@@ -877,8 +877,7 @@ let uiDprCap = Math.min(window.devicePixelRatio || 1, 2), uiDpr = uiDprCap;
 function resize() {
   W = Math.max(1, canvas.clientWidth); H = Math.max(1, canvas.clientHeight);
   uiDprCap = Math.min(window.devicePixelRatio || 1, 2);
-  uiDpr = uiPickDpr(false); renderer.setPixelRatio(uiDpr);
-  renderer.setSize(W, H, false);
+  uiDpr = uiPickDpr(false); uiBufferSize();
   camera.aspect = W / H;
   camera.updateProjectionMatrix();
   syncSheetHeight();
@@ -905,7 +904,14 @@ function uiPickDpr(active) {
   if (active && uiMoving() > 800) return Math.max(1, uiDprCap * 0.75);
   return uiDprCap;
 }
-function uiSetDpr(v) { if (Math.abs(v - uiDpr) < 1e-3) return; uiDpr = v; renderer.setPixelRatio(v); renderer.setSize(W, H, false); }
+function uiSetDpr(v) { if (Math.abs(v - uiDpr) < 1e-3) return; uiDpr = v; uiBufferSize(); }
+// tekenbuffer in één keer op maat (setPixelRatio + setSize wezen hem twee keer opnieuw toe); niets doen als hij al klopt
+function uiBufferSize() {
+  if (canvas.width === Math.floor(W * uiDpr) && canvas.height === Math.floor(H * uiDpr) && renderer.getPixelRatio() === uiDpr) {
+    const s = renderer.getSize(new THREE.Vector2()); if (s.x === W && s.y === H) return;
+  }
+  renderer.setDrawingBufferSize(W, H, uiDpr);
+}
 function uiSetLite(on) {
   uiAdapted = true; uiLite = on;
   const cc = on ? 0 : 1;
