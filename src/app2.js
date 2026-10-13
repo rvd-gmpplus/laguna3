@@ -592,6 +592,7 @@ function uiStartPress(d) {
   later(UI_PRESS_MS, check);
 }
 canvas.addEventListener('pointerdown', e => {
+  for (const l of labelPool) l._pd = false; // elk gebaar begint schoon: geen label houdt een oude druk vast
   uiPtrs.set(e.pointerId, e.pointerType);
   pointers = uiPtrs.size;
   try { canvas.focus({ preventScroll: true }); } catch (_) { }
@@ -740,7 +741,7 @@ function uiLabelGroup() {
 // meebeweegt als de groep uitklapt: het midden van het mesh als dat binnenin ligt, anders (ring, holle bus) het midden
 // van de driehoek die het dichtst bij dat midden ligt. Eén keer per knoop berekend (lui), per geometrie gedeeld; geen
 // raycasts per frame.
-const uiGeoAnchor = new WeakMap();
+let uiGeoAnchor = new WeakMap();
 function uiGeoPoint(geo) {
   let p = uiGeoAnchor.get(geo);
   if (p) return p;
@@ -779,8 +780,10 @@ function uiMeshSize(m) {
   const d = [uiBs.x, uiBs.y, uiBs.z].sort((x, y) => y - x);
   return d[0] * d[1] + 4 * d[1] * d[2];
 }
-function uiMakeAnchors(k) {
-  if (!k.asm) return [{ m: k.obj, p: uiGeoPoint(k.obj.geometry), node: k }];
+// Rangschikt de meshes van een knoop en geeft de zes beste terug; het (dure) ankerpunt per mesh volgt los van elkaar
+// (uiGeoPoint), zodat het werk over frames te verdelen is.
+function uiRankAnchors(k) {
+  if (!k.asm) return [{ m: k.obj, node: k }];
   if (!k.meshes.length) return [];
   // ingesloten meshes (binnen k) zijn alleen te zien als hun groep open is; die komen pas na de rest
   const isIn = m => { for (let q = m.userData.node; q && q !== k; q = q.parent) if (q.inner) return true; return false; };
@@ -788,13 +791,67 @@ function uiMakeAnchors(k) {
   const outer = info.filter(x => !x.inner), big = Math.max(...(outer.length ? outer : info).map(x => x.size));
   const rank = x => (x.size >= 0.5 * big ? 0 : 2) + (x.inner ? 1 : 0);
   info.sort((x, y) => rank(x) - rank(y) || x.d - y.d);
-  return info.slice(0, 6).map(x => ({ m: x.m, p: uiGeoPoint(x.m.geometry), node: x.m.userData.node }));
+  return info.slice(0, 6).map(x => ({ m: x.m, node: x.m.userData.node }));
+}
+function uiMakeAnchors(k) {
+  const a = uiRankAnchors(k);
+  for (const x of a) x.p = uiGeoPoint(x.m.geometry);
+  return a;
+}
+// De ankers van een groep worden niet in één frame gebouwd (bij Carrosserie 17 ms, bij de hoofdgroepen ~19 ms in het
+// midden van het uitklappen): knopen komen in een rij en uiAnchorStep bouwt ze binnen een tijdsbudget per frame, per
+// stap één rangschikking of één geometrie. Tot een knoop klaar is, ankert zijn label op het midden van het kader.
+// Zodra een groep begint uit te klappen, gaat zijn rij met labelkandidaten (grootste eerst) vooruit de rij in.
+const uiAnchorQ = new Set();
+let uiAnchorJob = null, uiPfGroup = null, uiPfMax = 0;
+function uiAnchorStep(budget) {
+  const t0 = performance.now();
+  let done = false;
+  while (performance.now() - t0 < budget) {
+    if (!uiAnchorJob) {
+      let k = null;
+      for (const q of uiAnchorQ) { uiAnchorQ.delete(q); if (!q._la) { k = q; break; } }
+      if (!k) break;
+      uiAnchorJob = { k, list: uiRankAnchors(k), i: 0 };
+    } else {
+      const j = uiAnchorJob;
+      if (j.i < j.list.length) { const x = j.list[j.i++]; x.p = uiGeoPoint(x.m.geometry); }
+      if (j.i >= j.list.length) { j.k._la = j.list; uiAnchorJob = null; done = true; }
+    }
+  }
+  return done;
+}
+function uiAnchorFlush() { // voor tests en voor finishAll: alles in de rij direct bouwen
+  for (let it = 0; it < 1000 && (uiAnchorQ.size || uiAnchorJob); it++) uiAnchorStep(1e9);
+}
+// per frame: vooruit inplannen en binnen het budget bouwen; true als er ankers klaar zijn gekomen (labels opnieuw leggen)
+function uiAnchorFrame(active) {
+  uiAnchorPrefetch();
+  return (uiAnchorQ.size || uiAnchorJob) ? uiAnchorStep(active ? 2 : 8) : false;
+}
+function uiAnchorPrefetch() {
+  const g = LABELS ? (SEL && SEL.asm && uiOpen(SEL) ? SEL : (CTX && uiOpen(CTX) ? CTX : null)) : null;
+  const max = W < 600 ? 10 : 24;
+  if (g === uiPfGroup && max === uiPfMax) return;
+  uiPfGroup = g; uiPfMax = max;
+  if (!g) return;
+  let n = 0;
+  for (const k of g.bySize) { if (n++ >= max) break; if (!k._la) uiAnchorQ.add(k); }
 }
 function uiLabelAnchor(k, out) {
-  const a = k._la || (k._la = uiMakeAnchors(k));
-  let c = a[0];
-  for (const x of a) if (x.node.ev) { c = x; break; }
-  return c ? out.copy(c.p).applyMatrix4(c.m.matrixWorld) : out.copy(k.lc).applyMatrix4(k.obj.matrixWorld);
+  const a = k._la;
+  if (!a) { uiAnchorQ.add(k); return out.copy(k.lc).applyMatrix4(k.obj.matrixWorld); }
+  for (const x of a) if (x.node.ev) return out.copy(x.p).applyMatrix4(x.m.matrixWorld);
+  // geen van de zes gekozen meshes is zichtbaar (bijvoorbeeld na isoleren): eerste zichtbare mesh van de knoop, anders
+  // het midden van het kader
+  let f = k._lf;
+  if (!f || !f.node.ev) {
+    f = null;
+    if (k.asm) for (const m of k.meshes) { const nd = m.userData.node; if (nd.ev) { f = { m, node: nd }; break; } }
+    k._lf = f;
+  }
+  if (f) { if (!f.p) f.p = uiGeoPoint(f.m.geometry); return out.copy(f.p).applyMatrix4(f.m.matrixWorld); }
+  return out.copy(k.lc).applyMatrix4(k.obj.matrixWorld);
 }
 function uiNewLabel() {
   const el = document.createElement('button');
@@ -802,8 +859,8 @@ function uiNewLabel() {
   el.innerHTML = '<b></b><span></span>';
   // alleen een klik die op dit label begon (of een klik zonder aanwijzer: toetsenbord, schermlezer); geen nagekomen
   // click van een tik die op het canvas begon en waarna het label onder de vinger is geschoven
-  el.addEventListener('pointerdown', e => { el._pd = e.timeStamp; });
-  el.addEventListener('click', e => { const k = el._k; if (!k) return; if (e.detail > 0 && !(el._pd != null && e.timeStamp - el._pd < 2000)) return; el._pd = null; uiStopPlay(); uiStopTour(); hideHint(); uiAct(k); });
+  el.addEventListener('pointerdown', () => { el._pd = true; });
+  el.addEventListener('click', e => { const was = el._pd; el._pd = false; const k = el._k; if (!k || (e.detail > 0 && !was)) return; uiStopPlay(); uiStopTour(); hideHint(); uiAct(k); });
   els.labels.appendChild(el);
   const ln = document.createElementNS(uiSvgNs, 'line'); ln.style.display = 'none'; els.leaders.appendChild(ln);
   const dot = document.createElementNS(uiSvgNs, 'circle'); dot.setAttribute('r', '3'); dot.style.display = 'none'; els.leaders.appendChild(dot);
@@ -1089,6 +1146,8 @@ function loop(now) {
     needs = false;
     uiMeasure(now, active);
   }
+  // labelankers van de groep die opent in kleine porties vooruit bouwen (zie uiAnchorStep)
+  if (uiAnchorFrame(active)) needs = true;
   // batches bouwen in de vrije tijd van het frame; opnieuw tekenen als de rij leeg is of hoogstens elke 300 ms
   // (een weergave per batch zou in software-WebGL de opbouw zelf vertragen); bij het opstarten hoogstens elke 1,5 s,
   // zodat de eerste batches niet op een rij volle weergaven van de losse auto hoeven te wachten
@@ -1133,29 +1192,34 @@ function finishAll() {
   ground.position.y = groundTarget; blob.position.y = groundTarget + 0.002;
   controls.update();
   ROOT.obj.updateMatrixWorld(true); camera.updateMatrixWorld();
+  uiAnchorPrefetch(); uiAnchorFlush();
   uiAfterAnim(); uiSyncCats(); uiSyncLabels();
   requestRender();
 }
 // Frametijd zonder finishAll(): klapt de groep uit en draait de echte animatiestap N keer
 // (uitklappen, verschuivingen, wereldmatrices en labelindeling, zonder renderer.render).
-function uiProfileFrames(name, frames = 120) {
+function uiProfileFrames(name, frames = 120, cold = false) {
   const g = typeof name === 'string' ? byName(name) : name;
   if (!g) return null;
   const snap = uiSnap();
   collapseTree(g); finishAll();
   const oldCtx = CTX, oldForce = uiLabelForce;
+  if (cold) { uiAnchorQ.clear(); uiAnchorJob = null; uiPfGroup = null; uiGeoAnchor = new WeakMap(); for (const n of ALL) { n._la = null; n._lf = null; } }
   explodeAllUnder(g); CTX = g; uiLabelForce = false;
-  const times = [];
+  const times = []; let aMax = 0;
   for (let i = 0; i < frames; i++) {
     const t0 = performance.now();
     uiTick(1 / 60);
     ROOT.obj.updateMatrixWorld();
+    const t1 = performance.now();
+    uiAnchorFrame(true);
+    aMax = Math.max(aMax, performance.now() - t1);
     updateLabels();
     times.push(performance.now() - t0);
   }
   uiRestore(snap, true); CTX = oldCtx; uiLabelForce = oldForce; finishAll();
   const s = times.slice().sort((a, b) => a - b), q = f => s[Math.min(s.length - 1, Math.floor(f * s.length))];
-  return { frames, p50: +q(0.5).toFixed(3), p95: +q(0.95).toFixed(3), max: +s[s.length - 1].toFixed(3), mean: +(times.reduce((a, b) => a + b, 0) / frames).toFixed(3) };
+  return { frames, p50: +q(0.5).toFixed(3), p95: +q(0.95).toFixed(3), max: +s[s.length - 1].toFixed(3), mean: +(times.reduce((a, b) => a + b, 0) / frames).toFixed(3), anchorMax: +aMax.toFixed(3) };
 }
 function uiState() {
   const w = uiWorking(), L = uiLevels(w).length;
