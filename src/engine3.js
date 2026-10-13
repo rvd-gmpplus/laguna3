@@ -10,7 +10,7 @@ function buildAlternator(p) {
   const bolts = [0, 1, 2].map(k => { const a = PI / 6 + k * PI * 2 / 3; return P(`Doorgaande bout ${k + 1}`, hexBolt(0.145, 0.005, 'x'), MAT.steel, { d: 'Doorgaande bout die voor- en achterschild samentrekt.', p: [-0.067, 0.064 * Math.cos(a), 0.064 * Math.sin(a)], ex: [-0.12, 0, 0] }); });
   return A('Dynamo', { d: 'Valeo-dynamo (TG15C-reeks, 150 A) met vrijloop-poelie; de interne opbouw is schematisch weergegeven.', p, ex: [-0.04, 0.1, 0.08], spec: [['Type', 'Valeo TG15C'], ['Stroom', '150 A'], ['Poelie', 'Ø49 tot 50 mm, 7 groeven']] }, [
     A('Vrijlooppoelie', { d: 'Poelie met vrijloop die koppelstoten van de krukas opvangt.', p: [px, 0, 0], ex: [-0.16, 0, 0] }, [
-      P('Buitenring met riemprofiel', engPolyV(0.0245, 0.025, 'Alt'), MAT.steel, { d: 'Buitenring met zeven groeven voor de multiriem.', ex: [0, 0, 0] }),
+      P('Buitenring met riemprofiel', engPolyV(0.0245, 0.025, 'Alt', 24), MAT.steel, { d: 'Buitenring met zeven groeven voor de multiriem.', ex: [0, 0, 0] }),
       P('Binnenring', annulus(0.009, 0.0135, 0.022, 'x', 18), MAT.steel, { d: 'Binnenring op de rotoras.', ex: [0, 0, 0.05] }),
       P('Klemrollen', merge([0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(k => xf(G.cyl('x', 0.0016, 0.0016, 0.016, 6), [0, 0.0155 * Math.cos(k * PI / 5), 0.0155 * Math.sin(k * PI / 5)]))), MAT.bearing, { d: 'Klemrollen met veertjes van de vrijloop.', ex: [0, 0, 0.06] }),
       P('Stofdop', G.lathe('x', [[0, -0.004], [0.012, -0.004], [0.013, 0.0], [0.012, 0.002], [0, 0.002]], 18, 'engAltCap'), MAT.plastic, { d: 'Stofdop voor op de poelie.', p: [-0.016, 0, 0], ex: [-0.04, 0, 0] }),
@@ -26,9 +26,9 @@ function buildAlternator(p) {
       P('Sleepringen', merge([xf(G.cyl('x', 0.0085, 0.0085, 0.004, 14), [0.044, 0, 0]), xf(G.cyl('x', 0.0085, 0.0085, 0.004, 14), [0.05, 0, 0]), xf(G.cyl('x', 0.007, 0.007, 0.012, 10), [0.047, 0, 0])]), MAT.copper, { d: 'Twee koperen sleepringen waarover de koolborstels lopen.', ex: [0.05, 0, 0] }),
     ]),
     A('Stator', { d: 'Stator: driefasewikkeling in een plaatpakket van gestapelde elektroplaten met 36 sleuven; de koperen wikkelkoppen steken aan beide zijden uit het pakket (aantal sleuven en platen schematisch).', ex: [0, 0.11, 0] }, [
-      P('Plaatpakket', cache('engStatPack', () => merge([0, 1, 2, 3, 4, 5].map(k => xf(ringGear(36, 0.0605, 0.0478, 0.0526, 0.0052, 'x'), [(k - 2.5) * 0.0062, 0, 0])))), MAT.engStatorLam, { d: 'Gestapelde, tegen elkaar gelakte elektroplaten met de sleuven voor de driefasewikkeling; de groeven tussen de platen zijn schematisch.', ex: [0, 0, 0] }),
-      P('Wikkelkop voorzijde', cache('engStatWindF', () => xf(G.torus('x', 0.0525, 0.0045, 32, 8), [-0.0225, 0, 0])), MAT.copper, { d: 'Koperen wikkelkop aan de voorzijde van de statorwikkeling.', ex: [-0.035, 0, 0] }),
-      P('Wikkelkop achterzijde', cache('engStatWindR', () => xf(G.torus('x', 0.0525, 0.0045, 32, 8), [0.0225, 0, 0])), MAT.copper, { d: 'Koperen wikkelkop aan de achterzijde van de statorwikkeling.', ex: [0.035, 0, 0] }),
+      P('Plaatpakket', cache('engStatPack', () => merge([0, 1, 2].map(k => xf(ringGear(36, 0.0605, 0.0478, 0.0526, 0.0114, 'x'), [(k - 1) * 0.0124, 0, 0])))), MAT.engStatorLam, { d: 'Gestapelde, tegen elkaar gelakte elektroplaten met de sleuven voor de driefasewikkeling; de groeven tussen de platen zijn schematisch.', ex: [0, 0, 0] }),
+      P('Wikkelkop voorzijde', cache('engStatWindF', () => xf(G.torus('x', 0.0525, 0.0045, 28, 6), [-0.0225, 0, 0])), MAT.copper, { d: 'Koperen wikkelkop aan de voorzijde van de statorwikkeling.', ex: [-0.035, 0, 0] }),
+      P('Wikkelkop achterzijde', cache('engStatWindR', () => xf(G.torus('x', 0.0525, 0.0045, 28, 6), [0.0225, 0, 0])), MAT.copper, { d: 'Koperen wikkelkop aan de achterzijde van de statorwikkeling.', ex: [0.035, 0, 0] }),
     ]),
     P('Achterlager', annulus(0.0065, 0.014, 0.008, 'x', 16), MAT.bearing, { d: 'Kogellager in het achterschild.', p: [0.04, 0, 0], ex: [0.05, 0, 0] }),
     P('Achterschild', merge([shieldR, xf(G.box(0.02, 0.026, 0.016), [0.05, -0.068, -0.02])]), MAT.aluCast, { d: 'Achterschild aan de sleepringzijde met de kunststof afdekkap.', ex: [0.08, 0, 0.03] }),
@@ -37,8 +37,8 @@ function buildAlternator(p) {
       P('Borstelhouder', G.box(0.016, 0.03, 0.016), MAT.ecu, { d: 'Regelaar met borstelhouder.', p: [0.05, 0.025, 0], ex: [0, 0, 0] }),
       P('Koolborstel 1', G.box(0.004, 0.008, 0.005), MAT.blackGloss, { d: 'Koolborstel op de sleepring.', p: [0.044, 0.0125, 0], ex: [0, 0.03, -0.02] }),
       P('Koolborstel 2', G.box(0.004, 0.008, 0.005), MAT.blackGloss, { d: 'Tweede koolborstel.', p: [0.05, 0.0125, 0], ex: [0, 0.03, 0.02] }),
-      P('Borstelveer 1', spring(0.0018, 0.0003, 0.008, 4), MAT.steel, { d: 'Veer die de koolborstel aandrukt.', p: [0.044, 0.021, 0], ex: [0, 0.05, -0.02] }),
-      P('Borstelveer 2', spring(0.0018, 0.0003, 0.008, 4), MAT.steel, { d: 'Tweede borstelveer.', p: [0.05, 0.021, 0], ex: [0, 0.05, 0.02] }),
+      P('Borstelveer 1', engSpring(0.0018, 0.0003, 0.008, 4, 6), MAT.steel, { d: 'Veer die de koolborstel aandrukt.', p: [0.044, 0.021, 0], ex: [0, 0.05, -0.02] }),
+      P('Borstelveer 2', engSpring(0.0018, 0.0003, 0.008, 4, 6), MAT.steel, { d: 'Tweede borstelveer.', p: [0.05, 0.021, 0], ex: [0, 0.05, 0.02] }),
     ]),
     A('Doorgaande bouten', { d: 'Drie doorgaande bouten.', ex: [-0.04, 0, 0] }, bolts),
     P('B+-aansluiting', merge([G.cyl('x', 0.004, 0.004, 0.02, 8), xf(engNut(0.008, 0.006, 'x'), [0.006, 0, 0]), xf(G.cyl('x', 0.008, 0.008, 0.004, 12), [-0.004, 0, 0])]), MAT.copper, { d: 'Hoofdstroomaansluiting B+ (M8) naar de accu.', p: [0.085, 0.03, 0.025], ex: [0.06, 0.03, 0.03] }),
@@ -172,7 +172,7 @@ function engBuildPump() {
     ]),
     A('Stroomregelklep', { d: 'Stroomregel- en overdrukklep: houdt de oliestroom bij hoog toerental constant en begrenst de druk.', p: [0.03, 0, 0], ex: [0, 0, -0.035] }, [
       P('Plunjer', merge([G.cyl('z', 0.0085, 0.0085, 0.028, 14), xf(G.cyl('z', 0.0095, 0.0095, 0.004, 14), [0, 0, 0.007]), xf(G.cyl('z', 0.0095, 0.0095, 0.004, 14), [0, 0, -0.007])]), MAT.steel, { d: 'Plunjer met stuurkanten in de klepboring.', p: [0, 0, -0.026], ex: [0, 0, -0.02], inner: true }),
-      P('Klepveer', spring(0.0065, 0.0009, 0.012, 5, 'z'), MAT.steel, { d: 'Drukveer die de plunjer in de uitgangsstand houdt.', p: [0, 0, -0.046], ex: [0, 0, -0.04], inner: true }),
+      P('Klepveer', engSpring(0.0065, 0.0009, 0.012, 5, 6, 'z'), MAT.steel, { d: 'Drukveer die de plunjer in de uitgangsstand houdt.', p: [0, 0, -0.046], ex: [0, 0, -0.04], inner: true }),
       P('Afdichtring plug', annulus(0.0065, 0.0125, 0.002, 'z', 20), MAT.copper, { d: 'Afdichtring onder de plug.', p: [0, 0, -0.053], ex: [0, 0, -0.065] }),
       P('Schroefplug', plug, MAT.darkSteel, { d: 'Plug die de klepboring sluit en de veer voorspant.', p: [0, 0, -0.0585], ex: [0, 0, -0.09] }),
     ]),
