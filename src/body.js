@@ -226,7 +226,7 @@ function bodCap(z, dir, ny = 4, nx = 10) {
 /* ---------- koplamp- en achterlichtzones ---------- */
 // koplamp: van de achterpunt op de schouder (z 1,81) naar de binnenspits op het kapvlak (z ca. 2,235, |x| 0,37)
 const bodHLZ0 = 1.81, bodHLZ1 = 2.235;
-const bodHLlo = pchip([[1.81, 0.72], [1.88, 0.688], [1.97, 0.66], [2.08, 0.64], [2.17, 0.628], [2.215, 0.632], [2.235, 0.648]]);  // ondergrens (hoogte)
+const bodHLlo = pchip([[1.81, 0.715], [1.87, 0.672], [1.96, 0.642], [2.08, 0.624], [2.17, 0.616], [2.215, 0.622], [2.235, 0.64]]);  // ondergrens (hoogte)
 const bodHLhi = pchip([[1.81, 0.0], [1.88, 0.06], [1.97, 0.13], [2.08, 0.21], [2.17, 0.28], [2.215, 0.32], [2.235, 0.35]]);       // bovengrens (fractie van het dek)
 function hlLow(z) { return Math.min(sAtY(z, bodHLlo(z)), bodHLHi(z) - 0.006); }
 function bodHLHi(z) { const t = clamp((z - bodHLZ0) / 0.012, 0, 1); return S4 + (1 - S4) * bodHLhi(z) * t + 0.0005; }
