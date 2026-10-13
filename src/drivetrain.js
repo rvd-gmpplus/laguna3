@@ -108,7 +108,7 @@ function drvConverter() {
       P('Demperring', annulus(0.071, 0.099, 0.003, 'x', 40), MAT.darkSteel, { d: 'Tweede plaat die de veren in hun vensters houdt.', p: [0.0315, 0, 0], ex: [0.056, 0, 0] }),
     ]),
     A('Turbinewiel', { d: 'Turbinewiel met schoepen: wordt door de olie van het pompwiel aangedreven en geeft het koppel via de naaf aan de ingaande as.', ex: [sp * 3.2, 0, 0], inner: true }, [
-      P('Turbineschaal', merge([shellT, drvL('TurbHub', [[0.02, 0.07], [0.062, 0.07], [0.062, 0.075], [0.02, 0.075]], 32), G.cyl('x', 0.03, 0.03, 0.016, 20)]), MAT.steel, { d: 'Schaal en naaf van het turbinewiel; de naaf grijpt met spiebanen in de ingaande as.', ex: [0, 0, 0] }),
+      P('Turbineschaal', merge([shellT, drvL('TurbHub', [[0.02, 0.07], [0.062, 0.07], [0.062, 0.075], [0.02, 0.075]], 32), G.cyl('x', 0.03, 0.03, 0.016, 20)]), MAT.steel, { d: 'Schaal en naaf van het turbinewiel; de naaf grijpt met spiebanen in de ingaande as.', ex: [0, 0, 0.0001] }),
       P('Turbineschoepen', xf(blades(24, 0.066, 0.13, 0.026, 0.0015, 0, 'x'), [0.054, 0, 0]), MAT.steel, { d: 'Gebogen schoepen (aantal schematisch).', ex: [-0.015, 0, 0] }),
     ]),
     A('Leidwiel met vrijloop', { d: 'Leidwiel (stator) dat de oliestroom omkeert en zo het koppel vergroot; draait dankzij de vrijloop alleen in één richting.', ex: [sp * 4.4, 0, 0], inner: true }, [
@@ -120,7 +120,7 @@ function drvConverter() {
       P('Axiaal lager achter', drvNeedle('a', 0.022, 0.044, 0.003), MAT.bearing, { d: 'Axiaal naaldlager tussen leidwiel en pompwiel (schematisch weergegeven).', p: [0.0805, 0, 0], ex: [0.145, 0, 0] }),
     ]),
     A('Pompwiel', { d: 'Pompwiel (impeller): vast aan het deksel verbonden, draait met de motor mee en stuwt de olie naar het turbinewiel; de naaf drijft de oliepomp aan.', ex: [sp * 6.2, 0, 0], inner: true }, [
-      P('Pompwielschaal', merge([shellP, drvL('PumpHub', [[0.028, 0.095], [0.028, 0.15]], 24), drvL('PumpHub2', [[0.028, 0.095], [0.06, 0.095]], 24)]), MAT.steel, { d: 'Schaal van het pompwiel met lange naaf die in de oliepomp draait.', ex: [0, 0, 0] }),
+      P('Pompwielschaal', merge([shellP, drvL('PumpHub', [[0.028, 0.095], [0.028, 0.15]], 24), drvL('PumpHub2', [[0.028, 0.095], [0.06, 0.095]], 24)]), MAT.steel, { d: 'Schaal van het pompwiel met lange naaf die in de oliepomp draait.', ex: [0, 0, 0.0001] }),
       P('Pompwielschoepen', xf(blades(24, 0.066, 0.13, 0.026, 0.0015, 0, 'x'), [0.086, 0, 0]), MAT.steel, { d: 'Gebogen schoepen (aantal schematisch).', ex: [-0.03, 0, 0] }),
     ]),
   ]);
@@ -255,7 +255,7 @@ function drvValve() {
   const acc = (i) => P(`Accumulator ${i + 1}`, G.cyl('y', 0.011, 0.011, 0.03, 14), MAT.drvBrass, { d: 'Accumulatorzuiger met veer die de drukstoot bij het schakelen dempt (3-5-R, hoge koppeling, lage koppeling, 2-6).', p: [0.21 + i * 0.04, yLow - 0.0225, 0.0], ex: [0, -0.1, 0.03 * (i - 1.5)] });
   const spool = (nm, d, x, z, l) => P(nm, drvRing('drvSpool' + nm, 1, 0, () => merge([G.cyl('x', 0.0045, 0.0045, l, 10), ...[-0.35, 0, 0.35].map(f => xf(G.cyl('x', 0.0065, 0.0065, 0.007, 12), [f * l, 0, 0]))]), 0, [0, 0], 0), MAT.steel, { d, p: [x, yUp + 0.005, z], ex: [0, 0.06, z * 1.5], inner: true });
   return A('Klepblok', { d: 'Hydraulische besturing van de bak: het klepblok met acht solenoïdes (zes lineair, twee aan/uit) en vijf drukschakelaars regelt de oliedruk naar de koppelingen en remmen. Zit in het huis onder een afdekdeksel. Inwendige kleppen schematisch weergegeven.', ex: [0.0, -0.3, 0.0], inner: true }, [
-    A('Kleplichaam', { d: 'Onderste en bovenste blok met kanalen, een tussenplaat met twee pakkingen en de bouten.', ex: [0, 0, 0.0] }, [
+    A('Kleplichaam', { d: 'Onderste en bovenste blok met kanalen, een tussenplaat met twee pakkingen en de bouten.', ex: [0, 0.05, 0.0] }, [
       P('Onderste klepblok', G.rbox(W, 0.014, D, 0.002), MAT.aluCast, { d: 'Onderste helft van het klepblok met kanalen.', p: [cx, yLow, cz], ex: [0, -0.12, 0] }),
       P('Pakking onder', G.box(W, 0.001, D), MAT.drvPaper, { d: 'Pakking tussen onderste blok en tussenplaat.', p: [cx, yG1, cz], ex: [0, -0.08, 0] }),
       P('Tussenplaat', G.box(W, 0.002, D), MAT.steel, { d: 'Stalen tussenplaat met doorlaten en terugslagkleppen.', p: [cx, ySep, cz], ex: [0, -0.04, 0] }),
@@ -510,8 +510,8 @@ function buildPowertrain() {
   const dOutL = [GB_X + DIFF[0] + 0.082, DIFF[1], DIFF[2]], dOutR = [GB_X + DIFF[0] - 0.082, DIFF[1], DIFF[2]];
   const hubL = toPT([0.775, AY, AXF]).toArray(), hubR = toPT([-0.775, AY, AXF]).toArray();
   const shafts = A('Aandrijfassen', { d: 'Linker (kort) en rechter (lang, met tussenas en tussenaslager) aandrijfas van het differentieel naar de voorwielen, elk met een tripode-koppeling aan de bakzijde en een kogelkoppeling aan de wielzijde. Lengten volgens catalogus: links circa 640 mm, rechts circa 962 mm.', ex: [0, -0.5, -0.3] }, [
-    driveshaft('Aandrijfas links', dOutL, hubL, { sign: 1, d: 'Korte linker aandrijfas (catalogus circa 640 mm, 30 spiebanen bakzijde, 27 wielzijde).', spec: [['Lengte (catalogus)', 'circa 640 mm'], ['Binnenste koppeling', 'tripode, Ø87 mm'], ['Buitenste koppeling', 'kogelkoppeling, 8 kogels']], ex: [0.3, 0, 0] }),
-    driveshaft('Aandrijfas rechts', dOutR, hubR, { sign: -1, mid: 0.35, d: 'Lange rechter aandrijfas (catalogus circa 962 mm) met tussenas (circa 350 mm) en kogellager 35 × 62 × 14 mm; loopt achter het motorblok langs.', spec: [['Lengte (catalogus)', 'circa 962 mm'], ['Tussenlager', 'kogellager 35 × 62 × 14 mm'], ['Buitenste koppeling', 'kogelkoppeling, 8 kogels']], ex: [-0.3, 0, 0] }),
+    driveshaft('Aandrijfas links', dOutL, hubL, { sign: 1, d: 'Korte linker aandrijfas (catalogus circa 640 mm, 30 spiebanen bakzijde, 27 wielzijde).', spec: [['Lengte (catalogus)', 'circa 640 mm'], ['Binnenste koppeling', 'tripode, Ø87 mm'], ['Buitenste koppeling', 'kogelkoppeling, 8 kogels']], ex: [0.12, 0, 0.28] }),
+    driveshaft('Aandrijfas rechts', dOutR, hubR, { sign: -1, mid: 0.35, d: 'Lange rechter aandrijfas (catalogus circa 962 mm) met tussenas (circa 350 mm) en kogellager 35 × 62 × 14 mm; loopt achter het motorblok langs.', spec: [['Lengte (catalogus)', 'circa 962 mm'], ['Tussenlager', 'kogellager 35 × 62 × 14 mm'], ['Buitenste koppeling', 'kogelkoppeling, 8 kogels']], ex: [-0.12, 0, -0.28] }),
   ]);
   return A('Aandrijflijn', {
     d: 'Dwarsgeplaatste motor en automaat met differentieel en aandrijfassen naar de voorwielen.',
