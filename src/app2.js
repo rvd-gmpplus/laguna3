@@ -832,6 +832,8 @@ function uiLabelRects() { return uiSpots.slice(0, uiNPlaced).map(p => ({ name: p
 
 /* ---------- formaat en vrij beeld ---------- */
 let uiLastFit = null, uiRefitTimer = 0;
+const uiViewPrev = { l: -99, r: -99, t: -99, b: -99 };
+let uiViewW = 0, uiViewH = 0;
 function layoutView() {
   const wide = window.innerWidth >= 920;
   const title = els.topbar.querySelector('.title').getBoundingClientRect();
@@ -849,6 +851,10 @@ function layoutView() {
     const bottom = els.sheet.dataset.state === 'open' ? sheet.top : Math.min(dockTop, sheet.top);
     VIEW.b = Math.max(0, H - bottom + 4);
   }
+  // Kleine verschuivingen van de bediening (een focusrand, een paar pixels in het dock) verschuiven het beeld niet:
+  // anders springt de scène onder de vinger weg tussen aanwijzen en tikken.
+  for (const k of ['l', 'r', 't', 'b']) { if (Math.abs(VIEW[k] - uiViewPrev[k]) < 6 && uiViewW === W && uiViewH === H) VIEW[k] = uiViewPrev[k]; uiViewPrev[k] = VIEW[k]; }
+  uiViewW = W; uiViewH = H;
   camera.setViewOffset(W, H, (VIEW.r - VIEW.l) / 2, (VIEW.b - VIEW.t) / 2, W, H);
   camera.updateProjectionMatrix();
   uiPlaceMenu();
