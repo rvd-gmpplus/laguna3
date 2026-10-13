@@ -88,10 +88,16 @@ function renderPanel() {
   uiUiDirty = true;
 }
 // Na elke gebruikershandeling: paneel, boom, schuif, presetknoppen en stap-terug bijwerken.
+// I5/I6: schakelaars en spreidingsschuif volgen de stand ook na presets, stap terug en de rondleiding
+function uiSyncToggles() {
+  $('tXray').checked = XRAY; $('tSys').checked = SYSCOL; els.legend.hidden = !SYSCOL;
+  const sp = Math.round(SPREAD * 100); $('spread').value = String(sp); $('spreadOut').textContent = sp + '%';
+}
 function uiAfterAction() {
   renderPanel();
   if (treeVisible()) renderTree();
-  uiSyncExplode(); uiSyncCats(); uiSyncUndo();
+  uiSyncExplode(); uiSyncCats(); uiSyncUndo(); uiSyncToggles();
+  applyMats(); // I3: geen gele selectietint meer op een groep die open is gegaan
   uiHideTip();
   uiSyncLabels();
   requestRender();
@@ -124,7 +130,7 @@ function uiAct(p) {
 function tapNode(n) { uiAct(n); }
 function doExplode(g) {
   uiPush();
-  setTarget(g, 1);
+  setTarget(g, 1); updateGround();
   CTX = g; uiLabelForce = false; clearPreset();
   select(g);
   uiSoftFrame([g]);
@@ -132,7 +138,7 @@ function doExplode(g) {
 }
 function doCollapse(a) {
   uiPush();
-  collapseTree(a);
+  collapseTree(a); updateGround(); // I4: de vloer volgt de eindstand
   CTX = a.parent && uiOpen(a.parent) ? a.parent : null; uiLabelForce = false; clearPreset();
   select(a);
   uiAfterAction();
@@ -672,6 +678,7 @@ function uiEnter(shift) {
   if (a) { doExplode(a); return; }
   if (n.asm) doCollapse(n); else { uiPush(); uiLift(n); uiAfterAction(); }
 }
+if (!uiTouch) els.search.placeholder += ' (toets /)';
 window.addEventListener('keydown', e => {
   const t = e.target;
   if (!els.helpDlg.hidden) { if (e.key === 'Escape') { e.preventDefault(); uiHelp(false); } return; }
@@ -684,6 +691,8 @@ window.addEventListener('keydown', e => {
   if (e.key === 'Enter') { if (onCtl) return; e.preventDefault(); uiStopPlay(); uiStopTour(); hideHint(); uiEnter(e.shiftKey); return; }
   if (e.key === 'Backspace') { e.preventDefault(); uiStopPlay(); uiStopTour(); uiUndo(); return; }
   if (e.key === '?') { e.preventDefault(); uiHelp(true); return; }
+  // U17: / springt naar het zoekveld van de onderdelenlijst (op de telefoon gaat het paneel daarvoor open)
+  if (e.key === '/') { e.preventDefault(); hideHint(); showTab('tree'); if (window.innerWidth < 920) setSheet('open'); els.search.focus(); els.search.select(); return; }
   // pijltjes (niet op een bedieningselement): door de boom lopen. Omhoog = bovenliggende groep, omlaag = eerste deel,
   // links/rechts = vorige/volgende op hetzelfde niveau (audit U29). Selecteren en in beeld houden, niets uitklappen.
   if (!onCtl && /^Arrow(Up|Down|Left|Right)$/.test(e.key)) {
@@ -877,8 +886,7 @@ let uiDprCap = Math.min(window.devicePixelRatio || 1, 2), uiDpr = uiDprCap;
 function resize() {
   W = Math.max(1, canvas.clientWidth); H = Math.max(1, canvas.clientHeight);
   uiDprCap = Math.min(window.devicePixelRatio || 1, 2);
-  uiDpr = uiPickDpr(false); renderer.setPixelRatio(uiDpr);
-  renderer.setSize(W, H, false);
+  uiDpr = uiPickDpr(false); uiBufferSize();
   camera.aspect = W / H;
   camera.updateProjectionMatrix();
   syncSheetHeight();
@@ -892,7 +900,7 @@ if (window.ResizeObserver) {
 }
 
 /* ---------- thema ---------- */
-function refreshTheme() { const old = ground.material.map; ground.material.map = gridTexture(); ground.material.needsUpdate = true; old && old.dispose(); requestRender(); }
+function refreshTheme() { uiThemeLights(); const old = ground.material.map; ground.material.map = gridTexture(); ground.material.needsUpdate = true; old && old.dispose(); requestRender(); }
 if (window.matchMedia) { const mq = matchMedia('(prefers-color-scheme: dark)'); mq.addEventListener ? mq.addEventListener('change', refreshTheme) : mq.addListener(refreshTheme); }
 new MutationObserver(refreshTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
@@ -905,7 +913,14 @@ function uiPickDpr(active) {
   if (active && uiMoving() > 800) return Math.max(1, uiDprCap * 0.75);
   return uiDprCap;
 }
-function uiSetDpr(v) { if (Math.abs(v - uiDpr) < 1e-3) return; uiDpr = v; renderer.setPixelRatio(v); renderer.setSize(W, H, false); }
+function uiSetDpr(v) { if (Math.abs(v - uiDpr) < 1e-3) return; uiDpr = v; uiBufferSize(); }
+// tekenbuffer in één keer op maat (setPixelRatio + setSize wezen hem twee keer opnieuw toe); niets doen als hij al klopt
+function uiBufferSize() {
+  if (canvas.width === Math.floor(W * uiDpr) && canvas.height === Math.floor(H * uiDpr) && renderer.getPixelRatio() === uiDpr) {
+    const s = renderer.getSize(new THREE.Vector2()); if (s.x === W && s.y === H) return;
+  }
+  renderer.setDrawingBufferSize(W, H, uiDpr);
+}
 function uiSetLite(on) {
   uiAdapted = true; uiLite = on;
   const cc = on ? 0 : 1;
@@ -937,13 +952,18 @@ function uiWarmMaterials() {
   for (const b of [...bases, ...Object.values(SYS_MATS)]) todo.push(uiSelMat(b), uiHvMat(b));
   todo.push(...Object.values(SYS_MATS), GHOST, GHOST_HL, uiGhostHv);
   const geo = new THREE.BoxGeometry(0.001, 0.001, 0.001);
+  // kleine oefenscène met dezelfde soorten en aantallen lichten en dezelfde omgeving als de echte scène: dezelfde
+  // shaderprogramma's, maar compile() hoeft niet elke keer alle 2.400 meshes van de auto langs
+  const ws = new THREE.Scene();
+  scene.traverse(o => { if (o.isLight) ws.add(o.clone()); });
   const step = () => {
     const batch = todo.splice(0, 4);
     if (!batch.length) { geo.dispose(); return; }
+    ws.environment = scene.environment;
     const g = new THREE.Group();
     for (const mat of batch) { const m = new THREE.Mesh(geo, mat); m.position.set(0, -40, 0); g.add(m); }
-    scene.add(g);
-    try { renderer.compile(scene, camera); } catch (_) { } finally { scene.remove(g); }
+    ws.add(g);
+    try { renderer.compile(ws, camera); } catch (_) { } finally { ws.remove(g); }
     setTimeout(step, 40);
   };
   setTimeout(step, 600);
@@ -984,14 +1004,18 @@ function loop(now) {
     uiMeasure(now, active);
   }
   // batches bouwen in de vrije tijd van het frame; opnieuw tekenen als de rij leeg is of hoogstens elke 300 ms
-  // (een weergave per batch zou in software-WebGL de opbouw zelf vertragen)
-  if (uiBatchOn && (uiBatchQ.size || uiBatchJob) && uiBatchStep(active ? 3 : (now - uiReadyT < 8000 ? 25 : 10)) && (!uiBatchQ.size && !uiBatchJob || now - uiBatchDrawT > 300)) { needs = true; uiBatchDrawT = now; }
+  // (een weergave per batch zou in software-WebGL de opbouw zelf vertragen); bij het opstarten hoogstens elke 1,5 s,
+  // zodat de eerste batches niet op een rij volle weergaven van de losse auto hoeven te wachten
+  const uiStart = now - uiReadyT < 8000;
+  if (uiBatchOn && (uiBatchQ.size || uiBatchJob) && uiBatchStep(active ? 3 : (uiStart ? 25 : 10)) && (!uiBatchQ.size && !uiBatchJob || now - uiBatchDrawT > (uiStart ? 1500 : 300))) { needs = true; uiBatchDrawT = now; }
+  if (uiTiming.batches === undefined && !uiBatchQ.size && !uiBatchJob) uiTiming.batches = Math.round(now);
   if (uiWasActive && !active) { needs = true; uiAfterAnim(); }
   uiWasActive = active;
 }
 
 /* ---------- start ---------- */
 let uiReady = false, uiReadyT = 0;
+uiTiming.startUp = Math.round(performance.now());
 applyVisibility();
 resize();
 select(ROOT);
@@ -1000,10 +1024,12 @@ uiSyncUndo();
 updateGround();
 { const f = uiFitPoints(uiCollect([ROOT], true), DIRS.iso, 1.04); if (f) { camera.position.copy(f.pos); controls.target.copy(f.target); } uiLastFit = { preset: appPresetById.get('assembled') }; }
 controls.update();
+uiTiming.render0 = Math.round(performance.now());
 renderer.render(scene, camera);
 LOADING.classList.add('gone');
+uiTiming.firstFrame = Math.round(performance.now());
 uiInitHint();
-requestAnimationFrame(t => { last = t; uiReady = true; uiReadyT = performance.now(); loop(t); });
+requestAnimationFrame(t => { last = t; uiReady = true; uiReadyT = performance.now(); uiTiming.interactive = Math.round(uiReadyT); loop(t); });
 uiWarmMaterials();
 { const errs = appCheckPresets(); if (errs.length) console.warn('presets: ' + errs.join('; ')); }
 // labelbreedtes opnieuw meten zodra de lettertypen er zijn
@@ -1071,8 +1097,14 @@ window.__laguna = {
   finishAll, ROOT, ALL, MESHES, PRESETS, byName,
   select: uiApi(select), tapNode: uiApi(tapNode), focusNodes: uiApi(focusNodes),
   setTarget: uiApi(setTarget, true), explodeAllUnder: uiApi(explodeAllUnder, true), collapseAll: uiApi(collapseAll, true), isolate: uiApi(isolate, true),
-  // klaar: gebouwd, eerste keer getekend en de batches van de beginstand staan klaar (hoogstens 8 s wachten daarop)
-  get ready() { return uiReady && (!uiBatchOn || (!uiBatchQ.size && !uiBatchJob) || performance.now() - uiReadyT > 8000); },
+  // klaar: gebouwd, eerste keer getekend en bedienbaar; op de batches van de beginstand wordt hoogstens 2 s gewacht
+  // (tests die gebundelde aantallen meten roepen eerst batchFlush() aan)
+  get ready() {
+    const ok = uiReady && (!uiBatchOn || (!uiBatchQ.size && !uiBatchJob) || performance.now() - uiReadyT > 2000);
+    if (ok && uiTiming.ready === undefined) uiTiming.ready = Math.round(performance.now());
+    return ok;
+  },
+  timing: () => Object.assign({ batchesDone: !uiBatchQ.size && !uiBatchJob }, uiTiming),
   byPath: uiByPath,
   preset: id => { hideHint(true); return uiRunPreset(id); },
   presetList: () => PRESETS.filter(appPresetOk).map(p => ({ id: p.id, cat: p.cat, label: p.label, key: p.key || null, subject: p.tour ? [] : appSubject(p).map(n => n.name), tour: !!p.tour })),

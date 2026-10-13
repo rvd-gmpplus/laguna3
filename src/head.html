@@ -22,7 +22,7 @@
     --bg:#1a2129; --bg-deep:#0e1318; --surface:rgba(24,30,37,.95); --surface-solid:#181e25;
     --ink:#e6eaee; --ink-2:#9ba6b2; --line:rgba(230,234,238,.13); --chip:#212a33; --chip-ink:#e6eaee;
     --accent:#f2c230; --on-accent:#1b1500; --focus:#86bcff; --danger:#ff8a80; --hover:#6aa8ff;
-    --grid:rgba(230,234,238,.08); --grid-strong:rgba(230,234,238,.17); --shade:rgba(0,0,0,.55); --leader:rgba(230,234,238,.6);
+    --grid:rgba(230,234,238,.12); --grid-strong:rgba(230,234,238,.24); --shade:rgba(0,0,0,.55); --leader:rgba(230,234,238,.6);
     --shadow:0 12px 32px rgba(0,0,0,.5); color-scheme:dark;
   }
 }
@@ -30,7 +30,7 @@
   --bg:#1a2129; --bg-deep:#0e1318; --surface:rgba(24,30,37,.95); --surface-solid:#181e25;
   --ink:#e6eaee; --ink-2:#9ba6b2; --line:rgba(230,234,238,.13); --chip:#212a33; --chip-ink:#e6eaee;
   --accent:#f2c230; --on-accent:#1b1500; --focus:#86bcff; --danger:#ff8a80; --hover:#6aa8ff;
-  --grid:rgba(230,234,238,.08); --grid-strong:rgba(230,234,238,.17); --shade:rgba(0,0,0,.55); --leader:rgba(230,234,238,.6);
+  --grid:rgba(230,234,238,.12); --grid-strong:rgba(230,234,238,.24); --shade:rgba(0,0,0,.55); --leader:rgba(230,234,238,.6);
   --shadow:0 12px 32px rgba(0,0,0,.5); color-scheme:dark;
 }
 [hidden]{display:none!important}
@@ -301,7 +301,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
         <dl class="spec" id="selSpec"></dl>
         <p class="kids-title" id="kidsTitle">Bestaat uit</p>
         <div class="kids" id="selKids"></div>
-        <p class="note">Schematisch 3D-model: vormen, maten en posities van onderdelen zijn benaderd en niet geschikt als montagevoorschrift. Technische gegevens komen uit openbare specificaties van de Laguna III 2.0 Turbo 170 automaat (fase 2).</p>
+        <p class="note">Schematisch 3D-model: vormen, maten en posities van onderdelen zijn benaderd en niet geschikt als montagevoorschrift. Technische gegevens komen uit openbare specificaties en werkplaatshandboeken van deze auto en, waar vermeld, van zustermotoren (F4R) of de zusterbak (Mitsubishi F6AJA); niet elk gegeven is voor deze uitvoering bevestigd.</p>
       </section>
       <section id="tab-tree" role="tabpanel" aria-labelledby="tabbtn-tree" hidden>
         <input id="treeSearch" type="search" placeholder="Zoek een onderdeel, bijv. klepveer" autocomplete="off" aria-describedby="treeInfo">
@@ -382,6 +382,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
       <dt><kbd>&uarr;</kbd> <kbd>&darr;</kbd> <kbd>&larr;</kbd> <kbd>&rarr;</kbd></dt><dd>Door de onderdelen lopen: bovenliggende groep, eerste deel, vorige of volgende op hetzelfde niveau.</dd>
       <dt><kbd>Esc</kbd></dt><dd>Menu sluiten of de hele auto selecteren.</dd>
       <dt><kbd>0</kbd> – <kbd>9</kbd></dt><dd>Gemonteerd, Hoofdgroepen, Motor, Motor tot op de bout, Automaat, Onderstel, Carrosserie, Interieur, Röntgen, Alles uit elkaar.</dd>
+      <dt><kbd>/</kbd></dt><dd>Zoek een onderdeel in de onderdelenlijst.</dd>
       <dt><kbd>?</kbd></dt><dd>Deze uitleg.</dd></dl>
     <div class="btnrow"><button class="btn primary" id="helpClose">Sluiten</button></div>
   </div></div>
