@@ -29,7 +29,7 @@ function buildCooling() {
   const RY = 0.48, RZ = 1.99;                                   // hartlijn koelblok
   // ---------- radiateur ----------
   const coreGeo = cache('sysRadCore', () => merge([G.box(0.56, 0.36, 0.022), ...[-0.15, -0.075, 0, 0.075, 0.15].map(y => xf(G.box(0.56, 0.003, 0.025), [0, y, 0]))]));
-  const radiateur = A('Radiateur', { d: 'Dwarsstroomradiateur met aluminium blok en kunststof waterkasten, vóór de motor in de frontmodule. De koelvloeistof stroomt van de linker naar de rechter waterkast (opbouw schematisch).', spec: [['Opbouw', 'aluminium blok, kunststof waterkasten'], ['Dopdruk expansievat', '1,4 bar']], ex: [0, 0, -0.12] }, [
+  const radiateur = A('Radiateur', { d: 'Dwarsstroomradiateur met aluminium blok en kunststof waterkasten, vóór de motor in de frontmodule. De koelvloeistof stroomt van de linker naar de rechter waterkast (opbouw schematisch).', ex: [0, 0, -0.12] }, [
     P('Koelblok', coreGeo, MAT.alu, { d: 'Aluminium blok met buisjes en lamellen waar de lucht doorheen stroomt.', p: [0, RY, RZ], ex: [0, 0, 0] }),
     P('Waterkast links', G.rbox(0.04, 0.36, 0.046, 0.008), MAT.plastic, { d: 'Kunststof waterkast waar de warme koelvloeistof binnenkomt.', p: [0.30, RY, RZ], ex: [0.13, 0, 0] }),
     P('Waterkast rechts', G.rbox(0.04, 0.36, 0.046, 0.008), MAT.plastic, { d: 'Kunststof waterkast waar de afgekoelde vloeistof het blok verlaat.', p: [-0.30, RY, RZ], ex: [-0.13, 0, 0] }),
@@ -52,7 +52,7 @@ function buildCooling() {
   ]);
   // ---------- intercooler ----------
   const ICY = 0.31, ICZ = 2.15;
-  const intercooler = A('Intercooler', { d: 'Lucht-luchtkoeler achter de onderste luchtinlaat: koelt de door de turbo samengeperste lucht voordat die naar het gasklephuis gaat. De warme lucht komt links binnen, de gekoelde lucht verlaat hem rechts.', spec: [['Inlaat', 'ø 57 mm'], ['Uitlaat', 'ø 47 mm']], ex: [0, -0.04, 0.36] }, [
+  const intercooler = A('Intercooler', { d: 'Lucht-luchtkoeler achter de onderste luchtinlaat: koelt de door de turbo samengeperste lucht voordat die naar het gasklephuis gaat. De warme lucht komt links binnen, de gekoelde lucht verlaat hem rechts.', spec: [['Inlaat', 'ø 57 mm (aannemelijk)'], ['Uitlaat', 'ø 47 mm (aannemelijk)']], ex: [0, -0.04, 0.36] }, [
     P('Intercoolerkern', cache('sysIcCore', () => merge([G.box(0.54, 0.11, 0.09), ...[-0.03, 0, 0.03].map(y => xf(G.box(0.54, 0.003, 0.094), [0, y, 0]))])), MAT.alu, { d: 'Aluminium kern met plaatvormige luchtkanalen en koelribben.', p: [0, ICY, ICZ] }),
     P('Eindkap links', G.rbox(0.06, 0.12, 0.096, 0.012), MAT.aluCast, { d: 'Gegoten eindkap aan de inlaatzijde (links), met de aansluiting voor de hete laadluchtslang.', p: [0.30, ICY, ICZ], ex: [0.12, 0, 0] }),
     P('Eindkap rechts', G.rbox(0.06, 0.12, 0.096, 0.012), MAT.aluCast, { d: 'Gegoten eindkap aan de uitlaatzijde (rechts), met de aansluiting voor de gekoelde laadluchtslang.', p: [-0.30, ICY, ICZ], ex: [-0.12, 0, 0] }),
@@ -64,7 +64,7 @@ function buildCooling() {
   const FZ = 1.955;
   const shroud = cache('sysShroud', () => merge([xf(G.box(0.6, 0.026, 0.035), [0, 0.18, 0]), xf(G.box(0.6, 0.026, 0.035), [0, -0.18, 0]), xf(G.box(0.026, 0.36, 0.035), [0.3, 0, 0]), xf(G.box(0.026, 0.36, 0.035), [-0.3, 0, 0]), G.torus('z', 0.18, 0.012, 40, 6)]));
   const spokes = cache('sysFanSpokes', () => merge([0, 1, 2, 3].map(k => xf(G.box(0.012, 0.13, 0.014), [0.1 * Math.cos(k * HALF + 0.4), 0.1 * Math.sin(k * HALF + 0.4), -0.012], [0, 0, k * HALF + 0.4 - HALF]))));
-  const ventilator = A('Koelventilatormodule', { d: 'Elektrische koelventilator in een kunststof kap achter de radiateur; trekt lucht door het hele koelpakket, vooral stilstaand en bij lage snelheid. De ventilator draait in twee standen via een regelweerstand (schematisch weergegeven).', ex: [0, 0, -0.36] }, [
+  const ventilator = A('Koelventilatormodule', { d: 'Elektrische koelventilator in een kunststof kap achter de radiateur; trekt lucht door het hele koelpakket, vooral stilstaand en bij lage snelheid. Het aantal ventilatoren is niet gevonden; regelweerstand en stekker zijn schematisch weergegeven (opbouw zoals gebruikelijk bij een ventilatormodule).', ex: [0, 0, -0.36] }, [
     P('Ventilatorkap', shroud, MAT.plastic, { d: 'Kap die de luchtstroom door het hele koelblok leidt.', p: [0, RY, FZ] }),
     P('Ventilatorwaaier', merge([blades(7, 0.045, 0.165, 0.03, 0.003, 0.55, 'z'), G.cyl('z', 0.045, 0.045, 0.035, 20)]), MAT.plastic, { d: 'Zevenbladige waaier van kunststof.', p: [0, RY, FZ + 0.004], ex: [0, 0, 0.14] }),
     P('Ventilatormotor', G.cyl('z', 0.04, 0.04, 0.06, 20), MAT.darkSteel, { d: 'Elektromotor in het midden van de kap, drijft de waaier rechtstreeks aan.', p: [0, RY, FZ - 0.034], ex: [0, 0, -0.14] }),
@@ -74,7 +74,7 @@ function buildCooling() {
   ]);
   // ---------- expansievat ----------
   const EV = [-0.45, 0.70, 1.115];
-  const expansie = A('Expansievat', { d: 'Doorzichtig kunststof expansievat met min- en maxmarkering; vangt de uitzetting van de koelvloeistof op en houdt het systeem onder druk.', spec: [['Dopdruk', '1,4 bar']], ex: [-0.18, 0.2, -0.04] }, [
+  const expansie = A('Expansievat', { d: 'Doorzichtig kunststof expansievat met min- en maxmarkering; vangt de uitzetting van de koelvloeistof op en houdt het systeem onder druk.', spec: [['Dopdruk', '1,4 bar (aannemelijk)']], ex: [-0.18, 0.2, -0.04] }, [
     P('Vat', merge([G.rbox(0.12, 0.13, 0.15, 0.018), xf(G.cyl('y', 0.03, 0.03, 0.02, 16), [0.02, 0.07, 0.0])]), MAT.tank, { d: 'Doorzichtig vat met de niveaumarkering voor koelvloeistof.', p: EV }),
     P('Expansiedop', merge([G.cyl('y', 0.034, 0.034, 0.016, 16), xf(G.box(0.07, 0.01, 0.014), [0, 0.011, 0])]), MAT.plastic, { d: 'Drukdop met overdrukklep die bij 1,4 bar opent.', p: [EV[0] + 0.02, EV[1] + 0.088, EV[2]], ex: [0, 0.14, 0] }),
     P('Niveauschakelaar', G.rbox(0.03, 0.026, 0.026, 0.005), MAT.plastic, { d: 'Schakelaar die het dashboard waarschuwt bij een te laag koelvloeistofpeil.', p: [EV[0] + 0.068, EV[1] - 0.02, EV[2]], ex: [0.1, 0, 0] }),
@@ -114,8 +114,8 @@ function buildCooling() {
   ]);
   // ---------- laadluchtleidingen ----------
   const cO = ENG_PORTS.compOut, tI = ENG_PORTS.throttleIn;
-  const hot = sysHose('Hete laadluchtslang', 'Voert de door de turbo samengeperste, hete lucht van de compressoruitlaat naar de linker eindkap van de intercooler.', [sysP(cO.p), sysE(cO, 0.035), [0.0, 0.64, 1.16], [0.14, 0.62, 1.2], [0.17, 0.605, 1.45], [0.19, 0.6, 1.72], [0.31, 0.56, 1.86], [0.375, 0.46, 1.96], [0.35, 0.37, 2.02], [0.30, 0.31, 2.07]], 0.031, { n0: 'Klem turbo', n1: 'Klem intercooler', seg: 80, rad: 12, ex: [0.12, 0.2, 0], spec: [['Binnendiameter', '57 mm']] });
-  const cold = sysHose('Koude laadluchtslang', 'Voert de gekoelde lucht van de rechter eindkap van de intercooler naar het gasklephuis. De slang buigt vlak na het gasklephuis af en loopt boven de stuurbekrachtigingspomp langs.', [[-0.30, 0.31, 2.07], [-0.33, 0.33, 2.04], [-0.37, 0.40, 1.98], [-0.39, 0.50, 1.90], [-0.42, 0.57, 1.80], [-0.44, 0.575, 1.72], sysE(tI, 0.052), sysE(tI, 0.02), sysP(tI.p)], 0.027, { n0: 'Klem intercooler', n1: 'Klem gasklephuis', seg: 80, rad: 12, ex: [-0.12, 0.2, 0], spec: [['Binnendiameter', '47 mm']] });
+  const hot = sysHose('Hete laadluchtslang', 'Voert de door de turbo samengeperste, hete lucht van de compressoruitlaat naar de linker eindkap van de intercooler.', [sysP(cO.p), sysE(cO, 0.035), [0.0, 0.64, 1.16], [0.14, 0.62, 1.2], [0.17, 0.605, 1.45], [0.19, 0.6, 1.72], [0.31, 0.56, 1.86], [0.375, 0.46, 1.96], [0.35, 0.37, 2.02], [0.30, 0.31, 2.07]], 0.031, { n0: 'Klem turbo', n1: 'Klem intercooler', seg: 80, rad: 12, ex: [0.12, 0.2, 0], spec: [['Aansluiting op de intercooler', 'ø 57 mm (aannemelijk)']] });
+  const cold = sysHose('Koude laadluchtslang', 'Voert de gekoelde lucht van de rechter eindkap van de intercooler naar het gasklephuis. De slang buigt vlak na het gasklephuis af en loopt boven de stuurbekrachtigingspomp langs.', [[-0.30, 0.31, 2.07], [-0.33, 0.33, 2.04], [-0.37, 0.40, 1.98], [-0.39, 0.50, 1.90], [-0.42, 0.57, 1.80], [-0.44, 0.575, 1.72], sysE(tI, 0.052), sysE(tI, 0.02), sysP(tI.p)], 0.027, { n0: 'Klem intercooler', n1: 'Klem gasklephuis', seg: 80, rad: 12, ex: [-0.12, 0.2, 0], spec: [['Aansluiting op de intercooler', 'ø 47 mm (aannemelijk)']] });
   const laadlucht = A('Laadluchtleidingen', { d: 'De twee slangen die de aangezogen lucht van de turbo naar de intercooler en van de intercooler naar het gasklephuis brengen.', ex: [0, 0.22, 0.1] }, [hot, cold]);
 
   return A('Koeling en luchtinlaat', { d: 'Koelpakket (intercooler, condensor, radiateur en koelventilator), expansievat, koelslangen en het luchtinlaattraject naar de turbo.', ex: [0, 0.3, 2.0] }, [radiateur, condensor, intercooler, ventilator, expansie, slangen, inlaat, laadlucht]);
@@ -140,7 +140,7 @@ function buildExhaust() {
     P('Steunmat voorkat', annulus(0.036, 0.0405, canL - 0.014, 'x', 24), MAT.filter, { d: 'Uitzettende mat die de monoliet beschermt tegen trillingen en hitte.', p: [canX0 - canL / 2, ty, tz], ex: [-0.12, -0.05, 0], inner: true }),
     P('Uitlaatconus voorkat', G.lathe('-x', [[0.0405, 0], [0.034, 0.02], [0.026, 0.04]], 24, 'sysCatOut'), MAT.steel, { d: 'Conus die de katalysatorbehuizing aansluit op de uitlaatpijp.', p: [canX0 - canL, ty, tz], ex: [-0.09, 0, 0] }),
     P('Hitteschild voorkat', G.half('x', 0.053, canL + 0.02, PI, 16), MAT.heat, { d: 'Aluminium hitteschild boven de voorkatalysator; beschermt de bedrading en de motorruimte.', p: [canX0 - canL / 2, ty + 0.002, tz], ex: [0, 0.1, 0] }),
-    A('Lambdasonde voor', { d: 'Breedbandsonde in de uitlaat vóór de katalysator: meet het zuurstofgehalte en regelt het mengsel.', p: [xE - 0.0495, ty, tz - 0.034], r: [-HALF, 0, 0], ex: [0, 0, -0.12] }, [
+    A('Lambdasonde voor', { d: 'Zuurstofsonde in de uitlaat vóór de katalysator: meet het zuurstofgehalte voor de mengselregeling.', p: [xE - 0.0495, ty, tz - 0.034], r: [-HALF, 0, 0], ex: [0, 0, -0.12] }, [
       P('Sondelichaam', merge([G.cyl('y', 0.0045, 0.0045, 0.04, 8), xf(G.cyl('y', 0.0085, 0.0085, 0.008, 6), [0, 0.02, 0]), xf(G.cyl('y', 0.006, 0.006, 0.018, 10), [0, 0.034, 0])]), MAT.steel, { d: 'Sondelichaam met zeskant en beschermkap.', ex: [0, 0.05, 0] }),
       P('Stekker lambdasonde voor', G.rbox(0.022, 0.016, 0.018, 0.004), MAT.plastic, { d: 'Stekker aan de bedrading van de sonde.', p: [-0.02, 0.07, 0.02], ex: [-0.04, 0.05, 0.04] }),
       P('Kabel lambdasonde voor', tube([[0, 0.04, 0], [-0.008, 0.06, 0.008], [-0.016, 0.068, 0.016]], 0.0018, 8, 5), MAT.sysHose, { d: 'Bedrading tussen sonde en stekker.', ex: [-0.03, 0.04, 0.03] }),
@@ -151,13 +151,13 @@ function buildExhaust() {
   const pipeR = 0.0255;
   const dpCurve = new THREE.CatmullRomCurve3(dpP.map(q => V3(...q)), false, 'centripetal');
   const lp = dpCurve.getPoint(0.1), lpY = lp.y + pipeR + 0.015;
-  const lamB = A('Lambdasonde na', { d: 'Sprongsonde achter de katalysator: controleert of de katalysator goed werkt.', ex: [0.08, 0.1, 0] }, [
+  const lamB = A('Lambdasonde na', { d: 'Zuurstofsonde achter de katalysator: controleert of de katalysator goed werkt.', ex: [0.08, 0.1, 0] }, [
     P('Sondelichaam', merge([G.cyl('y', 0.0045, 0.0045, 0.04, 8), xf(G.cyl('y', 0.0085, 0.0085, 0.008, 6), [0, 0.02, 0]), xf(G.cyl('y', 0.006, 0.006, 0.018, 10), [0, 0.034, 0])]), MAT.steel, { d: 'Sondelichaam met zeskant en beschermkap.', p: [lp.x, lpY, lp.z], ex: [0, 0.05, 0] }),
     P('Stekker lambdasonde na', G.rbox(0.022, 0.016, 0.018, 0.004), MAT.plastic, { d: 'Stekker aan de bedrading van de sonde.', p: [lp.x - 0.02, lpY + 0.07, lp.z + 0.02], ex: [-0.04, 0.05, 0.04] }),
     P('Kabel lambdasonde na', tube([[lp.x, lpY + 0.04, lp.z], [lp.x - 0.008, lpY + 0.06, lp.z + 0.008], [lp.x - 0.016, lpY + 0.068, lp.z + 0.016]], 0.0018, 8, 5), MAT.sysHose, { d: 'Bedrading tussen sonde en stekker.', ex: [-0.03, 0.04, 0.03] }),
   ]);
   const downpipe = A('Downpipe', { d: 'Pijp van de voorkatalysator, achter het blok omlaag en onder het schutbord door naar de tunnel. De lambdasonde achter de katalysator zit in dit stuk.', ex: [0, -0.1, -0.12] }, [
-    P('Downpijp', tube(dpP, pipeR, 56, 14), MAT.exhaust, { d: 'Roestvrijstalen buis van ongeveer 51 mm doorsnede; buigt achter het blok omlaag.', ex: [0, 0, 0] }),
+    P('Downpijp', tube(dpP, pipeR, 56, 14), MAT.exhaust, { d: 'Stalen uitlaatbuis die achter het blok omlaag buigt (afmetingen schematisch).', ex: [0, 0, 0] }),
     lamB,
   ]);
   const FZ0 = 0.84;
@@ -167,8 +167,8 @@ function buildExhaust() {
     P('Flens achter', annulus(pipeR, 0.05, 0.008, 'z', 24), MAT.steel, { d: 'Flens aan het voorste uiteinde van het flexstuk.', p: [0.02, 0.27, FZ0 - 0.0075], ex: [0, 0, -0.05] }),
     ...[0, 1, 2].map(k => P(`Flensbout ${k + 1}`, hexBolt(0.032, 0.008, 'z'), MAT.steel, { d: 'Bout met moer door beide flenzen.', p: [0.02 + 0.04 * Math.cos(k * PI * 2 / 3 + HALF), 0.27 + 0.04 * Math.sin(k * PI * 2 / 3 + HALF), FZ0 - 0.0105], ex: [0.04 * Math.cos(k * PI * 2 / 3 + HALF), 0.04 * Math.sin(k * PI * 2 / 3 + HALF), -0.1] })),
   ]);
-  const flex = A('Flexstuk', { d: 'Gevlochten flexibele koppeling die de bewegingen van de dwarsgeplaatste motor opvangt zonder dat de uitlaat scheurt.', ex: [0, 0.05, -0.1] }, [
-    P('Balg met vlechtwerk', merge([tube([[0.02, 0.27, 0.83], [0.02, 0.27, 0.68]], 0.0245, 4, 14), ...[0, 1, 2, 3, 4, 5, 6].map(k => xf(G.torus('z', 0.0255, 0.004, 22, 6), [0.02, 0.27, 0.82 - k * 0.02]))]), MAT.steel, { d: 'Balg van roestvrij staal met een vlechtmantel eromheen.', ex: [0, 0, 0] }),
+  const flex = A('Flexstuk', { d: 'Flexibele koppeling die de bewegingen van de dwarsgeplaatste motor opvangt (opbouw zoals gebruikelijk, schematisch weergegeven).', ex: [0, 0.05, -0.1] }, [
+    P('Balg met vlechtwerk', merge([tube([[0.02, 0.27, 0.83], [0.02, 0.27, 0.68]], 0.0245, 4, 14), ...[0, 1, 2, 3, 4, 5, 6].map(k => xf(G.torus('z', 0.0255, 0.004, 22, 6), [0.02, 0.27, 0.82 - k * 0.02]))]), MAT.steel, { d: 'Gegolfde balg met een vlechtmantel eromheen.', ex: [0, 0, 0] }),
     sysClamp('Klem flexstuk voor', [0.02, 0.27, 0.80], V3(0, 0, 1), 0.0275, V3(0, 0, 1)),
     sysClamp('Klem flexstuk achter', [0.02, 0.27, 0.70], V3(0, 0, 1), 0.0275, V3(0, 0, -1)),
   ]);
@@ -209,8 +209,8 @@ function buildFuel() {
   const TX = 0.0, TY = 0.268, TZ = -0.9;             // hart van de tank
   const fx = surfX(-1.72, 0.86);
   const tankGeo = cache('sysTank', () => merge([G.rbox(0.86, 0.17, 0.36, 0.05), xf(G.box(0.66, 0.012, 0.24), [0, 0.088, 0])]));
-  const tank = A('Brandstoftank', { d: 'Kunststof tank van 66 liter onder de achterbank, vóór de achteras, met twee stalen spanbanden, rubber strips en een hitteschild.', spec: [['Inhoud', '66 l'], ['Materiaal', 'kunststof (HDPE)']], ex: [0, -0.2, 0] }, [
-    P('Tank', tankGeo, MAT.plastic, { d: 'Zadelvormig, gegoten kunststof tank van ongeveer 66 liter.', p: [TX, TY, TZ] }),
+  const tank = A('Brandstoftank', { d: 'Kunststof tank van 66 liter onder de achterbank, vóór de achteras, met twee stalen spanbanden, rubber strips en een hitteschild.', spec: [['Inhoud', '66 l']], ex: [0, -0.2, 0] }, [
+    P('Tank', tankGeo, MAT.plastic, { d: 'Zadelvormige kunststof tank van 66 liter (vorm schematisch).', p: [TX, TY, TZ] }),
     ...[0.2, -0.2].map((dz, i) => P(`Spanband ${i ? 'achter' : 'voor'}`, merge([G.box(0.88, 0.006, 0.04), xf(G.box(0.006, 0.18, 0.04), [0.438, 0.09, 0]), xf(G.box(0.006, 0.18, 0.04), [-0.438, 0.09, 0])]), MAT.darkSteel, { d: 'Stalen spanband onder de tank, aan beide kanten aan de vloer geschroefd.', p: [TX, TY - 0.088, TZ + dz], ex: [0, -0.14, dz * 0.8] })),
     ...[[0.438, 0.2], [-0.438, 0.2], [0.438, -0.2], [-0.438, -0.2]].map(([dx, dz], i) => P(`Spanbandbout ${i + 1}`, hexBolt(0.02, 0.008, 'y'), MAT.steel, { d: 'Bout die de spanband aan de vloer bevestigt.', p: [TX + dx, TY + 0.1, TZ + dz], ex: [dx * 0.2, 0.14, dz * 0.4] })),
     P('Tankstrips', merge([xf(G.box(0.76, 0.006, 0.03), [0, 0, 0.1]), xf(G.box(0.76, 0.006, 0.03), [0, 0, -0.1])]), MAT.rubber, { d: 'Rubber strips tussen tank en vloer tegen trillingen en piepen.', p: [TX, TY + 0.092, TZ], ex: [0, 0.1, 0] }),
@@ -262,7 +262,7 @@ function buildElectrical() {
   const BX = -0.63, BY = 0.489, BZ = 1.915;             // hart van de accu (rechtsvoor, achter het scherm)
   const W = 0.18, L = 0.23, Hh = 0.15;
   const cellGeo = cache('sysCell', () => G.box(W - 0.02, Hh - 0.04, (L - 0.02) / 6 - 0.004));
-  const accu = A('Accu', { d: '12-voltaccu in de motorruimte rechtsvoor, in een accubak met afdekkap, hoge-druk poolklemmen en een ontgassingsslang. Naast de accubak zit de zekerings- en relaisdoos van de motorruimte.', spec: [['Spanning', '12 V'], ['Plaats', 'motorruimte rechtsvoor']], ex: [-0.15, 0.3, 0.1] }, [
+  const accu = A('Accu', { d: '12-voltaccu in de motorruimte, in een accubak met afdekkap, poolklemmen, hoofdhouder en een ontgassingsslang. Naast de accubak zit de zekerings- en relaisdoos van de motorruimte.', spec: [['Spanning', '12 V'], ['Plaats', 'motorruimte rechtsvoor (aannemelijk)']], ex: [-0.15, 0.3, 0.1] }, [
     P('Accubak', G.rbox(W, Hh, L, 0.012), MAT.sysBattery, { d: 'Kunststof accubak met de zes cellen.', p: [BX, BY, BZ] }),
     P('Accudeksel', G.rbox(W + 0.004, 0.018, L + 0.004, 0.006), MAT.plasticGrey, { d: 'Deksel met ontgassingskanaal.', p: [BX, BY + Hh / 2 + 0.009, BZ], ex: [0, 0.2, 0] }),
     ...[0, 1, 2, 3, 4, 5].map(k => P(`Cel ${k + 1}`, cellGeo, MAT.sysBattery, { d: 'Loodzuurcel van 2 volt, in serie geschakeld met de andere cellen.', p: [BX, BY - 0.004, BZ + (k - 2.5) * ((L - 0.02) / 6)], ex: [0, 0.06 + k * 0.015, (k - 2.5) * 0.03], inner: true })),
@@ -277,7 +277,7 @@ function buildElectrical() {
     P('Ontgassingsslang', tube([[BX - 0.08, BY + Hh / 2 - 0.01, BZ - 0.08], [BX - 0.1, BY + 0.0, BZ - 0.1], [BX - 0.12, BY - 0.1, BZ - 0.12]], 0.006, 12, 6), MAT.sysHose, { d: 'Slangetje dat accugassen naar buiten voert.', ex: [-0.04, -0.1, 0] }),
   ]);
   const uHeight = 0.462;
-  const upc = A('Zekeringkast motorruimte', { d: 'Zekerings- en relaisdoos van de motorruimte (UPC) op een bakje naast de accubak, met de hoofdzekeringen voor de motorruimte.', ex: [0.14, 0.2, 0] }, [
+  const upc = A('Zekeringkast motorruimte', { d: 'Zekerings- en relaisdoos van de motorruimte (UPC) op een bakje naast de accubak (in het werkplaatsboek op een bakje bovenop de accubak), met de hoofdzekeringen voor de motorruimte.', ex: [0.14, 0.2, 0] }, [
     P('Doosbasis', G.rbox(0.08, 0.04, 0.15, 0.008), MAT.plastic, { d: 'Onderbak met de zekeringen en relais.', p: [-0.5, uHeight, BZ - 0.02], ex: [0, 0.02, 0] }),
     P('Doosdeksel', merge([G.rbox(0.082, 0.012, 0.152, 0.005), xf(G.box(0.04, 0.012, 0.03), [0.0, 0.012, 0])]), MAT.plasticGrey, { d: 'Afsluitdeksel met clips.', p: [-0.5, uHeight + 0.026, BZ - 0.02], ex: [0, 0.14, 0] }),
     P('Maxizekeringblok', merge([G.box(0.06, 0.016, 0.03), ...[-0.02, 0, 0.02].map(x => xf(G.box(0.012, 0.014, 0.012), [x, 0.012, 0]))]), MAT.red, { d: 'Blok met de hoofdzekeringen.', p: [-0.5, uHeight + 0.04, BZ + 0.04], ex: [0, 0.2, 0.08] }),
@@ -288,16 +288,16 @@ function buildElectrical() {
     P('ECU beugel', merge([G.box(0.17, 0.012, 0.14), xf(G.box(0.17, 0.05, 0.01), [0, 0.025, -0.07])]), MAT.darkSteel, { d: 'Beugel die de motorcomputer aan het schutbord bevestigt.', p: [-0.27, 0.589, 1.1], ex: [0, -0.1, 0] }),
     P('ECU stekker', G.rbox(0.06, 0.03, 0.03, 0.006), MAT.plastic, { d: 'Grote stekker voor de motorbedrading.', p: [-0.27, 0.62, 1.175], ex: [0, 0.06, 0.12] }),
   ]);
-  const uch = A('Centrale cabine-unit', { d: 'Centrale cabine-unit (UCH) linksonder in het dashboard, met de hoofdzekeringen voor het interieur. Regelt onder meer verlichting, portiersloten en de ontvangst van de bandenspanningssensoren.', ex: [0.2, -0.1, 0.3] }, [
+  const uch = A('Centrale cabine-unit', { d: 'Centrale cabine-unit (UCH) linksonder in het dashboard, met de hoofdzekeringen voor het interieur. Bevat de hoofdzekeringen voor het interieur en ontvangt onder meer de signalen van de bandenspanningssensoren.', ex: [0.2, -0.1, 0.3] }, [
     P('UCH behuizing', G.rbox(0.12, 0.05, 0.14, 0.008), MAT.ecu, { d: 'Behuizing met de printplaat van de cabine-unit.', p: [0.62, 0.45, 0.92] }),
     P('UCH zekeringkast', merge([G.box(0.1, 0.03, 0.1), ...[-0.03, 0, 0.03].map(x => xf(G.box(0.02, 0.02, 0.06), [x, 0.024, 0]))]), MAT.plastic, { d: 'Zekeringkast onder het dashboard, links van de stuurkolom.', p: [0.62, 0.395, 0.92], ex: [0, -0.1, 0] }),
   ]);
-  const horns = [1, -1].map(s => A(`Claxon ${sideName(s)}`, { d: 'Elektrische claxon achter de voorbumper.', ex: [s * 0.12, -0.08, 0.1] }, [
+  const horns = [1, -1].map(s => A(`Claxon ${sideName(s)}`, { d: 'Elektrische claxon achter de voorbumper (aantal en plaats geschat).', ex: [s * 0.12, -0.08, 0.1] }, [
     P('Claxonhuis', merge([G.cyl('z', 0.04, 0.04, 0.02, 20), xf(G.lathe('z', [[0.012, 0], [0.026, 0.02], [0.034, 0.05]], 16, 'sysHorn'), [0, 0, 0.012])]), MAT.darkSteel, { d: 'Membraanhoorn met trechter.', p: [s * 0.62, 0.53, 2.1], ex: [0, 0, 0.1] }),
     P('Claxonbeugel', merge([G.box(0.03, 0.05, 0.008), xf(G.box(0.03, 0.008, 0.05), [0, 0.025, 0.03])]), MAT.darkSteel, { d: 'Beugel waarmee de claxon aan de bumperbalk hangt.', p: [s * 0.62, 0.53 - 0.01, 2.06], ex: [0, 0.08, -0.08] }),
   ]));
   const plusCable = A('Accukabel plus', { d: 'Dikke voedingskabel van de accu naar de startmotor, onder de koelslangen langs de voorkant van de motor.', ex: [0, -0.1, 0.1] }, [
-    P('Kabel', tube([[BX + 0.05, BY + Hh / 2 + 0.07, BZ - 0.1], [BX + 0.07, BY + 0.0, BZ - 0.125], [-0.50, 0.43, 1.95], [-0.42, 0.34, 1.88], [-0.28, 0.27, 1.85], [0.0, 0.26, 1.84], [0.18, 0.3, 1.78], [starter[0] - 0.02, starter[1] - 0.04, starter[2] + 0.05], starter], 0.009, 56, 8), MAT.red, { d: 'Kabel van 25 mm² met rode isolatie.', ex: [0, -0.05, 0] }),
+    P('Kabel', tube([[BX + 0.05, BY + Hh / 2 + 0.07, BZ - 0.1], [BX + 0.07, BY + 0.0, BZ - 0.125], [-0.50, 0.43, 1.95], [-0.42, 0.34, 1.88], [-0.28, 0.27, 1.85], [0.0, 0.26, 1.84], [0.18, 0.3, 1.78], [starter[0] - 0.02, starter[1] - 0.04, starter[2] + 0.05], starter], 0.009, 56, 8), MAT.red, { d: 'Dikke kabel met rode isolatie.', ex: [0, -0.05, 0] }),
     P('Kabelschoen accu', G.cyl('y', 0.014, 0.014, 0.008, 10), MAT.copper, { d: 'Kabelschoen op de poolklem.', p: [BX + 0.05, BY + Hh / 2 + 0.065, BZ - 0.1], ex: [0, 0.48, 0] }),
     P('Kabelschoen startmotor', G.cyl('x', 0.012, 0.012, 0.008, 10), MAT.copper, { d: 'Kabelschoen op de pluspool van de startmotor.', p: starter, ex: [0.06, 0, 0] }),
     ...[[-0.5, 0.43, 1.95], [-0.28, 0.27, 1.85], [0.0, 0.26, 1.84]].map((p, i) => P(`Kabelclip ${i + 1}`, G.box(0.014, 0.012, 0.02), MAT.plastic, { d: 'Kunststof clip die de kabel op zijn plaats houdt.', p, ex: [0, -0.06, 0] })),
