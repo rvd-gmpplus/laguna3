@@ -85,7 +85,7 @@ function chsHub(xm, z0, front, kn) {
       ...[0, 1, 2, 3, 4].map(k => xf(G.cyl('x', 0.011, 0.011, 0.006, 10), [-0.006, 0.0572 * Math.cos(k * PI * 0.4), 0.0572 * Math.sin(k * PI * 0.4)]))]), MAT.steel,
       { d: 'Naaf met flens: de schijf en het wiel worden met vijf wielbouten M14 × 1,5 (steek 114,3 mm, middengat Ø66,1 mm) op de flens geklemd.', p: [xm, AY, z0], ex: [0.2, 0, 0] }),
     P('Aandrijfasmoer', merge([chsNut('x', 0.0185, 0.014), xf(G.cyl('x', 0.021, 0.021, 0.002, 18), [-0.008, 0, 0])]), MAT.steel, { d: front ? 'Grote moer op het uiteinde van de aandrijfas in het midden van de naaf (onder de naafdop); wordt vastgezet met een borgkraag.' : 'Naafmoer op de astap, geborgd met een borgkraag onder de naafdop.', p: [xm + 0.0145, AY, z0], ex: [0.38, 0, 0] }),
-    P('Borgkraag', annulus(0.0165, 0.0215, 0.002, 'x', 18), MAT.darkSteel, { d: 'Dun ring dat de asmoer borgt door in een gleuf te worden geslagen.', p: [xm + 0.0075, AY, z0], ex: [0.3, 0, 0] }),
+    P('Borgkraag', annulus(0.0165, 0.0215, 0.002, 'x', 18), MAT.darkSteel, { d: 'Dunne ring die de asmoer borgt doordat hij in een gleuf wordt geslagen.', p: [xm + 0.0075, AY, z0], ex: [0.3, 0, 0] }),
     A('Wiellagereenheid', { d: 'Gesloten naaflagereenheid (generatie 2): dubbelrijig kogellager met magnetische ABS-codeerring in de afdichting; aannemelijk volgens onderdelenlijsten, uitwendige maten schematisch.', ex: [-0.1, 0.12, 0] }, [
       P('Lagerbuitenring', merge([G.lathe('x', [[0.031, -0.085], [0.0425, -0.085], [0.0425, -0.036], [0.054, -0.036], [0.054, -0.027], [0.031, -0.027], [0.031, -0.085]], 36, 'chsBrg')]), MAT.bearing, { d: 'Buitenring met flens; zit met drie bouten aan de ' + (front ? 'fusee' : 'astapflens') + '.', p: [xm, AY, z0], ex: [-0.08, 0, 0] }),
       P('Lagerbinnenring', G.lathe('x', [[0.0275, -0.095], [0.031, -0.095], [0.031, -0.024], [0.0275, -0.024], [0.0275, -0.095]], 28, 'chsBri'), MAT.steel, { d: 'Binnenring die om de naaf zit.', p: [xm, AY, z0], ex: [0.0, 0.06, 0] }),
@@ -136,7 +136,7 @@ function frontCorner(s) {
   const bjk = chsPt(CM, [-0.045, 0.059, 0.028]), bjt = [0.61, 0.546, z0 + 0.052];
   const pa = Math.PI * 2 / 3;
   return A(`Wielophanging ${n}`, { d: `Wielophanging ${n}: fusee met naaf en lagereenheid, McPherson-veerpoot, onderste draagarm, koppelstang, geventileerde remschijf 296 × 26 mm met zwevende klauw.`, s: [s, 1, 1], ex: [s * 0.34, 0, 0] }, [
-    P('Fusee', knuckle, MAT.iron, { d: 'Fusee (wieldrager): draagt het naaflager, klemt de veerpoot, bevat de kogel van de draagarm, de stuurarm voor de spoorstang en de oren voor de remklauwdrager. Materiaal nodulair gietijzer (aannemelijk).', ex: [0, 0.02, 0] }),
+    P('Fusee', knuckle, MAT.iron, { d: 'Fusee (wieldrager): draagt het naaflager, klemt de veerpoot, bevat de kogel van de draagarm, de stuurarm voor de spoorstang en de oren voor de remklauwdrager. Materiaal: nodulair gietijzer (geschat, niet gevonden in de bronnen).', ex: [0, 0.02, 0] }),
     ...hubs,
     P('Remschijf voor', discGeo(0.093, 0.148, true, 'F', 0.046), MAT.iron, { d: 'Geventileerde remschijf 296 × 26 mm (vijf gaten, steek 114,3 mm, middengat Ø68 mm).', spec: [['Diameter', '296 mm'], ['Dikte', '26 mm'], ['Type', 'geventileerd']], p: [xd, AY, z0], ex: [0.14, 0, 0] }),
     P('Stofschild voor', shield, MAT.darkSteel, { d: 'Stalen schild achter de remschijf tegen steenslag en vuil.', p: [xm - 0.063, AY, z0], ex: [-0.06, 0, 0] }),
@@ -163,7 +163,7 @@ function frontCorner(s) {
     strut,
     caliper(`Remklauw ${n}`, xd, z0, phi, rp, true),
     A('Remslang voor', { d: 'Flexibele remslang van de vaste remleiding op de veerpoot naar de klauw, vastgezet met een holle (banjo) bout en twee koperen ringen.', ex: [0.04, 0.12, 0.1] }, [
-      P('Remslang', tube([bjk, chsPt(CM, [-0.045, 0.1, 0.028]), [0.66, 0.5, z0 + 0.15], bjt], 0.0055, 28, 8), MAT.rubber, { d: 'Flexibele, wapeningsversterkte remslang.', ex: [0, 0.06, 0] }),
+      P('Remslang', tube([bjk, chsPt(CM, [-0.045, 0.1, 0.028]), [0.63, 0.5, z0 + 0.13], bjt], 0.0055, 28, 8), MAT.rubber, { d: 'Flexibele, wapeningsversterkte remslang.', ex: [0, 0.06, 0] }),
       P('Banjo-oog', merge([G.torus('y', 0.008, 0.0035, 14, 6), xf(G.cyl('z', 0.004, 0.004, 0.02, 8), [0, 0, 0.016])]), MAT.steel, { d: 'Slangeinde met oog dat om de holle bout past.', p: chsPt(CM, [-0.045, 0.0545, 0.028]), r: [HALF - phi, 0, 0], ex: [0, 0.1, 0.04] }),
       P('Holle bout', chsFlip(hexBolt(0.016, 0.0085, 'y')), MAT.steel, { d: 'Holle bout (banjo) waardoor de remvloeistof het klauwhuis in gaat.', p: chsPt(CM, [-0.045, 0.0605, 0.028]), r: [HALF - phi, 0, 0], ex: [0, 0.2, 0] }),
       P('Koperringen', merge([annulus(0.0045, 0.0085, 0.0015, 'y', 14), xf(annulus(0.0045, 0.0085, 0.0015, 'y', 14), [0, 0.009, 0])]), MAT.copper, { d: 'Twee koperen afdichtringen: onder en boven het banjo-oog.', p: chsPt(CM, [-0.045, 0.0495, 0.028]), r: [HALF - phi, 0, 0], ex: [0, 0.14, 0.02] }),
@@ -190,7 +190,7 @@ function rearCorner(s) {
     P('Sensorkabel achter', tube([[xm - 0.14, AY + 0.034, z0 + 0.012], [0.6, AY + 0.04, z0 + 0.1], [0.58, 0.36, z0 + 0.2]], 0.0032, 18, 5), MAT.rubber, { d: 'Kabel van de achterste wielsnelheidssensor naar de kabelboom.', ex: [-0.08, 0.14, 0.08] }),
     caliper(`Remklauw ${n}`, xd, z0, phi, rp, false),
     A('Remslang achter', { d: 'Flexibele remslang van de vaste remleiding op de langsarm naar de klauw, met holle (banjo) bout en twee koperen ringen.', ex: [0.04, 0.12, -0.1] }, [
-      P('Remslang', tube([bjk, chsPt(CM, [-0.045, 0.1, 0.026]), [0.68, 0.46, z0 - 0.16], bjt], 0.0055, 28, 8), MAT.rubber, { d: 'Flexibele, wapeningsversterkte remslang.', ex: [0, 0.06, 0] }),
+      P('Remslang', tube([bjk, chsPt(CM, [-0.045, 0.1, 0.026]), [0.64, 0.46, z0 - 0.15], bjt], 0.0055, 28, 8), MAT.rubber, { d: 'Flexibele, wapeningsversterkte remslang.', ex: [0, 0.06, 0] }),
       P('Banjo-oog', merge([G.torus('y', 0.008, 0.0035, 14, 6), xf(G.cyl('z', 0.004, 0.004, 0.02, 8), [0, 0, 0.016])]), MAT.steel, { d: 'Slangeinde met oog dat om de holle bout past.', p: chsPt(CM, [-0.045, 0.0565, 0.026]), r: [HALF - phi, 0, 0], ex: [0, 0.1, 0.04] }),
       P('Holle bout', chsFlip(hexBolt(0.016, 0.0085, 'y')), MAT.steel, { d: 'Holle bout (banjo) waardoor de remvloeistof het klauwhuis in gaat.', p: chsPt(CM, [-0.045, 0.061, 0.026]), r: [HALF - phi, 0, 0], ex: [0, 0.2, 0] }),
       P('Koperringen', merge([annulus(0.0045, 0.0085, 0.0015, 'y', 14), xf(annulus(0.0045, 0.0085, 0.0015, 'y', 14), [0, 0.009, 0])]), MAT.copper, { d: 'Twee koperen afdichtringen: onder en boven het banjo-oog.', p: chsPt(CM, [-0.045, 0.0515, 0.026]), r: [HALF - phi, 0, 0], ex: [0, 0.14, 0.02] }),
@@ -272,7 +272,7 @@ function buildFrontAxle() {
     P('Tussenas', rodBetween(colA, colB, 0.011), MAT.steel, { d: 'Tussenas die door het schutbord naar het rondsel loopt (lengte-verschuifbaar; schematisch).', ex: [0.06, 0.0, 0.08] }),
     P('Kruiskoppeling onder', merge([G.sphere(0.014, 10), xf(chsRb(0.04, 0.012, 0.012, 0.002), [0, 0, 0]), xf(chsRb(0.012, 0.012, 0.04, 0.002), [0, 0, 0])]), MAT.steel, { d: 'Kruiskoppeling aan het rondsel.', p: colA, ex: [0.0, -0.04, 0.0] }),
     P('Kruiskoppeling boven', merge([G.sphere(0.014, 10), xf(chsRb(0.04, 0.012, 0.012, 0.002), [0, 0, 0]), xf(chsRb(0.012, 0.012, 0.04, 0.002), [0, 0, 0])]), MAT.steel, { d: 'Kruiskoppeling aan de stuurkolom.', p: colB, ex: [0.1, 0.1, 0.0] }),
-    P('Schutbordafdichting', G.lathe('y', bellows(0.05, 0.036, 0.04, 2), 20, 'chsFw'), MAT.rubber, { d: 'Rubber doorvoer van de tussenas door het schutbord.', p: [0.31, 0.58, 1.1], q: quatFromTo(V3(0, 1, 0), V3(0.08, 0.275, -0.12)), ex: [0.1, 0.0, 0.14] }),
+    P('Schutbordafdichting', G.lathe('y', bellows(0.05, 0.036, 0.04, 2), 20, 'chsFw'), MAT.rubber, { d: 'Rubber doorvoer van de tussenas door het schutbord.', p: [0.321, 0.635, 1.04], q: quatFromTo(V3(0, 1, 0), V3(0.08, 0.275, -0.255).normalize()), ex: [0.1, 0.0, 0.14] }),
     P('Kolombuis', rodBetween(colB, colC, 0.018), MAT.steel, { d: 'Buitenbuis van de stuurkolom met kreukelzone (geschat).', ex: [0.12, 0.1, 0] }),
     P('Kolomas', rodBetween([0.35, 0.78, 0.8], [0.37, 0.92, 0.37], 0.009), MAT.darkSteel, { d: 'Stuuras in de kolombuis; draagt aan het uiteinde de spiebaan voor het stuurwiel.', ex: [0.18, 0.14, 0.12] }),
     P('Kolomslot', chsRb(0.03, 0.03, 0.04, 0.005), MAT.darkSteel, { d: 'Elektrisch stuurkolomslot (vergrendelt het stuur).', p: [0.37, 0.83, 0.6], ex: [0.26, 0.0, 0.0] }),
@@ -318,12 +318,12 @@ function buildRearAxle() {
   const dmp = sg => A(`Schokdemper achter ${sideName(sg)}`, { d: 'Bitube-schokdemper (huis Ø45 mm, zuigerstang Ø12,5 mm), onderaan met een oog aan de langsarm, bovenaan met een rubbersteun in de carrosserie.', spec: [['Demperhuis', 'Ø 45 mm'], ['Zuigerstang', 'Ø 12,5 mm']], p: [sg * ax, 0.33, -1.5], q: quatFromTo(V3(0, 1, 0), V3(sg * dB.x, dB.y, dB.z)), ex: [sg * 0.08, 0.26, -0.08] }, [
     P('Demperbuis', merge([G.cyl('y', 0.0225, 0.0225, 0.21, 20).clone().translate(0, 0.105, 0), xf(G.torus('x', 0.013, 0.0065, 14, 6), [0, -0.004, 0])]), MAT.darkSteel, { d: 'Buis van de achterste schokdemper met onderoog.', ex: [0, -0.1, 0] }),
     P('Zuigerstang', G.cyl('y', 0.00625, 0.00625, 0.17, 10), MAT.chrome, { d: 'Verchroomde zuigerstang Ø12,5 mm.', p: [0, 0.23, 0], ex: [0, 0.04, 0] }),
-    P('Stofbuis', G.cyl('y', 0.019, 0.019, 0.1, 16), MAT.plastic, { d: 'Kunststof stofbuis over de zuigerstang.', p: [0, 0.21, 0], ex: [0.06, 0.05, 0] }),
-    P('Aanslagrubber', G.cyl('y', 0.017, 0.015, 0.035, 14), MAT.rubber, { d: 'Aanslagrubber in de stofbuis.', p: [0, 0.285, 0], ex: [0.08, 0.1, 0] }),
+    P('Stofbuis', G.cyl('y', 0.019, 0.019, 0.1, 16), MAT.plastic, { d: 'Kunststof stofbuis over de zuigerstang.', p: [0, 0.21, 0], ex: [sg * 0.06, 0.05, 0] }),
+    P('Aanslagrubber', G.cyl('y', 0.017, 0.015, 0.035, 14), MAT.rubber, { d: 'Aanslagrubber in de stofbuis.', p: [0, 0.285, 0], ex: [sg * 0.08, 0.1, 0] }),
     P('Bovensteun', G.lathe('y', [[0.006, 0], [0.026, 0], [0.026, 0.012], [0.016, 0.018], [0.006, 0.018]], 18, 'chsDtm'), MAT.rubber, { d: 'Rubber-metalen bovensteun waarmee de demper in de carrosserie hangt.', p: [0, 0.308, 0], ex: [0, 0.16, 0] }),
     P('Bovenmoer', chsNut('y', 0.0085, 0.01), MAT.steel, { d: 'Zelfborgende moer bovenop de zuigerstang.', p: [0, 0.335, 0], ex: [0, 0.26, 0] }),
-    P('Onderbout', hexBolt(0.08, 0.012, 'x'), MAT.steel, { d: 'Bout door het onderoog en de dempersteun.', p: [-0.04, 0, 0], ex: [-0.2, 0, 0] }),
-    P('Ondermoer', chsNut('x', 0.0105, 0.011), MAT.steel, { d: 'Zelfborgende moer van de onderbout.', p: [0.042, 0, 0], ex: [0.22, 0, 0] })]);
+    P('Onderbout', hexBolt(0.08, 0.012, sg > 0 ? 'x' : '-x'), MAT.steel, { d: 'Bout door het onderoog en de dempersteun.', p: [-sg * 0.04, 0, 0], ex: [-sg * 0.2, 0, 0] }),
+    P('Ondermoer', chsNut('x', 0.0105, 0.011), MAT.steel, { d: 'Zelfborgende moer van de onderbout.', p: [sg * 0.042, 0, 0], ex: [sg * 0.22, 0, 0] })]);
   return A('Achteras', { d: 'Semi-onafhankelijke torsieas (H-as, "essieu souple en H") met losse schroefveren en dempers. 4Control (vierwielbesturing) was op de Initiale een optie; dit model toont de standaard H-as zonder 4Control.', spec: [['Ophanging', 'torsieas in H-vorm, semi-onafhankelijk'], ['Stabilisatorstaaf', 'Ø 29,6 mm (in de balk)'], ['Demper', 'bitube, Ø 45 mm'], ['Remmen achter', 'massieve schijven 300 × 11 mm']], ex: [0, -0.25, -0.65] }, [
     A('Torsiebalk', { d: 'H-vormige torsiebalk: twee langsarmen verbonden door een torderende dwarsbalk met geïntegreerde stabilisatorstaaf; de balk werkt als veer voor het overhellen.', ex: [0, -0.14, 0] }, [
       P('Dwarsbalk', side(beamShape, 1.14), MAT.darkSteel, { d: 'Open U-profiel dat torderen toelaat (torsiebalk).', p: [0, 0.29, -1.15], ex: [0, -0.1, 0] }),
@@ -366,7 +366,7 @@ function buildWheel(s, front) {
     ...wa.map((w, i) => P(`Balansgewicht ${i ? 'buiten' : 'binnen'}`, chsRb(0.014, 0.004, 0.05, 0.001), MAT.steel, { d: 'Plakgewichtje op het velgbed om de wielbalans te corrigeren.', p: [i ? 0.03 : -0.05, 0.2072 * Math.cos(w), 0.2072 * Math.sin(w)], r: [w, 0, 0], ex: [i ? 0.0 : -0.08, -0.07 * Math.cos(w), -0.07 * Math.sin(w)] }))]);
 }
 function buildBrakeSystem() {
-  const bp = [0.4, 0.76, 1.08], mp = [0.4, 0.76, 1.255], ab = [-0.31, 0.72, 1.14];       // bekrachtiger, hoofdremcilinder, ABS/ESP-unit (passagierszijde, geschat)
+  const bp = [0.41, 0.675, 1.10], mp = [0.41, 0.675, 1.275], ab = [-0.25, 0.72, 1.14];       // bekrachtiger, hoofdremcilinder, ABS/ESP-unit (passagierszijde, geschat)
   const fz = AXF + 0.052, rz = AXR - 0.10;                                              // eindpunten van de vaste leidingen op veerpoot en langsarm
   const lev = chsPt(chsRearCM(), [-0.074, -0.0415, 0]);                                // hefboomuiteinde linksachter
   const clip = (nm, p, ex) => P(nm, chsClamp('x', 0.005), MAT.rubber, { d: 'Rubber geïsoleerde klem die de remleidingen langs de carrosserie vasthoudt.', p, ex });
@@ -381,12 +381,12 @@ function buildBrakeSystem() {
     P('Niveauschakelaar', merge([chsRb(0.022, 0.016, 0.026, 0.004), xf(G.cyl('y', 0.005, 0.005, 0.03, 8), [0, -0.02, 0])]), MAT.plastic, { d: 'Vlotterschakelaar die het waarschuwingslampje bedient bij te laag vloeistofpeil.', p: [mp[0] - 0.035, mp[1] + 0.09, mp[2] - 0.02], ex: [-0.12, 0.1, 0.0] }),
     ...[0, 1].map(k => P(`Reservoirrubber ${k + 1}`, G.cyl('y', 0.011, 0.011, 0.02, 12), MAT.rubber, { d: 'Rubber doorvoer tussen reservoir en cilinderhuis.', p: [mp[0], mp[1] + 0.047, mp[2] + (k ? 0.04 : -0.01)], ex: [0, 0.07, k ? 0.04 : -0.04] })),
     ...[0, 1].map(k => P(`Leidingaansluiting ${k + 1}`, merge([chsNut('x', 0.0085, 0.012), xf(G.cyl('x', 0.0045, 0.0045, 0.03, 8), [0.02, 0, 0])]), MAT.steel, { d: 'Wartelaansluiting van een remleiding op de hoofdremcilinder.', p: [mp[0] + 0.0165, mp[1] - 0.006, mp[2] + (k ? 0.06 : 0.0)], ex: [0.14, -0.04, k ? 0.04 : -0.0] }))]);
-  const boost = A('Rembekrachtiger', { d: 'Vacuümbekrachtiger die de pedaalkracht versterkt met onderdruk uit de inlaatspruitstuk (aannemelijk; opbouw gebruikelijk voor dit type).', ex: [0, 0.1, -0.12] }, [
+  const boost = A('Rembekrachtiger', { d: 'Vacuümbekrachtiger die de pedaalkracht versterkt met onderdruk uit het inlaatspruitstuk (aannemelijk; opbouw gebruikelijk voor dit type).', ex: [0, 0.1, -0.12] }, [
     P('Bekrachtigerhuis', G.lathe('z', [[0.03, -0.09], [0.12, -0.07], [0.125, -0.02], [0.125, 0.02], [0.12, 0.07], [0.03, 0.09]], 40, 'boost'), MAT.darkSteel, { d: 'Tweedelig stalen huis (voorste en achterste schaal) van de bekrachtiger.', p: bp, ex: [0, 0, 0] }),
     P('Membraan', annulus(0.03, 0.118, 0.006, 'z', 32), MAT.rubber, { d: 'Rubber membraan met stalen plaat dat het huis in twee kamers verdeelt.', p: bp, ex: [0, 0, -0.1], inner: true }),
     P('Duwstang', G.cyl('z', 0.005, 0.005, 0.16, 8), MAT.steel, { d: 'Stang tussen pedaal (interieur) en membraan, en door naar de hoofdremcilinder.', p: [bp[0], bp[1], bp[2] + 0.02], ex: [0, 0, -0.2], inner: true }),
     P('Vacuumaansluiting', merge([G.cyl('x', 0.009, 0.009, 0.03, 10), xf(G.cyl('y', 0.007, 0.007, 0.03, 10), [0.015, -0.01, 0])]), MAT.plastic, { d: 'Aansluiting van de vacuümslang met geïntegreerde terugslagklep.', p: [bp[0] + 0.0, bp[1] + 0.115, bp[2] + 0.05], ex: [0.12, 0.12, 0.0] }),
-    ...[0, 1, 2, 3].map(k => P(`Bekrachtigermoer ${k + 1}`, chsNut('z', 0.0095, 0.01), MAT.steel, { d: 'Moer op een tapeind: bevestigt de bekrachtiger aan het schutbord.', p: [bp[0] + (k < 2 ? 0.1 : -0.1), bp[1] + (k % 2 ? 0.1 : -0.1), bp[2] - 0.095], ex: [0, 0, -0.22 - k * 0.02] }))]);
+    ...[0, 1, 2, 3].map(k => P(`Bekrachtigermoer ${k + 1}`, chsNut('z', 0.0095, 0.01), MAT.steel, { d: 'Moer op een tapeind: bevestigt de bekrachtiger aan het schutbord.', p: [bp[0] + (k < 2 ? 0.1 : -0.1), bp[1] + (k % 2 ? 0.1 : -0.1), bp[2] - 0.089], ex: [0, 0, -0.22 - k * 0.02] }))]);
   const absU = A('ABS/ESP-unit', { d: 'Hydraulische modulator met pomp en regelkleppen voor ABS, EBV, noodremassistent en ESP, met regelunit, drukopnemer en beugel; de plaats aan de passagierszijde van de motorruimte is geschat, de uitvoering (Bosch ESP 8.0) aannemelijk.', ex: [-0.1, 0.12, 0] }, [
     P('Hydraulisch blok', merge([chsRb(0.1, 0.09, 0.09, 0.008), ...[0, 1, 2, 3, 4, 5, 6, 7].map(k => xf(G.cyl('y', 0.0045, 0.0045, 0.012, 8), [-0.042 + (k % 4) * 0.028, 0.049, k < 4 ? -0.022 : 0.022]))]), MAT.alu, { d: 'Aluminium blok met boringen en vier uitgangen naar de wielen en twee ingangen van de hoofdremcilinder.', p: ab, ex: [0, -0.04, 0] }),
     P('Pompmotor', G.cyl('x', 0.032, 0.032, 0.06, 20), MAT.darkSteel, { d: 'Elektromotor met retourpomp voor de afgetapte remvloeistof.', p: [ab[0] - 0.08, ab[1], ab[2]], ex: [-0.14, 0, 0] }),
@@ -398,10 +398,10 @@ function buildBrakeSystem() {
     ...[0, 1].map(k => P(`Beugelbout ${k + 1}`, hexBolt(0.02, 0.008, 'y'), MAT.steel, { d: 'Bout van de ABS-beugel.', p: [ab[0] - 0.04 + k * 0.05, ab[1] - 0.075, ab[2] + (k ? 0.03 : -0.03)], ex: [0, -0.2, 0] }))]);
   const line = (nm, pts, ex, d) => P(nm, tube(pts, 0.0024, Math.max(24, pts.length * 14), 6), MAT.steel, { d, ex });
   const lines = A('Remleidingen', { d: 'Stalen remleidingen per circuit: twee van de hoofdremcilinder naar de ABS/ESP-unit en vier van de unit naar de wielen, waar een flexibele slang het laatste stuk overneemt.', ex: [0, -0.06, 0] }, [
-    line('Leiding hoofdcilinder primair', [[mp[0] + 0.03, mp[1] - 0.006, mp[2] + 0.0], [0.3, 0.74, 1.25], [0.0, 0.7, 1.2], [ab[0] + 0.03, ab[1] + 0.049, ab[2] - 0.022]], [0, 0.1, 0.1], 'Leiding van het primaire circuit naar de ABS/ESP-unit.'),
-    line('Leiding hoofdcilinder secundair', [[mp[0] + 0.03, mp[1] - 0.012, mp[2] + 0.06], [0.3, 0.72, 1.3], [0.0, 0.69, 1.22], [ab[0] + 0.0, ab[1] + 0.049, ab[2] + 0.022]], [0, 0.12, 0.1], 'Leiding van het secundaire circuit naar de ABS/ESP-unit.'),
-    line('Remleiding linksvoor', [[ab[0] + 0.03, ab[1] + 0.049, ab[2] + 0.022], [0.0, 0.64, 1.1], [0.5, 0.62, 1.12], [0.64, 0.6, 1.2], [0.61, 0.546, fz]], [0.08, 0.1, 0.05], 'Vaste leiding naar de flexibele slang op de linkervoorveerpoot.'),
-    line('Remleiding rechtsvoor', [[ab[0] - 0.03, ab[1] + 0.049, ab[2] + 0.022], [-0.45, 0.66, 1.14], [-0.62, 0.62, 1.25], [-0.61, 0.546, fz]], [-0.08, 0.1, 0.05], 'Vaste leiding naar de flexibele slang op de rechtervoorveerpoot.'),
+    line('Leiding hoofdcilinder primair', [[mp[0] + 0.03, mp[1] - 0.006, mp[2] + 0.0], [0.3, 0.68, 1.26], [0.0, 0.7, 1.2], [ab[0] + 0.03, ab[1] + 0.049, ab[2] - 0.022]], [0, 0.1, 0.1], 'Leiding van het primaire circuit naar de ABS/ESP-unit.'),
+    line('Leiding hoofdcilinder secundair', [[mp[0] + 0.03, mp[1] - 0.012, mp[2] + 0.06], [0.3, 0.67, 1.31], [0.0, 0.69, 1.22], [ab[0] + 0.0, ab[1] + 0.049, ab[2] + 0.022]], [0, 0.12, 0.1], 'Leiding van het secundaire circuit naar de ABS/ESP-unit.'),
+    line('Remleiding linksvoor', [[ab[0] + 0.03, ab[1] + 0.049, ab[2] + 0.022], [0.0, 0.64, 1.1], [0.2, 0.54, 1.09], [0.4, 0.515, 1.10], [0.56, 0.52, 1.16], [0.64, 0.58, 1.22], [0.61, 0.546, fz]], [0.08, 0.1, 0.05], 'Vaste leiding naar de flexibele slang op de linkervoorveerpoot.'),
+    line('Remleiding rechtsvoor', [[ab[0] - 0.03, ab[1] + 0.049, ab[2] + 0.022], [ab[0] - 0.03, ab[1] + 0.06, ab[2] + 0.08], [-0.36, 0.60, 1.18], [-0.50, 0.60, 1.17], [-0.60, 0.60, 1.19], [-0.62, 0.60, 1.27], [-0.61, 0.546, fz]], [-0.08, 0.1, 0.05], 'Vaste leiding naar de flexibele slang op de rechtervoorveerpoot.'),
     line('Remleiding linksachter', [[ab[0] + 0.0, ab[1] - 0.04, ab[2] - 0.02], [-0.28, 0.5, 1.02], [-0.25, 0.16, 0.6], [-0.25, 0.16, -0.9], [0.3, 0.2, -1.25], [0.64, 0.4, rz]], [0.06, -0.06, 0], 'Vaste leiding langs de vloer naar de flexibele slang op de linker langsarm.'),
     line('Remleiding rechtsachter', [[ab[0] - 0.02, ab[1] - 0.04, ab[2] - 0.02], [-0.3, 0.5, 1.02], [-0.3, 0.16, 0.6], [-0.3, 0.16, -0.9], [-0.4, 0.2, -1.25], [-0.64, 0.4, rz]], [-0.06, -0.06, 0], 'Vaste leiding langs de vloer naar de flexibele slang op de rechter langsarm.'),
     clip('Leidingklem 1', [-0.28, 0.5, 1.02], [0, -0.1, 0.1]), clip('Leidingklem 2', [-0.25, 0.16, 0.2], [0, -0.1, 0]), clip('Leidingklem 3', [-0.25, 0.16, -0.5], [0, -0.1, 0])]);
