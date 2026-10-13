@@ -619,7 +619,8 @@ function uiHelp(open) {
   if (open) {
     const m = $('helpMouse'), t = $('helpTouch');
     if (uiTouch) m.before(t); else t.before(m);
-    $('helpClose').focus();
+    $('helpClose').focus({ preventScroll: true });
+    els.helpDlg.firstElementChild.scrollTop = 0;
   } else els.help.focus({ preventScroll: true });
   uiUiChanged();
 }
@@ -884,7 +885,7 @@ function uiAfterAnim() {
 let last = performance.now(), uiWasActive = false;
 function loop(now) {
   requestAnimationFrame(loop);
-  const dt = Math.min(0.05, Math.max(0, (now - last) / 1000)); last = now;
+  const dt = Math.min(0.1, Math.max(0, (now - last) / 1000)); last = now;
   const active = uiTick(dt);
   controls.update();
   if (active || needs || controls.autoRotate) {

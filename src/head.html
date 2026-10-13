@@ -42,7 +42,7 @@ button{cursor:pointer}
 kbd{font-family:var(--f-mono);font-size:10.5px;font-weight:500;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 5px;color:var(--ink-2);background:var(--chip)}
 #app{position:fixed;inset:0;overflow:hidden}
 #stage{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;outline:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
-#stage:focus-visible{outline:2px solid var(--focus);outline-offset:-4px}
+#stage:focus,#stage:focus-visible{outline:none}
 /* ---------- bovenbalk ---------- */
 #topbar{position:absolute;left:0;right:0;top:0;display:flex;align-items:flex-start;gap:12px;justify-content:space-between;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 10px;pointer-events:none}
 #topbar>*{pointer-events:auto}
@@ -85,7 +85,7 @@ h1 span{font-weight:500;color:var(--ink-2)}
 .cat.on small{color:var(--on-accent)}
 .cat[aria-expanded="true"]{outline:2px solid var(--ink);outline-offset:1px}
 /* presetmenu */
-#menu{position:fixed;z-index:30;width:min(340px,calc(100vw - 32px));background:var(--surface-solid);border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 48px rgba(0,0,0,.24);padding:6px;overflow:auto;overscroll-behavior:contain}
+#menu{position:fixed;z-index:30;box-sizing:border-box;width:min(340px,calc(100vw - 32px));background:var(--surface-solid);border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 48px rgba(0,0,0,.24);padding:6px;overflow:auto;overscroll-behavior:contain}
 .mhead{display:flex;align-items:center;justify-content:space-between;padding:4px 6px 6px 10px;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
 .mclose{border:0;background:none;width:32px;height:32px;border-radius:8px;font-size:20px;line-height:1;color:var(--ink-2)}
 .mi{display:flex;flex-direction:column;gap:1px;width:100%;text-align:left;border:0;background:none;border-radius:10px;padding:8px 10px}
@@ -183,7 +183,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
 .dlg{background:var(--surface-solid);color:var(--ink);border-radius:16px;box-shadow:0 24px 64px rgba(0,0,0,.35);width:min(560px,100%);max-height:calc(100% - 32px);overflow:auto;padding:18px 20px 16px;box-sizing:border-box}
 .dlg h2{margin:0 0 8px;font-family:var(--f-display);font-size:24px}
 .dlg h3{margin:14px 0 6px;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);font-weight:500}
-.dlg dl{display:grid;grid-template-columns:minmax(120px,auto) 1fr;gap:5px 14px;margin:0;font-size:13.5px}
+.dlg dl{display:grid;grid-template-columns:minmax(0,170px) 1fr;gap:5px 14px;margin:0;font-size:13.5px}
 .dlg dt{font-weight:700}
 .dlg dd{margin:0;color:var(--ink-2)}
 .dlg .btnrow{justify-content:flex-end;margin-top:14px}
@@ -227,6 +227,21 @@ input[type=range]{width:100%;accent-color:var(--ink)}
   .seg button{flex:1 1 0;padding:7px 4px;font-size:12.5px;min-height:34px}
   .cats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
   .cat{padding:5px 10px 6px}
+}
+/* smalle desktop: dock op twee regels houden */
+@media (min-width:920px) and (max-width:1239.98px){
+  .pbtn span{display:none}
+  .pbtn{width:34px;padding:0;justify-content:center}
+}
+@media (min-width:920px) and (max-width:1099.98px){
+  .seg-lbl,#explodeOut{display:none}
+  .seg button{padding:7px 9px}
+  .cat{padding:5px 10px 6px}
+}
+@media (max-height:660px){
+  .mi{padding:5px 10px}
+  .mi-n{font-size:11.5px;line-height:1.3}
+  .mhead{padding-bottom:2px}
 }
 @media (max-width:600px){
   #menu{left:0!important;right:0;bottom:0!important;top:auto!important;width:auto;max-height:78%;border-radius:18px 18px 0 0;padding:8px 8px calc(10px + env(safe-area-inset-bottom,0px))}
@@ -329,7 +344,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
         <div class="xrow">
           <input id="explode" type="range" min="0" max="1000" step="1" value="0" aria-valuetext="0 van 6 lagen">
           <output id="explodeOut" for="explode">0%</output>
-          <button class="pbtn" id="play" aria-pressed="false" aria-label="Demonteren"><svg viewBox="0 0 24 24"><path d="M8 5l11 7-11 7z"/></svg><span>Demonteren</span></button>
+          <button class="pbtn" id="play" aria-pressed="false" aria-label="Demonteren" title="Laag voor laag uit elkaar halen of weer in elkaar zetten"><svg viewBox="0 0 24 24"><path d="M8 5l11 7-11 7z"/></svg><span>Demonteren</span></button>
           <button class="pbtn" id="undo" aria-label="Stap terug" title="Stap terug (Backspace)" disabled><svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/></svg><span>Stap terug</span></button>
         </div>
       </div>

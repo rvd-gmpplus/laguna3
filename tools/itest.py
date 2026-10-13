@@ -432,6 +432,18 @@ with session() as s:
     pg.wait_for_timeout(300)
     shot(pg, 'itest_dark_motor')
     check('10 donkere modus', bg.replace(' ', '') in ('rgb(26,33,41)',), bg)
+    # 12. ingesloten onderdelen (inner): niet getekend en niet aanklikbaar zolang de oudergroep dicht is
+    r = pg.evaluate("""(() => { const L = __laguna; L.preset('assembled'); L.finishAll();
+      const n = L.byName('Krukmechanisme'), had = n.inner; n.inner = true; L.ROOT.innerKids = L.ROOT.innerKids; n.parent.innerKids = true; applyVisibility();
+      const hidden = n.meshes.every(m => !m.userData.node.ev) && !n.obj.visible;
+      renderer.info.reset(); renderer.render(scene, camera); const callsHidden = renderer.info.render.calls;
+      L.setTarget(n.parent, 1); applyVisibility(); const shownOnOpen = n.obj.visible;
+      L.finishAll(); L.setTarget(n.parent, 0); L.finishAll(); const hiddenAgain = !n.obj.visible;
+      L.isolate([n]); const shownIsolated = n.obj.visible; L.isolate([]);
+      n.inner = had; n.parent.innerKids = n.parent.kids.some(k => k.inner); applyVisibility(); L.finishAll();
+      renderer.info.reset(); renderer.render(scene, camera);
+      return { hidden, shownOnOpen, hiddenAgain, shownIsolated, saved: renderer.info.render.calls - callsHidden }; })()""")
+    check('12 inner: verborgen bij dichte ouder, zichtbaar zodra die uitklapt en bij isoleren', r['hidden'] and r['shownOnOpen'] and r['hiddenAgain'] and r['shownIsolated'], json.dumps(r))
     # 11. tekenopdrachten en frametijd
     pg.evaluate("__laguna.preset('assembled'); __laguna.finishAll()")
     pg.wait_for_timeout(200)
