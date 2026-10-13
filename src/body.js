@@ -37,7 +37,7 @@ const bodYTm = pchip([[-2.268, 0.985], [-2.25, 0.994], [-2.20, 0.999], [-2.10, 0
   [2.20, 0.648], [2.30, 0.605], [2.345, 0.565]]);
 function YT(z) { return z < bodZT ? bodYLEDGE : bodYTm(z); }
 // hartlijn van het dek (motorkap, torpedo, achterklep tussen lip en staartvlak); onder het glas niet zichtbaar
-const bodYD = pchip([[-2.268, 1.045], [-2.258, 1.057], [-2.24, 1.074], [-2.21, 1.093], [-2.17, 1.105], [-2.11, 1.118], [-1.95, 1.02], [-1.85, 0.99], [-1.0, 0.99], [0.0, 0.97], [0.6, 0.95], [0.88, 0.935], [1.0, 0.962], [1.06, 0.975], [1.20, 0.979], [1.345, 0.971],
+const bodYD = pchip([[-2.268, 1.045], [-2.258, 1.057], [-2.24, 1.072], [-2.21, 1.088], [-2.17, 1.099], [-2.11, 1.118], [-1.95, 1.02], [-1.85, 0.99], [-1.0, 0.99], [0.0, 0.97], [0.6, 0.95], [0.88, 0.935], [1.0, 0.962], [1.06, 0.975], [1.20, 0.979], [1.345, 0.971],
   [1.595, 0.932], [1.845, 0.887], [1.975, 0.852], [2.095, 0.811], [2.20, 0.752], [2.27, 0.69], [2.30, 0.645], [2.325, 0.60], [2.345, 0.565]]);
 const bodDP = pchip([[-2.3, 2.6], [-1.9, 2.8], [1.0, 4.2], [1.9, 4.2], [2.22, 3.2], [2.345, 2.4]]);  // exponent van het dekprofiel (vlak midden, afgeronde randen)
 // daklijn op de hartlijn (voorruit bol, dak als een boog, vlakke achterruit onder ca. 14 graden)
@@ -219,7 +219,8 @@ function frontZ(x, y) {
 const bodTB = 0.05, bodTF = 0.10;
 let bodYDT = 0;
 function tailZ(x, y) {
-  const X = Math.max(0.05, ringX(bodZT, y)), e = clamp(1 - (x / X) * (x / X), 0, 1);
+  // r^6-term: aan de rand helt het vlak even sterk als de flank (ca. 19 graden in bovenaanzicht), zodat de hoek rond doorloopt
+  const X = Math.max(0.05, ringX(bodZT, y)), r = clamp(Math.abs(x) / X, 0, 1), e = 1 - 0.55 * r * r - 0.45 * r ** 6;
   if (!bodYDT) bodYDT = bodSec(bodZT).yd;
   const u = clamp((y - bodYDT + bodTF) / bodTF, 0, 1);
   return bodZT - bodTB * e * (1 - Math.pow(u, 1.5));
