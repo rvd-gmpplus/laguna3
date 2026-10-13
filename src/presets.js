@@ -157,6 +157,8 @@ function uiTourStep() {
   appTour.i++;
   if (appTour.i >= appTourSteps.length) { uiStopTour(); return; }
   const p = appPresetById.get(appTourSteps[appTour.i]);
+  // een stap waarvan de namen niet (meer) oplossen, wordt overgeslagen (de waarschuwing staat al bij het starten in de console)
+  if (!p || !appPresetOk(p)) { uiTourStep(); return; }
   appApplyPreset(p, { tour: true, noHistory: true });
   uiTourCaption(p, appTour.i, appTourSteps.length);
   appTour.timer = setTimeout(uiTourStep, REDUCED ? 4500 : 5000);

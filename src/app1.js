@@ -462,3 +462,171 @@ function uiSetSpread(v, rerender) {
   for (const n of ASMS) if (n.amt > 0) placeKids(n);
   if (rerender) updateGround();
 }
+
+/* ---------- samengevoegd tekenen van gesloten groepen (premortem struikeldraad 5) ---------- */
+// Een groep waarvan de hele deelboom gemonteerd is (alle explosiewaarden 0, geen animatie, geen verschuiving),
+// die niet gemarkeerd (selectie, aanwijzen) is en helemaal binnen de isolatie valt, wordt getekend als één mesh
+// per materiaal in het lokale frame van de groep. De losse meshes blijven in de scène voor aanwijzen, labels en de
+// lijst; ze gaan zolang naar laag 1 (de camera tekent die niet, de raycaster raakt hem wel). Ingesloten (inner)
+// knopen tellen niet mee: in een gesloten deelboom zijn ze toch verborgen. Doorzichtige onderdelen (glas) blijven los
+// getekend, zodat de diepte-sortering van doorzichtige vlakken gelijk blijft. Batches worden lui gebouwd, verspreid over
+// frames, en hun extra geheugen is begrensd (minst recent gebruikte eerst weg).
+let uiBatchOn = true;
+const UI_BATCH_TRIS = 60000;   // grotere groepen worden over hun kinderen verdeeld
+const UI_HIDE_LAYER = 1;
+const uiBatched = new Set();   // groepen die nu samengevoegd getekend worden
+const uiBatchQ = new Set();    // groepen die op een batch wachten
+const uiBatchWant = new Set();
+let uiBatchJob = null, uiBatchBytes = 0, uiBatchClock = 0, uiBatchKey = '';
+const uiBm = new THREE.Matrix4(), uiBl = new THREE.Matrix4(), uiBn = new THREE.Matrix3(), uiBv = V3(0, 0, 0);
+const uiGeoTris = g => (g.index ? g.index.count : g.attributes.position.count) / 3;
+const uiGeoBytes = g => g.attributes.position.count * 24 + (g.index ? g.index.count : g.attributes.position.count) * 4;
+// geheugengrens: 1,25 x de geometrie van de gemonteerde auto (alle instanties één keer)
+const uiBatchCap = Math.round(1.25 * MESHES.reduce((a, m) => a + uiGeoBytes(m.geometry), 0));
+// inhoud van de batch van groep g: alle meshes in de deelboom, behalve onder een ingesloten knoop
+function uiBatchInfo(g) {
+  if (g.bInfo) return g.bInfo;
+  const src = []; let tris = 0;
+  const walk = n => { for (const k of n.kids) { if (k.inner) continue; if (k.asm) walk(k); else if (!(k.obj.userData.base || k.obj.material).transparent) { src.push(k.obj); tris += uiGeoTris(k.obj.geometry); } } };
+  walk(g);
+  return (g.bInfo = { src, tris, ok: src.length >= 2 && tris <= UI_BATCH_TRIS });
+}
+// per knoop: is de deelboom gemonteerd en ongemarkeerd (van onder naar boven, één keer per weergave)
+function uiBatchClean() {
+  for (let i = ALL.length - 1; i >= 0; i--) {
+    const n = ALL[i];
+    if (!n.asm) { n._bc = !uiSelSet.has(n.obj) && !uiHovSet.has(n.obj); continue; }
+    let c = n.target === 0 && n.amt === 0 && !uiAnim.has(n);
+    if (c) for (const k of n.kids) { if (k.inner) continue; if (!k._bc || k.hasOff) { c = false; break; } }
+    n._bc = c;
+  }
+}
+function uiBatchMat(base, g) {
+  if (XRAY && g.isBody) return GHOST;
+  if (SYSCOL && g.sys) return SYS_MATS[g.sys] || base;
+  return base;
+}
+function uiBatchShow(g) {
+  const b = g.bat;
+  for (const m of b.src) m.layers.set(UI_HIDE_LAYER);
+  if (b.key !== uiBatchKey) { for (const bm of b.obj.children) bm.material = uiBatchMat(bm.userData.base, g); b.key = uiBatchKey; }
+  b.obj.visible = true; uiBatched.add(g);
+}
+function uiUnbatch(g) {
+  const b = g.bat;
+  for (const m of b.src) m.layers.set(0);
+  b.obj.visible = false; uiBatched.delete(g);
+}
+// Vóór elke weergave: kies per tak de hoogste geschikte groep met een klare batch; wissel waar nodig (zelfde frame).
+function uiBatchSync() {
+  if (!uiBatchOn) { for (const g of [...uiBatched]) uiUnbatch(g); return; }
+  uiBatchClean();
+  uiBatchKey = (XRAY ? 'x' : '') + (SYSCOL ? 's' : '');
+  uiBatchWant.clear();
+  // enq: nog geen hogere groep in de rij gezet; daaronder alleen bestaande batches gebruiken (niets dubbel bouwen)
+  const walk = (n, enq) => {
+    if (!n.asm || !n.ev) return;
+    if (n._bc && uiInScope(n) && uiBatchInfo(n).ok) {
+      if (n.bat) { uiBatchWant.add(n); n.bat.used = ++uiBatchClock; return; }
+      if (enq) { uiBatchQ.add(n); enq = false; }
+    }
+    for (const k of n.kids) walk(k, enq);
+  };
+  walk(ROOT, true);
+  for (const g of [...uiBatched]) if (!uiBatchWant.has(g)) uiUnbatch(g);
+  for (const g of uiBatchWant) if (!uiBatched.has(g) || g.bat.key !== uiBatchKey) uiBatchShow(g);
+}
+// matrix van mesh naar groep in de gemonteerde stand (basisposities), onafhankelijk van de huidige explosie
+function uiBaseRel(o, top) {
+  uiBm.identity();
+  for (; o && o !== top; o = o.parent) { const n = o.userData.node; uiBl.compose(n ? n.base : o.position, o.quaternion, o.scale); uiBm.premultiply(uiBl); }
+  return uiBm;
+}
+function uiBatchAdd(job, m) {
+  const g = m.geometry, pos = g.attributes.position, nor = g.attributes.normal, nv = pos.count;
+  const M = uiBaseRel(m, job.g.obj); uiBn.getNormalMatrix(M);
+  const flip = M.determinant() < 0;
+  const base = m.userData.base || m.material;
+  let acc = job.parts.get(base);
+  if (!acc) job.parts.set(base, (acc = { p: [], n: [], i: [], nv: 0, ni: 0 }));
+  const P = new Float32Array(nv * 3), N = new Float32Array(nv * 3);
+  for (let i = 0; i < nv; i++) {
+    uiBv.set(pos.getX(i), pos.getY(i), pos.getZ(i)).applyMatrix4(M); P[i * 3] = uiBv.x; P[i * 3 + 1] = uiBv.y; P[i * 3 + 2] = uiBv.z;
+    if (nor) { uiBv.set(nor.getX(i), nor.getY(i), nor.getZ(i)).applyMatrix3(uiBn).normalize(); N[i * 3] = uiBv.x; N[i * 3 + 1] = uiBv.y; N[i * 3 + 2] = uiBv.z; }
+  }
+  const ix = g.index, ic = ix ? ix.count : nv, I = new Uint32Array(ic), o = acc.nv;
+  for (let t = 0; t + 2 < ic; t += 3) {
+    const a = ix ? ix.getX(t) : t, b = ix ? ix.getX(t + 1) : t + 1, c = ix ? ix.getX(t + 2) : t + 2;
+    I[t] = a + o; I[t + 1] = (flip ? c : b) + o; I[t + 2] = (flip ? b : c) + o; // gespiegeld: wikkeling omdraaien (DoubleSide-belichting)
+  }
+  acc.p.push(P); acc.n.push(N); acc.i.push(I); acc.nv += nv; acc.ni += ic;
+}
+function uiBatchFinish(job) {
+  const obj = new THREE.Group(); obj.name = 'uiBatch'; obj.visible = false;
+  let bytes = 0;
+  const cat = (list, n, T) => { const out = new T(n); let k = 0; for (const a of list) { out.set(a, k); k += a.length; } return out; };
+  for (const [base, a] of job.parts) {
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(cat(a.p, a.nv * 3, Float32Array), 3));
+    geo.setAttribute('normal', new THREE.BufferAttribute(cat(a.n, a.nv * 3, Float32Array), 3));
+    const idx = cat(a.i, a.ni, a.nv < 65536 ? Uint16Array : Uint32Array);
+    geo.setIndex(new THREE.BufferAttribute(idx, 1));
+    geo.computeBoundingSphere(); geo.computeBoundingBox();
+    const bm = new THREE.Mesh(geo, uiBatchMat(base, job.g));
+    bm.userData.base = base; bm.userData.uiBatch = true;
+    obj.add(bm);
+    bytes += a.nv * 24 + a.ni * idx.BYTES_PER_ELEMENT;
+  }
+  job.g.obj.add(obj);
+  job.g.bat = { obj, src: job.src, bytes, used: ++uiBatchClock, key: uiBatchKey };
+  uiBatchBytes += bytes;
+}
+function uiBatchFree(g) {
+  if (uiBatched.has(g)) uiUnbatch(g);
+  g.obj.remove(g.bat.obj);
+  for (const bm of g.bat.obj.children) bm.geometry.dispose();
+  uiBatchBytes -= g.bat.bytes; g.bat = null;
+}
+// Bouwt batches binnen een tijdsbudget (ms) per frame. Geeft true als er een batch klaar is gekomen.
+function uiBatchStep(budget) {
+  const t0 = performance.now();
+  let done = false;
+  while (performance.now() - t0 < budget) {
+    if (!uiBatchJob) {
+      let g = null;
+      for (const q of uiBatchQ) { uiBatchQ.delete(q); if (!q.bat) { g = q; break; } }
+      if (!g) break;
+      const info = uiBatchInfo(g);
+      let est = 0; for (const m of info.src) est += uiGeoBytes(m.geometry);
+      if (uiBatchBytes + est > uiBatchCap) { // ruimte maken: minst recent gebruikte batches die nu niet getekend worden
+        const old = ASMS.filter(a => a.bat && !uiBatched.has(a)).sort((a, b) => a.bat.used - b.bat.used);
+        while (old.length && uiBatchBytes + est > uiBatchCap) uiBatchFree(old.shift());
+        if (uiBatchBytes + est > uiBatchCap) continue; // past niet: deze groep blijft los getekend
+      }
+      uiBatchJob = { g, src: info.src, i: 0, parts: new Map() };
+    }
+    const j = uiBatchJob;
+    while (j.i < j.src.length && performance.now() - t0 < budget) uiBatchAdd(j, j.src[j.i++]);
+    if (j.i >= j.src.length) { uiBatchFinish(j); uiBatchJob = null; done = true; }
+  }
+  return done;
+}
+function uiBatchFlush() { // voor tests: alles wat in de rij staat direct bouwen
+  for (let it = 0; it < 50; it++) { uiBatchSync(); if (!uiBatchQ.size && !uiBatchJob) break; uiBatchStep(1e9); }
+  uiBatchSync();
+}
+function uiSetBatching(on) {
+  uiBatchOn = !!on;
+  if (!uiBatchOn) { uiBatchQ.clear(); uiBatchJob = null; }
+  uiBatchSync();
+}
+function uiBatchStats() {
+  let meshes = 0; for (const g of uiBatched) meshes += g.bat.obj.children.length;
+  let hidden = 0; for (const g of uiBatched) hidden += g.bat.src.length;
+  return { on: uiBatchOn, groups: uiBatched.size, built: ASMS.filter(a => a.bat).length, queued: uiBatchQ.size + (uiBatchJob ? 1 : 0), batchMeshes: meshes, replaced: hidden, mb: +(uiBatchBytes / 1048576).toFixed(1), capMb: +(uiBatchCap / 1048576).toFixed(1) };
+}
+// Elke weergave van de scène (ook vanuit testgereedschap) gaat eerst langs de batchkeuze.
+{
+  const raw = renderer.render.bind(renderer);
+  renderer.render = (s, c) => { if (s === scene) uiBatchSync(); return raw(s, c); };
+}

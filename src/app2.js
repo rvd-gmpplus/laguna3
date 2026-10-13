@@ -80,6 +80,7 @@ function renderPanel() {
   els.all.hidden = !n.asm;
   els.dive.hidden = n.asm;
   els.up.disabled = !uiClosedAbove(n);
+  els.up.title = els.up.disabled ? 'Alles boven deze selectie is al uitgeklapt' : 'De dichte groep boven de selectie uitklappen (Enter)';
   const isoOn = ISO.length === 1 && ISO[0] === n;
   els.iso.textContent = isoOn || (ISO.length && n === ROOT) ? 'Alles tonen' : 'Isoleren';
   els.iso.disabled = n === ROOT && !ISO.length;
@@ -281,6 +282,7 @@ $('tXray').addEventListener('change', e => { uiPush(); XRAY = e.target.checked; 
 $('tSys').addEventListener('change', e => { uiPush(); SYSCOL = e.target.checked; clearPreset(); applyMats(); uiAfterAction(); });
 $('tRotate').addEventListener('change', e => { controls.autoRotate = e.target.checked; requestRender(); });
 els.quality.addEventListener('change', e => uiSetLite(!e.target.checked));
+$('tBatch').addEventListener('change', e => { uiSetBatching(e.target.checked); requestRender(); });
 els.legend.innerHTML = Object.entries(SYS_COLORS).map(([k, c]) => `<span><i style="background:#${c.toString(16).padStart(6, '0')}"></i>${esc(k)}</span>`).join('');
 document.querySelectorAll('[data-cam]').forEach(b => b.addEventListener('click', () => { const nodes = contextNodes(), dir = DIRS[b.dataset.cam]; focusNodes(nodes, dir); uiLastFit = { nodes, dir, pad: 1.08 }; }));
 $('btnExplodeAll').onclick = () => { const r = uiScopeRoot(); uiPush(); explodeAllUnder(r); CTX = r; uiLabelForce = false; clearPreset(); focusNodes(contextNodes(), null, 1.02); uiAfterAction(); };
@@ -473,6 +475,7 @@ els.tourStop.onclick = () => uiStopTour();
 
 /* ---------- aanwijzen en tikken ---------- */
 const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+ray.layers.enableAll(); // samengevoegd getekende onderdelen staan op laag 1 en blijven aanwijsbaar
 let uiPickXray = [], uiPickXrayKey = -1;
 function uiPickList() {
   if (!XRAY) return uiPickable;
@@ -542,21 +545,40 @@ const uiPtrs = new Map();
 let down = null, pointers = 0, uiLastTap = null, uiPressS = null;
 function uiCancelPress() {
   if (!uiPressS) return;
-  clearTimeout(uiPressS.show); clearTimeout(uiPressS.fire);
+  clearTimeout(uiPressS.show); clearTimeout(uiPressS.fire); clearTimeout(uiPressS.zero); cancelAnimationFrame(uiPressS.raf);
   els.press.hidden = true; els.press.classList.remove('run');
   uiPressS = null;
 }
+// Lang drukken, tikken en dubbeltikken worden beslist op de tijdstempels van het gebaar zelf (event.timeStamp),
+// niet op het moment waarop een handler toevallig draait. De timer toont de ring en wapent het lang drukken;
+// vóór het doorvoeren laat hij wachtende invoer eerst afhandelen (een animatieframe en daarna een nul-timeout).
+// Komt er in die tijd een pointerup of pointercancel binnen, dan beslist die (op zijn eigen tijdstempel).
+const UI_PRESS_MS = 500;
+function uiCommitPress(d, fromUp) {
+  if (d.consumed || (d.ended && !fromUp)) return;
+  d.consumed = true;
+  if (uiPressS && uiPressS.d === d) uiCancelPress();
+  try { navigator.vibrate && navigator.vibrate(12); } catch (_) { }
+  if (d.pick) uiCollapseAt(d.pick);
+}
 function uiStartPress(d) {
   uiCancelPress();
-  uiPressS = {
-    show: setTimeout(() => { els.press.style.transform = `translate(${d.x}px, ${d.y}px)`; els.press.hidden = false; void els.press.offsetWidth; els.press.classList.add('run'); }, 150),
-    fire: setTimeout(() => {
-      d.consumed = true; uiPressS = null;
-      els.press.hidden = true; els.press.classList.remove('run');
-      try { navigator.vibrate && navigator.vibrate(12); } catch (_) { }
-      if (d.pick) uiCollapseAt(d.pick);
-    }, 500),
+  const s = uiPressS = { d, raf: 0, zero: 0 };
+  s.show = setTimeout(() => { els.press.style.transform = `translate(${d.x}px, ${d.y}px)`; els.press.hidden = false; void els.press.offsetWidth; els.press.classList.add('run'); }, 150);
+  // gewapend: eerst wachtende invoer laten afhandelen, dan pas doorvoeren als de vinger er nog ligt. Kwam een timer
+  // te laat (de hoofddraad was bezig, er kan invoer in de rij staan), dan opnieuw kijken tot de draad weer vrij is.
+  s.tries = 0;
+  const later = (ms, fn) => { const due = performance.now() + ms; s.fire = setTimeout(() => fn(performance.now() - due), ms); };
+  const check = lag => {
+    if (uiPressS !== s || d.ended) return;
+    if (lag > 40 && s.tries++ < 40) { later(30, check); return; }
+    s.raf = requestAnimationFrame(() => later(0, lag2 => {
+      if (uiPressS !== s || d.ended) return;
+      if (lag2 > 40 && s.tries++ < 40) { later(30, check); return; }
+      uiCommitPress(d);
+    }));
   };
+  later(UI_PRESS_MS, check);
 }
 canvas.addEventListener('pointerdown', e => {
   uiPtrs.set(e.pointerId, e.pointerType);
@@ -564,10 +586,10 @@ canvas.addEventListener('pointerdown', e => {
   try { canvas.focus({ preventScroll: true }); } catch (_) { }
   uiHideTip();
   if (uiPtrs.size === 1) {
-    down = { id: e.pointerId, x: e.clientX, y: e.clientY, t: performance.now(), type: e.pointerType, button: e.button, shift: e.shiftKey, consumed: false };
+    down = { id: e.pointerId, x: e.clientX, y: e.clientY, t: e.timeStamp, type: e.pointerType, button: e.button, shift: e.shiftKey, consumed: false, ended: false };
     down.pick = pick(e.clientX, e.clientY, e.pointerType !== 'mouse'); // de pick van deze tik, ook voor een dubbeltik
     if (e.pointerType !== 'mouse' && e.button === 0) uiStartPress(down);
-  } else { down = null; uiCancelPress(); }
+  } else { if (down) down.ended = true; down = null; uiCancelPress(); }
 });
 canvas.addEventListener('pointermove', e => {
   if (down && down.id === e.pointerId && Math.hypot(e.clientX - down.x, e.clientY - down.y) >= 7) uiCancelPress();
@@ -581,14 +603,18 @@ canvas.addEventListener('pointerup', e => {
   uiPtrs.delete(e.pointerId); pointers = uiPtrs.size;
   if (!down || down.id !== e.pointerId) return;
   const d = down; down = null;
+  d.ended = true;
   uiCancelPress();
   if (d.consumed) return;
-  const moved = Math.hypot(e.clientX - d.x, e.clientY - d.y), dt = performance.now() - d.t;
-  if (moved >= 7 || dt >= 600) return; // slepen is nooit een klik
+  const moved = Math.hypot(e.clientX - d.x, e.clientY - d.y), dt = e.timeStamp - d.t;
+  if (moved >= 7) return; // slepen is nooit een klik
+  // lang drukken op touch: beslist door de duur van het gebaar zelf, ook als de timer nog niet aan de beurt was
+  if (d.type !== 'mouse' && d.button === 0 && dt >= UI_PRESS_MS) { uiCommitPress(d, true); return; }
+  if (dt >= 600) return;
   if (d.button === 2) { if (d.type === 'mouse') { d.pick ? uiCollapseAt(d.pick) : uiBackground(); } return; }
   if (d.button !== 0) return;
-  const now = performance.now(), L = uiLastTap;
-  if (L && now - L.t < 420 && Math.hypot(e.clientX - L.x, e.clientY - L.y) < 26 && L.type === d.type) {
+  const now = e.timeStamp, L = uiLastTap;
+  if (L && now - L.t < 420 && now - L.t >= 0 && Math.hypot(e.clientX - L.x, e.clientY - L.y) < 26 && L.type === d.type) {
     uiLastTap = null;
     if (L.pick) uiDive(L.pick); // altijd het onderdeel van de eerste tik
     return;
@@ -597,8 +623,8 @@ canvas.addEventListener('pointerup', e => {
   if (d.shift) { d.pick ? uiCollapseAt(d.pick) : uiBackground(); return; }
   uiAct(d.pick);
 });
-const uiPtrReset = () => { uiPtrs.clear(); pointers = 0; down = null; uiCancelPress(); };
-canvas.addEventListener('pointercancel', e => { uiPtrs.delete(e.pointerId); pointers = uiPtrs.size; if (down && down.id === e.pointerId) down = null; uiCancelPress(); });
+const uiPtrReset = () => { uiPtrs.clear(); pointers = 0; if (down) down.ended = true; down = null; uiCancelPress(); };
+canvas.addEventListener('pointercancel', e => { uiPtrs.delete(e.pointerId); pointers = uiPtrs.size; if (down && down.id === e.pointerId) { down.ended = true; down = null; } uiCancelPress(); });
 canvas.addEventListener('lostpointercapture', e => { if (uiPtrs.has(e.pointerId) && down && down.id === e.pointerId && down.type !== 'mouse') { uiPtrs.delete(e.pointerId); pointers = uiPtrs.size; } });
 window.addEventListener('blur', uiPtrReset);
 document.addEventListener('visibilitychange', () => { if (document.hidden) uiPtrReset(); });
@@ -658,6 +684,17 @@ window.addEventListener('keydown', e => {
   if (e.key === 'Enter') { if (onCtl) return; e.preventDefault(); uiStopPlay(); uiStopTour(); hideHint(); uiEnter(e.shiftKey); return; }
   if (e.key === 'Backspace') { e.preventDefault(); uiStopPlay(); uiStopTour(); uiUndo(); return; }
   if (e.key === '?') { e.preventDefault(); uiHelp(true); return; }
+  // pijltjes (niet op een bedieningselement): door de boom lopen. Omhoog = bovenliggende groep, omlaag = eerste deel,
+  // links/rechts = vorige/volgende op hetzelfde niveau (audit U29). Selecteren en in beeld houden, niets uitklappen.
+  if (!onCtl && /^Arrow(Up|Down|Left|Right)$/.test(e.key)) {
+    const n = SEL || ROOT, sib = n.parent ? n.parent.kids : [n];
+    let m = null;
+    if (e.key === 'ArrowUp') m = n.parent && (!ISO.length || uiInScope(n.parent)) ? n.parent : null;
+    else if (e.key === 'ArrowDown') m = n.asm ? n.kids.find(k => k.ev) : null;
+    else { const i = sib.indexOf(n), d = e.key === 'ArrowRight' ? 1 : -1; for (let j = 1; j < sib.length && !m; j++) { const k = sib[(i + d * j + sib.length * j) % sib.length]; if (k.ev) m = k; } }
+    if (m && m !== n) { e.preventDefault(); uiStopPlay(); uiStopTour(); hideHint(); uiPush(); select(m); uiSoftFrame([m]); uiAfterAction(); }
+    return;
+  }
   if (/^[0-9]$/.test(e.key)) {
     const p = PRESETS.find(q => q.key === e.key);
     if (p && appPresetOk(p)) { e.preventDefault(); uiStopPlay(); uiStopTour(); uiRunPreset(p.id); }
@@ -795,6 +832,8 @@ function uiLabelRects() { return uiSpots.slice(0, uiNPlaced).map(p => ({ name: p
 
 /* ---------- formaat en vrij beeld ---------- */
 let uiLastFit = null, uiRefitTimer = 0;
+const uiViewPrev = { l: -99, r: -99, t: -99, b: -99 };
+let uiViewW = 0, uiViewH = 0;
 function layoutView() {
   const wide = window.innerWidth >= 920;
   const title = els.topbar.querySelector('.title').getBoundingClientRect();
@@ -812,6 +851,10 @@ function layoutView() {
     const bottom = els.sheet.dataset.state === 'open' ? sheet.top : Math.min(dockTop, sheet.top);
     VIEW.b = Math.max(0, H - bottom + 4);
   }
+  // Kleine verschuivingen van de bediening (een focusrand, een paar pixels in het dock) verschuiven het beeld niet:
+  // anders springt de scène onder de vinger weg tussen aanwijzen en tikken.
+  for (const k of ['l', 'r', 't', 'b']) { if (Math.abs(VIEW[k] - uiViewPrev[k]) < 6 && uiViewW === W && uiViewH === H) VIEW[k] = uiViewPrev[k]; uiViewPrev[k] = VIEW[k]; }
+  uiViewW = W; uiViewH = H;
   camera.setViewOffset(W, H, (VIEW.r - VIEW.l) / 2, (VIEW.b - VIEW.t) / 2, W, H);
   camera.updateProjectionMatrix();
   uiPlaceMenu();
@@ -926,7 +969,7 @@ function uiAfterAnim() {
   uiSyncExplode();
   if (uiHoverPos && !down) uiDoHover();
 }
-let last = performance.now(), uiWasActive = false;
+let last = performance.now(), uiWasActive = false, uiBatchDrawT = 0;
 function loop(now) {
   requestAnimationFrame(loop);
   const dt = Math.min(0.1, Math.max(0, (now - last) / 1000)); last = now;
@@ -940,12 +983,15 @@ function loop(now) {
     needs = false;
     uiMeasure(now, active);
   }
+  // batches bouwen in de vrije tijd van het frame; opnieuw tekenen als de rij leeg is of hoogstens elke 300 ms
+  // (een weergave per batch zou in software-WebGL de opbouw zelf vertragen)
+  if (uiBatchOn && (uiBatchQ.size || uiBatchJob) && uiBatchStep(active ? 3 : (now - uiReadyT < 8000 ? 25 : 10)) && (!uiBatchQ.size && !uiBatchJob || now - uiBatchDrawT > 300)) { needs = true; uiBatchDrawT = now; }
   if (uiWasActive && !active) { needs = true; uiAfterAnim(); }
   uiWasActive = active;
 }
 
 /* ---------- start ---------- */
-let uiReady = false;
+let uiReady = false, uiReadyT = 0;
 applyVisibility();
 resize();
 select(ROOT);
@@ -957,7 +1003,7 @@ controls.update();
 renderer.render(scene, camera);
 LOADING.classList.add('gone');
 uiInitHint();
-requestAnimationFrame(t => { last = t; uiReady = true; loop(t); });
+requestAnimationFrame(t => { last = t; uiReady = true; uiReadyT = performance.now(); loop(t); });
 uiWarmMaterials();
 { const errs = appCheckPresets(); if (errs.length) console.warn('presets: ' + errs.join('; ')); }
 // labelbreedtes opnieuw meten zodra de lettertypen er zijn
@@ -1025,7 +1071,8 @@ window.__laguna = {
   finishAll, ROOT, ALL, MESHES, PRESETS, byName,
   select: uiApi(select), tapNode: uiApi(tapNode), focusNodes: uiApi(focusNodes),
   setTarget: uiApi(setTarget, true), explodeAllUnder: uiApi(explodeAllUnder, true), collapseAll: uiApi(collapseAll, true), isolate: uiApi(isolate, true),
-  get ready() { return uiReady; },
+  // klaar: gebouwd, eerste keer getekend en de batches van de beginstand staan klaar (hoogstens 8 s wachten daarop)
+  get ready() { return uiReady && (!uiBatchOn || (!uiBatchQ.size && !uiBatchJob) || performance.now() - uiReadyT > 8000); },
   byPath: uiByPath,
   preset: id => { hideHint(true); return uiRunPreset(id); },
   presetList: () => PRESETS.filter(appPresetOk).map(p => ({ id: p.id, cat: p.cat, label: p.label, key: p.key || null, subject: p.tour ? [] : appSubject(p).map(n => n.name), tour: !!p.tour })),
@@ -1051,4 +1098,9 @@ window.__laguna = {
   collapseAt: n => uiCollapseAt(typeof n === 'string' ? byName(n) : n),
   stopTour: uiStopTour,
   get lite() { return uiLite; },
+  batching: on => { if (on !== undefined) { uiSetBatching(on); $('tBatch').checked = uiBatchOn; requestRender(); } return uiBatchOn; },
+  batchFlush: () => { uiBatchFlush(); requestRender(); return uiBatchStats(); },
+  batchStats: uiBatchStats,
+  batchedGroups: () => [...uiBatched].map(g => g.name),
+  drawCalls: () => { renderer.info.reset(); renderer.render(scene, camera); return renderer.info.render.calls; },
 };
