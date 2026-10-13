@@ -193,7 +193,7 @@ function buildTaillight(s) {
       P('Lens buitendeel', merge([side(-0.003), face(xs + 0.004, 1.2, ybot, ytop, 0.003)]), MAT.lensRed, { d: 'Rode afdeklens die vanaf het staartvlak om de hoek de flank in loopt.', ex: [s * 0.05, 0, -0.06] }),
       P('Lichthuis buitendeel', merge([side(0.05), face(xs + 0.01, 1.2, ybot + 0.01, ytop - 0.01, -0.05)]), MAT.plastic, { d: 'Kunststof behuizing met bevestigingsbouten in het achterscherm.', ex: [-s * 0.04, 0, 0.06] }),
       P('LED-print buitendeel', merge([side(0.035), face(xs + 0.004, 1.2, ybot + 0.03, ytop - 0.03, -0.035)]), MAT.ecu, { d: 'Printplaat met de lampen van achter-, rem- en knipperlicht.', inner: true, ex: [0, 0, 0.1] }),
-      P('Reflector buitendeel', merge([side(0.02), face(xs + 0.004, 1.2, ybot + 0.02, ytop - 0.02, -0.02)]), MAT.reflector, { d: 'Verchroomde reflector achter de lens.', inner: true, ex: [0, 0, 0.05] }),
+      P('Reflector buitendeel', merge([side(0.02), face(xs + 0.004, 1.2, ybot + 0.02, ytop - 0.02, -0.02)]), MAT.reflector, { d: 'Verchroomde reflector achter de lens; zichtbaar door het rode glas.', ex: [0, 0, 0.05] }),
     ]),
     A('Binnendeel', { d: 'Deel in de achterklep met achterlicht en achteruitrijlicht.', ex: [s * 0.03, 0.04, -0.08] }, [
       P('Lens binnendeel', face(xin, xs - 0.004, 0.975, ytop - 0.004, 0.003), MAT.lensRed, { d: 'Rode bovenste lens van het binnendeel (achterlicht).', ex: [0, 0.03, -0.06] }),
