@@ -26,8 +26,8 @@ function pchip(pts) {
   };
 }
 // grootste halve breedte (bovenaanzicht, zonder spiegels): smalle, ronde neus en staart
-const HW = pchip([[-2.35, 0.29], [-2.335, 0.40], [-2.30, 0.50], [-2.268, 0.60], [-2.22, 0.725], [-2.15, 0.79], [-2.05, 0.82], [-1.90, 0.857], [-1.75, 0.882], [-1.50, 0.902], [-1.20, 0.905],
-  [1.20, 0.905], [1.40, 0.903], [1.60, 0.893], [1.80, 0.86], [1.95, 0.82], [2.05, 0.782], [2.15, 0.715], [2.22, 0.625], [2.27, 0.48], [2.30, 0.33], [2.325, 0.22], [2.345, 0.07]]);
+const HW = pchip([[-2.35, 0.29], [-2.335, 0.40], [-2.30, 0.50], [-2.268, 0.60], [-2.22, 0.725], [-2.15, 0.79], [-2.05, 0.82], [-1.90, 0.852], [-1.75, 0.874], [-1.50, 0.891], [-1.20, 0.893],
+  [1.20, 0.893], [1.40, 0.891], [1.60, 0.884], [1.80, 0.86], [1.95, 0.82], [2.05, 0.782], [2.15, 0.715], [2.22, 0.625], [2.27, 0.48], [2.30, 0.33], [2.325, 0.22], [2.345, 0.07]]);
 // onderkant carrosserie (bumperranden en dorpel; in de wielbogen snijdt de boog)
 const YB = pchip([[-2.35, 0.53], [-2.335, 0.47], [-2.30, 0.38], [-2.268, 0.31], [-2.20, 0.287], [-2.10, 0.271], [-2.00, 0.26], [-1.90, 0.249], [-1.80, 0.244], [-1.60, 0.215], [-1.30, 0.19], [-1.0, 0.18],
   [0.95, 0.18], [1.30, 0.183], [1.80, 0.186], [1.90, 0.195], [2.00, 0.20], [2.10, 0.21], [2.20, 0.225], [2.27, 0.25], [2.30, 0.268], [2.33, 0.29], [2.345, 0.31]]);
@@ -49,30 +49,30 @@ const S1 = 0.14, S2 = 0.22, S3 = 0.60, S4 = 0.72, BUL = 0.016, CRW = 0.03;
 const sstep = t => { const u = clamp(t, 0, 1); return u * u * (3 - 2 * u); };
 // doorsnede van de onderbak op z
 function bodSec(z) {
-  const hw = HW(z), yb = YB(z), yt = YT(z), d = yt - yb, tip = z < bodZT;
-  const rb = Math.min(0.06, d * 0.28), rs = tip ? Math.min(0.03, d * 0.3) : Math.min(0.075, d * 0.3);
+  const hw = HW(z), yb = YB(z), yt = YT(z), d = yt - yb, tip = z < bodZT, bul = Math.min(BUL, hw * 0.15);
+  const rb = Math.min(0.06, d * 0.28, (hw - bul) * 0.45), rs = Math.min(tip ? 0.03 : 0.075, d * 0.3, (hw - bul) * 0.45);
   const yd = tip ? yt + 0.004 : Math.max(yt + 0.004, bodYD(z)), c = yd - yt, p = tip ? 2.4 : bodDP(z);
-  const cx = hw - BUL - rs;                       // middelpunt van de schouderboog
+  const cx = hw - bul - rs;                       // middelpunt van de schouderboog
   let xe = cx + rs * 0.3, th = 1.2;
   for (let i = 0; i < 3; i++) { th = Math.atan2(xe, c * p); xe = cx + rs * Math.cos(th); }
   const cy = yt - rs * Math.sin(th);
   // in de bumperpunt volgt de bolling van de flank die van het staartvlak (geen knik op de naad)
   const cyb = tip ? bodYTm(bodZT) - 0.072 : cy;
-  return { hw, yb, yt, rb, rs, yd, c, p, cx, cy, cyb, th, xe };
+  return { hw, yb, yt, rb, rs, yd, c, p, cx, cy, cyb, th, xe, bul };
 }
-function flank(z, y, t, ytop) {
-  let f = BUL * Math.sin(PI * t) - BUL;
+function flank(z, y, t, ytop, bul = BUL) {
+  let f = bul * Math.sin(PI * t) - bul;
   const yc = bodYC(z), fade = sstep((z + 2.25) / 0.25) * sstep((1.32 - z) / 0.25) * (1 - sstep((yc - ytop + 0.07) / 0.04)) * (1 - sstep((y - ytop + 0.03) / 0.03));
   if (fade > 0) { const dy = y - yc; f += fade * (0.0045 * Math.exp(-dy * dy / 0.0003) - 0.004 * sstep(dy / 0.03 + 0.5)); }
   return f;
 }
 function bodHalf(z, s, c) {
-  const { hw, yb, yt, rb, rs, cx, cy, cyb, th, xe, c: cr, p } = c;
-  if (s <= S1) return [s / S1 * (hw - BUL - rb), yb];
-  if (s <= S2) { const a = -HALF + (s - S1) / (S2 - S1) * HALF; return [hw - BUL - rb + rb * Math.cos(a), yb + rb + rb * Math.sin(a)]; }
+  const { hw, yb, yt, rb, rs, cx, cy, cyb, th, xe, c: cr, p, bul } = c;
+  if (s <= S1) return [s / S1 * (hw - bul - rb), yb];
+  if (s <= S2) { const a = -HALF + (s - S1) / (S2 - S1) * HALF; return [hw - bul - rb + rb * Math.cos(a), yb + rb + rb * Math.sin(a)]; }
   if (s <= S3) {
     const t = (s - S2) / (S3 - S2), y = yb + rb + t * (cy - yb - rb), tb = cyb === cy ? t : clamp((y - yb - rb) / (cyb - yb - rb), 0, 1);
-    const f = flank(z, y, tb, cyb) - (cyb === cy ? 0 : BUL * Math.sin(PI * tb) * sstep((t - 0.6) / 0.4));
+    const f = flank(z, y, tb, cyb, bul) - (cyb === cy ? 0 : bul * Math.sin(PI * tb) * sstep((t - 0.6) / 0.4));
     return [hw + f, y];
   }
   if (s <= S4) { const a = (s - S3) / (S4 - S3) * th; return [cx + rs * Math.cos(a), cy + rs * Math.sin(a)]; }
@@ -231,11 +231,12 @@ const bodHLhi = pchip([[1.81, 0.0], [1.88, 0.06], [1.97, 0.13], [2.08, 0.21], [2
 function hlLow(z) { return Math.min(sAtY(z, bodHLlo(z)), bodHLHi(z) - 0.006); }
 function bodHLHi(z) { const t = clamp((z - bodHLZ0) / 0.012, 0, 1); return S4 + (1 - S4) * bodHLhi(z) * t + 0.0005; }
 // voorkant motorkap: van de koplampspits naar de neus van de kap
-const bodHoodFront = pchip([[2.235, 0.35], [2.255, 0.62], [2.27, 0.82], [2.285, 1.0]]);
+const bodHoodZ1 = 2.29, bodHoodX0 = 0.36;                    // voorrand kap: ronde boog van de koplampspits naar de neus (y ca. 0,65)
 function bodHoodS(z) {
   if (z <= bodHLZ0) return S4;
   if (z <= bodHLZ1) return bodHLHi(z);
-  return S4 + (1 - S4) * bodHoodFront(z);
+  const u = clamp((z - bodHLZ1) / (bodHoodZ1 - bodHLZ1), 0, 1), x = bodHoodX0 * Math.sqrt(Math.max(0, 1 - u * u));
+  return x <= 1e-4 ? 1 : Math.max(bodHLHi(bodHLZ1), bodSAtX(z, x));
 }
 // naad bumper/voorscherm: van de voorkant van de wielboog schuin omhoog naar de achterpunt van de koplamp
 const bodSeamF = z => AY + 0.02 + (bodHLlo(bodHLZ0) - AY - 0.02) * clamp((z - (AXF + ARCH)) / (bodHLZ0 - AXF - ARCH), 0, 1);
