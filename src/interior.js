@@ -197,7 +197,7 @@ function intDashboard() {
     intPart('Schermbehuizing', G.rbox(0.2, 0.12, 0.04, 0.01), MAT.plastic, 'Behuizing van het scherm met bedieningstoetsen.', { p: [0, 0.075, 0], ex: [0, 0.03, 0.03] }),
     intPart('Schermglas', G.box(0.145, 0.085, 0.004), MAT.screen, 'Beeldscherm van de navigatie.', { p: [0, 0.078, -0.021], ex: [0, 0.02, -0.08] }),
   ]);
-  const audio = (() => { const f = intFace(0.795, 0.03); return A('Audiobediening', { d: 'Bediening van de audio: radiopaneel van de Carminat met cd-sleuf en twee draaiknoppen; Bose-geluidssysteem met tien luidsprekers.', p: [0, f.y, f.z], r: [f.rx, 0, 0], ex: [0, 0, -0.12] }, [
+  const audio = (() => { const f = intFace(0.795, 0.03); return A('Audiobediening', { d: 'Bediening van de audio: radiopaneel van de Carminat met cd-sleuf en twee draaiknoppen; Bose-geluidssysteem met tien luidsprekers, waarvan er negen zijn weergegeven (drie in het dashboard, twee op de achterplank, vier in de portieren); de tiende is niet getoond.', p: [0, f.y, f.z], r: [f.rx, 0, 0], ex: [0, 0, -0.12] }, [
     intPart('Audiopaneel', G.rbox(0.2, 0.06, 0.016, 0.006), MAT.blackGloss, 'Pianozwart paneel met de audiobediening.', { ex: [0, 0, -0.02] }),
     intPart('CD-sleuf', G.box(0.09, 0.006, 0.004), MAT.plastic, 'Sleuf voor de cd.', { p: [0, 0.01, -0.009], ex: [0, 0, -0.06] }),
     intPart('Volumeknop', G.cyl('z', 0.014, 0.014, 0.014, 20), MAT.chrome, 'Draaiknop voor het volume.', { p: [-0.075, -0.004, -0.014], ex: [0, 0, -0.08] }),
@@ -210,7 +210,7 @@ function intDashboard() {
     intPart('Ventilatorknop', G.cyl('z', 0.013, 0.013, 0.014, 20), MAT.satin, 'Draaiknop voor de ventilatorstand.', { p: [0, -0.016, -0.014], ex: [0, -0.02, -0.08] }),
     intPart('Klimaattoetsen', merge([-0.03, -0.01, 0.01, 0.03].map(x => xf(G.rbox(0.014, 0.01, 0.006, 0.002), [x, 0.022, -0.011]))), MAT.plastic, 'Toetsen voor recirculatie, ontwasemen en airco.', { ex: [0, 0.02, -0.07] }),
   ]); })();
-  const speakers = A('Luidsprekers dashboard', { d: 'Bose-luidsprekers in het dashboard: een middenluidspreker van 10 cm en twee hoogtonerluidsprekers; de totale installatie heeft tien luidsprekers, de overige posities zijn geschat.', ex: [0, 0.14, 0] }, [
+  const speakers = A('Luidsprekers dashboard', { d: 'Bose-luidsprekers in het dashboard: een middenluidspreker van 10 cm en twee hoogtonerluidsprekers; het Bose-systeem heeft tien luidsprekers, waarvan er negen zijn weergegeven (drie hier, twee op de achterplank, vier in de portieren); de overige is niet getoond en de posities zijn geschat.', ex: [0, 0.14, 0] }, [
     intPart('Roostermiddenluidspreker', G.rbox(0.12, 0.004, 0.1, 0.002), MAT.plastic, 'Rooster boven de middenluidspreker.', { p: [0, intDashTop(0.86) + 0.0005, 0.86], ex: [0, 0.08, 0] }),
     intPart('Middenluidspreker', merge([xf(G.cyl('y', 0.05, 0.03, 0.03, 24), [0, 0, 0]), xf(G.cyl('y', 0.018, 0.018, 0.012, 16), [0, 0.012, 0])]), MAT.darkSteel, 'Luidspreker van 10 cm in het midden van het dashboard.', { p: [0, intDashTop(0.86) - 0.025, 0.86], inner: true, ex: [0, 0.04, 0] }),
     ...[1, -1].map(s => intPart(`Hoogtonerrooster ${sideName(s)}`, G.rbox(0.05, 0.004, 0.04, 0.002), MAT.plastic, 'Rooster boven de hoogtonerluidspreker bij de A-stijl.', { p: [s * 0.62, intDashTop(0.9) + 0.0005, 0.9], ex: [s * 0.04, 0.08, 0] })),
@@ -380,5 +380,5 @@ function intMirror() {
 }
 function buildInterior() {
   const seats = A('Stoelen', { d: 'Voorstoelen met verwarming en elektrische verstelling, achterbank met gedeeld neerklapbare rugleuning en de veiligheidsgordels.', ex: [0, 0.26, -0.1] }, [frontSeat(1), frontSeat(-1), intRearBench(), intBelts()]);
-  return A('Interieur', { d: 'Initiale-interieur met geperforeerd beige leder, stoelverwarming, Bose-audio (tien luidsprekers) en tweezone-klimaatregeling.', ex: [0, 0.66, 0] }, [intDashboard(), intConsole(), seats, intTrim(), intPedals(), intMirror()]);
+  return A('Interieur', { d: 'Initiale-interieur met geperforeerd beige leder, stoelverwarming, Bose-audio (tien luidsprekers, negen weergegeven) en tweezone-klimaatregeling.', ex: [0, 0.66, 0] }, [intDashboard(), intConsole(), seats, intTrim(), intPedals(), intMirror()]);
 }
