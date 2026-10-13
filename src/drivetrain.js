@@ -463,13 +463,12 @@ function driveshaft(name, a, b, o) {
   ]));
   const balls = Array.from({ length: 8 }, (_, k) => P(`Kogel ${k + 1}`, G.sphere(0.0072, 10), MAT.chrome, { d: 'Stalen kogel die het koppel tussen binnenste naaf en klok overbrengt.', p: [outerX + 0.036, 0.0335 * Math.cos(k * PI / 4), 0.0335 * Math.sin(k * PI / 4)], ex: [0, 0.07 * Math.cos(k * PI / 4), 0.07 * Math.sin(k * PI / 4)], inner: true }));
   kids.push(A('Buitenste homokineet (kogelkoppeling)', { d: 'Vaste kogelkoppeling aan de wielzijde (Rzeppa, 8 kogels, buitendiameter circa 90 mm): laat sturen en veren toe. Maten en opbouw volgens catalogus, schematisch weergegeven.', ex: [0.06, 0, 0] }, [
-    P('Koppelingsklok', drvL('CvB' + name, [[0.031, outerX], [0.0455, outerX + 0.006], [0.0455, outerX + 0.05], [0.036, outerX + 0.066], [0.0165, outerX + 0.074], [0.0165, L + 0.05]], 32), MAT.steel, { d: 'Klok met de uitwendige loopbanen voor de kogels en de gegroefde stompas voor de naaf (27 spiebanen, M22 × 1,5).', ex: [0.12, 0, 0] }),
+    P('Koppelingsklok', drvL('CvB' + name, [[0.031, outerX], [0.0455, outerX + 0.006], [0.0455, outerX + 0.05], [0.036, outerX + 0.066], [0.0165, outerX + 0.074], [0.0165, L + 0.03], [0.011, L + 0.032], [0.011, L + 0.066]], 32), MAT.steel, { d: 'Klok met de uitwendige loopbanen voor de kogels en de gegroefde stompas voor de naaf (27 spiebanen) met schroefdraad M22 × 1,5 aan het uiteinde; de asmoer onder de naafdop (onderstel) klemt de as in de naaf.', ex: [0.12, 0, 0] }),
     P('Kogelkooi', G.lathe('x', [[0.026, outerX + 0.012], [0.04, outerX + 0.026], [0.04, outerX + 0.046], [0.026, outerX + 0.06]], 24, 'drvCage' + name), MAT.drvBrass, { d: 'Kooi die de acht kogels op hun plaats houdt.', ex: [0.04, 0, 0], inner: true }),
     ...balls,
     P('Binnenring kogelkoppeling', G.lathe('x', [[0.0125, outerX + 0.014], [0.0255, outerX + 0.016], [0.0255, outerX + 0.056], [0.0125, outerX + 0.058]], 24, 'drvInRace' + name), MAT.darkSteel, { d: 'Binnenste naaf met loopbanen, op de schacht gespied.', ex: [-0.04, 0, 0], inner: true }),
     P('Borgring kogelkoppeling', annulus(0.0125, 0.0165, 0.0018, 'x', 20), MAT.steel, { d: 'Borgring die de binnenring op de schacht houdt.', p: [outerX + 0.062, 0, 0], ex: [-0.1, 0, 0], inner: true }),
   ]));
-  kids.push(P('Naafmoer met ring', merge([G.cyl('x', 0.0165, 0.0165, 0.016, 6), xf(annulus(0.0115, 0.03, 0.004, 'x', 24), [-0.008, 0, 0])]), MAT.steel, { d: 'Naafmoer M22 × 1,5 met onderlegring (sleutelmaat 30 mm) die de as in de naaf klemt; wordt met borglijm vastgezet.', p: [hubX + 0.041, 0, 0], ex: [0.2, 0, 0] }));
   return A(name, { d: o.d, spec: o.spec, p: a, q, ex: o.ex }, kids);
 }
 
