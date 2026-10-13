@@ -281,6 +281,7 @@ $('tXray').addEventListener('change', e => { uiPush(); XRAY = e.target.checked; 
 $('tSys').addEventListener('change', e => { uiPush(); SYSCOL = e.target.checked; clearPreset(); applyMats(); uiAfterAction(); });
 $('tRotate').addEventListener('change', e => { controls.autoRotate = e.target.checked; requestRender(); });
 els.quality.addEventListener('change', e => uiSetLite(!e.target.checked));
+$('tBatch').addEventListener('change', e => { uiSetBatching(e.target.checked); requestRender(); });
 els.legend.innerHTML = Object.entries(SYS_COLORS).map(([k, c]) => `<span><i style="background:#${c.toString(16).padStart(6, '0')}"></i>${esc(k)}</span>`).join('');
 document.querySelectorAll('[data-cam]').forEach(b => b.addEventListener('click', () => { const nodes = contextNodes(), dir = DIRS[b.dataset.cam]; focusNodes(nodes, dir); uiLastFit = { nodes, dir, pad: 1.08 }; }));
 $('btnExplodeAll').onclick = () => { const r = uiScopeRoot(); uiPush(); explodeAllUnder(r); CTX = r; uiLabelForce = false; clearPreset(); focusNodes(contextNodes(), null, 1.02); uiAfterAction(); };
@@ -473,6 +474,7 @@ els.tourStop.onclick = () => uiStopTour();
 
 /* ---------- aanwijzen en tikken ---------- */
 const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+ray.layers.enableAll(); // samengevoegd getekende onderdelen staan op laag 1 en blijven aanwijsbaar
 let uiPickXray = [], uiPickXrayKey = -1;
 function uiPickList() {
   if (!XRAY) return uiPickable;
@@ -942,6 +944,7 @@ function loop(now) {
     needs = false;
     uiMeasure(now, active);
   }
+  if (uiBatchOn && (uiBatchQ.size || uiBatchJob) && uiBatchStep(active ? 3 : 10)) needs = true;
   if (uiWasActive && !active) { needs = true; uiAfterAnim(); }
   uiWasActive = active;
 }
@@ -1053,4 +1056,9 @@ window.__laguna = {
   collapseAt: n => uiCollapseAt(typeof n === 'string' ? byName(n) : n),
   stopTour: uiStopTour,
   get lite() { return uiLite; },
+  batching: on => { if (on !== undefined) { uiSetBatching(on); $('tBatch').checked = uiBatchOn; requestRender(); } return uiBatchOn; },
+  batchFlush: () => { uiBatchFlush(); requestRender(); return uiBatchStats(); },
+  batchStats: uiBatchStats,
+  batchedGroups: () => [...uiBatched].map(g => g.name),
+  drawCalls: () => { renderer.info.reset(); renderer.render(scene, camera); return renderer.info.render.calls; },
 };
