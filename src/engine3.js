@@ -1,6 +1,19 @@
 /* ===================== motor F4Rt 811: dynamo, aircocompressor, sensoren, kabelboom, flexplaat, afdekkap ===================== */
 // Dynamo en aircocompressor: lokaal frame met x langs de as; de poelie ligt in het multiriemvlak (lokaal x = XA - p[0]).
 std('engStatorLam', 0x5b6168, 0.6, 0.46);
+// statorplaat: ringGear (core) met 36 sleuven, maar met een fijnere buitenrand (48 segmenten) zodat de buitenkant rond leest
+function engStatLam() {
+  return cache('engStatLamPlate', () => {
+    const rOut = 0.0605, rTip = 0.0478, rRoot = 0.0526, st = PI * 2 / 36, sh = new THREE.Shape(), h = new THREE.Path();
+    sh.absarc(0, 0, rOut, 0, PI * 2, false);
+    for (let i = 0; i < 36; i++) [[rRoot, 0], [rTip, 0.2], [rTip, 0.45], [rRoot, 0.65]].forEach(([r, f], j) => {
+      const t = (i + f) * st, x = r * Math.cos(t), y = r * Math.sin(t);
+      (i === 0 && j === 0) ? h.moveTo(x, y) : h.lineTo(x, y);
+    });
+    h.closePath(); sh.holes.push(h);
+    return zTo(extrude(sh, 0.0114, 48), 'x');
+  });
+}
 function buildAlternator(p) {
   const px = XA - p[0];
   const shieldF = G.lathe('x', [[0.017, -0.066], [0.05, -0.066], [0.06, -0.06], [0.062, -0.05], [0.062, -0.038], [0.058, -0.038], [0.056, -0.056], [0.017, -0.06]], 32, 'engAltShieldF');
@@ -10,7 +23,7 @@ function buildAlternator(p) {
   const bolts = [0, 1, 2].map(k => { const a = PI / 6 + k * PI * 2 / 3; return P(`Doorgaande bout ${k + 1}`, hexBolt(0.145, 0.005, 'x'), MAT.steel, { d: 'Doorgaande bout die voor- en achterschild samentrekt.', p: [-0.067, 0.064 * Math.cos(a), 0.064 * Math.sin(a)], ex: [-0.12, 0, 0] }); });
   return A('Dynamo', { d: 'Valeo-dynamo (TG15C-reeks, 150 A) met vrijloop-poelie; de interne opbouw is schematisch weergegeven.', p, ex: [-0.04, 0.1, 0.08], spec: [['Type', 'Valeo TG15C'], ['Stroom', '150 A'], ['Poelie', 'Ø49 tot 50 mm, 7 groeven']] }, [
     A('Vrijlooppoelie', { d: 'Poelie met vrijloop die koppelstoten van de krukas opvangt.', p: [px, 0, 0], ex: [-0.16, 0, 0] }, [
-      P('Buitenring met riemprofiel', engPolyV(0.0245, 0.025, 'Alt', 24), MAT.steel, { d: 'Buitenring met zeven groeven voor de multiriem.', ex: [0, 0, 0] }),
+      P('Buitenring met riemprofiel', engPolyV(0.0245, 0.025, 'Alt', 28), MAT.steel, { d: 'Buitenring met zeven groeven voor de multiriem.', ex: [0, 0, 0] }),
       P('Binnenring', annulus(0.009, 0.0135, 0.022, 'x', 18), MAT.steel, { d: 'Binnenring op de rotoras.', ex: [0, 0, 0.05] }),
       P('Klemrollen', merge([0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(k => xf(G.cyl('x', 0.0016, 0.0016, 0.016, 6), [0, 0.0155 * Math.cos(k * PI / 5), 0.0155 * Math.sin(k * PI / 5)]))), MAT.bearing, { d: 'Klemrollen met veertjes van de vrijloop.', ex: [0, 0, 0.06] }),
       P('Stofdop', G.lathe('x', [[0, -0.004], [0.012, -0.004], [0.013, 0.0], [0.012, 0.002], [0, 0.002]], 18, 'engAltCap'), MAT.plastic, { d: 'Stofdop voor op de poelie.', p: [-0.016, 0, 0], ex: [-0.04, 0, 0] }),
@@ -26,7 +39,7 @@ function buildAlternator(p) {
       P('Sleepringen', merge([xf(G.cyl('x', 0.0085, 0.0085, 0.004, 14), [0.044, 0, 0]), xf(G.cyl('x', 0.0085, 0.0085, 0.004, 14), [0.05, 0, 0]), xf(G.cyl('x', 0.007, 0.007, 0.012, 10), [0.047, 0, 0])]), MAT.copper, { d: 'Twee koperen sleepringen waarover de koolborstels lopen.', ex: [0.05, 0, 0] }),
     ]),
     A('Stator', { d: 'Stator: driefasewikkeling in een plaatpakket van gestapelde elektroplaten met 36 sleuven; de koperen wikkelkoppen steken aan beide zijden uit het pakket (aantal sleuven en platen schematisch).', ex: [0, 0.11, 0] }, [
-      P('Plaatpakket', cache('engStatPack', () => merge([0, 1, 2].map(k => xf(ringGear(36, 0.0605, 0.0478, 0.0526, 0.0114, 'x'), [(k - 1) * 0.0124, 0, 0])))), MAT.engStatorLam, { d: 'Gestapelde, tegen elkaar gelakte elektroplaten met de sleuven voor de driefasewikkeling; de groeven tussen de platen zijn schematisch.', ex: [0, 0, 0] }),
+      P('Plaatpakket', cache('engStatPack', () => merge([0, 1, 2].map(k => xf(engStatLam(), [(k - 1) * 0.0124, 0, 0])))), MAT.engStatorLam, { d: 'Gestapelde, tegen elkaar gelakte elektroplaten met de sleuven voor de driefasewikkeling; de groeven tussen de platen zijn schematisch.', ex: [0, 0, 0] }),
       P('Wikkelkop voorzijde', cache('engStatWindF', () => xf(G.torus('x', 0.0525, 0.0045, 28, 6), [-0.0225, 0, 0])), MAT.copper, { d: 'Koperen wikkelkop aan de voorzijde van de statorwikkeling.', ex: [-0.035, 0, 0] }),
       P('Wikkelkop achterzijde', cache('engStatWindR', () => xf(G.torus('x', 0.0525, 0.0045, 28, 6), [0.0225, 0, 0])), MAT.copper, { d: 'Koperen wikkelkop aan de achterzijde van de statorwikkeling.', ex: [0.035, 0, 0] }),
     ]),
