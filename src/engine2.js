@@ -31,18 +31,18 @@ function buildTiming() {
     P('Nokkenaswiel uitlaat', merge([gear(38, 0.0569, 0.0545, 0.027, 0.012, 'x'), xf(G.cyl('x', 0.022, 0.022, 0.012, 20), [0.016, 0, 0])]), MAT.steel, { d: 'Distributiewiel van de uitlaatnokkenas, 38 tanden (afgeleid).', p: [XT, CAMY, -CAMZ], ex: [-0.045, 0.02, -0.03], spec: [['Tanden', '38 (geschat)']] }),
     P('Moer nokkenaswiel uitlaat', engNut(0.016, 0.009, 'x'), MAT.darkSteel, { d: 'Moer van het uitlaatnokkenaswiel; vervangen bij demontage.', p: [XT - 0.019, CAMY, -CAMZ], ex: [-0.1, 0.02, -0.03] }),
     A('Spanrol', { d: 'Halfautomatische spanrol met excentrische verstelling: bij het afstellen worden de merkstrepen uitgelijnd.', p: [XT, TIM[5][1], TIM[5][0]], ex: [-0.07, -0.02, -0.05] }, [
-      P('Excentrische naaf met wijzer', merge([G.cyl('x', 0.012, 0.012, 0.034, 16), xf(G.box(0.003, 0.004, 0.026), [-0.017, 0.008, 0.012])]), MAT.steel, { d: 'Excentrische naaf; de wijzer geeft de juiste spanning aan.' }),
+      P('Excentrische naaf met wijzer', merge([G.cyl('x', 0.012, 0.012, 0.034, 16), xf(G.box(0.003, 0.004, 0.026), [-0.017, 0.008, 0.012])]), MAT.steel, { d: 'Excentrische naaf; de wijzer geeft de juiste spanning aan.', ex: [0, 0, 0] }),
       P('Rol met kogellager', pulley(0.03, 0.028, 'engTens'), MAT.alu, { d: 'Gladde rol met kogellager.', ex: [-0.04, 0, 0] }),
       P('Borgmoer', engNut(0.014, 0.008, 'x'), MAT.darkSteel, { d: 'Borgmoer die de excentriek in de afgestelde stand vastzet.', p: [-0.021, 0, 0], ex: [-0.08, 0, 0] }),
     ]),
     A('Geleiderol', { d: 'Vaste geleiderol (galet enrouleur) in het riemverloop.', p: [XT, TIM[4][1], TIM[4][0]], ex: [-0.07, 0.03, -0.05] }, [
-      P('Rol met lager', pulley(0.028, 0.028, 'engIdl'), MAT.alu, { d: 'Gladde rol met kogellager.' }),
+      P('Rol met lager', pulley(0.028, 0.028, 'engIdl'), MAT.alu, { d: 'Gladde rol met kogellager.', ex: [0, 0, 0] }),
       P('Bout geleiderol', hexBolt(0.04, 0.01, 'x'), MAT.darkSteel, { d: 'Bout van de geleiderol, aanhaalmoment 4,5 daN·m.', p: [-0.02, 0, 0], ex: [-0.07, 0, 0] }),
     ]),
-    A('Distributiekappen', { d: 'Drie kunststof kappen: boven-, tussen- en onderkap.', ex: [-0.15, 0, 0] }, [
-      P('Distributiekap boven', engTimingCover(0.27, 0.6, false), MAT.plastic, { d: 'Bovenste kap over de nokkenaswielen.', ex: [0, 0.06, 0] }),
-      P('Distributiekap midden', engTimingCover(0.13, 0.27, false), MAT.plastic, { d: 'Tussenkap langs de riem.', ex: [-0.03, 0, 0.02] }),
-      P('Distributiekap onder', engTimingCover(-0.2, 0.13, true), MAT.plastic, { d: 'Onderkap rond het krukastandwiel en de waterpomppoelie.', ex: [0, -0.06, 0] }),
+    A('Distributiekappen', { d: 'Drie kunststof kappen: boven-, tussen- en onderkap.', ex: [-0.12, 0, 0] }, [
+      P('Distributiekap boven', engTimingCover(0.27, 0.6, false), MAT.plastic, { d: 'Bovenste kap over de nokkenaswielen.', ex: [-0.03, 0.17, 0] }),
+      P('Distributiekap midden', engTimingCover(0.13, 0.27, false), MAT.plastic, { d: 'Tussenkap langs de riem.', ex: [-0.05, 0, 0.2] }),
+      P('Distributiekap onder', engTimingCover(-0.2, 0.13, true), MAT.plastic, { d: 'Onderkap rond het krukastandwiel en de waterpomppoelie.', ex: [-0.03, -0.17, 0] }),
     ]),
   ]);
 }
@@ -53,17 +53,17 @@ function buildAccessory() {
     xf(G.cyl('z', 0.012, 0.012, 0.035, 12), [-0.205, 0.27, 0.142]), xf(G.cyl('z', 0.012, 0.012, 0.04, 12), [-0.205, -0.115, 0.145]), xf(G.cyl('z', 0.014, 0.014, 0.03, 12), [-0.2, 0.07, 0.14]),
   ]));
   const tp = ACC[4], piv = [0.045, 0.1];
-  return A('Hulpaandrijving', { d: 'Multiriem 7PK1795 die alleen de dynamo en de aircocompressor aandrijft; de stuurbekrachtiging is elektrohydraulisch en zit niet op de riem.', ex: [-0.52, -0.1, 0.28], spec: [['Riem', '7PK1795 (7 ribben, 1795 mm)'], ['Verbruikers', 'dynamo, aircocompressor']] }, [
+  return A('Hulpaandrijving', { d: 'Multiriem 7PK1795 die alleen de dynamo en de aircocompressor aandrijft; de stuurbekrachtiging is elektrohydraulisch en zit niet op de riem.', ex: [-0.42, -0.1, 0.26], spec: [['Riem', '7PK1795 (7 ribben, 1795 mm)'], ['Verbruikers', 'dynamo, aircocompressor']] }, [
     P('Multiriem', xf(belt.geo, [XA, 0, 0]), MAT.belt, { d: `Poly-V-riem met zeven ribben; de spanner drukt op de rug. Riemlengte in het model ${Math.round(belt.len * 1000)} mm (opgave 1795 mm; de exacte riemloop is niet gevonden).`, ex: [-0.1, 0, 0] }),
     P('Krukaspoelie', merge([engPolyV(0.07, 0.026, 'Crank'), xf(G.cyl('x', 0.021, 0.021, 0.055, 20), [0.03, 0, 0]), xf(G.cyl('x', 0.05, 0.05, 0.004, 32), [0.012, 0, 0])]), MAT.darkSteel, { d: 'Krukaspoelie met zeven groeven (Ø140 mm geschat); of hij een trillingsdemper heeft is niet gevonden.', p: [XA, 0, 0], ex: [-0.06, -0.03, 0] }),
     P('Poeliebout krukas', hexBolt(0.06, 0.012, 'x'), MAT.darkSteel, { d: 'Krukaspoeliebout: aanhalen plus 115° ± 15°; herbruikbaar zolang de lengte onder de kop ≤ 49,1 mm is.', p: [XA - 0.015, 0, 0], ex: [-0.12, -0.03, 0] }),
     A('Automatische riemspanner', { d: 'Veerbelaste spanner die de multiriem op spanning houdt; te ontspannen met een 16 mm sleutel. Binnenwerk schematisch.', ex: [-0.07, 0.02, 0.06] }, [
-      P('Spannerarm met veerhuis', merge([xf(G.cyl('x', 0.03, 0.03, 0.03, 20), [-0.31, piv[1], piv[0]]), rodBetween([-0.335, piv[1], piv[0]], [-0.335, tp[1], tp[0]], 0.009, 8), xf(G.cyl('x', 0.012, 0.012, 0.02, 12), [-0.335, tp[1], tp[0]])]), MAT.aluCast, { d: 'Arm met torsieveer en demping in het veerhuis.' }),
+      P('Spannerarm met veerhuis', merge([xf(G.cyl('x', 0.03, 0.03, 0.03, 20), [-0.31, piv[1], piv[0]]), rodBetween([-0.335, piv[1], piv[0]], [-0.335, tp[1], tp[0]], 0.009, 8), xf(G.cyl('x', 0.012, 0.012, 0.02, 12), [-0.335, tp[1], tp[0]])]), MAT.aluCast, { d: 'Arm met torsieveer en demping in het veerhuis.', ex: [0, 0, 0] }),
       P('Spannerrol', pulley(0.03, 0.027, 'engAccT'), MAT.alu, { d: 'Gladde rol met lager, tegen de rug van de riem.', p: [XA, tp[1], tp[0]], ex: [-0.05, 0, 0] }),
       P('Bevestigingsbout spanner', hexBolt(0.1, 0.01, 'x'), MAT.darkSteel, { d: 'Bout waarmee de spanner op de accessoiresteun zit.', p: [-0.335, piv[1], piv[0]], ex: [-0.09, 0, 0] }),
     ]),
     A('Geleiderol multiriem', { d: 'Vaste geleiderol in de multiriemloop.', p: [XA, ACC[3][1], ACC[3][0]], ex: [-0.06, 0.04, 0] }, [
-      P('Rol met lager', pulley(0.03, 0.027, 'engAccI'), MAT.alu, { d: 'Gladde rol met lager.' }),
+      P('Rol met lager', pulley(0.03, 0.027, 'engAccI'), MAT.alu, { d: 'Gladde rol met lager.', ex: [0, 0, 0] }),
       P('Bout geleiderol', hexBolt(0.1, 0.01, 'x'), MAT.darkSteel, { d: 'Bout van de geleiderol, aanhaalmoment 5,8 daN·m.', p: [-0.018, 0, 0], ex: [-0.07, 0, 0] }),
     ]),
     P('Accessoiresteun', bracket, MAT.aluCast, { d: 'Multifunctionele steun op het blok waaraan dynamo, aircocompressor en spanner vastzitten.', ex: [0.0, 0.0, 0.08] }),
@@ -88,15 +88,15 @@ function buildIntake() {
   const tbHousing = merge([G.lathe('x', [[0.03, -0.025], [0.036, -0.025], [0.036, 0.021], [0.03, 0.021]], 28, 'engTbBore'), xf(G.rbox(0.008, 0.08, 0.08, 0.008), [0.025, 0, 0]), xf(G.cyl('z', 0.017, 0.017, 0.05, 16), [0, -0.05, 0.004]), xf(G.rbox(0.03, 0.09, 0.02, 0.005), [0, -0.022, 0.044])]);
   const inj = cache('engInjBody', () => merge([G.lathe('y', [[0.0058, 0], [0.0065, -0.004], [0.0065, -0.045], [0.0048, -0.05], [0.0042, -0.062], [0.0025, -0.065], [0, -0.065]], 12)]));
   const injectors = XC.map((x, i) => A(`Verstuiver ${i + 1}`, { d: `Injector van cilinder ${i + 1} (bovenaanvoer) die brandstof in het inlaatkanaal spuit; naaldventiel en filtergaasje schematisch.`, p: [x, R[1] - 0.006, R[2]], r: [0.61, 0, 0], ex: [0, 0.07, 0.05] }, [
-    P('Injectorlichaam', inj, MAT.plasticGrey, { d: 'Huis met naaldventiel en sproeier.' }),
-    P('Spoel met stekker', merge([xf(G.cyl('y', 0.0085, 0.0085, 0.02, 14), [0, -0.022, 0]), xf(G.rbox(0.012, 0.014, 0.016, 0.003), [0, -0.018, 0.012])]), MAT.plastic, { d: 'Magneetspoel met stekker die de naald opent.', ex: [0, 0, 0.035] }),
+    P('Injectorlichaam', inj, MAT.plasticGrey, { d: 'Huis met naaldventiel en sproeier.', ex: [0, 0, 0] }),
+    P('Spoel met stekker', cache('engInjCoil', () => merge([xf(G.cyl('y', 0.0085, 0.0085, 0.02, 14), [0, -0.022, 0]), xf(G.rbox(0.012, 0.014, 0.016, 0.003), [0, -0.016, -0.012])])), MAT.plastic, { d: 'Magneetspoel met stekker die de naald opent.', ex: [0, 0, 0.035] }),
     P('O-ring boven', engORing(0.0062, 0.0012), MAT.rubber, { d: 'O-ring die de injector in de rail afdicht.', p: [0, -0.004, 0], ex: [0, 0.025, 0] }),
     P('O-ring onder', engORing(0.0048, 0.0011), MAT.rubber, { d: 'O-ring die de injector in het inlaatkanaal afdicht.', p: [0, -0.058, 0], ex: [0, -0.025, 0] }),
     P('Borgclip', G.torus('y', 0.0072, 0.0009, 16, 4, PI * 1.5), MAT.steel, { d: 'Clip die de injector aan de railbeker vastzet.', p: [0, 0.002, 0], ex: [0, 0.04, -0.015] }),
   ]));
-  return A('Inlaat en injectie', { d: 'Kunststof inlaatspruitstuk met vier kanalen, elektronisch gasklephuis en meerpuntsinjectie in het inlaatkanaal (geen directe inspuiting).', ex: [0.05, 0.3, 0.42] }, [
+  return A('Inlaat en injectie', { d: 'Kunststof inlaatspruitstuk met vier kanalen, elektronisch gasklephuis en meerpuntsinjectie in het inlaatkanaal (geen directe inspuiting).', ex: [0.05, 0.22, 0.48] }, [
     A('Inlaatspruitstuk', { d: 'Kunststof spruitstuk (répartiteur) dat de gekoelde laadlucht over de vier cilinders verdeelt.', ex: [0, 0, 0.06] }, [
-      P('Plenum met inlaatkanalen', plenum, MAT.plastic, { d: 'Verdeelkamer met vier inlaatkanalen, flens en injectorbekers.' }),
+      P('Plenum met inlaatkanalen', plenum, MAT.plastic, { d: 'Verdeelkamer met vier inlaatkanalen, flens en injectorbekers.', ex: [0, 0, 0] }),
       P('Spruitstukpakkingen', merge(XC.map(x => xf(portGasket, [x, 0.29, 0.1068]))), MAT.rubber, { d: 'Vier pakkingringen tussen spruitstuk en inlaatpoorten (uitvoering schematisch).', ex: [0, 0, -0.03] }),
       A('Tapeinden spruitstuk', { d: 'Acht tapeinden met moeren.', ex: [0, 0, 0.04] }, studs),
     ]),
@@ -104,7 +104,7 @@ function buildIntake() {
     P('Inlaatluchttemperatuursensor', merge([G.cyl('z', 0.007, 0.007, 0.022, 10), xf(G.rbox(0.016, 0.014, 0.012, 0.003), [0, 0, 0.012])]), MAT.plastic, { d: 'Meet de temperatuur van de laadlucht in het spruitstuk.', p: [-0.09, 0.15, 0.262], ex: [0, 0.03, 0.07] }),
     P('Vacuümaansluiting rembekrachtiger', merge([G.cyl('z', 0.006, 0.006, 0.026, 10), xf(G.torus('z', 0.006, 0.0015, 12, 4), [0, 0, 0.01])]), MAT.plasticGrey, { d: 'Nippel voor de vacuümslang naar de rembekrachtiger.', p: [0.17, 0.12, 0.264], ex: [0, -0.02, 0.07] }),
     A('Gasklephuis', { d: 'Elektronisch bediend gasklephuis (drive-by-wire); binnenwerk schematisch weergegeven.', p: T, ex: [-0.15, 0, 0.03] }, [
-      P('Huis', tbHousing, MAT.alu, { d: 'Aluminium huis met doorlaat, motorkamer en tandwielkamer.' }),
+      P('Huis', tbHousing, MAT.alu, { d: 'Aluminium huis met doorlaat, motorkamer en tandwielkamer.', ex: [0, 0, 0] }),
       P('Vlinderklep', G.cyl('x', 0.0295, 0.0295, 0.0015, 24), MAT.steel, { d: 'Gasklep die de luchtstroom doseert.', r: [0, 0, 0.14], ex: [-0.06, 0, 0] }),
       P('Klepas', G.cyl('z', 0.004, 0.004, 0.084, 8), MAT.steel, { d: 'As van de gasklep.', ex: [0, 0, 0.09] }),
       P('Terugstelveer', spring(0.008, 0.0011, 0.012, 3, 'z'), MAT.steel, { d: 'Veer die de klep zonder stroom in de noodloopstand terugzet.', p: [0, 0, -0.044], ex: [0, 0, -0.05] }),
@@ -118,7 +118,7 @@ function buildIntake() {
       A('Bouten gasklephuis', { d: 'Vier bouten van het gasklephuis.', ex: [-0.03, 0, 0] }, [[0.03, 0.03], [0.03, -0.03], [-0.03, 0.03], [-0.03, -0.03]].map(([y, z], k) => P(`Bout ${k + 1}`, hexBolt(0.028, 0.006, 'x'), MAT.darkSteel, { d: 'Bout van het gasklephuis.', p: [0.021, y, z], ex: [-0.07, 0, 0] }))),
     ]),
     A('Brandstofrail', { d: 'Rail die de brandstof over de vier injectoren verdeelt; retourloos systeem met de drukregelaar in de tank.', p: R, ex: [0, 0.14, 0.09] }, [
-      P('Rail', merge([G.cyl('x', 0.009, 0.009, 0.38, 14), ...XC.map(x => xf(G.cyl('y', 0.0105, 0.0105, 0.016, 12), [x, -0.012, 0])), ...[-0.088, 0.088].map(x => xf(G.box(0.016, 0.006, 0.03), [x, -0.012, 0.012])), xf(G.cyl('y', 0.006, 0.006, 0.024, 10), [0.2, -0.012, 0])]), MAT.steel, { d: 'Brandstofrail met vier injectorbekers en twee bevestigingsogen.' }),
+      P('Rail', merge([G.cyl('x', 0.009, 0.009, 0.38, 14), ...XC.map(x => xf(G.cyl('y', 0.0105, 0.0105, 0.016, 12), [x, -0.012, 0])), ...[-0.088, 0.088].map(x => xf(G.box(0.016, 0.006, 0.03), [x, -0.012, 0.012])), xf(G.cyl('y', 0.006, 0.006, 0.024, 10), [0.2, -0.012, 0])]), MAT.steel, { d: 'Brandstofrail met vier injectorbekers en twee bevestigingsogen.', ex: [0, 0, 0] }),
       P('Schraderventiel', merge([G.cyl('y', 0.004, 0.004, 0.014, 8), xf(G.cyl('y', 0.0055, 0.0055, 0.008, 8), [0, 0.01, 0])]), MAT.plastic, { d: 'Testnippel met dop om de brandstofdruk te meten.', p: [-0.1, 0.013, 0], ex: [0, 0.05, 0] }),
       P('Snelkoppeling', merge([G.cyl('y', 0.0085, 0.0085, 0.02, 12), xf(G.rbox(0.02, 0.008, 0.02, 0.003), [0, 0.004, 0])]), MAT.plasticGrey, { d: 'Snelkoppeling van de brandstofaanvoerleiding.', p: [0.205, -0.034, 0], ex: [0.04, -0.04, 0] }),
       P('Railbout 1', hexBolt(0.03, 0.007), MAT.darkSteel, { d: 'Bout van de brandstofrail.', p: [-0.088, -0.009, 0.018], r: [PI, 0, 0], ex: [0, 0.05, 0] }),
@@ -142,14 +142,15 @@ function buildTurbo() {
     studs.push(P(`Tapeind met moer ${k}`, engStudNut(0.04, 0.008, -0.008, 'z'), MAT.steel, { d: 'Tapeind in de cilinderkop met spruitstukmoer; de moeren worden bij demontage vervangen (aantal geschat).', p: [xx, y, -0.112], ex: [0, 0.03, -0.05] }));
   }));
   const mGasket = cache('engManGasket', () => { const s = shapeOf(rrectPts(0.43, 0.048, 0.006)); XC.forEach(x => s.holes.push(new THREE.Path(rrectPts(0.036, 0.03, 0.008).map(p => new THREE.Vector2(p[0] + x, p[1]))))); return front(s, 0.0015); });
-  return A('Turbo en uitlaatspruitstuk', { d: 'Twin-scroll uitlaatspruitstuk met de Mitsubishi TD04-turbo laag achter op het blok; de voorkatalysator zit direct op de turbine.', ex: [0.05, 0.3, -0.42] }, [
-    P('Uitlaatspruitstuk', merge(coll), MAT.iron, { d: 'Gegoten twin-scroll spruitstuk: twee gescheiden kanalen (cilinders 1+4 en 2+3) naar de dubbele turbine-inlaat.' }),
+  return A('Turbo en uitlaatspruitstuk', { d: 'Twin-scroll uitlaatspruitstuk met de Mitsubishi TD04-turbo laag achter op het blok; de voorkatalysator zit direct op de turbine.', ex: [0.36, 0.22, -0.32] }, [
+    P('Uitlaatspruitstuk', merge(coll), MAT.iron, { d: 'Gegoten twin-scroll spruitstuk: twee gescheiden kanalen (cilinders 1+4 en 2+3) naar de dubbele turbine-inlaat.', ex: [0, 0, 0] }),
     P('Spruitstukpakking', xf(mGasket, [0, 0.285, -0.1065]), MAT.heat, { d: 'Meerlaagse pakking tussen kop en spruitstuk (uitvoering schematisch).', ex: [0, 0, 0.03] }),
     A('Bevestiging spruitstuk', { d: 'Acht tapeinden met moeren.', ex: [0, 0.03, -0.03] }, studs),
     P('Hitteschild spruitstuk', shield, MAT.heat, { d: 'Hitteschild boven het spruitstuk.', ex: [0, 0.14, -0.03] }),
     buildTurbocharger(),
   ]);
 }
+function engSolenoidGeo() { return cache('engSolenoid', () => merge([G.cyl('y', 0.012, 0.012, 0.03, 14), xf(G.rbox(0.014, 0.012, 0.016, 0.003), [0, 0.01, 0.014]), xf(G.cyl('x', 0.003, 0.003, 0.03, 6), [0, -0.006, 0])])); }
 function buildTurbocharger() {
   const wheel = (n, rIn, rOut, h, tw, key) => cache(key, () => merge([blades(n, rIn, rOut, h, 0.0016, tw, 'x'), G.lathe('x', [[0, -h / 2], [rIn + 0.004, -h / 2], [0.006, h / 2], [0, h / 2]], 20)]));
   const tHouse = merge([G.torus('x', 0.042, 0.024, 36, 10), G.cyl('x', 0.03, 0.03, 0.05, 24), xf(G.cyl('x', 0.031, 0.031, 0.034, 20), [-0.022, 0, 0]), xf(G.rbox(0.05, 0.03, 0.05, 0.006), [0, 0.056, 0.03])]);
@@ -157,18 +158,18 @@ function buildTurbocharger() {
   const flange = cache('engTurbOutFlange', () => merge([side(shapeOf(circlesHull([[0.034, 0, 0.012], [-0.017, 0.03, 0.012], [-0.017, -0.03, 0.012]], 0)), 0.008), ...[[0.034, 0], [-0.017, 0.03], [-0.017, -0.03]].map(([z, y]) => xf(G.cyl('x', 0.004, 0.004, 0.03, 8), [-0.012, y, z]))]));
   const TP = ENG_TURBO;
   const tm = [[0.02, 0.02], [-0.02, 0.02], [0.02, -0.02], [-0.02, -0.02]];
-  return A('Turbocompressor', { d: 'Mitsubishi TD04 (referentie 49377-07303): de uitlaatgassen drijven het turbinewiel, dat via één as het compressorwiel laat draaien. Interne wastegate, watergekoeld lagerhuis.', p: TP, ex: [0.02, -0.06, -0.18], spec: [['Type', 'Mitsubishi TD04'], ['Referentie', '49377-07303'], ['Turbinewiel', 'circa Ø47 mm'], ['Compressorwiel', 'circa Ø53 mm']] }, [
+  return A('Turbocompressor', { d: 'Mitsubishi TD04 (referentie 49377-07303): de uitlaatgassen drijven het turbinewiel, dat via één as het compressorwiel laat draaien. Interne wastegate, watergekoeld lagerhuis.', p: TP, ex: [0.02, -0.05, -0.14], spec: [['Type', 'Mitsubishi TD04'], ['Referentie', '49377-07303'], ['Turbinewiel', 'circa Ø47 mm'], ['Compressorwiel', 'circa Ø53 mm']] }, [
     A('Turbinehuis', { d: 'Twin-scroll turbinehuis van hittebestendig gietstaal met interne wastegate.', p: [-0.045, 0, 0], ex: [-0.1, 0, 0] }, [
-      P('Turbinehuis', tHouse, MAT.iron, { d: 'Slakkenhuis met twee gescheiden inlaten; hier komen de hete gassen binnen.' }),
+      P('Turbinehuis', tHouse, MAT.iron, { d: 'Slakkenhuis met twee gescheiden inlaten; hier komen de hete gassen binnen.', ex: [0, 0, 0] }),
       P('Wastegateklep met as', merge([xf(G.cyl('x', 0.011, 0.011, 0.003, 14), [-0.038, 0.014, 0]), xf(G.cyl('z', 0.0025, 0.0025, 0.05, 8), [-0.034, 0.024, 0.02])]), MAT.darkSteel, { d: 'Klepje dat een omloop langs het turbinewiel opent en zo de laaddruk begrenst.', ex: [-0.04, 0.02, 0] }),
       P('Wastegatehefboom', merge([xf(G.box(0.006, 0.026, 0.004), [-0.034, 0.012, 0.046]), xf(G.cyl('x', 0.003, 0.003, 0.01, 8), [-0.034, 0.0, 0.046])]), MAT.steel, { d: 'Hefboom op de wastegate-as waaraan de actuatorstang trekt.', ex: [0, 0, 0.04] }),
       P('Uitlaatflens met tapeinden', flange, MAT.iron, { d: 'Driegatsflens waarop de voorkatalysator met drie moeren vastzit.', p: [-0.038, 0, 0], ex: [-0.06, 0, 0] }),
     ]),
     A('Lager- en rotorgroep', { d: 'Middenstuk (CHRA) met de as, beide wielen en de lagers; binnenwerk schematisch weergegeven.', ex: [0, 0.06, -0.06], inner: true }, [
-      P('Lagerhuis', merge([G.cyl('x', 0.026, 0.026, 0.05, 20), xf(G.cyl('y', 0.008, 0.008, 0.012, 10), [0, 0.03, 0]), xf(G.rbox(0.022, 0.012, 0.022, 0.004), [0, -0.03, 0]), xf(G.cyl('z', 0.006, 0.006, 0.016, 8), [0.005, 0, 0.027]), xf(G.cyl('z', 0.006, 0.006, 0.016, 8), [-0.005, 0, -0.027])]), MAT.aluCast, { d: 'Lagerhuis met olie-ingang, olie-uitgang en twee koelwateraansluitingen.' }),
+      P('Lagerhuis', merge([G.cyl('x', 0.026, 0.026, 0.05, 20), xf(G.cyl('y', 0.008, 0.008, 0.012, 10), [0, 0.03, 0]), xf(G.rbox(0.022, 0.012, 0.022, 0.004), [0, -0.03, 0]), xf(G.cyl('z', 0.006, 0.006, 0.016, 8), [0.005, 0, 0.027]), xf(G.cyl('z', 0.006, 0.006, 0.016, 8), [-0.005, 0, -0.027])]), MAT.aluCast, { d: 'Lagerhuis met olie-ingang, olie-uitgang en twee koelwateraansluitingen.', ex: [0, 0, 0] }),
       P('Turbinewiel met as', merge([xf(wheel(11, 0.008, 0.0235, 0.022, 0.3, 'engTurbW'), [-0.045, 0, 0]), xf(G.cyl('x', 0.0045, 0.0045, 0.105, 10), [0.0075, 0, 0])]), MAT.darkSteel, { d: 'Turbinewiel van hittebestendige nikkellegering, vast aan de as (circa Ø47 mm).', ex: [-0.11, 0, 0] }),
       P('Compressorwiel', wheel(12, 0.007, 0.0265, 0.024, -0.35, 'engCompW'), MAT.alu, { d: 'Aluminium compressorwiel dat lucht aanzuigt en samenperst (circa Ø53 mm).', p: [0.05, 0, 0], ex: [0.09, 0, 0] }),
-      P('Asmoer', engNut(0.006, 0.005, 'x'), MAT.steel, { d: 'Moer die het compressorwiel op de as klemt.', p: [0.0645, 0, 0], ex: [0.13, 0, 0] }),
+      P('Asmoer', engNut(0.006, 0.005, 'x'), MAT.steel, { d: 'Moer die het compressorwiel op de as klemt.', p: [0.0645, 0, 0], ex: [0.11, 0, 0] }),
       P('Glijlager turbinezijde', annulus(0.0046, 0.0075, 0.01, 'x', 16), MAT.bearing, { d: 'Zwevende glijlagerbus aan de turbinezijde.', p: [-0.015, 0, 0], ex: [-0.02, 0.05, 0] }),
       P('Glijlager compressorzijde', annulus(0.0046, 0.0075, 0.01, 'x', 16), MAT.bearing, { d: 'Zwevende glijlagerbus aan de compressorzijde.', p: [0.012, 0, 0], ex: [0.02, 0.05, 0] }),
       P('Axiaallagerset', merge([xf(annulus(0.0058, 0.016, 0.003, 'x', 20), [0.023, 0, 0]), xf(annulus(0.0046, 0.009, 0.004, 'x', 16), [0.0275, 0, 0])]), MAT.bearing, { d: 'Axiaallager: drukplaat en drukring die de as in lengterichting vasthouden.', ex: [0.045, -0.03, 0] }),
@@ -178,20 +179,20 @@ function buildTurbocharger() {
       P('Hitteschild turbinezijde', annulus(0.012, 0.034, 0.002, 'x', 24), MAT.heat, { d: 'Schild tussen turbinewiel en lagerhuis.', p: [-0.027, 0, 0], ex: [-0.05, -0.03, 0] }),
     ]),
     A('Compressorhuis', { d: 'Aluminium compressorhuis met omloopklep.', p: [0.055, 0, 0], ex: [0.11, 0, 0] }, [
-      P('Compressorhuis', cHouse, MAT.aluCast, { d: 'Slakkenhuis aan de inlaatzijde; de uitlaat gaat via de laadluchtslang naar de intercooler.' }),
+      P('Compressorhuis', cHouse, MAT.aluCast, { d: 'Slakkenhuis aan de inlaatzijde; de uitlaat gaat via de laadluchtslang naar de intercooler.', ex: [0, 0, 0] }),
       P('Omloopklep', merge([G.cyl('z', 0.013, 0.013, 0.02, 14), xf(G.cyl('z', 0.003, 0.003, 0.016, 6), [0, 0, -0.016])]), MAT.darkSteel, { d: 'Pneumatische omloopklep (blow-off) die bij het dichtgaan van de gasklep de druk terug naar de inlaat laat; plaats op het huis niet bevestigd.', p: [0.004, -0.04, -0.058], ex: [0, -0.02, -0.05] }),
       P('Borgring compressorhuis', G.torus('x', 0.032, 0.0015, 28, 4), MAT.steel, { d: 'Borgring die het compressorhuis op het lagerhuis vastzet.', p: [-0.025, 0, 0], ex: [-0.04, 0, 0] }),
     ]),
     A('Wastegate-actuator', { d: 'Drukdoos die bij te hoge laaddruk via de stang de wastegate opent; binnenwerk schematisch.', ex: [0, -0.02, 0.09] }, [
-      P('Drukdoos', merge([G.lathe('x', [[0, -0.012], [0.026, -0.01], [0.028, 0], [0.026, 0.012], [0, 0.014]], 24, 'engWgCan'), xf(G.box(0.03, 0.006, 0.05), [0.012, -0.03, 0])]), MAT.steel, { d: 'Stalen doos met steun op het compressorhuis.', p: [0.065, -0.012, 0.098] }),
+      P('Drukdoos', merge([G.lathe('x', [[0, -0.012], [0.026, -0.01], [0.028, 0], [0.026, 0.012], [0, 0.014]], 24, 'engWgCan'), xf(G.box(0.03, 0.006, 0.05), [0.012, -0.03, 0])]), MAT.steel, { d: 'Stalen doos met steun op het compressorhuis.', p: [0.065, -0.012, 0.098], ex: [0, 0, 0] }),
       P('Membraan', G.cyl('x', 0.025, 0.025, 0.0012, 20), MAT.rubber, { d: 'Rubber membraan met steunplaat.', p: [0.065, -0.012, 0.098], ex: [0.03, 0, 0] }),
       P('Veer', spring(0.012, 0.0014, 0.02, 4, 'x'), MAT.steel, { d: 'Veer die de wastegate dicht houdt tot de laaddruk hem overwint.', p: [0.062, -0.012, 0.098], ex: [0.06, 0, 0] }),
       P('Stang met oog', merge([rodBetween([0.05, -0.012, 0.098], [-0.079, 0.0, 0.05], 0.0022, 8), xf(G.torus('z', 0.004, 0.0013, 12, 4), [-0.079, 0.0, 0.05])]), MAT.steel, { d: 'Instelbare stang naar de wastegatehefboom.', ex: [-0.03, 0, 0.03] }),
       P('Borgclip', G.torus('x', 0.0035, 0.0007, 10, 4), MAT.steel, { d: 'Borgclip op de pen van de hefboom.', p: [-0.079, 0.0, 0.056], ex: [-0.03, 0, 0.06] }),
       P('Drukslangetje', tube([[0.078, -0.012, 0.098], [0.092, -0.01, 0.09], [0.1, 0.0, 0.07], [0.09, 0.02, 0.04]], 0.003, 16, 6), MAT.rubber, { d: 'Slangetje van het magneetventiel naar de drukdoos.', ex: [0.03, 0, 0.03] }),
     ]),
-    P('Magneetventiel laaddrukregeling', merge([G.cyl('y', 0.012, 0.012, 0.03, 14), xf(G.rbox(0.014, 0.012, 0.016, 0.003), [0, 0.01, 0.014]), xf(G.cyl('x', 0.003, 0.003, 0.03, 6), [0, -0.006, 0])]), MAT.plastic, { d: 'Magneetventiel (électrovanne de wastegate) dat de druk op de drukdoos regelt.', p: [0.035, 0.035, -0.088], r: [HALF, 0, 0], ex: [0, 0.03, -0.08] }),
-    P('Magneetventiel omloopklep', merge([G.cyl('y', 0.012, 0.012, 0.03, 14), xf(G.rbox(0.014, 0.012, 0.016, 0.003), [0, 0.01, 0.014]), xf(G.cyl('x', 0.003, 0.003, 0.03, 6), [0, -0.006, 0])]), MAT.plastic, { d: 'Tweede magneetventiel dat de omloopklep stuurt.', p: [0.085, 0.035, -0.088], r: [HALF, 0, 0], ex: [0, 0.03, -0.11] }),
+    P('Magneetventiel laaddrukregeling', engSolenoidGeo(), MAT.plastic, { d: 'Magneetventiel (électrovanne de wastegate) dat de druk op de drukdoos regelt.', p: [0.035, 0.035, -0.088], r: [HALF, 0, 0], ex: [0, 0.03, -0.08] }),
+    P('Magneetventiel omloopklep', engSolenoidGeo(), MAT.plastic, { d: 'Tweede magneetventiel dat de omloopklep stuurt.', p: [0.085, 0.035, -0.088], r: [HALF, 0, 0], ex: [0, 0.03, -0.11] }),
     A('Turbobevestiging', { d: 'Vier tapeinden met moeren, pakking en turbosteun.', ex: [0, 0.09, 0.02] }, [
       ...tm.map(([dx, dz], k) => P(`Tapeind met moer ${k + 1}`, engStudNut(0.04, 0.008, -0.012, 'y'), MAT.steel, { d: 'Tapeind met moer tussen spruitstuk en turbine; moeren vervangen.', p: [-0.045 + dx, 0.075, 0.03 + dz], ex: [0, 0.05, 0] })),
       P('Pakking turbo-spruitstuk', G.rbox(0.068, 0.0012, 0.058, 0.0005), MAT.heat, { d: 'Pakking tussen spruitstuk en turbine-inlaat.', p: [-0.045, 0.0715, 0.03], ex: [0, 0.025, 0] }),
@@ -199,7 +200,7 @@ function buildTurbocharger() {
     ]),
     P('Koelwaterleiding toevoer', tube([[0.005, 0, 0.034], [0.01, 0.0, 0.08], [0.04, 0.01, 0.13], [0.05, 0.01, 0.148]], 0.0045, 24, 8), MAT.steel, { d: 'Koelvloeistof van het blok naar het lagerhuis.', ex: [0, 0.0, 0.08] }),
     P('Koelwaterleiding retour', tube([[-0.005, 0, -0.034], [-0.01, -0.045, -0.05], [-0.02, -0.075, 0.03], [-0.04, -0.07, 0.148]], 0.0045, 24, 8), MAT.steel, { d: 'Koelvloeistof van het lagerhuis terug naar het blok.', ex: [0, -0.05, 0.06] }),
-    P('Hitteschild turbo', xf(G.half('x', 0.076, 0.11, HALF, 24), [-0.04, 0, 0]), MAT.heat, { d: 'Hitteschild met luchtkanaal aan de achterkant van de turbine.', ex: [0, 0.03, -0.09] }),
+    P('Hitteschild turbo', xf(G.half('x', 0.072, 0.085, HALF, 20), [-0.045, 0, 0]), MAT.heat, { d: 'Hitteschild met luchtkanaal aan de achterkant van de turbine.', ex: [0, 0.14, -0.1] }),
   ]);
 }
 
@@ -215,17 +216,17 @@ function buildLube() {
   const pick = cache('engPickup', () => tube([[-0.168, -0.135, 0.02], [-0.15, -0.165, 0.03], [-0.05, -0.178, 0.03], [0.03, -0.182, 0.02]], 0.0085, 20, 8));
   const PCV = [0.1, ENG_COVER_TOP + 0.008, -0.065];
   const sep = cache('engSeparator', () => merge([G.rbox(0.13, 0.016, 0.034, 0.006), xf(G.cyl('x', 0.007, 0.007, 0.018, 10), [0.072, 0.003, 0]), xf(G.cyl('z', 0.006, 0.006, 0.016, 10), [-0.05, 0.003, -0.022])]));
-  return A('Smering', { d: 'Smeersysteem: carterpan, kettinggedreven tandwielpomp, aanzuigbuis met zeef, watergekoelde oliekoeler met spin-on filter, peilstok, turbo-olieleidingen en carterventilatie.', ex: [0, -0.42, -0.36], spec: [['Olie-inhoud', 'circa 5,4 l'], ['Filter', 'spin-on, M20 × 1,5']] }, [
-    A('Carterpan', { d: 'Onderste carter met pakking en minimaal 18 bouten.', ex: [0, -0.2, 0] }, [
-      P('Pan', pan, MAT.aluCast, { d: 'Carterpan: het oliereservoir onder het blok, met oliebak bij de vliegwielzijde.' }),
+  return A('Smering', { d: 'Smeersysteem: carterpan, kettinggedreven tandwielpomp, aanzuigbuis met zeef, watergekoelde oliekoeler met spin-on filter, peilstok, turbo-olieleidingen en carterventilatie.', ex: [0, -0.55, -0.18], spec: [['Olie-inhoud', 'circa 5,4 l'], ['Filter', 'spin-on, M20 × 1,5']] }, [
+    A('Carterpan', { d: 'Onderste carter met pakking en minimaal 18 bouten.', ex: [0, -0.12, 0] }, [
+      P('Pan', pan, MAT.aluCast, { d: 'Carterpan: het oliereservoir onder het blok, met oliebak bij de vliegwielzijde.', ex: [0, 0, 0] }),
       P('Schotplaat', xf(G.box(0.3, 0.002, 0.15), [0.03, -0.085, 0]), MAT.steel, { d: 'Keerplaat in de pan die het klotsen van de olie tegengaat (schematisch).', ex: [0, 0.06, 0], inner: true }),
       P('Carterpakking', gasket, MAT.rubber, { d: 'Pakking tussen blok en pan.', ex: [0, 0.03, 0] }),
-      A('Carterbouten', { d: 'Achttien bouten van de carterpan.', ex: [0, -0.06, 0] }, bolts.map(([x, z], k) => P(`Carterbout ${k + 1}`, hexBolt(0.025, 0.007), MAT.darkSteel, { d: 'Bout van de carterpan.', p: [x, -0.072, z], ex: [0, -0.04, 0] }))),
+      A('Carterbouten', { d: 'Achttien bouten van de carterpan.', ex: [0, -0.04, 0] }, bolts.map(([x, z], k) => P(`Carterbout ${k + 1}`, hexBolt(0.025, 0.007), MAT.darkSteel, { d: 'Bout van de carterpan.', p: [x, -0.072, z], ex: [0, -0.03, 0] }))),
       P('Aftapplug', merge([G.cyl('y', 0.007, 0.007, 0.012, 10), xf(G.box(0.008, 0.006, 0.008), [0, -0.009, 0])]), MAT.steel, { d: 'Aftapplug met vierkante kop (vierkant 8).', p: [0.05, -0.207, 0.03], ex: [0, -0.08, 0] }),
       P('Koperring aftapplug', annulus(0.007, 0.011, 0.0015, 'y', 16), MAT.copper, { d: 'Koperen afdichtring van de aftapplug.', p: [0.05, -0.2138, 0.03], ex: [0, -0.05, 0] }),
     ]),
     A('Oliepomp', { d: 'Tandwielpomp met geïntegreerde overdrukklep, via een ketting door de krukas aangedreven; binnenwerk schematisch.', p: [PX, PY, 0], ex: [-0.06, -0.08, 0.12], inner: true }, [
-      P('Pomphuis', merge([xf(G.rbox(0.034, 0.06, 0.07, 0.006), [0.03, -0.004, 0]), xf(G.cyl('y', 0.01, 0.01, 0.02, 10), [0.03, -0.04, 0.02])]), MAT.aluCast, { d: 'Pomphuis met aanzuig- en persopening.' }),
+      P('Pomphuis', merge([xf(G.rbox(0.034, 0.06, 0.07, 0.006), [0.03, -0.004, 0]), xf(G.cyl('y', 0.01, 0.01, 0.02, 10), [0.03, -0.04, 0.02])]), MAT.aluCast, { d: 'Pomphuis met aanzuig- en persopening.', ex: [0, 0, 0] }),
       P('Pompdeksel', G.rbox(0.005, 0.06, 0.07, 0.004), MAT.aluCast, { d: 'Deksel aan de kettingzijde.', p: [0.011, -0.004, 0], ex: [-0.035, 0, 0] }),
       P('Binnenrotor', gear(10, 0.018, 0.015, 0.014, 0.006, 'x'), MAT.steel, { d: 'Aangedreven binnenrotor op de pompas.', p: [0.022, 0, 0], ex: [-0.02, 0, 0.06] }),
       P('Buitenrotor', ringGear(11, 0.027, 0.019, 0.022, 0.014, 'x'), MAT.steel, { d: 'Meedraaiende buitenrotor.', p: [0.022, 0, 0], ex: [-0.02, 0, 0.1] }),
@@ -237,7 +238,7 @@ function buildLube() {
     ]),
     P('Oliepompketting', xf(chain.geo, [PX, 0, 0]), MAT.darkSteel, { d: 'Enkelvoudige ketting van krukas naar oliepomp.', ex: [-0.1, -0.03, 0.06], inner: true }),
     A('Aanzuigbuis met zeef', { d: 'Aanzuigbuis met zeef (crépine) die de olie onder in de pan opneemt.', ex: [0, -0.05, 0.14], inner: true }, [
-      P('Aanzuigbuis', pick, MAT.steel, { d: 'Gebogen aanzuigbuis van zeef naar pomp.' }),
+      P('Aanzuigbuis', pick, MAT.steel, { d: 'Gebogen aanzuigbuis van zeef naar pomp.', ex: [0, 0, 0] }),
       P('Zeef', merge([xf(G.cyl('y', 0.036, 0.036, 0.008, 20), [0.045, -0.188, 0.02]), xf(G.cyl('y', 0.012, 0.012, 0.01, 12), [0.03, -0.182, 0.02])]), MAT.steel, { d: 'Zeef die grof vuil uit de olie houdt.', ex: [0.03, -0.03, 0] }),
       P('O-ring aanzuigbuis', engORing(0.0085, 0.0014), MAT.rubber, { d: 'Afdichting tussen aanzuigbuis en pomp.', p: [-0.168, -0.13, 0.02], ex: [-0.02, 0.03, 0] }),
       P('Bout aanzuigbuis', hexBolt(0.016, 0.006), MAT.darkSteel, { d: 'Bout van de aanzuigbuis.', p: [-0.06, -0.17, 0.045], r: [PI, 0, 0], ex: [0, 0.06, 0] }),
@@ -250,24 +251,24 @@ function buildLube() {
       P('Waterslangaansluiting retour', tube([[-0.04, 0.03, 0.02], [-0.06, 0.04, 0.022], [-0.075, 0.045, 0.03]], 0.0055, 10, 8), MAT.steel, { d: 'Tweede aansluiting voor de koelvloeistofslang.', ex: [-0.04, 0.02, 0] }),
     ]),
     A('Oliefilter', { d: 'Spin-on oliefilter aan de voorkant van het blok, ongeveer in het midden: Ø76 tot 77 mm, 52 tot 57 mm hoog.', p: [0.03, 0.015, 0.159], ex: [0, 0, 0.24], spec: [['Afmeting', 'Ø76 × 55 mm'], ['Draad', 'M20 × 1,5'], ['Bypassklep', 'opent bij 1 bar']] }, [
-      P('Filterhuis', merge([G.lathe('z', [[0.012, 0], [0.0365, 0], [0.038, 0.004], [0.038, 0.046], [0.034, 0.054], [0, 0.056]], 28, 'engOilFilter'), ...[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(k => xf(G.box(0.004, 0.003, 0.03), [0.038 * Math.cos(k * PI / 5), 0.038 * Math.sin(k * PI / 5), 0.03], [0, 0, k * PI / 5]))]), MAT.oilFilter, { d: 'Stalen huis met papieren element, terugslagklep en bypassklep.' }),
+      P('Filterhuis', merge([G.lathe('z', [[0.012, 0], [0.0365, 0], [0.038, 0.004], [0.038, 0.046], [0.034, 0.054], [0, 0.056]], 28, 'engOilFilter'), ...[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(k => xf(G.box(0.004, 0.003, 0.03), [0.038 * Math.cos(k * PI / 5), 0.038 * Math.sin(k * PI / 5), 0.03], [0, 0, k * PI / 5]))]), MAT.oilFilter, { d: 'Stalen huis met papieren element, terugslagklep en bypassklep.', ex: [0, 0, 0] }),
       P('Filterelement', merge([annulus(0.012, 0.03, 0.044, 'z', 20)]), MAT.filter, { d: 'Geplooid papieren filterelement.', p: [0, 0, 0.027], ex: [0, 0, 0.08], inner: true }),
       P('Afdichtring filter', G.torus('z', 0.0305, 0.0018, 28, 5), MAT.rubber, { d: 'Rubber afdichtring Ø61 mm.', p: [0, 0, -0.001], ex: [0, 0, -0.03] }),
     ]),
     A('Peilstok', { d: 'Peilstok met geleidebuis aan de voorzijde van het blok; de exacte plaats voor de Laguna III is niet gevonden.', ex: [0, 0.14, 0.1] }, [
       P('Peilstok', merge([tube([[0.205, 0.0, 0.112], [0.205, 0.2, 0.128], [0.205, 0.385, 0.142]], 0.002, 16, 5), xf(G.torus('z', 0.012, 0.0035, 18, 6), [0.205, 0.402, 0.143]), xf(G.cyl('y', 0.005, 0.005, 0.012, 8), [0.205, 0.388, 0.142])]), MAT.handle, { d: 'Peilstok met gele greep.', ex: [0, 0.12, 0] }),
-      P('Geleidebuis', tube([[0.205, -0.02, 0.11], [0.205, 0.2, 0.128], [0.205, 0.38, 0.142]], 0.0055, 20, 8), MAT.plastic, { d: 'Geleidebuis van de peilstok.' }),
+      P('Geleidebuis', tube([[0.205, -0.02, 0.11], [0.205, 0.2, 0.128], [0.205, 0.38, 0.142]], 0.0055, 20, 8), MAT.plastic, { d: 'Geleidebuis van de peilstok.', ex: [0, 0, 0] }),
       P('O-ring geleidebuis', engORing(0.0058, 0.0012), MAT.rubber, { d: 'Afdichting van de geleidebuis in het blok.', p: [0.205, 0.004, 0.112], ex: [0, -0.04, 0.02] }),
       P('Beugel peilstokbuis', merge([G.box(0.012, 0.01, 0.026), xf(hexBolt(0.012, 0.005, 'z'), [0, 0, -0.016], [PI, 0, 0])]), MAT.steel, { d: 'Beugel die de buis aan de kop vastzet.', p: [0.205, 0.28, 0.122], ex: [0, 0, 0.05] }),
     ]),
     P('Oliedrukschakelaar', merge([G.cyl('z', 0.011, 0.011, 0.01, 6), xf(G.cyl('z', 0.009, 0.009, 0.014, 12), [0, 0, 0.012]), xf(G.cyl('z', 0.002, 0.002, 0.008, 6), [0, 0, 0.022])]), MAT.steel, { d: 'Schakelaar die het oliedrukwaarschuwingslampje aanstuurt (plaats schematisch).', p: [0.135, 0.07, 0.11], ex: [0, 0, 0.09] }),
     A('Olietoevoer turbo', { d: 'Olietoevoerleiding van het blok naar het turbolagerhuis, met holle bouten en koperringen.', ex: [0, 0.06, -0.1] }, [
-      P('Olietoevoerleiding', tube([[0.12, 0.1, -0.11], [0.12, 0.17, -0.16], [0.09, 0.2, -0.23], [0.07, 0.188, -0.255]], 0.003, 24, 6), MAT.steel, { d: 'Stalen olieleiding met banjo-aansluitingen.' }),
+      P('Olietoevoerleiding', tube([[0.12, 0.1, -0.11], [0.12, 0.17, -0.16], [0.09, 0.2, -0.23], [0.07, 0.188, -0.255]], 0.003, 24, 6), MAT.steel, { d: 'Stalen olieleiding met banjo-aansluitingen.', ex: [0, 0, 0] }),
       P('Holle bout blokzijde', merge([G.cyl('z', 0.006, 0.006, 0.006, 6), xf(G.cyl('z', 0.004, 0.004, 0.014, 8), [0, 0, 0.008]), xf(annulus(0.004, 0.0075, 0.0012, 'z', 14), [0, 0, 0.0035]), xf(annulus(0.004, 0.0075, 0.0012, 'z', 14), [0, 0, 0.0095])]), MAT.steel, { d: 'Holle bout (banjo) in het blok met twee koperen afdichtringen.', p: [0.12, 0.1, -0.12], ex: [0, 0, -0.04] }),
       P('Holle bout turbozijde', merge([G.cyl('y', 0.006, 0.006, 0.006, 6), xf(G.cyl('y', 0.004, 0.004, 0.014, 8), [0, -0.008, 0]), xf(annulus(0.004, 0.0075, 0.0012, 'y', 14), [0, -0.0035, 0]), xf(annulus(0.004, 0.0075, 0.0012, 'y', 14), [0, -0.0095, 0])]), MAT.steel, { d: 'Holle bout op de olie-ingang van het lagerhuis met twee koperen afdichtringen.', p: [0.07, 0.196, -0.255], ex: [0, 0.04, 0] }),
     ]),
     A('Olieretour turbo', { d: 'Olieretourleiding van het lagerhuis terug naar het carter, boven het oliepeil in het blok.', ex: [0, -0.04, -0.1] }, [
-      P('Olieretourleiding', tube([[0.07, 0.09, -0.255], [0.07, 0.05, -0.24], [0.06, 0.02, -0.17], [0.06, 0.02, -0.11]], 0.0075, 24, 8), MAT.steel, { d: 'Retourleiding met flens aan beide kanten.' }),
+      P('Olieretourleiding', tube([[0.07, 0.09, -0.255], [0.07, 0.05, -0.24], [0.06, 0.02, -0.17], [0.06, 0.02, -0.11]], 0.0075, 24, 8), MAT.steel, { d: 'Retourleiding met flens aan beide kanten.', ex: [0, 0, 0] }),
       P('Pakking retourflens', G.rbox(0.03, 0.0012, 0.022, 0.0005), MAT.heat, { d: 'Pakking van de retourflens aan het lagerhuis.', p: [0.07, 0.095, -0.255], ex: [0, 0.02, 0] }),
       P('Retourbout 1', hexBolt(0.016, 0.006, 'z'), MAT.darkSteel, { d: 'Bout van de retourflens.', p: [0.05, 0.02, -0.118], r: [PI, 0, 0], ex: [0, 0, -0.04] }),
       P('Retourbout 2', hexBolt(0.016, 0.006, 'z'), MAT.darkSteel, { d: 'Bout van de retourflens.', p: [0.07, 0.02, -0.118], r: [PI, 0, 0], ex: [0, 0, -0.04] }),
@@ -288,7 +289,7 @@ function buildEngineCooling() {
   const th = [0.226, 0.3, 0.04];
   return A('Koelcircuit motor', { d: 'Waterpomp (door de distributieriem aangedreven) en waterstuk met thermostaat aan de motor.', ex: [0, 0.04, 0.22] }, [
     A('Waterpomp', { d: 'Waterpomp aan de rechterkant van het blok, aangedreven door de distributieriem; lager en afdichting schematisch.', p: WP, ex: [-0.24, -0.06, 0.06] }, [
-      P('Pomphuis', merge([xf(G.cyl('x', 0.04, 0.04, 0.01, 24), [0.0245, 0, 0]), xf(G.cyl('x', 0.015, 0.015, 0.012, 14), [0.016, 0, 0])]), MAT.aluCast, { d: 'Pomphuis met flens op het blok.' }),
+      P('Pomphuis', merge([xf(G.cyl('x', 0.04, 0.04, 0.01, 24), [0.0245, 0, 0]), xf(G.cyl('x', 0.015, 0.015, 0.012, 14), [0.016, 0, 0])]), MAT.aluCast, { d: 'Pomphuis met flens op het blok.', ex: [0, 0, 0] }),
       P('Tandpoelie', merge([gear(17, 0.0255, 0.0232, 0.03, 0.006, 'x'), xf(G.cyl('x', 0.012, 0.012, 0.012, 12), [0.012, 0, 0])]), MAT.steel, { d: 'Getande poelie, Ø52,2 mm, die door de distributieriem wordt aangedreven (tandental geschat).', ex: [-0.07, 0, 0], spec: [['Diameter', '52,2 mm']] }),
       P('As met lager', merge([G.cyl('x', 0.006, 0.006, 0.06, 10), xf(G.cyl('x', 0.012, 0.012, 0.018, 14), [0.015, 0, 0])]), MAT.bearing, { d: 'Pompas met dubbel kogellager.', p: [0.02, 0, 0], ex: [-0.035, 0, 0.05], inner: true }),
       P('Mechanische asafdichting', annulus(0.006, 0.013, 0.006, 'x', 16), MAT.ceramic, { d: 'Glijringafdichting die koelvloeistof langs de as tegenhoudt.', p: [0.036, 0, 0], ex: [0.03, 0, 0.05] }),
@@ -298,10 +299,10 @@ function buildEngineCooling() {
       P('Aanvoerstomp', merge([tube([[0.078, -0.093, -0.005], [0.082, -0.093, 0.01], [0.09, -0.093, 0.04], [0.09, -0.093, 0.059]], 0.013, 16, 10), xf(G.rbox(0.03, 0.03, 0.006, 0.004), [0.09, -0.093, 0.009])]), MAT.aluCast, { d: 'Inlaatstomp van de waterpomp aan de voorkant van het blok, voor de onderste radiateurslang.', ex: [0.02, 0, 0.06] }),
     ]),
     A('Waterstuk en thermostaat', { d: 'Waterstuk (boîtier de sortie d\'eau) aan de vliegwielzijde van de kop, met thermostaat en temperatuursensor.', ex: [0.14, 0.12, 0] }, [
-      P('Waterstuk', merge([xf(G.rbox(0.042, 0.05, 0.062, 0.008), [0.237, 0.3, 0.04]), xf(G.cyl('y', 0.0155, 0.0155, 0.04, 16), [0.252, 0.338, 0.04]), xf(G.cyl('x', 0.009, 0.009, 0.03, 12), [0.265, 0.29, 0.015]), xf(G.cyl('z', 0.0055, 0.0055, 0.02, 10), [0.25, 0.31, 0.078])]), MAT.aluCast, { d: 'Uitlaathuis met aansluitingen naar radiateur, kachel en expansievat.' }),
+      P('Waterstuk', merge([xf(G.rbox(0.042, 0.05, 0.062, 0.008), [0.237, 0.3, 0.04]), xf(G.cyl('y', 0.0155, 0.0155, 0.04, 16), [0.252, 0.338, 0.04]), xf(G.cyl('x', 0.009, 0.009, 0.03, 12), [0.265, 0.29, 0.015]), xf(G.cyl('z', 0.0055, 0.0055, 0.02, 10), [0.25, 0.31, 0.078])]), MAT.aluCast, { d: 'Uitlaathuis met aansluitingen naar radiateur, kachel en expansievat.', ex: [0, 0, 0] }),
       A('Thermostaat', { d: 'Wasthermostaat: begint te openen bij 89 ± 2 °C en is volledig open bij 99 ± 2 °C; binnenwerk schematisch.', p: th, ex: [0.05, 0.05, 0], inner: true, spec: [['Begint te openen', '89 ± 2 °C'], ['Volledig open', '99 ± 2 °C']] }, [
         P('Waselement met zuiger', merge([G.cyl('x', 0.0085, 0.0085, 0.02, 14), xf(G.cyl('x', 0.002, 0.002, 0.016, 6), [-0.016, 0, 0])]), MAT.copper, { d: 'Waselement dat bij warmte uitzet en de zuiger uitdrukt.', p: [0.008, 0, 0], ex: [0.04, 0, 0] }),
-        P('Klepplaat', merge([G.cyl('x', 0.019, 0.019, 0.002, 20), annulus(0.019, 0.023, 0.002, 'x', 20)]), MAT.steel, { d: 'Klepplaat met rand die de doorlaat naar de radiateur opent.' }),
+        P('Klepplaat', merge([G.cyl('x', 0.019, 0.019, 0.002, 20), annulus(0.019, 0.023, 0.002, 'x', 20)]), MAT.steel, { d: 'Klepplaat met rand die de doorlaat naar de radiateur opent.', ex: [0, 0, 0] }),
         P('Thermostaatveer', spring(0.011, 0.0012, 0.016, 3, 'x'), MAT.steel, { d: 'Veer die de klep sluit als de motor afkoelt.', p: [0.012, 0, 0], ex: [0.025, 0, 0] }),
         P('Omloopklepje', G.cyl('x', 0.01, 0.01, 0.0015, 14), MAT.steel, { d: 'Klepje dat de omloop bij een koude motor open houdt.', p: [0.022, 0, 0], ex: [0.06, 0, 0] }),
       ]),
