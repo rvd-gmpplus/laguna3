@@ -142,7 +142,6 @@ function bodBeltTrim(s, path) {
 }
 // dunne donkere naadlijn op de onderbak langs punten (z, y): het portierrubber dat in de sluitnaad zichtbaar is
 const bodSeamLine = (s, zy, w = 0.0045) => bodRibbon(s, zy, w, 0.0007, 0, 1, (z, y) => { const [x, yy] = halfPt(z, sAtY(z, y)); return [x, yy, z]; });
-const bodQRing = 0.004;                                                       // chroomband ligt zoveel (q) boven de bovenrand van de ruit
 const bodLinZ = (a, b, n, q) => { const out = []; for (let i = 0; i <= n; i++) out.push([a + (b - a) * i / n, typeof q === 'function' ? q(a + (b - a) * i / n) : q]); return out; };
 /* ---------- portieren ---------- */
 function buildDoor(s, isFront) {
