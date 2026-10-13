@@ -15,13 +15,6 @@ const chsNut = (ax, r, h) => G.cyl(ax, r, r, h, 6);
 const chsRb = (w, h, d, r) => (Math.min(w, h, d) >= 0.045 && r >= 0.01 ? G.rbox(w, h, d, r) : G.box(w, h, d));
 const chsFlip = g => xf(g, [0, 0, 0], [PI, 0, 0]);                     // bout met kop boven, steel omlaag
 function chsClamp(ax, R) { return merge([G.torus(ax, R, 0.0018, 20, 4), xf(G.box(0.008, 0.008, 0.008), [R + 0.003, 0, 0])]); }
-function chsFlange(r, holes, hr, pcd, t, key) {                          // schijf met gaten (as x)
-  return cache('chsFl' + key, () => {
-    const s = new THREE.Shape(); s.absarc(0, 0, r, 0, PI * 2, false);
-    for (let k = 0; k < holes; k++) s.holes.push(circlePath(pcd * Math.cos(k * PI * 2 / holes), pcd * Math.sin(k * PI * 2 / holes), hr));
-    return zTo(extrude(s, t, 20), 'x');
-  });
-}
 
 function discGeo(rIn, rOut, vented, key, hatH) {
   return cache('disc' + key, () => {
