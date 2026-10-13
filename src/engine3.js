@@ -1,5 +1,6 @@
 /* ===================== motor F4Rt 811: dynamo, aircocompressor, sensoren, kabelboom, flexplaat, afdekkap ===================== */
 // Dynamo en aircocompressor: lokaal frame met x langs de as; de poelie ligt in het multiriemvlak (lokaal x = XA - p[0]).
+std('engStatorLam', 0x5b6168, 0.6, 0.46);
 function buildAlternator(p) {
   const px = XA - p[0];
   const shieldF = G.lathe('x', [[0.017, -0.066], [0.05, -0.066], [0.06, -0.06], [0.062, -0.05], [0.062, -0.038], [0.058, -0.038], [0.056, -0.056], [0.017, -0.06]], 32, 'engAltShieldF');
@@ -21,10 +22,14 @@ function buildAlternator(p) {
       P('Rotoras', G.cyl('x', 0.0085, 0.0085, 0.15, 12), MAT.steel, { d: 'Rotoras.', p: [-0.01, 0, 0], ex: [0, 0, 0] }),
       P('Klauwpool voor', claw, MAT.darkSteel, { d: 'Klauwpool met zes vingers.', p: [-0.02, 0, 0], ex: [-0.03, 0, 0] }),
       P('Klauwpool achter', claw, MAT.darkSteel, { d: 'Tweede klauwpool, vingers in elkaar grijpend.', p: [0.02, 0, 0], r: [PI / 6, PI, 0], ex: [0.03, 0, 0] }),
-      P('Veldspoel', G.cyl('x', 0.03, 0.03, 0.026, 20), MAT.copper, { d: 'Bekrachtigingsspoel tussen de klauwpolen.', ex: [0, 0.06, 0] }),
+      P('Veldspoel', G.cyl('x', 0.03, 0.03, 0.026, 20), MAT.copper, { d: 'Bekrachtigingsspoel tussen de klauwpolen.', ex: [0, 0.01, 0] }),
       P('Sleepringen', merge([xf(G.cyl('x', 0.0085, 0.0085, 0.004, 14), [0.044, 0, 0]), xf(G.cyl('x', 0.0085, 0.0085, 0.004, 14), [0.05, 0, 0]), xf(G.cyl('x', 0.007, 0.007, 0.012, 10), [0.047, 0, 0])]), MAT.copper, { d: 'Twee koperen sleepringen waarover de koolborstels lopen.', ex: [0.05, 0, 0] }),
     ]),
-    P('Stator', merge([annulus(0.047, 0.0605, 0.036, 'x', 32), xf(G.torus('x', 0.053, 0.005, 28, 5), [0.021, 0, 0]), xf(G.torus('x', 0.053, 0.005, 28, 5), [-0.021, 0, 0])]), MAT.darkSteel, { d: 'Stator: driefasewikkeling in een plaatpakket; het plaatpakket is van buiten zichtbaar tussen de beide schilden.', ex: [0, 0.11, 0] }),
+    A('Stator', { d: 'Stator: driefasewikkeling in een plaatpakket van gestapelde elektroplaten met 36 sleuven; de koperen wikkelkoppen steken aan beide zijden uit het pakket (aantal sleuven en platen schematisch).', ex: [0, 0.11, 0] }, [
+      P('Plaatpakket', cache('engStatPack', () => merge([0, 1, 2, 3, 4, 5].map(k => xf(ringGear(36, 0.0605, 0.0478, 0.0526, 0.0052, 'x'), [(k - 2.5) * 0.0062, 0, 0])))), MAT.engStatorLam, { d: 'Gestapelde, tegen elkaar gelakte elektroplaten met de sleuven voor de driefasewikkeling; de groeven tussen de platen zijn schematisch.', ex: [0, 0, 0] }),
+      P('Wikkelkop voorzijde', cache('engStatWindF', () => xf(G.torus('x', 0.0525, 0.0045, 32, 8), [-0.0225, 0, 0])), MAT.copper, { d: 'Koperen wikkelkop aan de voorzijde van de statorwikkeling.', ex: [-0.035, 0, 0] }),
+      P('Wikkelkop achterzijde', cache('engStatWindR', () => xf(G.torus('x', 0.0525, 0.0045, 32, 8), [0.0225, 0, 0])), MAT.copper, { d: 'Koperen wikkelkop aan de achterzijde van de statorwikkeling.', ex: [0.035, 0, 0] }),
+    ]),
     P('Achterlager', annulus(0.0065, 0.014, 0.008, 'x', 16), MAT.bearing, { d: 'Kogellager in het achterschild.', p: [0.04, 0, 0], ex: [0.05, 0, 0] }),
     P('Achterschild', merge([shieldR, xf(G.box(0.02, 0.026, 0.016), [0.05, -0.068, -0.02])]), MAT.aluCast, { d: 'Achterschild aan de sleepringzijde met de kunststof afdekkap.', ex: [0.08, 0, 0.03] }),
     P('Gelijkrichter', merge([annulus(0.016, 0.05, 0.004, 'x', 24), ...[0, 1, 2, 3, 4, 5].map(k => xf(G.cyl('x', 0.004, 0.004, 0.005, 8), [0.003, 0.034 * Math.cos(k * PI / 3 + 0.3), 0.034 * Math.sin(k * PI / 3 + 0.3)]))]), MAT.ecu, { d: 'Diodebrug met zes diodes die de wisselstroom gelijkricht.', p: [0.062, 0, 0], ex: [0.07, 0.04, 0.09], inner: true }),
