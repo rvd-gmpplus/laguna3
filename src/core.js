@@ -202,6 +202,37 @@ function extrude(shape, depth, curveSeg = 12) {
   g.translate(0, 0, -depth / 2);
   return g;
 }
+// rechthoek u0..u1 x v0..v1 (hoekpunten tegen de klok in) met weggesneden onderhoeken: elke [kant, u, v] in cut haalt
+// het stuk onder v en voorbij u aan die kant (kant +1 of -1) weg
+function notchRect(u0, u1, v0, v1, cut = []) {
+  const R = cut.find(c => c[0] > 0 && c[1] < u1), L = cut.find(c => c[0] < 0 && c[1] > u0), p = [];
+  p.push(L ? [L[1], v0] : [u0, v0]);
+  if (R) p.push([R[1], v0], [R[1], R[2]], [u1, R[2]]); else p.push([u1, v0]);
+  p.push([u1, v1], [u0, v1]);
+  if (L) p.push([u0, L[2]], [L[1], L[2]]);
+  return p;
+}
+// kussen of plaat uit één stuk met rondom afgeronde randen: rechthoekige omtrek poly (tegen de klok in, in het vlak u-v,
+// buitenmaat), dikte t langs de derde as (gecentreerd), randstraal b; holle hoeken van de omtrek krijgen straal ri.
+// Geen naden zoals bij losse blokken; de normalen zijn glad met een knik boven 30 graden.
+function roundPlate(poly, t, b, ri = 0.025, seg = 4) {
+  b = Math.min(b, t / 2 - 0.0008);
+  const n = poly.length, unit = (a, c) => { const dx = c[0] - a[0], dy = c[1] - a[1], l = Math.hypot(dx, dy); return [dx / l, dy / l]; };
+  // omtrek b naar binnen: de afronding van ExtrudeGeometry zet hem weer b naar buiten
+  const ins = poly.map((P, i) => { const e1 = unit(poly[(i + n - 1) % n], P), e2 = unit(P, poly[(i + 1) % n]); return [P[0] - b * (e1[1] + e2[1]), P[1] + b * (e1[0] + e2[0])]; });
+  const pts = [];
+  ins.forEach((P, i) => {
+    const d1 = unit(P, ins[(i + n - 1) % n]), d2 = unit(P, ins[(i + 1) % n]), convex = d1[0] * d2[1] - d1[1] * d2[0] < 0, r = convex ? 0.004 : ri + b;
+    const cx = P[0] + (d1[0] + d2[0]) * r, cy = P[1] + (d1[1] + d2[1]) * r, a1 = Math.atan2(-d2[1], -d2[0]);
+    let da = Math.atan2(-d1[1], -d1[0]) - a1; while (da > PI) da -= 2 * PI; while (da < -PI) da += 2 * PI;
+    for (let k = 0; k <= 3; k++) pts.push(new THREE.Vector2(cx + r * Math.cos(a1 + da * k / 3), cy + r * Math.sin(a1 + da * k / 3)));
+  });
+  const g = new THREE.ExtrudeGeometry(new THREE.Shape(pts), { depth: t - 2 * b, bevelEnabled: true, bevelThickness: b, bevelSize: b, bevelSegments: seg, curveSegments: 1 });
+  g.translate(0, 0, -(t - 2 * b) / 2);
+  // hoekpunten op positie samenvoegen (geïndexeerd), daarna gladde normalen met een knik boven 30 graden
+  g.deleteAttribute('normal'); g.deleteAttribute('uv');
+  return cleanG(THREE.BufferGeometryUtils.toCreasedNormals(THREE.BufferGeometryUtils.mergeVertices(g, 1e-5), 0.52));
+}
 // vorm in (x,z)-vlak, dikte langs y (bovenaanzicht)
 function plan(shape, depth) { const g = extrude(shape, depth); g.rotateX(HALF); return g; }
 // vorm in (z,y)-vlak, dikte langs x (zijaanzicht)

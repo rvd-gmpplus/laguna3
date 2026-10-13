@@ -312,7 +312,7 @@ function buildRearAxle() {
   const spr = sg => A(`Veer achter ${sideName(sg)}`, { d: 'Schroefveer met rubber ondersteuning, bovenschotel, aanslagrubber en stofhoes; aparte veer en demper (Renault: aparte schroefveren en dempers).', ex: [0, 0.3, 0] }, [
     P('Veerrubber onder', annulus(0.045, 0.07, 0.006, 'y', 24), MAT.rubber, { d: 'Rubber tussenlaag op het veerpad.', p: [sg * 0.51, 0.348, -1.47], ex: [0, -0.04, 0], inner: true }),
     P('Schroefveer achter', spring(0.062, 0.0105, 0.2, 5), MAT.chsSpring, { d: 'Draagt het achtergewicht van de auto.', p: [sg * 0.51, 0.455, -1.47], ex: [0, 0.0, 0] }),
-    P('Veerschotel boven', G.lathe('y', [[0.02, 0], [0.068, 0.002], [0.07, -0.008], [0.062, -0.01], [0.02, -0.004]], 22, 'chsSeatR'), MAT.rubber, { d: 'Rubber bovenschotel in de carrosserie (de veer drukt tegen de vloer van de laadruimte).', p: [sg * 0.51, 0.566, -1.47], ex: [0, 0.14, 0] }),
+    P('Veerschotel boven', G.lathe('y', [[0.02, 0], [0.068, 0.002], [0.07, -0.008], [0.062, -0.01], [0.02, -0.004]], 22, 'chsSeatR'), MAT.rubber, { d: 'Rubber bovenschotel in de carrosserie (de veer drukt tegen de bovenkant van de veerkoker in de binnenwielkast).', p: [sg * 0.51, 0.566, -1.47], ex: [0, 0.14, 0] }),
     P('Aanslagrubber', G.cyl('y', 0.03, 0.026, 0.05, 16), MAT.rubber, { d: 'Vangt het inveren aan het einde van de slag op.', p: [sg * 0.51, 0.535, -1.47], ex: [0, 0.2, 0], inner: true }),
     P('Stofhoes veer', G.lathe('y', bellows(0.034, 0.028, 0.07, 3), 18, 'chsRdb'), MAT.rubber, { d: 'Balg om de aanslagrubber.', p: [sg * 0.51, 0.462, -1.47], ex: [0, 0.1, 0] })]);
   const dmp = sg => A(`Schokdemper achter ${sideName(sg)}`, { d: 'Bitube-schokdemper (huis Ø45 mm, zuigerstang Ø12,5 mm), onderaan met een oog aan de langsarm, bovenaan met een rubbersteun in de carrosserie.', spec: [['Demperhuis', 'Ø 45 mm'], ['Zuigerstang', 'Ø 12,5 mm']], p: [sg * ax, 0.33, -1.5], q: quatFromTo(V3(0, 1, 0), V3(sg * dB.x, dB.y, dB.z)), ex: [sg * 0.08, 0.26, -0.08] }, [
@@ -328,7 +328,7 @@ function buildRearAxle() {
     A('Torsiebalk', { d: 'H-vormige torsiebalk: twee langsarmen verbonden door een torderende dwarsbalk met geïntegreerde stabilisatorstaaf; de balk werkt als veer voor het overhellen.', ex: [0, -0.14, 0] }, [
       P('Dwarsbalk', side(beamShape, 1.14), MAT.darkSteel, { d: 'Open U-profiel dat torderen toelaat (torsiebalk).', p: [0, 0.29, -1.15], ex: [0, -0.1, 0] }),
       P('Stabilisatorstaaf achter', merge([G.cyl('x', 0.0148, 0.0148, 1.0, 14), rodBetween([0.5, 0.0, 0.0], [0.56, 0.0, -0.1], 0.0148), rodBetween([-0.5, 0.0, 0.0], [-0.56, 0.0, -0.1], 0.0148)]), MAT.steel, { d: 'Stabilisatorstaaf Ø29,6 mm in de dwarsbalk (aannemelijk; opgave Renault-persmap voor de F4Rt).', p: [0, 0.29, -1.15], ex: [0, 0.12, 0] }),
-      ...[1, -1].map(sg => P(`Hoekplaat ${sideName(sg)}`, chsRb(0.1, 0.012, 0.13, 0.004), MAT.darkSteel, { d: 'Aangelaste verstijvingsplaat tussen langsarm en dwarsbalk.', p: [sg * 0.54, 0.358, -1.15], ex: [sg * 0.08, 0.1, 0] })),
+      ...[1, -1].map(sg => P(`Hoekplaat ${sideName(sg)}`, chsRb(0.08, 0.012, 0.13, 0.004), MAT.darkSteel, { d: 'Aangelaste verstijvingsplaat tussen langsarm en dwarsbalk, buiten de binnenwand van de wielkast.', p: [sg * 0.555, 0.358, -1.15], ex: [sg * 0.08, 0.1, 0] })),
       arm(1), arm(-1)]),
     spr(1), spr(-1), dmp(1), dmp(-1), rearCorner(1), rearCorner(-1),
   ]);
