@@ -182,25 +182,27 @@ function buildExhaust() {
     sysClamp('Klem midden voor', [0.02, 0.27, MZ + 0.215], V3(0, 0, 1), 0.0275, V3(0, 0, 1)),
     sysClamp('Klem midden achter', [0.02, 0.27, MZ - 0.215], V3(0, 0, 1), 0.0275, V3(0, 0, -1)),
   ]);
-  const achterpijp = P('Achterpijp', tube([[0.02, 0.27, -0.33], [0.02, 0.27, -0.46], [0.03, 0.2, -0.57], [0.04, 0.125, -0.68], [0.05, 0.1, -0.85], [0.05, 0.1, -1.2], [0.07, 0.1, -1.62], [0.07, 0.105, -1.72], [0.066, 0.14, -1.775], [0.055, 0.19, -1.805], [0.05, 0.1975, -1.815]], pipeR, 64, 14), MAT.exhaust, { d: 'Pijp van de middendemper onder de tank en de achteras door naar de einddemper.', ex: [0, -0.04, -0.06] });
+  const PY = 0.148;                                               // hartlijn achterpijp achter de tunnel: onderkant 0,1225 boven de grond, bovenkant 2,5 mm onder het hitteschild van de tank
+  const achterpijp = P('Achterpijp', tube([[0.02, 0.27, -0.33], [0.02, 0.27, -0.46], [0.03, 0.235, -0.56], [0.04, 0.19, -0.65], [0.05, 0.157, -0.745], [0.05, PY, -0.84], [0.05, PY, -1.1], [0.05, PY, -1.3], [0.05, 0.15, -1.45], [0.05, 0.157, -1.58], [0.05, 0.175, -1.7], [0.05, 0.192, -1.78], [0.05, 0.1975, -1.82]], pipeR, 72, 14), MAT.exhaust, { d: 'Pijp van de middendemper, vanaf het eind van de tunnel strak onder de vloer en de brandstoftank (met het hitteschild ertussen) en onder de torsiebalk door, daarna oplopend naar de einddemper (verloop schematisch).', ex: [0, -0.04, -0.06] });
   const EZ = -1.93, EY = 0.1975;                                    // platte einddemper, zo hoog en zo ver naar voren als de bagagevloer toelaat (onder de reservewielkuip)
   const endGeo = cache('sysEndFlat', () => merge([xf(G.rbox(0.66, 0.075, 0.26, 0.03), [0, 0, 0]), xf(G.cyl('z', 0.026, 0.026, 0.05, 14), [0.05, 0, 0.14])]));
   const einddemper = A('Einddemper', { d: 'Dwarsgeplaatste einddemper achter de achteras, met aan beide kanten een uitlaatpijp naar een verchroomd eindstuk (twee chromen eindstukken: aannemelijk voor deze uitvoering).', ex: [0, -0.1, -0.18] }, [
     P('Demperhuis eind', endGeo, MAT.sysDemper, { d: 'Dwarsgeplaatste einddemper van geplooid plaatstaal.', p: [0, EY, EZ], ex: [0, 0, 0] }),
-    ...[1, -1].map(s => P(`Uitlaatpijp ${sideName(s)}`, tube([[s * 0.31, EY, EZ - 0.02], [s * 0.45, 0.205, -2.03], [s * 0.54, 0.235, -2.1], [s * 0.6, 0.285, -2.17], [s * 0.6, 0.3, -2.21]], 0.02, 20, 10), MAT.sysDemper, { d: 'Buis van de einddemper naar het chromen eindstuk onder de bumper.', ex: [s * 0.015, 0, -0.03] })),
-    ...[1, -1].map(s => P(`Uitlaateindstuk ${sideName(s)}`, annulus(0.0305, 0.037, 0.075, 'z', 22), MAT.chrome, { d: 'Verchroomd eindstuk, zichtbaar onder de achterbumper.', p: [s * 0.6, 0.3, -2.25], ex: [s * 0.015, 0, -0.1] })),
+    ...[1, -1].map(s => P(`Uitlaatpijp ${sideName(s)}`, tube([[s * 0.29, EY, EZ - 0.07], [s * 0.36, 0.1985, -2.035], [s * 0.45, 0.203, -2.085], [s * 0.55, 0.208, -2.14], [s * 0.61, 0.21, -2.19], [s * 0.62, 0.21, -2.235]], 0.02, 20, 10), MAT.sysDemper, { d: 'Korte, vrijwel rechte buis van het uiteinde van de einddemper naar het chromen eindstuk onder de achterrand van de bumper.', ex: [s * 0.015, 0, -0.03] })),
+    ...[1, -1].map(s => P(`Uitlaateindstuk ${sideName(s)}`, annulus(0.0305, 0.037, 0.075, 'z', 22), MAT.chrome, { d: 'Verchroomd eindstuk, zichtbaar onder de achterrand van de bumper.', p: [s * 0.62, 0.21, -2.235], ex: [s * 0.015, 0, -0.1] })),
   ]);
   const hang = (n, x, yp, z, yb) => {
-    const y0 = yp + pipeR + 0.008, len = yb - y0 - 0.004;
-    return A(`Ophanging ${n}`, { d: 'Rubber ophanging die de uitlaat aan de carrosserie hangt en trillingen isoleert.', ex: [0, -0.1, 0] }, [
-      P('Pijpbeugel', merge([G.box(0.05, 0.008, 0.03), xf(G.cyl('y', 0.003, 0.003, 0.02, 6), [0, 0.012, 0])]), MAT.darkSteel, { d: 'Stalen beugel die aan de uitlaatpijp is gelast.', p: [x, yp + pipeR + 0.004, z], ex: [0, -0.06, 0] }),
-      P('Ophangrubber', merge([G.cyl('y', 0.007, 0.007, len, 8), xf(G.torus('x', 0.011, 0.004, 12, 5), [0, -len / 2 + 0.004, 0]), xf(G.torus('x', 0.011, 0.004, 12, 5), [0, len / 2 - 0.004, 0])]), MAT.rubber, { d: 'Rubber ophangstrip tussen de pijpbeugel en de carrosserie.', p: [x, y0 + len / 2, z], ex: [0, 0.08, 0] }),
+    const yt = yp + pipeR, len = yb - yt - 0.010;                    // rubber tussen de tap van de pijpbeugel (tot yt + 6 mm) en het vloerplaatje (4 mm)
+    return A(`Ophanging ${n}`, { d: 'Rubber ophanging die de uitlaat aan de carrosserie hangt en trillingen isoleert: beugel om de pijp, rubber blokje, plaatje tegen de vloer.', ex: [0, -0.1, 0] }, [
+      P('Pijpbeugel', cache('sysHangBr', () => merge([G.torus('z', pipeR + 0.002, 0.002, 18, 5), xf(G.box(0.04, 0.004, 0.03), [0, pipeR + 0.004, 0])])), MAT.darkSteel, { d: 'Stalen beugel die om de uitlaatpijp is gelast, met een tap naar boven.', p: [x, yp, z], ex: [0, -0.06, 0] }),
+      P('Ophangrubber', cache(`sysHangRub${n}`, () => merge([G.cyl('y', 0.008, 0.008, len, 10), xf(G.cyl('y', 0.012, 0.012, 0.004, 12), [0, -len / 2 + 0.002, 0]), xf(G.cyl('y', 0.012, 0.012, 0.004, 12), [0, len / 2 - 0.002, 0])])), MAT.rubber, { d: 'Rubber ophangblokje tussen de pijpbeugel en de carrosserie.', p: [x, yt + 0.006 + len / 2, z], ex: [0, 0.08, 0] }),
+      P('Vloerplaatje', G.box(0.04, 0.004, 0.03), MAT.darkSteel, { d: 'Stalen plaatje tegen de vloer waar het rubber aan hangt.', p: [x, yb - 0.002, z], ex: [0, 0.1, 0] }),
     ]);
   };
-  const hangers = A('Ophangingen', { d: 'Rubber ophangingen die het uitlaatsysteem aan de vloer hangen.', ex: [0, 0.12, 0] }, [hang(1, 0.02, 0.27, 0.55, 0.385), hang(2, 0.02, 0.27, -0.46, 0.385), hang(3, 0.05, 0.1, -1.4, 0.198), hang(4, 0.07, 0.108, -1.68, 0.23)]);
+  const hangers = A('Ophangingen', { d: 'Rubber ophangingen die het uitlaatsysteem aan de vloer hangen.', ex: [0, 0.12, 0] }, [hang(1, 0.02, 0.27, 0.55, 0.385), hang(2, 0.02, 0.27, -0.46, 0.385), hang(3, 0.05, 0.149, -1.4, 0.198), hang(4, 0.05, 0.171, -1.68, 0.229)]);
   const hitte = A('Hitteschilden', { d: 'Aluminium hitteschilden die de vloer en de brandstoftank tegen de uitlaat beschermen.', ex: [0, 0.2, 0] }, [
     P('Hitteschild tunnel', plan(shapeOf([[-0.07, 0.8], [0.11, 0.8], [0.11, 0.2], [0.09, -0.5], [-0.05, -0.5], [-0.07, 0.2]]), 0.003), MAT.heat, { d: 'Plaat boven de pijp in de middentunnel; houdt de hitte van de vloer.', p: [0, 0.313, 0], ex: [0, 0.1, 0] }),
-    P('Hitteschild tank', plan(shapeOf([[-0.12, -0.72], [0.2, -0.72], [0.2, -1.12], [-0.12, -1.12]]), 0.003), MAT.heat, { d: 'Plaat tussen de uitlaatpijp en de brandstoftank.', p: [0.05, 0.145, 0], ex: [0, -0.1, 0] }),
+    P('Hitteschild tank', plan(shapeOf([[-0.12, -0.73], [0.2, -0.73], [0.2, -1.07], [-0.12, -1.07]]), 0.003), MAT.heat, { d: 'Plaat tussen de uitlaatpijp en de brandstoftank, strak onder de tank en tussen de twee spanbanden.', p: [0.05, 0.1775, 0], ex: [0, -0.1, 0] }),
   ]);
   return A('Uitlaatsysteem', { d: 'De uitlaat van de turbo tot de bumper: voorkatalysator direct op de turbine, downpipe, flexstuk, middendemper, einddemper en twee eindstukken (aannemelijk), met hitteschilden en rubber ophangingen. Lambdasondes zitten voor en na de katalysator.', ex: [0, -0.8, -0.3] }, [voorkat, downpipe, flenzen, flex, tussen, midden, achterpijp, einddemper, hangers, hitte]);
 }
