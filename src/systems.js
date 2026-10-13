@@ -100,7 +100,7 @@ function buildCooling() {
   const box = (w, h, d, r) => G.rbox(w, h, d, r);
   const sluit = [[-0.1, 0.1], [0.1, 0.1], [-0.1, -0.1], [0.1, -0.1]];
   const cIn = ENG_PORTS.compIn;
-  const hoseAir = sysHose('Aanzuigslang turbo', 'Voert de gefilterde lucht van het luchtfilterhuis naar de compressorinlaat van de turbo.', [[0.38, 0.755, 1.535], [0.37, 0.73, 1.48], [0.33, 0.68, 1.40], [0.26, 0.625, 1.32], [0.17, 0.585, 1.26], sysE(cIn, 0.08), sysE(cIn, 0.03), sysP(cIn.p)], 0.03, { n0: 'Klem luchtfilterhuis', n1: 'Klem turbo', seg: 56, rad: 12, ex: [0.1, 0.12, -0.1] });
+  const hoseAir = sysHose('Aanzuigslang turbo', 'Voert de gefilterde lucht van het luchtfilterhuis naar de compressorinlaat van de turbo.', [[0.38, 0.755, 1.535], [0.37, 0.73, 1.48], [0.34, 0.665, 1.40], [0.30, 0.60, 1.31], [0.24, 0.53, 1.235], [0.17, 0.495, 1.226], sysE(cIn, 0.08), sysE(cIn, 0.03), sysP(cIn.p)], 0.03, { n0: 'Klem luchtfilterhuis', n1: 'Klem turbo', seg: 56, rad: 12, ex: [0.1, 0.12, -0.1] });
   const inlaat = A('Luchtinlaat', { d: 'Aanzuigtraject: luchtgeleider achter de grille, luchtfilterhuis met papieren element en de aanzuigslang naar de turbocompressor. De motor meet de belasting met een druksensor in het inlaatspruitstuk, dus er zit geen luchtmassameter in.', ex: [0.2, 0.3, 0.15] }, [
     P('Luchtgeleider', merge([tube([[0.27, 0.62, 2.235], [0.31, 0.61, 2.15], [0.335, 0.60, 2.05], [0.335, 0.60, 1.94], [0.35, 0.64, 1.86], [0.36, 0.66, AB[2] + 0.145]], 0.025, 36, 12), xf(G.cyl('z', 0.034, 0.025, 0.03, 14), [0.27, 0.62, 2.24])]), MAT.plastic, { d: 'Kunststof kanaal dat koele buitenlucht achter de grille opvangt en naar het luchtfilterhuis leidt.', ex: [0, 0.08, 0.2] }),
     P('Luchtfilterhuis', merge([box(0.24, 0.1, 0.27, 0.02), xf(G.box(0.26, 0.008, 0.29), [0, 0.05, 0])]), MAT.plastic, { d: 'Onderbak van het luchtfilter met rand voor het deksel.', p: [AB[0] - 0.02, AB[1] - 0.04, AB[2]], ex: [0, -0.1, 0] }),
@@ -115,7 +115,7 @@ function buildCooling() {
   // ---------- laadluchtleidingen ----------
   const cO = ENG_PORTS.compOut, tI = ENG_PORTS.throttleIn;
   const hot = sysHose('Hete laadluchtslang', 'Voert de door de turbo samengeperste, hete lucht van de compressoruitlaat naar de linker eindkap van de intercooler.', [sysP(cO.p), sysE(cO, 0.035), [0.0, 0.64, 1.16], [0.14, 0.62, 1.2], [0.17, 0.605, 1.45], [0.19, 0.6, 1.72], [0.31, 0.56, 1.86], [0.375, 0.46, 1.96], [0.35, 0.37, 2.02], [0.30, 0.31, 2.07]], 0.031, { n0: 'Klem turbo', n1: 'Klem intercooler', seg: 80, rad: 12, ex: [0.12, 0.2, 0], spec: [['Aansluiting op de intercooler', 'ø 57 mm (aannemelijk)']] });
-  const cold = sysHose('Koude laadluchtslang', 'Voert de gekoelde lucht van de rechter eindkap van de intercooler naar het gasklephuis. De slang buigt binnen enkele centimeters na het gasklephuis naar voren, vóór de multiriem, en loopt boven de stuurbekrachtigingspomp langs.', [[-0.30, 0.31, 2.07], [-0.33, 0.33, 2.04], [-0.37, 0.40, 1.98], [-0.39, 0.50, 1.90], [-0.42, 0.57, 1.83], sysP([tI.p[0] - 0.038, tI.p[1] + 0.01, 0.30]), sysP([tI.p[0] - 0.036, tI.p[1], 0.245]), sysP([tI.p[0] - 0.021, tI.p[1], tI.p[2] + 0.005]), sysP(tI.p)], 0.027, { n0: 'Klem intercooler', n1: 'Klem gasklephuis', seg: 80, rad: 12, ex: [-0.12, 0.2, 0], spec: [['Aansluiting op de intercooler', 'ø 47 mm (aannemelijk)']] });
+  const cold = sysHose('Koude laadluchtslang', 'Voert de gekoelde lucht van de rechter eindkap van de intercooler naar het gasklephuis. De slang buigt binnen enkele centimeters na het gasklephuis naar voren, vóór de multiriem, en loopt boven de stuurbekrachtigingspomp langs.', [[-0.30, 0.31, 2.07], [-0.33, 0.33, 2.04], [-0.37, 0.40, 1.98], [-0.39, 0.50, 1.90], [-0.42, 0.57, 1.83], sysP([tI.p[0] - 0.03, tI.p[1] + 0.01, 0.30]), sysP([tI.p[0] - 0.029, tI.p[1], 0.245]), sysP([tI.p[0] - 0.021, tI.p[1], tI.p[2] + 0.005]), sysP(tI.p)], 0.027, { n0: 'Klem intercooler', n1: 'Klem gasklephuis', seg: 80, rad: 12, ex: [-0.12, 0.2, 0], spec: [['Aansluiting op de intercooler', 'ø 47 mm (aannemelijk)']] });
   const laadlucht = A('Laadluchtleidingen', { d: 'De twee slangen die de aangezogen lucht van de turbo naar de intercooler en van de intercooler naar het gasklephuis brengen.', ex: [0, 0.22, 0.1] }, [hot, cold]);
 
   return A('Koeling en luchtinlaat', { d: 'Koelpakket (intercooler, condensor, radiateur en koelventilator), expansievat, koelslangen en het luchtinlaattraject naar de turbo.', ex: [0, 0.3, 2.0] }, [radiateur, condensor, intercooler, ventilator, expansie, slangen, inlaat, laadlucht]);
@@ -259,58 +259,67 @@ function buildFuel() {
 /* ============================ elektrisch systeem ============================ */
 function buildElectrical() {
   const starter = ENG2CAR(DRV_PORTS.starterTerminal);
-  const BX = -0.63, BY = 0.489, BZ = 1.915;             // hart van de accu (rechtsvoor, achter het scherm)
-  const W = 0.18, L = 0.23, Hh = 0.15;
+  // kabel naar de B+-bout: komt van voren op de hoogte van de bout aan (de motorbout zit 1,1 cm lager), laatste stuk langs de boutas
+  const stAt = (dx, dy, dz) => ENG2CAR(DRV_PORTS.starterTerminal.map((v, i) => v + [dx, dy, dz][i]));
+  const BX = -0.632, BY = 0.489, BZ = 1.925;             // hart van de accu (rechtsvoor, achter het scherm); z-ruimte: stuurslangen achter, frontmodule voor
+  const PZ = BZ - 0.08;                                  // z van de polen
+  const W = 0.16, L = 0.20, Hh = 0.15;
   const cellGeo = cache('sysCell', () => G.box(W - 0.02, Hh - 0.04, (L - 0.02) / 6 - 0.004));
   const accu = A('Accu', { d: '12-voltaccu in de motorruimte, in een accubak met afdekkap, poolklemmen, hoofdhouder en een ontgassingsslang. Naast de accubak zit de zekerings- en relaisdoos van de motorruimte.', spec: [['Spanning', '12 V'], ['Plaats', 'motorruimte rechtsvoor (aannemelijk)']], ex: [-0.15, 0.3, 0.1] }, [
     P('Accubak', G.rbox(W, Hh, L, 0.012), MAT.sysBattery, { d: 'Kunststof accubak met de zes cellen.', p: [BX, BY, BZ] }),
-    P('Accudeksel', G.rbox(W + 0.004, 0.018, L + 0.004, 0.006), MAT.plasticGrey, { d: 'Deksel met ontgassingskanaal.', p: [BX, BY + Hh / 2 + 0.009, BZ], ex: [0, 0.2, 0] }),
+    P('Accudeksel', G.rbox(W + 0.002, 0.018, L + 0.002, 0.006), MAT.plasticGrey, { d: 'Deksel met ontgassingskanaal.', p: [BX, BY + Hh / 2 + 0.009, BZ], ex: [0, 0.2, 0] }),
     A('Cellen', { d: 'De zes in serie geschakelde cellen van de accu (2 volt per cel), in de accubak onder het deksel.', ex: [0, 0.1, 0], inner: true }, [0, 1, 2, 3, 4, 5].map(k => P(`Cel ${k + 1}`, cellGeo, MAT.sysBattery, { d: 'Loodzuurcel van 2 volt, in serie geschakeld met de andere cellen.', p: [BX, BY - 0.004, BZ + (k - 2.5) * ((L - 0.02) / 6)], ex: [0, k * 0.02, (k - 2.5) * 0.03], inner: true }))),
-    P('Pluspool', G.cyl('y', 0.009, 0.009, 0.026, 12), MAT.steel, { d: 'Pluspool van de accu.', p: [BX + 0.05, BY + Hh / 2 + 0.03, BZ - 0.1], ex: [0, 0.27, 0] }),
-    P('Minpool', G.cyl('y', 0.008, 0.008, 0.026, 12), MAT.steel, { d: 'Minpool van de accu.', p: [BX - 0.05, BY + Hh / 2 + 0.03, BZ - 0.1], ex: [0, 0.27, 0] }),
-    P('Poolklem plus', merge([G.cyl('y', 0.014, 0.014, 0.02, 12), xf(G.box(0.014, 0.02, 0.03), [0.016, 0, 0])]), MAT.steel, { d: 'Poolklem op de pluspool, aangesloten op de accuafkoppelunit.', p: [BX + 0.05, BY + Hh / 2 + 0.045, BZ - 0.1], ex: [0.04, 0.33, 0] }),
-    P('Poolklem min', merge([G.cyl('y', 0.013, 0.013, 0.02, 12), xf(G.box(0.014, 0.02, 0.03), [-0.016, 0, 0])]), MAT.steel, { d: 'Poolklem op de minpool, met de massakabel naar de carrosserie.', p: [BX - 0.05, BY + Hh / 2 + 0.045, BZ - 0.1], ex: [-0.04, 0.33, 0] }),
-    P('Afdekkap plus', G.cyl('y', 0.02, 0.02, 0.026, 14), MAT.red, { d: 'Rode afdekkap over de pluspool tegen kortsluiting.', p: [BX + 0.05, BY + Hh / 2 + 0.065, BZ - 0.1], ex: [0, 0.42, 0] }),
-    P('Accuafkoppelunit', merge([G.rbox(0.05, 0.03, 0.04, 0.006), xf(G.cyl('x', 0.006, 0.006, 0.03, 8), [0.04, 0, 0])]), MAT.plasticGrey, { d: 'Afkoppelunit met pyrotechnische klem die de voeding bij een aanrijding onderbreekt.', p: [BX + 0.05 + 0.04, BY + Hh / 2 + 0.03, BZ - 0.1], ex: [0.14, 0.3, 0] }),
-    P('Accuhouder', merge([G.box(W + 0.05, 0.01, 0.025), xf(G.cyl('y', 0.004, 0.004, 0.2, 6), [W / 2 + 0.018, -0.09, 0]), xf(G.cyl('y', 0.004, 0.004, 0.2, 6), [-W / 2 - 0.018, -0.09, 0])]), MAT.darkSteel, { d: 'Beugel die de accu op de bak houdt, met twee trekstangen.', p: [BX, BY + Hh / 2 + 0.024, BZ - 0.06], ex: [0, 0.36, 0] }),
-    P('Accubak onderplaat', G.box(W + 0.07, 0.014, L + 0.02), MAT.darkSteel, { d: 'Draagplaat van de accu op de langsligger.', p: [BX, BY - Hh / 2 - 0.007, BZ], ex: [0, -0.12, 0] }),
-    P('Ontgassingsslang', tube([[BX - 0.08, BY + Hh / 2 - 0.01, BZ - 0.08], [BX - 0.1, BY + 0.0, BZ - 0.1], [BX - 0.12, BY - 0.1, BZ - 0.12]], 0.006, 12, 6), MAT.sysHose, { d: 'Slangetje dat accugassen naar buiten voert.', ex: [-0.04, -0.1, 0] }),
+    P('Pluspool', G.cyl('y', 0.009, 0.009, 0.026, 12), MAT.steel, { d: 'Pluspool van de accu.', p: [BX + 0.05, BY + Hh / 2 + 0.03, PZ], ex: [0, 0.27, 0] }),
+    P('Minpool', G.cyl('y', 0.008, 0.008, 0.026, 12), MAT.steel, { d: 'Minpool van de accu.', p: [BX - 0.05, BY + Hh / 2 + 0.03, PZ], ex: [0, 0.27, 0] }),
+    P('Poolklem plus', merge([G.cyl('y', 0.014, 0.014, 0.02, 12), xf(G.box(0.014, 0.02, 0.03), [0.016, 0, 0])]), MAT.steel, { d: 'Poolklem op de pluspool, aangesloten op de accuafkoppelunit.', p: [BX + 0.05, BY + Hh / 2 + 0.045, PZ], ex: [0.04, 0.33, 0] }),
+    P('Poolklem min', merge([G.cyl('y', 0.013, 0.013, 0.02, 12), xf(G.box(0.014, 0.02, 0.03), [-0.016, 0, 0])]), MAT.steel, { d: 'Poolklem op de minpool, met de massakabel naar de carrosserie.', p: [BX - 0.05, BY + Hh / 2 + 0.045, PZ], ex: [-0.04, 0.33, 0] }),
+    P('Afdekkap plus', G.cyl('y', 0.02, 0.02, 0.026, 14), MAT.red, { d: 'Rode afdekkap over de pluspool tegen kortsluiting.', p: [BX + 0.05, BY + Hh / 2 + 0.065, PZ], ex: [0, 0.42, 0] }),
+    P('Accuafkoppelunit', merge([G.rbox(0.05, 0.03, 0.04, 0.006), xf(G.cyl('x', 0.006, 0.006, 0.03, 8), [0.04, 0, 0])]), MAT.plasticGrey, { d: 'Afkoppelunit met pyrotechnische klem die de voeding bij een aanrijding onderbreekt.', p: [BX + 0.05 + 0.04, BY + Hh / 2 + 0.03, PZ], ex: [0.14, 0.3, 0] }),
+    P('Accuhouder', merge([G.box(W + 0.05, 0.01, 0.025), xf(G.cyl('y', 0.004, 0.004, 0.2, 6), [W / 2 + 0.018, -0.09, 0]), xf(G.cyl('y', 0.004, 0.004, 0.2, 6), [-W / 2 - 0.018, -0.09, 0])]), MAT.darkSteel, { d: 'Beugel die de accu op de bak houdt, met twee trekstangen.', p: [BX, BY + Hh / 2 + 0.024, PZ + 0.02], ex: [0, 0.36, 0] }),
+    P('Accubak onderplaat', G.box(W + 0.07, 0.014, L), MAT.darkSteel, { d: 'Draagplaat van de accu op de langsligger.', p: [BX, BY - Hh / 2 - 0.007, BZ], ex: [0, -0.12, 0] }),
+    P('Ontgassingsslang', tube([[BX - 0.03, BY + Hh / 2 - 0.01, PZ + 0.01], [BX - 0.03, BY + 0.0, BZ - 0.115], [BX - 0.03, BY - 0.1, BZ - 0.115]], 0.006, 12, 6), MAT.sysHose, { d: 'Slangetje dat accugassen naar buiten voert.', ex: [-0.04, -0.1, 0] }),
   ]);
-  const uHeight = 0.462;
+  const uHeight = 0.462, UZ = BZ + 0.02;               // zekeringkast: tussen de zuigslang (achter) en de frontmodule (voor)
   const upc = A('Zekeringkast motorruimte', { d: 'Zekerings- en relaisdoos van de motorruimte (UPC) op een bakje naast de accubak (in het werkplaatsboek op een bakje bovenop de accubak), met de hoofdzekeringen voor de motorruimte.', ex: [0.14, 0.2, 0] }, [
-    P('Doosbasis', G.rbox(0.08, 0.04, 0.15, 0.008), MAT.plastic, { d: 'Onderbak met de zekeringen en relais.', p: [-0.5, uHeight, BZ - 0.02], ex: [0, 0.02, 0] }),
-    P('Doosdeksel', merge([G.rbox(0.082, 0.012, 0.152, 0.005), xf(G.box(0.04, 0.012, 0.03), [0.0, 0.012, 0])]), MAT.plasticGrey, { d: 'Afsluitdeksel met clips.', p: [-0.5, uHeight + 0.026, BZ - 0.02], ex: [0, 0.14, 0] }),
-    P('Maxizekeringblok', merge([G.box(0.06, 0.016, 0.03), ...[-0.02, 0, 0.02].map(x => xf(G.box(0.012, 0.014, 0.012), [x, 0.012, 0]))]), MAT.red, { d: 'Blok met de hoofdzekeringen.', p: [-0.5, uHeight + 0.04, BZ + 0.04], ex: [0, 0.2, 0.08] }),
-    P('Doosstekker', G.rbox(0.03, 0.03, 0.04, 0.006), MAT.plastic, { d: 'Stekker voor de kabelboom van de motorruimte.', p: [-0.445, uHeight, BZ - 0.03], ex: [0.12, 0, 0] }),
+    P('Doosbasis', G.rbox(0.08, 0.04, 0.13, 0.008), MAT.plastic, { d: 'Onderbak met de zekeringen en relais.', p: [-0.47, uHeight, UZ], ex: [0, 0.02, 0] }),
+    P('Doosdeksel', merge([G.rbox(0.082, 0.012, 0.132, 0.005), xf(G.box(0.04, 0.012, 0.03), [0.0, 0.012, 0])]), MAT.plasticGrey, { d: 'Afsluitdeksel met clips.', p: [-0.47, uHeight + 0.026, UZ], ex: [0, 0.14, 0] }),
+    P('Maxizekeringblok', merge([G.box(0.06, 0.016, 0.03), ...[-0.02, 0, 0.02].map(x => xf(G.box(0.012, 0.014, 0.012), [x, 0.012, 0]))]), MAT.red, { d: 'Blok met de hoofdzekeringen.', p: [-0.47, uHeight + 0.04, UZ + 0.05], ex: [0, 0.2, 0.08] }),
+    P('Doosstekker', G.rbox(0.03, 0.03, 0.04, 0.006), MAT.plastic, { d: 'Stekker voor de kabelboom van de motorruimte.', p: [-0.47, uHeight + 0.045, UZ - 0.03], ex: [0.05, 0.12, -0.05] }),
   ]);
   const ecu = A('Motorcomputer', { d: 'Motormanagementcomputer (ECU) van de F4Rt op een beugel aan het schutbord: regelt inspuiting, ontsteking, turbodruk en nokkenasverstelling. De exacte plaats is voor dit model niet gevonden (opbouw schematisch).', ex: [0, 0.2, -0.12] }, [
     P('ECU behuizing', G.rbox(0.16, 0.04, 0.13, 0.007), MAT.ecu, { d: 'Aluminium behuizing met de printplaat van de motorcomputer.', p: [-0.27, 0.615, 1.1] }),
     P('ECU beugel', merge([G.box(0.17, 0.012, 0.14), xf(G.box(0.17, 0.05, 0.01), [0, 0.025, -0.07])]), MAT.darkSteel, { d: 'Beugel die de motorcomputer aan het schutbord bevestigt.', p: [-0.27, 0.589, 1.1], ex: [0, -0.1, 0] }),
     P('ECU stekker', G.rbox(0.06, 0.03, 0.03, 0.006), MAT.plastic, { d: 'Grote stekker voor de motorbedrading.', p: [-0.27, 0.62, 1.175], ex: [0, 0.06, 0.12] }),
   ]);
-  const uch = A('Centrale cabine-unit', { d: 'Centrale cabine-unit (UCH) linksonder in het dashboard, met de hoofdzekeringen voor het interieur. Bevat de hoofdzekeringen voor het interieur en ontvangt onder meer de signalen van de bandenspanningssensoren.', ex: [0.2, -0.1, 0.3] }, [
-    P('UCH behuizing', G.rbox(0.12, 0.05, 0.14, 0.008), MAT.ecu, { d: 'Behuizing met de printplaat van de cabine-unit.', p: [0.62, 0.45, 0.92] }),
-    P('UCH zekeringkast', merge([G.box(0.1, 0.03, 0.1), ...[-0.03, 0, 0.03].map(x => xf(G.box(0.02, 0.02, 0.06), [x, 0.024, 0]))]), MAT.plastic, { d: 'Zekeringkast onder het dashboard, links van de stuurkolom.', p: [0.62, 0.395, 0.92], ex: [0, -0.1, 0] }),
+  // UCH: achter het onderpaneel van het interieur (dat de klep levert), in het frame van dat paneel:
+  // lokale z wijst van de bestuurder af, het paneel zit op x = 0,37 in het vlak van het dashboard
+  const uf = typeof intFace === 'function' ? intFace(0.66, 0.008) : { z: 0.52, y: 0.656, rx: -0.528 };
+  const uc = Math.cos(uf.rx), us = Math.sin(uf.rx);
+  const uchAt = (lx, ly, lz) => [0.37 + lx, uf.y + ly * uc - lz * us, uf.z + ly * us + lz * uc];
+  const uch = A('Centrale cabine-unit', { d: 'Centrale cabine-unit (UCH) met de zekeringen voor het interieur, achter het onderpaneel links van de stuurkolom (de klep van dat paneel hoort bij het interieur). Ontvangt onder meer de signalen van de bandenspanningssensoren. Opbouw schematisch.', p: uchAt(0, 0, 0), r: [uf.rx, 0, 0], ex: [0.2, -0.1, 0.3] }, [
+    P('UCH behuizing', G.rbox(0.15, 0.07, 0.04, 0.008), MAT.ecu, { d: 'Behuizing met de printplaat van de cabine-unit.', p: [-0.05, 0, 0.05] }),
+    P('UCH stekker', G.rbox(0.05, 0.03, 0.03, 0.006), MAT.plastic, { d: 'Stekker voor de kabelboom van de cabine.', p: [-0.05, -0.045, 0.083], ex: [0, -0.06, 0.08] }),
+    P('UCH zekeringkast', merge([G.box(0.1, 0.045, 0.026), ...[-0.03, 0, 0.03].map(x => xf(G.box(0.02, 0.03, 0.01), [x, 0, 0.016]))]), MAT.plastic, { d: 'Zekeringkast van het interieur naast de cabine-unit, achter het paneel.', p: [0.085, 0, 0.045], ex: [0.08, 0, 0.06] }),
   ]);
   const horns = [1, -1].map(s => A(`Claxon ${sideName(s)}`, { d: 'Elektrische claxon achter de voorbumper (aantal en plaats geschat).', ex: [s * 0.12, -0.08, 0.1] }, [
     P('Claxonhuis', merge([G.cyl('z', 0.04, 0.04, 0.02, 20), xf(G.lathe('z', [[0.012, 0], [0.026, 0.02], [0.034, 0.05]], 16, 'sysHorn'), [0, 0, 0.012])]), MAT.darkSteel, { d: 'Membraanhoorn met trechter.', p: [s * 0.62, 0.53, 2.1], ex: [0, 0, 0.1] }),
     P('Claxonbeugel', merge([G.box(0.03, 0.05, 0.008), xf(G.box(0.03, 0.008, 0.05), [0, 0.025, 0.03])]), MAT.darkSteel, { d: 'Beugel waarmee de claxon aan de bumperbalk hangt.', p: [s * 0.62, 0.53 - 0.01, 2.06], ex: [0, 0.08, -0.08] }),
   ]));
   const plusCable = A('Accukabel plus', { d: 'Dikke voedingskabel van de accu naar de startmotor, onder de koelslangen langs de voorkant van de motor.', ex: [0, -0.1, 0.1] }, [
-    P('Kabel', tube([[BX + 0.05, BY + Hh / 2 + 0.07, BZ - 0.1], [BX + 0.07, BY + 0.0, BZ - 0.125], [-0.50, 0.43, 1.95], [-0.42, 0.34, 1.88], [-0.28, 0.27, 1.85], [0.0, 0.26, 1.84], [0.18, 0.3, 1.78], [starter[0] - 0.02, starter[1] - 0.04, starter[2] + 0.05], starter], 0.009, 56, 8), MAT.red, { d: 'Dikke kabel met rode isolatie.', ex: [0, -0.05, 0] }),
-    P('Kabelschoen accu', G.cyl('y', 0.014, 0.014, 0.008, 10), MAT.copper, { d: 'Kabelschoen op de poolklem.', p: [BX + 0.05, BY + Hh / 2 + 0.065, BZ - 0.1], ex: [0, 0.48, 0] }),
-    P('Kabelschoen startmotor', G.cyl('x', 0.012, 0.012, 0.008, 10), MAT.copper, { d: 'Kabelschoen op de pluspool van de startmotor.', p: starter, ex: [0.06, 0, 0] }),
+    P('Kabel', tube([[BX + 0.05, BY + Hh / 2 + 0.07, PZ], [BX + 0.09, BY + Hh / 2 + 0.07, PZ], [-0.47, 0.594, PZ], [-0.52, 0.58, 1.89], [-0.53, 0.45, 1.9], [-0.50, 0.425, 1.92], [-0.42, 0.34, 1.88], [-0.28, 0.27, 1.85], [0.0, 0.26, 1.84], [0.18, 0.3, 1.78], stAt(-0.04, -0.12, 0.1), stAt(0.05, -0.02, 0.07), stAt(0.03, 0, 0.025), starter], 0.009, 56, 8), MAT.red, { d: 'Dikke kabel met rode isolatie.', ex: [0, -0.05, 0] }),
+    P('Kabelschoen accu', G.cyl('y', 0.014, 0.014, 0.008, 10), MAT.copper, { d: 'Kabelschoen op de poolklem.', p: [BX + 0.05, BY + Hh / 2 + 0.065, PZ], ex: [0, 0.48, 0] }),
+    P('Kabelschoen startmotor', G.cyl('x', 0.0095, 0.0095, 0.008, 10), MAT.copper, { d: 'Kabelschoen op de pluspool van de startmotor.', p: starter, ex: [0.06, 0, 0] }),
     ...[[-0.5, 0.43, 1.95], [-0.28, 0.27, 1.85], [0.0, 0.26, 1.84]].map((p, i) => P(`Kabelclip ${i + 1}`, G.box(0.014, 0.012, 0.02), MAT.plastic, { d: 'Kunststof clip die de kabel op zijn plaats houdt.', p, ex: [0, -0.06, 0] })),
   ]);
   const massa = A('Massakabels', { d: 'Massaverbindingen: van de minpool naar de carrosserie en een massaband naar de motor.', ex: [0, 0.1, 0.1] }, [
-    P('Massakabel accu', tube([[BX - 0.05, BY + Hh / 2 + 0.065, BZ - 0.1], [BX - 0.1, BY + Hh / 2 + 0.02, BZ - 0.13], [BX - 0.09, BY - 0.04, BZ - 0.13]], 0.008, 14, 8), MAT.sysHose, { d: 'Kabel van de minpool naar de carrosserie.', ex: [-0.06, 0, 0] }),
-    P('Massaoog carrosserie', merge([G.cyl('z', 0.012, 0.012, 0.004, 10), xf(hexBolt(0.016, 0.006, 'z'), [0, 0, 0.002])]), MAT.steel, { d: 'Massaoog met bout op de langsligger.', p: [BX - 0.09, BY - 0.04, BZ - 0.135], ex: [0, 0, 0.1] }),
+    P('Massakabel accu', tube([[BX - 0.05, BY + Hh / 2 + 0.065, PZ], [BX - 0.063, BY + Hh / 2 + 0.02, BZ - 0.12], [BX - 0.063, BY - 0.04, 1.795]], 0.008, 14, 8), MAT.sysHose, { d: 'Kabel van de minpool naar de carrosserie.', ex: [-0.06, 0, 0] }),
+    P('Massaoog carrosserie', merge([G.cyl('z', 0.012, 0.012, 0.004, 10), xf(hexBolt(0.016, 0.006, 'z'), [0, 0, 0.002])]), MAT.steel, { d: 'Massaoog met bout op de voorkant van de wielkast.', p: [BX - 0.063, BY - 0.04, 1.783], ex: [0, 0, -0.1] }),
   ]);
   // kabelbomen (schematisch)
   const harness = A('Kabelbomen', { d: 'De hoofdkabelbomen van de auto in vereenvoudigde vorm: voorzijde (koplampen en claxons), motorruimte met motorcomputer en cabine met de lijn naar de achterlichten.', ex: [0, 0.14, 0] }, [
-    P('Kabelboom voorzijde', merge([tube([[-0.46, 0.47, 1.9], [-0.5, 0.6, 1.88], [-0.5, 0.72, 1.88], [-0.2, 0.72, 1.88], [0.2, 0.72, 1.88], [0.5, 0.72, 1.88], [0.56, 0.68, 1.9]], 0.01, 48, 6), tube([[-0.5, 0.72, 1.88], [-0.58, 0.7, 1.9]], 0.007, 6, 6)]), MAT.sysHose, { d: 'Bedrading van de zekeringkast naar de koplampen, achter het koelpakket langs.', ex: [0, 0.1, 0] }),
+    P('Kabelboom voorzijde', merge([tube([[-0.47, 0.51, UZ - 0.03], [-0.46, 0.62, 1.95], [-0.5, 0.72, 1.92], [-0.2, 0.72, 1.88], [0.2, 0.72, 1.88], [0.5, 0.72, 1.88], [0.56, 0.68, 1.9]], 0.01, 48, 6), tube([[-0.5, 0.72, 1.88], [-0.58, 0.7, 1.9]], 0.007, 6, 6)]), MAT.sysHose, { d: 'Bedrading van de zekeringkast naar de koplampen, achter het koelpakket langs.', ex: [0, 0.1, 0] }),
     P('Kabelboom motorruimte', merge([tube([[-0.27, 0.64, 1.17], [-0.2, 0.63, 1.07], [0.0, 0.62, 1.05], [0.18, 0.62, 1.04]], 0.011, 24, 6), tube([[-0.27, 0.64, 1.17], [-0.31, 0.66, 1.26]], 0.007, 6, 6)]), MAT.sysHose, { d: 'Bedrading van de motorcomputer langs het schutbord; vertakt naar de sensoren en loopt door een rubber doorvoer de cabine in.', ex: [0, 0.1, -0.1] }),
-    P('Kabelboom cabine', tube([[0.62, 0.42, 0.92], [0.5, 0.27, 0.7], [0.42, 0.255, 0.0], [0.42, 0.255, -1.0], [0.45, 0.26, -1.9], [0.6, 0.55, -2.23]], 0.01, 80, 6), MAT.sysHose, { d: 'Bedrading van de centrale cabine-unit onder de bekleding langs de dorpel naar de achterlichten.', ex: [0.1, 0, 0] }),
+    P('Kabelboom cabine', tube([uchAt(-0.05, -0.062, 0.083), [0.4, 0.45, 0.66], [0.5, 0.27, 0.7], [0.42, 0.255, 0.0], [0.42, 0.255, -1.0], [0.45, 0.26, -1.9], [0.6, 0.55, -2.23]], 0.01, 80, 6), MAT.sysHose, { d: 'Bedrading van de centrale cabine-unit onder de bekleding langs de dorpel naar de achterlichten.', ex: [0.1, 0, 0] }),
     P('Doorvoer schutbord', G.cyl('z', 0.04, 0.04, 0.02, 14), MAT.rubber, { d: 'Rubber doorvoer in het schutbord voor de kabelboom.', p: [0.18, 0.62, 1.03], ex: [0, 0, 0.12] }),
   ]);
   return A('Elektrisch systeem', { d: 'Accu met zekeringkast, motorcomputer, cabine-unit, claxons, voedings- en massakabels en de kabelbomen.', ex: [-1.5, 0.7, 1.4] }, [accu, upc, ecu, uch, ...horns, plusCable, massa, harness]);
@@ -318,9 +327,9 @@ function buildElectrical() {
 
 /* ============================ de hele auto ============================ */
 function buildCar() {
-  const wheels = A('Wielen', { d: 'Vier lichtmetalen wielen met banden 225/45 R18 (18 inch is leverbaar; voor een Nederlandse Initiale Paris van 2011 is 17 inch even goed mogelijk) en bandenspanningssensoren in de ventielen.', ex: [0, 0, 0] },
+  const wheels = A('Wielen', { d: 'Vier lichtmetalen wielen met banden 225/45 R18 en bandenspanningssensoren in de ventielen. Maat: 18 inch (UK Initiale Lux standaard; voor een Nederlandse Initiale Paris van 2011 is 17 inch even goed mogelijk).', ex: [0, 0, 0] },
     [[1, true], [-1, true], [1, false], [-1, false]].map(([s, f]) => buildWheel(s, f)));
-  const chassis = A('Onderstel', { d: 'Vooras met stuurinrichting, achteras, de vier wielen en het remsysteem.', ex: [0, -0.4, 0] },
+  const chassis = A('Onderstel', { d: 'Vooras met stuurinrichting, achteras, de vier wielen (225/45 R18; 18 inch is de maat van de UK Initiale Lux, voor een Nederlandse Initiale Paris van 2011 is 17 inch even goed mogelijk) en het remsysteem.', ex: [0, -0.4, 0] },
     [buildFrontAxle(), buildRearAxle(), wheels, buildBrakeSystem()]);
   const car = A('Renault Laguna III', {
     d: 'Renault Laguna III hatchback (fase 2, 2011) in Initiale Paris-uitvoering, zilvergrijs metallic (Gris Platine), met de 2.0 Turbo F4Rt-motor en zestraps automaat. Klik op een onderdeel om het uit te klappen, dubbelklik om er direct naartoe te gaan, rechtsklik of houd vast om weer in te klappen.',
