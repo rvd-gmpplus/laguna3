@@ -46,7 +46,7 @@ const PRESETS = [
   { id: 'parkBrake', cat: 'Onderstel', label: 'Parkeerrem', note: 'Elektrische parkeerremunit bij de achteras, uit elkaar: elektromotor met wormoverbrenging en kabelverdeler, en de twee kabels naar de achterklauwen.', iso: ['Parkeerrem'], open: ['Parkeerrem'], labels: 'Parkeerrem', cam: { dir: [0.6, 0.75, -1], pad: 1.05 } },
   // Carrosserie
   { id: 'body', cat: 'Carrosserie', label: 'Carrosserie', key: '6', note: 'Kooi met portieren, kleppen, bumpers, verlichting en ruiten: eerste laag uit elkaar.', iso: ['Carrosserie'], open: ['Carrosserie'], cam: { dir: [1, 0.5, 1.08], pad: 1.03 } },
-  { id: 'doorLF', cat: 'Carrosserie', label: 'Portier linksvoor', note: 'Linker voorportier tot op de onderdelen, met de buitenspiegel.', iso: ['Portier linksvoor'], deep: ['Portier linksvoor'], cam: { dir: [1, 0.3, 0.35], pad: 1.05 } },
+  { id: 'doorLF', cat: 'Carrosserie', label: 'Portier linksvoor', note: 'Linker voorportier tot op de onderdelen, met de buitenspiegel.', iso: ['Portier linksvoor'], deep: ['Portier linksvoor'], cam: { dir: [0.85, 0.5, 0.75], pad: 1.05 } },
   { id: 'headlampL', cat: 'Carrosserie', label: 'Koplamp links', note: 'Bi-xenon koplamp links uit elkaar.', iso: ['Koplamp links'], deep: ['Koplamp links'], cam: { dir: [0.8, 0.35, 1], pad: 1.06 } },
   { id: 'tailgate', cat: 'Carrosserie', label: 'Achterklep', note: 'Achterklep van de hatchback met achterruit, derde remlicht, wisser, slot en gasveren, uit elkaar.', iso: ['Achterklep'], deep: ['Achterklep'], cam: { dir: [0.55, 0.45, -1], pad: 1.05 } },
   // Interieur
