@@ -19,7 +19,7 @@ Controles (zie de app-brief):
   12 ingesloten onderdelen verborgen bij een dichte ouder
   13 batching: minder tekenopdrachten, aanwijzen en selecteren in een samengevoegde groep, openen maakt los, dichtklappen weer samen
 """
-import sys, os, random, json
+import sys, os, random, json, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from harness import session
 
@@ -180,9 +180,20 @@ def settle(pg, ms=180):
     pg.wait_for_timeout(ms)
 
 
+_CDP = {}
+
+
 def tap(pg, touch, x, y, **kw):
     if touch:
-        pg.touchscreen.tap(x, y)
+        # Tik met de tijdstempels van het gebaar zelf (zoals een echt toestel ze meegeeft): 60 ms tussen neer en op.
+        # touchscreen.tap van Playwright stempelt het loslaten pas als het neerzetten is afgehandeld; onder zware
+        # belasting (SwiftShader, zes agents) duurt dat soms langer dan 500 ms en lijkt de tik dan echt lang drukken.
+        cdp = _CDP.get(id(pg))
+        if cdp is None:
+            cdp = _CDP[id(pg)] = pg.context.new_cdp_session(pg)
+        t0 = time.time()
+        cdp.send('Input.dispatchTouchEvent', {'type': 'touchStart', 'touchPoints': [{'x': x, 'y': y, 'id': 1}], 'timestamp': t0})
+        cdp.send('Input.dispatchTouchEvent', {'type': 'touchEnd', 'touchPoints': [], 'timestamp': t0 + 0.06})
     else:
         pg.mouse.click(x, y, **kw)
 
