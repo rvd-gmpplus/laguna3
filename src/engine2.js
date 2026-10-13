@@ -4,14 +4,14 @@ const TIM = [[0, 0, 0.0281, 1], [0.099, 0.093, 0.0255, 1], [CAMZ, CAMY, 0.0569, 
 // hulpaandrijvingsvlak (z, y) bij x = XA, in looprichting: krukaspoelie, aircocompressor, stuurpomp, dynamo, geleiderol, spanner (tegen de rug)
 const ACC = [[0, 0, 0.07, 1], [0.161, -0.16, 0.0595, 1], [ENG_PS[2], ENG_PS[1], ENG_PS_R, 1], [0.19, 0.34, 0.0245, 1], [0.127, 0.23, 0.03, 1], [0.096, 0.11, 0.03, -1]];
 function pulley(r, w, key) {
-  return G.lathe('x', [[0.008, -w / 2], [r, -w / 2], [r, -w / 2 + 0.003], [r - 0.004, -w / 2 + 0.006], [r - 0.004, w / 2 - 0.006], [r, w / 2 - 0.003], [r, w / 2], [0.008, w / 2]], 36, key);
+  return G.lathe('x', [[0.008, -w / 2], [r, -w / 2], [r, -w / 2 + 0.003], [r - 0.004, -w / 2 + 0.006], [r - 0.004, w / 2 - 0.006], [r, w / 2 - 0.003], [r, w / 2], [0.008, w / 2]], 28, key);
 }
-function engPolyV(r, w, key) {   // poelie met zeven groeven (multiriem)
+function engPolyV(r, w, key, seg = 32) {   // poelie met zeven groeven (multiriem)
   return cache('engPV' + key, () => {
     const pts = [[0.01, -w / 2], [r + 0.002, -w / 2]];
     for (let k = 0; k < 7; k++) { const x0 = -w / 2 + 0.002 + k * (w - 0.004) / 7; pts.push([r, x0], [r - 0.0018, x0 + (w - 0.004) / 14]); }
     pts.push([r, w / 2 - 0.002], [r + 0.002, w / 2], [0.01, w / 2]);
-    return G.lathe('x', pts, 36);
+    return G.lathe('x', pts, seg);
   });
 }
 // distributiekap in drie delen: band [y0, y1] van de omhullende rond de distributiewielen
@@ -108,7 +108,7 @@ function buildIntake() {
       P('Huis', tbHousing, MAT.alu, { d: 'Aluminium huis met doorlaat, motorkamer en tandwielkamer.', ex: [0, 0, 0] }),
       P('Vlinderklep', G.cyl('x', 0.0295, 0.0295, 0.0015, 24), MAT.steel, { d: 'Gasklep die de luchtstroom doseert.', r: [0, 0, 0.14], ex: [-0.06, 0, 0] }),
       P('Klepas', G.cyl('z', 0.004, 0.004, 0.084, 8), MAT.steel, { d: 'As van de gasklep.', ex: [0, 0, 0.09] }),
-      P('Terugstelveer', spring(0.008, 0.0011, 0.012, 3, 'z'), MAT.steel, { d: 'Veer die de klep zonder stroom in de noodloopstand terugzet.', p: [0, 0, -0.044], ex: [0, 0, -0.05] }),
+      P('Terugstelveer', engSpring(0.008, 0.0011, 0.012, 3, 6, 'z'), MAT.steel, { d: 'Veer die de klep zonder stroom in de noodloopstand terugzet.', p: [0, 0, -0.044], ex: [0, 0, -0.05] }),
       P('Gelijkstroommotor', merge([G.cyl('z', 0.015, 0.015, 0.045, 16), xf(G.cyl('z', 0.002, 0.002, 0.01, 6), [0, 0, 0.027])]), MAT.darkSteel, { d: 'Elektromotor die de gasklep via de tandwielen verdraait.', p: [0, -0.05, 0.002], ex: [0, -0.05, 0] , inner: true }),
       P('Tussentandwiel', gear(22, 0.012, 0.0105, 0.004, 0.002, 'z'), MAT.plasticGrey, { d: 'Tussenwiel van de tandwielreductie.', p: [0, -0.028, 0.047], ex: [0, -0.02, 0.06] }),
       P('Sectortandwiel', gear(44, 0.022, 0.0205, 0.004, 0.004, 'z'), MAT.plasticGrey, { d: 'Tandwiel op de klepas (in werkelijkheid een sector).', p: [0, 0, 0.049], ex: [0, 0, 0.075] }),
@@ -187,7 +187,7 @@ function buildTurbocharger() {
     A('Wastegate-actuator', { d: 'Drukdoos die bij te hoge laaddruk via de stang de wastegate opent; binnenwerk schematisch.', ex: [0, -0.02, 0.09] }, [
       P('Drukdoos', merge([G.lathe('x', [[0, -0.012], [0.026, -0.01], [0.028, 0], [0.026, 0.012], [0, 0.014]], 24, 'engWgCan'), xf(G.box(0.03, 0.006, 0.05), [0.012, -0.03, 0])]), MAT.steel, { d: 'Stalen doos met steun op het compressorhuis.', p: [0.065, -0.012, 0.098], ex: [0, 0, 0] }),
       P('Membraan', G.cyl('x', 0.025, 0.025, 0.0012, 20), MAT.rubber, { d: 'Rubber membraan met steunplaat.', p: [0.065, -0.012, 0.098], ex: [0.03, 0, 0] }),
-      P('Veer', spring(0.012, 0.0014, 0.02, 4, 'x'), MAT.steel, { d: 'Veer die de wastegate dicht houdt tot de laaddruk hem overwint.', p: [0.062, -0.012, 0.098], ex: [0.06, 0, 0] }),
+      P('Veer', engSpring(0.012, 0.0014, 0.02, 4, 6, 'x'), MAT.steel, { d: 'Veer die de wastegate dicht houdt tot de laaddruk hem overwint.', p: [0.062, -0.012, 0.098], ex: [0.06, 0, 0] }),
       P('Stang met oog', merge([rodBetween([0.05, -0.012, 0.098], [-0.079, 0.0, 0.05], 0.0022, 8), xf(G.torus('z', 0.004, 0.0013, 12, 4), [-0.079, 0.0, 0.05])]), MAT.steel, { d: 'Instelbare stang naar de wastegatehefboom.', ex: [-0.03, 0, 0.03] }),
       P('Borgclip', G.torus('x', 0.0035, 0.0007, 10, 4), MAT.steel, { d: 'Borgclip op de pen van de hefboom.', p: [-0.079, 0.0, 0.056], ex: [-0.03, 0, 0.06] }),
       P('Drukslangetje', tube([[0.078, -0.012, 0.098], [0.092, -0.01, 0.09], [0.1, 0.0, 0.07], [0.09, 0.02, 0.04]], 0.003, 16, 6), MAT.rubber, { d: 'Slangetje van het magneetventiel naar de drukdoos.', ex: [0.03, 0, 0.03] }),
@@ -232,7 +232,7 @@ function buildLube() {
       P('Binnenrotor', gear(10, 0.018, 0.015, 0.014, 0.006, 'x'), MAT.steel, { d: 'Aangedreven binnenrotor op de pompas.', p: [0.022, 0, 0], ex: [-0.02, 0, 0.06] }),
       P('Buitenrotor', ringGear(11, 0.027, 0.019, 0.022, 0.014, 'x'), MAT.steel, { d: 'Meedraaiende buitenrotor.', p: [0.022, 0, 0], ex: [-0.02, 0, 0.1] }),
       P('Overdrukplunjer', G.cyl('z', 0.005, 0.005, 0.014, 10), MAT.steel, { d: 'Plunjer van de overdrukklep.', p: [0.03, -0.025, 0.03], ex: [0, 0, 0.05] }),
-      P('Overdrukveer', spring(0.004, 0.0007, 0.016, 5, 'z'), MAT.steel, { d: 'Veer die de maximale oliedruk bepaalt.', p: [0.03, -0.025, 0.046], ex: [0, 0, 0.075] }),
+      P('Overdrukveer', engSpring(0.004, 0.0007, 0.016, 5, 6, 'z'), MAT.steel, { d: 'Veer die de maximale oliedruk bepaalt.', p: [0.03, -0.025, 0.046], ex: [0, 0, 0.075] }),
       P('Kettingwiel pomp', gear(24, 0.031, 0.027, 0.008, 0.006, 'x'), MAT.steel, { d: 'Kettingwiel op de pompas.', ex: [-0.06, 0, 0] }),
       P('Pompbout 1', hexBolt(0.05, 0.007, 'x'), MAT.darkSteel, { d: 'Bout waarmee de pomp onder het blok zit.', p: [0.012, 0.022, 0.025], ex: [-0.08, 0.02, 0] }),
       P('Pompbout 2', hexBolt(0.05, 0.007, 'x'), MAT.darkSteel, { d: 'Bout waarmee de pomp onder het blok zit.', p: [0.012, 0.022, -0.025], ex: [-0.08, 0.02, 0] }),
@@ -304,7 +304,7 @@ function buildEngineCooling() {
       A('Thermostaat', { d: 'Wasthermostaat: begint te openen bij 89 ± 2 °C en is volledig open bij 99 ± 2 °C (waarden uit het werkplaatshandboek van de F4R-familie, aannemelijk voor deze motor); binnenwerk schematisch.', p: th, ex: [0.05, 0.05, 0], inner: true, spec: [['Begint te openen (F4R)', '89 ± 2 °C'], ['Volledig open (F4R)', '99 ± 2 °C']] }, [
         P('Waselement met zuiger', merge([G.cyl('x', 0.0085, 0.0085, 0.02, 14), xf(G.cyl('x', 0.002, 0.002, 0.016, 6), [-0.016, 0, 0])]), MAT.copper, { d: 'Waselement dat bij warmte uitzet en de zuiger uitdrukt.', p: [0.008, 0, 0], ex: [0.04, 0, 0] }),
         P('Klepplaat', merge([G.cyl('x', 0.019, 0.019, 0.002, 20), annulus(0.019, 0.023, 0.002, 'x', 20)]), MAT.steel, { d: 'Klepplaat met rand die de doorlaat naar de radiateur opent.', ex: [0, 0, 0] }),
-        P('Thermostaatveer', spring(0.011, 0.0012, 0.016, 3, 'x'), MAT.steel, { d: 'Veer die de klep sluit als de motor afkoelt.', p: [0.012, 0, 0], ex: [0.025, 0, 0] }),
+        P('Thermostaatveer', engSpring(0.011, 0.0012, 0.016, 3, 6, 'x'), MAT.steel, { d: 'Veer die de klep sluit als de motor afkoelt.', p: [0.012, 0, 0], ex: [0.025, 0, 0] }),
         P('Omloopklepje', G.cyl('x', 0.01, 0.01, 0.0015, 14), MAT.steel, { d: 'Klepje dat de omloop bij een koude motor open houdt.', p: [0.022, 0, 0], ex: [0.06, 0, 0] }),
       ]),
       P('Pakking waterstuk', G.rbox(0.0012, 0.056, 0.066, 0.006), MAT.rubber, { d: 'Pakking tussen waterstuk en kop.', p: [0.2152, 0.3, 0.04], ex: [-0.03, 0, 0] }),

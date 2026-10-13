@@ -50,11 +50,12 @@ function engStudNut(len, d, at, ax = 'y') {
   });
 }
 // schroefveer met weinig segmenten (klepveren, 16 stuks)
-function engSpring(R, wire, h, turns) {
-  return cache(`engSp${R}|${wire}|${h}|${turns}`, () => {
-    const pts = [], N = Math.ceil(turns * 10);
+// per = punten per winding (6 is genoeg voor een draad van enkele millimeters), ax = aslichting
+function engSpring(R, wire, h, turns, per = 10, ax = 'y') {
+  return cache(`engSp${R}|${wire}|${h}|${turns}|${per}|${ax}`, () => {
+    const pts = [], N = Math.ceil(turns * per);
     for (let i = 0; i <= N; i++) { const t = i / N, a = t * turns * PI * 2; pts.push(V3(R * Math.cos(a), t * h - h / 2, R * Math.sin(a))); }
-    return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), N, wire, 4, false);
+    return yTo(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), N, wire, 4, false), ax);
   });
 }
 function engORing(R, r, ax = 'y') { return G.torus(ax, R, r, 20, 5); }
@@ -240,10 +241,10 @@ function pistonGroup(i) {
   const py = PIN_UP[i] * THROW, pp = py + ROD, n = i + 1;
   ROD_GEOS = ROD_GEOS || rodShapes();
   const piston = cache('engPiston', () => merge([
-    G.lathe('y', [[0, 0.0295], [0.0402, 0.0295], [0.04134, 0.0283], [0.04134, -0.026], [0.039, -0.026], [0.039, 0.017], [0, 0.017]], 40),
-    G.cyl('x', 0.0145, 0.0145, 0.056, 16),
+    G.lathe('y', [[0, 0.0295], [0.0402, 0.0295], [0.04134, 0.0283], [0.04134, -0.026], [0.039, -0.026], [0.039, 0.017], [0, 0.017]], 32),
+    G.cyl('x', 0.0145, 0.0145, 0.056, 12),
   ]));
-  const ring = r => G.torus('y', 0.0408, r, 40, 5);
+  const ring = r => G.torus('y', 0.0408, r, 32, 4);
   return A(`Zuiger en drijfstang ${n}`, { d: `Zuiger-drijfstanggroep van cilinder ${n} (geteld vanaf de vliegwielzijde); ontsteekvolgorde 1-3-4-2.`, p: [XC[i], 0, 0], ex: [XC[i] * 1.0, 0.13, 0] }, [
     P('Zuiger', piston, MAT.alu, { d: 'Aluminium zuiger, Ø82,69 mm, met drie veergroeven; de zuigerpen ligt 0,8 mm uit het midden en het merkteken "V" wijst naar het vliegwiel.', p: [0, pp, 0], ex: [0, 0.05, 0], spec: [['Diameter', '82,69 mm'], ['Zuigerveren', '3']] }),
     A('Zuigerveren', { d: 'De drie zuigerveren: twee compressieveren en de olieschraapveer.', p: [0, pp, 0], ex: [0, 0.11, 0] }, [
@@ -251,7 +252,7 @@ function pistonGroup(i) {
       P('Compressieveer 2', ring(0.00105), MAT.darkSteel, { d: 'Tweede compressieveer; schraapt ook olie terug.', p: [0, 0.0195, 0], ex: [0, 0.012, 0] }),
       A('Olieschraapveer', { d: 'Olieschraapveer; de opbouw met twee lamellen en een spreidveer is schematisch weergegeven (niet bevestigd voor de F4R).', p: [0, 0.013, 0], ex: [0, -0.006, 0] }, [
         P('Schraaplamel boven', ring(0.0006), MAT.steel, { d: 'Dunne stalen schraaplamel.', p: [0, 0.0022, 0], ex: [0, 0.012, 0] }),
-        P('Spreidveer', G.torus('y', 0.0399, 0.0013, 40, 5), MAT.steel, { d: 'Golvende spreidveer die de lamellen tegen de cilinderwand drukt.', ex: [0, 0.006, 0] }),
+        P('Spreidveer', G.torus('y', 0.0399, 0.0013, 32, 4), MAT.steel, { d: 'Golvende spreidveer die de lamellen tegen de cilinderwand drukt.', ex: [0, 0.006, 0] }),
         P('Schraaplamel onder', ring(0.0006), MAT.steel, { d: 'Dunne stalen schraaplamel.', p: [0, -0.0022, 0], ex: [0, -0.004, 0] }),
       ]),
     ]),
@@ -301,23 +302,23 @@ function valveGroup(cyl, k, sg) {
   const [rY, rU] = toL(CAMY - ENG_CAM_RB - ENG_ROLL_R, sg * CAMZ);
   const pY = L + 0.003, f = 2.7, hU = rU * f, hY = pY + (rY - 0.004 - pY) * f;
   const key = intake ? 'In' : 'Ex';
-  const valve = G.lathe('y', [[0, 0], [V.rh, 0], [V.rh, 0.0016], [V.rh * 0.62, 0.0065], [V.rs * 1.5, 0.017], [V.rs, 0.024], [V.rs, L - 0.006], [V.rs * 0.85, L - 0.0055], [V.rs * 0.85, L - 0.0035], [V.rs, L - 0.003], [V.rs, L], [0, L]], 16, 'engValve' + key);
+  const valve = G.lathe('y', [[0, 0], [V.rh, 0], [V.rh, 0.0016], [V.rh * 0.62, 0.0065], [V.rs * 1.5, 0.017], [V.rs, 0.024], [V.rs, L - 0.006], [V.rs * 0.85, L - 0.0055], [V.rs * 0.85, L - 0.0035], [V.rs, L - 0.003], [V.rs, L], [0, L]], 12, 'engValve' + key);
   const yS = L - 0.0125, yB = yS - 0.036;          // bovenkant en onderkant klepveer
   const keeper = st => cache('engKeep' + st, () => new THREE.CylinderGeometry(0.0044, 0.0036, 0.0075, 8, 1, false, st, PI));
   const arm = cache('engRff' + key, () => side(shapeOf(circlesHull([[0, pY + 0.0005, 0.0042], [sg * rU, rY - 0.0048, 0.0062], [sg * hU, hY + 0.0022, 0.0052]], 0)), 0.011));
   const name = `${intake ? 'Inlaatklep' : 'Uitlaatklep'} ${cyl + 1}${k ? 'b' : 'a'}`;
   return A(name, { d: `Klepgroep van cilinder ${cyl + 1} (${intake ? 'inlaat' : 'uitlaat'}): klep, veerzitting, steelafdichting, veer, veerschotel, twee spieën, hydraulische klepstoter en rolzwenkarm.`, p: [x, y0, z0], r: [sg * th, 0, 0], ex: [x * 0.6, 0, 0] }, [
     P(intake ? 'Inlaatklep' : 'Uitlaatklep', valve, intake ? MAT.steel : MAT.darkSteel, { d: intake ? 'Inlaatklep: kop Ø33,5 mm, steel Ø5,47 mm, lengte 110,08 mm.' : 'Uitlaatklep van hittebestendige nikkellegering (Nimonic): kop Ø29 mm, steel Ø5,447 mm, lengte 106,87 mm.', ex: [0, -0.3, 0], spec: intake ? [['Kop', 'Ø33,5 mm'], ['Steel', 'Ø5,47 mm'], ['Lengte', '110,08 mm']] : [['Kop', 'Ø29 mm'], ['Steel', 'Ø5,447 mm'], ['Lengte', '106,87 mm']] }),
-    P('Klepveerzitting', annulus(0.0035, 0.0145, 0.001, 'y', 20), MAT.steel, { d: 'Onderste veerschotel op de cilinderkop.', p: [0, yB - 0.0005, 0], ex: [0, 0.02, 0] }),
-    P('Klepsteelafdichting', G.lathe('y', [[0.0028, 0], [0.0058, 0], [0.0058, 0.007], [0.0042, 0.0095], [0.0028, 0.0095]], 12, 'engStemSeal'), MAT.rubber, { d: 'Rubber afdichting op de klepgeleider die olieverbruik langs de klepsteel voorkomt.', p: [0, yB, 0], ex: [0, 0.034, 0] }),
-    P('Klepveer', engSpring(0.01145, 0.0019, 0.036, 6.2), MAT.steel, { d: 'Klepveer van ovaal draad: vrije lengte 41,3 mm, buiten Ø27 mm, binnen Ø18,8 mm.', p: [0, (yS + yB) / 2, 0], ex: [0, 0.06, 0], spec: [['Vrije lengte', '41,3 mm'], ['Buitendiameter', '27 mm']] }),
-    P('Veerschotel', G.lathe('y', [[0.0038, 0], [0.0135, 0.0015], [0.0135, 0.003], [0.0065, 0.0065], [0.0038, 0.0065]], 16, 'engRetainer'), MAT.steel, { d: 'Bovenste veerschotel die de klepveer vasthoudt.', p: [0, yS, 0], ex: [0, 0.088, 0] }),
+    P('Klepveerzitting', annulus(0.0035, 0.0145, 0.001, 'y', 12), MAT.steel, { d: 'Onderste veerschotel op de cilinderkop.', p: [0, yB - 0.0005, 0], ex: [0, 0.02, 0] }),
+    P('Klepsteelafdichting', G.lathe('y', [[0.0028, 0], [0.0058, 0], [0.0058, 0.007], [0.0042, 0.0095], [0.0028, 0.0095]], 8, 'engStemSeal'), MAT.rubber, { d: 'Rubber afdichting op de klepgeleider die olieverbruik langs de klepsteel voorkomt.', p: [0, yB, 0], ex: [0, 0.034, 0] }),
+    P('Klepveer', engSpring(0.01145, 0.0019, 0.036, 6.2, 6), MAT.steel, { d: 'Klepveer van ovaal draad: vrije lengte 41,3 mm, buiten Ø27 mm, binnen Ø18,8 mm.', p: [0, (yS + yB) / 2, 0], ex: [0, 0.06, 0], spec: [['Vrije lengte', '41,3 mm'], ['Buitendiameter', '27 mm']] }),
+    P('Veerschotel', G.lathe('y', [[0.0038, 0], [0.0135, 0.0015], [0.0135, 0.003], [0.0065, 0.0065], [0.0038, 0.0065]], 12, 'engRetainer'), MAT.steel, { d: 'Bovenste veerschotel die de klepveer vasthoudt.', p: [0, yS, 0], ex: [0, 0.088, 0] }),
     P('Klepspie 1', keeper(0), MAT.darkSteel, { d: 'Halve kegelspie die de veerschotel op de klepsteel klemt.', p: [0, L - 0.0045, 0], ex: [0.013, 0.104, 0] }),
     P('Klepspie 2', keeper(PI), MAT.darkSteel, { d: 'Tweede halve kegelspie.', p: [0, L - 0.0045, 0], ex: [-0.013, 0.104, 0] }),
     A('Hydraulische klepstoter', { d: 'Hydraulische speling-opvanger: het steunpunt van de rolzwenkarm; houdt de klepspeling automatisch op nul. Binnenwerk schematisch weergegeven.', p: [0, hY, sg * hU], ex: [0, 0.12, sg * 0.012] }, [
-      P('Huis', G.lathe('y', [[0, -0.026], [0.0062, -0.026], [0.0062, -0.004], [0.0053, -0.004], [0.0053, -0.024], [0, -0.024]], 14, 'engHlaBody'), MAT.steel, { d: 'Stalen huis dat in een boring in de kop staat.', ex: [0, 0, 0] }),
-      P('Plunjer', cache('engHlaPlunger', () => merge([xf(G.cyl('y', 0.005, 0.005, 0.0125, 12), [0, -0.0085, 0]), xf(G.sphere(0.0032, 10), [0, -0.0012, 0])])), MAT.steel, { d: 'Plunjer met kogelkop waarop de rolzwenkarm scharniert; olie onder de plunjer neemt de speling op.', ex: [0, 0.04, 0] }),
-      P('Terugslagkogel met veer', cache('engHlaBall', () => merge([xf(G.sphere(0.0018, 8), [0, -0.0155, 0]), xf(G.cyl('y', 0.0014, 0.0014, 0.005, 8, true), [0, -0.0195, 0])])), MAT.darkSteel, { d: 'Terugslagkogel met veertje dat de olie in de drukkamer opsluit.', ex: [0, 0.02, 0] }),
+      P('Huis', G.lathe('y', [[0, -0.026], [0.0062, -0.026], [0.0062, -0.004], [0.0053, -0.004], [0.0053, -0.024], [0, -0.024]], 10, 'engHlaBody'), MAT.steel, { d: 'Stalen huis dat in een boring in de kop staat.', ex: [0, 0, 0] }),
+      P('Plunjer', cache('engHlaPlunger', () => merge([xf(G.cyl('y', 0.005, 0.005, 0.0125, 8), [0, -0.0085, 0]), xf(G.sphere(0.0032, 8), [0, -0.0012, 0])])), MAT.steel, { d: 'Plunjer met kogelkop waarop de rolzwenkarm scharniert; olie onder de plunjer neemt de speling op.', ex: [0, 0.04, 0] }),
+      P('Terugslagkogel met veer', cache('engHlaBall', () => merge([xf(G.sphere(0.0018, 6), [0, -0.0155, 0]), xf(G.cyl('y', 0.0014, 0.0014, 0.005, 6, true), [0, -0.0195, 0])])), MAT.darkSteel, { d: 'Terugslagkogel met veertje dat de olie in de drukkamer opsluit.', ex: [0, 0.02, 0] }),
     ]),
     A('Rolzwenkarm', { d: 'Rolzwenkarm (linguet à rouleau): de nok drukt op de rol, de arm kantelt om de klepstoter en opent de klep.', ex: [0, 0.155, 0] }, [
       P('Arm', arm, MAT.steel, { d: 'Geperste stalen arm met kogelkom en drukvlak op de klepsteel.', ex: [0, 0, 0] }),
@@ -386,7 +387,7 @@ function buildPhaser() {
     P('Huis met distributiewiel', merge([gear(38, 0.0569, 0.0545, 0.027, 0.03, 'x'), xf(annulus(0.016, 0.046, 0.008, 'x', 32), [-0.017, 0, 0])]), MAT.steel, { d: 'Huis met 38 tanden waarover de distributieriem loopt (tandental afgeleid uit de 2 : 1-overbrenging).', spec: [['Tanden', '38 (geschat)']], ex: [0, 0, 0] }),
     P('Vleugelrotor', merge([G.cyl('x', 0.024, 0.024, 0.022, 20), ...[0, 1, 2, 3].map(k => xf(G.box(0.022, 0.016, 0.008), [0, 0.032 * Math.cos(k * HALF), 0.032 * Math.sin(k * HALF)], [k * HALF, 0, 0]))]), MAT.darkSteel, { d: 'Rotor met vier vleugels op de nokkenas; oliedruk aan een van beide kanten verdraait hem ten opzichte van het huis.', ex: [-0.05, 0, 0], inner: true }),
     P('Vergrendelpen', G.cyl('x', 0.003, 0.003, 0.012, 8), MAT.steel, { d: 'Pen die rotor en huis bij lage oliedruk vergrendelt (start).', p: [0, 0.034, 0.008], ex: [-0.04, 0.03, 0], inner: true }),
-    P('Vergrendelveer', spring(0.0022, 0.0004, 0.008, 4, 'x'), MAT.steel, { d: 'Veer achter de vergrendelpen.', p: [0.008, 0.034, 0.008], ex: [-0.025, 0.04, 0], inner: true }),
+    P('Vergrendelveer', engSpring(0.0022, 0.0004, 0.008, 4, 6, 'x'), MAT.steel, { d: 'Veer achter de vergrendelpen.', p: [0.008, 0.034, 0.008], ex: [-0.025, 0.04, 0], inner: true }),
     P('Centrale bout', hexBolt(0.05, 0.012, 'x'), MAT.darkSteel, { d: 'Centrale bout van de faseversteller; vervangen bij demontage.', p: [-0.022, 0, 0], ex: [-0.09, 0, 0] }),
     P('Afdekplaat', G.lathe('x', [[0, -0.003], [0.015, -0.003], [0.016, 0], [0.015, 0.003], [0, 0.003]], 20, 'engPhaserCap'), MAT.aluCast, { d: 'Afdekdop (obturateur) voor in het huis.', p: [-0.029, 0, 0], ex: [-0.13, 0, 0] }),
   ]);
