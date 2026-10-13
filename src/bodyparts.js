@@ -232,8 +232,8 @@ function buildBody() {
   ]);
   // voorkop
   const frontGrp = A('Voorkop', { d: 'Dragende voorbouw: langsliggers met kreukelzones, veerpoottorens, schutbord, torpedobak, frontmodule en bumperbalk.', ex: [0, 0.05, 0.42] }, [
-    ...both(s => P(`Langsligger voor ${sn(s)}`, G.box(0.075, 0.12, 1.1), MAT.paintIn, { d: 'Kokerprofiel in de motorruimte dat botsenergie opvangt.', p: [s * 0.53, 0.34, 1.58], ex: [s * 0.08, 0, 0] })),
-    ...both(s => P(`Crashbox ${sn(s)}`, G.rbox(0.09, 0.1, 0.13, 0.01), MAT.steel, { d: 'Kreukelelement tussen langsligger en bumperbalk; wordt na een lichte aanrijding vervangen.', p: [s * 0.45, 0.4, 2.11], ex: [s * 0.04, 0, 0.08] })),
+    ...both(s => P(`Langsligger voor ${sn(s)}`, G.box(0.075, 0.12, 1.1), MAT.paintIn, { d: 'Kokerprofiel in de motorruimte dat botsenergie opvangt.', p: [s * 0.545, 0.34, 1.58], ex: [s * 0.08, 0, 0] })),
+    ...both(s => P(`Crashbox ${sn(s)}`, G.rbox(0.09, 0.1, 0.13, 0.01), MAT.steel, { d: 'Kreukelelement tussen langsligger en bumperbalk; wordt na een lichte aanrijding vervangen.', p: [s * 0.545, 0.37, 2.11], ex: [s * 0.04, 0, 0.08] })),
     ...both(s => P(`Veerpoottoren ${sn(s)}`, merge([G.cyl('y', 0.095, 0.13, 0.26, 24, true), xf(G.cyl('y', 0.095, 0.095, 0.006, 24), [0, 0.13, 0])]), MAT.paintIn, { d: 'Bevestigingspunt van de veerpoot in de carrosserie.', p: [s * 0.6, 0.71, 1.33], ex: [s * 0.1, 0.06, 0] })),
     ...both(s => P(`Wielkast voor ${sn(s)}`, G.half('x', ARCH + 0.03, 0.2, PI, 24), MAT.paintIn, { d: 'Binnenscherm van de voorwielkast, gelast aan langsligger en veerpoottoren.', p: [s * 0.6, AY, AXF], r: [0, 0, 0], ex: [s * 0.1, 0.04, 0] })),
     P('Schutbord', G.rbox(1.5, 0.62, 0.012, 0.004), MAT.paintIn, { d: 'Scheidingswand tussen motorruimte en interieur.', p: [0, 0.6, 1.02], ex: [0, 0, -0.08] }),
