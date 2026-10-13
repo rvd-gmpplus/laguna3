@@ -109,7 +109,7 @@ function buildFlexplate() {
 function buildEngineCover() {
   const top = 0.473, cap = cache('engTopCover', () => merge([xf(G.rbox(0.4, 0.016, 0.22, 0.008), [0, -0.008, 0]), ...[-0.12, -0.04, 0.04, 0.12].map(x => xf(G.box(0.05, 0.003, 0.16), [x, 0.0005, 0]))]));
   const grom = [[0.188, 0.06], [-0.14, 0.075], [-0.05, -0.085]];
-  return A('Motorafdekkap', { d: 'Kunststof afdekkap bovenop de motor met akoestische schuimlaag, op rubber nokken.', ex: [0, 0.62, -0.12] }, [
+  return A('Motorafdekkap', { d: 'Kunststof afdekkap bovenop de motor met akoestische schuimlaag, op rubber nokken.', ex: [0, 1.05, -0.12] }, [
     P('Afdekkap', cap, MAT.plastic, { d: 'Kunststof afdekkap (vorm geschat).', p: [0, top - 0.0005, 0], ex: [0, 0, 0] }),
     P('Akoestische schuimlaag', G.rbox(0.38, 0.006, 0.2, 0.003), MAT.engFoam, { d: 'Schuimlaag aan de onderkant die motorgeluid dempt.', p: [0, top - 0.019, 0], ex: [0, -0.05, 0] }),
     ...grom.map(([x, z], k) => P(`Rubber nok ${k + 1}`, G.cyl('y', 0.0065, 0.0065, 0.024, 10), MAT.rubber, { d: 'Rubber nok waarop de afdekkap klemt.', p: [x, ENG_COVER_TOP + 0.012, z], ex: [0, -0.1, 0] })),

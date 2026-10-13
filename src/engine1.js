@@ -244,7 +244,7 @@ function pistonGroup(i) {
     G.cyl('x', 0.0145, 0.0145, 0.056, 16),
   ]));
   const ring = r => G.torus('y', 0.0408, r, 40, 5);
-  return A(`Zuiger en drijfstang ${n}`, { d: `Zuiger-drijfstanggroep van cilinder ${n} (geteld vanaf de vliegwielzijde); ontsteekvolgorde 1-3-4-2.`, p: [XC[i], 0, 0], ex: [XC[i] * 0.2, 0.13, 0] }, [
+  return A(`Zuiger en drijfstang ${n}`, { d: `Zuiger-drijfstanggroep van cilinder ${n} (geteld vanaf de vliegwielzijde); ontsteekvolgorde 1-3-4-2.`, p: [XC[i], 0, 0], ex: [XC[i] * 1.0, 0.13, 0] }, [
     P('Zuiger', piston, MAT.alu, { d: 'Aluminium zuiger, Ø82,69 mm, met drie veergroeven; de zuigerpen ligt 0,8 mm uit het midden en het merkteken "V" wijst naar het vliegwiel.', p: [0, pp, 0], ex: [0, 0.05, 0], spec: [['Diameter', '82,69 mm'], ['Zuigerveren', '3']] }),
     A('Zuigerveren', { d: 'De drie zuigerveren: twee compressieveren en de olieschraapveer.', p: [0, pp, 0], ex: [0, 0.11, 0] }, [
       P('Compressieveer 1', ring(0.0011), MAT.darkSteel, { d: 'Bovenste compressieveer (vuurveer): dicht de verbrandingsruimte af.', p: [0, 0.0245, 0], ex: [0, 0.028, 0] }),
@@ -255,7 +255,7 @@ function pistonGroup(i) {
         P('Schraaplamel onder', ring(0.0006), MAT.steel, { d: 'Dunne stalen schraaplamel.', p: [0, -0.0022, 0], ex: [0, -0.004, 0] }),
       ]),
     ]),
-    P('Zuigerpen', G.cyl('x', 0.0105, 0.0105, 0.061, 16), MAT.steel, { d: 'Vrij zwevende zuigerpen, Ø21 × 61 mm.', p: [0, pp, 0], ex: [0.04, 0, 0], spec: [['Afmeting', 'Ø21 × 61 mm']] }),
+    P('Zuigerpen', G.cyl('x', 0.0105, 0.0105, 0.061, 16), MAT.steel, { d: 'Vrij zwevende zuigerpen, Ø21 × 61 mm.', p: [0, pp, 0], ex: [Math.sign(XC[i]) * 0.04, 0, 0], spec: [['Afmeting', 'Ø21 × 61 mm']] }),
     P('Borgveer vliegwielzijde', G.torus('x', 0.0099, 0.0008, 18, 4), MAT.steel, { d: 'Borgveer die de zuigerpen in de zuiger vasthoudt; opening circa 45° van de verticaal.', p: [0.0318, pp, 0], ex: [0.06, 0, 0] }),
     P('Borgveer distributiezijde', G.torus('x', 0.0099, 0.0008, 18, 4), MAT.steel, { d: 'Tweede borgveer van de zuigerpen.', p: [-0.0318, pp, 0], ex: [-0.06, 0, 0] }),
     P('Drijfstang', ROD_GEOS[0], MAT.steel, { d: 'Gesmede drijfstang met I-profiel, hartafstand 144 mm.', p: [0, py, 0], spec: [['Hartafstand', '144 mm'], ['Groot oog', 'Ø51,6 mm']], ex: [0, 0, 0] }),
@@ -393,7 +393,7 @@ function buildPhaser() {
 }
 function buildVvtValve() {
   const P0 = [-0.185, ENG_COVER_TOP, 0.06];
-  return A('VVT-elektroklep', { d: 'Olieregelventiel op het kleppendeksel dat de olie naar de faseversteller stuurt; binnenwerk schematisch weergegeven.', p: P0, ex: [0, 0.42, 0.1] }, [
+  return A('VVT-elektroklep', { d: 'Olieregelventiel op het kleppendeksel dat de olie naar de faseversteller stuurt; binnenwerk schematisch weergegeven.', p: P0, ex: [0, 0.55, 0.1] }, [
     P('Spoelhuis met stekker', merge([xf(G.cyl('y', 0.013, 0.013, 0.018, 16), [0, 0.011, 0]), xf(G.rbox(0.018, 0.012, 0.02, 0.003), [0, 0.012, 0.019]), xf(G.box(0.036, 0.004, 0.012), [0.012, 0.003, 0])]), MAT.plastic, { d: 'Elektromagneet met stekker, door de motorcomputer gestuurd.', ex: [0, 0, 0] }),
     P('Schuifventiel met veer', G.cyl('y', 0.0065, 0.0065, 0.04, 12), MAT.steel, { d: 'Schuif met terugstelveer die de oliekanalen opent en sluit.', p: [0, -0.018, 0], ex: [0, -0.03, 0] }),
     P('Zeefje', annulus(0.003, 0.0066, 0.004, 'y', 12), MAT.steel, { d: 'Zeefje dat vuil uit de stuurolie houdt.', p: [0, -0.04, 0], ex: [0, -0.06, 0] }),
@@ -420,7 +420,7 @@ function buildHead() {
   for (let c = 0; c < 4; c++) for (let k = 0; k < 2; k++) { valvesIn.push(valveGroup(c, k, 1)); valvesOut.push(valveGroup(c, k, -1)); }
   const headBolt = hexBolt(0.115, 0.0105, 'y');
   const bridgeBolts = [], coverBolts = [];
-  XM.forEach((x, i) => [0.093, -0.093].forEach((z, j) => bridgeBolts.push(P(`Lagerbrugbout ${i * 2 + j + 1}`, hexBolt(0.045, 0.007), MAT.darkSteel, { d: 'Bout van de nokkenaslagerbrug.', p: [x, CAMY + ENG_BRIDGE_T, z], r: [PI, 0, 0], ex: [0, 0.07, 0] }))));
+  XM.forEach((x, i) => [0.093, -0.093].forEach((z, j) => bridgeBolts.push(P(`Lagerbrugbout ${i * 2 + j + 1}`, hexBolt(0.045, 0.007), MAT.darkSteel, { d: 'Bout van de nokkenaslagerbrug.', p: [x, CAMY + ENG_BRIDGE_T, z], r: [PI, 0, 0], ex: [0, 0.04, 0] }))));
   [-0.2, -0.1, 0.1, 0.2].forEach((x, i) => [0.088, -0.088].forEach((z, j) => coverBolts.push(P(`Kleppendekselbout ${i * 2 + j + 1}`, hexBolt(0.03, 0.006), MAT.steel, { d: 'Bout van het kleppendeksel.', p: [x, ENG_COVER_TOP, z], r: [PI, 0, 0], ex: [0, 0.07, 0] }))));
   const camSealG = annulus(0.014, 0.0205, 0.007, 'x', 24), plugG = G.lathe('x', [[0, -0.003], [0.017, -0.003], [0.017, 0.003], [0, 0.003]], 20, 'engCamPlug');
   return A('Cilinderkop', { d: 'Aluminium cilinderkop met twee bovenliggende nokkenassen in één lagerbrug, 16 kleppen met rolzwenkarmen (zoals bij de F4R-familie, aannemelijk voor de 811) en hydraulische klepstoters, faseversteller, kleppendeksel en ontsteking.', ex: [0, 0.3, 0] }, [
@@ -440,9 +440,9 @@ function buildHead() {
     buildPhaser(),
     A('Nokkenaslagerbrug', { d: 'Eén lagerbrug (carter-chapeau de paliers) die beide nokkenassen draagt, met vloeibare pakking op het vlak.', ex: [0, 0.3, 0] }, [
       P('Lagerbrug', engBridgeGeo(), MAT.aluCast, { d: 'Aluminium ladder met de bovenste helften van de twaalf nokkenaslagers.', ex: [0, 0, 0] }),
-      A('Lagerbrugbouten', { d: 'Bouten van de lagerbrug (aantal geschat).', ex: [0, 0.05, 0] }, bridgeBolts),
+      A('Lagerbrugbouten', { d: 'Bouten van de lagerbrug (aantal geschat).', ex: [0, 0.03, 0] }, bridgeBolts),
     ]),
-    A('Kleppendeksel', { d: 'Kleppendeksel met pakking, bouten en olievuldop.', ex: [0, 0.37, 0] }, [
+    A('Kleppendeksel', { d: 'Kleppendeksel met pakking, bouten en olievuldop.', ex: [0, 0.45, 0] }, [
       P('Deksel', engCoverGeo(), MAT.aluCast, { d: 'Deksel over de lagerbrug met doorvoeren voor de vier bobines en een opname voor de VVT-elektroklep.', ex: [0, 0, 0] }),
       P('Kleppendekselpakking', coverGasket, MAT.rubber, { d: 'Rubber pakking onder het kleppendeksel.', ex: [0, -0.025, 0] }),
       A('Kleppendekselbouten', { d: 'Acht bouten van het kleppendeksel (aantal geschat).', ex: [0, 0.05, 0] }, coverBolts),
