@@ -435,7 +435,7 @@ function driveshaft(name, a, b, o) {
   const q = o.sign < 0 ? quatFromTo(V3(-1, 0, 0), dir).multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, PI))) : quatFromTo(V3(1, 0, 0), dir), s = o.sign;
   const bel = G.lathe('x', bellows(0.0445, 0.0236, 0.12, 4), 28, 'drvBel');
   const x1 = o.inner0 || 0.0;                     // begin van de tripode-koppeling (na de tussenas)
-  const outerX = L - 0.095, hubX = L;
+  const outerX = L - 0.16, hubX = L;     // klok eindigt inboard van de wiellagereenheid (G-B13)
   const kids = [];
   if (o.mid) kids.push(A('Tussenas', { d: 'Lange binnenstam van de rechter aandrijfas (circa 350 mm) die in een kogellager achter het blok draait; zo komt de rechter as op dezelfde lengte als de linker.', ex: [-0.05, 0.15, 0.0] }, [
     P('Tussenas (stam)', drvL('Tus', [[0.0125, 0.0], [0.0125, 0.052], [0.0155, 0.058], [0.0155, o.mid - 0.02], [0.0125, o.mid - 0.02], [0.0125, o.mid]], 18), MAT.steel, { d: 'Stalen stam met bakzijde 30 spiebanen, die in het zijwiel van het differentieel steekt.', ex: [0, 0, 0.0001] }),
