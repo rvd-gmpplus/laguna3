@@ -173,6 +173,7 @@ function isUnder(n, a) { for (let p = n; p; p = p.parent) if (p === a) return tr
 let ISO = [];
 let XRAY = false, SYSCOL = false, SEL = null;
 const uiPickable = [];
+let uiPickVer = 0;
 function uiInScope(a) { return !ISO.length || ISO.some(r => isUnder(a, r)); }
 // Ingesloten onderdelen (inner) zijn niet te zien zolang hun oudergroep dicht is; dan tekenen we ze niet.
 // Staat de ouder zelf buiten de isolatie (je isoleert het ingesloten deel), dan is er niets dat het verbergt.
@@ -188,7 +189,7 @@ function applyVisibility() {
     if (!n.asm) { if (n.ev && ins) uiPickable.push(n.obj); return; }
     for (const k of n.kids) walk(k, ins, n.ev);
   })(ROOT, false, true);
-  uiVisDirty = false;
+  uiVisDirty = false; uiPickVer++;
 }
 // Markering door de kleur zelf te verschuiven (een optelsom met emissive verdwijnt op glanzend, licht metaal:
 // gemeten 218 -> 222 in rood op de lak). Minder metaal en minder reflectie, zodat de tint ook op de lak leesbaar is.

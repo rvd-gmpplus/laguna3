@@ -473,7 +473,12 @@ els.tourStop.onclick = () => uiStopTour();
 
 /* ---------- aanwijzen en tikken ---------- */
 const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
-function uiPickList() { return XRAY ? uiPickable.filter(m => !m.userData.node.isBody) : uiPickable; }
+let uiPickXray = [], uiPickXrayKey = -1;
+function uiPickList() {
+  if (!XRAY) return uiPickable;
+  if (uiPickXrayKey !== uiPickVer) { uiPickXray = uiPickable.filter(m => !m.userData.node.isBody); uiPickXrayKey = uiPickVer; }
+  return uiPickXray;
+}
 function pick(cx, cy, loose) {
   const r = canvas.getBoundingClientRect();
   ndc.set(((cx - r.left) / r.width) * 2 - 1, -((cy - r.top) / r.height) * 2 + 1);
@@ -661,7 +666,8 @@ window.addEventListener('keydown', e => {
 /* ---------- labels: genummerde callouts met leiderlijn ---------- */
 const labelPool = [], uiLinePool = [], uiDotPool = [];
 const uiSvgNs = 'http://www.w3.org/2000/svg';
-let uiPlaced = [], uiRectCache = [], uiCands = [];
+let uiRectCache = [], uiNPlaced = 0, uiVx0 = 0, uiVy0 = 0, uiVx1 = 0, uiVy1 = 0;
+const uiCands = [], uiSpots = [];
 const uiAnchor = V3(0, 0, 0), uiGc = V3(0, 0, 0);
 function uiLabelGroup() {
   if (!LABELS) return null;
@@ -683,9 +689,9 @@ function uiNewLabel() {
 }
 function uiHideLabel(i) {
   const el = labelPool[i];
-  if (!el.hidden) { el.hidden = true; el.style.transform = 'translate(-9999px,-9999px)'; }
+  if (!el.hidden) { el.hidden = true; el.style.transform = 'translate(-9999px,-9999px)'; el._x = el._y = null; }
   el._k = null;
-  uiLinePool[i].style.display = 'none'; uiDotPool[i].style.display = 'none';
+  if (uiLinePool[i].style.display !== 'none') { uiLinePool[i].style.display = 'none'; uiDotPool[i].style.display = 'none'; }
 }
 function uiMeasureUi() {
   const out = [];
@@ -700,7 +706,6 @@ function uiMeasureUi() {
   return out;
 }
 function uiRects() { return uiMeasureUi(); }
-const uiOverlap = (a, b, m) => a.x < b.x + b.w + m && a.x + a.w + m > b.x && a.y < b.y + b.h + m && a.y + a.h + m > b.y;
 const uiDirs = [0, 0.52, -0.52, 1.05, -1.05, 1.57, -1.57, 2.36, -2.36, 3.14];
 const uiRadii = [30, 52, 78, 110, 150];
 function updateLabels() {
@@ -721,8 +726,8 @@ function updateLabels() {
     if (k._lw == null) { const el = labelPool[i]; const wasHidden = el.hidden; el.hidden = false; k._lw = el.offsetWidth; k._lh = el.offsetHeight; if (wasHidden) el.hidden = true; }
   }
   const v = uiFreeView(), M = 4;
-  const vx0 = v.x0 + M, vy0 = v.y0 + M, vx1 = v.x1 - M, vy1 = v.y1 - M;
-  uiPlaced = [];
+  uiVx0 = v.x0 + M; uiVy0 = v.y0 + M; uiVx1 = v.x1 - M; uiVy1 = v.y1 - M;
+  uiNPlaced = 0;
   let gx = 0, gy = 0;
   if (g) { uiGc.copy(g.lc).applyMatrix4(g.obj.matrixWorld).project(camera); gx = (uiGc.x * 0.5 + 0.5) * W; gy = (-uiGc.y * 0.5 + 0.5) * H; }
   let shown = 0;
@@ -731,46 +736,61 @@ function updateLabels() {
     uiAnchor.copy(k.lc).applyMatrix4(k.obj.matrixWorld).project(camera);
     const ax = (uiAnchor.x * 0.5 + 0.5) * W, ay = (-uiAnchor.y * 0.5 + 0.5) * H;
     const w = k._lw || 100, h = k._lh || 22;
-    let spot = null;
-    if (uiAnchor.z <= 1 && ax >= vx0 && ax <= vx1 && ay >= vy0 && ay <= vy1) {
-      const base = g && Math.hypot(ax - gx, ay - gy) > 6 ? Math.atan2(ay - gy, ax - gx) : -HALF;
-      const tryAt = (dx, dy) => {
-        const r = { x: ax + dx - w / 2, y: ay + dy - h / 2, w, h };
-        if (r.x < vx0 || r.y < vy0 || r.x + w > vx1 || r.y + h > vy1) return null;
-        for (const q of uiPlaced) { if (uiOverlap(r, q, 4)) return null; if (q.ax > r.x - 3 && q.ax < r.x + w + 3 && q.ay > r.y - 3 && q.ay < r.y + h + 3) return null; }
-        for (const q of uiRectCache) if (uiOverlap(r, q, 2)) return null;
-        return r;
-      };
-      if (k._lo) spot = tryAt(k._lo[0], k._lo[1]);
-      for (let ri = 0; !spot && ri < uiRadii.length; ri++) {
-        for (const da of uiDirs) {
-          const a = base + da, R = uiRadii[ri];
-          const dx = Math.cos(a) * (R + w / 2 * Math.abs(Math.cos(a))), dy = Math.sin(a) * (R * 0.75 + h / 2 * Math.abs(Math.sin(a)));
-          spot = tryAt(dx, dy);
-          if (spot) { k._lo = [dx, dy]; break; }
+    let found = false, dx = 0, dy = 0;
+    if (uiAnchor.z <= 1 && ax >= uiVx0 && ax <= uiVx1 && ay >= uiVy0 && ay <= uiVy1) {
+      // eerst de vorige plek (rustig beeld tijdens animaties), dan ringen rond het anker, van de groep af gericht
+      if (k._lo && uiFits(ax + k._lo[0] - w / 2, ay + k._lo[1] - h / 2, w, h)) { found = true; dx = k._lo[0]; dy = k._lo[1]; }
+      const base = g && Math.abs(ax - gx) + Math.abs(ay - gy) > 6 ? Math.atan2(ay - gy, ax - gx) : -HALF;
+      for (let ri = 0; !found && ri < uiRadii.length; ri++) {
+        const R = uiRadii[ri];
+        for (let di = 0; di < uiDirs.length; di++) {
+          const a = base + uiDirs[di], ca = Math.cos(a), sa = Math.sin(a);
+          dx = ca * (R + w / 2 * Math.abs(ca)); dy = sa * (R * 0.75 + h / 2 * Math.abs(sa));
+          if (uiFits(ax + dx - w / 2, ay + dy - h / 2, w, h)) { found = true; if (!k._lo) k._lo = [0, 0]; k._lo[0] = dx; k._lo[1] = dy; break; }
         }
       }
     }
-    if (!spot) { uiHideLabel(i); continue; }
-    spot.ax = ax; spot.ay = ay; spot.k = k;
-    uiPlaced.push(spot);
+    if (!found) { uiHideLabel(i); continue; }
+    const x = ax + dx - w / 2, y = ay + dy - h / 2;
+    let sp = uiSpots[uiNPlaced];
+    if (!sp) sp = uiSpots[uiNPlaced] = { x: 0, y: 0, w: 0, h: 0, ax: 0, ay: 0, k: null };
+    sp.x = x; sp.y = y; sp.w = w; sp.h = h; sp.ax = ax; sp.ay = ay; sp.k = k;
+    uiNPlaced++;
     el._k = k;
-    el.classList.toggle('sel', k === SEL);
-    el.style.transform = `translate(${Math.round(spot.x)}px, ${Math.round(spot.y)}px)`;
+    const isSel = k === SEL;
+    if (el._sel !== isSel) { el._sel = isSel; el.classList.toggle('sel', isSel); uiDotPool[i].classList.toggle('sel', isSel); }
+    const rx = Math.round(x), ry = Math.round(y);
+    if (el._x !== rx || el._y !== ry || el.hidden) { el._x = rx; el._y = ry; el.style.transform = 'translate(' + rx + 'px,' + ry + 'px)'; }
     if (el.hidden) el.hidden = false;
     // leiderlijn van het ankerpunt naar de dichtstbijzijnde rand van het label
-    const ex = clamp(ax, spot.x, spot.x + w), ey = clamp(ay, spot.y, spot.y + h);
+    const x1 = Math.round(ax), y1 = Math.round(ay), x2 = Math.round(clamp(ax, x, x + w)), y2 = Math.round(clamp(ay, y, y + h));
     const ln = uiLinePool[i], dot = uiDotPool[i];
-    ln.setAttribute('x1', ax.toFixed(1)); ln.setAttribute('y1', ay.toFixed(1)); ln.setAttribute('x2', ex.toFixed(1)); ln.setAttribute('y2', ey.toFixed(1));
-    ln.style.display = '';
-    dot.setAttribute('cx', ax.toFixed(1)); dot.setAttribute('cy', ay.toFixed(1)); dot.style.display = '';
-    dot.classList.toggle('sel', k === SEL);
+    if (ln._x1 !== x1 || ln._y1 !== y1 || ln._x2 !== x2 || ln._y2 !== y2) {
+      ln._x1 = x1; ln._y1 = y1; ln._x2 = x2; ln._y2 = y2;
+      ln.setAttribute('x1', x1); ln.setAttribute('y1', y1); ln.setAttribute('x2', x2); ln.setAttribute('y2', y2);
+      dot.setAttribute('cx', x1); dot.setAttribute('cy', y1);
+    }
+    if (ln.style.display) { ln.style.display = ''; dot.style.display = ''; }
     shown++;
   }
   for (let i = uiCands.length; i < labelPool.length; i++) uiHideLabel(i);
   return shown;
 }
-function labelRects() { return uiPlaced.map(p => ({ name: p.k.name, x: p.x, y: p.y, w: p.w, h: p.h })); }
+// vrije plek voor een label: binnen het vrije beeld, niet over andere labels of hun ankers, niet over de bediening
+function uiFits(x, y, w, h) {
+  if (x < uiVx0 || y < uiVy0 || x + w > uiVx1 || y + h > uiVy1) return false;
+  for (let j = 0; j < uiNPlaced; j++) {
+    const q = uiSpots[j];
+    if (x < q.x + q.w + 4 && x + w + 4 > q.x && y < q.y + q.h + 4 && y + h + 4 > q.y) return false;
+    if (q.ax > x - 3 && q.ax < x + w + 3 && q.ay > y - 3 && q.ay < y + h + 3) return false;
+  }
+  for (let j = 0; j < uiRectCache.length; j++) {
+    const q = uiRectCache[j];
+    if (x < q.x + q.w + 2 && x + w + 2 > q.x && y < q.y + q.h + 2 && y + h + 2 > q.y) return false;
+  }
+  return true;
+}
+function labelRects() { return uiSpots.slice(0, uiNPlaced).map(p => ({ name: p.k.name, x: p.x, y: p.y, w: p.w, h: p.h })); }
 
 /* ---------- formaat en vrij beeld ---------- */
 let uiLastFit = null, uiRefitTimer = 0;
