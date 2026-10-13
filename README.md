@@ -138,6 +138,7 @@ Voorbereiding, alle scripts en de resultaten staan in [docs/testen.md](docs/test
 - De multiriem is in het model 1.569 mm lang tegen 1.795 mm (7PK1795); de beschrijving in de pagina zegt dat. De positie van de stuurpomp en de routes van de slangen zijn schematisch.
 - De voorste langsliggers snijden de aandrijfassen. Dit was al zo en is niet opgelost.
 - Niet gebouwd: UX-punt U19 en een zijkolomindeling voor telefoons in liggende stand.
+- Herkenbaarheid: de visuele poort op de eindbuild vond 3 van de 9 herkenningskenmerken volledig aanwezig, terwijl de eis 7 is. Van voren driekwart is de auto herkenbaar. De achterkant leest te hoekig en te hoog: de schuine fastbackstaart en de afgeronde, smaller wordende achterkant zijn maar deels aanwezig. De chromen sierlijsten, de raamlijst en de dorpelstrip ontbreken. De omtrek ligt wel binnen 3 tot 5 cm van het gemeten silhouet. Zie [docs/premortem.md](docs/premortem.md), struikeldraad 3.
 - Alle laadtijden zijn in een container met software-rendering gemeten (de pagina is daar na 5 tot 21 seconden klaar, afhankelijk van de belasting van de machine). Ze zeggen niets over een echt apparaat.
 - De gedragingen van de webview van een telefoon-app (lang drukken, sneltoetsen in een iframe) zijn niet te testen in de container. De stijlregels ervoor zijn wel getoetst.
 - Niet elke 2.0T 170 automaat uit fase 2 is overal geleverd. Zie [docs/specificaties-en-bronnen.md](docs/specificaties-en-bronnen.md) onder Leverbaarheid.
