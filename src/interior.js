@@ -99,9 +99,9 @@ function intRearHead(x, name) {
 function intRearBench() {
   const bx = intBx, cy = intCy;
   const cush = A('Zitting achterbank', { d: 'Zitkussen van de achterbank: plaat, schuim en lederen bekleding, met de ISOFIX-beugels en de gordelsloten.', p: [0, 0.43, -0.95], ex: [0, 0.06, 0.14] }, [
-    intPart('Zitplaat achter', bx(1.2, 0.012, 0.44, 0.005, [0, -0.045, 0]), MAT.darkSteel, 'Stalen plaat onder het zitschuim.', { inner: true, ex: [0, 0.02, 0] }),
-    intPart('Zitschuim achter', bx(1.24, 0.07, 0.46, 0.03, [0, -0.015, 0]), MAT.intFoam, 'Schuimlaag van de achterbankzitting.', { inner: true, ex: [0, 0.04, 0] }),
-    intPart('Zitbekleding achter', bx(1.3, 0.12, 0.48, 0.03, [0, 0, 0]), MAT.leather, 'Beige lederen bekleding van de zitting.', { ex: [0, 0.1, 0.04] }),
+    intPart('Zitplaat achter', bx(1.17, 0.012, 0.44, 0.005, [0, -0.045, 0]), MAT.darkSteel, 'Stalen plaat onder het zitschuim.', { inner: true, ex: [0, 0.02, 0] }),
+    intPart('Zitschuim achter', bx(1.21, 0.07, 0.46, 0.03, [0, -0.015, 0]), MAT.intFoam, 'Schuimlaag van de achterbankzitting.', { inner: true, ex: [0, 0.04, 0] }),
+    intPart('Zitbekleding achter', bx(1.26, 0.12, 0.48, 0.03, [0, 0, 0]), MAT.leather, 'Beige lederen bekleding van de zitting.', { ex: [0, 0.1, 0.04] }),
     ...[1, -1].map(s => intPart(`ISOFIX-beugel ${sideName(s)}`, merge([rodBetween([s * 0.42 - 0.03, 0.063, -0.25], [s * 0.42 + 0.03, 0.063, -0.25], 0.004, 6), rodBetween([s * 0.42 - 0.03, 0.063, -0.25], [s * 0.42 - 0.03, 0.03, -0.26], 0.004, 6), rodBetween([s * 0.42 + 0.03, 0.063, -0.25], [s * 0.42 + 0.03, 0.03, -0.26], 0.004, 6)]), MAT.steel, 'ISOFIX-beugel voor een kinderzitje op de buitenste zitplaats, in de spleet tussen zitting en rugleuning.', { ex: [s * 0.08, 0.04, -0.06] })),
     ...[[0.2, 'links'], [0, 'midden'], [-0.2, 'rechts']].map(([x, n]) => intPart(`Gordelslot achter ${n}`, merge([bx(0.03, 0.05, 0.04, 0.008, [x, 0.07, -0.2]), bx(0.014, 0.01, 0.02, 0.003, [x, 0.098, -0.2])]), MAT.plastic, 'Gordelslot van de achterbank met gordelverklikker.', { ex: [0, 0.1, 0] })),
   ]);
@@ -345,7 +345,7 @@ function intTrim() {
     A('Vloerbekleding', { d: 'Vloerbedekking met losse matten en de dorpellijsten.', ex: [0, -0.1, 0] }, [
     intPart('Vloerbedekking', carpet, MAT.carpet, 'Getufte vloerbedekking als dunne laag op de vloer en over de tunnel; de uitlaat in de tunnel blijft eronder vrij.', { ex: [0, -0.22, 0] }),
     mat(1, 'bestuurder'), mat(-1, 'passagier'),
-    sill(1, 0.2, 0.8, 'voor'), sill(-1, 0.2, 0.8, 'voor'), sill(1, -0.85, 0.6, 'achter'), sill(-1, -0.85, 0.6, 'achter'),
+    sill(1, 0.2, 0.8, 'voor'), sill(-1, 0.2, 0.8, 'voor'), sill(1, -0.78, 0.44, 'achter'), sill(-1, -0.78, 0.44, 'achter'),
     ]),
     A('Bagageruimte', { d: 'Bekleding van de bagageruimte met hoedenplank, vloerplaat, de luidsprekers van de achterplank en de versterker.', ex: [0, 0.0, -0.3] }, [
     intPart('Hoedenplank', G.rbox(1.3, 0.012, 0.55, 0.005), MAT.carpet, 'Afdekplaat achter de achterbank boven de bagageruimte; in dit model los van de achterklep.', { p: [0, 1.0, -1.85], ex: [0, 0.3, -0.2] }),
