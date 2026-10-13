@@ -865,6 +865,19 @@ const XM = [-0.176, -0.088, 0, 0.088, 0.176];        // hoofdlagers
 const DECK = 0.222, BORE_R = 0.04135, THROW = 0.0465, ROD = 0.144, CAMY = 0.358, CAMZ = 0.056;
 const PIN_UP = [1, -1, -1, 1];                       // krukpennen 1/4 boven, 2/3 onder
 const FIRE = ['1', '3', '4', '2'];
+// Aansluitpunten in het motorframe. systems.js sluit slangen en leidingen hierop aan.
+// Contract: de sleutels blijven bestaan; als de motor verandert, volgen de waarden (p = punt, dir = richting waarin een slang de aansluiting verlaat).
+const ENG_PORTS = {
+  turbineOut: { p: [0.01, 0.15, -0.26], dir: [-0.5298, -0.6623, -0.5298] },   // turbine-uitgang naar downpipe
+  compIn: { p: [0.22, 0.15, -0.26], dir: [1, 0, 0] },                         // compressorinlaat van luchtfilter
+  compOut: { p: [0.155, 0.27, -0.26], dir: [0, 1, 0] },                       // compressoruitlaat naar intercooler
+  throttleIn: { p: [-0.262, 0.14, 0.21], dir: [-1, 0, 0] },                   // ingang gasklephuis van intercooler
+  thermostatOut: { p: [0.27, 0.3, 0.04], dir: [0, 1, 0] },                    // thermostaathuis naar bovenste radiateurslang
+  waterPumpIn: { p: [-0.19, 0.06, 0.15], dir: [0, 0, 1] },                    // waterpompinlaat van onderste radiateurslang
+  fuelRailIn: { p: [0.2, 0.345, 0.155], dir: [0, -1, 0] },                    // aansluiting brandstofrail
+};
+// punt op afstand d buiten een aansluiting, langs dir (motorframe)
+function portAt(port, d = 0) { return [port.p[0] + port.dir[0] * d, port.p[1] + port.dir[1] * d, port.p[2] + port.dir[2] * d]; }
 
 function blockGeo() {
   const s = shapeOf(rrectPts(0.43, 0.21, 0.02));
@@ -1136,6 +1149,8 @@ function buildEngine() {
   ]);
 }
 
+/* ===================== motor F4Rt: aanvullende groepen (hulpaggregaten, turbo-inwendig) ===================== */
+
 /* ===================== aandrijflijn: automaat, aandrijfassen, motorsteunen ===================== */
 const PT_POS = V3(-0.13, 0.40, 1.50), PT_TILT = -0.18, GB_X = 0.235;
 const PTM = new THREE.Matrix4().compose(PT_POS, new THREE.Quaternion().setFromEuler(new THREE.Euler(PT_TILT, 0, 0)), V3(1, 1, 1));
@@ -1145,6 +1160,8 @@ const fromPT = p => V3(...p).applyMatrix4(PTM);
 const ENG2CAR = p => fromPT(p).toArray();             // motorframe = aandrijflijnframe
 const DIFF = [0.125, -0.04, -0.15];                   // in versnellingsbakframe
 const CSH = [-0.101, -0.043];                         // tussenas (y,z)
+// Aansluitpunten in het aandrijflijnframe voor andere systemen (contract: sleutels blijven bestaan).
+const DRV_PORTS = { starterTerminal: [GB_X + 0.12, -0.035, 0.205] };   // plusaansluiting startmotor
 
 function discPack(name, x0, rIn, rOut, n) {
   const kids = [];
@@ -1526,7 +1543,6 @@ function buildInterior() {
 }
 
 /* ===================== koeling, luchtinlaat, uitlaat, brandstof, elektra ===================== */
-const TURB_OUT = [0.01, 0.15, -0.26], COMP_IN = [0.2, 0.15, -0.26], COMP_OUT = [0.155, 0.25, -0.26];
 function buildCooling() {
   const shroud = merge([xf(G.box(0.64, 0.03, 0.03), [0, 0.215, 0]), xf(G.box(0.64, 0.03, 0.03), [0, -0.215, 0]), xf(G.box(0.03, 0.43, 0.03), [0.32, 0, 0]), xf(G.box(0.03, 0.43, 0.03), [-0.32, 0, 0]), G.torus('z', 0.175, 0.012, 48, 6), xf(G.box(0.36, 0.012, 0.012), [0, 0, -0.01]), xf(G.box(0.012, 0.36, 0.012), [0, 0, -0.01])]);
   return A('Koeling en luchtinlaat', { d: 'Radiateur, condensor, intercooler, koelventilator en het luchtinlaattraject naar de turbo.', ex: [0, 0.3, 3.15] }, [
@@ -1548,21 +1564,21 @@ function buildCooling() {
       P('Ventilatormotor', G.cyl('z', 0.045, 0.045, 0.06, 20), MAT.darkSteel, { d: 'Elektromotor met regelweerstand.', p: [0, 0.47, 1.962], ex: [0, 0, -0.12] }),
     ]),
     P('Expansievat', merge([G.rbox(0.14, 0.12, 0.18, 0.02), xf(G.cyl('y', 0.025, 0.025, 0.03, 16), [0.02, 0.07, 0])]), MAT.tank, { d: 'Doorzichtig expansievat met min/max-markering.', p: [-0.5, 0.76, 1.12], ex: [-0.2, 0.16, -0.2] }),
-    P('Koelslang boven', tube([ENG2CAR([0.27, 0.3, 0.04]), [0.22, 0.62, 1.75], [0.33, 0.63, 1.98], [0.33, 0.63, 2.02]], 0.02, 40, 10), MAT.rubber, { d: 'Warme koelvloeistof van de thermostaat naar de radiateur.', ex: [0.1, 0.18, 0] }),
-    P('Koelslang onder', tube([ENG2CAR([-0.19, 0.06, 0.15]), [-0.3, 0.3, 1.85], [-0.33, 0.3, 2.0], [-0.33, 0.3, 2.02]], 0.02, 40, 10), MAT.rubber, { d: 'Afgekoelde vloeistof terug naar de waterpomp.', ex: [-0.1, -0.14, 0] }),
+    P('Koelslang boven', tube([ENG2CAR(ENG_PORTS.thermostatOut.p), [0.22, 0.62, 1.75], [0.33, 0.63, 1.98], [0.33, 0.63, 2.02]], 0.02, 40, 10), MAT.rubber, { d: 'Warme koelvloeistof van de thermostaat naar de radiateur.', ex: [0.1, 0.18, 0] }),
+    P('Koelslang onder', tube([ENG2CAR(ENG_PORTS.waterPumpIn.p), [-0.3, 0.3, 1.85], [-0.33, 0.3, 2.0], [-0.33, 0.3, 2.02]], 0.02, 40, 10), MAT.rubber, { d: 'Afgekoelde vloeistof terug naar de waterpomp.', ex: [-0.1, -0.14, 0] }),
     A('Luchtinlaat', { d: 'Aanzuigtraject van luchthapper tot turbocompressor.', ex: [0.3, 0.36, -0.2] }, [
       P('Aanzuigmond', tube([[0.36, 0.7, 2.02], [0.36, 0.72, 2.12], [0.3, 0.72, 2.18]], 0.03, 16, 10), MAT.plastic, { d: 'Haalt koele buitenlucht achter de grille.', ex: [0, 0, 0.14] }),
       P('Luchtfilterhuis', G.rbox(0.24, 0.1, 0.3, 0.02), MAT.plastic, { d: 'Onderbak van het luchtfilter.', p: [0.36, 0.69, 1.86], ex: [0, -0.1, 0] }),
       P('Luchtfilterelement', G.rbox(0.22, 0.035, 0.28, 0.006), MAT.filter, { d: 'Papieren luchtfilter.', p: [0.36, 0.755, 1.86], ex: [0, 0.08, 0] }),
       P('Luchtfilterdeksel', G.rbox(0.24, 0.05, 0.3, 0.02), MAT.plastic, { d: 'Deksel met aansluiting naar de turbo.', p: [0.36, 0.795, 1.86], ex: [0, 0.2, 0] }),
-      P('Aanzuigslang turbo', tube([[0.36, 0.73, 1.71], [0.36, 0.72, 1.45], [0.25, 0.62, 1.28], ENG2CAR([COMP_IN[0] + 0.05, COMP_IN[1], COMP_IN[2]]), ENG2CAR([COMP_IN[0] + 0.02, COMP_IN[1], COMP_IN[2]])], 0.03, 48, 12), MAT.rubber, { d: 'Gefilterde lucht naar de compressorinlaat.', ex: [0, 0.12, -0.12] }),
+      P('Aanzuigslang turbo', tube([[0.36, 0.73, 1.71], [0.36, 0.72, 1.45], [0.25, 0.62, 1.28], ENG2CAR(portAt(ENG_PORTS.compIn, 0.03)), ENG2CAR(ENG_PORTS.compIn.p)], 0.03, 48, 12), MAT.rubber, { d: 'Gefilterde lucht naar de compressorinlaat.', ex: [0, 0.12, -0.12] }),
     ]),
-    P('Intercoolerslang heet', tube([ENG2CAR([COMP_OUT[0], COMP_OUT[1] + 0.02, COMP_OUT[2]]), [0.3, 0.62, 1.3], [0.4, 0.62, 1.6], [0.45, 0.45, 1.95], [0.4, 0.32, 2.1], [0.29, 0.315, 2.19]], 0.025, 64, 10), MAT.rubber, { d: 'Samengeperste, hete lucht van turbo naar intercooler.', ex: [0.22, 0.2, 0] }),
-    P('Intercoolerslang koud', tube([[-0.29, 0.315, 2.19], [-0.42, 0.32, 2.0], [-0.44, 0.42, 1.8], ENG2CAR([-0.3, 0.14, 0.21]), ENG2CAR([-0.262, 0.14, 0.21])], 0.025, 56, 10), MAT.rubber, { d: 'Gekoelde laadlucht naar het gasklephuis.', ex: [-0.22, 0.2, 0] }),
+    P('Intercoolerslang heet', tube([ENG2CAR(ENG_PORTS.compOut.p), [0.3, 0.62, 1.3], [0.4, 0.62, 1.6], [0.45, 0.45, 1.95], [0.4, 0.32, 2.1], [0.29, 0.315, 2.19]], 0.025, 64, 10), MAT.rubber, { d: 'Samengeperste, hete lucht van turbo naar intercooler.', ex: [0.22, 0.2, 0] }),
+    P('Intercoolerslang koud', tube([[-0.29, 0.315, 2.19], [-0.42, 0.32, 2.0], [-0.44, 0.42, 1.8], ENG2CAR(portAt(ENG_PORTS.throttleIn, 0.038)), ENG2CAR(ENG_PORTS.throttleIn.p)], 0.025, 56, 10), MAT.rubber, { d: 'Gekoelde laadlucht naar het gasklephuis.', ex: [-0.22, 0.2, 0] }),
   ]);
 }
 function buildExhaust() {
-  const t0 = ENG2CAR(TURB_OUT), t1 = ENG2CAR([TURB_OUT[0] - 0.04, TURB_OUT[1] - 0.05, TURB_OUT[2] - 0.04]);
+  const t0 = ENG2CAR(ENG_PORTS.turbineOut.p), t1 = ENG2CAR(portAt(ENG_PORTS.turbineOut, 0.0755));
   const oval = (len, r, sx) => xf(G.cyl('z', r, r, len, 24), [0, 0, 0], null, [sx, 1, 1]);
   return A('Uitlaatsysteem', { d: 'Van turbo via katalysator en twee dempers naar het eindstuk.', ex: [0, -0.7, -0.25] }, [
     P('Downpipe', tube([t0, t1, [0.04, 0.3, 1.1], [0.04, 0.16, 0.96]], 0.028, 40, 12), MAT.exhaust, { d: 'Voorpijp direct achter de turbine.', ex: [0, 0.12, 0.18] }),
@@ -1586,12 +1602,12 @@ function buildFuel() {
     P('Tankvulpijp', tube([[-0.48, 0.3, -1.02], [-0.62, 0.42, -1.3], [-0.8, 0.7, -1.62], [-(fx - 0.03), 0.86, -1.72]], 0.022, 40, 10), MAT.plastic, { d: 'Vulpijp van tankklep naar tank.', ex: [-0.14, 0.1, -0.12] }),
     P('Tankdop', G.cyl('x', 0.025, 0.025, 0.02, 18), MAT.plastic, { d: 'Afsluitdop van de vulpijp.', p: [-(fx - 0.02), 0.86, -1.72], ex: [-0.26, 0.1, -0.12] }),
     P('Tankklep', G.cyl('x', 0.06, 0.06, 0.006, 28), MAT.paint, { d: 'Tankklep in het rechter achterscherm.', p: [-(fx + 0.003), 0.86, -1.72], ex: [-0.36, 0.1, -0.12] }),
-    P('Brandstofleiding', tube([[-0.25, 0.39, -0.9], [-0.3, 0.16, -0.7], [-0.3, 0.15, 0.8], [-0.32, 0.3, 1.02], ENG2CAR([0.2, 0.3, 0.155]), ENG2CAR([0.2, 0.345, 0.155])], 0.004, 80, 6), MAT.steel, { d: 'Leiding van pompmodule naar de brandstofrail.', ex: [0, 0.1, 0.1] }),
+    P('Brandstofleiding', tube([[-0.25, 0.39, -0.9], [-0.3, 0.16, -0.7], [-0.3, 0.15, 0.8], [-0.32, 0.3, 1.02], ENG2CAR(portAt(ENG_PORTS.fuelRailIn, 0.045)), ENG2CAR(ENG_PORTS.fuelRailIn.p)], 0.004, 80, 6), MAT.steel, { d: 'Leiding van pompmodule naar de brandstofrail.', ex: [0, 0.1, 0.1] }),
     P('Koolstoffilter', G.cyl('y', 0.045, 0.045, 0.18, 20), MAT.plastic, { d: 'Actief-koolfilter dat benzinedampen uit de tank opvangt.', p: [0.58, 0.52, 1.8], ex: [0.2, 0.1, 0.3] }),
   ]);
 }
 function buildElectrical() {
-  const starter = ENG2CAR([GB_X + 0.12, -0.035, 0.205]);
+  const starter = ENG2CAR(DRV_PORTS.starterTerminal);
   return A('Elektrisch systeem', { d: 'Accu, zekeringkast, motorcomputer, claxons en kabelbomen.', ex: [-1.55, 0.65, 1.85] }, [
     A('Accu', { d: '12-voltaccu in de motorruimte.', ex: [-0.2, 0.18, 0.1] }, [
       P('Accubak', G.box(0.24, 0.17, 0.175), MAT.battery || MAT.plastic, { d: 'Accubak met loodcellen.', p: [-0.42, 0.675, 1.86] }),
@@ -1798,6 +1814,8 @@ function stepGround(dt) {
   blob.position.y = ground.position.y + 0.002;
   return true;
 }
+
+/* ===================== presets ===================== */
 
 /* ===================== interactie, paneel, presets, labels, render-lus ===================== */
 const $ = id => document.getElementById(id);

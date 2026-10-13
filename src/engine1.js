@@ -5,6 +5,19 @@ const XM = [-0.176, -0.088, 0, 0.088, 0.176];        // hoofdlagers
 const DECK = 0.222, BORE_R = 0.04135, THROW = 0.0465, ROD = 0.144, CAMY = 0.358, CAMZ = 0.056;
 const PIN_UP = [1, -1, -1, 1];                       // krukpennen 1/4 boven, 2/3 onder
 const FIRE = ['1', '3', '4', '2'];
+// Aansluitpunten in het motorframe. systems.js sluit slangen en leidingen hierop aan.
+// Contract: de sleutels blijven bestaan; als de motor verandert, volgen de waarden (p = punt, dir = richting waarin een slang de aansluiting verlaat).
+const ENG_PORTS = {
+  turbineOut: { p: [0.01, 0.15, -0.26], dir: [-0.5298, -0.6623, -0.5298] },   // turbine-uitgang naar downpipe
+  compIn: { p: [0.22, 0.15, -0.26], dir: [1, 0, 0] },                         // compressorinlaat van luchtfilter
+  compOut: { p: [0.155, 0.27, -0.26], dir: [0, 1, 0] },                       // compressoruitlaat naar intercooler
+  throttleIn: { p: [-0.262, 0.14, 0.21], dir: [-1, 0, 0] },                   // ingang gasklephuis van intercooler
+  thermostatOut: { p: [0.27, 0.3, 0.04], dir: [0, 1, 0] },                    // thermostaathuis naar bovenste radiateurslang
+  waterPumpIn: { p: [-0.19, 0.06, 0.15], dir: [0, 0, 1] },                    // waterpompinlaat van onderste radiateurslang
+  fuelRailIn: { p: [0.2, 0.345, 0.155], dir: [0, -1, 0] },                    // aansluiting brandstofrail
+};
+// punt op afstand d buiten een aansluiting, langs dir (motorframe)
+function portAt(port, d = 0) { return [port.p[0] + port.dir[0] * d, port.p[1] + port.dir[1] * d, port.p[2] + port.dir[2] * d]; }
 
 function blockGeo() {
   const s = shapeOf(rrectPts(0.43, 0.21, 0.02));

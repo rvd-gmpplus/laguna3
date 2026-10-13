@@ -7,6 +7,8 @@ const fromPT = p => V3(...p).applyMatrix4(PTM);
 const ENG2CAR = p => fromPT(p).toArray();             // motorframe = aandrijflijnframe
 const DIFF = [0.125, -0.04, -0.15];                   // in versnellingsbakframe
 const CSH = [-0.101, -0.043];                         // tussenas (y,z)
+// Aansluitpunten in het aandrijflijnframe voor andere systemen (contract: sleutels blijven bestaan).
+const DRV_PORTS = { starterTerminal: [GB_X + 0.12, -0.035, 0.205] };   // plusaansluiting startmotor
 
 function discPack(name, x0, rIn, rOut, n) {
   const kids = [];

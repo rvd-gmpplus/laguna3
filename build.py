@@ -14,7 +14,7 @@ import os, re, sys, shutil, subprocess, tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, 'src')
-ORDER = ['core.js', 'body.js', 'bodyparts.js', 'engine1.js', 'engine2.js', 'drivetrain.js', 'chassis.js', 'interior.js', 'systems.js', 'app1.js', 'app2.js']
+ORDER = ['core.js', 'body.js', 'bodyparts.js', 'engine1.js', 'engine2.js', 'engine3.js', 'drivetrain.js', 'chassis.js', 'interior.js', 'systems.js', 'app1.js', 'presets.js', 'app2.js']
 LIBS = ['build/three.min.js', 'examples/js/controls/OrbitControls.js', 'examples/js/environments/RoomEnvironment.js', 'examples/js/geometries/RoundedBoxGeometry.js', 'examples/js/utils/BufferGeometryUtils.js']
 CDN = 'https://cdn.jsdelivr.net/npm/three@0.147.0/'
 
