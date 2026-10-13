@@ -80,6 +80,7 @@ function renderPanel() {
   els.all.hidden = !n.asm;
   els.dive.hidden = n.asm;
   els.up.disabled = !uiClosedAbove(n);
+  els.up.title = els.up.disabled ? 'Alles boven deze selectie is al uitgeklapt' : 'De dichte groep boven de selectie uitklappen (Enter)';
   const isoOn = ISO.length === 1 && ISO[0] === n;
   els.iso.textContent = isoOn || (ISO.length && n === ROOT) ? 'Alles tonen' : 'Isoleren';
   els.iso.disabled = n === ROOT && !ISO.length;
@@ -673,6 +674,17 @@ window.addEventListener('keydown', e => {
   if (e.key === 'Enter') { if (onCtl) return; e.preventDefault(); uiStopPlay(); uiStopTour(); hideHint(); uiEnter(e.shiftKey); return; }
   if (e.key === 'Backspace') { e.preventDefault(); uiStopPlay(); uiStopTour(); uiUndo(); return; }
   if (e.key === '?') { e.preventDefault(); uiHelp(true); return; }
+  // pijltjes (niet op een bedieningselement): door de boom lopen. Omhoog = bovenliggende groep, omlaag = eerste deel,
+  // links/rechts = vorige/volgende op hetzelfde niveau (audit U29). Selecteren en in beeld houden, niets uitklappen.
+  if (!onCtl && /^Arrow(Up|Down|Left|Right)$/.test(e.key)) {
+    const n = SEL || ROOT, sib = n.parent ? n.parent.kids : [n];
+    let m = null;
+    if (e.key === 'ArrowUp') m = n.parent && (!ISO.length || uiInScope(n.parent)) ? n.parent : null;
+    else if (e.key === 'ArrowDown') m = n.asm ? n.kids.find(k => k.ev) : null;
+    else { const i = sib.indexOf(n), d = e.key === 'ArrowRight' ? 1 : -1; for (let j = 1; j < sib.length && !m; j++) { const k = sib[(i + d * j + sib.length * j) % sib.length]; if (k.ev) m = k; } }
+    if (m && m !== n) { e.preventDefault(); uiStopPlay(); uiStopTour(); hideHint(); uiPush(); select(m); uiSoftFrame([m]); uiAfterAction(); }
+    return;
+  }
   if (/^[0-9]$/.test(e.key)) {
     const p = PRESETS.find(q => q.key === e.key);
     if (p && appPresetOk(p)) { e.preventDefault(); uiStopPlay(); uiStopTour(); uiRunPreset(p.id); }
