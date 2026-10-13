@@ -74,7 +74,7 @@ function drvPack(name, d, spec, o) {
 // planetaire set met zonnewiel, drager, planeetwielen en holwiel; N* = tanden, m = modulus
 function drvPlanets(key, name, d, o) {
   const { m, w, Ns, Np, Nr, n, x } = o, rp = m * (Ns + Np) / 2, kids = [];
-  kids.push(P('Zonnewiel', drvG(Ns, m, w, 0.008), MAT.steel, { d: `Zonnewiel (${Ns} tanden, schematisch weergegeven).`, p: [x, 0, 0], ex: [-0.075, 0, 0]}));
+  kids.push(P('Zonnewiel', drvG(Ns, m, w, 0.008), MAT.steel, { d: `Zonnewiel (${Ns} tanden, schematisch weergegeven).`, p: [x, 0, 0], ex: [o.sunEx || -0.075, 0, 0]}));
   const pl = [];
   for (let k = 0; k < n; k++) {
     const a = k * PI * 2 / n + (o.ph || 0);
@@ -108,7 +108,7 @@ function drvConverter() {
     A('Torsiedemper', { d: 'Veerdemper tussen de overbruggingskoppeling en de turbine; dempt de trillingen van de motor als de koppeling vastklemt.', ex: [sp * 2, 0, 0], inner: true }, [
       P('Demperplaat', annulus(0.035, 0.097, 0.003, 'x', 40), MAT.steel, { d: 'Plaat met vensters voor de demperveren.', p: [0.0285, 0, 0], ex: [0.012, 0, 0] }),
       P('Demperveren', drvRing('drvDemperV', 6, 0.085, () => G.cyl('z', 0.0055, 0.0055, 0.034, 6), 0.0, [0, 0], 0.0285), MAT.darkSteel, { d: 'Zes demperveren (schematisch weergegeven als veerkolommen) die het koppel van de zuiger naar de turbine overbrengen.', ex: [0.034, 0, 0] }),
-      P('Demperring', annulus(0.071, 0.099, 0.003, 'x', 40), MAT.darkSteel, { d: 'Tweede plaat die de veren in hun vensters houdt.', p: [0.0315, 0, 0], ex: [0.056, 0, 0] }),
+      P('Demperring', annulus(0.071, 0.099, 0.003, 'x', 40), MAT.darkSteel, { d: 'Tweede plaat die de veren in hun vensters houdt.', p: [0.0315, 0, 0], ex: [0.014, 0, 0] }),
     ]),
     A('Turbinewiel', { d: 'Turbinewiel met schoepen: wordt door de olie van het pompwiel aangedreven en geeft het koppel via de naaf aan de ingaande as.', ex: [sp * 3.2, 0, 0], inner: true }, [
       P('Turbineschaal', merge([shellT, drvL('TurbHub', [[0.02, 0.07], [0.062, 0.07], [0.062, 0.075], [0.02, 0.075]], 32), G.cyl('x', 0.03, 0.03, 0.016, 20)]), MAT.steel, { d: 'Schaal en naaf van het turbinewiel; de naaf grijpt met spiebanen in de ingaande as.', ex: [0, 0, 0.0001] }),
@@ -138,7 +138,7 @@ function drvPump() {
     P('Buitenrotor', ringGear(11, 0.046, 0.033, 0.0375, 0.012), MAT.steel, { d: 'Meedraaiende buitenrotor.', p: [0.1305, 0, 0], ex: [0.07, 0, 0] }),
     P('Pompdeksel', annulus(0.03, 0.09, 0.008, 'x', 40), MAT.aluCast, { d: 'Deksel van de pomp; het leidwielas zit hierin vast.', p: [0.1465, 0, 0], ex: [0.11, 0, 0] }),
     P('Dichtringen ingaande as', cache('drvDRing', () => merge([0, 1, 2].map(k => xf(G.torus('x', 0.0125, 0.0013, 16, 6), [k * 0.005, 0, 0])))), MAT.drvBrass, { d: 'Drie metalen afdichtringen op de ingaande as (aantal schematisch).', p: [0.155, 0, 0], ex: [0.15, 0, 0] }),
-    P('Oliezeef', G.box(0.07, 0.012, 0.055), MAT.filter, { d: 'Zeef op de pomp die de olie reinigt vóór de pomp; zit niet in een losse onderpan.', p: [0.1305, -0.085, 0.0], ex: [0, -0.07, 0] }),
+    P('Oliezeef', G.box(0.07, 0.012, 0.055), MAT.filter, { d: 'Zeef op de pomp die de olie reinigt vóór de pomp; zit niet in een losse onderpan.', p: [0.1305, -0.085, 0.0], ex: [0, -0.03, 0.08] }),
     P('Zeefmagneet', G.box(0.02, 0.008, 0.012), MAT.drvMagnet, { d: 'Magneet op de zeef die staalslijpsel opvangt.', p: [0.1305, -0.093, 0.0], ex: [0, -0.12, 0] }),
     P('O-ring zeef', G.torus('y', 0.016, 0.0016, 20, 6), MAT.rubber, { d: 'Afdichting tussen zeef en pomphuis.', p: [0.1305, -0.078, 0.0], ex: [0, -0.04, 0] }),
   ]);
@@ -189,7 +189,7 @@ function drvSets() {
   }, [
     drvPlanets('fr', 'Voorste planetaire set', 'Voorste set (FR) met vier planeetwielen; de drager is de naaf van het uitgaande tandwiel. Tandentallen schematisch weergegeven.', { m: 0.0024, w: 0.02, Ns: 20, Np: 12, Nr: 44, n: 4, x: 0.2195, ex: [-0.1, 0.1, 0] }),
     A('Achterste planetaire set', { d: 'Achterste set (RR) van het Ravigneaux-type: twee zonnewielen op één drager met korte en lange planeetwielen en een holwiel dat het uitgaande tandwiel aandrijft. Rij-indeling van de planeetwielen schematisch weergegeven.', ex: [0.12, 0.1, 0] }, rr),
-    drvPlanets('red', 'Reductieset', 'Reductieset van de Lepelletier-opbouw: het zonnewiel staat vast in het zijdeksel, het holwiel zit aan de trommel van de hoge koppeling; levert het gereduceerde koppel. Drie planeetwielen schematisch weergegeven.', { m: 0.0022, w: 0.016, Ns: 22, Np: 13, Nr: 48, n: 3, x: 0.3955, ph: 0.4, ex: [0.28, 0.1, 0] }),
+    drvPlanets('red', 'Reductieset', 'Reductieset van de Lepelletier-opbouw: het zonnewiel staat vast in het zijdeksel, het holwiel zit aan de trommel van de hoge koppeling; levert het gereduceerde koppel. Drie planeetwielen schematisch weergegeven.', { m: 0.0022, w: 0.016, Ns: 22, Np: 13, Nr: 48, n: 3, x: 0.3955, ph: 0.4, sunEx: -0.1, ex: [0.28, 0.1, 0] }),
   ]);
 }
 
@@ -298,7 +298,7 @@ function drvStarter() {
   const cap = 0.152, bx = (k) => [cap, sy + 0.0085 * (k ? 1 : -1), sz];
   const st = A('Startmotor', {
     d: 'Elektrische startmotor (circa 1 kW, type schematisch) met voorgeschakelde planetaire reductie en solenoïde; het rondsel grijpt in de startkrans van de flexplaat. Zit met drie bouten (flens Ø66 mm) op de koppelomvormerklok.',
-    spec: [['Vermogen', 'circa 1 kW (geschat)'], ['Flensmaat', 'Ø66 mm, 3 bouten'], ['Rondsel', '9 tanden']], p: P0, ex: [-0.12, -0.25, 0.25],
+    spec: [['Vermogen', 'circa 1 kW (geschat)'], ['Flensmaat', 'Ø66 mm, 3 bouten'], ['Rondsel', '9 tanden']], p: P0, ex: [-0.12, -0.25, 0.55],
   }, [
     P('Rondsel', drvG(9, 0.0025, 0.014, 0.006), MAT.steel, { d: 'Rondsel met 9 tanden dat bij het starten naar voren schuift en in de startkrans van de flexplaat grijpt.', ex: [-0.07, 0, 0] }),
     A('Rondselas met vrijloop', { d: 'Aandrijfas met rondsel en vrijloopkoppeling; de vrijloop voorkomt dat de draaiende motor de startmotor meeneemt.', ex: [0.05, 0.2, 0.0], inner: true }, [
@@ -435,7 +435,7 @@ function driveshaft(name, a, b, o) {
   const q = o.sign < 0 ? quatFromTo(V3(-1, 0, 0), dir).multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, PI))) : quatFromTo(V3(1, 0, 0), dir), s = o.sign;
   const bel = G.lathe('x', bellows(0.0445, 0.0236, 0.12, 4), 28, 'drvBel');
   const x1 = o.inner0 || 0.0;                     // begin van de tripode-koppeling (na de tussenas)
-  const outerX = L - 0.095, hubX = L;
+  const outerX = L - 0.16, hubX = L;     // klok eindigt inboard van de wiellagereenheid (G-B13)
   const kids = [];
   if (o.mid) kids.push(A('Tussenas', { d: 'Lange binnenstam van de rechter aandrijfas (circa 350 mm) die in een kogellager achter het blok draait; zo komt de rechter as op dezelfde lengte als de linker.', ex: [-0.05, 0.15, 0.0] }, [
     P('Tussenas (stam)', drvL('Tus', [[0.0125, 0.0], [0.0125, 0.052], [0.0155, 0.058], [0.0155, o.mid - 0.02], [0.0125, o.mid - 0.02], [0.0125, o.mid]], 18), MAT.steel, { d: 'Stalen stam met bakzijde 30 spiebanen, die in het zijwiel van het differentieel steekt.', ex: [0, 0, 0.0001] }),
@@ -484,8 +484,8 @@ function drvMounts() {
       P('Rubber pendelsteun', G.cyl('x', 0.024, 0.024, 0.05, 20), MAT.rubber, { d: 'Rubberelement dat de trillingen dempt.', p: [-0.33, 0.447, 0.062], ex: [-0.08, 0, 0] }),
       P('Limiteur', merge([G.cyl('x', 0.01, 0.01, 0.09, 12), xf(G.cyl('x', 0.016, 0.016, 0.006, 16), [0.045, 0, 0])]), MAT.darkSteel, { d: 'Begrenzer die de beweging van de motor bij hoge belasting beperkt.', p: [-0.335, 0.447, 0.062], ex: [-0.16, 0.06, 0] }),
       P('Beugel carrosseriezijde', merge([G.rbox(0.04, 0.06, 0.05, 0.005), xf(G.box(0.04, 0.012, 0.05), [0.0, -0.03, 0])]), MAT.alu, { d: 'Aluminium beugel naar de torenbevestiging van de carrosserie (vorm schematisch).', p: [-0.375, 0.447, 0.062], ex: [-0.24, 0, 0] }),
-      bolt('Bout beugel 1', 'Bout die de beugel aan het distributiedeksel bevestigt.', [-0.24, 0.4635, 0.045], 'y', [0, 0.1, 0], [PI, 0, 0]),
-      bolt('Bout beugel 2', 'Bout die de beugel aan het distributiedeksel bevestigt.', [-0.24, 0.4635, 0.079], 'y', [0, 0.1, 0.06], [PI, 0, 0]),
+      bolt('Bout beugel 1', 'Bout die de beugel aan het distributiedeksel bevestigt.', [-0.24, 0.457, 0.045], 'y', [0, 0.1, 0], [PI, 0, 0]),
+      bolt('Bout beugel 2', 'Bout die de beugel aan het distributiedeksel bevestigt.', [-0.24, 0.457, 0.079], 'y', [0, 0.1, 0.06], [PI, 0, 0]),
       bolt('Bout carrosseriebeugel 1', 'Bout die de steun aan de carrosserie bevestigt.', [-0.355, 0.447, 0.045], '-x', [-0.3, 0.05, 0]),
       bolt('Bout carrosseriebeugel 2', 'Bout die de steun aan de carrosserie bevestigt.', [-0.355, 0.447, 0.079], '-x', [-0.3, -0.05, 0]),
     ]),
@@ -493,7 +493,7 @@ function drvMounts() {
       P('Beugel bak', merge([G.rbox(0.06, 0.02, 0.07, 0.004), xf(G.box(0.02, 0.03, 0.07), [-0.02, -0.025, 0])]), MAT.aluCast, { d: 'Beugel op het carter.', p: [gx, 0.1505, -0.02], ex: [0, 0, 0.0001] }),
       P('Rubber bakssteun', G.cyl('y', 0.022, 0.022, 0.036, 18), MAT.rubber, { d: 'Rubberblok van de steun.', p: [gx, 0.1785, -0.02], ex: [0, 0.07, 0] }),
       P('Bovenplaat bakssteun', G.rbox(0.05, 0.01, 0.07, 0.003), MAT.darkSteel, { d: 'Plaat naar de langsligger van de carrosserie.', p: [gx + 0.0, 0.2015, -0.02], ex: [0.0, 0.14, 0] }),
-      ...[-1, 1].map((k, i) => bolt(`Bout bakssteun ${i + 1}`, 'Bout van de bakssteun.', [gx + 0.0, 0.2135, -0.02 + k * 0.025], 'y', [0.0, 0.2, 0], [PI, 0, 0])),
+      ...[-1, 1].map((k, i) => bolt(`Bout bakssteun ${i + 1}`, 'Bout van de bakssteun.', [gx + 0.0, 0.2065, -0.02 + k * 0.025], 'y', [0.0, 0.2, 0], [PI, 0, 0])),
     ]),
     A('Koppelstang', { d: 'Onderste koppelstang (biellette de reprise de couple): vangt het reactiekoppel van de aandrijflijn bij optrekken en remmen op tussen een beugel op de carterpan en het subframe. Positie en vorm schematisch weergegeven.', ex: [0, -0.2, -0.1] }, [
       P('Koppelstang (staaf)', rodBetween(rodA, sub, 0.011), MAT.darkSteel, { d: 'Staaf met aan beide uiteinden een oog.', ex: [0, 0, 0.0001] }),
