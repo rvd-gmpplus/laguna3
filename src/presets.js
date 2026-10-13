@@ -165,8 +165,9 @@ function uiTourStep() {
   const p = appPresetById.get(appTourSteps[appTour.i]);
   // een stap waarvan de namen niet (meer) oplossen, wordt overgeslagen (de waarschuwing staat al bij het starten in de console)
   if (!p || !appPresetOk(p)) { uiTourStep(); return; }
-  appApplyPreset(p, { tour: true, noHistory: true });
+  // eerst het bijschrift: op een telefoon houdt het vrije beeld er rekening mee, zodat de camera de auto eronder inpast
   uiTourCaption(p, appTour.i, appTourSteps.length);
+  appApplyPreset(p, { tour: true, noHistory: true });
   appTour.timer = setTimeout(uiTourStep, REDUCED ? 4500 : 5000);
 }
 function uiStopTour() {
