@@ -163,7 +163,7 @@ function frontCorner(s) {
     strut,
     caliper(`Remklauw ${n}`, xd, z0, phi, rp, true),
     A('Remslang voor', { d: 'Flexibele remslang van de vaste remleiding op de veerpoot naar de klauw, vastgezet met een holle (banjo) bout en twee koperen ringen.', ex: [0.04, 0.12, 0.1] }, [
-      P('Remslang', tube([bjk, chsPt(CM, [-0.045, 0.1, 0.028]), [0.63, 0.5, z0 + 0.13], bjt], 0.0055, 28, 8), MAT.rubber, { d: 'Flexibele, wapeningsversterkte remslang.', ex: [0, 0.06, 0] }),
+      P('Remslang', tube([bjk, chsPt(CM, [-0.045, 0.1, 0.028]), [0.64, 0.45, z0 + 0.11], bjt], 0.0055, 28, 8), MAT.rubber, { d: 'Flexibele, wapeningsversterkte remslang.', ex: [0, 0.06, 0] }),
       P('Banjo-oog', merge([G.torus('y', 0.008, 0.0035, 14, 6), xf(G.cyl('z', 0.004, 0.004, 0.02, 8), [0, 0, 0.016])]), MAT.steel, { d: 'Slangeinde met oog dat om de holle bout past.', p: chsPt(CM, [-0.045, 0.0545, 0.028]), r: [HALF - phi, 0, 0], ex: [0, 0.1, 0.04] }),
       P('Holle bout', chsFlip(hexBolt(0.016, 0.0085, 'y')), MAT.steel, { d: 'Holle bout (banjo) waardoor de remvloeistof het klauwhuis in gaat.', p: chsPt(CM, [-0.045, 0.0605, 0.028]), r: [HALF - phi, 0, 0], ex: [0, 0.2, 0] }),
       P('Koperringen', merge([annulus(0.0045, 0.0085, 0.0015, 'y', 14), xf(annulus(0.0045, 0.0085, 0.0015, 'y', 14), [0, 0.009, 0])]), MAT.copper, { d: 'Twee koperen afdichtringen: onder en boven het banjo-oog.', p: chsPt(CM, [-0.045, 0.0495, 0.028]), r: [HALF - phi, 0, 0], ex: [0, 0.14, 0.02] }),
