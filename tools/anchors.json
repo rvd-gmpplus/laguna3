@@ -1,0 +1,108 @@
+{
+ "root": [
+  "Renault Laguna III"
+ ],
+ "main": [
+  "Carrosserie",
+  "Interieur",
+  "Aandrijflijn",
+  "Onderstel",
+  "Koeling en luchtinlaat",
+  "Uitlaatsysteem",
+  "Brandstofsysteem",
+  "Elektrisch systeem"
+ ],
+ "body": [
+  "Carrosseriekooi",
+  "Motorkap",
+  "Achterklep",
+  "Voorbumper",
+  "Achterbumper",
+  "Portier linksvoor",
+  "Portier rechtsvoor",
+  "Portier linksachter",
+  "Portier rechtsachter",
+  "Koplamp links",
+  "Koplamp rechts",
+  "Achterlicht links",
+  "Achterlicht rechts",
+  "Buitenspiegel links",
+  "Buitenspiegel rechts"
+ ],
+ "interior": [
+  "Dashboard",
+  "Middenconsole",
+  "Stoelen",
+  "Bestuurdersstoel",
+  "Passagiersstoel",
+  "Achterbank"
+ ],
+ "engine": [
+  "Motor F4Rt",
+  "Motorblok",
+  "Krukmechanisme",
+  "Cilinderkop",
+  "Distributie",
+  "Hulpaandrijving",
+  "Turbo en uitlaatspruitstuk",
+  "Turbocompressor",
+  "Dynamo",
+  "Smering"
+ ],
+ "drivetrain": [
+  "Automaatversnellingsbak",
+  "Koppelomvormer",
+  "Tandwielsets",
+  "Koppelingen en remmen",
+  "Differentieel",
+  "Klepblok",
+  "Startmotor",
+  "Aandrijfassen",
+  "Aandrijfas links",
+  "Aandrijfas rechts"
+ ],
+ "chassis": [
+  "Vooras en stuurinrichting",
+  "Stuurinrichting",
+  "Stuurwiel",
+  "Wielophanging linksvoor",
+  "Wielophanging rechtsvoor",
+  "Veerpoot linksvoor",
+  "Veerpoot rechtsvoor",
+  "Remklauw linksvoor",
+  "Remklauw rechtsvoor",
+  "Achteras",
+  "Wielophanging linksachter",
+  "Wielophanging rechtsachter",
+  "Remklauw linksachter",
+  "Remklauw rechtsachter",
+  "Wiel linksvoor",
+  "Wiel rechtsvoor",
+  "Wiel linksachter",
+  "Wiel rechtsachter",
+  "Remsysteem",
+  "Parkeerrem"
+ ],
+ "systems": [
+  "Wielen",
+  "Radiateur",
+  "Intercooler",
+  "Accu"
+ ],
+ "root_children_order": [
+  "Carrosserie",
+  "Interieur",
+  "Aandrijflijn",
+  "Onderstel",
+  "Koeling en luchtinlaat",
+  "Uitlaatsysteem",
+  "Brandstofsysteem",
+  "Elektrisch systeem"
+ ],
+ "onderstel_children": [
+  "Vooras en stuurinrichting",
+  "Achteras",
+  "Wielen",
+  "Remsysteem"
+ ]
+}

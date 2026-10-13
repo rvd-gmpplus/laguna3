@@ -6,7 +6,7 @@ import sys, os, json
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from harness import session
 
-CHECK = r"""(() => {
+CHECK = r"""(ANCHORS) => {
   const L = window.__laguna, err = [], warn = [];
   const path = n => { const a = []; for (let p = n; p; p = p.parent) a.unshift(p.name); return a.join(' › '); };
   L.ROOT.obj.updateMatrixWorld(true);
@@ -40,20 +40,34 @@ CHECK = r"""(() => {
       else if (e.length() < 1e-4) warn.push('uitklapvector nul: ' + path(n));
     }
   }
+  const anchorErr = [];
+  const A = ANCHORS, count = new Map();
+  for (const n of L.ALL) count.set(n.name, (count.get(n.name) || 0) + 1);
+  for (const [k, list] of Object.entries(A)) {
+    if (k === 'root_children_order' || k === 'onderstel_children') continue;
+    for (const name of list) { const c = count.get(name) || 0; if (c !== 1) anchorErr.push(`anker "${name}" (${k}) komt ${c}x voor, moet 1x`); }
+  }
+  const rc = L.ROOT.kids.map(k => k.name).join(' | '), want = A.root_children_order.join(' | ');
+  if (rc !== want) anchorErr.push(`hoofdgroepen: "${rc}" in plaats van "${want}"`);
+  const on = L.ALL.find(n => n.name === 'Onderstel');
+  if (on) { const oc = on.kids.map(k => k.name).slice().sort().join(' | '), ow = A.onderstel_children.slice().sort().join(' | '); if (oc !== ow) anchorErr.push(`Onderstel bevat "${oc}" in plaats van "${ow}"`); }
   const presetErr = [];
   if (L.checkPresets) presetErr.push(...L.checkPresets());
-  return { err, warn, presetErr, nodes: L.ALL.length, parts: L.ALL.filter(n => !n.asm).length };
-})()"""
+  return { err, warn, presetErr, anchorErr, nodes: L.ALL.length, parts: L.ALL.filter(n => !n.asm).length };
+}"""
+
+ANCHORS = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'anchors.json'), encoding='utf-8'))
 
 with session() as s:
     pg = s.page(1100, 700)
-    r = pg.evaluate(CHECK)
+    r = pg.evaluate(CHECK, ANCHORS)
     print(f"{r['nodes']} knopen, {r['parts']} onderdelen")
-    print(f"{len(r['err'])} fouten, {len(r['warn'])} waarschuwingen, {len(r['presetErr'])} presetfouten")
+    print(f"{len(r['err'])} fouten, {len(r['anchorErr'])} ankerfouten, {len(r['warn'])} waarschuwingen, {len(r['presetErr'])} presetfouten")
     for e in r['err'][:60]: print('FOUT  ' + e)
+    for e in r['anchorErr'][:60]: print('ANKER ' + e)
     for e in r['presetErr'][:30]: print('PRESET ' + e)
     show = int(os.environ.get('WARN', '25'))
     for w in r['warn'][:show]: print('let op ' + w)
     if len(r['warn']) > show: print(f'... nog {len(r["warn"]) - show} waarschuwingen (WARN=999 voor alles)')
     s.report()
-    sys.exit(1 if (r['err'] or r['presetErr'] or s.errors()) else 0)
+    sys.exit(1 if (r['err'] or r['anchorErr'] or r['presetErr'] or s.errors()) else 0)

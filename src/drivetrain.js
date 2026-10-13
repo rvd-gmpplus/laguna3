@@ -59,8 +59,8 @@ function buildGearbox() {
     P('Zijwiel links', G.lathe('-x', [[0, 0], [0.02, 0], [0.014, 0.014], [0, 0.014]], 18, 'sidegL'), MAT.steel, { d: 'Kegeltandwiel naar de linker aandrijfas.', p: [0.071, 0, 0], ex: [0.09, 0, 0] }),
     P('Zijwiel rechts', G.lathe('x', [[0, 0], [0.02, 0], [0.014, 0.014], [0, 0.014]], 18, 'sidegR'), MAT.steel, { d: 'Kegeltandwiel naar de rechter aandrijfas.', p: [-0.001, 0, 0], ex: [-0.09, 0, 0] }),
   ]);
-  const vb = A('Hydraulische besturing', { d: 'Klepblok met magneetkleppen dat de koppelingen en remmen in de bak aanstuurt.', ex: [0, -0.34, 0.08] }, [
-    P('Klepblok', merge([G.box(0.2, 0.035, 0.16), ...[-0.06, 0, 0.06].map(x => xf(G.box(0.012, 0.006, 0.15), [x, 0.02, 0]))]), MAT.aluCast, { d: 'Kanalenplaat met schuiven die de oliedruk verdelen.', p: [0.26, -0.153, 0.02] }),
+  const vb = A('Klepblok', { d: 'Klepblok met magneetkleppen dat de koppelingen en remmen in de bak aanstuurt.', ex: [0, -0.34, 0.08] }, [
+    P('Klepblokhuis', merge([G.box(0.2, 0.035, 0.16), ...[-0.06, 0, 0.06].map(x => xf(G.box(0.012, 0.006, 0.15), [x, 0.02, 0]))]), MAT.aluCast, { d: 'Kanalenplaat met schuiven die de oliedruk verdelen.', p: [0.26, -0.153, 0.02] }),
     ...[0, 1, 2, 3, 4, 5].map(k => P(`Magneetklep ${k + 1}`, G.cyl('z', 0.009, 0.009, 0.04, 12), MAT.darkSteel, { d: 'Elektrisch bediende klep (solenoïde) die een schakelelement aanstuurt.', p: [0.185 + k * 0.03, -0.148, 0.11], ex: [0, 0, 0.09] })),
     P('ATF-filter', G.box(0.18, 0.012, 0.14), MAT.filter, { d: 'Zeef/filter voor de automaatolie.', p: [0.26, -0.18, 0.02], ex: [0, -0.07, 0] }),
     P('Carter automaat', G.rbox(0.24, 0.04, 0.19, 0.01), MAT.aluCast, { d: 'Oliecarter van de automaat.', p: [0.26, -0.21, 0.02], ex: [0, -0.15, 0] }),
@@ -73,12 +73,13 @@ function buildGearbox() {
   }, [
     P('Transmissiehuis', housing, MAT.aluCast, { d: 'Aluminium huis met koppelomvormerklok en differentieelhuis.', ex: [0, 0.44, 0] }),
     conv, pump,
-    A('Koppeling C1', { d: 'Lamellenkoppeling.', ex: [-0.02, 0, 0] }, discPack('C1', 0.167, 0.045, 0.075, 6)),
-    frontSet,
-    A('Koppeling C2', { d: 'Lamellenkoppeling.', ex: [0.1, 0, 0] }, discPack('C2', 0.224, 0.045, 0.075, 6)),
-    rearSet,
-    A('Rem B1', { d: 'Lamellenrem die een deel van de planetaire set vastzet.', ex: [0.24, 0, 0] }, discPack('B1', 0.297, 0.065, 0.09, 6)),
-    A('Rem B2', { d: 'Lamellenrem die een deel van de planetaire set vastzet.', ex: [0.31, 0, 0] }, discPack('B2', 0.33, 0.065, 0.09, 6)),
+    A('Tandwielsets', { d: 'De planetaire tandwielsets die samen de zes versnellingen en de achteruit vormen.', ex: [0, 0.2, 0.22] }, [frontSet, rearSet]),
+    A('Koppelingen en remmen', { d: 'Lamellenkoppelingen en -remmen die per versnelling delen van de planetaire sets koppelen of vastzetten.', ex: [0, -0.2, 0.22] }, [
+      A('Koppeling C1', { d: 'Lamellenkoppeling.', ex: [-0.02, 0, 0] }, discPack('C1', 0.167, 0.045, 0.075, 6)),
+      A('Koppeling C2', { d: 'Lamellenkoppeling.', ex: [0.1, 0, 0] }, discPack('C2', 0.224, 0.045, 0.075, 6)),
+      A('Rem B1', { d: 'Lamellenrem die een deel van de planetaire set vastzet.', ex: [0.24, 0, 0] }, discPack('B1', 0.297, 0.065, 0.09, 6)),
+      A('Rem B2', { d: 'Lamellenrem die een deel van de planetaire set vastzet.', ex: [0.31, 0, 0] }, discPack('B2', 0.33, 0.065, 0.09, 6)),
+    ]),
     P('Uitgaand tandwiel', gear(28, 0.05, 0.046, 0.018, 0.012), MAT.steel, { d: 'Geeft de kracht van de planetaire sets door aan de tussenas.', p: [0.362, 0, 0], ex: [0.38, 0, 0] }),
     P('Ingaande as', G.cyl('x', 0.012, 0.012, 0.36, 14), MAT.steel, { d: 'Hoofdas van turbinewiel naar de planetaire sets.', p: [0.2, 0, 0], ex: [0, 0, 0.3] }),
     counter, diff, vb, starter,

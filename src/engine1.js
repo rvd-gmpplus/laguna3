@@ -120,7 +120,6 @@ function valveGroup(cyl, k, side) {
 function buildBlock() {
   const kids = [
     P('Cilinderblok', blockGeo(), MAT.iron, { d: 'Gietijzeren cilinderblok met direct in het blok gehoonde boringen (F staat voor fonte, gietijzer).', spec: [['Materiaal', 'gietijzer'], ['Boring × slag', '82,7 × 93,0 mm'], ['Cilinderinhoud', '1998 cm³']] }),
-    P('Krukas', crankGeo(), MAT.steel, { d: 'Krukas met vijf hoofdlagers; zet de zuigerbeweging om in draaiing.', ex: [0, -0.22, 0] }),
     P('Keerring krukas distributiezijde', G.torus('x', 0.022, 0.004, 24, 6), MAT.rubber, { d: 'Oliekeerring rond de krukasneus.', p: [-0.218, 0, 0], ex: [-0.16, -0.12, 0] }),
     P('Keerring krukas vliegwielzijde', G.torus('x', 0.045, 0.005, 32, 6), MAT.rubber, { d: 'Oliekeerring aan de transmissiezijde.', p: [0.218, 0, 0], ex: [0.16, -0.12, 0] }),
     P('Aanloopring links', G.lathe('x', [[0.031, -0.0012], [0.046, -0.0012], [0.046, 0.0012], [0.031, 0.0012], [0.031, -0.0012]], 20, 'thrust'), MAT.bearing, { d: 'Bepaalt de axiale speling van de krukas.', p: [0.012, 0, 0], ex: [0.05, -0.16, 0.08] }),
@@ -132,7 +131,7 @@ function buildBlock() {
     kids.push(P(`Hoofdlagerschaal onder ${i + 1}`, G.half('x', 0.0295, 0.02, 0), MAT.bearing, { d: 'Glijlagerschaal in de lagerkap.', p: [x, 0, 0], ex: [0, -0.27, 0] }));
     [-0.04, 0.04].forEach((z, j) => kids.push(P(`Hoofdlagerbout ${i + 1}${j ? 'b' : 'a'}`, hexBolt(0.09, 0.011), MAT.darkSteel, { d: 'Bout van de hoofdlagerkap.', p: [x, -0.097, z], ex: [0, -0.43, 0] })));
   });
-  return A('Motorblok', { d: 'Cilinderblok met krukas, hoofdlagers en keerringen.', ex: [0, 0, 0] }, kids);
+  return A('Motorblok', { d: 'Cilinderblok met hoofdlagers, aanloopringen en keerringen.', ex: [0, 0, 0] }, kids);
 }
 function buildHead() {
   const hs = shapeOf(rrectPts(0.43, 0.2, 0.02));
@@ -153,7 +152,7 @@ function buildHead() {
   const valvesIn = [], valvesOut = [];
   for (let c = 0; c < 4; c++) for (let k = 0; k < 2; k++) { valvesIn.push(valveGroup(c, k, 1)); valvesOut.push(valveGroup(c, k, -1)); }
   const kids = [
-    P('Cilinderkop', merge([head, ...ports]), MAT.aluCast, { d: 'Aluminium cilinderkop met vier kleppen per cilinder en twee bovenliggende nokkenassen.', spec: [['Materiaal', 'aluminium'], ['Kleppen', '16 (4 per cilinder)'], ['Nokkenassen', '2, bovenliggend']] }),
+    P('Cilinderkop (gietstuk)', merge([head, ...ports]), MAT.aluCast, { d: 'Aluminium cilinderkop met vier kleppen per cilinder en twee bovenliggende nokkenassen.', spec: [['Materiaal', 'aluminium'], ['Kleppen', '16 (4 per cilinder)'], ['Nokkenassen', '2, bovenliggend']] }),
     P('Koppakking', gasket, MAT.darkSteel, { d: 'Meerlaagse stalen koppakking tussen blok en kop.', ex: [0, -0.24, 0] }),
     P('Nokkenas inlaat', camGeo(0), MAT.steel, { d: 'Bedient de acht inlaatkleppen; heeft een faseversteller op het distributiewiel.', p: [0, CAMY, CAMZ], ex: [0, 0.18, 0.12] }),
     P('Nokkenas uitlaat', camGeo(1.9), MAT.steel, { d: 'Bedient de acht uitlaatkleppen.', p: [0, CAMY, -CAMZ], ex: [0, 0.18, -0.12] }),

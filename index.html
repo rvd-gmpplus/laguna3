@@ -980,7 +980,6 @@ function valveGroup(cyl, k, side) {
 function buildBlock() {
   const kids = [
     P('Cilinderblok', blockGeo(), MAT.iron, { d: 'Gietijzeren cilinderblok met direct in het blok gehoonde boringen (F staat voor fonte, gietijzer).', spec: [['Materiaal', 'gietijzer'], ['Boring × slag', '82,7 × 93,0 mm'], ['Cilinderinhoud', '1998 cm³']] }),
-    P('Krukas', crankGeo(), MAT.steel, { d: 'Krukas met vijf hoofdlagers; zet de zuigerbeweging om in draaiing.', ex: [0, -0.22, 0] }),
     P('Keerring krukas distributiezijde', G.torus('x', 0.022, 0.004, 24, 6), MAT.rubber, { d: 'Oliekeerring rond de krukasneus.', p: [-0.218, 0, 0], ex: [-0.16, -0.12, 0] }),
     P('Keerring krukas vliegwielzijde', G.torus('x', 0.045, 0.005, 32, 6), MAT.rubber, { d: 'Oliekeerring aan de transmissiezijde.', p: [0.218, 0, 0], ex: [0.16, -0.12, 0] }),
     P('Aanloopring links', G.lathe('x', [[0.031, -0.0012], [0.046, -0.0012], [0.046, 0.0012], [0.031, 0.0012], [0.031, -0.0012]], 20, 'thrust'), MAT.bearing, { d: 'Bepaalt de axiale speling van de krukas.', p: [0.012, 0, 0], ex: [0.05, -0.16, 0.08] }),
@@ -992,7 +991,7 @@ function buildBlock() {
     kids.push(P(`Hoofdlagerschaal onder ${i + 1}`, G.half('x', 0.0295, 0.02, 0), MAT.bearing, { d: 'Glijlagerschaal in de lagerkap.', p: [x, 0, 0], ex: [0, -0.27, 0] }));
     [-0.04, 0.04].forEach((z, j) => kids.push(P(`Hoofdlagerbout ${i + 1}${j ? 'b' : 'a'}`, hexBolt(0.09, 0.011), MAT.darkSteel, { d: 'Bout van de hoofdlagerkap.', p: [x, -0.097, z], ex: [0, -0.43, 0] })));
   });
-  return A('Motorblok', { d: 'Cilinderblok met krukas, hoofdlagers en keerringen.', ex: [0, 0, 0] }, kids);
+  return A('Motorblok', { d: 'Cilinderblok met hoofdlagers, aanloopringen en keerringen.', ex: [0, 0, 0] }, kids);
 }
 function buildHead() {
   const hs = shapeOf(rrectPts(0.43, 0.2, 0.02));
@@ -1013,7 +1012,7 @@ function buildHead() {
   const valvesIn = [], valvesOut = [];
   for (let c = 0; c < 4; c++) for (let k = 0; k < 2; k++) { valvesIn.push(valveGroup(c, k, 1)); valvesOut.push(valveGroup(c, k, -1)); }
   const kids = [
-    P('Cilinderkop', merge([head, ...ports]), MAT.aluCast, { d: 'Aluminium cilinderkop met vier kleppen per cilinder en twee bovenliggende nokkenassen.', spec: [['Materiaal', 'aluminium'], ['Kleppen', '16 (4 per cilinder)'], ['Nokkenassen', '2, bovenliggend']] }),
+    P('Cilinderkop (gietstuk)', merge([head, ...ports]), MAT.aluCast, { d: 'Aluminium cilinderkop met vier kleppen per cilinder en twee bovenliggende nokkenassen.', spec: [['Materiaal', 'aluminium'], ['Kleppen', '16 (4 per cilinder)'], ['Nokkenassen', '2, bovenliggend']] }),
     P('Koppakking', gasket, MAT.darkSteel, { d: 'Meerlaagse stalen koppakking tussen blok en kop.', ex: [0, -0.24, 0] }),
     P('Nokkenas inlaat', camGeo(0), MAT.steel, { d: 'Bedient de acht inlaatkleppen; heeft een faseversteller op het distributiewiel.', p: [0, CAMY, CAMZ], ex: [0, 0.18, 0.12] }),
     P('Nokkenas uitlaat', camGeo(1.9), MAT.steel, { d: 'Bedient de acht uitlaatkleppen.', p: [0, CAMY, -CAMZ], ex: [0, 0.18, -0.12] }),
@@ -1062,8 +1061,10 @@ function buildAccessory() {
   return A('Hulpaandrijving', { d: 'Poly-V-riem die dynamo en aircocompressor aandrijft.', ex: [-0.66, -0.18, 0.12] }, [
     P('Multiriem', belt, MAT.belt, { d: 'Poly-V-riem (multiriem).', ex: [-0.1, 0, 0] }),
     P('Krukaspoelie', merge([pulley(0.068, 0.024, 'crankp'), xf(G.cyl('x', 0.02, 0.02, 0.05), [0.03, 0, 0])]), MAT.darkSteel, { d: 'Poelie met trillingsdemper op de krukas.', p: [XA, 0, 0], ex: [-0.06, -0.04, 0] }),
-    P('Dynamo', altBody, MAT.alu, { d: 'Wisselstroomdynamo die de accu laadt.', p: [-0.27, ACC[1][1], ACC[1][0]], ex: [0.02, 0.14, 0.08] }),
-    P('Dynamopoelie', pulley(0.028, 0.024, 'altp'), MAT.steel, { d: 'Vrijloop-poelie van de dynamo.', p: [XA, ACC[1][1], ACC[1][0]], ex: [-0.08, 0.14, 0.08] }),
+    A('Dynamo', { d: 'Wisselstroomdynamo die tijdens het rijden de accu laadt en het boordnet voedt.', ex: [0.02, 0.14, 0.08] }, [
+      P('Dynamohuis', altBody, MAT.alu, { d: 'Behuizing met stator, rotor, gelijkrichter en spanningsregelaar.', p: [-0.27, ACC[1][1], ACC[1][0]], ex: [0.06, 0, 0] }),
+      P('Dynamopoelie', pulley(0.028, 0.024, 'altp'), MAT.steel, { d: 'Vrijloop-poelie van de dynamo.', p: [XA, ACC[1][1], ACC[1][0]], ex: [-0.1, 0, 0] }),
+    ]),
     P('Aircocompressor', merge([G.cyl('x', 0.058, 0.058, 0.13, 28), xf(G.rbox(0.05, 0.04, 0.04, 0.008), [0.02, 0.06, 0])]), MAT.alu, { d: 'Compressor van de airconditioning.', p: [-0.27, ACC[2][1], ACC[2][0]], ex: [0.02, -0.12, 0.1] }),
     P('Magneetkoppeling airco', pulley(0.055, 0.024, 'acp'), MAT.steel, { d: 'Elektromagnetische koppeling die de compressor in- en uitschakelt.', p: [XA, ACC[2][1], ACC[2][0]], ex: [-0.08, -0.12, 0.1] }),
     P('Automatische riemspanner', merge([pulley(0.03, 0.024, 'acct'), xf(G.box(0.02, 0.07, 0.025), [0.02, -0.035, 0])]), MAT.alu, { d: 'Veerbelaste spanner van de multiriem.', p: [XA, ACC[3][1], ACC[3][0]], ex: [-0.08, 0.08, 0] }),
@@ -1144,7 +1145,12 @@ function buildEngine() {
     spec: [['Motorcode', 'F4Rt'], ['Opbouw', '4 in lijn, 16V DOHC'], ['Cilinderinhoud', '1998 cm³'], ['Boring × slag', '82,7 × 93,0 mm'], ['Compressie', '9,5 : 1'], ['Brandstofsysteem', 'multipoint-injectie'], ['Inductie', 'turbo + intercooler'], ['Vermogen', '125 kW (170 pk) bij 5000 tpm'], ['Koppel', '270 Nm bij 3250 tpm'], ['Nokkenasaandrijving', 'distributieriem']],
     ex: [0, 0.25, 0],
   }, [
-    buildBlock(), pistons, buildHead(), buildTiming(), buildAccessory(), buildIntake(), buildTurbo(), buildLube(), buildEngineCooling(), buildSensors(), flex,
+    buildBlock(),
+    A('Krukmechanisme', { d: 'Krukas met de vier zuiger-drijfstanggroepen: zet de op- en neergaande beweging van de zuigers om in draaiing.', ex: [0, -0.32, 0.38] }, [
+      P('Krukas', crankGeo(), MAT.steel, { d: 'Krukas met vijf hoofdlagers; zet de zuigerbeweging om in draaiing.', ex: [0, -0.22, 0] }),
+      pistons,
+    ]),
+    buildHead(), buildTiming(), buildAccessory(), buildIntake(), buildTurbo(), buildLube(), buildEngineCooling(), buildSensors(), flex,
     P('Motorafdekkap', merge([G.rbox(0.4, 0.03, 0.18, 0.012), ...[-0.12, -0.04, 0.04, 0.12].map(x => xf(G.box(0.05, 0.006, 0.14), [x, 0.017, 0]))]), MAT.plastic, { d: 'Kunststof afdekkap bovenop de motor.', p: [0, 0.478, 0], ex: [0, 0.95, 0] }),
   ]);
 }
@@ -1212,8 +1218,8 @@ function buildGearbox() {
     P('Zijwiel links', G.lathe('-x', [[0, 0], [0.02, 0], [0.014, 0.014], [0, 0.014]], 18, 'sidegL'), MAT.steel, { d: 'Kegeltandwiel naar de linker aandrijfas.', p: [0.071, 0, 0], ex: [0.09, 0, 0] }),
     P('Zijwiel rechts', G.lathe('x', [[0, 0], [0.02, 0], [0.014, 0.014], [0, 0.014]], 18, 'sidegR'), MAT.steel, { d: 'Kegeltandwiel naar de rechter aandrijfas.', p: [-0.001, 0, 0], ex: [-0.09, 0, 0] }),
   ]);
-  const vb = A('Hydraulische besturing', { d: 'Klepblok met magneetkleppen dat de koppelingen en remmen in de bak aanstuurt.', ex: [0, -0.34, 0.08] }, [
-    P('Klepblok', merge([G.box(0.2, 0.035, 0.16), ...[-0.06, 0, 0.06].map(x => xf(G.box(0.012, 0.006, 0.15), [x, 0.02, 0]))]), MAT.aluCast, { d: 'Kanalenplaat met schuiven die de oliedruk verdelen.', p: [0.26, -0.153, 0.02] }),
+  const vb = A('Klepblok', { d: 'Klepblok met magneetkleppen dat de koppelingen en remmen in de bak aanstuurt.', ex: [0, -0.34, 0.08] }, [
+    P('Klepblokhuis', merge([G.box(0.2, 0.035, 0.16), ...[-0.06, 0, 0.06].map(x => xf(G.box(0.012, 0.006, 0.15), [x, 0.02, 0]))]), MAT.aluCast, { d: 'Kanalenplaat met schuiven die de oliedruk verdelen.', p: [0.26, -0.153, 0.02] }),
     ...[0, 1, 2, 3, 4, 5].map(k => P(`Magneetklep ${k + 1}`, G.cyl('z', 0.009, 0.009, 0.04, 12), MAT.darkSteel, { d: 'Elektrisch bediende klep (solenoïde) die een schakelelement aanstuurt.', p: [0.185 + k * 0.03, -0.148, 0.11], ex: [0, 0, 0.09] })),
     P('ATF-filter', G.box(0.18, 0.012, 0.14), MAT.filter, { d: 'Zeef/filter voor de automaatolie.', p: [0.26, -0.18, 0.02], ex: [0, -0.07, 0] }),
     P('Carter automaat', G.rbox(0.24, 0.04, 0.19, 0.01), MAT.aluCast, { d: 'Oliecarter van de automaat.', p: [0.26, -0.21, 0.02], ex: [0, -0.15, 0] }),
@@ -1226,12 +1232,13 @@ function buildGearbox() {
   }, [
     P('Transmissiehuis', housing, MAT.aluCast, { d: 'Aluminium huis met koppelomvormerklok en differentieelhuis.', ex: [0, 0.44, 0] }),
     conv, pump,
-    A('Koppeling C1', { d: 'Lamellenkoppeling.', ex: [-0.02, 0, 0] }, discPack('C1', 0.167, 0.045, 0.075, 6)),
-    frontSet,
-    A('Koppeling C2', { d: 'Lamellenkoppeling.', ex: [0.1, 0, 0] }, discPack('C2', 0.224, 0.045, 0.075, 6)),
-    rearSet,
-    A('Rem B1', { d: 'Lamellenrem die een deel van de planetaire set vastzet.', ex: [0.24, 0, 0] }, discPack('B1', 0.297, 0.065, 0.09, 6)),
-    A('Rem B2', { d: 'Lamellenrem die een deel van de planetaire set vastzet.', ex: [0.31, 0, 0] }, discPack('B2', 0.33, 0.065, 0.09, 6)),
+    A('Tandwielsets', { d: 'De planetaire tandwielsets die samen de zes versnellingen en de achteruit vormen.', ex: [0, 0.2, 0.22] }, [frontSet, rearSet]),
+    A('Koppelingen en remmen', { d: 'Lamellenkoppelingen en -remmen die per versnelling delen van de planetaire sets koppelen of vastzetten.', ex: [0, -0.2, 0.22] }, [
+      A('Koppeling C1', { d: 'Lamellenkoppeling.', ex: [-0.02, 0, 0] }, discPack('C1', 0.167, 0.045, 0.075, 6)),
+      A('Koppeling C2', { d: 'Lamellenkoppeling.', ex: [0.1, 0, 0] }, discPack('C2', 0.224, 0.045, 0.075, 6)),
+      A('Rem B1', { d: 'Lamellenrem die een deel van de planetaire set vastzet.', ex: [0.24, 0, 0] }, discPack('B1', 0.297, 0.065, 0.09, 6)),
+      A('Rem B2', { d: 'Lamellenrem die een deel van de planetaire set vastzet.', ex: [0.31, 0, 0] }, discPack('B2', 0.33, 0.065, 0.09, 6)),
+    ]),
     P('Uitgaand tandwiel', gear(28, 0.05, 0.046, 0.018, 0.012), MAT.steel, { d: 'Geeft de kracht van de planetaire sets door aan de tussenas.', p: [0.362, 0, 0], ex: [0.38, 0, 0] }),
     P('Ingaande as', G.cyl('x', 0.012, 0.012, 0.36, 14), MAT.steel, { d: 'Hoofdas van turbinewiel naar de planetaire sets.', p: [0.2, 0, 0], ex: [0, 0, 0.3] }),
     counter, diff, vb, starter,

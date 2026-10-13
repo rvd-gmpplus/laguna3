@@ -24,8 +24,10 @@ function buildAccessory() {
   return A('Hulpaandrijving', { d: 'Poly-V-riem die dynamo en aircocompressor aandrijft.', ex: [-0.66, -0.18, 0.12] }, [
     P('Multiriem', belt, MAT.belt, { d: 'Poly-V-riem (multiriem).', ex: [-0.1, 0, 0] }),
     P('Krukaspoelie', merge([pulley(0.068, 0.024, 'crankp'), xf(G.cyl('x', 0.02, 0.02, 0.05), [0.03, 0, 0])]), MAT.darkSteel, { d: 'Poelie met trillingsdemper op de krukas.', p: [XA, 0, 0], ex: [-0.06, -0.04, 0] }),
-    P('Dynamo', altBody, MAT.alu, { d: 'Wisselstroomdynamo die de accu laadt.', p: [-0.27, ACC[1][1], ACC[1][0]], ex: [0.02, 0.14, 0.08] }),
-    P('Dynamopoelie', pulley(0.028, 0.024, 'altp'), MAT.steel, { d: 'Vrijloop-poelie van de dynamo.', p: [XA, ACC[1][1], ACC[1][0]], ex: [-0.08, 0.14, 0.08] }),
+    A('Dynamo', { d: 'Wisselstroomdynamo die tijdens het rijden de accu laadt en het boordnet voedt.', ex: [0.02, 0.14, 0.08] }, [
+      P('Dynamohuis', altBody, MAT.alu, { d: 'Behuizing met stator, rotor, gelijkrichter en spanningsregelaar.', p: [-0.27, ACC[1][1], ACC[1][0]], ex: [0.06, 0, 0] }),
+      P('Dynamopoelie', pulley(0.028, 0.024, 'altp'), MAT.steel, { d: 'Vrijloop-poelie van de dynamo.', p: [XA, ACC[1][1], ACC[1][0]], ex: [-0.1, 0, 0] }),
+    ]),
     P('Aircocompressor', merge([G.cyl('x', 0.058, 0.058, 0.13, 28), xf(G.rbox(0.05, 0.04, 0.04, 0.008), [0.02, 0.06, 0])]), MAT.alu, { d: 'Compressor van de airconditioning.', p: [-0.27, ACC[2][1], ACC[2][0]], ex: [0.02, -0.12, 0.1] }),
     P('Magneetkoppeling airco', pulley(0.055, 0.024, 'acp'), MAT.steel, { d: 'Elektromagnetische koppeling die de compressor in- en uitschakelt.', p: [XA, ACC[2][1], ACC[2][0]], ex: [-0.08, -0.12, 0.1] }),
     P('Automatische riemspanner', merge([pulley(0.03, 0.024, 'acct'), xf(G.box(0.02, 0.07, 0.025), [0.02, -0.035, 0])]), MAT.alu, { d: 'Veerbelaste spanner van de multiriem.', p: [XA, ACC[3][1], ACC[3][0]], ex: [-0.08, 0.08, 0] }),
@@ -106,7 +108,12 @@ function buildEngine() {
     spec: [['Motorcode', 'F4Rt'], ['Opbouw', '4 in lijn, 16V DOHC'], ['Cilinderinhoud', '1998 cm³'], ['Boring × slag', '82,7 × 93,0 mm'], ['Compressie', '9,5 : 1'], ['Brandstofsysteem', 'multipoint-injectie'], ['Inductie', 'turbo + intercooler'], ['Vermogen', '125 kW (170 pk) bij 5000 tpm'], ['Koppel', '270 Nm bij 3250 tpm'], ['Nokkenasaandrijving', 'distributieriem']],
     ex: [0, 0.25, 0],
   }, [
-    buildBlock(), pistons, buildHead(), buildTiming(), buildAccessory(), buildIntake(), buildTurbo(), buildLube(), buildEngineCooling(), buildSensors(), flex,
+    buildBlock(),
+    A('Krukmechanisme', { d: 'Krukas met de vier zuiger-drijfstanggroepen: zet de op- en neergaande beweging van de zuigers om in draaiing.', ex: [0, -0.32, 0.38] }, [
+      P('Krukas', crankGeo(), MAT.steel, { d: 'Krukas met vijf hoofdlagers; zet de zuigerbeweging om in draaiing.', ex: [0, -0.22, 0] }),
+      pistons,
+    ]),
+    buildHead(), buildTiming(), buildAccessory(), buildIntake(), buildTurbo(), buildLube(), buildEngineCooling(), buildSensors(), flex,
     P('Motorafdekkap', merge([G.rbox(0.4, 0.03, 0.18, 0.012), ...[-0.12, -0.04, 0.04, 0.12].map(x => xf(G.box(0.05, 0.006, 0.14), [x, 0.017, 0]))]), MAT.plastic, { d: 'Kunststof afdekkap bovenop de motor.', p: [0, 0.478, 0], ex: [0, 0.95, 0] }),
   ]);
 }
