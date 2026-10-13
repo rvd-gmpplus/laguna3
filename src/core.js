@@ -1,0 +1,295 @@
+'use strict';
+/* ===================== basis: renderer, scène, materialen, geometrie-hulpen ===================== */
+const LOADING = document.getElementById('loading');
+if (!window.THREE || !THREE.OrbitControls || !THREE.BufferGeometryUtils) {
+  LOADING.textContent = 'De 3D-bibliotheek kon niet worden geladen. Controleer de verbinding en laad de pagina opnieuw.';
+  throw new Error('three.js ontbreekt');
+}
+THREE.ColorManagement.legacyMode = false;
+const PI = Math.PI, HALF = PI / 2;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const V3 = (x, y, z) => new THREE.Vector3(x, y, z);
+const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const canvas = document.getElementById('stage');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.98;
+renderer.setClearColor(0x000000, 0);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(36, 1, 0.02, 400);
+camera.position.set(5.6, 2.5, 6.2);
+const controls = new THREE.OrbitControls(camera, canvas);
+controls.enableDamping = true;
+controls.dampingFactor = 0.09;
+controls.target.set(0, 0.62, 0);
+controls.minDistance = 0.12;
+controls.maxDistance = 60;
+controls.maxPolarAngle = PI * 0.97;
+controls.rotateSpeed = 0.8;
+controls.zoomSpeed = 0.9;
+controls.autoRotateSpeed = 0.7;
+
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new THREE.RoomEnvironment(), 0.04).texture;
+scene.add(new THREE.HemisphereLight(0xffffff, 0x3c434b, 0.35));
+const sun = new THREE.DirectionalLight(0xffffff, 1.2);
+sun.position.set(4, 9, 6);
+scene.add(sun);
+const rim = new THREE.DirectionalLight(0xdfe8ff, 0.35);
+rim.position.set(-6, 3, -5);
+scene.add(rim);
+
+/* ---------- materialen ---------- */
+const MAT = {};
+function std(name, color, metal, rough, extra) {
+  const m = new THREE.MeshStandardMaterial(Object.assign({ color, metalness: metal, roughness: rough, side: THREE.DoubleSide }, extra || {}));
+  m.name = name; MAT[name] = m; return m;
+}
+function phys(name, opts) {
+  const m = new THREE.MeshPhysicalMaterial(Object.assign({ side: THREE.DoubleSide }, opts));
+  m.name = name; MAT[name] = m; return m;
+}
+phys('paint', { color: 0x92979e, metalness: 0.74, roughness: 0.26, clearcoat: 1, clearcoatRoughness: 0.05, envMapIntensity: 1.15 });
+std('paintIn', 0x8b9096, 0.45, 0.55);
+std('underbody', 0x3a3f45, 0.15, 0.85);
+phys('glass', { color: 0x0b1117, metalness: 0, roughness: 0.04, transparent: true, opacity: 0.86, depthWrite: false, envMapIntensity: 0.85 });
+std('chrome', 0xeef1f4, 1, 0.08, { envMapIntensity: 1.25 });
+std('blackGloss', 0x0e1013, 0.3, 0.2);
+std('plastic', 0x1e2024, 0, 0.72);
+std('plasticGrey', 0x4a4f57, 0, 0.62);
+std('rubber', 0x141516, 0, 0.88);
+std('alu', 0xc3c7cc, 0.85, 0.34);
+std('aluCast', 0xa6abb1, 0.7, 0.56);
+std('iron', 0x5b6066, 0.75, 0.52);
+std('steel', 0xa0a6ad, 0.95, 0.28);
+std('darkSteel', 0x3c4147, 0.85, 0.45);
+std('bearing', 0xc9a265, 0.95, 0.3);
+std('copper', 0xb36d42, 0.9, 0.35);
+std('leather', 0xcbb796, 0, 0.6);
+std('dash', 0x2a2c30, 0, 0.78);
+std('fabric', 0xd8d2c6, 0, 0.95);
+std('carpet', 0x2a2927, 0, 1);
+std('satin', 0xc8ccd1, 0.9, 0.26);
+phys('lensRed', { color: 0xa8121d, metalness: 0, roughness: 0.15, transparent: true, opacity: 0.9 });
+phys('lensClear', { color: 0xe6eef5, metalness: 0, roughness: 0.04, transparent: true, opacity: 0.3, depthWrite: false });
+std('amber', 0xd8871a, 0.1, 0.35);
+std('reflector', 0xdde2e7, 1, 0.14);
+std('plateYellow', 0xf3c400, 0, 0.5);
+std('plateBlue', 0x1d3f9a, 0, 0.5);
+std('ceramic', 0xf1efe9, 0, 0.35);
+phys('tank', { color: 0xe9e5da, metalness: 0, roughness: 0.4, transparent: true, opacity: 0.86 });
+std('oilFilter', 0x2a56a8, 0.3, 0.45);
+std('belt', 0x111214, 0, 0.85);
+std('exhaust', 0x8c8681, 0.75, 0.48);
+std('heat', 0xcac4b9, 0.9, 0.32);
+std('ecu', 0x2f3339, 0.45, 0.5);
+std('red', 0xc0262d, 0.1, 0.5);
+std('friction', 0x4b3c31, 0, 0.9);
+std('handle', 0xf0b81f, 0, 0.5);
+std('screen', 0x0b1118, 0.2, 0.1);
+std('filter', 0xdcc8a0, 0, 0.9);
+std('heater', 0xa86a3d, 0.6, 0.45);
+
+const HL = new Map();
+function hlMat(base) {
+  let m = HL.get(base);
+  if (!m) {
+    m = base.clone();
+    m.emissive = new THREE.Color(0xf2c230);
+    m.emissiveIntensity = 0.42;
+    if (m.transparent) m.opacity = Math.max(m.opacity, 0.55);
+    HL.set(base, m);
+  }
+  return m;
+}
+const GHOST = new THREE.MeshStandardMaterial({ color: 0xc4ccd5, metalness: 0, roughness: 0.4, transparent: true, opacity: 0.09, depthWrite: false, side: THREE.DoubleSide });
+const GHOST_HL = new THREE.MeshStandardMaterial({ color: 0xf2c230, emissive: 0xf2c230, emissiveIntensity: 0.25, transparent: true, opacity: 0.35, depthWrite: false, side: THREE.DoubleSide });
+
+/* ---------- geometrie-hulpen ---------- */
+const GC = new Map();
+function cache(key, fn) { let g = GC.get(key); if (!g) { g = fn(); GC.set(key, g); } return g; }
+function xf(g, p, r, s) {
+  const c = g.clone();
+  const m = new THREE.Matrix4().compose(V3(...(p || [0, 0, 0])), new THREE.Quaternion().setFromEuler(new THREE.Euler(...(r || [0, 0, 0]))), V3(...(s || [1, 1, 1])));
+  c.applyMatrix4(m);
+  return c;
+}
+function cleanG(g) {
+  const n = g.index ? g.toNonIndexed() : g.clone();
+  for (const k of Object.keys(n.attributes)) if (k !== 'position' && k !== 'normal') n.deleteAttribute(k);
+  if (!n.attributes.normal) n.computeVertexNormals();
+  n.morphAttributes = {}; n.clearGroups();
+  return n;
+}
+function merge(list) {
+  const m = THREE.BufferGeometryUtils.mergeBufferGeometries(list.filter(Boolean).map(cleanG), false);
+  if (!m) throw new Error('merge mislukt');
+  return m;
+}
+// as-oriëntatie: geometrie gebouwd langs Y (cilinder/lathe) of Z (extrude/torus)
+function yTo(g, ax) { if (ax === 'x') g.rotateZ(-HALF); else if (ax === 'z') g.rotateX(HALF); else if (ax === '-x') g.rotateZ(HALF); return g; }
+function zTo(g, ax) { if (ax === 'x') g.rotateY(HALF); else if (ax === 'y') g.rotateX(-HALF); return g; }
+
+const G = {
+  box: (w, h, d) => cache(`b${w}|${h}|${d}`, () => new THREE.BoxGeometry(w, h, d)),
+  rbox: (w, h, d, r) => cache(`rb${w}|${h}|${d}|${r}`, () => new THREE.RoundedBoxGeometry(w, h, d, 2, Math.max(0.0005, Math.min(r, Math.min(w, h, d) / 2 - 0.0002)))),
+  cyl: (ax, rt, rb, h, seg = 24, open = false) => cache(`c${ax}${rt}|${rb}|${h}|${seg}|${open}`, () => yTo(new THREE.CylinderGeometry(rt, rb, h, seg, 1, open), ax)),
+  half: (ax, r, h, start, seg = 16) => cache(`h${ax}${r}|${h}|${start}|${seg}`, () => yTo(new THREE.CylinderGeometry(r, r, h, seg, 1, true, start, PI), ax)),
+  torus: (ax, R, r, seg = 40, rad = 8, arc = PI * 2) => cache(`t${ax}${R}|${r}|${seg}|${arc}`, () => zTo(new THREE.TorusGeometry(R, r, rad, seg, arc), ax)),
+  sphere: (r, seg = 16) => cache(`s${r}|${seg}`, () => new THREE.SphereGeometry(r, seg, Math.max(6, seg * 0.6 | 0))),
+  lathe: (ax, pts, seg = 32, key) => {
+    const build = () => yTo(new THREE.LatheGeometry(pts.map(p => new THREE.Vector2(p[0], p[1])), seg), ax);
+    return key ? cache('l' + ax + key + seg, build) : build();
+  },
+};
+function hexBolt(len, d, ax = 'y') { // kop bij oorsprong, steel richting +as
+  return cache(`bolt${len}|${d}|${ax}`, () => {
+    const head = new THREE.CylinderGeometry(d * 0.9, d * 0.9, d * 0.65, 6); head.translate(0, -d * 0.325, 0);
+    const shank = new THREE.CylinderGeometry(d / 2, d / 2, len, 10); shank.translate(0, len / 2, 0);
+    const washer = new THREE.CylinderGeometry(d * 1.05, d * 1.05, d * 0.12, 16); washer.translate(0, d * 0.06, 0);
+    return yTo(merge([head, shank, washer]), ax);
+  });
+}
+function spring(R, wire, h, turns, ax = 'y') {
+  return cache(`sp${R}|${wire}|${h}|${turns}|${ax}`, () => {
+    const pts = []; const N = Math.max(24, Math.ceil(turns * 14));
+    for (let i = 0; i <= N; i++) { const t = i / N, a = t * turns * PI * 2; pts.push(V3(R * Math.cos(a), t * h - h / 2, R * Math.sin(a))); }
+    return yTo(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), N, wire, 5, false), ax);
+  });
+}
+function tube(points, r, seg = 64, rad = 10, closed = false) {
+  const curve = new THREE.CatmullRomCurve3(points.map(p => Array.isArray(p) ? V3(...p) : p), closed, 'centripetal');
+  return new THREE.TubeGeometry(curve, seg, r, rad, closed);
+}
+function shapeOf(pts) { const s = new THREE.Shape(); pts.forEach((p, i) => i ? s.lineTo(p[0], p[1]) : s.moveTo(p[0], p[1])); s.closePath(); return s; }
+function circlePath(cx, cy, r) { const h = new THREE.Path(); h.absarc(cx, cy, r, 0, PI * 2, true); return h; }
+function rrectPts(w, h, r, n = 4) {
+  const pts = [], hw = w / 2, hh = h / 2;
+  const cs = [[hw - r, hh - r, 0], [-hw + r, hh - r, HALF], [-hw + r, -hh + r, PI], [hw - r, -hh + r, PI * 1.5]];
+  for (const [cx, cy, a0] of cs) for (let i = 0; i <= n; i++) { const a = a0 + i / n * HALF; pts.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]); }
+  return pts;
+}
+function extrude(shape, depth, curveSeg = 12) {
+  const g = new THREE.ExtrudeGeometry(shape, { depth, bevelEnabled: false, curveSegments: curveSeg });
+  g.translate(0, 0, -depth / 2);
+  return g;
+}
+// vorm in (x,z)-vlak, dikte langs y (bovenaanzicht)
+function plan(shape, depth) { const g = extrude(shape, depth); g.rotateX(HALF); return g; }
+// vorm in (z,y)-vlak, dikte langs x (zijaanzicht)
+function side(shape, depth) { const g = extrude(shape, depth); g.rotateY(-HALF); return g; }
+// vorm in (x,y)-vlak, dikte langs z (vooraanzicht)
+function front(shape, depth) { return extrude(shape, depth); }
+function gearShape(n, ro, rr, hole, inner) {
+  const s = new THREE.Shape(), st = PI * 2 / n;
+  for (let i = 0; i < n; i++) {
+    const a = i * st;
+    [[rr, a], [ro, a + 0.2 * st], [ro, a + 0.45 * st], [rr, a + 0.65 * st]].forEach(([r, t], j) => {
+      const x = r * Math.cos(t), y = r * Math.sin(t);
+      (i === 0 && j === 0) ? s.moveTo(x, y) : s.lineTo(x, y);
+    });
+  }
+  s.closePath();
+  if (hole > 0) s.holes.push(circlePath(0, 0, hole));
+  return s;
+}
+function gear(n, ro, rr, w, hole = 0, ax = 'x') {
+  return cache(`g${n}|${ro}|${rr}|${w}|${hole}|${ax}`, () => zTo(extrude(gearShape(n, ro, rr, hole), w, 6), ax));
+}
+function ringGear(n, rOut, rTip, rRoot, w, ax = 'x') {
+  return cache(`rg${n}|${rOut}|${rTip}|${w}|${ax}`, () => {
+    const s = new THREE.Shape(); s.absarc(0, 0, rOut, 0, PI * 2, false);
+    const h = new THREE.Path(), st = PI * 2 / n;
+    for (let i = 0; i < n; i++) {
+      const a = i * st;
+      [[rRoot, a], [rTip, a + 0.2 * st], [rTip, a + 0.45 * st], [rRoot, a + 0.65 * st]].forEach(([r, t], j) => {
+        const x = r * Math.cos(t), y = r * Math.sin(t);
+        (i === 0 && j === 0) ? h.moveTo(x, y) : h.lineTo(x, y);
+      });
+    }
+    h.closePath(); s.holes.push(h);
+    return zTo(extrude(s, w, 24), ax);
+  });
+}
+function annulus(rIn, rOut, t, ax = 'x', seg = 40) {
+  return cache(`an${rIn}|${rOut}|${t}|${ax}`, () => yTo(new THREE.LatheGeometry([[rIn, -t / 2], [rOut, -t / 2], [rOut, t / 2], [rIn, t / 2], [rIn, -t / 2]].map(p => new THREE.Vector2(...p)), seg), ax));
+}
+function hull(P) {
+  P = P.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const cr = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+  const lo = [], up = [];
+  for (const p of P) { while (lo.length >= 2 && cr(lo[lo.length - 2], lo[lo.length - 1], p) <= 0) lo.pop(); lo.push(p); }
+  for (let i = P.length - 1; i >= 0; i--) { const p = P[i]; while (up.length >= 2 && cr(up[up.length - 2], up[up.length - 1], p) <= 0) up.pop(); up.push(p); }
+  up.pop(); lo.pop();
+  return lo.concat(up);
+}
+function circlesHull(circles, grow) {
+  const pts = [];
+  circles.forEach(([a, b, r]) => { for (let i = 0; i < 56; i++) { const t = i / 56 * PI * 2; pts.push([a + (r + grow) * Math.cos(t), b + (r + grow) * Math.sin(t)]); } });
+  return hull(pts);
+}
+// riem rond poelies in het (z,y)-vlak, breedte langs x
+function beltGeo(circles, width, thick) {
+  const outer = circlesHull(circles, thick), inner = circlesHull(circles, 0);
+  const s = shapeOf(outer); s.holes.push(new THREE.Path(inner.map(p => new THREE.Vector2(p[0], p[1]))));
+  return side(s, width);
+}
+function hullSolid(circles, grow, depth) { return side(shapeOf(circlesHull(circles, grow)), depth); }
+function blades(n, rIn, rOut, h, t, twist, ax = 'x') { // waaier-/turbineschoepen rond as
+  const list = [];
+  for (let i = 0; i < n; i++) {
+    const a = i / n * PI * 2;
+    const b = new THREE.BoxGeometry(t, h, rOut - rIn);
+    b.translate(0, 0, (rIn + rOut) / 2);
+    b.rotateZ(twist);
+    b.rotateY(a);
+    list.push(b);
+  }
+  return yTo(merge(list), ax);
+}
+function quatFromTo(a, b) { return new THREE.Quaternion().setFromUnitVectors(a.clone().normalize(), b.clone().normalize()); }
+// staaf/buis tussen twee punten (as Y gebouwd)
+function rodBetween(a, b, r, seg = 12) {
+  const A = V3(...a), B = V3(...b), d = B.clone().sub(A), L = d.length();
+  const g = new THREE.CylinderGeometry(r, r, L, seg);
+  g.applyQuaternion(quatFromTo(V3(0, 1, 0), d));
+  const m = A.clone().add(B).multiplyScalar(0.5);
+  g.translate(m.x, m.y, m.z);
+  return g;
+}
+
+/* ---------- onderdelenboom ---------- */
+const NODES = [];
+let NID = 0;
+function mkNode(obj, name, o) {
+  const n = {
+    id: NID++, name, d: o.d || '', spec: o.spec || null, obj, kids: [], parent: null, asm: false,
+    ex: o.ex ? V3(...o.ex) : null, exs: o.exs != null ? o.exs : 1, mode: o.mode || null, axis: o.axis ? V3(...o.axis) : null, step: o.step || 0,
+    u: 0, amt: 0, target: 0, delay: 0, base: null, exv: V3(0, 0, 0), sys: null, depth: 0, count: 0, lc: null, rad: 0, tag: o.tag || null
+  };
+  obj.userData.node = n;
+  if (o.p) obj.position.set(...o.p);
+  if (o.r) obj.rotation.set(...o.r);
+  if (o.q) obj.quaternion.copy(o.q);
+  if (o.s) obj.scale.set(...o.s);
+  NODES.push(n);
+  return n;
+}
+function A(name, o = {}, kids = []) {
+  const n = mkNode(new THREE.Group(), name, o);
+  n.asm = true;
+  [kids].flat(Infinity).forEach(k => k && addKid(n, k));
+  return n;
+}
+function P(name, geo, m, o = {}) {
+  const mesh = new THREE.Mesh(geo, m);
+  mesh.userData.base = m;
+  return mkNode(mesh, name, o);
+}
+function addKid(p, c) { p.kids.push(c); c.parent = p; p.obj.add(c.obj); }
+const sideName = s => (s > 0 ? 'links' : 'rechts');
