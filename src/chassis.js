@@ -120,7 +120,7 @@ function frontCorner(s) {
     P('Veerrubber onder', annulus(0.052, 0.074, 0.004, 'y', 28), MAT.rubber, { d: 'Rubber tussenlaag tussen veer en onderste schotel.', p: [0, 0.114, 0], ex: [0, -0.03, 0], inner: true }),
     P('Schroefveer voor', spring(0.066, 0.0068, 0.2, 5.5), MAT.chsSpring, { d: 'Draagt het voorgewicht van de auto.', p: [0, 0.21, 0] }),
     P('Stofhoes veerpoot', G.lathe('y', bellows(0.032, 0.026, 0.115, 5), 22, 'chsDb'), MAT.rubber, { d: 'Balg over de zuigerstang die vuil uit de demper houdt.', p: [0, 0.165, 0], ex: [0.16, 0.02, 0] }),
-    P('Aanslagrubber', G.cyl('y', 0.024, 0.021, 0.04, 16), MAT.rubber, { d: 'Vangt het inveren aan het einde van de slag op.', p: [0, 0.285, 0], ex: [0.2, 0.06, 0], inner: true }),
+    P('Aanslagrubber', G.cyl('y', 0.024, 0.021, 0.04, 16), MAT.rubber, { d: 'Vangt het inveren aan het einde van de slag op.', p: [0, 0.285, 0], ex: [0.2, 0.06, 0] }),
     P('Veerschotel boven', seat(-1, 'chsSeatU'), MAT.darkSteel, { d: 'Bovenste veerschotel.', p: [0, 0.318, 0], ex: [0, 0.08, 0] }),
     P('Veerrubber boven', annulus(0.052, 0.074, 0.004, 'y', 28), MAT.rubber, { d: 'Rubber tussenlaag tussen veer en bovenste schotel.', p: [0, 0.31, 0], ex: [0, 0.05, 0] }),
     P('Veerpootlager', annulus(0.03, 0.052, 0.014, 'y', 28), MAT.bearing, { d: 'Axiaal draaglager zodat de veerpoot met het stuur mee kan draaien.', p: [0, 0.331, 0], ex: [0, 0.12, 0] }),
@@ -293,7 +293,7 @@ function buildFrontAxle() {
     A('Airbagmodule bestuurder', { d: 'Bestuurdersairbag in het stuurwielcentrum (twee ontstekingsstanden); in het deksel zit de claxon.', ex: [0, 0, 0.12] }, [
       P('Airbagdeksel', chsRb(0.15, 0.12, 0.012, 0.02), MAT.dash, { d: 'Scheurdeksel van de airbag; drukken erop bedient de claxon.', p: [0, -0.005, 0.034], ex: [0, 0, 0.1] }),
       P('Airbag', chsRb(0.12, 0.09, 0.03, 0.012), MAT.fabric, { d: 'Opgevouwen nylon airbag.', p: [0, -0.005, 0.012], ex: [0, 0, 0.05] }),
-      P('Gasgenerator', G.cyl('z', 0.036, 0.036, 0.028, 18), MAT.darkSteel, { d: 'Gasgenerator met twee ontstekers.', p: [0, -0.005, -0.012], ex: [0, 0, -0.02], inner: true })]),
+      P('Gasgenerator', G.cyl('z', 0.036, 0.036, 0.028, 18), MAT.darkSteel, { d: 'Gasgenerator met twee ontstekers.', p: [0, -0.005, -0.012], ex: [0, 0, -0.02] })]),
     P('Wikkelcontact', annulus(0.028, 0.052, 0.02, 'z', 28), MAT.plasticGrey, { d: 'Spiraalvormig wikkelcontact dat de airbag en de claxon met de kabelboom verbindt terwijl het stuur draait.', p: [0, 0, -0.065], ex: [0, 0, -0.28] }),
     P('Centrale bout', hexBolt(0.06, 0.014, 'z'), MAT.steel, { d: 'Bout die het stuurwiel op de stuuras trekt.', p: [0, 0, -0.1], ex: [0, 0, -0.4] })]);
   const steer = A('Stuurinrichting', { d: 'Tandheugelbesturing met hydraulische, snelheidsafhankelijke assistentie: stuurhuis, twee spoorstangen, bekrachtigingsolie met reservoir en slangen, stuurkolom en stuurwiel.', ex: [0, 0.3, 0.05] }, [rack, chsTieRod(1, z0, rackY, rackZ), chsTieRod(-1, z0, rackY, rackZ), hyd, column, wheel]);
