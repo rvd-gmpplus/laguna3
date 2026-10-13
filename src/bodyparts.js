@@ -51,11 +51,11 @@ const bodQy = (z, y) => bodQAtY(z, y);
 
 /* ---------- sierlijsten met afgerond profiel ---------- */
 // lijst op de huid van de onderbak tussen y0 en y1 en z zA..zB; hgt = hoogte van het profiel boven de huid; de uiteinden lopen in de huid weg
-function bodMould(s, y0, y1, zA, zB, hgt, nz = 36) {
+function bodMould(s, y0, y1, zA, zB, hgt, nz = 36, nv = 8) {
   return patch((z, t) => {
     const e = sstep((z - zA) / 0.05) * sstep((zB - z) / 0.05), o = hgt * e * Math.pow(Math.sin(PI * t), 0.6) - 0.001;
     const p = bodAt(z, y0 + (y1 - y0) * t, o); return [s * p[0], p[1], p[2]];
-  }, zA, zB, nz, () => [0, 1], 8);
+  }, zA, zB, nz, () => [0, 1], nv);
 }
 /* ---------- portieren ---------- */
 function buildDoor(s, isFront) {
@@ -90,12 +90,12 @@ function buildDoor(s, isFront) {
   const topPts = [], beltZ = [], beltPts = [];
   for (let i = 0; i <= 20; i++) { const z = zT0 + (zT1 - zT0) * i / 20, p = bodGhAt(z, bodQG + 0.004, 0.003); topPts.push([s * p[0], p[1], z]); }
   for (let i = 0; i <= 16; i++) beltZ.push(isFront ? -0.25 + (gz1 + 0.13 + 0.25) * i / 16 : gz0 + (-0.25 - gz0) * i / 16);
-  for (const z of beltZ) { const g = bodGh(z); beltPts.push([s * (g.xb + 0.004), g.yb + 0.004, z]); }
+  for (const z of beltZ) { const g = bodGh(z); beltPts.push([s * (g.xb + 0.007), g.yb + 0.003, z]); }
   const handleZ = isFront ? 0.03 : -1.015, handleY = isFront ? 0.80 : 0.84;
   const hp = bodAt(handleZ, handleY, 0.012), hn = bodNormalAt(handleZ, handleY);
   const mZ0 = isFront ? 0.03 : -1.16, mZ1 = isFront ? 0.82 : -0.16;
   const strip = y => bodMould(s, y, y + 0.026, mZ0, mZ1, 0.009);                       // afgeronde aluminiumlook lijst, 9 mm boven de huid
-  const stripShadow = y => bodMould(s, y - 0.011, y - 0.003, mZ0 + 0.01, mZ1 - 0.01, 0.003);   // donkere rubberlijn onder de lijst
+  const stripShadow = y => bodMould(s, y - 0.011, y - 0.003, mZ0 + 0.01, mZ1 - 0.01, 0.003, 24, 3);   // donkere rubberlijn onder de lijst
   const hingeZ = isFront ? z1 - 0.03 : z1 - 0.025;
   const hinge = (h, y) => A(`Scharnier ${h}`, { d: `${h === 'boven' ? 'Bovenste' : 'Onderste'} portierscharnier: een blad op de stijl en een blad op het portier met een scharnierpen.`, ex: [-s * 0.03, 0, 0.12] }, [
     P('Scharnierblad', G.rbox(0.03, 0.07, 0.05, 0.006), MAT.darkSteel, { d: 'Gesmeed stalen scharnierblad met pen.', p: [s * (surfX(hingeZ, y) - 0.035), y, hingeZ + 0.02], ex: [0, 0, 0.04] }),
@@ -270,7 +270,7 @@ function buildBody() {
     ...both(s => P(`Langsligger achter ${sn(s)}`, G.box(0.08, 0.1, 0.9), MAT.paintIn, { d: 'Langsligger onder de bagageruimte die de achteras en de achterbumperbalk draagt.', p: [s * 0.52, 0.32, -1.72], ex: [s * 0.06, -0.06, 0] })),
     ...both(s => P(`Dorpel ${sn(s)}`, lowSide(s, AXR + ARCH + 0.002, AXF - ARCH - 0.002, 36, z => [S1 * 0.55, bodSY(z, 0.302)], 6), MAT.paint, { d: 'Dorpel: dragend kokerprofiel onder de portieren.', ex: [s * 0.12, -0.04, 0] })),
     ...both(s => P(`Dorpelsierlijst ${sn(s)}`, bodMould(s, 0.208, 0.242, -0.95, 0.85, 0.010, 40), MAT.bodBright, { d: 'Zilveren sierlijst langs de onderdorpel (aluminiumlook).', ex: [s * 0.2, -0.02, 0] })),
-    ...both(s => P(`Rubberlijn dorpelsierlijst ${sn(s)}`, bodMould(s, 0.194, 0.205, -0.94, 0.84, 0.0035, 40), MAT.rubber, { d: 'Dunne zwarte rubberlijn onder de dorpelsierlijst.', ex: [s * 0.16, -0.03, 0] })),
+    ...both(s => P(`Rubberlijn dorpelsierlijst ${sn(s)}`, bodMould(s, 0.194, 0.205, -0.94, 0.84, 0.0035, 28, 3), MAT.rubber, { d: 'Dunne zwarte rubberlijn onder de dorpelsierlijst.', ex: [s * 0.16, -0.03, 0] })),
   ]);
   // voorkop
   const frontGrp = A('Voorkop', { d: 'Dragende voorbouw: langsliggers met kreukelzones, veerpoottorens, schutbord, torpedobak, frontmodule en bumperbalk.', ex: [0, 0.05, 0.42] }, [
