@@ -124,20 +124,24 @@ function intBelts() {
   const bandGeo = (pts, w) => merge(pts.slice(1).map((p, i) => intStrip(pts[i], p, w, 0.003)));
   for (const s of [1, -1]) {
     const n = sideName(s), zB = -0.28, xr = s * (surfX(zB, 0.55) - 0.075), xg = s * (surfX(zB, 1.1) - 0.05), tong = [s * 0.135, 0.505, -0.14];
-    out.push(
+    const grp = [];
+    grp.push(
       intPart(`Gordelrolautomaat voor ${n}`, G.rbox(0.06, 0.1, 0.06, 0.01), MAT.plastic, 'Oprolautomaat met gordelspanner en krachtbegrenzer onderin de B-stijl; de bestuurder heeft een dubbele spanner.', { p: [xr, 0.55, zB], ex: [s * 0.1, 0, 0] }),
       intPart(`Hoogteversteller voor ${n}`, G.rbox(0.03, 0.2, 0.012, 0.004), MAT.plasticGrey, 'Geleiderail op de B-stijl waarmee de bovenste gordelgeleider in hoogte wordt versteld.', { p: [xg, 1.04, zB - 0.02], ex: [s * 0.1, 0.1, 0] }),
       intPart(`Gordelgeleider voor ${n}`, G.torus('z', 0.018, 0.004, 16, 6), MAT.steel, 'Geleideoog waar de gordelband doorheen loopt.', { p: [xg, 1.1, zB], ex: [s * 0.1, 0.16, 0] }),
       intPart(`Gordelband voor ${n}`, bandGeo([[xg, 1.1, zB + 0.012], tong, [s * 0.66, 0.31, -0.22]], 0.046), MAT.intBelt, 'Driepuntsgordelband: schouderband van de geleider naar de gordeltong en heupband naar de buitenste verankering.', { ex: [s * 0.1, 0.1, 0.06] }),
       intPart(`Gordeltong voor ${n}`, G.rbox(0.03, 0.05, 0.008, 0.003), MAT.steel, 'Metalen tong op de gordelband die in het gordelslot klikt.', { p: tong, ex: [0, 0.14, 0.04] }),
       intPart(`Gordelverankering voor ${n}`, hexBolt(0.02, 0.014, 'x'), MAT.steel, 'Bout waarmee de heupband aan de buitenkant van de stoel in de drempel is verankerd.', { p: [s * 0.66, 0.31, -0.22], r: [0, s > 0 ? 0 : PI, 0], ex: [s * 0.1, 0, 0] }));
+    out.push(A(`Gordel voor ${n}`, { d: 'Driepuntsgordel van de voorstoel: rolautomaat in de B-stijl, hoogteversteller, geleider, band, tong en onderste verankering.', ex: [s * 0.05, 0.12, 0] }, grp));
   }
   [[0.42, 'links', 0.2], [0, 'midden', 0], [-0.42, 'rechts', -0.2]].forEach(([x, n, bxp]) => {
     const xg = x === 0 ? 0 : Math.sign(x) * (surfX(-1.3, 1.03) - 0.06), xr = x === 0 ? 0 : Math.sign(x) * (surfX(-1.5, 0.7) - 0.07), zr = x === 0 ? -1.58 : -1.5, yr = x === 0 ? 1.0 : 0.7;
-    out.push(
+    const grp = [];
+    grp.push(
       intPart(`Gordelrolautomaat achter ${n}`, G.rbox(0.06, 0.06, 0.08, 0.01), MAT.plastic, x === 0 ? 'Oprolautomaat van de middelste achtergordel op de hoedenplank.' : 'Oprolautomaat met spanner in de achterstijl.', { p: [xr, yr, zr], ex: [Math.sign(x) * 0.1, 0.1, 0] }),
       intPart(`Gordelband achter ${n}`, bandGeo([[xg, 1.03, -1.28], [bxp, 0.51, -1.14]], 0.046), MAT.intBelt, 'Gordelband van de achterbank.', { ex: [Math.sign(x) * 0.08, 0.12, 0.05] }),
       intPart(`Gordeltong achter ${n}`, G.rbox(0.03, 0.05, 0.008, 0.003), MAT.steel, 'Metalen tong die in het gordelslot klikt.', { p: [bxp, 0.52, -1.14], ex: [0, 0.14, 0.04] }));
+    out.push(A(`Gordel achter ${n}`, { d: 'Driepuntsgordel van de achterbank: rolautomaat, band en tong; het slot zit in de zitting.', ex: [Math.sign(x) * 0.04, 0.1, 0] }, grp));
   });
   return A('Veiligheidsgordels', { d: 'Driepuntsgordels met oprolautomaten, geleiders en tongen; de gordelsloten zitten in de stoelen en de achterbank.', ex: [0, 0.3, 0] }, out);
 }
@@ -259,9 +263,13 @@ function intDashboard() {
   const caps = [1, -1].map(s => intPart(`Dashboardeindkap ${sideName(s)}`, G.rbox(0.012, 0.3, 0.38, 0.004), MAT.plasticGrey, 'Kap op het uiteinde van het dashboard naast de portier.', { p: [s * 0.757, 0.8, 0.78], ex: [s * 0.14, 0, 0] }));
   const hazard = (() => { const f = intFace(0.862, 0.024); return intPart('Alarmlichtschakelaar', G.rbox(0.045, 0.04, 0.014, 0.004), MAT.red, 'Schakelaar voor de alarmknipperlichten tussen de middelste roosters.', { p: [0, f.y, f.z], r: [f.rx, 0, 0], ex: [0, 0.05, -0.1] }); })();
   return A('Dashboard', { d: 'Dashboard met instrumentenpaneel, navigatiescherm, klimaat- en audiobediening, luchtroosters, handschoenenkastje, passagiersairbag, klimaatunit en dwarsbalk.', ex: [0, 0.16, 0.6] }, [
-    carrier, huid, fascia, ...caps, defrost, cluster, nav, audio, climate, hazard,
-    ventGroup('Luchtrooster midden links', 0.1, 'Verstelbaar middenrooster aan bestuurderszijde.'), ventGroup('Luchtrooster midden rechts', -0.1, 'Verstelbaar middenrooster aan passagierszijde.'),
-    ventGroup('Luchtrooster zij links', 0.62, 'Verstelbaar zijrooster aan bestuurderszijde, richt de lucht op de zijruit of het gezicht.'), ventGroup('Luchtrooster zij rechts', -0.62, 'Verstelbaar zijrooster aan passagierszijde.'),
+    A('Dashboardschil', { d: 'Draagstructuur en zichtbare bekleding van het dashboard: drager, gestikte huid, pianozwart middenpaneel, eindkappen en de ontwasemsleuven.', ex: [0, 0.0, 0.04] }, [carrier, huid, fascia, ...caps, defrost]),
+    A('Luchtroosters', { d: 'Vier verstelbare luchtroosters: twee in het midden en twee aan de zijkanten van het dashboard.', ex: [0, 0.04, -0.06] }, [
+      ventGroup('Luchtrooster midden links', 0.1, 'Verstelbaar middenrooster aan bestuurderszijde.'), ventGroup('Luchtrooster midden rechts', -0.1, 'Verstelbaar middenrooster aan passagierszijde.'),
+      ventGroup('Luchtrooster zij links', 0.62, 'Verstelbaar zijrooster aan bestuurderszijde, richt de lucht op de zijruit of het gezicht.'), ventGroup('Luchtrooster zij rechts', -0.62, 'Verstelbaar zijrooster aan passagierszijde.'),
+    ]),
+    cluster, nav,
+    A('Bedieningspanelen', { d: 'Bediening van audio en klimaat en de alarmlichtschakelaar op het middenpaneel.', ex: [0, 0, -0.05] }, [audio, climate, hazard]),
     speakers, glove, airbag, uch, beam, hvac, harness,
   ]);
 }
@@ -327,10 +335,8 @@ function intTrim() {
   const curtain = s => { const pts = []; for (let i = 0; i <= 12; i++) { const z = 0.2 - 1.9 * i / 12, p = ghPt(z, 0.31); pts.push([s * Math.abs(p[0]) * 0.965, p[1] - 0.055, z]); } return intPart(`Gordijnairbag ${sideName(s)}`, tube(pts, 0.018, 36, 6), MAT.fabric, 'Opgerolde gordijnairbag langs de dakrand, beschermt hoofd en schouders bij een zijdelingse botsing.', { inner: true, ex: [s * 0.1, 0.1, 0] }); };
   const roofZ = -0.02, lampY = intRoofY(roofZ, 0);
   return A('Bekleding', { d: 'Hemel met zonkleppen, grepen en plafonniers, vloerbedekking met matten, dorpellijsten en de bekleding van de bagageruimte met de luidsprekers van de achterplank en de versterker.', ex: [0, 0.4, 0] }, [
+    A('Dakbekleding', { d: 'Hemel met zonkleppen, handgrepen, plafonniers en de opgerolde gordijnairbags.', ex: [0, 0.3, 0] }, [
     intPart('Hemelbekleding', patch((z, w) => { const p = ghPt(z, w); return [p[0] * 0.965, p[1] - 0.028, p[2]]; }, -1.75, 0.4, 34, () => [0.3, 0.7], 12), MAT.fabric, 'Lichtbeige hemelbekleding.', { ex: [0, 0.48, 0] }),
-    intPart('Vloerbedekking', carpet, MAT.carpet, 'Getufte vloerbedekking over vloer en tunnel.', { ex: [0, -0.22, 0] }),
-    mat(1, 'bestuurder'), mat(-1, 'passagier'),
-    sill(1, 0.2, 0.8, 'voor'), sill(-1, 0.2, 0.8, 'voor'), sill(1, -0.85, 0.6, 'achter'), sill(-1, -0.85, 0.6, 'achter'),
     visor(1), visor(-1),
     handle(1, 0.0, 'voor'), handle(-1, 0.0, 'voor'), handle(1, -0.9, 'achter'), handle(-1, -0.9, 'achter'),
     A('Plafonnier voor', { d: 'Plafonnier met twee leeslampjes voor de voorpassagiers.', p: [0, lampY - 0.01, roofZ], ex: [0, 0.2, 0] }, [
@@ -339,10 +345,17 @@ function intTrim() {
     ]),
     intPart('Plafonnier achter', G.rbox(0.12, 0.016, 0.07, 0.006), MAT.plasticGrey, 'Middenlamp achter met lens.', { p: [0, intRoofY(-0.9, 0) - 0.01, -0.9], ex: [0, 0.2, 0] }),
     curtain(1), curtain(-1),
+    ]),
+    A('Vloerbekleding', { d: 'Vloerbedekking met losse matten en de dorpellijsten.', ex: [0, -0.1, 0] }, [
+    intPart('Vloerbedekking', carpet, MAT.carpet, 'Getufte vloerbedekking over vloer en tunnel.', { ex: [0, -0.22, 0] }),
+    mat(1, 'bestuurder'), mat(-1, 'passagier'),
+    sill(1, 0.2, 0.8, 'voor'), sill(-1, 0.2, 0.8, 'voor'), sill(1, -0.85, 0.6, 'achter'), sill(-1, -0.85, 0.6, 'achter'),
+    ]),
+    A('Bagageruimte', { d: 'Bekleding van de bagageruimte met hoedenplank, vloerplaat, de luidsprekers van de achterplank en de versterker.', ex: [0, 0.0, -0.3] }, [
     intPart('Hoedenplank', G.rbox(1.3, 0.012, 0.55, 0.005), MAT.carpet, 'Afdekplaat achter de achterbank boven de bagageruimte; in dit model los van de achterklep.', { p: [0, 1.0, -1.85], ex: [0, 0.3, -0.2] }),
     ...[1, -1].map(s => intPart(`Achterplankluidspreker ${sideName(s)}`, merge([xf(G.cyl('y', 0.065, 0.065, 0.008, 24), [0, 0, 0]), xf(G.cyl('y', 0.04, 0.025, 0.02, 20), [0, -0.012, 0])]), MAT.darkSteel, 'Luidspreker in de achterplank (Bose, positie geschat).', { p: [s * 0.45, 1.01, -1.7], ex: [s * 0.1, 0.2, 0] })),
     intPart('Bagageruimtevloer', G.rbox(1.2, 0.015, 0.75, 0.005), MAT.carpet, 'Vloerplaat van de bagageruimte (450 tot 1377 liter).', { p: [0, 0.46, -1.86], ex: [0, -0.12, -0.3] }),
-    intPart('Versterker Bose', G.rbox(0.28, 0.06, 0.2, 0.01), MAT.ecu, 'Digitale versterker met zes kanalen van het Bose-systeem, links achter in een opbergvak (plaats aannemelijk).', { p: [0.5, 0.4975, -2.0], ex: [0.1, 0.12, -0.1] }),
+    intPart('Versterker Bose', G.rbox(0.28, 0.06, 0.2, 0.01), MAT.ecu, 'Digitale versterker met zes kanalen van het Bose-systeem, links achter in een opbergvak (plaats aannemelijk).', { p: [0.5, 0.4975, -2.0], ex: [0.1, 0.12, -0.1] }),    ])
   ]);
 }
 function intPedals() {
