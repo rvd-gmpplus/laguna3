@@ -3,34 +3,34 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@400;500&family=Saira+Condensed:wght@500;600;700&display=swap">
 <style>
-/* Layout: full-bleed 3D-werkbank; bovenbalk met naam en specs, dock met tikmodus en presets,
+/* Layout: full-bleed 3D-werkbank; bovenbalk met naam en specs, dock met klikmodus, explosieschuif en presetcategorieën,
    paneel rechts (desktop) of onderaan (mobiel) met onderdeelkaart, onderdelenlijst en weergave. */
 :root{
-  --bg:#e5e9ed; --bg-deep:#cfd6de; --surface:rgba(247,249,250,.94); --surface-solid:#f7f9fa;
+  --bg:#e5e9ed; --bg-deep:#cfd6de; --surface:rgba(247,249,250,.95); --surface-solid:#f7f9fa;
   --ink:#151a21; --ink-2:#4d5764; --line:rgba(21,26,33,.13); --chip:#ffffff; --chip-ink:#151a21;
-  --accent:#f2c230; --on-accent:#1b1500; --focus:#0b5cad; --danger:#b3261e;
-  --grid:rgba(21,26,33,.09); --grid-strong:rgba(21,26,33,.17); --shade:rgba(15,20,26,.30);
+  --accent:#f2c230; --on-accent:#1b1500; --focus:#0b5cad; --danger:#b3261e; --hover:#2f86ff;
+  --grid:rgba(21,26,33,.09); --grid-strong:rgba(21,26,33,.17); --shade:rgba(15,20,26,.30); --leader:rgba(21,26,33,.55);
   --f-display:"Saira Condensed","Arial Narrow",system-ui,sans-serif;
   --f-body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
   --r:12px; --shadow:0 12px 32px rgba(18,24,32,.14);
-  --panel-w:368px; --top-h:76px;
+  --panel-w:clamp(312px,29vw,368px);
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#11161b; --bg-deep:#07090c; --surface:rgba(21,26,32,.94); --surface-solid:#151a20;
-    --ink:#e6eaee; --ink-2:#9ba6b2; --line:rgba(230,234,238,.12); --chip:#1c232b; --chip-ink:#e6eaee;
-    --accent:#f2c230; --on-accent:#1b1500; --focus:#86bcff; --danger:#ff8a80;
-    --grid:rgba(230,234,238,.06); --grid-strong:rgba(230,234,238,.13); --shade:rgba(0,0,0,.55);
+    --bg:#1a2129; --bg-deep:#0e1318; --surface:rgba(24,30,37,.95); --surface-solid:#181e25;
+    --ink:#e6eaee; --ink-2:#9ba6b2; --line:rgba(230,234,238,.13); --chip:#212a33; --chip-ink:#e6eaee;
+    --accent:#f2c230; --on-accent:#1b1500; --focus:#86bcff; --danger:#ff8a80; --hover:#6aa8ff;
+    --grid:rgba(230,234,238,.08); --grid-strong:rgba(230,234,238,.17); --shade:rgba(0,0,0,.55); --leader:rgba(230,234,238,.6);
     --shadow:0 12px 32px rgba(0,0,0,.5); color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#11161b; --bg-deep:#07090c; --surface:rgba(21,26,32,.94); --surface-solid:#151a20;
-  --ink:#e6eaee; --ink-2:#9ba6b2; --line:rgba(230,234,238,.12); --chip:#1c232b; --chip-ink:#e6eaee;
-  --accent:#f2c230; --on-accent:#1b1500; --focus:#86bcff; --danger:#ff8a80;
-  --grid:rgba(230,234,238,.06); --grid-strong:rgba(230,234,238,.13); --shade:rgba(0,0,0,.55);
+  --bg:#1a2129; --bg-deep:#0e1318; --surface:rgba(24,30,37,.95); --surface-solid:#181e25;
+  --ink:#e6eaee; --ink-2:#9ba6b2; --line:rgba(230,234,238,.13); --chip:#212a33; --chip-ink:#e6eaee;
+  --accent:#f2c230; --on-accent:#1b1500; --focus:#86bcff; --danger:#ff8a80; --hover:#6aa8ff;
+  --grid:rgba(230,234,238,.08); --grid-strong:rgba(230,234,238,.17); --shade:rgba(0,0,0,.55); --leader:rgba(230,234,238,.6);
   --shadow:0 12px 32px rgba(0,0,0,.5); color-scheme:dark;
 }
 [hidden]{display:none!important}
@@ -39,8 +39,10 @@ body{margin:0;background:var(--bg);background-image:radial-gradient(120% 95% at 
 button,input{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+kbd{font-family:var(--f-mono);font-size:10.5px;font-weight:500;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 5px;color:var(--ink-2);background:var(--chip)}
 #app{position:fixed;inset:0;overflow:hidden}
 #stage{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;outline:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#stage:focus-visible{outline:2px solid var(--focus);outline-offset:-4px}
 /* ---------- bovenbalk ---------- */
 #topbar{position:absolute;left:0;right:0;top:0;display:flex;align-items:flex-start;gap:12px;justify-content:space-between;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 10px;pointer-events:none}
 #topbar>*{pointer-events:auto}
@@ -51,24 +53,50 @@ h1 span{font-weight:500;color:var(--ink-2)}
 .sub{margin:5px 0 0;font-size:12.5px;color:var(--ink-2);max-width:62ch}
 .sub b{color:var(--ink);font-weight:700}
 .top-actions{display:flex;gap:8px;flex-shrink:0}
-.iconbtn{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow);display:grid;place-items:center;padding:0}
+.iconbtn{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow);display:grid;place-items:center;padding:0;font-family:var(--f-display);font-weight:700;font-size:20px}
 .iconbtn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .iconbtn[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
 /* ---------- dock ---------- */
-#dock{position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column;gap:8px;padding:0 16px calc(12px + env(safe-area-inset-bottom,0px));pointer-events:none}
-#dock>*{pointer-events:auto}
-.seg{display:inline-flex;align-self:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px;box-shadow:var(--shadow)}
-.seg button{border:0;background:transparent;border-radius:999px;padding:7px 13px;font-size:13px;font-weight:700;color:var(--ink-2);display:inline-flex;align-items:center;gap:6px}
-.seg button svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+#dock{position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:0 16px calc(12px + env(safe-area-inset-bottom,0px));pointer-events:none}
+#dock>*,.dock-main>*{pointer-events:auto}
+.dock-main{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;pointer-events:none;max-width:100%}
+.seg{display:inline-flex;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px;box-shadow:var(--shadow)}
+.seg-lbl{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);padding:0 6px 0 10px}
+.seg button{border:0;background:transparent;border-radius:999px;padding:7px 11px;font-size:13px;font-weight:700;color:var(--ink-2);white-space:nowrap}
 .seg button[aria-checked="true"]{background:var(--ink);color:var(--bg)}
-.presets{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 0 4px;margin:0 -16px;padding-inline:16px;scroll-padding-inline:16px}
-.presets::-webkit-scrollbar{display:none}
-.chip{flex:0 0 auto;border:1px solid var(--line);background:var(--chip);color:var(--chip-ink);border-radius:999px;padding:8px 14px;font-size:13.5px;font-weight:700;box-shadow:0 2px 10px rgba(0,0,0,.06);white-space:nowrap}
-.chip small{font-family:var(--f-mono);font-weight:400;font-size:10.5px;color:var(--ink-2);margin-left:6px}
-.chip[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);border-color:transparent}
-.chip[aria-pressed="true"] small{color:var(--on-accent)}
+.seg .short{display:none}
+.xctl{display:flex;flex-direction:column;justify-content:center;gap:1px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:4px 6px 4px 12px;box-shadow:var(--shadow);min-width:0}
+.xlbl{font-size:11.5px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.xlbl b{color:var(--ink)}
+.xrow{display:flex;align-items:center;gap:8px}
+#explode{width:clamp(96px,10vw,170px);margin:0;accent-color:var(--accent)}
+.xlbl span::after{content:" · "}
+#explodeOut{font-family:var(--f-mono);font-size:11.5px;min-width:3.4em;text-align:right;color:var(--ink-2)}
+.pbtn{border:1px solid var(--line);background:var(--chip);border-radius:999px;height:32px;padding:0 11px 0 8px;display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;white-space:nowrap}
+.pbtn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+.pbtn:disabled{opacity:.42;cursor:default}
+#play[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.cats{display:flex;flex-wrap:wrap;gap:6px}
+.cat{border:1px solid var(--line);background:var(--chip);color:var(--chip-ink);border-radius:12px;padding:5px 12px 6px;box-shadow:0 2px 10px rgba(0,0,0,.06);display:flex;flex-direction:column;align-items:flex-start;line-height:1.15;min-width:0;text-align:left}
+.cat b{font-size:13.5px;font-weight:700;white-space:nowrap}
+.cat b::after{content:"";display:inline-block;width:6px;height:6px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-135deg);margin-left:7px;vertical-align:1px;opacity:.6}
+.cat small{font-family:var(--f-mono);font-size:10.5px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.cat.on{background:var(--accent);color:var(--on-accent);border-color:transparent}
+.cat.on small{color:var(--on-accent)}
+.cat[aria-expanded="true"]{outline:2px solid var(--ink);outline-offset:1px}
+/* presetmenu */
+#menu{position:fixed;z-index:30;width:min(340px,calc(100vw - 32px));background:var(--surface-solid);border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 48px rgba(0,0,0,.24);padding:6px;overflow:auto;overscroll-behavior:contain}
+.mhead{display:flex;align-items:center;justify-content:space-between;padding:4px 6px 6px 10px;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+.mclose{border:0;background:none;width:32px;height:32px;border-radius:8px;font-size:20px;line-height:1;color:var(--ink-2)}
+.mi{display:flex;flex-direction:column;gap:1px;width:100%;text-align:left;border:0;background:none;border-radius:10px;padding:8px 10px}
+.mi:hover,.mi:focus-visible{background:var(--line);outline:none}
+.mi[aria-current="true"]{background:var(--accent);color:var(--on-accent)}
+.mi-t{display:flex;align-items:center;justify-content:space-between;gap:8px;font-weight:700;font-size:14px}
+.mi-n{font-size:12px;color:var(--ink-2);line-height:1.35}
+.mi[aria-current="true"] .mi-n{color:var(--on-accent)}
 /* ---------- paneel ---------- */
-#sheet{position:absolute;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);min-height:0}
+/* geen backdrop-filter: vervagen van het WebGL-canvas eronder kost elk frame een volledige extra pass (gemeten: 60 -> 1,5 fps) */
+#sheet{position:absolute;display:flex;flex-direction:column;background:var(--surface-solid);border:1px solid var(--line);box-shadow:var(--shadow);min-height:0;z-index:10}
 .grab{display:none}
 .sel-head{padding:14px 16px 12px;border-bottom:1px solid var(--line)}
 .crumbs{display:flex;flex-wrap:wrap;gap:2px 4px;font-size:12px;color:var(--ink-2);margin-bottom:4px}
@@ -94,20 +122,23 @@ dl.spec dd{margin:0;font-family:var(--f-mono);font-size:12.5px;font-variant-nume
 .kids-title{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);margin:4px 0 8px}
 .kids{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
 .kids button{border:1px solid var(--line);background:var(--chip);border-radius:8px;padding:5px 9px;font-size:12.5px}
+.kids button b{font-family:var(--f-mono);font-weight:500;font-size:10.5px;color:var(--ink-2);margin-right:4px}
 .note{font-size:12px;color:var(--ink-2);border-top:1px solid var(--line);padding-top:10px;margin:6px 0 0;max-width:62ch}
-#treeSearch{width:100%;box-sizing:border-box;border:1px solid var(--line);background:var(--chip);border-radius:9px;padding:9px 11px;margin-bottom:10px}
+#treeSearch{width:100%;box-sizing:border-box;border:1px solid var(--line);background:var(--chip);border-radius:9px;padding:9px 11px;margin-bottom:8px}
+#treeInfo{margin:0 0 8px;font-size:12px;color:var(--ink-2)}
 .tree{font-size:13.5px}
 .tree ul{list-style:none;margin:0;padding:0 0 0 14px;border-left:1px dashed var(--line)}
 .tree>ul{padding-left:0;border-left:0}
 .tree li{margin:0}
 .trow{display:flex;align-items:center;gap:4px;min-width:0}
-.trow .tw{width:22px;height:26px;border:0;background:none;padding:0;color:var(--ink-2);flex:0 0 auto;font-family:var(--f-mono)}
-.trow .tn{flex:1;min-width:0;text-align:left;border:0;background:none;padding:4px 4px;border-radius:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trow .tw{width:24px;height:30px;border:0;background:none;padding:0;color:var(--ink-2);flex:0 0 auto;font-family:var(--f-mono)}
+.trow .tn{flex:1;min-width:0;text-align:left;border:0;background:none;padding:5px 4px;border-radius:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .trow .tn:hover{background:var(--line)}
 .trow .tc{font-family:var(--f-mono);font-size:10.5px;color:var(--ink-2);flex:0 0 auto}
 .trow.sel .tn{background:var(--accent);color:var(--on-accent)}
 .trow .dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto;border:1.5px solid var(--ink-2)}
 .trow .dot.open{background:var(--accent);border-color:var(--accent)}
+.tpath{font-family:var(--f-mono);font-size:10.5px;color:var(--ink-2);padding:0 0 4px 30px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ctl{display:grid;gap:14px}
 .ctl label.row{display:flex;align-items:center;justify-content:space-between;gap:12px;font-weight:700;font-size:14px}
 .ctl .row small{display:block;font-weight:400;color:var(--ink-2);font-size:12px}
@@ -121,15 +152,41 @@ input[type=range]{width:100%;accent-color:var(--ink)}
 .btnrow{display:flex;flex-wrap:wrap;gap:6px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--ink-2)}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
-/* ---------- labels ---------- */
+.qnote{font-size:12px;color:var(--ink-2);margin:-6px 0 0}
+/* ---------- labels (callouts met leiderlijn) ---------- */
 #labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
-.lbl{position:absolute;left:0;top:0;pointer-events:auto;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:3px 9px 3px 4px;font-size:11.5px;font-weight:700;white-space:nowrap;display:flex;align-items:center;gap:5px;box-shadow:0 2px 8px rgba(0,0,0,.12);max-width:42vw;overflow:hidden;text-overflow:ellipsis}
-.lbl b{font-family:var(--f-mono);font-weight:500;font-size:10px;background:var(--ink);color:var(--bg);border-radius:999px;min-width:18px;height:18px;display:inline-grid;place-items:center;padding:0 4px}
+#leaders{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+#leaders line{stroke:var(--leader);stroke-width:1.1}
+#leaders circle{fill:var(--surface-solid);stroke:var(--ink);stroke-width:1.4}
+#leaders circle.sel{fill:var(--accent)}
+.lbl{position:absolute;left:0;top:0;pointer-events:auto;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:2px 9px 2px 3px;font-size:11.5px;font-weight:700;white-space:nowrap;display:flex;align-items:center;gap:5px;box-shadow:0 2px 8px rgba(0,0,0,.12);max-width:min(240px,46vw);overflow:hidden;text-overflow:ellipsis;transform:translate(-9999px,-9999px);will-change:transform}
+.lbl span{overflow:hidden;text-overflow:ellipsis}
+.lbl b{font-family:var(--f-mono);font-weight:500;font-size:10px;background:var(--ink);color:var(--bg);border-radius:999px;min-width:18px;height:18px;display:inline-grid;place-items:center;padding:0 4px;flex:0 0 auto}
 .lbl.sel{background:var(--accent);color:var(--on-accent);border-color:transparent}
-#hint{position:absolute;left:50%;top:calc(var(--top-h) + 18px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);border-radius:999px;padding:8px 14px;font-size:13px;font-weight:700;box-shadow:var(--shadow);pointer-events:none;transition:opacity .4s;white-space:nowrap;max-width:calc(100% - 32px);overflow:hidden;text-overflow:ellipsis}
+.touch .lbl{padding:5px 11px 5px 5px;font-size:12px}
+#tip{position:fixed;left:0;top:0;z-index:40;pointer-events:none;background:var(--ink);color:var(--bg);border-radius:9px;padding:6px 10px;font-size:12.5px;font-weight:700;box-shadow:var(--shadow);white-space:nowrap;max-width:min(420px,80vw);overflow:hidden;text-overflow:ellipsis}
+#tip i{font-style:normal;font-weight:400;opacity:.8}
+#press{position:fixed;left:0;top:0;width:64px;height:64px;margin:-32px 0 0 -32px;pointer-events:none;z-index:40}
+#press circle{fill:none;stroke:var(--accent);stroke-width:5;stroke-dasharray:176;stroke-dashoffset:176;transform:rotate(-90deg);transform-origin:50% 50%}
+#press.run circle{animation:press .35s linear forwards}
+@keyframes press{to{stroke-dashoffset:0}}
+#hint{position:absolute;left:calc((100% - var(--panel-w) - 32px) / 2);top:calc(96px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);border-radius:14px;padding:8px 14px;font-size:13px;font-weight:700;border:1px solid var(--line);pointer-events:none;transition:opacity .4s;max-width:min(560px,calc(100% - var(--panel-w) - 64px));text-align:center;z-index:5}
 #hint.gone{opacity:0}
-#loading{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-mono);font-size:13px;color:var(--ink-2);background:var(--bg);text-align:center;padding:0 24px}
+#tourBar{position:absolute;left:calc((100% - var(--panel-w) - 32px) / 2);top:calc(96px + env(safe-area-inset-top,0px));transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:var(--surface-solid);border:1px solid var(--line);border-radius:14px;padding:7px 8px 7px 14px;box-shadow:var(--shadow);max-width:min(640px,calc(100% - var(--panel-w) - 64px));z-index:6}
+#tourText{font-size:13px;line-height:1.35}
+#tourText b{display:block;font-family:var(--f-mono);font-size:10.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
+#tourStop{flex:0 0 auto}
+#loading{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-mono);font-size:13px;color:var(--ink-2);background:var(--bg);text-align:center;padding:0 24px;z-index:50}
 #loading.gone{display:none}
+/* hulp */
+#helpDlg{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:rgba(10,14,18,.42);padding:16px}
+.dlg{background:var(--surface-solid);color:var(--ink);border-radius:16px;box-shadow:0 24px 64px rgba(0,0,0,.35);width:min(560px,100%);max-height:calc(100% - 32px);overflow:auto;padding:18px 20px 16px;box-sizing:border-box}
+.dlg h2{margin:0 0 8px;font-family:var(--f-display);font-size:24px}
+.dlg h3{margin:14px 0 6px;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);font-weight:500}
+.dlg dl{display:grid;grid-template-columns:minmax(120px,auto) 1fr;gap:5px 14px;margin:0;font-size:13.5px}
+.dlg dt{font-weight:700}
+.dlg dd{margin:0;color:var(--ink-2)}
+.dlg .btnrow{justify-content:flex-end;margin-top:14px}
 /* ---------- desktop ---------- */
 @media (min-width:920px){
   #sheet{top:calc(12px + env(safe-area-inset-top,0px));right:16px;bottom:16px;width:var(--panel-w);border-radius:16px;overflow:hidden}
@@ -143,28 +200,54 @@ input[type=range]{width:100%;accent-color:var(--ink)}
   #sheet[data-state="peek"]{height:auto}
   #sheet[data-state="peek"] .tabs,#sheet[data-state="peek"] .tabpanels{display:none}
   #sheet[data-state="open"]{height:64%}
-  .grab{display:block;border:0;background:none;width:100%;height:20px;padding:0;margin:0}
+  .grab{display:block;border:0;background:none;width:100%;height:22px;padding:0;margin:0}
   .grab span{display:block;width:42px;height:5px;border-radius:9px;background:var(--line);margin:8px auto 0}
-  .sel-head{padding-top:2px}
-  #selName{font-size:21px}
-  #dock{bottom:var(--sheet-h,150px);padding-bottom:10px}
+  .sel-head{padding:0 16px 10px}
+  #selName{font-size:20px}
+  .crumbs{flex-wrap:nowrap;overflow:hidden;white-space:nowrap;mask-image:linear-gradient(90deg,#000 85%,transparent)}
+  #dock{bottom:var(--sheet-h,150px);padding-bottom:8px;align-items:stretch;gap:6px}
   #sheet[data-state="open"]~#dock{display:none}
-  .sel-actions .btn{padding:6px 10px;font-size:12.5px}
-  .sub{font-size:12px}
-  #hint{top:auto;bottom:calc(var(--sheet-h,150px) + 112px)}
+  .sel-actions{margin-top:8px}
+  #sheet[data-state="peek"] #actAll,#sheet[data-state="peek"] #actFocus{display:none}
+  /* vaste hoogte van de kaart in de peek-stand: geen verspringend beeld bij een andere selectie */
+  #sheet[data-state="peek"] #selName,#sheet[data-state="peek"] .meta{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #sheet[data-state="peek"] .sel-actions{flex-wrap:nowrap;overflow:hidden}
+  #sheet[data-state="peek"] .sel-actions .btn{flex:0 0 auto;white-space:nowrap}
+  .crumbs{min-height:18px}
+  .xlbl span::after{content:none}
+  .sel-actions .btn{padding:7px 10px;font-size:12.5px}
+  .sub{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #hint,#tourBar{left:50%;top:calc(76px + env(safe-area-inset-top,0px));max-width:calc(100% - 32px);box-sizing:border-box}
+  .dock-main{flex-direction:column;align-items:stretch;gap:6px}
+  .xctl{flex-direction:row;align-items:center;gap:8px;padding:4px 5px 4px 12px}
+  .xlbl{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;line-height:1.15}
+  #explode{width:auto;flex:1 1 120px;min-width:90px}
+  .xrow{flex:2 1 auto;min-width:0}
+  .seg{align-self:stretch}
+  .seg button{flex:1 1 0;padding:7px 4px;font-size:12.5px;min-height:34px}
+  .cats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  .cat{padding:5px 10px 6px}
+}
+@media (max-width:600px){
+  #menu{left:0!important;right:0;bottom:0!important;top:auto!important;width:auto;max-height:78%;border-radius:18px 18px 0 0;padding:8px 8px calc(10px + env(safe-area-inset-bottom,0px))}
+  .mi{padding:10px 12px}
 }
 @media (max-width:520px){
-  .sub .long,.eyebrow .long{display:none}
+  .sub .long,.eyebrow .long,.seg .long,.seg-lbl,.pbtn span,#explodeOut{display:none}
+  .seg .short{display:inline}
   .eyebrow{font-size:10px}
+  .pbtn{width:36px;height:36px;padding:0;justify-content:center}
+  .xlbl{font-size:11px}
 }
 @media (prefers-reduced-motion: reduce){
   #sheet,#hint,.switch,.switch::after{transition:none}
+  #press.run circle{animation-duration:.01s}
 }
 </style>
 
 <div id="app">
-  <canvas id="stage" aria-label="3D-explosietekening van een Renault Laguna III hatchback"></canvas>
-  <div id="labels" aria-hidden="false"></div>
+  <canvas id="stage" tabindex="0" role="application" aria-label="3D-explosietekening van een Renault Laguna III hatchback. Klik op een onderdeel om het uit te klappen."></canvas>
+  <div id="labels"><svg id="leaders" aria-hidden="true"></svg></div>
   <header id="topbar">
     <div class="title">
       <p class="eyebrow">Explosietekening<span class="long"> · schematisch model</span></p>
@@ -172,6 +255,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
       <p class="sub">2011 · 5-deurs hatchback · zilvergrijs · <b>F4Rt 2.0 Turbo 170 pk</b><span class="long"> · 6-traps automaat</span></p>
     </div>
     <div class="top-actions">
+      <button class="iconbtn" id="help" aria-label="Uitleg over de bediening" aria-haspopup="dialog">?</button>
       <button class="iconbtn" id="btnParts" aria-label="Onderdelenlijst openen" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg></button>
       <button class="iconbtn" id="btnView" aria-label="Weergave-instellingen openen" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button>
     </div>
@@ -180,11 +264,13 @@ input[type=range]{width:100%;accent-color:var(--ink)}
     <button class="grab" id="sheetToggle" aria-label="Paneel groter maken" aria-expanded="false"><span></span></button>
     <div class="sel-head">
       <div class="crumbs" id="crumbs"></div>
-      <h2 id="selName">Renault Laguna III</h2>
+      <h2 id="selName" aria-live="polite">Renault Laguna III</h2>
       <p class="meta" id="selMeta"></p>
       <div class="sel-actions">
         <button class="btn primary" id="actToggle">Uitklappen</button>
-        <button class="btn" id="actAll">Alles hieronder uit</button>
+        <button class="btn primary" id="actDive" hidden>Duik hierheen</button>
+        <button class="btn" id="actUp" title="Klap de eerstvolgende dichte groep erboven uit">Groter geheel</button>
+        <button class="btn" id="actAll" title="Deze groep met alles eronder uitklappen">Alles hieronder uit</button>
         <button class="btn" id="actIsolate">Isoleren</button>
         <button class="btn" id="actFocus">In beeld</button>
       </div>
@@ -203,22 +289,25 @@ input[type=range]{width:100%;accent-color:var(--ink)}
         <p class="note">Schematisch 3D-model: vormen, maten en posities van onderdelen zijn benaderd en niet geschikt als montagevoorschrift. Technische gegevens komen uit openbare specificaties van de Laguna III 2.0 Turbo 170 automaat (fase 2).</p>
       </section>
       <section id="tab-tree" role="tabpanel" aria-labelledby="tabbtn-tree" hidden>
-        <input id="treeSearch" type="search" placeholder="Zoek een onderdeel, bijv. klepveer" autocomplete="off">
-        <div class="tree" id="tree" role="tree"></div>
+        <input id="treeSearch" type="search" placeholder="Zoek een onderdeel, bijv. klepveer" autocomplete="off" aria-describedby="treeInfo">
+        <p id="treeInfo" aria-live="polite"></p>
+        <div class="tree" id="tree" role="tree" aria-label="Onderdelenboom"></div>
       </section>
       <section id="tab-view" role="tabpanel" aria-labelledby="tabbtn-view" hidden>
         <div class="ctl">
           <label class="row" for="spread"><span>Spreiding<small>Afstand tussen uitgeklapte delen</small></span><output id="spreadOut">100%</output></label>
           <input id="spread" type="range" min="40" max="220" step="5" value="100">
-          <label class="row" for="tLabels"><span>Labels<small>Namen bij de laatst uitgeklapte groep</small></span><input class="switch" type="checkbox" id="tLabels" checked></label>
-          <label class="row" for="tXray"><span>Röntgen<small>Carrosserie doorzichtig</small></span><input class="switch" type="checkbox" id="tXray"></label>
-          <label class="row" for="tSys"><span>Kleuren per systeem<small>Elke hoofdgroep een eigen kleur</small></span><input class="switch" type="checkbox" id="tSys"></label>
+          <label class="row" for="tLabels"><span>Labels<small>Namen bij de laatst uitgeklapte groep</small></span><input class="switch" type="checkbox" role="switch" id="tLabels" checked></label>
+          <label class="row" for="tXray"><span>Röntgen<small>Carrosserie doorzichtig</small></span><input class="switch" type="checkbox" role="switch" id="tXray"></label>
+          <label class="row" for="tSys"><span>Kleuren per systeem<small>Elke hoofdgroep een eigen kleur</small></span><input class="switch" type="checkbox" role="switch" id="tSys"></label>
           <div class="legend" id="legend" hidden></div>
-          <label class="row" for="tRotate"><span>Langzaam draaien<small>Camera draait rond het model</small></span><input class="switch" type="checkbox" id="tRotate"></label>
+          <label class="row" for="tRotate"><span>Langzaam draaien<small>Camera draait rond het model</small></span><input class="switch" type="checkbox" role="switch" id="tRotate"></label>
+          <label class="row" for="tQuality" id="qualityRow" hidden><span>Volle kwaliteit<small>Scherpte en lakglans</small></span><input class="switch" type="checkbox" role="switch" id="tQuality"></label>
+          <p class="qnote" id="qualityNote" hidden>Lichte weergave ingeschakeld voor vloeiende beweging.</p>
           <div><p class="kids-title">Camera</p>
             <div class="camgrid">
               <button class="btn" data-cam="front">Voor</button><button class="btn" data-cam="side">Zij</button><button class="btn" data-cam="rear">Achter</button>
-              <button class="btn" data-cam="top">Boven</button><button class="btn" data-cam="iso">¾ voor</button><button class="btn" data-cam="under">Onder</button>
+              <button class="btn" data-cam="top">Boven</button><button class="btn" data-cam="iso">¾ voor</button><button class="btn" data-cam="isoRear">¾ achter</button>
             </div></div>
           <div><p class="kids-title">Alles tegelijk</p>
             <div class="btnrow"><button class="btn" id="btnExplodeAll">Alles uitklappen</button><button class="btn" id="btnCollapseAll">Alles inklappen</button><button class="btn" id="btnShowAll">Alles tonen</button></div></div>
@@ -226,14 +315,58 @@ input[type=range]{width:100%;accent-color:var(--ink)}
       </section>
     </div>
   </aside>
-  <nav id="dock" aria-label="Tikmodus en presets">
-    <div class="seg" role="radiogroup" aria-label="Wat doet tikken op een onderdeel">
-      <button role="radio" aria-checked="true" data-mode="explode"><svg viewBox="0 0 24 24"><path d="M12 4v5M12 15v5M4 12h5M15 12h5"/></svg>Uitklappen</button>
-      <button role="radio" aria-checked="false" data-mode="collapse"><svg viewBox="0 0 24 24"><path d="M12 4l0 5M9 7l3 3 3-3M12 20v-5M9 17l3-3 3 3"/></svg>Inklappen</button>
-      <button role="radio" aria-checked="false" data-mode="select"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 11v5M12 8v.01"/></svg>Info</button>
+  <nav id="dock" aria-label="Bediening">
+    <div class="dock-main">
+      <div class="seg" id="modes" role="radiogroup" aria-label="Wat doet een klik op een onderdeel">
+        <span class="seg-lbl" aria-hidden="true">Klik</span>
+        <button role="radio" aria-checked="true" tabindex="0" data-mode="part" title="Klik klapt de groep van het onderdeel uit; staat die al open, dan wordt het onderdeel uitgelicht">Onderdeel</button>
+        <button role="radio" aria-checked="false" tabindex="-1" data-mode="layers" title="Klik klapt de buitenste dichte groep uit, van buiten naar binnen"><span class="long">Laag voor laag</span><span class="short">Lagen</span></button>
+        <button role="radio" aria-checked="false" tabindex="-1" data-mode="collapse" title="Klik klapt de groep in waar het onderdeel uitgeklapt in zit">Inklappen</button>
+        <button role="radio" aria-checked="false" tabindex="-1" data-mode="select" title="Klik toont alleen de gegevens">Info</button>
+      </div>
+      <div class="xctl" id="xctl">
+        <label for="explode" class="xlbl"><span>Explosie</span><b id="explodeName">Renault Laguna III</b></label>
+        <div class="xrow">
+          <input id="explode" type="range" min="0" max="1000" step="1" value="0" aria-valuetext="0 van 6 lagen">
+          <output id="explodeOut" for="explode">0%</output>
+          <button class="pbtn" id="play" aria-pressed="false" aria-label="Demonteren"><svg viewBox="0 0 24 24"><path d="M8 5l11 7-11 7z"/></svg><span>Demonteren</span></button>
+          <button class="pbtn" id="undo" aria-label="Stap terug" title="Stap terug (Backspace)" disabled><svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/></svg><span>Stap terug</span></button>
+        </div>
+      </div>
     </div>
-    <div class="presets" id="presets" role="group" aria-label="Presets"></div>
+    <div class="cats" id="presets" role="toolbar" aria-label="Presets per categorie"></div>
   </nav>
-  <div id="hint">Tik op de auto om hem laag voor laag uit elkaar te halen</div>
+  <div id="menu" role="menu" hidden></div>
+  <div id="hint" role="status"></div>
+  <div id="tourBar" role="status" hidden><span id="tourText"></span><button class="btn" id="tourStop">Stop rondleiding</button></div>
+  <div id="tip" hidden></div>
+  <div id="press" hidden><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="28"/></svg></div>
+  <div id="helpDlg" hidden><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+    <h2 id="helpTitle">Bediening</h2>
+    <div id="helpMouse"><h3>Met de muis</h3><dl>
+      <dt>Klik</dt><dd>De groep van het onderdeel klapt uit; de rest blijft staan. Staat die groep al open, dan wordt het onderdeel uitgelicht.</dd>
+      <dt>Dubbelklik</dt><dd>Direct naar dit onderdeel: alle groepen erboven gaan laag voor laag open.</dd>
+      <dt>Rechtsklik of Shift+klik</dt><dd>Klapt de groep in waar het onderdeel uitgeklapt in zit.</dd>
+      <dt>Klik naast de auto</dt><dd>Selecteert de hele auto (of de geïsoleerde groep).</dd>
+      <dt>Slepen · rechts slepen · scrollen</dt><dd>Draaien · verschuiven · zoomen.</dd></dl></div>
+    <div id="helpTouch"><h3>Op een aanraakscherm</h3><dl>
+      <dt>Tik</dt><dd>De groep van het onderdeel klapt uit; staat die al open, dan wordt het onderdeel uitgelicht.</dd>
+      <dt>Dubbeltik</dt><dd>Direct naar dit onderdeel.</dd>
+      <dt>Vasthouden</dt><dd>Klapt de groep in waar het onderdeel in zit (de ring loopt vol).</dd>
+      <dt>Eén vinger · twee vingers</dt><dd>Draaien · knijpen om te zoomen en schuiven.</dd></dl></div>
+    <h3>Bediening onderin</h3><dl>
+      <dt>Klik: …</dt><dd>Onderdeel (standaard), Laag voor laag (van buiten naar binnen), Inklappen of alleen Info.</dd>
+      <dt>Explosie</dt><dd>Schuif om de gekozen groep laag voor laag uit elkaar te halen; Demonteren en Monteren spelen dat af.</dd>
+      <dt>Presets</dt><dd>Zes categorieën met kant-en-klare standen, ook de rondleiding.</dd>
+      <dt>Groter geheel</dt><dd>In het paneel: klapt de eerstvolgende dichte groep erboven uit.</dd>
+      <dt>Stap terug</dt><dd>Maakt de laatste handeling ongedaan.</dd></dl>
+    <h3>Toetsen</h3><dl>
+      <dt><kbd>Enter</kbd></dt><dd>Selectie uitklappen; is die al open, dan het grotere geheel. <kbd>Shift</kbd>+<kbd>Enter</kbd> klapt in.</dd>
+      <dt><kbd>Backspace</kbd></dt><dd>Stap terug.</dd>
+      <dt><kbd>Esc</kbd></dt><dd>Menu sluiten of de hele auto selecteren.</dd>
+      <dt><kbd>0</kbd> – <kbd>9</kbd></dt><dd>Gemonteerd, Hoofdgroepen, Motor, Motor tot op de bout, Automaat, Onderstel, Carrosserie, Interieur, Röntgen, Alles uit elkaar.</dd>
+      <dt><kbd>?</kbd></dt><dd>Deze uitleg.</dd></dl>
+    <div class="btnrow"><button class="btn primary" id="helpClose">Sluiten</button></div>
+  </div></div>
   <div id="loading">Model opbouwen…</div>
 </div>
