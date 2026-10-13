@@ -1,6 +1,6 @@
 # Laguna III explosietekening
 
-Interactieve 3D-explosietekening van een Renault Laguna III hatchback (fase 2, 2011) in de uitvoering Initiale Paris: zilvergrijs (Gris Platine D69), met de 2.0 Turbo F4Rt-motor (170 pk) en de zestraps automaat Jatco JF613E (Renault AJ0). Het model bestaat uit 2.394 losse onderdelen in 484 groepen, tot 8 lagen diep (2.878 knopen, 599.972 driehoeken). Elke groep klapt apart uit en in, tot op klepspie, zuigerveer en remzuiger. Alle geometrie wordt in code opgebouwd; er zijn geen 3D-bestanden.
+Interactieve 3D-explosietekening van een Renault Laguna III hatchback (fase 2, 2011) in de uitvoering Initiale Paris: zilvergrijs (Gris Platine D69), met de 2.0 Turbo F4Rt-motor (170 pk) en de zestraps automaat Jatco JF613E (Renault AJ0). Het model bestaat uit 2.396 losse onderdelen in 485 groepen, tot 8 lagen diep (2.881 knopen, 604.972 driehoeken). Elke groep klapt apart uit en in, tot op klepspie, zuigerveer en remzuiger. Alle geometrie wordt in code opgebouwd; er zijn geen 3D-bestanden.
 
 ![Gemonteerd](docs/screenshots/gemonteerd.png)
 
@@ -133,11 +133,12 @@ Voorbereiding, alle scripts en de resultaten staan in [docs/testen.md](docs/test
 - Niet in het model: 4Control (vierwielbesturing) en het panoramadak. Beide waren opties.
 - De stuurbekrachtiging is hydraulisch met een pomp op de multiriem. Dat is aannemelijk voor deze motor, niet met een eigen bron bevestigd.
 - De prestaties zijn alleen in een container met software-rendering gemeten. Op een echte telefoon is de framesnelheid niet getest; de pagina schakelt zelf over op een lichte weergave als hij haperen gaat.
-- Gebundeld renderen van gesloten groepen staat standaard aan (schakelaar in Weergave). Zonder bundelen heeft de gemonteerde auto 1.680 tekenopdrachten, met bundelen 369. De grens van 1.500 geldt dus alleen met bundelen.
-- De Aandrijflijn heeft 245.794 driehoeken tegen een budget van 240.000. De hele auto (599.972) blijft binnen het budget van 700.000.
+- Gebundeld renderen van gesloten groepen staat standaard aan (schakelaar in Weergave). Zonder bundelen heeft de gemonteerde auto 1.682 tekenopdrachten, met bundelen 370. De grens van 1.500 geldt dus alleen met bundelen.
+- De Aandrijflijn heeft 250.794 driehoeken tegen een budget van 240.000. De hele auto (604.972) blijft binnen het budget van 700.000.
 - De multiriem is in het model 1.569 mm lang tegen 1.795 mm (7PK1795); de beschrijving in de pagina zegt dat. De positie van de stuurpomp en de routes van de slangen zijn schematisch.
 - De voorste langsliggers snijden de aandrijfassen. Dit was al zo en is niet opgelost.
 - Niet gebouwd: UX-punt U19 en een zijkolomindeling voor telefoons in liggende stand.
+- Interactietest: op de eindstand slagen 78 van de 79 controles. Op de telefoon koos één van de 40 willekeurige tikken, op de rand tussen het binnenframe van de motorkap en de koplampsproeiers, het buurdeel in plaats van het aangewezen onderdeel. De fout komt in een herhaalrun precies zo terug en is niet opgelost. Zie [docs/testen.md](docs/testen.md).
 - Herkenbaarheid: de visuele poort op de eindbuild vond 3 van de 9 herkenningskenmerken volledig aanwezig, terwijl de eis 7 is. Van voren driekwart is de auto herkenbaar. De achterkant leest te hoekig en te hoog: de schuine fastbackstaart en de afgeronde, smaller wordende achterkant zijn maar deels aanwezig. De chromen sierlijsten, de raamlijst en de dorpelstrip ontbreken. De omtrek ligt wel binnen 3 tot 5 cm van het gemeten silhouet. Zie [docs/premortem.md](docs/premortem.md), struikeldraad 3.
 - Alle laadtijden zijn in een container met software-rendering gemeten (de pagina is daar na 5 tot 21 seconden klaar, afhankelijk van de belasting van de machine). Ze zeggen niets over een echt apparaat.
 - De gedragingen van de webview van een telefoon-app (lang drukken, sneltoetsen in een iframe) zijn niet te testen in de container. De stijlregels ervoor zijn wel getoetst.
@@ -155,4 +156,4 @@ Alles uit elkaar: [docs/screenshots/alles-uit-elkaar.png](docs/screenshots/alles
 
 Telefoonweergave: [docs/screenshots/mobiel.png](docs/screenshots/mobiel.png)
 
-De screenshots in `docs/screenshots/` tonen de eindstand: ze zijn in `8095a3e` opnieuw gemaakt uit dezelfde build als `index.html`, op 1280 × 800 (`mobiel.png` op 390 × 844 met pixelverhouding 2) en met software-rendering in de container.
+De screenshots in `docs/screenshots/` tonen de eindstand: ze zijn opnieuw gemaakt uit de build van `index.html` in `60909fe`, op 1280 × 800 (`mobiel.png` op 390 × 844 met pixelverhouding 2) en met software-rendering in de container.
