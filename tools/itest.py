@@ -254,6 +254,7 @@ def run_view(s, tag, w, h, touch):
             # op de telefoon verandert het paneel van hoogte na een preset; de camera past zich ~160 ms later
             # opnieuw in (ResizeObserver). Eerst dat laten gebeuren, anders verschuift het beeld tussen aanwijzen en tikken.
             pg.wait_for_timeout(350); settle(pg, 60)
+        settle(pg, 30)  # ook een herinpassing na een paneelwijziging afronden voordat we aanwijzen
         p = pg.evaluate(f'window.__T.randomPoint({rnd.randrange(1, 10 ** 6)})')
         if not p:
             misses += 1
