@@ -1,0 +1,2124 @@
+<title>Laguna III explosietekening</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@400;500&family=Saira+Condensed:wght@500;600;700&display=swap">
+<style>
+/* Layout: full-bleed 3D-werkbank; bovenbalk met naam en specs, dock met tikmodus en presets,
+   paneel rechts (desktop) of onderaan (mobiel) met onderdeelkaart, onderdelenlijst en weergave. */
+:root{
+  --bg:#e5e9ed; --bg-deep:#cfd6de; --surface:rgba(247,249,250,.94); --surface-solid:#f7f9fa;
+  --ink:#151a21; --ink-2:#4d5764; --line:rgba(21,26,33,.13); --chip:#ffffff; --chip-ink:#151a21;
+  --accent:#f2c230; --on-accent:#1b1500; --focus:#0b5cad; --danger:#b3261e;
+  --grid:rgba(21,26,33,.09); --grid-strong:rgba(21,26,33,.17); --shade:rgba(15,20,26,.30);
+  --f-display:"Saira Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --r:12px; --shadow:0 12px 32px rgba(18,24,32,.14);
+  --panel-w:368px; --top-h:76px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#11161b; --bg-deep:#07090c; --surface:rgba(21,26,32,.94); --surface-solid:#151a20;
+    --ink:#e6eaee; --ink-2:#9ba6b2; --line:rgba(230,234,238,.12); --chip:#1c232b; --chip-ink:#e6eaee;
+    --accent:#f2c230; --on-accent:#1b1500; --focus:#86bcff; --danger:#ff8a80;
+    --grid:rgba(230,234,238,.06); --grid-strong:rgba(230,234,238,.13); --shade:rgba(0,0,0,.55);
+    --shadow:0 12px 32px rgba(0,0,0,.5); color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#11161b; --bg-deep:#07090c; --surface:rgba(21,26,32,.94); --surface-solid:#151a20;
+  --ink:#e6eaee; --ink-2:#9ba6b2; --line:rgba(230,234,238,.12); --chip:#1c232b; --chip-ink:#e6eaee;
+  --accent:#f2c230; --on-accent:#1b1500; --focus:#86bcff; --danger:#ff8a80;
+  --grid:rgba(230,234,238,.06); --grid-strong:rgba(230,234,238,.13); --shade:rgba(0,0,0,.55);
+  --shadow:0 12px 32px rgba(0,0,0,.5); color-scheme:dark;
+}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--bg);background-image:radial-gradient(120% 95% at 42% 38%,var(--bg) 0%,var(--bg-deep) 100%);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45;overflow:hidden;-webkit-tap-highlight-color:transparent}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+#app{position:fixed;inset:0;overflow:hidden}
+#stage{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;outline:none}
+/* ---------- bovenbalk ---------- */
+#topbar{position:absolute;left:0;right:0;top:0;display:flex;align-items:flex-start;gap:12px;justify-content:space-between;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 10px;pointer-events:none}
+#topbar>*{pointer-events:auto}
+.title{min-width:0}
+.eyebrow{margin:0;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+h1{margin:2px 0 0;font-family:var(--f-display);font-weight:700;font-size:clamp(24px,4.4vw,34px);line-height:1;letter-spacing:.01em;text-wrap:balance}
+h1 span{font-weight:500;color:var(--ink-2)}
+.sub{margin:5px 0 0;font-size:12.5px;color:var(--ink-2);max-width:62ch}
+.sub b{color:var(--ink);font-weight:700}
+.top-actions{display:flex;gap:8px;flex-shrink:0}
+.iconbtn{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow);display:grid;place-items:center;padding:0}
+.iconbtn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.iconbtn[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+/* ---------- dock ---------- */
+#dock{position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column;gap:8px;padding:0 16px calc(12px + env(safe-area-inset-bottom,0px));pointer-events:none}
+#dock>*{pointer-events:auto}
+.seg{display:inline-flex;align-self:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px;box-shadow:var(--shadow)}
+.seg button{border:0;background:transparent;border-radius:999px;padding:7px 13px;font-size:13px;font-weight:700;color:var(--ink-2);display:inline-flex;align-items:center;gap:6px}
+.seg button svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+.seg button[aria-checked="true"]{background:var(--ink);color:var(--bg)}
+.presets{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 0 4px;margin:0 -16px;padding-inline:16px;scroll-padding-inline:16px}
+.presets::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;border:1px solid var(--line);background:var(--chip);color:var(--chip-ink);border-radius:999px;padding:8px 14px;font-size:13.5px;font-weight:700;box-shadow:0 2px 10px rgba(0,0,0,.06);white-space:nowrap}
+.chip small{font-family:var(--f-mono);font-weight:400;font-size:10.5px;color:var(--ink-2);margin-left:6px}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);border-color:transparent}
+.chip[aria-pressed="true"] small{color:var(--on-accent)}
+/* ---------- paneel ---------- */
+#sheet{position:absolute;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);min-height:0}
+.grab{display:none}
+.sel-head{padding:14px 16px 12px;border-bottom:1px solid var(--line)}
+.crumbs{display:flex;flex-wrap:wrap;gap:2px 4px;font-size:12px;color:var(--ink-2);margin-bottom:4px}
+.crumbs button{border:0;background:none;padding:2px 0;color:var(--ink-2);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+.crumbs span{opacity:.6}
+#selName{margin:0;font-family:var(--f-display);font-weight:700;font-size:23px;line-height:1.05;text-wrap:balance}
+.meta{margin:3px 0 0;font-family:var(--f-mono);font-size:11.5px;color:var(--ink-2)}
+.meta .state{display:inline-block;padding:1px 7px;border-radius:999px;border:1px solid var(--line);margin-right:6px;font-family:var(--f-body);font-weight:700;font-size:11px;color:var(--ink)}
+.meta .state.open{background:var(--accent);color:var(--on-accent);border-color:transparent}
+.sel-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.btn{border:1px solid var(--line);background:var(--chip);border-radius:9px;padding:7px 11px;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:6px}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:transparent}
+.btn:disabled{opacity:.45;cursor:default}
+.tabs{display:flex;gap:4px;padding:8px 12px 0;border-bottom:1px solid var(--line)}
+.tabs button{border:0;background:none;padding:8px 10px 9px;font-weight:700;font-size:13.5px;color:var(--ink-2);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.tabpanels{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain}
+.tabpanels section{padding:14px 16px 20px}
+#selDesc{margin:0 0 12px;max-width:62ch}
+dl.spec{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0 0 14px;font-size:13.5px}
+dl.spec dt{color:var(--ink-2)}
+dl.spec dd{margin:0;font-family:var(--f-mono);font-size:12.5px;font-variant-numeric:tabular-nums;min-width:0}
+.kids-title{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);margin:4px 0 8px}
+.kids{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
+.kids button{border:1px solid var(--line);background:var(--chip);border-radius:8px;padding:5px 9px;font-size:12.5px}
+.note{font-size:12px;color:var(--ink-2);border-top:1px solid var(--line);padding-top:10px;margin:6px 0 0;max-width:62ch}
+#treeSearch{width:100%;box-sizing:border-box;border:1px solid var(--line);background:var(--chip);border-radius:9px;padding:9px 11px;margin-bottom:10px}
+.tree{font-size:13.5px}
+.tree ul{list-style:none;margin:0;padding:0 0 0 14px;border-left:1px dashed var(--line)}
+.tree>ul{padding-left:0;border-left:0}
+.tree li{margin:0}
+.trow{display:flex;align-items:center;gap:4px;min-width:0}
+.trow .tw{width:22px;height:26px;border:0;background:none;padding:0;color:var(--ink-2);flex:0 0 auto;font-family:var(--f-mono)}
+.trow .tn{flex:1;min-width:0;text-align:left;border:0;background:none;padding:4px 4px;border-radius:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trow .tn:hover{background:var(--line)}
+.trow .tc{font-family:var(--f-mono);font-size:10.5px;color:var(--ink-2);flex:0 0 auto}
+.trow.sel .tn{background:var(--accent);color:var(--on-accent)}
+.trow .dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto;border:1.5px solid var(--ink-2)}
+.trow .dot.open{background:var(--accent);border-color:var(--accent)}
+.ctl{display:grid;gap:14px}
+.ctl label.row{display:flex;align-items:center;justify-content:space-between;gap:12px;font-weight:700;font-size:14px}
+.ctl .row small{display:block;font-weight:400;color:var(--ink-2);font-size:12px}
+.switch{appearance:none;-webkit-appearance:none;width:44px;height:26px;border-radius:999px;background:var(--line);position:relative;flex:0 0 auto;margin:0;cursor:pointer;transition:background .2s}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--surface-solid);box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .2s}
+.switch:checked{background:var(--ink)}
+.switch:checked::after{transform:translateX(18px)}
+input[type=range]{width:100%;accent-color:var(--ink)}
+.camgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.camgrid .btn{justify-content:center}
+.btnrow{display:flex;flex-wrap:wrap;gap:6px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--ink-2)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+/* ---------- labels ---------- */
+#labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.lbl{position:absolute;left:0;top:0;pointer-events:auto;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:3px 9px 3px 4px;font-size:11.5px;font-weight:700;white-space:nowrap;display:flex;align-items:center;gap:5px;box-shadow:0 2px 8px rgba(0,0,0,.12);max-width:42vw;overflow:hidden;text-overflow:ellipsis}
+.lbl b{font-family:var(--f-mono);font-weight:500;font-size:10px;background:var(--ink);color:var(--bg);border-radius:999px;min-width:18px;height:18px;display:inline-grid;place-items:center;padding:0 4px}
+.lbl.sel{background:var(--accent);color:var(--on-accent);border-color:transparent}
+#hint{position:absolute;left:50%;top:calc(var(--top-h) + 18px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);border-radius:999px;padding:8px 14px;font-size:13px;font-weight:700;box-shadow:var(--shadow);pointer-events:none;transition:opacity .4s;white-space:nowrap;max-width:calc(100% - 32px);overflow:hidden;text-overflow:ellipsis}
+#hint.gone{opacity:0}
+#loading{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-mono);font-size:13px;color:var(--ink-2);background:var(--bg);text-align:center;padding:0 24px}
+#loading.gone{display:none}
+/* ---------- desktop ---------- */
+@media (min-width:920px){
+  #sheet{top:calc(12px + env(safe-area-inset-top,0px));right:16px;bottom:16px;width:var(--panel-w);border-radius:16px;overflow:hidden}
+  #dock{right:calc(var(--panel-w) + 32px)}
+  #topbar{right:calc(var(--panel-w) + 32px)}
+  #btnParts,#btnView{display:none}
+}
+/* ---------- mobiel ---------- */
+@media (max-width:919.98px){
+  #sheet{left:0;right:0;bottom:0;border-radius:18px 18px 0 0;border-bottom:0;padding-bottom:env(safe-area-inset-bottom,0px);max-height:calc(100% - 96px - env(safe-area-inset-top,0px));transition:height .28s ease}
+  #sheet[data-state="peek"]{height:auto}
+  #sheet[data-state="peek"] .tabs,#sheet[data-state="peek"] .tabpanels{display:none}
+  #sheet[data-state="open"]{height:64%}
+  .grab{display:block;border:0;background:none;width:100%;height:20px;padding:0;margin:0}
+  .grab span{display:block;width:42px;height:5px;border-radius:9px;background:var(--line);margin:8px auto 0}
+  .sel-head{padding-top:2px}
+  #selName{font-size:21px}
+  #dock{bottom:var(--sheet-h,150px);padding-bottom:10px}
+  #sheet[data-state="open"]~#dock{display:none}
+  .sel-actions .btn{padding:6px 10px;font-size:12.5px}
+  .sub{font-size:12px}
+  #hint{top:auto;bottom:calc(var(--sheet-h,150px) + 112px)}
+}
+@media (max-width:520px){
+  .sub .long,.eyebrow .long{display:none}
+  .eyebrow{font-size:10px}
+}
+@media (prefers-reduced-motion: reduce){
+  #sheet,#hint,.switch,.switch::after{transition:none}
+}
+</style>
+
+<div id="app">
+  <canvas id="stage" aria-label="3D-explosietekening van een Renault Laguna III hatchback"></canvas>
+  <div id="labels" aria-hidden="false"></div>
+  <header id="topbar">
+    <div class="title">
+      <p class="eyebrow">Explosietekening<span class="long"> · schematisch model</span></p>
+      <h1>Laguna III <span>Initiale Paris</span></h1>
+      <p class="sub">2011 · 5-deurs hatchback · zilvergrijs · <b>F4Rt 2.0 Turbo 170 pk</b><span class="long"> · 6-traps automaat</span></p>
+    </div>
+    <div class="top-actions">
+      <button class="iconbtn" id="btnParts" aria-label="Onderdelenlijst openen" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg></button>
+      <button class="iconbtn" id="btnView" aria-label="Weergave-instellingen openen" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button>
+    </div>
+  </header>
+  <aside id="sheet" data-state="peek" aria-label="Onderdeel en bediening">
+    <button class="grab" id="sheetToggle" aria-label="Paneel groter maken" aria-expanded="false"><span></span></button>
+    <div class="sel-head">
+      <div class="crumbs" id="crumbs"></div>
+      <h2 id="selName">Renault Laguna III</h2>
+      <p class="meta" id="selMeta"></p>
+      <div class="sel-actions">
+        <button class="btn primary" id="actToggle">Uitklappen</button>
+        <button class="btn" id="actAll">Alles hieronder uit</button>
+        <button class="btn" id="actIsolate">Isoleren</button>
+        <button class="btn" id="actFocus">In beeld</button>
+      </div>
+    </div>
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tabbtn-info" aria-selected="true" aria-controls="tab-info">Onderdeel</button>
+      <button role="tab" id="tabbtn-tree" aria-selected="false" aria-controls="tab-tree">Onderdelen</button>
+      <button role="tab" id="tabbtn-view" aria-selected="false" aria-controls="tab-view">Weergave</button>
+    </div>
+    <div class="tabpanels">
+      <section id="tab-info" role="tabpanel" aria-labelledby="tabbtn-info">
+        <p id="selDesc"></p>
+        <dl class="spec" id="selSpec"></dl>
+        <p class="kids-title" id="kidsTitle">Bestaat uit</p>
+        <div class="kids" id="selKids"></div>
+        <p class="note">Schematisch 3D-model: vormen, maten en posities van onderdelen zijn benaderd en niet geschikt als montagevoorschrift. Technische gegevens komen uit openbare specificaties van de Laguna III 2.0 Turbo 170 automaat (fase 2).</p>
+      </section>
+      <section id="tab-tree" role="tabpanel" aria-labelledby="tabbtn-tree" hidden>
+        <input id="treeSearch" type="search" placeholder="Zoek een onderdeel, bijv. klepveer" autocomplete="off">
+        <div class="tree" id="tree" role="tree"></div>
+      </section>
+      <section id="tab-view" role="tabpanel" aria-labelledby="tabbtn-view" hidden>
+        <div class="ctl">
+          <label class="row" for="spread"><span>Spreiding<small>Afstand tussen uitgeklapte delen</small></span><output id="spreadOut">100%</output></label>
+          <input id="spread" type="range" min="40" max="220" step="5" value="100">
+          <label class="row" for="tLabels"><span>Labels<small>Namen bij de laatst uitgeklapte groep</small></span><input class="switch" type="checkbox" id="tLabels" checked></label>
+          <label class="row" for="tXray"><span>Röntgen<small>Carrosserie doorzichtig</small></span><input class="switch" type="checkbox" id="tXray"></label>
+          <label class="row" for="tSys"><span>Kleuren per systeem<small>Elke hoofdgroep een eigen kleur</small></span><input class="switch" type="checkbox" id="tSys"></label>
+          <div class="legend" id="legend" hidden></div>
+          <label class="row" for="tRotate"><span>Langzaam draaien<small>Camera draait rond het model</small></span><input class="switch" type="checkbox" id="tRotate"></label>
+          <div><p class="kids-title">Camera</p>
+            <div class="camgrid">
+              <button class="btn" data-cam="front">Voor</button><button class="btn" data-cam="side">Zij</button><button class="btn" data-cam="rear">Achter</button>
+              <button class="btn" data-cam="top">Boven</button><button class="btn" data-cam="iso">¾ voor</button><button class="btn" data-cam="under">Onder</button>
+            </div></div>
+          <div><p class="kids-title">Alles tegelijk</p>
+            <div class="btnrow"><button class="btn" id="btnExplodeAll">Alles uitklappen</button><button class="btn" id="btnCollapseAll">Alles inklappen</button><button class="btn" id="btnShowAll">Alles tonen</button></div></div>
+        </div>
+      </section>
+    </div>
+  </aside>
+  <nav id="dock" aria-label="Tikmodus en presets">
+    <div class="seg" role="radiogroup" aria-label="Wat doet tikken op een onderdeel">
+      <button role="radio" aria-checked="true" data-mode="explode"><svg viewBox="0 0 24 24"><path d="M12 4v5M12 15v5M4 12h5M15 12h5"/></svg>Uitklappen</button>
+      <button role="radio" aria-checked="false" data-mode="collapse"><svg viewBox="0 0 24 24"><path d="M12 4l0 5M9 7l3 3 3-3M12 20v-5M9 17l3-3 3 3"/></svg>Inklappen</button>
+      <button role="radio" aria-checked="false" data-mode="select"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 11v5M12 8v.01"/></svg>Info</button>
+    </div>
+    <div class="presets" id="presets" role="group" aria-label="Presets"></div>
+  </nav>
+  <div id="hint">Tik op de auto om hem laag voor laag uit elkaar te halen</div>
+  <div id="loading">Model opbouwen…</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/environments/RoomEnvironment.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/geometries/RoundedBoxGeometry.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/utils/BufferGeometryUtils.js"></script>
+<script>
+'use strict';
+/* ===================== basis: renderer, scène, materialen, geometrie-hulpen ===================== */
+const LOADING = document.getElementById('loading');
+if (!window.THREE || !THREE.OrbitControls || !THREE.BufferGeometryUtils) {
+  LOADING.textContent = 'De 3D-bibliotheek kon niet worden geladen. Controleer de verbinding en laad de pagina opnieuw.';
+  throw new Error('three.js ontbreekt');
+}
+THREE.ColorManagement.legacyMode = false;
+const PI = Math.PI, HALF = PI / 2;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const V3 = (x, y, z) => new THREE.Vector3(x, y, z);
+const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const canvas = document.getElementById('stage');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.98;
+renderer.setClearColor(0x000000, 0);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(36, 1, 0.02, 400);
+camera.position.set(5.6, 2.5, 6.2);
+const controls = new THREE.OrbitControls(camera, canvas);
+controls.enableDamping = true;
+controls.dampingFactor = 0.09;
+controls.target.set(0, 0.62, 0);
+controls.minDistance = 0.12;
+controls.maxDistance = 60;
+controls.maxPolarAngle = PI * 0.97;
+controls.rotateSpeed = 0.8;
+controls.zoomSpeed = 0.9;
+controls.autoRotateSpeed = 0.7;
+
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new THREE.RoomEnvironment(), 0.04).texture;
+scene.add(new THREE.HemisphereLight(0xffffff, 0x3c434b, 0.35));
+const sun = new THREE.DirectionalLight(0xffffff, 1.2);
+sun.position.set(4, 9, 6);
+scene.add(sun);
+const rim = new THREE.DirectionalLight(0xdfe8ff, 0.35);
+rim.position.set(-6, 3, -5);
+scene.add(rim);
+
+/* ---------- materialen ---------- */
+const MAT = {};
+function std(name, color, metal, rough, extra) {
+  const m = new THREE.MeshStandardMaterial(Object.assign({ color, metalness: metal, roughness: rough, side: THREE.DoubleSide }, extra || {}));
+  m.name = name; MAT[name] = m; return m;
+}
+function phys(name, opts) {
+  const m = new THREE.MeshPhysicalMaterial(Object.assign({ side: THREE.DoubleSide }, opts));
+  m.name = name; MAT[name] = m; return m;
+}
+phys('paint', { color: 0x92979e, metalness: 0.74, roughness: 0.26, clearcoat: 1, clearcoatRoughness: 0.05, envMapIntensity: 1.15 });
+std('paintIn', 0x8b9096, 0.45, 0.55);
+std('underbody', 0x3a3f45, 0.15, 0.85);
+phys('glass', { color: 0x0b1117, metalness: 0, roughness: 0.04, transparent: true, opacity: 0.86, depthWrite: false, envMapIntensity: 0.85 });
+std('chrome', 0xeef1f4, 1, 0.08, { envMapIntensity: 1.25 });
+std('blackGloss', 0x0e1013, 0.3, 0.2);
+std('plastic', 0x1e2024, 0, 0.72);
+std('plasticGrey', 0x4a4f57, 0, 0.62);
+std('rubber', 0x141516, 0, 0.88);
+std('alu', 0xc3c7cc, 0.85, 0.34);
+std('aluCast', 0xa6abb1, 0.7, 0.56);
+std('iron', 0x5b6066, 0.75, 0.52);
+std('steel', 0xa0a6ad, 0.95, 0.28);
+std('darkSteel', 0x3c4147, 0.85, 0.45);
+std('bearing', 0xc9a265, 0.95, 0.3);
+std('copper', 0xb36d42, 0.9, 0.35);
+std('leather', 0xcbb796, 0, 0.6);
+std('dash', 0x2a2c30, 0, 0.78);
+std('fabric', 0xd8d2c6, 0, 0.95);
+std('carpet', 0x2a2927, 0, 1);
+std('satin', 0xc8ccd1, 0.9, 0.26);
+phys('lensRed', { color: 0xa8121d, metalness: 0, roughness: 0.15, transparent: true, opacity: 0.9 });
+phys('lensClear', { color: 0xe6eef5, metalness: 0, roughness: 0.04, transparent: true, opacity: 0.3, depthWrite: false });
+std('amber', 0xd8871a, 0.1, 0.35);
+std('reflector', 0xdde2e7, 1, 0.14);
+std('plateYellow', 0xf3c400, 0, 0.5);
+std('plateBlue', 0x1d3f9a, 0, 0.5);
+std('ceramic', 0xf1efe9, 0, 0.35);
+phys('tank', { color: 0xe9e5da, metalness: 0, roughness: 0.4, transparent: true, opacity: 0.86 });
+std('oilFilter', 0x2a56a8, 0.3, 0.45);
+std('belt', 0x111214, 0, 0.85);
+std('exhaust', 0x8c8681, 0.75, 0.48);
+std('heat', 0xcac4b9, 0.9, 0.32);
+std('ecu', 0x2f3339, 0.45, 0.5);
+std('red', 0xc0262d, 0.1, 0.5);
+std('friction', 0x4b3c31, 0, 0.9);
+std('handle', 0xf0b81f, 0, 0.5);
+std('screen', 0x0b1118, 0.2, 0.1);
+std('filter', 0xdcc8a0, 0, 0.9);
+std('heater', 0xa86a3d, 0.6, 0.45);
+
+const HL = new Map();
+function hlMat(base) {
+  let m = HL.get(base);
+  if (!m) {
+    m = base.clone();
+    m.emissive = new THREE.Color(0xf2c230);
+    m.emissiveIntensity = 0.42;
+    if (m.transparent) m.opacity = Math.max(m.opacity, 0.55);
+    HL.set(base, m);
+  }
+  return m;
+}
+const GHOST = new THREE.MeshStandardMaterial({ color: 0xc4ccd5, metalness: 0, roughness: 0.4, transparent: true, opacity: 0.09, depthWrite: false, side: THREE.DoubleSide });
+const GHOST_HL = new THREE.MeshStandardMaterial({ color: 0xf2c230, emissive: 0xf2c230, emissiveIntensity: 0.25, transparent: true, opacity: 0.35, depthWrite: false, side: THREE.DoubleSide });
+
+/* ---------- geometrie-hulpen ---------- */
+const GC = new Map();
+function cache(key, fn) { let g = GC.get(key); if (!g) { g = fn(); GC.set(key, g); } return g; }
+function xf(g, p, r, s) {
+  const c = g.clone();
+  const m = new THREE.Matrix4().compose(V3(...(p || [0, 0, 0])), new THREE.Quaternion().setFromEuler(new THREE.Euler(...(r || [0, 0, 0]))), V3(...(s || [1, 1, 1])));
+  c.applyMatrix4(m);
+  return c;
+}
+function cleanG(g) {
+  const n = g.index ? g.toNonIndexed() : g.clone();
+  for (const k of Object.keys(n.attributes)) if (k !== 'position' && k !== 'normal') n.deleteAttribute(k);
+  if (!n.attributes.normal) n.computeVertexNormals();
+  n.morphAttributes = {}; n.clearGroups();
+  return n;
+}
+function merge(list) {
+  const m = THREE.BufferGeometryUtils.mergeBufferGeometries(list.filter(Boolean).map(cleanG), false);
+  if (!m) throw new Error('merge mislukt');
+  return m;
+}
+// as-oriëntatie: geometrie gebouwd langs Y (cilinder/lathe) of Z (extrude/torus)
+function yTo(g, ax) { if (ax === 'x') g.rotateZ(-HALF); else if (ax === 'z') g.rotateX(HALF); else if (ax === '-x') g.rotateZ(HALF); return g; }
+function zTo(g, ax) { if (ax === 'x') g.rotateY(HALF); else if (ax === 'y') g.rotateX(-HALF); return g; }
+
+const G = {
+  box: (w, h, d) => cache(`b${w}|${h}|${d}`, () => new THREE.BoxGeometry(w, h, d)),
+  rbox: (w, h, d, r) => cache(`rb${w}|${h}|${d}|${r}`, () => new THREE.RoundedBoxGeometry(w, h, d, 2, Math.max(0.0005, Math.min(r, Math.min(w, h, d) / 2 - 0.0002)))),
+  cyl: (ax, rt, rb, h, seg = 24, open = false) => cache(`c${ax}${rt}|${rb}|${h}|${seg}|${open}`, () => yTo(new THREE.CylinderGeometry(rt, rb, h, seg, 1, open), ax)),
+  half: (ax, r, h, start, seg = 16) => cache(`h${ax}${r}|${h}|${start}|${seg}`, () => yTo(new THREE.CylinderGeometry(r, r, h, seg, 1, true, start, PI), ax)),
+  torus: (ax, R, r, seg = 40, rad = 8, arc = PI * 2) => cache(`t${ax}${R}|${r}|${seg}|${arc}`, () => zTo(new THREE.TorusGeometry(R, r, rad, seg, arc), ax)),
+  sphere: (r, seg = 16) => cache(`s${r}|${seg}`, () => new THREE.SphereGeometry(r, seg, Math.max(6, seg * 0.6 | 0))),
+  lathe: (ax, pts, seg = 32, key) => {
+    const build = () => yTo(new THREE.LatheGeometry(pts.map(p => new THREE.Vector2(p[0], p[1])), seg), ax);
+    return key ? cache('l' + ax + key + seg, build) : build();
+  },
+};
+function hexBolt(len, d, ax = 'y') { // kop bij oorsprong, steel richting +as
+  return cache(`bolt${len}|${d}|${ax}`, () => {
+    const head = new THREE.CylinderGeometry(d * 0.9, d * 0.9, d * 0.65, 6); head.translate(0, -d * 0.325, 0);
+    const shank = new THREE.CylinderGeometry(d / 2, d / 2, len, 10); shank.translate(0, len / 2, 0);
+    const washer = new THREE.CylinderGeometry(d * 1.05, d * 1.05, d * 0.12, 16); washer.translate(0, d * 0.06, 0);
+    return yTo(merge([head, shank, washer]), ax);
+  });
+}
+function spring(R, wire, h, turns, ax = 'y') {
+  return cache(`sp${R}|${wire}|${h}|${turns}|${ax}`, () => {
+    const pts = []; const N = Math.max(24, Math.ceil(turns * 14));
+    for (let i = 0; i <= N; i++) { const t = i / N, a = t * turns * PI * 2; pts.push(V3(R * Math.cos(a), t * h - h / 2, R * Math.sin(a))); }
+    return yTo(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), N, wire, 5, false), ax);
+  });
+}
+function tube(points, r, seg = 64, rad = 10, closed = false) {
+  const curve = new THREE.CatmullRomCurve3(points.map(p => Array.isArray(p) ? V3(...p) : p), closed, 'centripetal');
+  return new THREE.TubeGeometry(curve, seg, r, rad, closed);
+}
+function shapeOf(pts) { const s = new THREE.Shape(); pts.forEach((p, i) => i ? s.lineTo(p[0], p[1]) : s.moveTo(p[0], p[1])); s.closePath(); return s; }
+function circlePath(cx, cy, r) { const h = new THREE.Path(); h.absarc(cx, cy, r, 0, PI * 2, true); return h; }
+function rrectPts(w, h, r, n = 4) {
+  const pts = [], hw = w / 2, hh = h / 2;
+  const cs = [[hw - r, hh - r, 0], [-hw + r, hh - r, HALF], [-hw + r, -hh + r, PI], [hw - r, -hh + r, PI * 1.5]];
+  for (const [cx, cy, a0] of cs) for (let i = 0; i <= n; i++) { const a = a0 + i / n * HALF; pts.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]); }
+  return pts;
+}
+function extrude(shape, depth, curveSeg = 12) {
+  const g = new THREE.ExtrudeGeometry(shape, { depth, bevelEnabled: false, curveSegments: curveSeg });
+  g.translate(0, 0, -depth / 2);
+  return g;
+}
+// vorm in (x,z)-vlak, dikte langs y (bovenaanzicht)
+function plan(shape, depth) { const g = extrude(shape, depth); g.rotateX(HALF); return g; }
+// vorm in (z,y)-vlak, dikte langs x (zijaanzicht)
+function side(shape, depth) { const g = extrude(shape, depth); g.rotateY(-HALF); return g; }
+// vorm in (x,y)-vlak, dikte langs z (vooraanzicht)
+function front(shape, depth) { return extrude(shape, depth); }
+function gearShape(n, ro, rr, hole, inner) {
+  const s = new THREE.Shape(), st = PI * 2 / n;
+  for (let i = 0; i < n; i++) {
+    const a = i * st;
+    [[rr, a], [ro, a + 0.2 * st], [ro, a + 0.45 * st], [rr, a + 0.65 * st]].forEach(([r, t], j) => {
+      const x = r * Math.cos(t), y = r * Math.sin(t);
+      (i === 0 && j === 0) ? s.moveTo(x, y) : s.lineTo(x, y);
+    });
+  }
+  s.closePath();
+  if (hole > 0) s.holes.push(circlePath(0, 0, hole));
+  return s;
+}
+function gear(n, ro, rr, w, hole = 0, ax = 'x') {
+  return cache(`g${n}|${ro}|${rr}|${w}|${hole}|${ax}`, () => zTo(extrude(gearShape(n, ro, rr, hole), w, 6), ax));
+}
+function ringGear(n, rOut, rTip, rRoot, w, ax = 'x') {
+  return cache(`rg${n}|${rOut}|${rTip}|${w}|${ax}`, () => {
+    const s = new THREE.Shape(); s.absarc(0, 0, rOut, 0, PI * 2, false);
+    const h = new THREE.Path(), st = PI * 2 / n;
+    for (let i = 0; i < n; i++) {
+      const a = i * st;
+      [[rRoot, a], [rTip, a + 0.2 * st], [rTip, a + 0.45 * st], [rRoot, a + 0.65 * st]].forEach(([r, t], j) => {
+        const x = r * Math.cos(t), y = r * Math.sin(t);
+        (i === 0 && j === 0) ? h.moveTo(x, y) : h.lineTo(x, y);
+      });
+    }
+    h.closePath(); s.holes.push(h);
+    return zTo(extrude(s, w, 24), ax);
+  });
+}
+function annulus(rIn, rOut, t, ax = 'x', seg = 40) {
+  return cache(`an${rIn}|${rOut}|${t}|${ax}`, () => yTo(new THREE.LatheGeometry([[rIn, -t / 2], [rOut, -t / 2], [rOut, t / 2], [rIn, t / 2], [rIn, -t / 2]].map(p => new THREE.Vector2(...p)), seg), ax));
+}
+function hull(P) {
+  P = P.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const cr = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+  const lo = [], up = [];
+  for (const p of P) { while (lo.length >= 2 && cr(lo[lo.length - 2], lo[lo.length - 1], p) <= 0) lo.pop(); lo.push(p); }
+  for (let i = P.length - 1; i >= 0; i--) { const p = P[i]; while (up.length >= 2 && cr(up[up.length - 2], up[up.length - 1], p) <= 0) up.pop(); up.push(p); }
+  up.pop(); lo.pop();
+  return lo.concat(up);
+}
+function circlesHull(circles, grow) {
+  const pts = [];
+  circles.forEach(([a, b, r]) => { for (let i = 0; i < 56; i++) { const t = i / 56 * PI * 2; pts.push([a + (r + grow) * Math.cos(t), b + (r + grow) * Math.sin(t)]); } });
+  return hull(pts);
+}
+// riem rond poelies in het (z,y)-vlak, breedte langs x
+function beltGeo(circles, width, thick) {
+  const outer = circlesHull(circles, thick), inner = circlesHull(circles, 0);
+  const s = shapeOf(outer); s.holes.push(new THREE.Path(inner.map(p => new THREE.Vector2(p[0], p[1]))));
+  return side(s, width);
+}
+function hullSolid(circles, grow, depth) { return side(shapeOf(circlesHull(circles, grow)), depth); }
+function blades(n, rIn, rOut, h, t, twist, ax = 'x') { // waaier-/turbineschoepen rond as
+  const list = [];
+  for (let i = 0; i < n; i++) {
+    const a = i / n * PI * 2;
+    const b = new THREE.BoxGeometry(t, h, rOut - rIn);
+    b.translate(0, 0, (rIn + rOut) / 2);
+    b.rotateZ(twist);
+    b.rotateY(a);
+    list.push(b);
+  }
+  return yTo(merge(list), ax);
+}
+function quatFromTo(a, b) { return new THREE.Quaternion().setFromUnitVectors(a.clone().normalize(), b.clone().normalize()); }
+// staaf/buis tussen twee punten (as Y gebouwd)
+function rodBetween(a, b, r, seg = 12) {
+  const A = V3(...a), B = V3(...b), d = B.clone().sub(A), L = d.length();
+  const g = new THREE.CylinderGeometry(r, r, L, seg);
+  g.applyQuaternion(quatFromTo(V3(0, 1, 0), d));
+  const m = A.clone().add(B).multiplyScalar(0.5);
+  g.translate(m.x, m.y, m.z);
+  return g;
+}
+
+/* ---------- onderdelenboom ---------- */
+const NODES = [];
+let NID = 0;
+function mkNode(obj, name, o) {
+  const n = {
+    id: NID++, name, d: o.d || '', spec: o.spec || null, obj, kids: [], parent: null, asm: false,
+    ex: o.ex ? V3(...o.ex) : null, exs: o.exs != null ? o.exs : 1, mode: o.mode || null, axis: o.axis ? V3(...o.axis) : null, step: o.step || 0,
+    u: 0, amt: 0, target: 0, delay: 0, base: null, exv: V3(0, 0, 0), sys: null, depth: 0, count: 0, lc: null, rad: 0, tag: o.tag || null
+  };
+  obj.userData.node = n;
+  if (o.p) obj.position.set(...o.p);
+  if (o.r) obj.rotation.set(...o.r);
+  if (o.q) obj.quaternion.copy(o.q);
+  if (o.s) obj.scale.set(...o.s);
+  NODES.push(n);
+  return n;
+}
+function A(name, o = {}, kids = []) {
+  const n = mkNode(new THREE.Group(), name, o);
+  n.asm = true;
+  [kids].flat(Infinity).forEach(k => k && addKid(n, k));
+  return n;
+}
+function P(name, geo, m, o = {}) {
+  const mesh = new THREE.Mesh(geo, m);
+  mesh.userData.base = m;
+  return mkNode(mesh, name, o);
+}
+function addKid(p, c) { p.kids.push(c); c.parent = p; p.obj.add(c.obj); }
+const sideName = s => (s > 0 ? 'links' : 'rechts');
+
+/* ===================== carrosserie: parametrisch oppervlak ===================== */
+// assen: x = links(+)/rechts(-), y = omhoog, z = voor(+)/achter(-); maten in meter
+const ZF = 2.345, ZR = -2.35;                       // lengte 4695 mm
+const AXF = 1.365, AXR = -1.391, AY = 0.33;         // wielbasis 2756 mm, bandstraal 225/45 R18
+const ARCH = 0.395, TRACK = 0.775;
+const WS0 = 1.06, WS1 = 0.32, RW0 = -1.20, SP = -2.16;
+function pchip(pts) {
+  const n = pts.length, xs = pts.map(p => p[0]), ys = pts.map(p => p[1]), h = [], dl = [], m = new Array(n);
+  for (let i = 0; i < n - 1; i++) { h[i] = xs[i + 1] - xs[i]; dl[i] = (ys[i + 1] - ys[i]) / h[i]; }
+  m[0] = dl[0]; m[n - 1] = dl[n - 2];
+  for (let i = 1; i < n - 1; i++) {
+    if (dl[i - 1] * dl[i] <= 0) m[i] = 0;
+    else { const w1 = 2 * h[i] + h[i - 1], w2 = h[i] + 2 * h[i - 1]; m[i] = (w1 + w2) / (w1 / dl[i - 1] + w2 / dl[i]); }
+  }
+  return x => {
+    if (x <= xs[0]) return ys[0];
+    if (x >= xs[n - 1]) return ys[n - 1];
+    let i = 0; while (i < n - 2 && x > xs[i + 1]) i++;
+    const t = (x - xs[i]) / h[i], t2 = t * t, t3 = t2 * t;
+    return (2 * t3 - 3 * t2 + 1) * ys[i] + (t3 - 2 * t2 + t) * h[i] * m[i] + (-2 * t3 + 3 * t2) * ys[i + 1] + (t3 - t2) * h[i] * m[i + 1];
+  };
+}
+const HW = pchip([[-2.35, 0.70], [-2.34, 0.76], [-2.32, 0.80], [-2.28, 0.835], [-2.20, 0.862], [-2.0, 0.884], [-1.6, 0.899], [-1.0, 0.905], [0.6, 0.905], [1.4, 0.899], [1.8, 0.888], [2.05, 0.866], [2.2, 0.835], [2.28, 0.80], [2.32, 0.76], [2.338, 0.71], [2.345, 0.66]]);
+const YT = pchip([[-2.35, 0.94], [-2.34, 0.97], [-2.32, 0.995], [-2.28, 1.015], [-2.15, 1.035], [-1.8, 1.045], [-1.2, 1.025], [-0.5, 0.995], [0.4, 0.965], [1.10, 0.945], [1.6, 0.885], [2.0, 0.82], [2.18, 0.78], [2.26, 0.745], [2.31, 0.70], [2.335, 0.655], [2.345, 0.62]]);
+const YB = pchip([[-2.35, 0.40], [-2.34, 0.36], [-2.32, 0.33], [-2.25, 0.30], [-2.10, 0.275], [-1.85, 0.24], [-1.6, 0.19], [-1.2, 0.17], [1.1, 0.17], [1.6, 0.19], [1.95, 0.215], [2.2, 0.24], [2.30, 0.26], [2.335, 0.29], [2.345, 0.32]]);
+const YR = pchip([[-2.16, 1.04], [-1.95, 1.13], [-1.70, 1.235], [-1.45, 1.318], [-1.20, 1.377], [-0.80, 1.425], [-0.30, 1.445], [0.10, 1.432], [0.32, 1.402], [0.55, 1.29], [0.80, 1.14], [0.98, 1.01], [1.06, 0.95]]);
+const S1 = 0.14, S2 = 0.22, S3 = 0.60, S4 = 0.72, BUL = 0.016, CRW = 0.028;
+const flank = t => BUL * Math.sin(PI * t) + 0.0055 * Math.exp(-Math.pow((t - 0.8) / 0.055, 2)) - 0.004 * Math.exp(-Math.pow((t - 0.16) / 0.08, 2));
+function radii(z) { const d = YT(z) - YB(z); return [Math.min(0.075, d * 0.3), Math.min(0.07, d * 0.3)]; }
+function halfPt(z, s) {
+  const hw = HW(z), yb = YB(z), yt = YT(z), [rb, rs] = radii(z);
+  if (s <= S1) return [s / S1 * (hw - rb), yb];
+  if (s <= S2) { const a = -HALF + (s - S1) / (S2 - S1) * HALF; return [hw - rb + rb * Math.cos(a), yb + rb + rb * Math.sin(a)]; }
+  if (s <= S3) { const t = (s - S2) / (S3 - S2); return [hw + flank(t), yb + rb + t * (yt - rs - yb - rb)]; }
+  if (s <= S4) { const a = (s - S3) / (S4 - S3) * HALF; return [hw - rs + rs * Math.cos(a), yt - rs + rs * Math.sin(a)]; }
+  const t = (s - S4) / (1 - S4); return [(hw - rs) * (1 - t), yt + CRW * t * (2 - t)];
+}
+function lowPt(z, p) {
+  const q = ((p % 2) + 2) % 2;
+  if (q <= 1) { const [x, y] = halfPt(z, q); return [x, y, z]; }
+  const [x, y] = halfPt(z, 2 - q); return [-x, y, z];
+}
+function sAtY(z, y) {
+  const yb = YB(z), yt = YT(z), [rb, rs] = radii(z), y0 = yb + rb, y1 = yt - rs;
+  if (y <= y0) { const a = Math.asin(clamp((y - y0) / rb, -1, 0)); return S1 + (a + HALF) / HALF * (S2 - S1); }
+  if (y >= y1) { const a = Math.asin(clamp((y - y1) / rs, 0, 1)); return S3 + a / HALF * (S4 - S3); }
+  return S2 + (y - y0) / (y1 - y0) * (S3 - S2);
+}
+function surfX(z, y) { return halfPt(z, sAtY(z, y))[0]; }
+function archS(z) {
+  for (const az of [AXF, AXR]) { const dz = z - az; if (Math.abs(dz) <= ARCH) return sAtY(z, AY + Math.sqrt(ARCH * ARCH - dz * dz)); }
+  return 0;
+}
+const inArch = z => Math.abs(z - AXF) < ARCH + 0.01 || Math.abs(z - AXR) < ARCH + 0.01;
+const ARCH_BREAKS = [AXF - ARCH - 0.001, AXF - ARCH, AXF + ARCH, AXF + ARCH + 0.001, AXR - ARCH - 0.001, AXR - ARCH, AXR + ARCH, AXR + ARCH + 0.001];
+function ghPt(z, w) {
+  const sd = w <= 0.5 ? 1 : -1, q = w <= 0.5 ? 2 * w : 2 - 2 * w;
+  const [, rs] = radii(z), xb = HW(z) - rs, yb = YT(z), yr = Math.max(yb, YR(z)), h = yr - yb;
+  const rr = Math.min(0.065, h * 0.35), yst = yb + Math.max(0, h - rr), xst = xb - 0.30 * (yst - yb), xre = xst - rr * 0.85, cr = 0.02 * Math.min(1, h / 0.2);
+  let x, y;
+  if (q <= 0.54) { const t = q / 0.54; x = xb + (xst - xb) * t; y = yb + (yst - yb) * t; }
+  else if (q <= 0.72) { const a = (q - 0.54) / 0.18 * HALF; x = xre + (xst - xre) * Math.cos(a); y = yst + (yr - yst) * Math.sin(a); }
+  else { const t = (q - 0.72) / 0.28; x = xre * (1 - t); y = yr + cr * t * (2 - t); }
+  return [sd * x, y, z];
+}
+function patch(fn, u0, u1, nu, vr, nv, breaks = []) {
+  const us = [];
+  for (let i = 0; i <= nu; i++) us.push(u0 + (u1 - u0) * i / nu);
+  breaks.forEach(b => { if (b > u0 + 1e-4 && b < u1 - 1e-4) us.push(b); });
+  us.sort((a, b) => a - b);
+  const pos = [], idx = [], rows = nv + 1;
+  for (const u of us) { const [v0, v1] = vr(u); for (let j = 0; j <= nv; j++) { const p = fn(u, v0 + (v1 - v0) * j / nv); pos.push(p[0], p[1], p[2]); } }
+  for (let i = 0; i < us.length - 1; i++) for (let j = 0; j < nv; j++) {
+    const a = i * rows + j, b = (i + 1) * rows + j, c = b + 1, d = a + 1;
+    idx.push(a, b, d, b, c, d);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setIndex(idx); g.computeVertexNormals();
+  return g;
+}
+const sideR = (s, a, b) => (s > 0 ? [a, b] : [2 - b, 2 - a]);
+const sideW = (s, a, b) => (s > 0 ? [a, b] : [1 - b, 1 - a]);
+function offsetFn(fn, s, dx, dy = 0, dz = 0) { return (u, v) => { const p = fn(u, v); return [p[0] - s * dx, p[1] + dy, p[2] + dz]; }; }
+function lowSide(s, z0, z1, nu, vr, nv, breaks, off) {
+  const fn = off ? offsetFn(lowPt, s, off) : lowPt;
+  return patch(fn, z0, z1, nu, z => sideR(s, ...vr(z)), nv, breaks);
+}
+function ghSide(s, z0, z1, nu, w0, w1, nv, off) {
+  const fn = off ? offsetFn(ghPt, s, off) : ghPt;
+  return patch(fn, z0, z1, nu, () => sideW(s, w0, w1), nv);
+}
+// eindvlak (voor/achter): rooster over hoogte y, breedte volgt de doorsnede
+function ringX(z, y) {
+  const hw = HW(z), yb = YB(z), yt = YT(z), [rb, rs] = radii(z);
+  if (y <= yb + rb) { const a = Math.asin(clamp((y - yb - rb) / rb, -1, 0)); return hw - rb + rb * Math.cos(a); }
+  if (y <= yt - rs) { const t = (y - yb - rb) / (yt - rs - yb - rb); return hw + flank(t); }
+  if (y <= yt) { const a = Math.asin(clamp((y - yt + rs) / rs, 0, 1)); return hw - rs + rs * Math.cos(a); }
+  const t = 1 - Math.sqrt(Math.max(0, 1 - (y - yt) / CRW)); return (hw - rs) * (1 - t);
+}
+function faceZ(zEnd, dir, x, y) {
+  const y0 = YB(zEnd), y1 = YT(zEnd) + CRW, X = Math.max(1e-4, ringX(zEnd, y));
+  const v = clamp((y - y0) / (y1 - y0), 0, 1), e = Math.max(0, 1 - (x / X) * (x / X));
+  const bulge = dir > 0 ? 0.085 : 0.05, recess = dir > 0 ? 0.05 : 0.035;
+  return zEnd + dir * e * (bulge * Math.sin(PI * Math.min(1, v * 1.15)) - recess * v * v);
+}
+function faceGeo(zEnd, dir, yLo, yHi, ny = 18, nx = 28) {
+  const y0 = Math.max(yLo, YB(zEnd)), y1 = Math.min(yHi, YT(zEnd) + CRW - 1e-4);
+  return patch((y, t) => { const X = ringX(zEnd, y), x = X * t; return [x, y, faceZ(zEnd, dir, x, y)]; }, y0, y1, ny, () => [-1, 1], nx);
+}
+function facePatch(zEnd, dir, x0, x1, y0, y1, off, ny = 6, nx = 24) {
+  return patch((y, t) => { const X = ringX(zEnd, y), xa = Math.max(-X, x0), xb = Math.min(X, x1), x = xa + (xb - xa) * t; return [x, y, faceZ(zEnd, dir, x, y) + dir * off]; }, y0, y1, ny, () => [0, 1], nx);
+}
+// koplamp/achterlicht-zones
+const hlLow = z => sAtY(z, YT(z) - 0.2 * Math.sqrt(clamp((z - 1.86) / 0.42, 0, 1)));
+const tlLow = z => sAtY(z, YT(z) - 0.165 * Math.sqrt(clamp((-1.98 - z) / 0.33, 0, 1)));
+const inHL = z => z >= 1.86 && z <= 2.338;
+const inTL = z => z <= -1.98 && z >= -2.338;
+// punt op de buitenhuid (voor onderdelen die erop zitten)
+function skin(z, y, s, out = 0) { const x = surfX(z, y); return [s * (x + out), y, z]; }
+
+/* ===================== carrosserie: onderdelen ===================== */
+function archLip(s, z) {
+  const g = new THREE.TorusGeometry(ARCH + 0.004, 0.011, 6, 44, PI); g.rotateY(HALF);
+  g.translate(s * (HW(z) + 0.009), AY, z);
+  return g;
+}
+function buildDoor(s, isFront) {
+  const sn = sideName(s), pos = isFront ? 'voor' : 'achter';
+  const z0 = isFront ? -0.25 : -1.06, z1 = isFront ? 0.92 : -0.27;
+  const g0 = isFront ? -0.17 : -1.04, g1 = isFront ? 0.975 : -0.355;
+  const zm = (z0 + z1) / 2;
+  const vr = z => [Math.max(sAtY(z, 0.29), archS(z)) + 0.002, S4 - 0.001];
+  const outer = lowSide(s, z0 + 0.004, z1 - 0.004, 34, vr, 22, ARCH_BREAKS);
+  const inner = lowSide(s, z0 + 0.02, z1 - 0.02, 20, vr, 12, ARCH_BREAKS, 0.07);
+  const trim = lowSide(s, z0 + 0.03, z1 - 0.03, 20, z => [Math.max(sAtY(z, 0.33), archS(z) + 0.02), S4 - 0.03], 12, ARCH_BREAKS, 0.115);
+  const xin = HW(zm) - 0.075;
+  const reg = merge([xf(G.box(0.012, 0.42, 0.02), [0, 0, 0], [0.55, 0, 0]), xf(G.box(0.012, 0.42, 0.02), [0, 0, 0], [-0.55, 0, 0]), xf(G.box(0.014, 0.02, 0.32), [0, 0.19, 0])]);
+  const hy = 0.86, hz = z1 - 0.2, hx = surfX(hz, hy) + 0.014;
+  const kids = [
+    P('Buitenpaneel', outer, MAT.paint, { d: 'Geperste plaatstalen buitenhuid van het portier, in zilvergrijs metallic gelakt.', ex: [s * 0.24, 0, 0] }),
+    P('Binnenpaneel (deurframe)', inner, MAT.paintIn, { d: 'Draagframe van het portier waarop raammechaniek, slot en bekleding vastzitten.' }),
+    P('Zijruit', ghSide(s, g0, g1, 28, 0.012, 0.262, 10), MAT.glass, { d: 'Zakbare zijruit van gehard veiligheidsglas.', ex: [0, 0.42, 0] }),
+    P('Raammechaniek', reg, MAT.steel, { d: 'Schaarmechaniek die de zijruit op en neer beweegt.', p: [s * xin, 0.66, zm], ex: [-s * 0.14, 0.12, 0] }),
+    P('Raammotor', G.cyl('x', 0.032, 0.032, 0.05), MAT.darkSteel, { d: 'Elektromotor van de elektrische ruitbediening.', p: [s * (xin - 0.01), 0.5, zm - 0.14], ex: [-s * 0.2, -0.04, 0] }),
+    P('Deurslot', G.rbox(0.035, 0.09, 0.06, 0.008), MAT.darkSteel, { d: 'Slotmechanisme met centrale vergrendeling; opent met de Renault-kaart.', p: [s * (HW(z0 + 0.05) - 0.045), 0.78, z0 + 0.045], ex: [0, 0, -0.16] }),
+    P('Buitendeurgreep', G.rbox(0.03, 0.034, 0.17, 0.012), MAT.chrome, { d: 'Verchroomde deurgreep met sensor voor handsfree openen.', p: [s * hx, hy, hz], ex: [s * 0.36, 0, 0] }),
+    P('Deurbekleding', trim, MAT.dash, { d: 'Binnenbekleding van het portier met armsteun en schakelaars.', ex: [-s * 0.28, 0, 0] }),
+    P('Armsteun', G.rbox(0.07, 0.05, isFront ? 0.42 : 0.32, 0.02), MAT.leather, { d: 'Met beige leder beklede armsteun.', p: [s * (HW(zm) - 0.15), 0.64, zm - 0.02], ex: [-s * 0.36, 0, 0] }),
+    P('Bose-luidspreker', G.lathe('x', [[0, 0.02], [0.03, 0.018], [0.07, 0.002], [0.08, 0], [0.08, -0.02], [0.03, -0.02], [0, -0.02]], 28, 'spk'), MAT.plastic, { d: 'Luidspreker van het Bose-audiosysteem.', p: [s * (HW(zm) - 0.1), 0.42, isFront ? z1 - 0.28 : zm], r: [0, 0, s > 0 ? PI : 0], ex: [-s * 0.32, 0, 0] }),
+    P('Deurscharnier boven', G.rbox(0.05, 0.06, 0.04, 0.008), MAT.darkSteel, { d: 'Scharnier tussen portier en carrosserie.', p: [s * (HW(z1) - 0.03), 0.84, z1 - 0.012], ex: [0, 0, 0.14] }),
+    P('Deurscharnier onder', G.rbox(0.05, 0.06, 0.04, 0.008), MAT.darkSteel, { d: 'Scharnier tussen portier en carrosserie.', p: [s * (HW(z1) - 0.03), 0.52, z1 - 0.012], ex: [0, 0, 0.14] }),
+  ];
+  if (isFront) {
+    const mx = HW(0.86) + 0.06;
+    kids.push(A('Buitenspiegel', { d: 'Elektrisch verstelbare en inklapbare buitenspiegel met geheugenfunctie.', ex: [s * 0.4, 0.22, 0.05] }, [
+      P('Spiegelvoet', G.rbox(0.1, 0.045, 0.1, 0.012), MAT.blackGloss, { d: 'Voet waarmee de spiegel op het portier is bevestigd.', p: [s * (mx - 0.03), 1.02, 0.86], ex: [-s * 0.05, -0.06, 0] }),
+      P('Spiegelkap', xf(G.sphere(0.06, 24), null, null, [1.85, 1.0, 0.95]), MAT.paint, { d: 'Spiegelkap in carrosseriekleur.', p: [s * (mx + 0.08), 1.06, 0.86], ex: [0, 0.1, 0.06] }),
+      P('Spiegelglas', xf(G.sphere(0.052, 20), null, null, [1.8, 0.95, 0.06]), MAT.reflector, { d: 'Verwarmd spiegelglas.', p: [s * (mx + 0.08), 1.06, 0.806], ex: [0, 0, -0.12] }),
+      P('Spiegelmotor', G.rbox(0.05, 0.04, 0.04, 0.006), MAT.darkSteel, { d: 'Verstelmotor van het spiegelglas.', p: [s * (mx + 0.06), 1.06, 0.86], ex: [0, -0.1, 0] }),
+    ]));
+  }
+  return A(`Portier ${sn}${pos}`, { d: `Compleet ${isFront ? 'voor' : 'achter'}portier aan de ${sn}kant: plaatwerk, glas, mechaniek en bekleding.`, ex: [s * 0.88, 0.02, isFront ? 0.18 : -0.24] }, kids);
+}
+
+function buildHeadlight(s) {
+  const glass = lowSide(s, 1.861, 2.337, 30, z => [hlLow(z), S4 - 0.001], 10, [], -0.002);
+  const house = lowSide(s, 1.87, 2.33, 24, z => [hlLow(z), S4 - 0.002], 8, [], 0.055);
+  const pz = 2.2, py = YT(pz) - 0.085, px = surfX(pz, py) - 0.07;
+  return A(`Koplamp ${sn(s)}`, { d: 'Bi-xenon koplampunit; standaard op de Laguna Initiale (fase 2).', ex: [s * 0.4, 0.14, 0.88] }, [
+    P('Koplampglas', glass, MAT.lensClear, { d: 'Polycarbonaat afdekglas.', ex: [s * 0.1, 0.05, 0.16] }),
+    P('Koplamphuis', house, MAT.reflector, { d: 'Behuizing met verchroomde reflectoren.', ex: [-s * 0.05, 0, -0.08] }),
+    P('Projectormodule', merge([xf(G.cyl('z', 0.036, 0.036, 0.07), [0, 0, 0]), xf(G.sphere(0.034, 18), [0, 0, 0.04], null, [1, 1, 0.45])]), MAT.reflector, { d: 'Bi-xenon projector met lens; een klepje wisselt tussen dim- en grootlicht.', p: [px, py, pz], ex: [0, 0.12, 0.04] }),
+    P('Xenonlamp', G.cyl('z', 0.009, 0.009, 0.05, 12), MAT.ceramic, { d: 'Gasontladingslamp (xenon).', p: [px, py, pz - 0.07], ex: [0, 0.16, -0.1] }),
+    P('Voorschakelapparaat', G.rbox(0.08, 0.025, 0.08, 0.006), MAT.ecu, { d: 'Ballast die de hoge ontsteekspanning voor de xenonlamp levert.', p: [px - s * 0.02, py - 0.075, pz - 0.05], ex: [0, -0.16, 0] }),
+    P('Knipperlicht', G.rbox(0.05, 0.02, 0.06, 0.008), MAT.amber, { d: 'Richtingaanwijzer in de koplampunit.', p: [s * (surfX(2.06, YT(2.06) - 0.03) - 0.03), YT(2.06) - 0.035, 2.06], ex: [s * 0.1, 0.1, 0] }),
+  ]);
+}
+function sn(s) { return sideName(s); }
+
+function buildTaillight(s) {
+  const lens = lowSide(s, -2.337, -1.981, 22, z => [tlLow(z), S4 - 0.001], 8, [], -0.002);
+  const house = lowSide(s, -2.33, -1.99, 16, z => [tlLow(z), S4 - 0.002], 6, [], 0.06);
+  const fy = 0.92, fx = s * 0.66, fz = faceZ(ZR, -1, 0.66, fy) - 0.006;
+  return A(`Achterlicht ${sn(s)}`, { d: 'Achterlichtunit met remlicht, achterlicht, knipperlicht en achteruitrijlicht.', ex: [s * 0.42, 0.14, -0.9] }, [
+    P('Lens zijkant', lens, MAT.lensRed, { d: 'Rode afdeklens op de hoek van de carrosserie.', ex: [s * 0.08, 0, -0.05] }),
+    P('Lens achterzijde', G.rbox(0.2, 0.075, 0.02, 0.01), MAT.lensRed, { d: 'Rode lens aan de achterzijde.', p: [fx, fy, fz], ex: [0, 0, -0.12] }),
+    P('Lichthuis', house, MAT.plastic, { d: 'Behuizing met reflectoren.', ex: [-s * 0.06, 0, 0.05] }),
+    P('Lampdrager', G.rbox(0.03, 0.08, 0.14, 0.006), MAT.ecu, { d: 'Printplaat/lampdrager met fittingen en stekker.', p: [s * (HW(-2.2) - 0.09), YT(-2.2) - 0.07, -2.2], ex: [-s * 0.16, 0, 0] }),
+  ]);
+}
+
+function buildBody() {
+  const L = 1, R = -1;
+  /* --- carrosseriekooi (ruwbouw) --- */
+  const floorVR = z => { const lim = inArch(z) ? S1 * 0.6 / (HW(z) - radii(z)[0]) : S1; return [-lim, lim]; };
+  const biwKids = [
+    P('Bodemplaat', patch(lowPt, -1.8, 1.1, 60, floorVR, 14, ARCH_BREAKS), MAT.underbody, { d: 'Vloer van de ruwbouw met tunnel en bevestigingspunten voor stoelen en onderstel.' }),
+    P('Dakpaneel', patch(ghPt, RW0, WS1, 30, () => [0.36, 0.64], 16), MAT.paint, { d: 'Dakplaat, gelast op de dakrails.' }),
+    P('Schutbord', G.rbox(1.62, 0.68, 0.012, 0.004), MAT.paintIn, { d: 'Scheidingswand tussen motorruimte en interieur.', p: [0, 0.58, 1.0] }),
+    P('Radiateurdrager', merge([xf(G.box(1.2, 0.06, 0.06), [0, 0.75, 0]), xf(G.box(1.1, 0.06, 0.06), [0, 0.27, 0]), xf(G.box(0.06, 0.48, 0.06), [0.56, 0.51, 0]), xf(G.box(0.06, 0.48, 0.06), [-0.56, 0.51, 0]), xf(G.box(0.05, 0.42, 0.05), [0, 0.51, 0])]), MAT.plastic, { d: 'Frontmodule (slotplaat) die radiateur, koplampen en motorkapslot draagt.', p: [0, 0, 2.12] }),
+    P('Bumperbalk voor', merge([G.box(1.24, 0.1, 0.07), xf(G.box(0.09, 0.09, 0.12), [0.56, 0, -0.08]), xf(G.box(0.09, 0.09, 0.12), [-0.56, 0, -0.08])]), MAT.steel, { d: 'Stalen botsbalk met kreukelzones achter de voorbumper.', p: [0, 0.46, 2.27] }),
+    P('Bumperbalk achter', G.box(1.2, 0.1, 0.07), MAT.steel, { d: 'Stalen botsbalk achter de achterbumper.', p: [0, 0.5, -2.27] }),
+    P('Achterpaneel', G.rbox(1.42, 0.3, 0.012, 0.004), MAT.paintIn, { d: 'Dwarspaneel onder de achterklepopening.', p: [0, 0.5, -2.29] }),
+  ];
+  for (const s of [L, R]) {
+    const n = sn(s);
+    biwKids.push(
+      P(`Dorpel ${n}`, lowSide(s, -0.994, 0.968, 30, z => [S1, sAtY(z, 0.29)], 8), MAT.paint, { d: 'Dorpel: dragend kokerprofiel onder de portieren.' }),
+      P(`Achterscherm ${n}`, merge([lowSide(s, -2.33, -1.075, 44, z => [z < -1.8 ? sAtY(z, 0.645) : Math.max(sAtY(z, 0.29), archS(z)), inTL(z) ? tlLow(z) : S4 - 0.001], 20, ARCH_BREAKS.concat([-1.801, -1.799, -1.98])), archLip(s, AXR)]), MAT.paint, { d: 'Achterzijpaneel, gelast deel van de ruwbouw.' }),
+      P(`A-stijl ${n}`, merge([ghSide(s, WS1, WS0, 18, 0.262, 0.36, 4), ghSide(s, 0.975, WS0, 4, 0, 0.27, 4)]), MAT.paint, { d: 'Voorste dakstijl langs de voorruit.' }),
+      P(`Dakrail ${n}`, ghSide(s, RW0, WS1, 24, 0.27, 0.36, 4), MAT.paint, { d: 'Zijdelingse dakligger tussen A- en C-stijl.' }),
+      P(`B-stijl ${n}`, ghSide(s, -0.355, -0.17, 4, 0, 0.27, 6), MAT.blackGloss, { d: 'Middenstijl met hoogglans zwarte afdekking.' }),
+      P(`B-stijl constructie ${n}`, G.box(0.06, 0.95, 0.11), MAT.paintIn, { d: 'Verstevigd profiel in de middenstijl.', p: [s * 0.82, 0.74, -0.26] }),
+      P(`C-stijl ${n}`, merge([ghSide(s, SP, -1.455, 18, 0, 0.27, 6), ghSide(s, SP, RW0, 18, 0.27, 0.36, 4)]), MAT.paint, { d: 'Achterste dakstijl naast de achterklep.' }),
+      P(`Langsligger voor ${n}`, G.box(0.075, 0.12, 1.28), MAT.paintIn, { d: 'Kokerprofiel in de motorruimte dat botsenergie opvangt.', p: [s * 0.56, 0.36, 1.62] }),
+      P(`Veerpoottoren ${n}`, G.cyl('y', 0.095, 0.125, 0.25, 24, true), MAT.paintIn, { d: 'Bevestigingspunt van de veerpoot in de carrosserie.', p: [s * 0.6, 0.81, 1.33] }),
+    );
+  }
+  const biw = A('Carrosseriekooi', { d: 'De gelaste ruwbouw: vloer, stijlen, dak en draagprofielen.', exs: 0.85 }, biwKids);
+
+  /* --- motorkap --- */
+  const hood = A('Motorkap', { d: 'Motorkap met binnenframe, isolatie, scharnieren en slot.', ex: [0, 0.6, 0.38] }, [
+    P('Buitenpaneel motorkap', patch(lowPt, 1.13, 2.24, 44, () => [S4, 2 - S4], 24), MAT.paint, { d: 'Buitenhuid van de motorkap.', ex: [0, 0.14, 0] }),
+    P('Binnenframe motorkap', patch((z, p) => { const q = lowPt(z, p); return [q[0] * 0.98, q[1] - 0.035, z]; }, 1.15, 2.22, 24, () => [S4 + 0.01, 2 - S4 - 0.01], 12), MAT.paintIn, { d: 'Verstevigend binnenframe.' }),
+    P('Motorkapisolatie', patch((z, p) => { const q = lowPt(z, p); return [q[0] * 0.95, q[1] - 0.048, z]; }, 1.2, 2.12, 20, () => [S4 + 0.03, 2 - S4 - 0.03], 10), MAT.plastic, { d: 'Geluids- en hitte-isolatie aan de onderzijde.', ex: [0, -0.12, 0] }),
+    P('Motorkapscharnier links', G.rbox(0.03, 0.05, 0.12, 0.006), MAT.darkSteel, { d: 'Scharnier bij de voorruit.', p: [0.62, YT(1.17) - 0.05, 1.17], ex: [0.1, 0, -0.08] }),
+    P('Motorkapscharnier rechts', G.rbox(0.03, 0.05, 0.12, 0.006), MAT.darkSteel, { d: 'Scharnier bij de voorruit.', p: [-0.62, YT(1.17) - 0.05, 1.17], ex: [-0.1, 0, -0.08] }),
+    P('Motorkapslot', G.rbox(0.08, 0.06, 0.05, 0.008), MAT.darkSteel, { d: 'Slot met veiligheidshaak.', p: [0, YT(2.2) - 0.07, 2.2], ex: [0, -0.1, 0.1] }),
+  ]);
+
+  /* --- voorschermen --- */
+  const fenders = [L, R].map(s => P(`Voorscherm ${sn(s)}`, merge([lowSide(s, 0.93, 1.77, 50, z => [Math.max(sAtY(z, 0.3), archS(z)), S4 - 0.001], 20, ARCH_BREAKS), archLip(s, AXF)]), MAT.paint, { d: 'Losse, geschroefde spatbordhelft boven het voorwiel.', ex: [s * 0.58, 0.12, 0.32] }));
+
+  /* --- voorbumper --- */
+  const bumpF = merge([
+    lowSide(L, 1.775, ZF, 30, z => [S1, inHL(z) ? hlLow(z) : S4 - 0.001], 18, [1.86, 2.338]),
+    lowSide(R, 1.775, ZF, 30, z => [S1, inHL(z) ? hlLow(z) : S4 - 0.001], 18, [1.86, 2.338]),
+    patch(lowPt, 2.245, ZF, 6, () => [S4, 2 - S4], 20),
+    faceGeo(ZF, 1, 0, 9),
+  ]);
+  const fz = y => faceZ(ZF, 1, 0, y);
+  const frontBumper = A('Voorbumper', { d: 'Kunststof bumperschaal met grille, luchtinlaat, mistlampen en kentekenplaat.', ex: [0, -0.04, 0.82] }, [
+    P('Bumperschaal voor', bumpF, MAT.paint, { d: 'Gespoten kunststof bumperschaal.' }),
+    P('Grille', merge([facePatch(ZF, 1, -0.34, 0.34, 0.545, 0.612, 0.003, 4), facePatch(ZF, 1, -0.32, 0.32, 0.571, 0.577, 0.008, 1), facePatch(ZF, 1, -0.32, 0.32, 0.585, 0.591, 0.008, 1)]), MAT.blackGloss, { d: 'Hoogglans zwarte bovenste grille.', ex: [0, 0.06, 0.12] }),
+    P('Luchtinlaat', merge([facePatch(ZF, 1, -0.4, 0.4, 0.34, 0.482, 0.003, 8), ...[0.37, 0.4, 0.43, 0.46].map(y => facePatch(ZF, 1, -0.38, 0.38, y, y + 0.006, 0.009, 1))]), MAT.plastic, { d: 'Onderste luchtinlaat voor radiateur en intercooler.', ex: [0, -0.06, 0.12] }),
+    P('Sierlijst luchtinlaat', facePatch(ZF, 1, -0.41, 0.41, 0.492, 0.503, 0.006, 2), MAT.chrome, { d: 'Chromen sierlijst boven de luchtinlaat.', ex: [0, 0, 0.24] }),
+    ...[L, R].map(s => P(`Mistlamp ${sn(s)}`, merge([G.cyl('z', 0.045, 0.045, 0.03, 24), xf(G.torus('z', 0.047, 0.006), [0, 0, 0.012])]), MAT.reflector, { d: 'Mistlamp voor in de bumper.', p: [s * 0.53, 0.4, faceZ(ZF, 1, 0.53, 0.4) - 0.004], ex: [s * 0.1, -0.04, 0.16] })),
+    P('Spoilerlip voor', G.rbox(1.08, 0.022, 0.08, 0.008), MAT.plastic, { d: 'Zwarte spoilerlip onder de voorbumper.', p: [0, 0.318, ZF - 0.02], ex: [0, -0.1, 0.1] }),
+    A('Kentekenplaat voor', { d: 'Gele Nederlandse kentekenplaat (zonder kenteken weergegeven).', ex: [0, 0.04, 0.3] }, [
+      P('Plaat', G.box(0.52, 0.11, 0.004), MAT.plateYellow, { d: 'Retroreflecterende gele plaat.', p: [0, 0.41, fz(0.41) + 0.024] }),
+      P('EU-strook', G.box(0.045, 0.11, 0.005), MAT.plateBlue, { d: 'Blauwe strook met landcode NL.', p: [-0.2375, 0.41, fz(0.41) + 0.0245], ex: [-0.06, 0, 0.02] }),
+    ]),
+  ]);
+
+  /* --- achterbumper --- */
+  const bumpR = merge([
+    lowSide(L, ZR, -1.8, 14, z => [S1, sAtY(z, 0.64)], 12),
+    lowSide(R, ZR, -1.8, 14, z => [S1, sAtY(z, 0.64)], 12),
+    faceGeo(ZR, -1, 0, 0.64, 10),
+  ]);
+  const rz = (x, y) => faceZ(ZR, -1, x, y);
+  const rearBumper = A('Achterbumper', { d: 'Bumperschaal met diffuser, reflectoren en parkeersensoren.', ex: [0, -0.04, -0.82] }, [
+    P('Bumperschaal achter', bumpR, MAT.paint, { d: 'Gespoten kunststof bumperschaal.' }),
+    P('Onderrand achterbumper', faceGeo(ZR - 0.004, -1, 0, 0.475, 4), MAT.plastic, { d: 'Zwarte onderrand van de achterbumper.', ex: [0, -0.06, -0.08] }),
+    P('Diffuser', patch(lowPt, ZR + 0.005, -1.8, 10, () => [-S1, S1], 12), MAT.plastic, { d: 'Zwarte onderplaat/diffuser.', ex: [0, -0.1, 0] }),
+    ...[L, R].map(s => P(`Reflector ${sn(s)}`, G.rbox(0.12, 0.025, 0.012, 0.006), MAT.lensRed, { d: 'Rode reflector.', p: [s * 0.6, 0.42, rz(0.6, 0.42) - 0.006], ex: [s * 0.08, 0, -0.1] })),
+    ...[0.55, 0.19, -0.19, -0.55].map((x, i) => P(`Parkeersensor ${i + 1}`, G.cyl('z', 0.011, 0.011, 0.03, 14), MAT.paint, { d: 'Ultrasone sensor van de parkeerhulp.', p: [x, 0.53, rz(x, 0.53) + 0.008], ex: [0, 0.04, -0.12] })),
+  ]);
+
+  /* --- achterklep --- */
+  const tgOuter = merge([patch(lowPt, ZR + 0.002, SP, 8, () => [S4, 2 - S4], 20), faceGeo(ZR, -1, 0.645, 2, 10)]);
+  const tz = y => faceZ(ZR, -1, 0, y);
+  const tailgate = A('Achterklep', { d: 'Grote achterklep inclusief achterruit, typerend voor de hatchback.', ex: [0, 0.5, -0.62] }, [
+    P('Buitenpaneel achterklep', tgOuter, MAT.paint, { d: 'Plaatwerk van de achterklep.' }),
+    P('Achterruit', patch(ghPt, SP + 0.004, RW0, 24, () => [0.36, 0.64], 16), MAT.glass, { d: 'Verwarmde achterruit met verwarmingsdraden.', ex: [0, 0.18, 0.05] }),
+    P('Spoiler', G.rbox(1.38, 0.022, 0.09, 0.01), MAT.paint, { d: 'Kleine dakspoiler-lip boven de achterruitrand.', p: [0, YT(SP) + 0.014, SP - 0.03], ex: [0, 0.12, -0.08] }),
+    P('Derde remlicht', G.rbox(0.32, 0.018, 0.03, 0.006), MAT.lensRed, { d: 'Hooggeplaatst derde remlicht.', p: [0, YR(RW0 - 0.04) + 0.012, RW0 - 0.04], ex: [0, 0.14, 0] }),
+    P('Ruitenwisser achter', merge([xf(G.box(0.02, 0.01, 0.35), [0, 0, 0]), xf(G.box(0.012, 0.012, 0.42), [0.02, 0.01, 0.02])]), MAT.plastic, { d: 'Achterruitenwisser met arm en blad.', p: [0, YT(-2.02) + 0.06, -2.0], r: [-0.33, 0, 0], ex: [0, 0.22, 0] }),
+    P('Wissermotor achter', G.cyl('z', 0.03, 0.03, 0.08), MAT.darkSteel, { d: 'Motor van de achterruitenwisser.', p: [0, 0.98, -2.25], ex: [0, 0.1, 0.12] }),
+    P('Achterklepslot', G.rbox(0.08, 0.05, 0.05, 0.008), MAT.darkSteel, { d: 'Slot met elektrische ontgrendeling.', p: [0, 0.68, ZR + 0.05], ex: [0, -0.1, 0] }),
+    ...[L, R].map(s => P(`Gasveer ${sn(s)}`, rodBetween([s * 0.6, 1.32, RW0 - 0.06], [s * 0.66, 0.95, -1.72], 0.011), MAT.steel, { d: 'Gasveer die de achterklep open houdt.', ex: [s * 0.18, 0, 0] })),
+    P('Binnenbekleding achterklep', patch((y, t) => { const X = ringX(ZR, y) * 0.9; return [X * t, y, tz(y) + 0.04]; }, 0.66, YT(ZR) - 0.01, 6, () => [-1, 1], 12), MAT.dash, { d: 'Kunststof binnenbekleding.', ex: [0, 0, 0.14] }),
+    A('Kentekenplaat achter', { d: 'Gele Nederlandse kentekenplaat (zonder kenteken weergegeven).', ex: [0, 0, -0.26] }, [
+      P('Plaat', G.box(0.52, 0.11, 0.004), MAT.plateYellow, { d: 'Retroreflecterende gele plaat.', p: [0, 0.75, tz(0.75) - 0.012] }),
+      P('EU-strook', G.box(0.045, 0.11, 0.005), MAT.plateBlue, { d: 'Blauwe strook met landcode NL.', p: [0.2375, 0.75, tz(0.75) - 0.0125], ex: [0.06, 0, -0.02] }),
+      P('Kentekenverlichting', G.rbox(0.1, 0.012, 0.02, 0.005), MAT.lensClear, { d: 'Verlichting van de kentekenplaat.', p: [0, 0.818, tz(0.818) - 0.006], ex: [0, 0.05, 0] }),
+    ]),
+  ]);
+
+  /* --- vaste ruiten, wissers, verlichting, sierlijsten, wielkuipen --- */
+  const windscreen = P('Voorruit', patch(ghPt, WS1, WS0 - 0.006, 24, () => [0.36, 0.64], 16), MAT.glass, { d: 'Gelaagde voorruit met regensensor bij de binnenspiegel.', ex: [0, 0.44, 0.5] });
+  const quarters = [L, R].map(s => P(`Zijruit achter ${sn(s)}`, ghSide(s, -1.45, -1.085, 8, 0.02, 0.25, 6), MAT.glass, { d: 'Vaste driehoeksruit in de C-stijl.', ex: [s * 0.46, 0.2, -0.1] }));
+  const wy = YR(1.035) + 0.012;
+  const wipers = A('Ruitenwissers', { d: 'Wisserinstallatie met regensensorbediening.', ex: [0, 0.52, 0.85] }, [
+    P('Ruitenwisserafdekking', patch(lowPt, 1.065, 1.125, 3, () => [S4, 2 - S4], 16), MAT.plastic, { d: 'Kunststof afdekking (torpedo) onder de voorruit.', ex: [0, 0.06, 0.08] }),
+    P('Wisserarm links', G.box(0.58, 0.012, 0.02), MAT.blackGloss, { d: 'Wisserarm bestuurderszijde.', p: [0.12, wy, 1.04], ex: [0, 0.1, 0] }),
+    P('Wisserarm rechts', G.box(0.5, 0.012, 0.02), MAT.blackGloss, { d: 'Wisserarm passagierszijde.', p: [-0.42, wy, 1.04], ex: [0, 0.1, 0] }),
+    P('Wisserblad links', G.box(0.62, 0.018, 0.012), MAT.rubber, { d: 'Wisserblad.', p: [0.1, wy + 0.012, 1.02], ex: [0, 0.18, 0] }),
+    P('Wisserblad rechts', G.box(0.52, 0.018, 0.012), MAT.rubber, { d: 'Wisserblad.', p: [-0.4, wy + 0.012, 1.02], ex: [0, 0.18, 0] }),
+    P('Wissermotor', merge([G.cyl('z', 0.04, 0.04, 0.09), xf(G.rbox(0.08, 0.06, 0.05, 0.01), [0, 0, 0.06])]), MAT.darkSteel, { d: 'Elektromotor van de ruitenwissers.', p: [0.3, 0.93, 1.06], ex: [0, -0.1, 0.06] }),
+    P('Wisserstangenmechaniek', merge([xf(G.box(0.7, 0.012, 0.02), [0, 0, 0]), xf(G.box(0.012, 0.012, 0.08), [0.33, 0, 0.03]), xf(G.box(0.012, 0.012, 0.08), [-0.33, 0, 0.03])]), MAT.steel, { d: 'Stangenstelsel dat beide wisserassen aandrijft.', p: [-0.05, 0.95, 1.08], ex: [0, -0.06, 0.12] }),
+  ]);
+  const trims = A('Sierlijsten', { d: 'Chromen raamlijsten van de Initiale-uitvoering.', ex: [0, 0.3, -0.05] }, [L, R].map(s =>
+    P(`Raamlijst ${sn(s)}`, merge([ghSide(s, -1.455, 0.975, 40, 0, 0.012, 1), ghSide(s, -1.455, 0.975, 40, 0.262, 0.27, 1)]), MAT.chrome, { d: 'Chromen lijst langs de zijruiten.', ex: [s * 0.12, 0, 0] })));
+  const liners = A('Wielkuipschermen', { d: 'Kunststof binnenschermen in de wielkasten.', ex: [0, -0.1, 0] },
+    [[L, AXF, 'linksvoor'], [R, AXF, 'rechtsvoor'], [L, AXR, 'linksachter'], [R, AXR, 'rechtsachter']].map(([s, z, n]) =>
+      P(`Wielkuipscherm ${n}`, G.cyl('x', ARCH - 0.01, ARCH - 0.01, 0.3, 28, true), MAT.plastic, { d: 'Beschermt de wielkast tegen steenslag en vuil.', p: [s * 0.75, AY, z], ex: [s * 0.12, 0.08, 0] })));
+  // halve cilinder: alleen bovenzijde zichtbaar maken via schaal en draaiing van geometrie
+  liners.kids.forEach(k => { const g = new THREE.CylinderGeometry(ARCH - 0.01, ARCH - 0.01, 0.3, 28, 1, true, PI - 0.25, PI + 0.5); g.rotateZ(-HALF); k.obj.geometry = g; });
+
+  return A('Carrosserie', { d: 'Zelfdragende carrosserie van de 5-deurs hatchback in zilvergrijs metallic, met alle aanbouwdelen, ruiten en verlichting.', ex: [0, 2.0, 0], spec: [['Lengte', '4695 mm'], ['Breedte', '1811 mm'], ['Hoogte', '1445 mm'], ['Wielbasis', '2756 mm'], ['Bagageruimte', '450–1377 l']] }, [
+    biw, hood, tailgate, ...fenders, frontBumper, rearBumper,
+    buildDoor(L, true), buildDoor(R, true), buildDoor(L, false), buildDoor(R, false),
+    windscreen, ...quarters, buildHeadlight(L), buildHeadlight(R), buildTaillight(L), buildTaillight(R), wipers, trims, liners,
+  ]);
+}
+
+/* ===================== motor F4Rt: blok, krukas, zuigers, kop, kleppen ===================== */
+// motorframe: oorsprong op de krukas-as, x langs de krukas, y langs de cilinderas, z naar de inlaatzijde
+const XC = [-0.132, -0.044, 0.044, 0.132];           // cilinderhartlijnen
+const XM = [-0.176, -0.088, 0, 0.088, 0.176];        // hoofdlagers
+const DECK = 0.222, BORE_R = 0.04135, THROW = 0.0465, ROD = 0.144, CAMY = 0.358, CAMZ = 0.056;
+const PIN_UP = [1, -1, -1, 1];                       // krukpennen 1/4 boven, 2/3 onder
+const FIRE = ['1', '3', '4', '2'];
+
+function blockGeo() {
+  const s = shapeOf(rrectPts(0.43, 0.21, 0.02));
+  XC.forEach(x => s.holes.push(circlePath(x, 0, BORE_R + 0.0005)));
+  const h = DECK + 0.06, g = plan(s, h); g.translate(0, DECK - h / 2, 0);
+  const ribs = [];
+  [-0.19, -0.088, 0, 0.088, 0.19].forEach(x => { ribs.push(xf(G.box(0.012, 0.18, 0.012), [x, 0.05, 0.108])); ribs.push(xf(G.box(0.012, 0.18, 0.012), [x, 0.05, -0.108])); });
+  ribs.push(xf(G.box(0.06, 0.07, 0.03), [-0.2, 0.13, 0.115]));
+  return merge([g, ...ribs]);
+}
+function crankGeo() {
+  const L = [];
+  XM.forEach(x => L.push(xf(G.cyl('x', 0.029, 0.029, 0.022), [x, 0, 0])));
+  XC.forEach((x, i) => {
+    const py = PIN_UP[i] * THROW;
+    L.push(xf(G.cyl('x', 0.0235, 0.0235, 0.024), [x, py, 0]));
+    [-0.019, 0.019].forEach(dx => {
+      L.push(xf(G.box(0.013, 0.095, 0.064), [x + dx, py / 2, 0]));
+      const cw = new THREE.CylinderGeometry(0.07, 0.07, 0.013, 20, 1, false, 0, PI);
+      cw.rotateZ(-HALF); if (PIN_UP[i] < 0) cw.rotateX(PI);
+      L.push(xf(cw, [x + dx, 0, 0], [0, 0, 0]));
+    });
+  });
+  L.push(xf(G.cyl('x', 0.018, 0.018, 0.075), [-0.25, 0, 0]));
+  L.push(xf(G.cyl('x', 0.042, 0.042, 0.012), [0.212, 0, 0]));
+  return merge(L);
+}
+function camGeo(phase) {
+  const L = [xf(G.cyl('x', 0.0115, 0.0115, 0.47), [0, 0, 0])];
+  XM.forEach(x => L.push(xf(G.cyl('x', 0.0135, 0.0135, 0.016), [x, 0, 0])));
+  XC.forEach((x, i) => {
+    const ang = phase + [0, 3, 1, 2][i] * HALF;          // volgorde 1-3-4-2
+    const pts = [];
+    for (let k = 0; k < 40; k++) { const t = k / 40 * PI * 2, r = 0.0165 + 0.0085 * Math.pow(Math.max(0, Math.cos(t)), 3); pts.push([r * Math.cos(t + ang), r * Math.sin(t + ang)]); }
+    const lobe = zTo(extrude(shapeOf(pts), 0.013), 'x');
+    [-0.017, 0.017].forEach(dx => L.push(xf(lobe, [x + dx, 0, 0])));
+  });
+  return merge(L);
+}
+function rodShapes() {
+  const rodPts = [], capPts = [], bo = 0.04, bi = 0.0245, sr = 0.0165, sy = ROD;
+  const a1 = Math.acos(0.016 / bo), sa = Math.asin(Math.min(1, 0.011 / sr));
+  rodPts.push([bo, 0]);
+  for (let k = 1; k <= 6; k++) { const a = k / 6 * a1; rodPts.push([bo * Math.cos(a), bo * Math.sin(a)]); }
+  const yTop = sy - Math.sqrt(sr * sr - 0.011 * 0.011);
+  rodPts.push([0.011, yTop]);
+  for (let k = 1; k <= 12; k++) { const a = -HALF + sa + k / 12 * (PI + 2 * (HALF - sa)); rodPts.push([sr * Math.cos(a), sy + sr * Math.sin(a)]); }
+  rodPts.push([-0.016, bo * Math.sin(a1)]);
+  for (let k = 1; k <= 6; k++) { const a = PI - a1 + k / 6 * a1; rodPts.push([bo * Math.cos(a), bo * Math.sin(a)]); }
+  rodPts.push([-bi, 0]);
+  for (let k = 1; k < 12; k++) { const a = PI - k / 12 * PI; rodPts.push([bi * Math.cos(a), bi * Math.sin(a)]); }
+  rodPts.push([bi, 0]);
+  const rod = shapeOf(rodPts); rod.holes.push(circlePath(0, sy, 0.0106));
+  capPts.push([bo, 0]);
+  for (let k = 1; k <= 12; k++) { const a = -k / 12 * PI; capPts.push([bo * Math.cos(a), bo * Math.sin(a)]); }
+  capPts.push([-bi, 0]);
+  for (let k = 1; k < 12; k++) { const a = PI + k / 12 * PI; capPts.push([bi * Math.cos(a), bi * Math.sin(a)]); }
+  capPts.push([bi, 0]);
+  return [side(rod, 0.02), side(shapeOf(capPts), 0.02)];
+}
+let ROD_GEOS = null;
+function pistonGroup(i) {
+  const py = PIN_UP[i] * THROW, pp = py + ROD;
+  ROD_GEOS = ROD_GEOS || rodShapes();
+  const piston = G.lathe('y', [[0, 0.03], [0.0405, 0.03], [0.0412, 0.028], [0.0412, -0.026], [0.0385, -0.026], [0.0385, 0.019], [0, 0.019]], 36, 'piston');
+  const ring = r => G.torus('y', 0.0411, r, 48, 6);
+  return A(`Zuiger en drijfstang ${i + 1}`, { d: `Zuigergroep van cilinder ${i + 1}; ontsteekvolgorde 1-3-4-2.`, p: [XC[i], 0, 0], ex: [XC[i] * 0.9, 0.04, 0] }, [
+    P('Zuiger', piston, MAT.alu, { d: 'Aluminium zuiger; boring 82,7 mm.', p: [0, pp, 0], ex: [0, 0.07, 0] }),
+    P('Compressieveer 1', ring(0.0011), MAT.darkSteel, { d: 'Bovenste compressieveer: dicht de verbrandingsruimte af.', p: [0, pp + 0.0245, 0], ex: [0, 0.14, 0] }),
+    P('Compressieveer 2', ring(0.0011), MAT.darkSteel, { d: 'Tweede compressieveer, schraapt ook olie mee terug.', p: [0, pp + 0.0195, 0], ex: [0, 0.122, 0] }),
+    P('Olieschraapveer', ring(0.0016), MAT.steel, { d: 'Schraapt overtollige olie van de cilinderwand.', p: [0, pp + 0.013, 0], ex: [0, 0.104, 0] }),
+    P('Zuigerpen', G.cyl('x', 0.0105, 0.0105, 0.06, 16), MAT.steel, { d: 'Verbindt zuiger en drijfstang.', p: [0, pp, 0], ex: [0.085, 0.04, 0] }),
+    P('Borgveer links', G.torus('x', 0.0098, 0.0008, 20, 4), MAT.steel, { d: 'Borgt de zuigerpen in de zuiger.', p: [0.0305, pp, 0], ex: [0.135, 0.04, 0] }),
+    P('Borgveer rechts', G.torus('x', 0.0098, 0.0008, 20, 4), MAT.steel, { d: 'Borgt de zuigerpen in de zuiger.', p: [-0.0305, pp, 0], ex: [-0.075, 0.04, 0] }),
+    P('Drijfstang', ROD_GEOS[0], MAT.steel, { d: 'Gesmede drijfstang; zet de op-en-neergaande beweging om in rotatie.', p: [0, py, 0] }),
+    P('Drijfstanglagerschaal boven', G.half('x', 0.0244, 0.019, PI), MAT.bearing, { d: 'Glijlagerschaal in de drijfstang.', p: [0, py, 0], ex: [0, -0.02, 0.06] }),
+    P('Drijfstanglagerschaal onder', G.half('x', 0.0244, 0.019, 0), MAT.bearing, { d: 'Glijlagerschaal in de drijfstangkap.', p: [0, py, 0], ex: [0, -0.055, 0] }),
+    P('Drijfstangkap', ROD_GEOS[1], MAT.steel, { d: 'Afneembare kap van het grote drijfstangoog.', p: [0, py, 0], ex: [0, -0.09, 0] }),
+    P('Drijfstangbout voor', hexBolt(0.05, 0.008), MAT.darkSteel, { d: 'Rekbout van de drijfstangkap.', p: [0, py - 0.04, 0.032], ex: [0, -0.15, 0] }),
+    P('Drijfstangbout achter', hexBolt(0.05, 0.008), MAT.darkSteel, { d: 'Rekbout van de drijfstangkap.', p: [0, py - 0.04, -0.032], ex: [0, -0.15, 0] }),
+  ]);
+}
+function valveGroup(cyl, k, side) {
+  const intake = side > 0, x = XC[cyl] + (k ? 0.017 : -0.017);
+  const rh = intake ? 0.0165 : 0.0142;
+  const valve = G.lathe('y', [[0, 0], [rh, 0], [rh, 0.0018], [rh * 0.55, 0.0075], [0.0029, 0.018], [0.0029, 0.104], [0, 0.104]], 18, 'valve' + intake);
+  const keeper = st => cache('keep' + st, () => new THREE.CylinderGeometry(0.0042, 0.0034, 0.008, 8, 1, false, st, PI));
+  const name = `${intake ? 'Inlaatklep' : 'Uitlaatklep'} ${cyl + 1}${k ? 'b' : 'a'}`;
+  return A(name, { d: `Klepgroep van cilinder ${cyl + 1} (${intake ? 'inlaat' : 'uitlaat'}): klep, veer, schotel, spieën, afdichting en stoter.`, p: [x, DECK + 0.004, side * 0.02], r: [side * 0.2618, 0, 0] }, [
+    P(intake ? 'Inlaatklep' : 'Uitlaatklep', valve, intake ? MAT.steel : MAT.darkSteel, { d: intake ? 'Inlaatklep: laat het lucht-brandstofmengsel binnen.' : 'Uitlaatklep: laat de verbrandingsgassen naar de turbo.', ex: [0, -0.07, 0] }),
+    P('Klepveerzitting', annulus(0.004, 0.0115, 0.0012, 'y', 20), MAT.steel, { d: 'Onderste veerschotel op de cilinderkop.', p: [0, 0.058, 0], ex: [0, -0.012, 0.03] }),
+    P('Klepsteelafdichting', G.cyl('y', 0.0058, 0.0058, 0.009, 14), MAT.rubber, { d: 'Rubber afdichting die olieverbruik langs de klepsteel voorkomt.', p: [0, 0.064, 0], ex: [0, 0.015, -0.035] }),
+    P('Klepveer', spring(0.0105, 0.0016, 0.036, 6.5), MAT.steel, { d: 'Sluit de klep na elke opening.', p: [0, 0.076, 0], ex: [0, 0.03, 0] }),
+    P('Veerschotel', G.lathe('y', [[0.004, 0], [0.0125, 0.002], [0.0125, 0.0035], [0.006, 0.006], [0.004, 0.006]], 18, 'retainer'), MAT.steel, { d: 'Bovenste veerschotel, houdt de klepveer vast.', p: [0, 0.094, 0], ex: [0, 0.065, 0] }),
+    P('Klepspie 1', keeper(0), MAT.darkSteel, { d: 'Halve kegelspie die de veerschotel op de klepsteel klemt.', p: [0, 0.098, 0], ex: [0.014, 0.082, 0] }),
+    P('Klepspie 2', keeper(PI), MAT.darkSteel, { d: 'Halve kegelspie die de veerschotel op de klepsteel klemt.', p: [0, 0.098, 0], ex: [-0.014, 0.082, 0] }),
+    P('Klepstoter', G.lathe('y', [[0, 0.013], [0.0145, 0.013], [0.0145, -0.012], [0.0135, -0.012], [0.0135, 0.011], [0, 0.011]], 24, 'tappet'), MAT.steel, { d: 'Kopstoter tussen nok en klep.', p: [0, 0.104, 0], ex: [0, 0.11, 0] }),
+  ]);
+}
+function buildBlock() {
+  const kids = [
+    P('Cilinderblok', blockGeo(), MAT.iron, { d: 'Gietijzeren cilinderblok met direct in het blok gehoonde boringen (F staat voor fonte, gietijzer).', spec: [['Materiaal', 'gietijzer'], ['Boring × slag', '82,7 × 93,0 mm'], ['Cilinderinhoud', '1998 cm³']] }),
+    P('Krukas', crankGeo(), MAT.steel, { d: 'Krukas met vijf hoofdlagers; zet de zuigerbeweging om in draaiing.', ex: [0, -0.22, 0] }),
+    P('Keerring krukas distributiezijde', G.torus('x', 0.022, 0.004, 24, 6), MAT.rubber, { d: 'Oliekeerring rond de krukasneus.', p: [-0.218, 0, 0], ex: [-0.16, -0.12, 0] }),
+    P('Keerring krukas vliegwielzijde', G.torus('x', 0.045, 0.005, 32, 6), MAT.rubber, { d: 'Oliekeerring aan de transmissiezijde.', p: [0.218, 0, 0], ex: [0.16, -0.12, 0] }),
+    P('Aanloopring links', G.lathe('x', [[0.031, -0.0012], [0.046, -0.0012], [0.046, 0.0012], [0.031, 0.0012], [0.031, -0.0012]], 20, 'thrust'), MAT.bearing, { d: 'Bepaalt de axiale speling van de krukas.', p: [0.012, 0, 0], ex: [0.05, -0.16, 0.08] }),
+    P('Aanloopring rechts', G.lathe('x', [[0.031, -0.0012], [0.046, -0.0012], [0.046, 0.0012], [0.031, 0.0012], [0.031, -0.0012]], 20, 'thrust'), MAT.bearing, { d: 'Bepaalt de axiale speling van de krukas.', p: [-0.012, 0, 0], ex: [-0.05, -0.16, 0.08] }),
+  ];
+  XM.forEach((x, i) => {
+    kids.push(P(`Hoofdlagerkap ${i + 1}`, G.box(0.024, 0.035, 0.11), MAT.iron, { d: 'Lagerkap die de krukas in het blok vasthoudt.', p: [x, -0.0775, 0], ex: [0, -0.34, 0] }));
+    kids.push(P(`Hoofdlagerschaal boven ${i + 1}`, G.half('x', 0.0295, 0.02, PI), MAT.bearing, { d: 'Glijlagerschaal in het blok.', p: [x, 0, 0], ex: [0, -0.15, 0.1] }));
+    kids.push(P(`Hoofdlagerschaal onder ${i + 1}`, G.half('x', 0.0295, 0.02, 0), MAT.bearing, { d: 'Glijlagerschaal in de lagerkap.', p: [x, 0, 0], ex: [0, -0.27, 0] }));
+    [-0.04, 0.04].forEach((z, j) => kids.push(P(`Hoofdlagerbout ${i + 1}${j ? 'b' : 'a'}`, hexBolt(0.09, 0.011), MAT.darkSteel, { d: 'Bout van de hoofdlagerkap.', p: [x, -0.097, z], ex: [0, -0.43, 0] })));
+  });
+  return A('Motorblok', { d: 'Cilinderblok met krukas, hoofdlagers en keerringen.', ex: [0, 0, 0] }, kids);
+}
+function buildHead() {
+  const hs = shapeOf(rrectPts(0.43, 0.2, 0.02));
+  XC.forEach(x => hs.holes.push(circlePath(x, 0, 0.013)));
+  const hh = 0.133, head = plan(hs, hh); head.translate(0, DECK + 0.0015 + hh / 2, 0);
+  const ports = [];
+  XC.forEach(x => { ports.push(xf(G.box(0.07, 0.04, 0.012), [x, 0.29, 0.104])); ports.push(xf(G.box(0.06, 0.035, 0.012), [x, 0.285, -0.104])); });
+  const gs = shapeOf(rrectPts(0.428, 0.204, 0.02));
+  XC.forEach(x => gs.holes.push(circlePath(x, 0, 0.0425)));
+  XM.forEach(x => { gs.holes.push(circlePath(x, 0.072, 0.0065)); gs.holes.push(circlePath(x, -0.072, 0.0065)); });
+  const gasket = plan(gs, 0.0015); gasket.translate(0, DECK + 0.00075, 0);
+  const cs = shapeOf(rrectPts(0.436, 0.196, 0.03));
+  XC.forEach(x => cs.holes.push(circlePath(x, 0, 0.017)));
+  const cover = plan(cs, 0.065); cover.translate(0, 0.3565 + 0.0325, 0);
+  const coverRibs = [-0.16, -0.08, 0, 0.08, 0.16].map(x => xf(G.box(0.01, 0.01, 0.17), [x + 0.044, 0.426, 0]));
+  const gk = shapeOf(rrectPts(0.436, 0.196, 0.03)); gk.holes.push(new THREE.Path(rrectPts(0.416, 0.176, 0.02).map(p => new THREE.Vector2(p[0], p[1]))));
+  const coverGasket = plan(gk, 0.002); coverGasket.translate(0, 0.357, 0);
+  const valvesIn = [], valvesOut = [];
+  for (let c = 0; c < 4; c++) for (let k = 0; k < 2; k++) { valvesIn.push(valveGroup(c, k, 1)); valvesOut.push(valveGroup(c, k, -1)); }
+  const kids = [
+    P('Cilinderkop', merge([head, ...ports]), MAT.aluCast, { d: 'Aluminium cilinderkop met vier kleppen per cilinder en twee bovenliggende nokkenassen.', spec: [['Materiaal', 'aluminium'], ['Kleppen', '16 (4 per cilinder)'], ['Nokkenassen', '2, bovenliggend']] }),
+    P('Koppakking', gasket, MAT.darkSteel, { d: 'Meerlaagse stalen koppakking tussen blok en kop.', ex: [0, -0.24, 0] }),
+    P('Nokkenas inlaat', camGeo(0), MAT.steel, { d: 'Bedient de acht inlaatkleppen; heeft een faseversteller op het distributiewiel.', p: [0, CAMY, CAMZ], ex: [0, 0.18, 0.12] }),
+    P('Nokkenas uitlaat', camGeo(1.9), MAT.steel, { d: 'Bedient de acht uitlaatkleppen.', p: [0, CAMY, -CAMZ], ex: [0, 0.18, -0.12] }),
+    A('Kleppen inlaatzijde', { d: 'Acht inlaatklepgroepen.', ex: [0, -0.2, 0.17], exs: 0.8 }, valvesIn),
+    A('Kleppen uitlaatzijde', { d: 'Acht uitlaatklepgroepen.', ex: [0, -0.2, -0.17], exs: 0.8 }, valvesOut),
+    P('Kleppendekselpakking', coverGasket, MAT.rubber, { d: 'Rubber pakking onder het kleppendeksel.', ex: [0, 0.34, 0] }),
+    P('Kleppendeksel', merge([cover, ...coverRibs]), MAT.aluCast, { d: 'Afdekking boven de nokkenassen, met doorvoeren voor de bobines.', ex: [0, 0.42, 0] }),
+    P('Olievuldop', G.cyl('y', 0.02, 0.02, 0.02, 20), MAT.plastic, { d: 'Dop van de olievulopening.', p: [-0.088, 0.432, -0.05], ex: [0, 0.56, 0] }),
+  ];
+  for (let c = 0; c < 2; c++) XM.forEach((x, i) => kids.push(P(`Nokkenaslagerkap ${c ? 'uitlaat' : 'inlaat'} ${i + 1}`, merge([G.box(0.018, 0.016, 0.042), xf(G.cyl('y', 0.005, 0.005, 0.006, 6), [0, 0.011, 0.014]), xf(G.cyl('y', 0.005, 0.005, 0.006, 6), [0, 0.011, -0.014])]), MAT.aluCast, { d: 'Lagerkap van de nokkenas, met twee bouten.', p: [x, CAMY + 0.0215, c ? -CAMZ : CAMZ], ex: [0, 0.26, 0] })));
+  XM.forEach((x, i) => [0.072, -0.072].forEach((z, j) => kids.push(P(`Cilinderkopbout ${i * 2 + j + 1}`, hexBolt(0.16, 0.0105, 'y'), MAT.darkSteel, { d: 'Rekbout die kop en koppakking op het blok klemt.', p: [x, DECK + 0.135, z], r: [PI, 0, 0], ex: [0, 0.3, 0] }))));
+  [-0.2, -0.1, 0, 0.1, 0.2].forEach((x, i) => [0.085, -0.085].forEach((z, j) => kids.push(P(`Kleppendekselbout ${i * 2 + j + 1}`, hexBolt(0.03, 0.006), MAT.steel, { d: 'Bout van het kleppendeksel.', p: [x, 0.4215, z], r: [PI, 0, 0], ex: [0, 0.5, 0] }))));
+  XC.forEach((x, i) => {
+    kids.push(A(`Bougie ${i + 1}`, { d: `Bougie van cilinder ${i + 1}.`, p: [x, DECK + 0.004, 0], ex: [0, 0.26, 0] }, [
+      P('Isolator', G.lathe('y', [[0.003, 0.092], [0.0055, 0.085], [0.0055, 0.04], [0, 0.04]], 16, 'plugIns'), MAT.ceramic, { d: 'Keramische isolator.', ex: [0, 0.04, 0] }),
+      P('Huis en elektrode', G.lathe('y', [[0.0015, 0], [0.007, 0.004], [0.007, 0.023], [0.0095, 0.026], [0.0095, 0.036], [0.006, 0.04], [0, 0.04]], 6, 'plugBody'), MAT.steel, { d: 'Draadhuis met zeskant en massa-elektrode.' }),
+    ]));
+    kids.push(P(`Bobine ${i + 1}`, merge([xf(G.cyl('y', 0.011, 0.011, 0.13, 16), [0, 0.365, 0]), xf(G.rbox(0.045, 0.03, 0.05, 0.006), [0, 0.445, 0.008])]), MAT.plastic, { d: 'Losse bobine per cilinder (pencil coil) direct op de bougie.', p: [x, 0, 0], ex: [0, 0.62, 0] }));
+  });
+  return A('Cilinderkop', { d: 'Cilinderkop met nokkenassen, 16 kleppen, bougies en bobines.', ex: [0, 0.66, 0] }, kids);
+}
+
+/* ===================== motor F4Rt: distributie, hulpaandrijving, inlaat, turbo, smering ===================== */
+const TIM = [[0, 0, 0.032], [CAMZ, CAMY, 0.056], [-CAMZ, CAMY, 0.056], [0.075, 0.13, 0.03], [-0.075, 0.16, 0.028]];
+const ACC = [[0, 0, 0.068], [0.19, 0.25, 0.028], [0.17, -0.05, 0.055], [0.06, 0.22, 0.03]];
+const XT = -0.245, XA = -0.345;
+function pulley(r, w, key) {
+  return G.lathe('x', [[0.008, -w / 2], [r, -w / 2], [r, -w / 2 + 0.003], [r - 0.004, -w / 2 + 0.006], [r - 0.004, w / 2 - 0.006], [r, w / 2 - 0.003], [r, w / 2], [0.008, w / 2]], 36, key);
+}
+function buildTiming() {
+  const belt = beltGeo(TIM, 0.022, 0.004); belt.translate(XT, 0, 0);
+  const cover = hullSolid(TIM, 0.014, 0.05); cover.translate(-0.285, 0, 0);
+  return A('Distributie', { d: 'Getande distributieriem die beide nokkenassen synchroon met de krukas aandrijft.', ex: [-0.5, 0.26, 0] }, [
+    P('Distributiekap', cover, MAT.plastic, { d: 'Kunststof afdekkap over riem en wielen.', ex: [-0.18, 0, 0] }),
+    P('Distributieriem', belt, MAT.belt, { d: 'Getande rubberen riem; vervangen volgens het onderhoudsschema voorkomt zware motorschade.', ex: [-0.09, 0, 0] }),
+    P('Krukastandwiel', gear(24, 0.032, 0.0295, 0.024, 0.018), MAT.steel, { d: 'Tandwiel op de krukasneus.', p: [XT, 0, 0], ex: [-0.03, -0.06, 0] }),
+    P('Nokkenaswiel inlaat', merge([gear(48, 0.056, 0.0525, 0.024, 0.012), xf(G.cyl('x', 0.032, 0.032, 0.03), [-0.026, 0, 0])]), MAT.steel, { d: 'Distributiewiel met hydraulische faseversteller die de inlaatnokkenas verdraait.', p: [XT, CAMY, CAMZ], ex: [-0.03, 0.05, 0.04] }),
+    P('Nokkenaswiel uitlaat', gear(48, 0.056, 0.0525, 0.024, 0.012), MAT.steel, { d: 'Distributiewiel van de uitlaatnokkenas.', p: [XT, CAMY, -CAMZ], ex: [-0.03, 0.05, -0.04] }),
+    P('Spanrol', merge([pulley(0.03, 0.026, 'tens'), xf(G.box(0.012, 0.06, 0.02), [0.016, -0.03, 0])]), MAT.alu, { d: 'Spanrol die de distributieriem op spanning houdt.', p: [XT, 0.13, 0.075], ex: [-0.05, 0, 0.06] }),
+    P('Geleiderol', pulley(0.028, 0.026, 'idl'), MAT.alu, { d: 'Geleiderol in het riemverloop.', p: [XT, 0.16, -0.075], ex: [-0.05, 0, -0.06] }),
+  ]);
+}
+function buildAccessory() {
+  const belt = beltGeo(ACC, 0.022, 0.005); belt.translate(XA, 0, 0);
+  const altBody = merge([G.cyl('x', 0.062, 0.062, 0.13, 28), ...[0, 1, 2, 3, 4, 5].map(k => xf(G.box(0.12, 0.006, 0.02), [0, 0.06 * Math.cos(k), 0.06 * Math.sin(k)], [k, 0, 0]))]);
+  return A('Hulpaandrijving', { d: 'Poly-V-riem die dynamo en aircocompressor aandrijft.', ex: [-0.66, -0.18, 0.12] }, [
+    P('Multiriem', belt, MAT.belt, { d: 'Poly-V-riem (multiriem).', ex: [-0.1, 0, 0] }),
+    P('Krukaspoelie', merge([pulley(0.068, 0.024, 'crankp'), xf(G.cyl('x', 0.02, 0.02, 0.05), [0.03, 0, 0])]), MAT.darkSteel, { d: 'Poelie met trillingsdemper op de krukas.', p: [XA, 0, 0], ex: [-0.06, -0.04, 0] }),
+    P('Dynamo', altBody, MAT.alu, { d: 'Wisselstroomdynamo die de accu laadt.', p: [-0.27, ACC[1][1], ACC[1][0]], ex: [0.02, 0.14, 0.08] }),
+    P('Dynamopoelie', pulley(0.028, 0.024, 'altp'), MAT.steel, { d: 'Vrijloop-poelie van de dynamo.', p: [XA, ACC[1][1], ACC[1][0]], ex: [-0.08, 0.14, 0.08] }),
+    P('Aircocompressor', merge([G.cyl('x', 0.058, 0.058, 0.13, 28), xf(G.rbox(0.05, 0.04, 0.04, 0.008), [0.02, 0.06, 0])]), MAT.alu, { d: 'Compressor van de airconditioning.', p: [-0.27, ACC[2][1], ACC[2][0]], ex: [0.02, -0.12, 0.1] }),
+    P('Magneetkoppeling airco', pulley(0.055, 0.024, 'acp'), MAT.steel, { d: 'Elektromagnetische koppeling die de compressor in- en uitschakelt.', p: [XA, ACC[2][1], ACC[2][0]], ex: [-0.08, -0.12, 0.1] }),
+    P('Automatische riemspanner', merge([pulley(0.03, 0.024, 'acct'), xf(G.box(0.02, 0.07, 0.025), [0.02, -0.035, 0])]), MAT.alu, { d: 'Veerbelaste spanner van de multiriem.', p: [XA, ACC[3][1], ACC[3][0]], ex: [-0.08, 0.08, 0] }),
+  ]);
+}
+function buildIntake() {
+  const parts = [xf(G.cyl('x', 0.046, 0.046, 0.42, 28), [0.01, 0.14, 0.21]), xf(G.box(0.42, 0.05, 0.012), [0, 0.29, 0.111])];
+  XC.forEach(x => parts.push(tube([[x, 0.29, 0.106], [x, 0.305, 0.16], [x, 0.25, 0.21], [x, 0.17, 0.216]], 0.019, 24, 10)));
+  return A('Inlaat en injectie', { d: 'Inlaatspruitstuk, gasklephuis en multipoint-injectie (één verstuiver per cilinder in het spruitstuk).', ex: [0.52, 0.56, 0.3] }, [
+    P('Inlaatspruitstuk', merge(parts), MAT.plastic, { d: 'Kunststof spruitstuk dat de gekoelde laadlucht over de cilinders verdeelt.' }),
+    P('Gasklephuis', merge([G.cyl('x', 0.033, 0.033, 0.05, 24), xf(G.rbox(0.05, 0.05, 0.04, 0.008), [0, -0.045, 0.02])]), MAT.alu, { d: 'Elektronisch gestuurde gasklep.', p: [-0.235, 0.14, 0.21], ex: [-0.12, 0, 0.04] }),
+    P('Brandstofrail', G.cyl('x', 0.009, 0.009, 0.4, 14), MAT.steel, { d: 'Verdeelt de brandstof onder druk over de verstuivers.', p: [0, 0.345, 0.155], ex: [0, 0.14, 0.04] }),
+    ...XC.map((x, i) => P(`Verstuiver ${i + 1}`, G.cyl('y', 0.0065, 0.005, 0.055, 12), MAT.plasticGrey, { d: 'Elektromagnetische injector die brandstof in het inlaatkanaal spuit.', p: [x, 0.32, 0.14], r: [0.5, 0, 0], ex: [0, 0.08, 0.02] })),
+    P('Inlaatdruksensor', G.rbox(0.03, 0.02, 0.03, 0.005), MAT.plastic, { d: 'Meet de laaddruk in het spruitstuk (MAP-sensor).', p: [0.12, 0.193, 0.21], ex: [0, 0.08, 0] }),
+  ]);
+}
+const TURBO_POS = [0.1, 0.15, -0.26];
+function buildTurbo() {
+  const coll = [xf(G.cyl('x', 0.03, 0.03, 0.12, 20), [0.03, 0.18, -0.22]), xf(G.box(0.42, 0.045, 0.012), [0, 0.285, -0.111])];
+  XC.forEach(x => coll.push(tube([[x, 0.285, -0.106], [x, 0.27, -0.15], [x * 0.5 + 0.02, 0.21, -0.2], [0.03, 0.18, -0.22]], 0.018, 24, 10)));
+  const tHouse = merge([G.torus('x', 0.048, 0.026, 36, 10), G.cyl('x', 0.03, 0.03, 0.05, 24), xf(G.cyl('x', 0.03, 0.03, 0.05, 20), [-0.05, 0, 0])]);
+  const cHouse = merge([G.torus('x', 0.05, 0.024, 36, 10), G.cyl('x', 0.028, 0.028, 0.045, 24), xf(G.cyl('x', 0.032, 0.032, 0.045, 24), [0.045, 0, 0]), xf(G.cyl('y', 0.022, 0.022, 0.05, 16), [0, 0.07, 0])]);
+  const wheel = (n, rIn, rOut, h, tw) => merge([blades(n, rIn, rOut, h, 0.002, tw, 'x'), G.lathe('x', [[0, -h / 2], [rIn + 0.004, -h / 2], [0.006, h / 2], [0, h / 2]], 20)]);
+  return A('Turbo en uitlaatspruitstuk', { d: 'Gietijzeren uitlaatspruitstuk met turbocompressor; de turbo perst lucht via de intercooler naar het inlaatspruitstuk.', ex: [0.66, 0.12, -0.32] }, [
+    P('Uitlaatspruitstuk', merge(coll), MAT.iron, { d: 'Verzamelt de uitlaatgassen van vier cilinders en leidt ze naar de turbine.' }),
+    P('Hitteschild spruitstuk', G.rbox(0.42, 0.006, 0.14, 0.003), MAT.heat, { d: 'Beschermt omliggende delen tegen de hitte van het spruitstuk.', p: [0, 0.32, -0.19], r: [0.55, 0, 0], ex: [0, 0.16, 0] }),
+    A('Turbocompressor', { d: 'Turbo: de uitlaatgassen drijven de turbine aan, die via één as het compressorwiel laat draaien.', p: TURBO_POS, ex: [0.06, 0, -0.14] }, [
+      P('Turbinehuis', tHouse, MAT.iron, { d: 'Slakkenhuis aan de uitlaatzijde; hier komen de hete gassen binnen.', p: [-0.04, 0, 0], ex: [-0.12, 0, 0] }),
+      P('Turbinewiel', wheel(11, 0.008, 0.034, 0.03, 0.3), MAT.darkSteel, { d: 'Turbinewiel van hittebestendige legering.', p: [-0.045, 0, 0], ex: [-0.06, 0, 0] }),
+      P('Turbo-as', G.cyl('x', 0.0045, 0.0045, 0.12, 10), MAT.steel, { d: 'As tussen turbine- en compressorwiel.', ex: [0, 0.06, 0] }),
+      P('Lagerhuis', merge([G.cyl('x', 0.026, 0.026, 0.05, 20), xf(G.cyl('y', 0.007, 0.007, 0.03, 8), [0, 0.03, 0])]), MAT.alu, { d: 'Lagerhuis met oliegesmeerde lagers en waterkoeling.' }),
+      P('Compressorwiel', wheel(12, 0.007, 0.03, 0.028, -0.35), MAT.alu, { d: 'Aluminium compressorwiel dat verse lucht aanzuigt en samenperst.', p: [0.05, 0, 0], ex: [0.07, 0, 0] }),
+      P('Compressorhuis', cHouse, MAT.aluCast, { d: 'Slakkenhuis aan de inlaatzijde.', p: [0.055, 0, 0], ex: [0.13, 0, 0] }),
+      P('Wastegate-actuator', merge([G.cyl('z', 0.027, 0.027, 0.035, 20), xf(G.box(0.07, 0.005, 0.005), [-0.04, 0, -0.02])]), MAT.steel, { d: 'Drukdoos die de wastegate opent en zo de laaddruk begrenst.', p: [0.03, -0.01, 0.075], ex: [0.02, 0, 0.1] }),
+      P('Olietoevoerleiding', tube([[0.005, 0.03, 0], [-0.02, 0.1, 0.04], [-0.05, 0.18, 0.1]], 0.003, 20, 6), MAT.steel, { d: 'Voert motorolie naar de turbolagers.', ex: [0, 0.08, 0] }),
+      P('Olieretourleiding', tube([[0.005, -0.03, 0], [-0.01, -0.1, 0.05], [-0.04, -0.17, 0.12]], 0.006, 20, 8), MAT.steel, { d: 'Voert de olie terug naar het carter.', ex: [0, -0.08, 0] }),
+    ]),
+  ]);
+}
+function buildLube() {
+  const pan = merge([(() => { const g = plan(shapeOf(rrectPts(0.42, 0.2, 0.02)), 0.1); g.translate(0, -0.11, 0); return g; })(), xf(G.rbox(0.2, 0.05, 0.16, 0.012), [0.05, -0.18, 0])]);
+  return A('Smering', { d: 'Smeersysteem: carter, oliepomp, filter en peilstok.', ex: [0, -0.46, 0.05] }, [
+    P('Oliecarter', pan, MAT.aluCast, { d: 'Carterpan: het oliereservoir onder het blok.', ex: [0, -0.12, 0] }),
+    P('Aftapplug', hexBolt(0.015, 0.009), MAT.steel, { d: 'Aftapplug voor het verversen van de olie.', p: [0.05, -0.205, 0.03], ex: [0, -0.22, 0] }),
+    P('Oliepomp', G.rbox(0.06, 0.05, 0.08, 0.008), MAT.aluCast, { d: 'Pomp die olie onder druk naar lagers en nokkenassen stuurt.', p: [-0.17, -0.09, 0], ex: [-0.08, 0.05, 0] }),
+    P('Olieaanzuigzeef', merge([tube([[-0.17, -0.11, 0], [-0.08, -0.16, 0], [0.02, -0.18, 0]], 0.008, 16, 8), xf(G.cyl('y', 0.035, 0.035, 0.01, 24), [0.04, -0.19, 0])]), MAT.steel, { d: 'Aanzuigbuis met zeef in het oliecarter.', ex: [0, 0.03, 0.09] }),
+    P('Oliefilterhouder', G.cyl('z', 0.028, 0.028, 0.015, 20), MAT.aluCast, { d: 'Adapter waarop het filter wordt geschroefd.', p: [0.08, 0.02, 0.112], ex: [0, 0, 0.1] }),
+    P('Oliefilter', merge([G.cyl('z', 0.038, 0.038, 0.085, 28), xf(G.cyl('z', 0.036, 0.036, 0.004, 28), [0, 0, 0.044])]), MAT.oilFilter, { d: 'Wegwerp-oliefilter.', p: [0.08, 0.02, 0.15], ex: [0, 0, 0.2] }),
+    P('Peilstokbuis', tube([[0.18, -0.03, 0.112], [0.19, 0.2, 0.125], [0.2, 0.44, 0.13]], 0.007, 20, 8), MAT.plastic, { d: 'Geleidebuis van de oliepeilstok.', ex: [0, 0.04, 0.08] }),
+    P('Oliepeilstok', merge([tube([[0.18, -0.02, 0.112], [0.19, 0.2, 0.125], [0.2, 0.45, 0.13]], 0.0025, 20, 6), xf(G.torus('z', 0.014, 0.004, 20, 6), [0.2, 0.47, 0.13])]), MAT.handle, { d: 'Peilstok met gele greep om het oliepeil te controleren.', ex: [0, 0.2, 0.1] }),
+  ]);
+}
+function buildEngineCooling() {
+  return A('Koelcircuit motor', { d: 'Waterpomp en thermostaat aan de motor.', ex: [-0.48, -0.5, 0.18] }, [
+    P('Waterpomp', merge([G.cyl('z', 0.04, 0.04, 0.04, 24), xf(G.cyl('z', 0.05, 0.05, 0.006, 24), [0, 0, -0.018])]), MAT.aluCast, { d: 'Pompt koelvloeistof door motor en radiateur.', p: [-0.19, 0.06, 0.125], ex: [-0.04, 0, 0.1] }),
+    P('Waterpompwaaier', blades(6, 0.008, 0.032, 0.012, 0.003, 0.4, 'z'), MAT.steel, { d: 'Schoepenwiel in de waterpomp.', p: [-0.19, 0.06, 0.1], ex: [-0.04, 0, 0.02] }),
+    P('Thermostaathuis', G.rbox(0.05, 0.05, 0.06, 0.01), MAT.aluCast, { d: 'Behuizing met aansluiting voor de bovenste radiateurslang.', p: [0.24, 0.3, 0.04], ex: [0.12, 0.04, 0] }),
+    P('Thermostaat', merge([G.cyl('x', 0.02, 0.02, 0.004, 20), xf(spring(0.008, 0.0012, 0.02, 4, 'x'), [0.013, 0, 0])]), MAT.steel, { d: 'Opent bij bedrijfstemperatuur de weg naar de radiateur.', p: [0.226, 0.3, 0.04], ex: [0.08, 0.04, 0] }),
+  ]);
+}
+function buildSensors() {
+  return A('Sensoren', { d: 'Sensoren voor het motormanagement.', ex: [0.5, -0.5, 0.2] }, [
+    P('Klopsensor', merge([G.cyl('z', 0.012, 0.012, 0.015, 6), xf(G.cyl('z', 0.005, 0.005, 0.01, 10), [0, 0, -0.012])]), MAT.darkSteel, { d: 'Detecteert pingelen zodat de ontsteking kan worden aangepast.', p: [0, 0.11, 0.117], ex: [0, 0, 0.1] }),
+    P('Krukaspositiesensor', G.cyl('z', 0.008, 0.008, 0.04, 12), MAT.plastic, { d: 'Leest de positie en het toerental van de krukas.', p: [0.205, -0.03, -0.11], ex: [0.08, 0, -0.08] }),
+    P('Nokkenaspositiesensor', G.cyl('x', 0.009, 0.009, 0.03, 12), MAT.plastic, { d: 'Herkent de stand van de inlaatnokkenas.', p: [0.235, CAMY, CAMZ], ex: [0.1, 0.04, 0] }),
+    P('Temperatuursensor koelvloeistof', G.cyl('x', 0.006, 0.006, 0.025, 10), MAT.plasticGrey, { d: 'Meet de temperatuur van de koelvloeistof.', p: [0.272, 0.3, 0.04], ex: [0.1, 0.04, 0] }),
+    P('Oliedrukschakelaar', G.cyl('z', 0.009, 0.009, 0.02, 6), MAT.steel, { d: 'Waarschuwt bij te lage oliedruk.', p: [0.15, 0.05, 0.116], ex: [0, -0.04, 0.1] }),
+  ]);
+}
+function buildEngine() {
+  const pistons = A('Zuigers en drijfstangen', { d: 'Vier zuiger-drijfstanggroepen; zuigers 1 en 4 staan in het bovenste dode punt.', ex: [0, 0.37, 0] }, XC.map((_, i) => pistonGroup(i)));
+  const flex = A('Flexplaat', { d: 'Dunne meeneemplaat met startkrans tussen krukas en koppelomvormer; vervangt bij een automaat het vliegwiel.', ex: [0.44, -0.16, 0] }, [
+    P('Flexplaat met startkrans', merge([gear(72, 0.142, 0.137, 0.008, 0.123), G.lathe('x', [[0.03, 0.004], [0.125, 0.0], [0.125, -0.002], [0.03, -0.002]], 40)]), MAT.steel, { d: 'Plaat met getande startkrans waarin de startmotor grijpt.', p: [0.23, 0, 0] }),
+    ...[0, 1, 2, 3, 4, 5].map(k => P(`Flexplaatbout ${k + 1}`, hexBolt(0.02, 0.009, '-x'), MAT.darkSteel, { d: 'Bout tussen flexplaat en krukasflens.', p: [0.236, 0.028 * Math.cos(k * PI / 3), 0.028 * Math.sin(k * PI / 3)], ex: [0.07, 0, 0] })),
+  ]);
+  return A('Motor F4Rt', {
+    d: 'Renault F-motor met turbo: 2,0 liter, vier cilinders in lijn, 16 kleppen, gietijzeren blok, aluminium kop en distributieriem.',
+    spec: [['Motorcode', 'F4Rt'], ['Opbouw', '4 in lijn, 16V DOHC'], ['Cilinderinhoud', '1998 cm³'], ['Boring × slag', '82,7 × 93,0 mm'], ['Compressie', '9,5 : 1'], ['Brandstofsysteem', 'multipoint-injectie'], ['Inductie', 'turbo + intercooler'], ['Vermogen', '125 kW (170 pk) bij 5000 tpm'], ['Koppel', '270 Nm bij 3250 tpm'], ['Nokkenasaandrijving', 'distributieriem']],
+    ex: [0, 0.25, 0],
+  }, [
+    buildBlock(), pistons, buildHead(), buildTiming(), buildAccessory(), buildIntake(), buildTurbo(), buildLube(), buildEngineCooling(), buildSensors(), flex,
+    P('Motorafdekkap', merge([G.rbox(0.4, 0.03, 0.18, 0.012), ...[-0.12, -0.04, 0.04, 0.12].map(x => xf(G.box(0.05, 0.006, 0.14), [x, 0.017, 0]))]), MAT.plastic, { d: 'Kunststof afdekkap bovenop de motor.', p: [0, 0.478, 0], ex: [0, 0.95, 0] }),
+  ]);
+}
+
+/* ===================== aandrijflijn: automaat, aandrijfassen, motorsteunen ===================== */
+const PT_POS = V3(-0.13, 0.40, 1.50), PT_TILT = -0.18, GB_X = 0.235;
+const PTM = new THREE.Matrix4().compose(PT_POS, new THREE.Quaternion().setFromEuler(new THREE.Euler(PT_TILT, 0, 0)), V3(1, 1, 1));
+const PTI = PTM.clone().invert();
+const toPT = p => V3(...p).applyMatrix4(PTI);
+const fromPT = p => V3(...p).applyMatrix4(PTM);
+const ENG2CAR = p => fromPT(p).toArray();             // motorframe = aandrijflijnframe
+const DIFF = [0.125, -0.04, -0.15];                   // in versnellingsbakframe
+const CSH = [-0.101, -0.043];                         // tussenas (y,z)
+
+function discPack(name, x0, rIn, rOut, n) {
+  const kids = [];
+  for (let k = 0; k < n; k++) {
+    const fr = k % 2 === 0;
+    kids.push(P(`${fr ? 'Frictieplaat' : 'Stalen plaat'} ${Math.floor(k / 2) + 1}`, annulus(rIn, rOut, 0.0022, 'x', 40), fr ? MAT.friction : MAT.steel, { d: fr ? 'Plaat met frictievoering.' : 'Stalen tussenplaat.', p: [x0 + k * 0.0045, 0, 0], ex: [(k - (n - 1) / 2) * 0.026, 0, 0] }));
+  }
+  kids.push(P('Zuiger en retourveer', merge([annulus(rIn, rOut, 0.004, 'x', 40), ...[0, 1, 2, 3, 4, 5, 6, 7].map(k => xf(G.cyl('x', 0.004, 0.004, 0.012, 8, true), [-0.008, (rIn + 0.006) * Math.cos(k * PI / 4), (rIn + 0.006) * Math.sin(k * PI / 4)]))]), MAT.aluCast, { d: 'Hydraulische zuiger die het lamellenpakket samendrukt, met retourveren.', p: [x0 - 0.006, 0, 0], ex: [-(n / 2 + 1) * 0.026, 0, 0] }));
+  return kids;
+}
+function planetSet(name, x0, cfg, d) {
+  const kids = [P('Zonnewiel', gear(cfg.sunT, cfg.sunR, cfg.sunR - 0.003, cfg.w, 0.008), MAT.steel, { d: 'Centraal tandwiel van de planetaire set.', p: [x0, 0, 0], ex: [0.07, 0, 0] })];
+  cfg.planets.forEach(([rad, ang, w, label], i) => kids.push(P(`${label || 'Planeetwiel'} ${i + 1}`, gear(cfg.plT, cfg.plR, cfg.plR - 0.003, w, 0.005), MAT.steel, { d: 'Planeetwiel dat tussen zonnewiel en ringwiel rolt.', p: [x0, rad * Math.cos(ang), rad * Math.sin(ang)], ex: [0, Math.cos(ang) * 0.07, Math.sin(ang) * 0.07] })));
+  kids.push(P('Ringwiel', ringGear(cfg.ringT, cfg.ringOut, cfg.ringTip, cfg.ringTip + 0.004, cfg.w + 0.004), MAT.steel, { d: 'Holwiel met binnenvertanding.', p: [x0, 0, 0], ex: [-0.07, 0, 0] }));
+  kids.push(P('Planeetdrager', merge([annulus(0.012, cfg.carR, 0.004, 'x', 32), ...cfg.planets.map(([rad, ang]) => xf(G.cyl('x', 0.005, 0.005, cfg.w + 0.01, 10), [-0.004, rad * Math.cos(ang), rad * Math.sin(ang)]))]), MAT.darkSteel, { d: 'Drager waarop de planeetwielen draaien.', p: [x0 + cfg.w / 2 + 0.004, 0, 0], ex: [0.12, 0, 0] }));
+  return A(name, { d }, kids);
+}
+function semicircle(rc, xc, rr, sgn, n = 14) { const pts = []; for (let k = 0; k <= n; k++) { const f = k / n * PI; pts.push([rc + rr * Math.cos(f), xc + sgn * rr * Math.sin(f)]); } return pts; }
+function buildGearbox() {
+  const bell = G.lathe('x', [[0.146, 0.0], [0.149, 0.008], [0.143, 0.06], [0.13, 0.11], [0.11, 0.14], [0.08, 0.15]], 48, 'bell');
+  const housing = merge([bell, xf(G.rbox(0.25, 0.25, 0.26, 0.03), [0.27, -0.01, -0.03]), xf(G.cyl('x', 0.085, 0.085, 0.12, 32), [0.125, DIFF[1], DIFF[2]]), ...[0.18, 0.24, 0.3, 0.36].map(x => xf(G.box(0.012, 0.012, 0.26), [x, 0.118, -0.03]))]);
+  const conv = A('Koppelomvormer', { d: 'Hydraulische koppeling tussen motor en versnellingsbak: pompwiel, turbinewiel en leidwiel versterken het koppel bij het wegrijden; de overbruggingskoppeling schakelt verlies uit bij constant rijden.', ex: [-0.17, 0, 0] }, [
+    P('Omvormerdeksel', merge([G.lathe('x', [[0.02, 0.012], [0.11, 0.014], [0.13, 0.022], [0.137, 0.04], [0.137, 0.07]], 48, 'cvcov'), ...[0, 1, 2, 3].map(k => xf(G.cyl('x', 0.006, 0.006, 0.02, 8), [0.002, 0.12 * Math.cos(k * HALF), 0.12 * Math.sin(k * HALF)]))]), MAT.steel, { d: 'Voorste schaal, met nokken naar de flexplaat.', ex: [-0.13, 0, 0] }),
+    P('Overbruggingskoppeling', annulus(0.06, 0.125, 0.005, 'x', 48), MAT.friction, { d: 'Lock-up-koppeling die motor en bak direct koppelt.', p: [0.026, 0, 0], ex: [-0.085, 0, 0] }),
+    P('Turbinewiel omvormer', merge([G.lathe('x', semicircle(0.098, 0.07, 0.036, -1), 40, 'cvturb'), G.lathe('x', [[0.02, 0.07], [0.062, 0.07], [0.062, 0.075], [0.02, 0.075]], 32, 'cvhub'), xf(blades(24, 0.066, 0.13, 0.026, 0.0015, 0, 'x'), [0.054, 0, 0])]), MAT.steel, { d: 'Turbinewiel, verbonden met de ingaande as.', ex: [-0.04, 0, 0] }),
+    P('Leidwiel (stator)', merge([annulus(0.045, 0.072, 0.012, 'x', 32), blades(13, 0.045, 0.072, 0.012, 0.002, 0.6, 'x'), G.cyl('x', 0.03, 0.03, 0.014, 20)]), MAT.aluCast, { d: 'Leidwiel op een vrijloop; buigt de oliestroom om en vergroot zo het koppel.', p: [0.072, 0, 0], ex: [0.02, 0, 0] }),
+    P('Pompwiel', merge([G.lathe('x', semicircle(0.098, 0.07, 0.036, 1), 40, 'cvpump'), xf(G.cyl('x', 0.028, 0.028, 0.05, 20), [0.12, 0, 0]), xf(blades(24, 0.066, 0.13, 0.026, 0.0015, 0, 'x'), [0.086, 0, 0])]), MAT.steel, { d: 'Pompwiel, draait mee met de motor en stuwt de olie rond.', ex: [0.09, 0, 0] }),
+  ]);
+  const pump = A('ATF-oliepomp', { d: 'Pomp die de automaatolie (ATF) op druk brengt voor schakelen, smeren en koelen.', ex: [-0.075, 0, 0] }, [
+    P('Pomphuis', annulus(0.048, 0.075, 0.018, 'x', 40), MAT.aluCast, { d: 'Behuizing van de oliepomp.', p: [0.149, 0, 0], ex: [-0.03, 0, 0] }),
+    P('Binnenrotor', gear(10, 0.032, 0.026, 0.012, 0.014), MAT.steel, { d: 'Aangedreven binnenrotor.', p: [0.149, 0, 0], ex: [0.03, 0, 0.0] }),
+    P('Buitenrotor', ringGear(11, 0.046, 0.033, 0.038, 0.012), MAT.steel, { d: 'Meedraaiende buitenrotor.', p: [0.149, 0, 0], ex: [0.06, 0, 0] }),
+  ]);
+  const frontSet = planetSet('Planeetwielset voor', 0.205, { sunT: 14, sunR: 0.022, plT: 14, plR: 0.022, w: 0.02, ringT: 46, ringOut: 0.082, ringTip: 0.066, carR: 0.058, planets: [0, 1, 2].map(k => [0.044, k * PI * 2 / 3, 0.02]) }, 'Eerste planetaire tandwielset.');
+  const rearSet = planetSet('Planeetwielset achter', 0.27, { sunT: 16, sunR: 0.026, plT: 12, plR: 0.02, w: 0.026, ringT: 52, ringOut: 0.09, ringTip: 0.08, carR: 0.07, planets: [0, 1, 2].map(k => [0.046, k * PI * 2 / 3, 0.024, 'Korte planeet']).concat([0, 1, 2].map(k => [0.06, PI / 3 + k * PI * 2 / 3, 0.044, 'Lange planeet'])) }, 'Tweede planetaire set met korte en lange planeetwielen.');
+  const counter = A('Tussenas', { d: 'Brengt de kracht van de hoofdas over naar het differentieel.', ex: [0, -0.22, -0.08] }, [
+    P('Tussenas', G.cyl('x', 0.013, 0.013, 0.3, 16), MAT.steel, { d: 'As van de tussenoverbrenging.', p: [0.225, CSH[0], CSH[1]] }),
+    P('Aangedreven tandwiel', gear(34, 0.06, 0.056, 0.018, 0.012), MAT.steel, { d: 'Wordt aangedreven door het uitgaande tandwiel.', p: [0.362, CSH[0], CSH[1]], ex: [0.06, 0, 0] }),
+    P('Rondsel eindoverbrenging', gear(15, 0.035, 0.031, 0.022, 0.012), MAT.steel, { d: 'Drijft het kroonwiel van het differentieel aan.', p: [0.125, CSH[0], CSH[1]], ex: [-0.06, 0, 0] }),
+  ]);
+  const cone = (r, h, key) => G.lathe('y', [[0, 0], [r, 0], [r * 0.65, h], [0, h]], 18, key);
+  const diff = A('Differentieel', { d: 'Verdeelt het koppel over beide voorwielen en laat ze in bochten verschillend snel draaien.', p: DIFF, ex: [0.02, -0.1, -0.3] }, [
+    P('Kroonwiel', gear(60, 0.088, 0.084, 0.02, 0.05), MAT.steel, { d: 'Groot tandwiel van de eindoverbrenging.', ex: [-0.07, 0, 0] }),
+    P('Differentieelhuis', G.lathe('x', [[0.022, -0.01], [0.05, -0.005], [0.058, 0.02], [0.058, 0.05], [0.04, 0.07], [0.022, 0.075]], 32, 'diffh'), MAT.iron, { d: 'Huis waarin de differentieelwielen draaien.' }),
+    P('Satellietas', G.cyl('y', 0.006, 0.006, 0.09, 10), MAT.steel, { d: 'As van de satellietwielen.', p: [0.035, 0, 0], ex: [0, 0, 0.11] }),
+    P('Satellietwiel boven', cone(0.018, 0.014, 'sat'), MAT.steel, { d: 'Satellietwiel (kegeltandwiel).', p: [0.035, 0.036, 0], r: [PI, 0, 0], ex: [0, 0.08, 0] }),
+    P('Satellietwiel onder', cone(0.018, 0.014, 'sat'), MAT.steel, { d: 'Satellietwiel (kegeltandwiel).', p: [0.035, -0.036, 0], ex: [0, -0.08, 0] }),
+    P('Zijwiel links', G.lathe('-x', [[0, 0], [0.02, 0], [0.014, 0.014], [0, 0.014]], 18, 'sidegL'), MAT.steel, { d: 'Kegeltandwiel naar de linker aandrijfas.', p: [0.071, 0, 0], ex: [0.09, 0, 0] }),
+    P('Zijwiel rechts', G.lathe('x', [[0, 0], [0.02, 0], [0.014, 0.014], [0, 0.014]], 18, 'sidegR'), MAT.steel, { d: 'Kegeltandwiel naar de rechter aandrijfas.', p: [-0.001, 0, 0], ex: [-0.09, 0, 0] }),
+  ]);
+  const vb = A('Hydraulische besturing', { d: 'Klepblok met magneetkleppen dat de koppelingen en remmen in de bak aanstuurt.', ex: [0, -0.34, 0.08] }, [
+    P('Klepblok', merge([G.box(0.2, 0.035, 0.16), ...[-0.06, 0, 0.06].map(x => xf(G.box(0.012, 0.006, 0.15), [x, 0.02, 0]))]), MAT.aluCast, { d: 'Kanalenplaat met schuiven die de oliedruk verdelen.', p: [0.26, -0.153, 0.02] }),
+    ...[0, 1, 2, 3, 4, 5].map(k => P(`Magneetklep ${k + 1}`, G.cyl('z', 0.009, 0.009, 0.04, 12), MAT.darkSteel, { d: 'Elektrisch bediende klep (solenoïde) die een schakelelement aanstuurt.', p: [0.185 + k * 0.03, -0.148, 0.11], ex: [0, 0, 0.09] })),
+    P('ATF-filter', G.box(0.18, 0.012, 0.14), MAT.filter, { d: 'Zeef/filter voor de automaatolie.', p: [0.26, -0.18, 0.02], ex: [0, -0.07, 0] }),
+    P('Carter automaat', G.rbox(0.24, 0.04, 0.19, 0.01), MAT.aluCast, { d: 'Oliecarter van de automaat.', p: [0.26, -0.21, 0.02], ex: [0, -0.15, 0] }),
+  ]);
+  const starter = P('Startmotor', merge([G.cyl('x', 0.038, 0.038, 0.15, 24), xf(G.cyl('x', 0.02, 0.02, 0.08, 16), [0.02, 0.045, 0.012]), xf(gear(9, 0.013, 0.01, 0.014, 0.004), [-0.08, 0, 0])]), MAT.darkSteel, { d: 'Elektromotor die via de startkrans van de flexplaat de motor aanslingert.', p: [0.1, -0.08, 0.19], ex: [0, -0.06, 0.3] });
+  return A('Automaatversnellingsbak', {
+    d: 'Klassieke zestraps automaat met koppelomvormer, planetaire tandwielsets en lamellenkoppelingen, dwars naast de motor geplaatst met ingebouwd differentieel.',
+    spec: [['Type', '6-traps automaat'], ['Koppeling', 'koppelomvormer met lock-up'], ['Aandrijving', 'voorwielen'], ['Plaats', 'dwars, links van de motor']],
+    p: [GB_X, 0, 0], ex: [0.66, 0, 0],
+  }, [
+    P('Transmissiehuis', housing, MAT.aluCast, { d: 'Aluminium huis met koppelomvormerklok en differentieelhuis.', ex: [0, 0.44, 0] }),
+    conv, pump,
+    A('Koppeling C1', { d: 'Lamellenkoppeling.', ex: [-0.02, 0, 0] }, discPack('C1', 0.167, 0.045, 0.075, 6)),
+    frontSet,
+    A('Koppeling C2', { d: 'Lamellenkoppeling.', ex: [0.1, 0, 0] }, discPack('C2', 0.224, 0.045, 0.075, 6)),
+    rearSet,
+    A('Rem B1', { d: 'Lamellenrem die een deel van de planetaire set vastzet.', ex: [0.24, 0, 0] }, discPack('B1', 0.297, 0.065, 0.09, 6)),
+    A('Rem B2', { d: 'Lamellenrem die een deel van de planetaire set vastzet.', ex: [0.31, 0, 0] }, discPack('B2', 0.33, 0.065, 0.09, 6)),
+    P('Uitgaand tandwiel', gear(28, 0.05, 0.046, 0.018, 0.012), MAT.steel, { d: 'Geeft de kracht van de planetaire sets door aan de tussenas.', p: [0.362, 0, 0], ex: [0.38, 0, 0] }),
+    P('Ingaande as', G.cyl('x', 0.012, 0.012, 0.36, 14), MAT.steel, { d: 'Hoofdas van turbinewiel naar de planetaire sets.', p: [0.2, 0, 0], ex: [0, 0, 0.3] }),
+    counter, diff, vb, starter,
+    P('Keuzeas met hendel', merge([G.cyl('z', 0.008, 0.008, 0.05, 10), xf(G.box(0.012, 0.05, 0.012), [0, 0.025, 0.025])]), MAT.steel, { d: 'Verbindt de keuzehendel (P-R-N-D) met de handklep in de bak.', p: [0.3, 0.13, 0.05], ex: [0, 0.56, 0.08] }),
+    P('Standensensor', G.rbox(0.05, 0.04, 0.03, 0.006), MAT.plastic, { d: 'Meldt de gekozen stand aan de transmissiecomputer en blokkeert starten buiten P/N.', p: [0.3, 0.1, 0.11], ex: [0.05, 0.5, 0.15] }),
+  ]);
+}
+function bellows(r1, r2, len, n) { const pts = []; for (let k = 0; k <= n * 2; k++) pts.push([k % 2 ? r2 : r1, k / (n * 2) * len]); return pts; }
+function driveshaft(name, a, b) {
+  const A3 = V3(...a), B3 = V3(...b), dir = B3.clone().sub(A3), L = dir.length();
+  const q = quatFromTo(V3(1, 0, 0), dir);
+  const bel = G.lathe('x', bellows(0.034, 0.024, 0.08, 4), 24, 'bel');
+  return A(name, { d: 'Aandrijfas met homokinetische koppelingen aan beide kanten.', p: a, q }, [
+    P('Homokineet binnen', G.lathe('x', [[0, 0], [0.042, 0], [0.042, 0.07], [0.03, 0.08], [0, 0.08]], 28, 'cvin'), MAT.steel, { d: 'Tripode-koppeling aan de versnellingsbakzijde; vangt lengteverschil op.', ex: [-0.07, 0, 0] }),
+    P('Manchet binnen', bel, MAT.rubber, { d: 'Rubber stofhoes die het vet in de koppeling houdt.', p: [0.08, 0, 0], ex: [-0.02, 0.07, 0] }),
+    P('As', G.cyl('x', 0.012, 0.012, L - 0.3, 14), MAT.steel, { d: 'Stalen tussenas.', p: [L / 2, 0, 0], ex: [0, 0.12, 0] }),
+    P('Manchet buiten', bel, MAT.rubber, { d: 'Rubber stofhoes van de buitenste koppeling.', p: [L - 0.16, 0, 0], ex: [0.02, 0.07, 0] }),
+    P('Homokineet buiten', G.lathe('x', [[0, -0.08], [0.045, -0.075], [0.048, -0.04], [0.03, -0.005], [0.016, 0], [0.016, 0.04], [0, 0.04]], 28, 'cvout'), MAT.steel, { d: 'Kogelkoppeling bij het wiel; laat sturen en veren toe.', p: [L, 0, 0], ex: [0.07, 0, 0] }),
+  ]);
+}
+function buildPowertrain() {
+  const engine = buildEngine();
+  engine.ex = V3(-0.24, 0.12, 0);
+  const gb = buildGearbox();
+  const dL = [GB_X + DIFF[0] + 0.08, DIFF[1], DIFF[2]], dR = [GB_X + DIFF[0] - 0.02, DIFF[1], DIFF[2]];
+  const hubL = toPT([0.715, AY, AXF]).toArray(), hubR = toPT([-0.715, AY, AXF]).toArray();
+  const shafts = A('Aandrijfassen', { d: 'Linker (kort) en rechter (lang) aandrijfas van differentieel naar de voorwielen.', ex: [0, -0.45, -0.25] }, [
+    driveshaft('Aandrijfas links', dL, hubL), driveshaft('Aandrijfas rechts', dR, hubR),
+  ]);
+  shafts.kids[0].ex = V3(0.12, 0, 0); shafts.kids[1].ex = V3(-0.12, 0, 0);
+  const sub = toPT([0, 0.27, 1.2]).toArray(), rodA = [0, -0.14, -0.1];
+  const mounts = A('Motorsteunen', { d: 'Rubber/hydraulische steunen die motor en bak trillingsarm in de carrosserie ophangen.', ex: [0, 0.6, 0] }, [
+    P('Motorsteun distributiezijde', merge([G.rbox(0.09, 0.08, 0.11, 0.015), xf(G.box(0.12, 0.02, 0.06), [0.06, -0.02, 0])]), MAT.darkSteel, { d: 'Hydraulische motorsteun aan de rechterkant.', p: [-0.36, 0.32, 0.08], ex: [-0.12, 0, 0] }),
+    P('Steun versnellingsbak', merge([G.rbox(0.1, 0.08, 0.12, 0.015), xf(G.box(0.06, 0.02, 0.08), [-0.06, -0.02, 0])]), MAT.darkSteel, { d: 'Rubbersteun aan de bakzijde.', p: [GB_X + 0.4, 0.08, 0], ex: [0.12, 0, 0] }),
+    P('Reactiestang', merge([rodBetween(rodA, sub, 0.012), xf(G.cyl('x', 0.025, 0.025, 0.03, 16), rodA), xf(G.cyl('x', 0.025, 0.025, 0.03, 16), sub)]), MAT.darkSteel, { d: 'Koppelsteun onder de motor die kantelen bij optrekken en remmen opvangt.', ex: [0, -0.2, -0.1] }),
+  ]);
+  return A('Aandrijflijn', {
+    d: 'Dwarsgeplaatste motor en automaat met differentieel en aandrijfassen naar de voorwielen.',
+    spec: [['Motor', '2.0 Turbo F4Rt, 170 pk'], ['Transmissie', '6-traps automaat'], ['Aandrijving', 'voorwielen'], ['Topsnelheid', '220 km/h'], ['0–100 km/h', '9,2 s']],
+    p: PT_POS.toArray(), r: [PT_TILT, 0, 0], ex: [0, 0.35, 1.9],
+  }, [engine, gb, shafts, mounts]);
+}
+
+/* ===================== onderstel: vooras, stuurinrichting, achteras, wielen, remmen ===================== */
+// hoek-assemblages worden voor links gebouwd (x > 0) en voor rechts gespiegeld (schaal x = -1)
+function discGeo(rIn, rOut, vented, key) {
+  return cache('disc' + key, () => {
+    const hat = G.lathe('y', [[0.035, 0.036], [0.072, 0.036], [0.076, 0.03], [0.084, 0.015], [rIn, 0.014]], 40);
+    const parts = [hat];
+    if (vented) {
+      parts.push(G.lathe('y', [[rIn, 0.013], [rOut, 0.013], [rOut, 0.004], [rIn, 0.004], [rIn, 0.013]], 48));
+      parts.push(G.lathe('y', [[rIn, -0.004], [rOut, -0.004], [rOut, -0.013], [rIn, -0.013], [rIn, -0.004]], 48));
+      parts.push(blades(36, rIn, rOut, 0.008, 0.004, 0, 'y'));
+    } else parts.push(G.lathe('y', [[rIn, 0.0055], [rOut, 0.0055], [rOut, -0.0055], [rIn, -0.0055], [rIn, 0.0055]], 48));
+    return yTo(merge(parts), 'x');
+  });
+}
+function caliper(label, x, z0, phi, rp, front) {
+  const r = rp, pos = [x, AY + r * Math.sin(phi), z0 + r * Math.cos(phi)];
+  const w = front ? 0.10 : 0.08, t = front ? 0.013 : 0.0055;
+  return A(label, { d: front ? 'Zwevende enkelzuigerremklauw.' : 'Remklauw achter.', p: pos, r: [HALF - phi, 0, 0], ex: [0.06, 0.14, 0] }, [
+    P('Remklauwhuis', merge([xf(G.rbox(0.07, 0.05, w, 0.012), [-0.005, 0.02, 0]), xf(G.cyl('x', 0.032, 0.032, 0.03, 24), [-0.035, -0.005, 0]), xf(G.rbox(0.012, 0.05, w - 0.01, 0.004), [0.026, -0.01, 0])]), MAT.iron, { d: 'Gietijzeren klauwhuis met de remzuiger.', ex: [0, 0.09, 0] }),
+    P('Remklauwdrager', G.rbox(0.06, 0.02, w + 0.03, 0.005), MAT.darkSteel, { d: 'Drager die aan de fusee is geschroefd.', p: [-0.005, -0.045, 0], ex: [0, -0.06, 0] }),
+    P('Remblok binnen', G.rbox(0.009, 0.045, w - 0.015, 0.004), MAT.friction, { d: 'Remvoering aan de binnenzijde.', p: [-(t + 0.0055), 0, 0], ex: [-0.06, 0.03, 0] }),
+    P('Rugplaat binnen', G.box(0.003, 0.05, w - 0.01), MAT.steel, { d: 'Stalen rugplaat van het remblok.', p: [-(t + 0.0115), 0, 0], ex: [-0.085, 0.03, 0] }),
+    P('Remblok buiten', G.rbox(0.009, 0.045, w - 0.015, 0.004), MAT.friction, { d: 'Remvoering aan de buitenzijde.', p: [t + 0.0055, 0, 0], ex: [0.07, 0.03, 0] }),
+    P('Rugplaat buiten', G.box(0.003, 0.05, w - 0.01), MAT.steel, { d: 'Stalen rugplaat van het remblok.', p: [t + 0.0115, 0, 0], ex: [0.095, 0.03, 0] }),
+    P('Remzuiger', G.cyl('x', 0.027, 0.027, 0.03, 24), MAT.steel, { d: 'Hydraulische zuiger die de blokken tegen de schijf drukt.', p: [-0.04, -0.005, 0], ex: [-0.12, 0, 0] }),
+    P('Geleidepen boven', G.cyl('x', 0.006, 0.006, 0.06, 10), MAT.steel, { d: 'Glijpen waarover de klauw zweeft.', p: [-0.02, -0.03, w / 2 + 0.005], ex: [-0.06, -0.03, 0.05] }),
+    P('Geleidepen onder', G.cyl('x', 0.006, 0.006, 0.06, 10), MAT.steel, { d: 'Glijpen waarover de klauw zweeft.', p: [-0.02, -0.03, -w / 2 - 0.005], ex: [-0.06, -0.03, -0.05] }),
+    P('Ontluchtingsnippel', G.cyl('y', 0.003, 0.004, 0.012, 8), MAT.steel, { d: 'Nippel om lucht uit het remsysteem te verwijderen.', p: [-0.05, 0.03, 0.02], ex: [0, 0.16, 0] }),
+  ]);
+}
+function frontCorner(s) {
+  const z0 = AXF, n = s > 0 ? 'linksvoor' : 'rechtsvoor';
+  const knuckle = merge([xf(G.cyl('x', 0.055, 0.055, 0.05, 24), [0.715, AY, z0]), rodBetween([0.71, AY + 0.03, z0], [0.69, 0.5, z0 - 0.005], 0.02), xf(G.cyl('y', 0.034, 0.034, 0.07, 20), [0.685, 0.535, z0]), rodBetween([0.72, AY - 0.03, z0], [0.735, 0.225, z0 + 0.01], 0.018), rodBetween([0.7, AY - 0.01, z0 - 0.03], [0.7, 0.31, z0 - 0.16], 0.014)]);
+  const arm = plan(shapeOf([[0.37, z0 + 0.1], [0.37, z0 - 0.22], [0.45, z0 - 0.22], [0.735, z0], [0.735, z0 + 0.04], [0.45, z0 + 0.1]]), 0.025);
+  const sd = V3(-0.085, 0.425, -0.03);
+  const seat = (sg, key) => G.lathe('y', [[0.026, 0], [0.085, sg * 0.004], [0.088, sg * 0.012], [0.084, sg * 0.014], [0.026, sg * 0.006]], 36, key);
+  const strut = A('Veerpoot', { d: 'McPherson-veerpoot: schokdemper met schroefveer, tevens fuseedraaipunt.', p: [0.685, 0.5, z0], q: quatFromTo(V3(0, 1, 0), sd), ex: [0.06, 0.32, 0] }, [
+    P('Schokdemper', merge([xf(G.cyl('y', 0.026, 0.026, 0.27, 20), [0, 0.135, 0]), xf(G.cyl('y', 0.011, 0.011, 0.13, 12), [0, 0.335, 0]), xf(G.box(0.06, 0.04, 0.05), [0, 0.02, 0])]), MAT.darkSteel, { d: 'Gasgevulde schokdemper met zuigerstang.', ex: [0, -0.2, 0] }),
+    P('Veerschotel onder', seat(1, 'seatL'), MAT.darkSteel, { d: 'Onderste veerschotel op de demperbuis.', p: [0, 0.19, 0], ex: [0, -0.06, 0] }),
+    P('Schroefveer voor', spring(0.074, 0.0065, 0.19, 5.5), MAT.steel, { d: 'Draagt het gewicht van de auto.', p: [0, 0.295, 0] }),
+    P('Stofhoes veerpoot', G.lathe('y', bellows(0.03, 0.022, 0.09, 5), 24, 'boot'), MAT.rubber, { d: 'Beschermt de zuigerstang tegen vuil.', p: [0, 0.28, 0], ex: [0.13, 0.02, 0] }),
+    P('Aanslagrubber', G.cyl('y', 0.022, 0.02, 0.035, 16), MAT.rubber, { d: 'Vangt het uitveren aan het eind van de slag op.', p: [0, 0.375, 0], ex: [0.13, 0.06, 0] }),
+    P('Veerschotel boven', seat(-1, 'seatU'), MAT.darkSteel, { d: 'Bovenste veerschotel.', p: [0, 0.395, 0], ex: [0, 0.1, 0] }),
+    P('Veerpootlager', annulus(0.03, 0.055, 0.016, 'y', 32), MAT.bearing, { d: 'Draaglager zodat de veerpoot mee kan sturen.', p: [0, 0.405, 0], ex: [0, 0.14, 0] }),
+    P('Veerpootsteunlager', G.lathe('y', [[0.012, 0], [0.075, 0], [0.075, 0.022], [0.05, 0.032], [0.012, 0.032]], 32, 'topm'), MAT.rubber, { d: 'Rubber steunlager in de veerpoottoren.', p: [0, 0.412, 0], ex: [0, 0.18, 0] }),
+    P('Veerpootmoer', G.cyl('y', 0.011, 0.011, 0.01, 6), MAT.steel, { d: 'Borgmoer bovenop de zuigerstang.', p: [0, 0.452, 0], ex: [0, 0.23, 0] }),
+  ]);
+  return A(`Wielophanging ${n}`, { d: `Wielophanging ${n}: fusee, draagarm, veerpoot, wielnaaf en schijfrem.`, s: [s, 1, 1], ex: [s * 0.34, 0, 0] }, [
+    P('Fusee', knuckle, MAT.iron, { d: 'Gietijzeren wieldrager (fusee) met naaf, veerpoot- en stuuraansluiting.' }),
+    P('Wiellager', G.cyl('x', 0.04, 0.04, 0.04, 24), MAT.bearing, { d: 'Dubbelrijig kogellager in de fusee.', p: [0.745, AY, z0], ex: [0.1, 0.1, 0] }),
+    P('Wielnaaf', merge([G.cyl('x', 0.042, 0.042, 0.035, 24), xf(G.cyl('x', 0.075, 0.075, 0.008, 32), [0.018, 0, 0])]), MAT.steel, { d: 'Naaf met flens waarop het wiel met vijf bouten vastzit (steek 5×114,3).', p: [0.79, AY, z0], ex: [0.2, 0, 0] }),
+    P('Asmoer', G.cyl('x', 0.014, 0.014, 0.012, 6), MAT.steel, { d: 'Moer die de aandrijfas in de naaf vastzet.', p: [0.824, AY, z0], ex: [0.3, 0, 0] }),
+    P('ABS-sensorring', gear(48, 0.05, 0.047, 0.006, 0.04), MAT.steel, { d: 'Getande ring voor de wielsnelheidsmeting.', p: [0.73, AY, z0], ex: [-0.05, 0.12, 0] }),
+    P('ABS-sensor', G.cyl('y', 0.007, 0.007, 0.04, 10), MAT.plastic, { d: 'Wielsnelheidssensor voor ABS en ESP.', p: [0.728, AY + 0.07, z0 + 0.04], ex: [-0.05, 0.16, 0.05] }),
+    P('Remschijf voor', discGeo(0.1, 0.148, true, 'F'), MAT.iron, { d: 'Geventileerde remschijf.', p: [0.765, AY, z0], ex: [0.14, 0, 0] }),
+    caliper('Remklauw voor', 0.765, z0, 2.79, 0.124, true),
+    P('Remslang voor', tube([[0.72, AY + 0.09, z0 - 0.13], [0.69, 0.55, z0 - 0.12], [0.66, 0.62, z0 - 0.05]], 0.006, 24, 8), MAT.rubber, { d: 'Flexibele remleiding naar de klauw.', ex: [0, 0.12, -0.06] }),
+    P('Draagarm', arm, MAT.darkSteel, { d: 'Onderste draagarm (triangel) tussen subframe en fusee.', p: [0, 0.225, 0], ex: [0, -0.16, 0] }),
+    P('Fuseekogel', merge([G.sphere(0.02, 14), xf(G.cyl('y', 0.008, 0.008, 0.04, 10), [0, 0.02, 0])]), MAT.steel, { d: 'Kogelgewricht tussen draagarm en fusee.', p: [0.735, 0.235, z0 + 0.01], ex: [0.05, -0.1, 0] }),
+    P('Draagarmrubber voor', G.cyl('z', 0.022, 0.022, 0.05, 16), MAT.rubber, { d: 'Rubberlager van de draagarm.', p: [0.37, 0.225, z0 + 0.07], ex: [-0.12, -0.12, 0.05] }),
+    P('Draagarmrubber achter', G.cyl('y', 0.03, 0.03, 0.04, 16), MAT.rubber, { d: 'Rubberlager van de draagarm.', p: [0.4, 0.225, z0 - 0.19], ex: [-0.12, -0.12, -0.05] }),
+    P('Stabilisatorstangetje', merge([rodBetween([0.55, 0.37, z0 + 0.05], [0.655, 0.56, z0 + 0.03], 0.007), xf(G.sphere(0.014, 10), [0.55, 0.37, z0 + 0.05]), xf(G.sphere(0.014, 10), [0.655, 0.56, z0 + 0.03])]), MAT.steel, { d: 'Koppelstang tussen stabilisatorstang en veerpoot.', ex: [-0.05, 0.1, 0.12] }),
+    strut,
+  ]);
+}
+function rearCorner(s) {
+  const z0 = AXR, n = s > 0 ? 'linksachter' : 'rechtsachter';
+  return A(`Wielophanging ${n}`, { d: `Wielophanging ${n}: naaf, lager en schijfrem.`, s: [s, 1, 1], ex: [s * 0.32, 0, 0] }, [
+    P('Wielnaaf achter', merge([G.cyl('x', 0.045, 0.045, 0.05, 24), xf(G.cyl('x', 0.075, 0.075, 0.008, 32), [0.022, 0, 0])]), MAT.steel, { d: 'Naaf met geïntegreerd wiellager op de astap.', p: [0.785, AY, z0], ex: [0.2, 0, 0] }),
+    P('Naafmoer', G.cyl('x', 0.014, 0.014, 0.012, 6), MAT.steel, { d: 'Borgmoer van de naaf.', p: [0.822, AY, z0], ex: [0.3, 0, 0] }),
+    P('Remschijf achter', discGeo(0.09, 0.13, false, 'R'), MAT.iron, { d: 'Massieve remschijf.', p: [0.77, AY, z0], ex: [0.12, 0, 0] }),
+    caliper('Remklauw achter', 0.77, z0, 2.79, 0.108, false),
+    P('Stofschild achter', G.lathe('x', [[0.05, 0], [0.14, 0]], 40, 'shieldR'), MAT.darkSteel, { d: 'Afschermplaat achter de remschijf.', p: [0.728, AY, z0], ex: [-0.06, 0, 0] }),
+    P('ABS-sensor achter', G.cyl('y', 0.007, 0.007, 0.04, 10), MAT.plastic, { d: 'Wielsnelheidssensor.', p: [0.73, AY + 0.065, z0 + 0.04], ex: [-0.05, 0.15, 0.05] }),
+  ]);
+}
+function buildFrontAxle() {
+  const z0 = AXF;
+  const sub = merge([xf(G.box(0.92, 0.06, 0.1), [0, 0.22, z0 - 0.2]), xf(G.box(0.07, 0.06, 0.55), [0.42, 0.225, z0]), xf(G.box(0.07, 0.06, 0.55), [-0.42, 0.225, z0]), xf(G.box(0.84, 0.05, 0.06), [0, 0.23, z0 + 0.33]), ...[[0.5, z0 - 0.2], [-0.5, z0 - 0.2], [0.47, z0 + 0.3], [-0.47, z0 + 0.3]].map(([x, z]) => xf(G.cyl('y', 0.03, 0.03, 0.12, 14), [x, 0.3, z]))]);
+  const arb = tube([[0.55, 0.36, z0 + 0.05], [0.52, 0.26, z0 - 0.06], [0.42, 0.22, z0 - 0.3], [0, 0.22, z0 - 0.3], [-0.42, 0.22, z0 - 0.3], [-0.52, 0.26, z0 - 0.06], [-0.55, 0.36, z0 + 0.05]], 0.012, 80, 10);
+  const rackY = 0.3, rackZ = z0 - 0.14;
+  const wheelPos = V3(0.372, 0.915, 0.36);
+  const steer = A('Stuurinrichting', { d: 'Tandheugelbesturing met bekrachtiging, stuurkolom en stuurwiel.', ex: [0, 0.3, 0.05] }, [
+    P('Stuurhuis', merge([G.cyl('x', 0.026, 0.026, 0.62, 20), xf(G.cyl('y', 0.03, 0.03, 0.09, 16), [0.26, 0.03, 0.01]), xf(G.rbox(0.05, 0.06, 0.07, 0.01), [0.2, 0, 0]), xf(G.rbox(0.05, 0.06, 0.07, 0.01), [-0.2, 0, 0])]), MAT.aluCast, { d: 'Huis van de tandheugel met rondsel.', p: [0, rackY, rackZ], ex: [0, 0, -0.14] }),
+    P('Tandheugel', G.cyl('x', 0.011, 0.011, 0.8, 12), MAT.steel, { d: 'Getande staaf die de draaibeweging omzet in zijdelingse beweging.', p: [0, rackY, rackZ], ex: [0, -0.1, -0.05] }),
+    P('Stuurhoes links', G.lathe('x', bellows(0.03, 0.02, 0.08, 4), 24, 'rboot'), MAT.rubber, { d: 'Stofhoes over het tandheugeluiteinde.', p: [0.31, rackY, rackZ], ex: [0.06, 0, -0.06] }),
+    P('Stuurhoes rechts', G.lathe('x', bellows(0.03, 0.02, 0.08, 4), 24, 'rboot'), MAT.rubber, { d: 'Stofhoes over het tandheugeluiteinde.', p: [-0.39, rackY, rackZ], ex: [-0.06, 0, -0.06] }),
+    P('Spoorstang links', rodBetween([0.39, rackY, rackZ], [0.67, 0.31, z0 - 0.163], 0.009), MAT.steel, { d: 'Verbindt de tandheugel met de stuurarm.', ex: [0.08, 0, -0.06] }),
+    P('Spoorstang rechts', rodBetween([-0.39, rackY, rackZ], [-0.67, 0.31, z0 - 0.163], 0.009), MAT.steel, { d: 'Verbindt de tandheugel met de stuurarm.', ex: [-0.08, 0, -0.06] }),
+    P('Spoorstangeind links', merge([G.sphere(0.018, 12), xf(G.cyl('y', 0.007, 0.007, 0.04, 8), [0, 0.02, 0])]), MAT.steel, { d: 'Kogelgewricht aan de stuurarm.', p: [0.69, 0.31, z0 - 0.165], ex: [0.12, 0.04, -0.06] }),
+    P('Spoorstangeind rechts', merge([G.sphere(0.018, 12), xf(G.cyl('y', 0.007, 0.007, 0.04, 8), [0, 0.02, 0])]), MAT.steel, { d: 'Kogelgewricht aan de stuurarm.', p: [-0.69, 0.31, z0 - 0.165], ex: [-0.12, 0.04, -0.06] }),
+    P('Stuurtussenas', merge([rodBetween([0.26, 0.38, z0 - 0.13], [0.34, 0.7, 0.98], 0.011), xf(G.rbox(0.04, 0.04, 0.04, 0.008), [0.26, 0.38, z0 - 0.13]), xf(G.rbox(0.04, 0.04, 0.04, 0.008), [0.34, 0.7, 0.98])]), MAT.steel, { d: 'Tussenas met twee kruiskoppelingen door het schutbord.', ex: [0.08, 0.06, 0.06] }),
+    P('Stuurkolom', rodBetween([0.34, 0.7, 0.98], [0.37, 0.9, 0.4], 0.018), MAT.steel, { d: 'In hoogte en diepte verstelbare stuurkolom met kreukelzone.', ex: [0.12, 0.1, 0] }),
+    P('Stuurkolomomkasting', G.rbox(0.1, 0.1, 0.28, 0.03), MAT.dash, { d: 'Kunststof omkasting rond de stuurkolom.', p: [0.367, 0.86, 0.5], r: [0.332, 0, 0], ex: [0.2, -0.04, 0] }),
+    P('Stuurkolomschakelaars', merge([rodBetween([0.37, 0.89, 0.43], [0.2, 0.9, 0.43], 0.007), rodBetween([0.37, 0.89, 0.43], [0.54, 0.9, 0.43], 0.007)]), MAT.dash, { d: 'Hendels voor richtingaanwijzers, verlichting en ruitenwissers.', ex: [0, 0.14, -0.12] }),
+    A('Stuurwiel', { d: 'Met leder bekleed stuurwiel met bestuurdersairbag en bedieningstoetsen.', p: wheelPos.toArray(), r: [PI + 0.332, 0, PI], ex: [0, 0.25, -0.35] }, [
+      P('Stuurwielkrans', G.torus('z', 0.185, 0.016, 64, 10), MAT.leather, { d: 'Lederen stuurwielkrans.', ex: [0, 0, -0.12] }),
+      P('Spaken', merge([xf(G.box(0.13, 0.03, 0.02), [-0.11, -0.01, -0.01]), xf(G.box(0.13, 0.03, 0.02), [0.11, -0.01, -0.01]), xf(G.box(0.03, 0.13, 0.02), [0, -0.11, -0.01])]), MAT.satin, { d: 'Drie spaken met satijn-aluminium afwerking.', ex: [0, 0, -0.06] }),
+      P('Stuurwielnaaf', G.cyl('z', 0.03, 0.03, 0.05, 16), MAT.darkSteel, { d: 'Naaf op de spiekertanden van de stuurkolom.', p: [0, 0, -0.03], ex: [0, 0, -0.18] }),
+      P('Airbagmodule bestuurder', G.rbox(0.15, 0.12, 0.05, 0.02), MAT.dash, { d: 'Bestuurdersairbag in het stuurwielcentrum.', p: [0, -0.005, 0.015], ex: [0, 0, 0.12] }),
+      P('Multifunctietoetsen', merge([xf(G.rbox(0.05, 0.03, 0.01, 0.004), [-0.1, -0.005, 0.005]), xf(G.rbox(0.05, 0.03, 0.01, 0.004), [0.1, -0.005, 0.005])]), MAT.chrome, { d: 'Toetsen voor cruise control en audio.', ex: [0, 0, 0.08] }),
+    ]),
+  ]);
+  return A('Vooras en stuurinrichting', { d: 'Subframe met McPherson-wielophanging, stabilisatorstang en tandheugelbesturing.', spec: [['Ophanging', 'McPherson, onafhankelijk'], ['Remmen voor', 'geventileerde schijven']], ex: [0, -0.25, 0.55] }, [
+    P('Subframe voor', sub, MAT.darkSteel, { d: 'Hulpframe dat draagarmen, stuurhuis en motorsteun draagt.', ex: [0, -0.18, 0] }),
+    P('Stabilisatorstang', arb, MAT.darkSteel, { d: 'Torsiestaaf die het overhellen in bochten beperkt.', ex: [0, -0.1, -0.18] }),
+    P('Stabilisatorrubbers', merge([xf(G.rbox(0.05, 0.04, 0.04, 0.008), [0.3, 0.22, z0 - 0.3]), xf(G.rbox(0.05, 0.04, 0.04, 0.008), [-0.3, 0.22, z0 - 0.3])]), MAT.rubber, { d: 'Rubberlagers van de stabilisatorstang.', ex: [0, -0.04, -0.24] }),
+    steer, frontCorner(1), frontCorner(-1),
+  ]);
+}
+function buildRearAxle() {
+  const z0 = AXR, beam = [xf(G.box(1.12, 0.07, 0.09), [0, 0.29, -1.15])];
+  [1, -1].forEach(s => {
+    beam.push(xf(G.box(0.06, 0.07, 0.48), [s * 0.64, 0.32, -1.195], [0, -s * 0.08, 0]));
+    beam.push(xf(G.cyl('y', 0.075, 0.075, 0.012, 24), [s * 0.56, 0.26, -1.47]));
+    beam.push(xf(G.box(0.12, 0.012, 0.12), [s * 0.6, 0.26, -1.45]));
+    beam.push(xf(G.box(0.02, 0.12, 0.12), [s * 0.69, AY, z0]));
+  });
+  const damper = s => merge([rodBetween([s * 0.66, 0.27, -1.44], [s * 0.65, 0.47, -1.48], 0.022), rodBetween([s * 0.65, 0.47, -1.48], [s * 0.64, 0.62, -1.51], 0.009), xf(G.torus('x', 0.016, 0.006, 16, 6), [s * 0.66, 0.26, -1.44])]);
+  return A('Achteras', { d: 'Semi-onafhankelijke torsieas (H-as) met losse veren en dempers.', spec: [['Ophanging', 'torsieas, semi-onafhankelijk'], ['Remmen achter', 'massieve schijven']], ex: [0, -0.25, -0.65] }, [
+    P('Torsieas', merge(beam), MAT.darkSteel, { d: 'Stalen H-as: twee langsarmen verbonden door een torderende dwarsbalk.', ex: [0, -0.14, 0] }),
+    P('Rubberlager links', G.cyl('x', 0.04, 0.04, 0.06, 20), MAT.rubber, { d: 'Draaipunt van de torsieas in de carrosserie.', p: [0.62, 0.32, -0.96], ex: [0.1, 0, 0.1] }),
+    P('Rubberlager rechts', G.cyl('x', 0.04, 0.04, 0.06, 20), MAT.rubber, { d: 'Draaipunt van de torsieas in de carrosserie.', p: [-0.62, 0.32, -0.96], ex: [-0.1, 0, 0.1] }),
+    P('Schroefveer achter links', spring(0.065, 0.011, 0.24, 5), MAT.steel, { d: 'Schroefveer achter.', p: [0.56, 0.39, -1.47], ex: [0, 0.32, 0] }),
+    P('Schroefveer achter rechts', spring(0.065, 0.011, 0.24, 5), MAT.steel, { d: 'Schroefveer achter.', p: [-0.56, 0.39, -1.47], ex: [0, 0.32, 0] }),
+    P('Schokdemper achter links', damper(1), MAT.darkSteel, { d: 'Telescopische schokdemper achter.', ex: [0.08, 0.26, -0.08] }),
+    P('Schokdemper achter rechts', damper(-1), MAT.darkSteel, { d: 'Telescopische schokdemper achter.', ex: [-0.08, 0.26, -0.08] }),
+    rearCorner(1), rearCorner(-1),
+  ]);
+}
+function buildWheel(s, front) {
+  const z = front ? AXF : AXR, n = (s > 0 ? 'links' : 'rechts') + (front ? 'voor' : 'achter');
+  const tire = G.lathe('x', [[0.2286, -0.103], [0.25, -0.112], [0.29, -0.1145], [0.315, -0.11], [0.326, -0.1], [0.33, -0.085], [0.33, -0.062], [0.327, -0.062], [0.327, -0.052], [0.33, -0.052], [0.33, -0.018], [0.327, -0.018], [0.327, -0.008], [0.33, -0.008], [0.33, 0.008], [0.327, 0.008], [0.327, 0.018], [0.33, 0.018], [0.33, 0.052], [0.327, 0.052], [0.327, 0.062], [0.33, 0.062], [0.33, 0.085], [0.326, 0.1], [0.315, 0.11], [0.29, 0.1145], [0.25, 0.112], [0.2286, 0.103]], 72, 'tire');
+  const rim = cache('rim', () => {
+    const barrel = new THREE.LatheGeometry([[0.2286, -0.106], [0.236, -0.108], [0.236, -0.103], [0.229, -0.098], [0.222, -0.088], [0.205, -0.07], [0.205, 0.04], [0.214, 0.085], [0.226, 0.092], [0.236, 0.098], [0.236, 0.106], [0.2286, 0.106]].map(p => new THREE.Vector2(...p)), 72);
+    const hub = new THREE.LatheGeometry([[0.028, 0.07], [0.066, 0.068], [0.072, 0.056], [0.072, 0.04], [0.028, 0.04]].map(p => new THREE.Vector2(...p)), 40);
+    const spokes = [];
+    for (let k = 0; k < 10; k++) {
+      const sp = extrude(shapeOf([[-0.017, 0.062], [0.017, 0.062], [0.011, 0.215], [-0.011, 0.215]]), 0.02);
+      sp.rotateX(-HALF); sp.rotateY(k * PI / 5); sp.translate(0, 0.052 + (k % 2) * 0.006, 0);
+      spokes.push(sp);
+    }
+    return yTo(merge([barrel, hub, ...spokes]), 'x');
+  });
+  const va = 0.31;
+  return A(`Wiel ${n}`, { d: 'Lichtmetalen meerspaaks velg met band 225/45 R18.', p: [s * TRACK, AY, z], s: [s, 1, 1], spec: [['Band', '225/45 R18'], ['Steekcirkel', '5 × 114,3 mm'], ['Bevestiging', 'wielbouten M14 × 1,5']], ex: [s * 1.05, -0.1, front ? 0.55 : -0.65] }, [
+    P('Band', tire, MAT.rubber, { d: 'Radiaalband 225/45 R18.', ex: [-0.07, 0, 0] }),
+    P('Velg', rim, MAT.alu, { d: 'Lichtmetalen 18-inch velg met tien spaken.', ex: [0.09, 0, 0] }),
+    ...[0, 1, 2, 3, 4].map(k => P(`Wielbout ${k + 1}`, hexBolt(0.06, 0.012, '-x'), MAT.steel, { d: 'Wielbout M14 × 1,5.', p: [0.072, 0.0572 * Math.cos(k * PI * 0.4), 0.0572 * Math.sin(k * PI * 0.4)], ex: [0.26, 0, 0] })),
+    P('Naafdop', G.lathe('x', [[0, 0.012], [0.02, 0.01], [0.03, 0.003], [0.03, 0], [0, 0]], 32, 'cap'), MAT.chrome, { d: 'Afdekkap van het velgcentrum.', p: [0.074, 0, 0], ex: [0.34, 0, 0] }),
+    P('Ventiel', G.cyl('x', 0.005, 0.0045, 0.035, 10), MAT.rubber, { d: 'Bandenventiel.', p: [0.075, 0.21 * Math.cos(va), 0.21 * Math.sin(va)], ex: [0.18, 0.06, 0.02] }),
+    P('Bandenspanningssensor', G.rbox(0.03, 0.015, 0.04, 0.005), MAT.ecu, { d: 'Sensor aan het ventiel die de bandenspanning doorgeeft.', p: [0.045, 0.2 * Math.cos(va), 0.2 * Math.sin(va)], ex: [0.12, 0.12, 0.04] }),
+  ]);
+}
+function buildBrakeSystem() {
+  const lines = merge([
+    tube([[0.18, 0.7, 1.12], [0.5, 0.66, 1.12], [0.66, 0.62, 1.2], [0.7, 0.46, AXF - 0.08]], 0.004, 40, 6),
+    tube([[0.16, 0.7, 1.12], [-0.4, 0.66, 1.12], [-0.66, 0.62, 1.2], [-0.7, 0.46, AXF - 0.08]], 0.004, 50, 6),
+    tube([[0.2, 0.68, 1.08], [0.24, 0.3, 1.0], [0.25, 0.16, 0.6], [0.25, 0.16, -0.9], [0.5, 0.22, -1.3], [0.7, 0.42, AXR - 0.1]], 0.004, 90, 6),
+    tube([[0.19, 0.68, 1.08], [0.21, 0.3, 1.0], [0.21, 0.16, 0.6], [0.21, 0.16, -0.9], [-0.4, 0.22, -1.3], [-0.7, 0.42, AXR - 0.1]], 0.004, 90, 6),
+  ]);
+  const epbX = 0.33, epbZ = -0.95;
+  return A('Remsysteem', { d: 'Hydraulisch remsysteem met bekrachtiger, ABS/ESP en de automatische parkeerrem.', ex: [1.55, 0.55, 1.0] }, [
+    P('Rembekrachtiger', G.lathe('z', [[0.03, -0.09], [0.12, -0.07], [0.125, -0.02], [0.125, 0.02], [0.12, 0.07], [0.03, 0.09]], 40, 'boost'), MAT.darkSteel, { d: 'Vacuümbekrachtiger die de pedaalkracht versterkt.', p: [0.4, 0.76, 1.08], ex: [0, 0.1, -0.1] }),
+    P('Hoofdremcilinder', G.cyl('z', 0.03, 0.03, 0.16, 20), MAT.alu, { d: 'Zet de pedaalkracht om in hydraulische druk.', p: [0.4, 0.76, 1.25], ex: [0, 0.06, 0.12] }),
+    P('Remvloeistofreservoir', merge([G.rbox(0.12, 0.07, 0.08, 0.012), xf(G.cyl('y', 0.022, 0.022, 0.02, 16), [0.03, 0.045, 0])]), MAT.tank, { d: 'Voorraadbak met remvloeistof.', p: [0.4, 0.825, 1.24], ex: [0, 0.16, 0.12] }),
+    P('ABS/ESP-unit', merge([G.rbox(0.14, 0.1, 0.12, 0.01), xf(G.cyl('x', 0.035, 0.035, 0.07, 16), [-0.1, 0, 0])]), MAT.alu, { d: 'Hydraulische modulator met pomp en regelkleppen voor ABS en ESP.', p: [0.18, 0.72, 1.1], ex: [-0.1, 0.12, 0] }),
+    P('Remleidingen', lines, MAT.steel, { d: 'Stalen remleidingen naar de vier wielen.', ex: [0, -0.06, 0] }),
+    A('Parkeerrem', { d: 'Automatische parkeerrem: een unit onder de auto met één elektromotor die via een wormwiel twee kabels naar de achterremmen spant.', ex: [0, -0.3, 0] }, [
+      P('Behuizing parkeerremunit', G.rbox(0.18, 0.07, 0.14, 0.012), MAT.plastic, { d: 'Afgedichte behuizing onder de auto.', p: [epbX, 0.13, epbZ], ex: [0, -0.12, 0] }),
+      P('Elektromotor met wormwiel', merge([G.cyl('x', 0.022, 0.022, 0.07, 16), xf(spring(0.008, 0.003, 0.05, 6, 'x'), [0.06, 0, 0])]), MAT.steel, { d: 'Motor die via een wormwiel de kabels aantrekt of loslaat.', p: [epbX - 0.02, 0.13, epbZ], ex: [0, 0.03, 0.1] }),
+      P('Printplaat parkeerrem', G.box(0.12, 0.004, 0.09), MAT.ecu, { d: 'Elektronica die de parkeerrem aanstuurt.', p: [epbX, 0.155, epbZ], ex: [0, 0.1, 0] }),
+      P('Parkeerremkabel links', tube([[epbX + 0.06, 0.13, epbZ - 0.05], [0.55, 0.2, -1.2], [0.72, 0.38, AXR - 0.1]], 0.004, 40, 6), MAT.darkSteel, { d: 'Kabel naar de linker achterrem.', ex: [0.06, 0, 0] }),
+      P('Parkeerremkabel rechts', tube([[epbX - 0.06, 0.13, epbZ - 0.05], [-0.2, 0.17, -1.2], [-0.72, 0.38, AXR - 0.1]], 0.004, 40, 6), MAT.darkSteel, { d: 'Kabel naar de rechter achterrem.', ex: [-0.06, 0, 0] }),
+    ]),
+  ]);
+}
+
+/* ===================== interieur ===================== */
+function frontSeat(s) {
+  const who = s > 0 ? 'Bestuurdersstoel' : 'Passagiersstoel';
+  const headrest = A('Hoofdsteun', { d: 'In hoogte verstelbare hoofdsteun.', p: [0, 0.68, -0.02], ex: [0, 0.3, 0] }, [
+    P('Hoofdsteunkussen', G.rbox(0.27, 0.17, 0.09, 0.04), MAT.leather, { d: 'Met leder bekleed kussen.', p: [0, 0.09, 0], ex: [0, 0.07, 0] }),
+    P('Hoofdsteunstangen', merge([xf(G.cyl('y', 0.006, 0.006, 0.1, 10), [0.07, -0.02, 0]), xf(G.cyl('y', 0.006, 0.006, 0.1, 10), [-0.07, -0.02, 0])]), MAT.chrome, { d: 'Verchroomde geleidestangen.', ex: [0, -0.05, 0] }),
+  ]);
+  const back = A('Rugleuning', { d: 'Elektrisch verstelbare rugleuning met zijairbag en verwarming.', p: [0, 0.24, -0.24], r: [-0.3, 0, 0], ex: [0, 0.26, -0.26] }, [
+    P('Rugleuningbekleding', merge([xf(G.rbox(0.5, 0.62, 0.11, 0.04), [0, 0.31, 0]), xf(G.rbox(0.07, 0.55, 0.08, 0.03), [0.22, 0.3, 0.05]), xf(G.rbox(0.07, 0.55, 0.08, 0.03), [-0.22, 0.3, 0.05])]), MAT.leather, { d: 'Beige lederen bekleding met verstevigde zijwangen.', ex: [0, 0, 0.13] }),
+    P('Verwarmingsmat rugleuning', G.box(0.34, 0.4, 0.003), MAT.heater, { d: 'Verwarmingselement voor de stoelverwarming.', p: [0, 0.3, 0.057], ex: [0, 0, 0.24] }),
+    P('Rugleuningframe', merge([xf(G.box(0.44, 0.03, 0.03), [0, 0.6, -0.03]), xf(G.box(0.03, 0.6, 0.03), [0.21, 0.3, -0.03]), xf(G.box(0.03, 0.6, 0.03), [-0.21, 0.3, -0.03])]), MAT.darkSteel, { d: 'Stalen frame van de rugleuning.', ex: [0, 0, -0.14] }),
+    P('Zijairbag', G.rbox(0.06, 0.2, 0.08, 0.02), MAT.plastic, { d: 'Zijairbag in de buitenste zijwang.', p: [s * 0.235, 0.38, 0], ex: [s * 0.2, 0, 0] }),
+    headrest,
+  ]);
+  return A(who, { d: `${who}: elektrisch verstelbaar met geheugen (bestuurder), stoelverwarming en beige leder (Initiale).`, p: [s * 0.37, 0.24, -0.02], ex: [s * 0.36, 0.05, 0.06] }, [
+    P('Stoelrail links', G.box(0.03, 0.03, 0.5), MAT.steel, { d: 'Geleiderail voor de lengteverstelling.', p: [0.18, 0.015, 0], ex: [0.04, -0.15, 0] }),
+    P('Stoelrail rechts', G.box(0.03, 0.03, 0.5), MAT.steel, { d: 'Geleiderail voor de lengteverstelling.', p: [-0.18, 0.015, 0], ex: [-0.04, -0.15, 0] }),
+    P('Stoelonderstel', G.rbox(0.42, 0.06, 0.44, 0.01), MAT.darkSteel, { d: 'Onderstel met hoogteverstelling.', p: [0, 0.07, 0.01], ex: [0, -0.08, 0] }),
+    P('Verstelmotoren', merge([xf(G.cyl('x', 0.022, 0.022, 0.12, 14), [0, 0.115, 0.12]), xf(G.cyl('x', 0.022, 0.022, 0.12, 14), [0, 0.115, -0.1])]), MAT.darkSteel, { d: 'Elektromotoren voor lengte, hoogte en hellingshoek.', ex: [0, -0.03, 0.22] }),
+    P('Zitting', merge([xf(G.rbox(0.5, 0.11, 0.52, 0.04), [0, 0.18, 0.02]), xf(G.rbox(0.07, 0.06, 0.5, 0.03), [0.22, 0.25, 0.02]), xf(G.rbox(0.07, 0.06, 0.5, 0.03), [-0.22, 0.25, 0.02])]), MAT.leather, { d: 'Lederen zitting met zijwangen.', ex: [0, 0.1, 0.12] }),
+    P('Verwarmingsmat zitting', G.box(0.34, 0.003, 0.38), MAT.heater, { d: 'Verwarmingselement in de zitting.', p: [0, 0.238, 0.02], ex: [0, 0.2, 0.2] }),
+    back,
+  ]);
+}
+function buildInterior() {
+  const dashProfile = [[1.03, 0.935], [0.8, 0.95], [0.62, 0.945], [0.52, 0.91], [0.47, 0.84], [0.48, 0.74], [0.55, 0.62], [0.58, 0.52], [0.68, 0.5], [0.9, 0.6], [1.0, 0.78]];
+  const vent = merge([G.rbox(0.11, 0.05, 0.015, 0.008), ...[-0.012, 0, 0.012].map(y => xf(G.box(0.1, 0.004, 0.01), [0, y, 0.006]))]);
+  const dash = A('Dashboard', { d: 'Dashboard met instrumenten, navigatiescherm, klimaatbediening en airbags.', ex: [0, 0.16, 0.6] }, [
+    P('Dashboardbekleding', side(shapeOf(dashProfile), 1.5), MAT.dash, { d: 'Zachte kunststof dashboardhuid over een draagstructuur.', ex: [0, 0.12, 0.08] }),
+    P('Dwarsbalk dashboard', merge([G.cyl('x', 0.03, 0.03, 1.44, 16), xf(G.box(0.03, 0.3, 0.03), [0.12, -0.2, -0.1]), xf(G.box(0.03, 0.3, 0.03), [-0.12, -0.2, -0.1])]), MAT.steel, { d: 'Stalen dwarsbalk die stuurkolom en dashboard draagt.', p: [0, 0.8, 0.72], ex: [0, -0.1, 0.1] }),
+    P('Instrumentenpaneel', G.rbox(0.3, 0.12, 0.03, 0.01), MAT.screen, { d: 'Instrumenten met snelheidsmeter, toerenteller en boordcomputer.', p: [0.37, 0.875, 0.53], r: [-0.25, 0, 0], ex: [0, 0.04, -0.12] }),
+    P('Instrumentenkap', G.rbox(0.34, 0.035, 0.14, 0.015), MAT.dash, { d: 'Kap boven de instrumenten tegen reflecties.', p: [0.37, 0.945, 0.56], ex: [0, 0.1, 0] }),
+    P('Navigatiescherm', G.rbox(0.2, 0.11, 0.018, 0.008), MAT.screen, { d: 'Scherm van de Carminat TomTom Live-navigatie.', p: [0, 0.965, 0.64], r: [-0.35, 0, 0], ex: [0, 0.14, -0.04] }),
+    P('Klimaatbedieningspaneel', G.rbox(0.22, 0.08, 0.02, 0.008), MAT.plastic, { d: 'Bediening van de tweezone-klimaatregeling.', p: [0, 0.78, 0.466], ex: [0, 0, -0.14] }),
+    ...[[0.62, 0.485], [0.1, 0.462], [-0.1, 0.462], [-0.62, 0.485]].map(([x, z], i) => P(`Ventilatierooster ${i + 1}`, vent, MAT.satin, { d: 'Verstelbaar luchtrooster.', p: [x, 0.86, z], ex: [0, 0.03, -0.12] })),
+    P('Handschoenenkastje', G.rbox(0.4, 0.15, 0.03, 0.01), MAT.dash, { d: 'Afsluitbaar dashboardkastje.', p: [-0.38, 0.67, 0.508], ex: [0, -0.04, -0.16] }),
+    P('Passagiersairbag', G.rbox(0.3, 0.06, 0.2, 0.012), MAT.plastic, { d: 'Airbagmodule aan passagierszijde.', p: [-0.38, 0.9, 0.68], ex: [0, 0.22, 0] }),
+    P('Kachelhuis', merge([G.rbox(0.5, 0.28, 0.24, 0.03), xf(G.cyl('x', 0.07, 0.07, 0.16, 20), [-0.33, -0.05, 0])]), MAT.plastic, { d: 'Klimaatunit met kachelradiateur, verdamper en aanjager.', p: [0.02, 0.66, 0.8], ex: [0, -0.06, 0.24] }),
+  ]);
+  const cup = G.lathe('y', [[0.035, 0], [0.035, -0.06], [0, -0.06]], 24, 'cup');
+  const console_ = A('Middenconsole', { d: 'Middenconsole met keuzehendel, kaartlezer en startknop.', ex: [0, 0.12, 0.05] }, [
+    P('Consoletunnel', G.rbox(0.24, 0.26, 0.87, 0.04), MAT.dash, { d: 'Kunststof console over de vloertunnel.', p: [0, 0.36, 0.015], ex: [0, -0.06, 0] }),
+    P('Middenconsole voorzijde', G.rbox(0.24, 0.3, 0.12, 0.03), MAT.dash, { d: 'Verticaal deel onder de klimaatbediening.', p: [0, 0.55, 0.48], ex: [0, 0, 0.08] }),
+    P('Keuzehendel', merge([xf(G.cyl('y', 0.008, 0.008, 0.08, 10), [0, -0.04, 0]), G.lathe('y', [[0, 0], [0.022, 0.006], [0.026, 0.03], [0.018, 0.05], [0, 0.055]], 24)]), MAT.leather, { d: 'Keuzehendel van de automaat (P-R-N-D) met handmatige schakelstand.', p: [0, 0.545, 0.2], ex: [0, 0.18, 0] }),
+    P('Keuzehendelplaat', G.rbox(0.12, 0.012, 0.2, 0.005), MAT.satin, { d: 'Afdekplaat met standaanduiding.', p: [0, 0.497, 0.2], ex: [0, 0.1, 0] }),
+    P('Kaartlezer', G.rbox(0.1, 0.03, 0.03, 0.008), MAT.plastic, { d: 'Lezer voor de handsfree Renault-kaart.', p: [0, 0.64, 0.545], ex: [0, 0, 0.12] }),
+    P('Startknop', G.cyl('z', 0.015, 0.015, 0.012, 20), MAT.chrome, { d: 'Start-/stopknop van de motor.', p: [0.08, 0.64, 0.548], ex: [0, 0, 0.14] }),
+    P('Parkeerremschakelaar', G.rbox(0.04, 0.015, 0.05, 0.005), MAT.plastic, { d: 'Bedient de automatische parkeerrem.', p: [0.07, 0.498, 0.32], ex: [0, 0.1, 0] }),
+    P('Bekerhouders', merge([xf(cup, [0.045, 0.49, 0.02]), xf(cup, [-0.045, 0.49, 0.02])]), MAT.plastic, { d: 'Twee bekerhouders.', ex: [0, 0.08, 0] }),
+    P('Armsteun middenconsole', G.rbox(0.2, 0.07, 0.3, 0.025), MAT.leather, { d: 'Lederen armsteun met opbergvak.', p: [0, 0.525, -0.26], ex: [0, 0.14, -0.05] }),
+  ]);
+  const seats = A('Stoelen', { d: 'Voorstoelen met verwarming en elektrische verstelling, achterbank met neerklapbare rugleuning.', ex: [0, 0.26, -0.1] }, [
+    frontSeat(1), frontSeat(-1),
+    A('Achterbank', { d: 'Driezits achterbank met gedeeld neerklapbare rugleuning.', ex: [0, 0.1, -0.36] }, [
+      P('Zitting achterbank', G.rbox(1.3, 0.12, 0.48, 0.05), MAT.leather, { d: 'Lederen zitting achter.', p: [0, 0.43, -0.95], ex: [0, -0.06, 0.12] }),
+      P('Rugleuning groot deel', G.rbox(0.77, 0.56, 0.11, 0.04), MAT.leather, { d: 'Grootste deel van de gedeelde rugleuning.', p: [-0.265, 0.76, -1.27], r: [-0.25, 0, 0], ex: [-0.12, 0.1, -0.1] }),
+      P('Rugleuning klein deel', G.rbox(0.52, 0.56, 0.11, 0.04), MAT.leather, { d: 'Kleinste deel van de gedeelde rugleuning.', p: [0.385, 0.76, -1.27], r: [-0.25, 0, 0], ex: [0.12, 0.1, -0.1] }),
+      ...[[-0.42, 1.1, 'links'], [0, 1.08, 'midden'], [0.42, 1.1, 'rechts']].map(([x, y, n]) => P(`Hoofdsteun achter ${n}`, G.rbox(0.24, 0.14, 0.08, 0.035), MAT.leather, { d: 'Hoofdsteun achter.', p: [x, y, -1.37], ex: [0, 0.22, 0] })),
+    ]),
+    A('Veiligheidsgordels', { d: 'Driepuntsgordels met oprolautomaten en gordelsloten.', ex: [0, 0.3, 0] }, [
+      ...[1, -1].map(s => P(`Gordelrolautomaat voor ${sideName(s)}`, G.rbox(0.06, 0.1, 0.06, 0.01), MAT.plastic, { d: 'Oprolautomaat met gordelspanner in de B-stijl.', p: [s * 0.78, 0.36, -0.3], ex: [s * 0.1, 0, 0] })),
+      ...[1, -1].map(s => P(`Gordelband voor ${sideName(s)}`, rodBetween([s * 0.8, 1.2, -0.3], [s * 0.15, 0.47, -0.18], 0.008, 6), MAT.plastic, { d: 'Gordelband van de voorstoel.', ex: [s * 0.12, 0.08, 0] })),
+      ...[1, -1].map(s => P(`Gordelslot voor ${sideName(s)}`, G.rbox(0.03, 0.08, 0.04, 0.008), MAT.plastic, { d: 'Gordelslot met gordelverklikker.', p: [s * 0.14, 0.45, -0.18], ex: [0, 0.12, 0] })),
+      ...[1, -1].map(s => P(`Gordelrolautomaat achter ${sideName(s)}`, G.rbox(0.06, 0.06, 0.08, 0.01), MAT.plastic, { d: 'Oprolautomaat achter.', p: [s * 0.58, 1.0, -1.55], ex: [0, 0.12, 0] })),
+      ...[-0.45, 0, 0.45].map((x, i) => P(`Gordelslot achter ${i + 1}`, G.rbox(0.03, 0.07, 0.04, 0.008), MAT.plastic, { d: 'Gordelslot achterbank.', p: [x, 0.48, -1.12], ex: [0, 0.12, 0] })),
+    ]),
+  ]);
+  const carpet = front(shapeOf([[-0.8, 0.235], [-0.13, 0.235], [-0.11, 0.36], [0.11, 0.36], [0.13, 0.235], [0.8, 0.235], [0.8, 0.215], [-0.8, 0.215]]), 1.65); carpet.translate(0, 0, 0.125);
+  const trim = A('Bekleding', { d: 'Hemel, vloer en bagageruimte.' }, [
+    P('Hemelbekleding', patch((z, w) => { const p = ghPt(z, w); return [p[0] * 0.965, p[1] - 0.028, p[2]]; }, -1.3, 0.4, 24, () => [0.3, 0.7], 12), MAT.fabric, { d: 'Lichtbeige hemelbekleding.', ex: [0, 0.48, 0] }),
+    P('Vloerbedekking', carpet, MAT.carpet, { d: 'Getufte vloerbedekking over vloer en tunnel.', ex: [0, -0.22, 0] }),
+    P('Hoedenplank', G.rbox(1.3, 0.012, 0.55, 0.005), MAT.carpet, { d: 'Afdekplaat van de bagageruimte; beweegt mee met de achterklep.', p: [0, 1.0, -1.85], ex: [0, 0.3, -0.2] }),
+    P('Bagageruimtevloer', G.rbox(1.2, 0.015, 0.75, 0.005), MAT.carpet, { d: 'Vloerplaat van de bagageruimte (450 tot 1377 liter).', p: [0, 0.46, -1.86], ex: [0, -0.12, -0.3] }),
+    ...[1, -1].map(s => P(`Zonneklep ${sideName(s)}`, G.rbox(0.4, 0.012, 0.17, 0.006), MAT.fabric, { d: 'Zonneklep met make-upspiegel.', p: [s * 0.36, 1.372, 0.27], ex: [0, 0.3, 0.1] })),
+  ]);
+  const pedals = A('Pedalen', { d: 'Rem- en gaspedaal; een automaat heeft geen koppelingspedaal.', ex: [0.12, -0.1, 0.38] }, [
+    P('Pedaalbok', G.rbox(0.18, 0.2, 0.1, 0.01), MAT.darkSteel, { d: 'Steun waarin de pedalen scharnieren.', p: [0.33, 0.72, 0.86], ex: [0, 0.1, 0.08] }),
+    P('Rempedaal', merge([rodBetween([0.4, 0.72, 0.86], [0.4, 0.42, 0.74], 0.01), xf(G.rbox(0.13, 0.065, 0.012, 0.005), [0.4, 0.4, 0.73], [-0.35, 0, 0])]), MAT.satin, { d: 'Breed rempedaal, typisch voor een automaat.', ex: [0.04, 0, -0.06] }),
+    P('Gaspedaal', merge([rodBetween([0.23, 0.7, 0.86], [0.23, 0.4, 0.78], 0.006), xf(G.rbox(0.06, 0.15, 0.012, 0.005), [0.23, 0.36, 0.77], [-0.4, 0, 0])]), MAT.satin, { d: 'Elektronisch gaspedaal (drive-by-wire).', ex: [-0.06, 0, -0.06] }),
+    P('Voetsteun', xf(G.rbox(0.07, 0.17, 0.02, 0.006), [0.58, 0.33, 0.76], [-0.6, 0, 0]), MAT.satin, { d: 'Steun voor de linkervoet.', ex: [0.08, 0, -0.04] }),
+  ]);
+  const mirror = A('Binnenspiegel', { d: 'Automatisch dimmende binnenspiegel.', ex: [0, 0.32, 0.2] }, [
+    P('Spiegelvoet binnen', G.rbox(0.04, 0.05, 0.03, 0.008), MAT.plastic, { d: 'Voet op de voorruit, met regensensor.', p: [0, 1.36, 0.38], ex: [0, 0.06, 0.04] }),
+    P('Spiegelhuis binnen', G.rbox(0.26, 0.065, 0.035, 0.015), MAT.plastic, { d: 'Behuizing van de binnenspiegel.', p: [0, 1.3, 0.355] }),
+    P('Spiegelglas binnen', G.box(0.24, 0.05, 0.003), MAT.reflector, { d: 'Elektrochroom spiegelglas dat automatisch dimt.', p: [0, 1.3, 0.336], ex: [0, 0, -0.08] }),
+  ]);
+  return A('Interieur', { d: 'Initiale-interieur met beige leder, stoelverwarming, Bose-audio en tweezone-klimaatregeling.', ex: [0, 0.66, 0] }, [dash, console_, seats, trim, pedals, mirror]);
+}
+
+/* ===================== koeling, luchtinlaat, uitlaat, brandstof, elektra ===================== */
+const TURB_OUT = [0.01, 0.15, -0.26], COMP_IN = [0.2, 0.15, -0.26], COMP_OUT = [0.155, 0.25, -0.26];
+function buildCooling() {
+  const shroud = merge([xf(G.box(0.64, 0.03, 0.03), [0, 0.215, 0]), xf(G.box(0.64, 0.03, 0.03), [0, -0.215, 0]), xf(G.box(0.03, 0.43, 0.03), [0.32, 0, 0]), xf(G.box(0.03, 0.43, 0.03), [-0.32, 0, 0]), G.torus('z', 0.175, 0.012, 48, 6), xf(G.box(0.36, 0.012, 0.012), [0, 0, -0.01]), xf(G.box(0.012, 0.36, 0.012), [0, 0, -0.01])]);
+  return A('Koeling en luchtinlaat', { d: 'Radiateur, condensor, intercooler, koelventilator en het luchtinlaattraject naar de turbo.', ex: [0, 0.3, 3.15] }, [
+    A('Radiateur', { d: 'Koelt de koelvloeistof van de motor.', ex: [0, 0.05, -0.05] }, [
+      P('Koelblok', merge([G.box(0.62, 0.4, 0.026), ...[-0.15, -0.05, 0.05, 0.15].map(y => xf(G.box(0.62, 0.004, 0.028), [0, y, 0]))]), MAT.alu, { d: 'Aluminium lamellenblok.', p: [0, 0.47, 2.04] }),
+      P('Waterkast links', G.box(0.04, 0.42, 0.045), MAT.plastic, { d: 'Kunststof eindtank.', p: [0.33, 0.47, 2.04], ex: [0.14, 0, 0] }),
+      P('Waterkast rechts', G.box(0.04, 0.42, 0.045), MAT.plastic, { d: 'Kunststof eindtank met aftapkraan.', p: [-0.33, 0.47, 2.04], ex: [-0.14, 0, 0] }),
+      P('Aftapkraan', G.cyl('y', 0.008, 0.008, 0.03, 10), MAT.plastic, { d: 'Kraan om de koelvloeistof af te tappen.', p: [-0.33, 0.245, 2.04], ex: [-0.2, -0.1, 0] }),
+    ]),
+    P('Condensor', G.box(0.6, 0.36, 0.016), MAT.darkSteel, { d: 'Condensor van de airconditioning, vóór de radiateur.', p: [0, 0.46, 2.085], ex: [0, 0.04, 0.18] }),
+    A('Intercooler', { d: 'Koelt de door de turbo samengeperste lucht voor een hogere vullingsgraad.', ex: [0, -0.12, 0.3] }, [
+      P('Intercoolerblok', merge([G.box(0.5, 0.13, 0.05), ...[-0.03, 0.03].map(y => xf(G.box(0.5, 0.004, 0.052), [0, y, 0]))]), MAT.alu, { d: 'Lucht-luchtwarmtewisselaar.', p: [0, 0.315, 2.19] }),
+      P('Eindkap links', G.rbox(0.04, 0.13, 0.06, 0.012), MAT.aluCast, { d: 'Inlaatzijde met aansluiting van de turbo.', p: [0.27, 0.315, 2.19], ex: [0.12, 0, 0] }),
+      P('Eindkap rechts', G.rbox(0.04, 0.13, 0.06, 0.012), MAT.aluCast, { d: 'Uitlaatzijde naar het gasklephuis.', p: [-0.27, 0.315, 2.19], ex: [-0.12, 0, 0] }),
+    ]),
+    A('Koelventilator', { d: 'Elektrische ventilator achter de radiateur.', ex: [0, 0.02, -0.38] }, [
+      P('Ventilatorkap', shroud, MAT.plastic, { d: 'Kap die de luchtstroom door het hele blok trekt.', p: [0, 0.47, 1.995] }),
+      P('Ventilatorwaaier', merge([blades(7, 0.045, 0.165, 0.03, 0.003, 0.55, 'z'), G.cyl('z', 0.045, 0.045, 0.035, 20)]), MAT.plastic, { d: 'Zevenbladige waaier.', p: [0, 0.47, 2.005], ex: [0, 0, 0.14] }),
+      P('Ventilatormotor', G.cyl('z', 0.045, 0.045, 0.06, 20), MAT.darkSteel, { d: 'Elektromotor met regelweerstand.', p: [0, 0.47, 1.962], ex: [0, 0, -0.12] }),
+    ]),
+    P('Expansievat', merge([G.rbox(0.14, 0.12, 0.18, 0.02), xf(G.cyl('y', 0.025, 0.025, 0.03, 16), [0.02, 0.07, 0])]), MAT.tank, { d: 'Doorzichtig expansievat met min/max-markering.', p: [-0.5, 0.76, 1.12], ex: [-0.2, 0.16, -0.2] }),
+    P('Koelslang boven', tube([ENG2CAR([0.27, 0.3, 0.04]), [0.22, 0.62, 1.75], [0.33, 0.63, 1.98], [0.33, 0.63, 2.02]], 0.02, 40, 10), MAT.rubber, { d: 'Warme koelvloeistof van de thermostaat naar de radiateur.', ex: [0.1, 0.18, 0] }),
+    P('Koelslang onder', tube([ENG2CAR([-0.19, 0.06, 0.15]), [-0.3, 0.3, 1.85], [-0.33, 0.3, 2.0], [-0.33, 0.3, 2.02]], 0.02, 40, 10), MAT.rubber, { d: 'Afgekoelde vloeistof terug naar de waterpomp.', ex: [-0.1, -0.14, 0] }),
+    A('Luchtinlaat', { d: 'Aanzuigtraject van luchthapper tot turbocompressor.', ex: [0.3, 0.36, -0.2] }, [
+      P('Aanzuigmond', tube([[0.36, 0.7, 2.02], [0.36, 0.72, 2.12], [0.3, 0.72, 2.18]], 0.03, 16, 10), MAT.plastic, { d: 'Haalt koele buitenlucht achter de grille.', ex: [0, 0, 0.14] }),
+      P('Luchtfilterhuis', G.rbox(0.24, 0.1, 0.3, 0.02), MAT.plastic, { d: 'Onderbak van het luchtfilter.', p: [0.36, 0.69, 1.86], ex: [0, -0.1, 0] }),
+      P('Luchtfilterelement', G.rbox(0.22, 0.035, 0.28, 0.006), MAT.filter, { d: 'Papieren luchtfilter.', p: [0.36, 0.755, 1.86], ex: [0, 0.08, 0] }),
+      P('Luchtfilterdeksel', G.rbox(0.24, 0.05, 0.3, 0.02), MAT.plastic, { d: 'Deksel met aansluiting naar de turbo.', p: [0.36, 0.795, 1.86], ex: [0, 0.2, 0] }),
+      P('Aanzuigslang turbo', tube([[0.36, 0.73, 1.71], [0.36, 0.72, 1.45], [0.25, 0.62, 1.28], ENG2CAR([COMP_IN[0] + 0.05, COMP_IN[1], COMP_IN[2]]), ENG2CAR([COMP_IN[0] + 0.02, COMP_IN[1], COMP_IN[2]])], 0.03, 48, 12), MAT.rubber, { d: 'Gefilterde lucht naar de compressorinlaat.', ex: [0, 0.12, -0.12] }),
+    ]),
+    P('Intercoolerslang heet', tube([ENG2CAR([COMP_OUT[0], COMP_OUT[1] + 0.02, COMP_OUT[2]]), [0.3, 0.62, 1.3], [0.4, 0.62, 1.6], [0.45, 0.45, 1.95], [0.4, 0.32, 2.1], [0.29, 0.315, 2.19]], 0.025, 64, 10), MAT.rubber, { d: 'Samengeperste, hete lucht van turbo naar intercooler.', ex: [0.22, 0.2, 0] }),
+    P('Intercoolerslang koud', tube([[-0.29, 0.315, 2.19], [-0.42, 0.32, 2.0], [-0.44, 0.42, 1.8], ENG2CAR([-0.3, 0.14, 0.21]), ENG2CAR([-0.262, 0.14, 0.21])], 0.025, 56, 10), MAT.rubber, { d: 'Gekoelde laadlucht naar het gasklephuis.', ex: [-0.22, 0.2, 0] }),
+  ]);
+}
+function buildExhaust() {
+  const t0 = ENG2CAR(TURB_OUT), t1 = ENG2CAR([TURB_OUT[0] - 0.04, TURB_OUT[1] - 0.05, TURB_OUT[2] - 0.04]);
+  const oval = (len, r, sx) => xf(G.cyl('z', r, r, len, 24), [0, 0, 0], null, [sx, 1, 1]);
+  return A('Uitlaatsysteem', { d: 'Van turbo via katalysator en twee dempers naar het eindstuk.', ex: [0, -0.7, -0.25] }, [
+    P('Downpipe', tube([t0, t1, [0.04, 0.3, 1.1], [0.04, 0.16, 0.96]], 0.028, 40, 12), MAT.exhaust, { d: 'Voorpijp direct achter de turbine.', ex: [0, 0.12, 0.18] }),
+    P('Lambdasonde voor', G.cyl('y', 0.009, 0.009, 0.05, 12), MAT.steel, { d: 'Meet het restzuurstofgehalte voor de katalysator.', p: [t1[0], t1[1] + 0.035, t1[2]], ex: [0, 0.16, 0.18] }),
+    P('Katalysator', merge([oval(0.3, 0.065, 1.4), xf(G.cyl('z', 0.028, 0.065, 0.06, 20), [0, 0, 0.18]), xf(G.cyl('z', 0.065, 0.028, 0.06, 20), [0, 0, -0.18])]), MAT.heat, { d: 'Driewegkatalysator die CO, HC en NOx omzet.', p: [0.04, 0.13, 0.78], ex: [0, 0, 0.1] }),
+    P('Lambdasonde na', G.cyl('y', 0.009, 0.009, 0.05, 12), MAT.steel, { d: 'Controleert de werking van de katalysator.', p: [0.04, 0.2, 0.57], ex: [0, 0.12, 0] }),
+    P('Flexstuk', merge([tube([[0.04, 0.13, 0.57], [0.04, 0.13, 0.41]], 0.024, 8, 12), ...[0, 1, 2, 3, 4, 5, 6].map(k => xf(G.torus('z', 0.026, 0.004, 24, 6), [0.04, 0.13, 0.43 + k * 0.02]))]), MAT.steel, { d: 'Flexibele koppeling die motorbewegingen opvangt.', ex: [0, 0, 0.04] }),
+    P('Tussenpijp', tube([[0.04, 0.13, 0.42], [0.04, 0.125, 0.2], [0.04, 0.12, 0.02]], 0.025, 16, 10), MAT.exhaust, { d: 'Pijp tussen flexstuk en middendemper.', ex: [0, 0, 0.02] }),
+    P('Middendemper', merge([oval(0.42, 0.06, 1.3), xf(G.cyl('z', 0.025, 0.06, 0.05, 20), [0, 0, 0.235]), xf(G.cyl('z', 0.06, 0.025, 0.05, 20), [0, 0, -0.235])]), MAT.exhaust, { d: 'Resonator die vooral hoge tonen dempt.', p: [0.04, 0.12, -0.2] }),
+    P('Achterpijp', tube([[0.04, 0.12, -0.42], [0.06, 0.1, -0.62], [0.08, 0.1, -1.05], [0.1, 0.12, -1.3], [0.15, 0.2, -1.7], [0.15, 0.24, -1.86]], 0.025, 64, 10), MAT.exhaust, { d: 'Pijp onder tank en achteras door naar de einddemper.', ex: [0, 0, -0.04] }),
+    P('Einddemper', G.rbox(0.62, 0.17, 0.28, 0.06), MAT.exhaust, { d: 'Dwarsgeplaatste einddemper.', p: [0.05, 0.25, -2.0], ex: [0, 0, -0.14] }),
+    P('Uitlaateindstuk', G.cyl('z', 0.036, 0.036, 0.12, 24), MAT.chrome, { d: 'Verchroomd eindstuk.', p: [0.3, 0.24, -2.2], ex: [0, 0, -0.32] }),
+    ...[[0.04, 0.17, 0.0], [0.07, 0.15, -0.62], [0.22, 0.34, -1.95], [-0.12, 0.34, -2.0]].map((p, i) => P(`Uitlaatrubber ${i + 1}`, G.torus('z', 0.018, 0.006, 20, 6), MAT.rubber, { d: 'Rubber ophanging die trillingen isoleert.', p, ex: [0, 0.16, 0] })),
+  ]);
+}
+function buildFuel() {
+  const fx = surfX(-1.72, 0.86);
+  return A('Brandstofsysteem', { d: 'Kunststof tank onder de achterbank met pompmodule, vulpijp en leiding naar de motor.', spec: [['Tankinhoud', '66 l'], ['Brandstof', 'benzine (Euro 95)']], ex: [-0.9, -0.5, -0.6] }, [
+    P('Brandstoftank', merge([G.rbox(0.92, 0.18, 0.36, 0.05), xf(G.box(0.86, 0.004, 0.3), [0, -0.09, 0])]), MAT.plastic, { d: 'Kunststof brandstoftank van 66 liter.', p: [-0.04, 0.27, -0.9] }),
+    P('Brandstofpompmodule', merge([G.cyl('y', 0.06, 0.06, 0.03, 24), xf(G.cyl('y', 0.035, 0.035, 0.12, 18), [0, -0.075, 0])]), MAT.plasticGrey, { d: 'Elektrische brandstofpomp met niveaumeter in de tank.', p: [-0.25, 0.37, -0.9], ex: [0, 0.18, 0] }),
+    P('Tankvulpijp', tube([[-0.48, 0.3, -1.02], [-0.62, 0.42, -1.3], [-0.8, 0.7, -1.62], [-(fx - 0.03), 0.86, -1.72]], 0.022, 40, 10), MAT.plastic, { d: 'Vulpijp van tankklep naar tank.', ex: [-0.14, 0.1, -0.12] }),
+    P('Tankdop', G.cyl('x', 0.025, 0.025, 0.02, 18), MAT.plastic, { d: 'Afsluitdop van de vulpijp.', p: [-(fx - 0.02), 0.86, -1.72], ex: [-0.26, 0.1, -0.12] }),
+    P('Tankklep', G.cyl('x', 0.06, 0.06, 0.006, 28), MAT.paint, { d: 'Tankklep in het rechter achterscherm.', p: [-(fx + 0.003), 0.86, -1.72], ex: [-0.36, 0.1, -0.12] }),
+    P('Brandstofleiding', tube([[-0.25, 0.39, -0.9], [-0.3, 0.16, -0.7], [-0.3, 0.15, 0.8], [-0.32, 0.3, 1.02], ENG2CAR([0.2, 0.3, 0.155]), ENG2CAR([0.2, 0.345, 0.155])], 0.004, 80, 6), MAT.steel, { d: 'Leiding van pompmodule naar de brandstofrail.', ex: [0, 0.1, 0.1] }),
+    P('Koolstoffilter', G.cyl('y', 0.045, 0.045, 0.18, 20), MAT.plastic, { d: 'Actief-koolfilter dat benzinedampen uit de tank opvangt.', p: [0.58, 0.52, 1.8], ex: [0.2, 0.1, 0.3] }),
+  ]);
+}
+function buildElectrical() {
+  const starter = ENG2CAR([GB_X + 0.12, -0.035, 0.205]);
+  return A('Elektrisch systeem', { d: 'Accu, zekeringkast, motorcomputer, claxons en kabelbomen.', ex: [-1.55, 0.65, 1.85] }, [
+    A('Accu', { d: '12-voltaccu in de motorruimte.', ex: [-0.2, 0.18, 0.1] }, [
+      P('Accubak', G.box(0.24, 0.17, 0.175), MAT.battery || MAT.plastic, { d: 'Accubak met loodcellen.', p: [-0.42, 0.675, 1.86] }),
+      P('Accudeksel', G.box(0.245, 0.02, 0.18), MAT.plasticGrey, { d: 'Deksel met ontluchting.', p: [-0.42, 0.77, 1.86], ex: [0, 0.08, 0] }),
+      P('Pluspool', G.cyl('y', 0.01, 0.01, 0.025, 14), MAT.red, { d: 'Pluspool met rode afdekkap.', p: [-0.5, 0.79, 1.8], ex: [0, 0.16, 0] }),
+      P('Minpool', G.cyl('y', 0.01, 0.01, 0.025, 14), MAT.darkSteel, { d: 'Minpool (massa).', p: [-0.34, 0.79, 1.8], ex: [0, 0.16, 0] }),
+      P('Accuklem', G.box(0.03, 0.015, 0.2), MAT.darkSteel, { d: 'Klem die de accu vastzet.', p: [-0.42, 0.788, 1.86], ex: [0, 0.24, 0] }),
+      P('Accuplaat', G.box(0.27, 0.02, 0.2), MAT.plastic, { d: 'Draagplaat onder de accu.', p: [-0.42, 0.58, 1.86], ex: [0, -0.1, 0] }),
+    ]),
+    P('Zekeringkast motorruimte', G.rbox(0.14, 0.09, 0.2, 0.012), MAT.plastic, { d: 'Zekeringen en relais voor de motorruimte.', p: [0.48, 0.74, 1.58], ex: [0.16, 0.08, 0] }),
+    P('Motormanagementcomputer', G.rbox(0.16, 0.035, 0.13, 0.006), MAT.ecu, { d: 'Regelt inspuiting, ontsteking, turbodruk en nokkenasverstelling.', p: [-0.42, 0.72, 1.66], ex: [-0.12, 0.12, 0] }),
+    ...[1, -1].map(s => P(`Claxon ${sideName(s)}`, merge([G.cyl('z', 0.04, 0.04, 0.02, 20), xf(G.cyl('z', 0.012, 0.025, 0.03, 14), [0, 0, 0.022])]), MAT.darkSteel, { d: 'Elektrische claxon.', p: [s * 0.45, 0.42, 2.18], ex: [s * 0.1, 0, 0.12] })),
+    P('Kabelboom', merge([tube([[-0.42, 0.8, 1.8], [-0.5, 0.85, 1.4], [-0.4, 0.9, 1.05], [0, 0.92, 1.0]], 0.008, 40, 6), tube([[0, 0.3, 0.95], [0.7, 0.25, 0.8], [0.75, 0.24, -0.8], [0.7, 0.4, -1.8]], 0.008, 60, 6)]), MAT.plastic, { d: 'Hoofdkabelboom door motorruimte en interieur.', ex: [0, 0.1, 0] }),
+    P('Accukabel plus', tube([[-0.5, 0.81, 1.8], [-0.52, 0.55, 1.9], [-0.1, 0.45, 1.88], [0.15, 0.4, 1.8], starter], 0.009, 48, 8), MAT.red, { d: 'Dikke voedingskabel van accu naar startmotor.', ex: [0, -0.06, 0.1] }),
+    P('Massakabel', tube([[-0.34, 0.8, 1.8], [-0.3, 0.7, 1.95], [-0.3, 0.6, 2.06]], 0.008, 16, 6), MAT.darkSteel, { d: 'Massaverbinding met de carrosserie.', ex: [0, 0.04, 0.08] }),
+  ]);
+}
+function buildCar() {
+  const wheels = [[1, true], [-1, true], [1, false], [-1, false]].map(([s, f]) => buildWheel(s, f));
+  return A('Renault Laguna III', {
+    d: 'Renault Laguna III hatchback (fase 2, 2011) in Initiale Paris-uitvoering, zilvergrijs metallic, met de 2.0 Turbo F4Rt-motor en zestraps automaat. Tik op een groep om hem uit te klappen.',
+    spec: [['Uitvoering', 'Initiale Paris (fase 2)'], ['Carrosserie', '5-deurs hatchback'], ['Motor', '2.0 Turbo F4Rt, 125 kW (170 pk)'], ['Koppel', '270 Nm bij 3250 tpm'], ['Transmissie', '6-traps automaat'], ['Topsnelheid', '220 km/h'], ['0–100 km/h', '9,2 s'], ['Verbruik (gecomb.)', '8,9 l/100 km'], ['CO₂', '210 g/km'], ['Tankinhoud', '66 l'], ['L × B × H', '4695 × 1811 × 1445 mm'], ['Wielbasis', '2756 mm']],
+  }, [buildBody(), buildInterior(), buildPowertrain(), buildCooling(), buildFrontAxle(), buildRearAxle(), ...wheels, buildBrakeSystem(), buildExhaust(), buildFuel(), buildElectrical()]);
+}
+
+/* ===================== opbouw en explosielogica ===================== */
+const ROOT = buildCar();
+scene.add(ROOT.obj);
+const ALL = [], ASMS = [];
+(function walk(n, d) { n.depth = d; ALL.push(n); if (n.asm) ASMS.push(n); n.kids.forEach(k => walk(k, d + 1)); })(ROOT, 0);
+const MESHES = [];
+ROOT.obj.traverse(o => { if (o.isMesh) MESHES.push(o); });
+const MAXDEPTH = Math.max(...ALL.map(n => n.depth));
+const SYS_COLORS = { 'Carrosserie': 0x7d93b4, 'Interieur': 0xcaa77a, 'Aandrijflijn': 0xe0782f, 'Koeling en luchtinlaat': 0x2fa6a0, 'Vooras en stuurinrichting': 0x8a64c8, 'Achteras': 0xb062b0, 'Wiel': 0x5b6168, 'Remsysteem': 0xd0443e, 'Uitlaatsysteem': 0x9a6b4b, 'Brandstofsysteem': 0x58a24d, 'Elektrisch systeem': 0xe5c23a };
+const SYS_MATS = {};
+for (const [k, c] of Object.entries(SYS_COLORS)) SYS_MATS[k] = new THREE.MeshStandardMaterial({ color: c, metalness: 0.15, roughness: 0.55, side: THREE.DoubleSide });
+function sysKey(name) { return name.startsWith('Wiel ') ? 'Wiel' : name; }
+// telling, systeem, lokale middens
+ROOT.obj.updateMatrixWorld(true);
+const _box = new THREE.Box3(), _v = V3(0, 0, 0);
+for (let i = ALL.length - 1; i >= 0; i--) {
+  const n = ALL[i];
+  n.count = n.asm ? n.kids.reduce((a, k) => a + k.count, 0) : 1;
+  n.base = n.obj.position.clone();
+}
+for (const n of ALL) {
+  let top = n; while (top.parent && top.parent !== ROOT) top = top.parent;
+  n.sys = top === ROOT ? null : sysKey(top.name);
+  n.isBody = top.name === 'Carrosserie';
+  _box.setFromObject(n.obj);
+  const c = _box.getCenter(V3(0, 0, 0));
+  n.rad = Math.max(0.01, _box.getSize(_v).length() / 2);
+  n.wc = c.clone();
+  n.lc = n.obj.worldToLocal(c.clone());
+  n.meshes = [];
+  n.obj.traverse(o => { if (o.isMesh) n.meshes.push(o); });
+}
+for (const n of ALL) {
+  if (!n.parent) continue;
+  const p = n.parent;
+  if (n.ex) { n.exv.copy(n.ex); continue; }
+  const pc = p.obj.worldToLocal(p.wc.clone()), cc = p.obj.worldToLocal(n.wc.clone());
+  const dir = cc.sub(pc);
+  if (dir.length() < 1e-3) dir.set(0, 1, 0);
+  const dist = Math.max(0.04, p.exs * (0.35 * p.rad + 0.5 * n.rad));
+  n.exv.copy(dir.normalize().multiplyScalar(dist));
+}
+let SPREAD = 1;
+const DUR = REDUCED ? 0.01 : 0.85;
+const ease = t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+function placeKids(n) { for (const k of n.kids) k.obj.position.copy(k.base).addScaledVector(k.exv, n.amt * SPREAD); }
+function setTarget(n, t, delay = 0) { if (!n.asm) return; if (n.target !== t) { n.target = t; n.delay = delay; } else if (n.u !== t) n.delay = Math.min(n.delay, delay); }
+function stepExplode(dt) {
+  let active = false;
+  for (const n of ASMS) {
+    if (n.u === n.target) continue;
+    active = true;
+    if (n.delay > 0) { n.delay -= dt; continue; }
+    const sp = dt / DUR;
+    n.u = n.target > n.u ? Math.min(n.target, n.u + sp) : Math.max(n.target, n.u - sp);
+    n.amt = ease(n.u);
+    placeKids(n);
+  }
+  return active;
+}
+function subtree(n, out = []) { out.push(n); n.kids.forEach(k => subtree(k, out)); return out; }
+function explodeAllUnder(n) { subtree(n).forEach(a => { if (a.asm) setTarget(a, 1, (a.depth - n.depth) * (REDUCED ? 0 : 0.32)); }); }
+function collapseTree(n) { const list = subtree(n).filter(a => a.asm); const md = Math.max(...list.map(a => a.depth)); list.forEach(a => setTarget(a, 0, (md - a.depth) * (REDUCED ? 0 : 0.12))); }
+function collapseAll() { collapseTree(ROOT); }
+function ancestors(n) { const a = []; for (let p = n.parent; p; p = p.parent) a.unshift(p); return a; }
+function isUnder(n, a) { for (let p = n; p; p = p.parent) if (p === a) return true; return false; }
+
+/* ---------- zichtbaarheid en materialen ---------- */
+let ISO = [];
+let XRAY = false, SYSCOL = false, SEL = null;
+function applyVisibility() {
+  for (const m of MESHES) { const n = m.userData.node; m.visible = !ISO.length || ISO.some(a => isUnder(n, a)); }
+}
+function applyMats() {
+  const showHl = SEL && SEL !== ROOT && !ISO.includes(SEL) && (!SEL.asm || !SEL.target);
+  const selSet = showHl ? new Set(SEL.meshes) : null;
+  for (const m of MESHES) {
+    const n = m.userData.node;
+    let mat = m.userData.base;
+    if (SYSCOL && n.sys) mat = SYS_MATS[n.sys] || mat;
+    const ghost = XRAY && n.isBody;
+    if (ghost) mat = GHOST;
+    if (selSet && selSet.has(m)) mat = ghost ? GHOST_HL : hlMat(mat);
+    m.material = mat;
+  }
+}
+
+/* ---------- camera ---------- */
+const VIEW = { l: 0, r: 0, t: 0, b: 0 };
+let W = 1, H = 1;
+const DIRS = { iso: V3(1, 0.42, 1.08), front: V3(0.12, 0.22, 1), rear: V3(-0.15, 0.3, -1), side: V3(1, 0.1, 0.02), top: V3(0.0001, 1, 0.12), under: V3(0.25, -1, 0.15), isoRear: V3(-1, 0.45, -1) };
+function predictedBox(nodes) {
+  for (const n of ALL) if (n.parent) { n._p = n._p || V3(0, 0, 0); n._p.copy(n.obj.position); n.obj.position.copy(n.base).addScaledVector(n.exv, n.parent.target * SPREAD); }
+  ROOT.obj.updateMatrixWorld(true);
+  const box = new THREE.Box3();
+  for (const n of nodes) for (const m of n.meshes) if (m.visible) box.expandByObject(m);
+  for (const n of ALL) if (n.parent) n.obj.position.copy(n._p);
+  ROOT.obj.updateMatrixWorld(true);
+  return box;
+}
+let camAnim = null;
+function fitBox(box, dir, pad = 1.06) {
+  if (box.isEmpty()) return;
+  const back = (dir ? dir.clone() : camera.position.clone().sub(controls.target)).normalize();
+  const upW = Math.abs(back.y) > 0.985 ? V3(0, 0, back.y > 0 ? -1 : 1) : V3(0, 1, 0);
+  const right = V3(0, 0, 0).crossVectors(upW, back).normalize(), up = V3(0, 0, 0).crossVectors(back, right);
+  const c = box.getCenter(V3(0, 0, 0));
+  const vf = camera.fov * PI / 180, tv0 = Math.tan(vf / 2), th0 = tv0 * camera.aspect;
+  const fw = Math.max(0.3, (W - VIEW.l - VIEW.r) / W), fh = Math.max(0.3, (H - VIEW.t - VIEW.b) / H);
+  const tv = tv0 * fh, th = th0 * fw;
+  let d = 0.2;
+  for (let i = 0; i < 8; i++) {
+    const p = V3(i & 1 ? box.max.x : box.min.x, i & 2 ? box.max.y : box.min.y, i & 4 ? box.max.z : box.min.z).sub(c);
+    const x = p.dot(right), y = p.dot(up), z = p.dot(back);
+    d = Math.max(d, Math.abs(x) * pad / th + z, Math.abs(y) * pad / tv + z);
+  }
+  d = clamp(d, controls.minDistance * 1.2, controls.maxDistance * 0.95);
+  animCam(c.clone().add(back.multiplyScalar(d)), c);
+}
+function animCam(pos, target, dur = REDUCED ? 0.01 : 0.95) {
+  camAnim = { p0: camera.position.clone(), t0: controls.target.clone(), p1: pos, t1: target, t: 0, dur };
+}
+function stepCam(dt) {
+  if (!camAnim) return false;
+  camAnim.t = Math.min(1, camAnim.t + dt / camAnim.dur);
+  const k = ease(camAnim.t);
+  // interpoleer richting en afstand apart voor een vloeiende baan
+  const o0 = camAnim.p0.clone().sub(camAnim.t0), o1 = camAnim.p1.clone().sub(camAnim.t1);
+  const l0 = o0.length(), l1 = o1.length();
+  const dir = o0.normalize().lerp(o1.normalize(), k).normalize();
+  controls.target.lerpVectors(camAnim.t0, camAnim.t1, k);
+  camera.position.copy(controls.target).addScaledVector(dir, lerp(l0, l1, k));
+  if (camAnim.t >= 1) camAnim = null;
+  return true;
+}
+function focusNodes(nodes, dir, pad) { fitBox(predictedBox(nodes), dir, pad); updateGround(); }
+function contextNodes() { return ISO.length ? ISO : [ROOT]; }
+
+/* ---------- vloer ---------- */
+function gridTexture() {
+  const cs = getComputedStyle(document.documentElement);
+  const g1 = cs.getPropertyValue('--grid').trim() || 'rgba(0,0,0,.08)', g2 = cs.getPropertyValue('--grid-strong').trim() || 'rgba(0,0,0,.16)';
+  const S = 1024, cv = document.createElement('canvas'); cv.width = cv.height = S;
+  const x = cv.getContext('2d');
+  const step = S / 48;
+  for (let i = 0; i <= 48; i++) {
+    x.strokeStyle = i % 6 === 0 ? g2 : g1; x.lineWidth = i % 6 === 0 ? 2 : 1;
+    x.beginPath(); x.moveTo(i * step, 0); x.lineTo(i * step, S); x.stroke();
+    x.beginPath(); x.moveTo(0, i * step); x.lineTo(S, i * step); x.stroke();
+  }
+  x.globalCompositeOperation = 'destination-in';
+  const rg = x.createRadialGradient(S / 2, S / 2, S * 0.05, S / 2, S / 2, S / 2);
+  rg.addColorStop(0, 'rgba(0,0,0,1)'); rg.addColorStop(0.55, 'rgba(0,0,0,.75)'); rg.addColorStop(1, 'rgba(0,0,0,0)');
+  x.fillStyle = rg; x.fillRect(0, 0, S, S);
+  const t = new THREE.CanvasTexture(cv); t.encoding = THREE.sRGBEncoding; t.anisotropy = 4;
+  return t;
+}
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(24, 24), new THREE.MeshBasicMaterial({ map: gridTexture(), transparent: true, depthWrite: false, toneMapped: false }));
+ground.rotation.x = -HALF; ground.renderOrder = -2;
+scene.add(ground);
+const shadowCv = document.createElement('canvas'); shadowCv.width = 128; shadowCv.height = 256;
+(() => { const x = shadowCv.getContext('2d'); x.save(); x.scale(0.5, 1); const g = x.createRadialGradient(128, 128, 8, 128, 128, 124); g.addColorStop(0, 'rgba(0,0,0,.55)'); g.addColorStop(0.6, 'rgba(0,0,0,.25)'); g.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = g; x.fillRect(0, 0, 256, 256); x.restore(); })();
+const blob = new THREE.Mesh(new THREE.PlaneGeometry(2.9, 5.6), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(shadowCv), transparent: true, depthWrite: false, opacity: 0.85, toneMapped: false }));
+blob.rotation.x = -HALF; blob.renderOrder = -1;
+scene.add(blob);
+let groundTarget = 0;
+function updateGround() {
+  const b = predictedBox([ROOT]);
+  groundTarget = b.isEmpty() ? 0 : Math.min(0, b.min.y - 0.03);
+}
+function stepGround(dt) {
+  const y = ground.position.y;
+  const fade = 1 - Math.min(1, ROOT.amt) * 0.85;
+  blob.material.opacity = 0.85 * fade;
+  blob.visible = !ISO.length;
+  if (Math.abs(y - groundTarget) < 1e-4) { blob.position.y = y + 0.002; return false; }
+  ground.position.y = lerp(y, groundTarget, Math.min(1, dt * 5));
+  if (Math.abs(ground.position.y - groundTarget) < 1e-3) ground.position.y = groundTarget;
+  blob.position.y = ground.position.y + 0.002;
+  return true;
+}
+
+/* ===================== interactie, paneel, presets, labels, render-lus ===================== */
+const $ = id => document.getElementById(id);
+const els = { sheet: $('sheet'), crumbs: $('crumbs'), name: $('selName'), meta: $('selMeta'), desc: $('selDesc'), spec: $('selSpec'), kids: $('selKids'), kidsTitle: $('kidsTitle'), toggle: $('actToggle'), all: $('actAll'), iso: $('actIsolate'), focus: $('actFocus'), tree: $('tree'), search: $('treeSearch'), labels: $('labels'), hint: $('hint'), presets: $('presets'), legend: $('legend') };
+let MODE = 'explode', LABELS = true, CTX = null, ACTIVE_PRESET = null, needs = true;
+const requestRender = () => { needs = true; };
+const byName = name => ALL.find(n => n.name === name);
+const fmtCount = n => (n.count === 1 ? '1 onderdeel' : `${n.count} onderdelen`);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+
+/* ---------- selectie en paneel ---------- */
+function select(n, opts = {}) {
+  SEL = n || ROOT;
+  applyMats();
+  renderPanel();
+  if (opts.focus) focusNodes([SEL]);
+  if (treeVisible()) renderTree();
+  requestRender();
+}
+function renderPanel() {
+  const n = SEL;
+  els.crumbs.innerHTML = '';
+  ancestors(n).forEach((a, i) => {
+    if (i) { const sp = document.createElement('span'); sp.textContent = '›'; els.crumbs.appendChild(sp); }
+    const b = document.createElement('button'); b.textContent = a.name; b.onclick = () => select(a, { focus: true }); els.crumbs.appendChild(b);
+  });
+  els.name.textContent = n.name;
+  const state = n.asm ? (n.target ? '<span class="state open">Uitgeklapt</span>' : '<span class="state">Ingeklapt</span>') : '<span class="state">Onderdeel</span>';
+  els.meta.innerHTML = `${state}${n.asm ? fmtCount(n) : (n.parent ? 'in ' + esc(n.parent.name) : '')}`;
+  els.desc.textContent = n.d || '';
+  els.spec.innerHTML = (n.spec || []).map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('');
+  els.spec.hidden = !n.spec;
+  els.kids.innerHTML = '';
+  els.kidsTitle.hidden = !n.asm;
+  if (n.asm) {
+    els.kidsTitle.textContent = `Bestaat uit (${n.kids.length})`;
+    n.kids.slice(0, 60).forEach((k, i) => {
+      const b = document.createElement('button');
+      b.textContent = `${i + 1}. ${k.name}`;
+      b.onclick = () => { reveal(k); };
+      els.kids.appendChild(b);
+    });
+  }
+  els.toggle.disabled = !n.asm;
+  els.toggle.textContent = n.asm && n.target ? 'Inklappen' : 'Uitklappen';
+  els.all.disabled = !n.asm;
+  const isoOn = ISO.length === 1 && ISO[0] === n;
+  els.iso.textContent = isoOn ? 'Alles tonen' : 'Isoleren';
+  els.iso.disabled = n === ROOT && !ISO.length;
+  syncSheetHeight();
+}
+function reveal(n) {
+  if (ISO.length && !ISO.some(a => isUnder(n, a))) { ISO = []; applyVisibility(); }
+  ancestors(n).forEach(a => setTarget(a, 1));
+  CTX = n.parent;
+  clearPreset();
+  select(n);
+  focusNodes([n], null, n.asm ? 1.12 : 1.6);
+}
+function doExplode(n) { setTarget(n, 1); CTX = n; clearPreset(); select(n); focusNodes([n], null, 1.08); }
+function doCollapse(n) { collapseTree(n); CTX = n.parent && n.parent.target ? n.parent : null; clearPreset(); select(n); focusNodes([n.parent && n.parent.target ? n.parent : n], null, 1.1); }
+function isolate(list) { ISO = list.slice(); applyVisibility(); applyMats(); updateGround(); }
+els.toggle.onclick = () => { const n = SEL; if (!n.asm) return; n.target ? doCollapse(n) : doExplode(n); };
+els.all.onclick = () => { const n = SEL; if (!n.asm) return; explodeAllUnder(n); CTX = n; clearPreset(); renderPanel(); focusNodes([n], null, 1.04); };
+els.iso.onclick = () => {
+  const on = ISO.length === 1 && ISO[0] === SEL;
+  isolate(on ? [] : [SEL]); clearPreset(); renderPanel();
+  focusNodes(on ? contextNodes() : [SEL]);
+};
+els.focus.onclick = () => focusNodes([SEL], null, SEL.asm ? 1.08 : 1.6);
+
+/* ---------- onderdelenboom ---------- */
+const openRows = new Set([ROOT.id]);
+function treeVisible() { return !$('tab-tree').hidden && (window.innerWidth >= 920 || els.sheet.dataset.state === 'open'); }
+function treeRow(n) {
+  const li = document.createElement('li');
+  const row = document.createElement('div'); row.className = 'trow' + (n === SEL ? ' sel' : ''); row.setAttribute('role', 'treeitem');
+  const tw = document.createElement('button'); tw.className = 'tw';
+  if (n.asm) { tw.textContent = openRows.has(n.id) ? '▾' : '▸'; tw.setAttribute('aria-label', openRows.has(n.id) ? 'Inklappen in lijst' : 'Uitklappen in lijst'); tw.onclick = () => { openRows.has(n.id) ? openRows.delete(n.id) : openRows.add(n.id); renderTree(); }; } else tw.tabIndex = -1;
+  const dot = document.createElement('span'); dot.className = 'dot' + (n.asm && n.target ? ' open' : ''); if (!n.asm) dot.style.visibility = 'hidden';
+  const nm = document.createElement('button'); nm.className = 'tn'; nm.textContent = n.name; nm.onclick = () => reveal(n);
+  const c = document.createElement('span'); c.className = 'tc'; c.textContent = n.asm ? n.count : '';
+  row.append(tw, dot, nm, c); li.appendChild(row);
+  if (n.asm && openRows.has(n.id)) { const ul = document.createElement('ul'); n.kids.forEach(k => ul.appendChild(treeRow(k))); li.appendChild(ul); }
+  return li;
+}
+const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+function renderTree() {
+  const q = norm(els.search.value.trim());
+  els.tree.innerHTML = '';
+  const ul = document.createElement('ul');
+  if (q.length >= 2) {
+    const hits = ALL.filter(n => norm(n.name).includes(q)).slice(0, 80);
+    if (!hits.length) { const p = document.createElement('p'); p.className = 'note'; p.textContent = 'Geen onderdeel gevonden met die naam.'; els.tree.appendChild(p); return; }
+    hits.forEach(n => { const li = treeRow(n); const small = document.createElement('div'); small.className = 'tc'; small.style.paddingLeft = '34px'; small.textContent = ancestors(n).slice(1).map(a => a.name).join(' › '); li.appendChild(small); ul.appendChild(li); });
+  } else ul.appendChild(treeRow(ROOT));
+  els.tree.appendChild(ul);
+}
+els.search.addEventListener('input', renderTree);
+
+/* ---------- tabs en paneel (mobiel) ---------- */
+function showTab(id) {
+  ['info', 'tree', 'view'].forEach(t => { $('tab-' + t).hidden = t !== id; $('tabbtn-' + t).setAttribute('aria-selected', String(t === id)); });
+  if (id === 'tree') { ancestors(SEL).forEach(a => openRows.add(a.id)); renderTree(); }
+}
+['info', 'tree', 'view'].forEach(t => $('tabbtn-' + t).addEventListener('click', () => showTab(t)));
+function setSheet(state) {
+  els.sheet.dataset.state = state;
+  $('sheetToggle').setAttribute('aria-expanded', String(state === 'open'));
+  $('btnParts').setAttribute('aria-pressed', String(state === 'open' && !$('tab-tree').hidden));
+  $('btnView').setAttribute('aria-pressed', String(state === 'open' && !$('tab-view').hidden));
+  syncSheetHeight(); layoutView();
+  if (treeVisible()) renderTree();
+}
+$('sheetToggle').onclick = () => setSheet(els.sheet.dataset.state === 'open' ? 'peek' : 'open');
+$('btnParts').onclick = () => { const open = els.sheet.dataset.state === 'open' && !$('tab-tree').hidden; showTab('tree'); setSheet(open ? 'peek' : 'open'); };
+$('btnView').onclick = () => { const open = els.sheet.dataset.state === 'open' && !$('tab-view').hidden; showTab('view'); setSheet(open ? 'peek' : 'open'); };
+function syncSheetHeight() {
+  if (window.innerWidth < 920) document.getElementById('app').style.setProperty('--sheet-h', (els.sheet.dataset.state === 'open' ? 0 : els.sheet.offsetHeight) + 'px');
+}
+
+/* ---------- weergave-bediening ---------- */
+$('spread').addEventListener('input', e => {
+  SPREAD = e.target.value / 100; $('spreadOut').textContent = e.target.value + '%';
+  ASMS.forEach(placeKids); updateGround(); requestRender();
+});
+$('spread').addEventListener('change', () => focusNodes(contextNodes()));
+$('tLabels').addEventListener('change', e => { LABELS = e.target.checked; requestRender(); });
+$('tXray').addEventListener('change', e => { XRAY = e.target.checked; applyMats(); requestRender(); });
+$('tSys').addEventListener('change', e => { SYSCOL = e.target.checked; els.legend.hidden = !SYSCOL; applyMats(); requestRender(); });
+$('tRotate').addEventListener('change', e => { controls.autoRotate = e.target.checked; requestRender(); });
+els.legend.innerHTML = Object.entries(SYS_COLORS).map(([k, c]) => `<span><i style="background:#${c.toString(16).padStart(6, '0')}"></i>${esc(k === 'Wiel' ? 'Wielen' : k)}</span>`).join('');
+document.querySelectorAll('[data-cam]').forEach(b => b.addEventListener('click', () => focusNodes(contextNodes(), DIRS[b.dataset.cam])));
+$('btnExplodeAll').onclick = () => { explodeAllUnder(ISO.length ? ISO[0] : ROOT); CTX = ISO.length ? ISO[0] : ROOT; clearPreset(); renderPanel(); focusNodes(contextNodes(), null, 1.02); };
+$('btnCollapseAll').onclick = () => { collapseAll(); CTX = null; clearPreset(); renderPanel(); focusNodes(contextNodes()); };
+$('btnShowAll').onclick = () => { isolate([]); clearPreset(); renderPanel(); focusNodes([ROOT]); };
+document.querySelectorAll('.seg [data-mode]').forEach(b => b.addEventListener('click', () => {
+  MODE = b.dataset.mode;
+  document.querySelectorAll('.seg [data-mode]').forEach(x => x.setAttribute('aria-checked', String(x === b)));
+}));
+
+/* ---------- presets ---------- */
+function clearPreset() { ACTIVE_PRESET = null; els.presets.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', 'false')); }
+function setXray(on) { XRAY = on; $('tXray').checked = on; }
+const PRESETS = [
+  { id: 'assembled', label: 'Gemonteerd', run() { collapseAll(); isolate([]); setXray(false); CTX = null; select(ROOT); focusNodes([ROOT], DIRS.iso); } },
+  { id: 'main', label: 'Hoofdgroepen', run() { collapseAll(); isolate([]); setXray(false); setTarget(ROOT, 1); CTX = ROOT; select(ROOT); focusNodes([ROOT], DIRS.iso, 1.02); } },
+  { id: 'body', label: 'Carrosserie', run() { const b = byName('Carrosserie'); collapseAll(); isolate([b]); setXray(false); setTarget(b, 1); setTarget(byName('Carrosseriekooi'), 1, 0.4); CTX = b; select(b); focusNodes([b], DIRS.iso, 1.02); } },
+  { id: 'engine', label: 'Motor F4Rt', run() { const m = byName('Motor F4Rt'); collapseAll(); isolate([m]); setXray(false); setTarget(m, 1); CTX = m; select(m); focusNodes([m], V3(0.25, 0.35, 1)); } },
+  { id: 'engineAll', label: 'Motor tot op de bout', run() { const m = byName('Motor F4Rt'); collapseAll(); isolate([m]); setXray(false); explodeAllUnder(m); CTX = m; select(m); focusNodes([m], V3(0.25, 0.35, 1), 1.0); } },
+  { id: 'head', label: 'Cilinderkop', run() { const h = byName('Cilinderkop'); collapseAll(); isolate([h]); setXray(false); explodeAllUnder(h); CTX = h; select(h); focusNodes([h], V3(0.7, 0.5, 1), 1.0); } },
+  { id: 'gearbox', label: 'Automaat', run() { const g = byName('Automaatversnellingsbak'); collapseAll(); isolate([g]); setXray(false); explodeAllUnder(g); CTX = g; select(g); focusNodes([g], V3(0.4, 0.5, 1), 1.0); } },
+  { id: 'chassis', label: 'Onderstel en remmen', run() { const list = ['Vooras en stuurinrichting', 'Achteras', 'Remsysteem', 'Wiel linksvoor', 'Wiel rechtsvoor', 'Wiel linksachter', 'Wiel rechtsachter'].map(byName); collapseAll(); isolate(list); setXray(false); setTarget(ROOT, 1); setTarget(list[0], 1, 0.3); setTarget(list[1], 1, 0.3); CTX = list[0]; select(list[0]); focusNodes(list, DIRS.iso, 1.02); } },
+  { id: 'interior', label: 'Interieur', run() { const i = byName('Interieur'); collapseAll(); isolate([i]); setXray(false); setTarget(i, 1); setTarget(byName('Stoelen'), 1, 0.4); CTX = i; select(i); focusNodes([i], V3(0.9, 0.8, 0.7), 1.02); } },
+  { id: 'xray', label: 'Röntgen', run() { collapseAll(); isolate([]); setXray(true); CTX = null; select(ROOT); focusNodes([ROOT], DIRS.side); } },
+  { id: 'everything', label: 'Alles uit elkaar', run() { isolate([]); setXray(false); explodeAllUnder(ROOT); CTX = ROOT; select(ROOT); focusNodes([ROOT], DIRS.iso, 1.0); } },
+];
+PRESETS.forEach(p => {
+  const b = document.createElement('button'); b.className = 'chip'; b.setAttribute('aria-pressed', 'false'); b.dataset.preset = p.id; b.textContent = p.label;
+  b.onclick = () => { p.run(); applyMats(); ACTIVE_PRESET = p.id; els.presets.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', String(c === b))); hideHint(); requestRender(); };
+  els.presets.appendChild(b);
+});
+
+/* ---------- aanwijzen en tikken ---------- */
+const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+function pick(cx, cy) {
+  const r = canvas.getBoundingClientRect();
+  ndc.set(((cx - r.left) / r.width) * 2 - 1, -((cy - r.top) / r.height) * 2 + 1);
+  ray.setFromCamera(ndc, camera);
+  const list = MESHES.filter(m => m.visible && !(XRAY && m.userData.node.isBody));
+  const hit = ray.intersectObjects(list, false)[0];
+  return hit ? hit.object.userData.node : null;
+}
+function pathFrom(n) {
+  const p = [];
+  for (let a = n; a; a = a.parent) { p.unshift(a); if (ISO.includes(a)) break; }
+  return p;
+}
+function tapNode(n) {
+  if (!n) return;
+  const path = pathFrom(n);
+  if (MODE === 'explode') {
+    const a = path.find(x => x.asm && !x.target);
+    if (a) doExplode(a); else select(n);
+  } else if (MODE === 'collapse') {
+    let a = null; path.forEach(x => { if (x.asm && x.target) a = x; });
+    if (a) doCollapse(a); else select(n);
+  } else select(n);
+}
+let down = null, pointers = 0;
+canvas.addEventListener('pointerdown', e => { pointers++; down = pointers === 1 ? { x: e.clientX, y: e.clientY, t: performance.now() } : null; camAnim = null; hideHint(); });
+canvas.addEventListener('pointerup', e => {
+  pointers = Math.max(0, pointers - 1);
+  if (!down) return;
+  const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y), dt = performance.now() - down.t;
+  down = null;
+  if (moved < 7 && dt < 600 && e.button === 0) tapNode(pick(e.clientX, e.clientY));
+});
+canvas.addEventListener('pointercancel', () => { pointers = Math.max(0, pointers - 1); down = null; });
+canvas.addEventListener('contextmenu', e => { e.preventDefault(); const n = pick(e.clientX, e.clientY); if (!n) return; let a = null; pathFrom(n).forEach(x => { if (x.asm && x.target) a = x; }); if (a) doCollapse(a); });
+canvas.addEventListener('dblclick', e => { const n = pick(e.clientX, e.clientY); if (n) focusNodes([n], null, 1.8); });
+const tag = document.createElement('div'); tag.className = 'lbl'; tag.style.pointerEvents = 'none'; tag.hidden = true; document.getElementById('app').appendChild(tag);
+let lastHover = 0;
+canvas.addEventListener('pointermove', e => {
+  if (e.pointerType !== 'mouse' || e.buttons) { tag.hidden = true; return; }
+  const now = performance.now(); if (now - lastHover < 70) return; lastHover = now;
+  const n = pick(e.clientX, e.clientY);
+  if (!n) { tag.hidden = true; canvas.style.cursor = ''; return; }
+  let target = n;
+  if (MODE === 'explode') { const a = pathFrom(n).find(x => x.asm && !x.target); if (a) target = a; }
+  tag.textContent = target.name + (MODE === 'explode' && target.asm ? ' · klik om uit te klappen' : '');
+  tag.style.transform = `translate(${e.clientX + 14}px, ${e.clientY + 12}px)`;
+  tag.hidden = false; canvas.style.cursor = 'pointer';
+});
+canvas.addEventListener('pointerleave', () => { tag.hidden = true; });
+function hideHint() { if (els.hint.hidden || els.hint.classList.contains('gone')) return; els.hint.classList.add('gone'); setTimeout(() => { els.hint.hidden = true; }, 450); }
+window.addEventListener('keydown', e => { if (e.key === 'Escape') { select(ROOT); } });
+
+/* ---------- labels ---------- */
+const labelPool = [];
+function updateLabels() {
+  let shown = 0;
+  const ctx = LABELS && CTX && CTX.target && CTX.amt > 0.6 ? CTX : null;
+  if (ctx) {
+    const max = window.innerWidth < 600 ? 12 : 26;
+    const kids = ctx.kids.filter(k => k.meshes.some(m => m.visible)).sort((a, b) => b.rad - a.rad).slice(0, max);
+    const r = canvas.getBoundingClientRect(), placed = [];
+    const minX = VIEW.l + 4, maxX = r.width - VIEW.r - 4, minY = VIEW.t + 4, maxY = r.height - VIEW.b - 4;
+    kids.forEach(k => {
+      const p = k.obj.localToWorld(k.lc.clone()).project(camera);
+      if (p.z > 1) return;
+      const sx = (p.x * 0.5 + 0.5) * r.width, sy = (-p.y * 0.5 + 0.5) * r.height;
+      let el = labelPool[shown];
+      if (!el) { el = document.createElement('button'); el.className = 'lbl'; el.innerHTML = '<b></b><span></span>'; els.labels.appendChild(el); labelPool.push(el); }
+      const txt = k.name, num = String(ctx.kids.indexOf(k) + 1);
+      if (el.dataset.t !== txt) { el.firstChild.textContent = num; el.lastChild.textContent = txt; el.dataset.t = txt; el.hidden = false; el._w = el.offsetWidth; el._h = el.offsetHeight; }
+      el.firstChild.textContent = num;
+      const w = el._w || 120, h = el._h || 24;
+      let spot = null;
+      for (const dy of [0, -(h + 3), h + 3, -2 * (h + 3), 2 * (h + 3)]) {
+        const x0 = sx - w / 2, y0 = sy + dy - h / 2;
+        if (x0 < minX || x0 + w > maxX || y0 < minY || y0 + h > maxY) continue;
+        if (placed.some(q => x0 < q.x + q.w + 4 && x0 + w + 4 > q.x && y0 < q.y + q.h + 2 && y0 + h + 2 > q.y)) continue;
+        spot = { x: x0, y: y0, w, h }; break;
+      }
+      if (!spot) return;
+      placed.push(spot);
+      el.hidden = false;
+      el.classList.toggle('sel', k === SEL);
+      el.onclick = () => { hideHint(); tapLabel(k); };
+      el.style.transform = `translate(${spot.x}px, ${spot.y}px)`;
+      labelPool[shown] = el;
+      shown++;
+    });
+  }
+  for (let i = shown; i < labelPool.length; i++) labelPool[i].hidden = true;
+}
+function tapLabel(k) { if (MODE === 'explode' && k.asm && !k.target) doExplode(k); else if (MODE === 'collapse' && k.asm && k.target) doCollapse(k); else select(k); }
+
+/* ---------- formaat en weergave-offset ---------- */
+function layoutView() {
+  const wide = window.innerWidth >= 920;
+  const top = document.getElementById('topbar').offsetHeight;
+  if (wide) { VIEW.l = 0; VIEW.r = els.sheet.offsetWidth + 32; VIEW.t = top * 0.6; VIEW.b = document.getElementById('dock').offsetHeight; }
+  else { VIEW.l = 0; VIEW.r = 0; VIEW.t = top; VIEW.b = (els.sheet.dataset.state === 'open' ? els.sheet.offsetHeight : els.sheet.offsetHeight + document.getElementById('dock').offsetHeight); }
+  camera.setViewOffset(W, H, (VIEW.r - VIEW.l) / 2, (VIEW.b - VIEW.t) / 2, W, H);
+  camera.updateProjectionMatrix();
+  requestRender();
+}
+function resize() {
+  W = Math.max(1, canvas.clientWidth); H = Math.max(1, canvas.clientHeight);
+  renderer.setSize(W, H, false);
+  camera.aspect = W / H;
+  camera.updateProjectionMatrix();
+  syncSheetHeight();
+  layoutView();
+}
+window.addEventListener('resize', resize);
+if (window.ResizeObserver) new ResizeObserver(() => { syncSheetHeight(); layoutView(); }).observe(els.sheet);
+
+/* ---------- thema ---------- */
+function refreshTheme() { const old = ground.material.map; ground.material.map = gridTexture(); ground.material.needsUpdate = true; old && old.dispose(); requestRender(); }
+if (window.matchMedia) { const mq = matchMedia('(prefers-color-scheme: dark)'); mq.addEventListener ? mq.addEventListener('change', refreshTheme) : mq.addListener(refreshTheme); }
+new MutationObserver(refreshTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+/* ---------- render-lus ---------- */
+controls.addEventListener('change', requestRender);
+controls.addEventListener('start', () => { camAnim = null; hideHint(); });
+let last = performance.now();
+function loop(now) {
+  requestAnimationFrame(loop);
+  const dt = Math.min(0.05, Math.max(0, (now - last) / 1000)); last = now;
+  let active = stepExplode(dt);
+  if (stepCam(dt)) active = true;
+  if (stepGround(dt)) active = true;
+  controls.update();
+  if (active || needs || controls.autoRotate) {
+    renderer.render(scene, camera);
+    updateLabels();
+    needs = false;
+    if (active && SEL) renderPanelStateOnly();
+  }
+}
+let lastState = null;
+function renderPanelStateOnly() { const s = SEL.asm ? SEL.target : -1; if (s !== lastState) { lastState = s; renderPanel(); applyMats(); if (treeVisible()) renderTree(); } }
+
+/* ---------- start ---------- */
+resize();
+select(ROOT);
+updateGround();
+{ const b = predictedBox([ROOT]); fitBox(b, DIRS.iso, 1.04); if (camAnim) { camera.position.copy(camAnim.p1); controls.target.copy(camAnim.t1); camAnim = null; } }
+controls.update();
+renderer.render(scene, camera);
+LOADING.classList.add('gone');
+requestAnimationFrame(loop);
+setTimeout(hideHint, 9000);
+function finishAll() {
+  for (const n of ASMS) { n.delay = 0; n.u = n.target; n.amt = ease(n.u); placeKids(n); }
+  if (camAnim) { camera.position.copy(camAnim.p1); controls.target.copy(camAnim.t1); camAnim = null; }
+  ground.position.y = groundTarget; controls.update(); requestRender();
+}
+window.__laguna = { finishAll, ROOT, ALL, MESHES, PRESETS, select, tapNode, byName, focusNodes, setTarget, explodeAllUnder, collapseAll, isolate };
+
+</script>

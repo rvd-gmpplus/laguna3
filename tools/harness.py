@@ -72,6 +72,7 @@ class Session:
 
     def page(self, w=1280, h=800, scale=1, wait=True, touch=False, timeout=120000):
         ctx = self.browser.new_context(viewport={'width': w, 'height': h}, device_scale_factor=scale, has_touch=touch, is_mobile=touch)
+        ctx.add_init_script('window.__LAGUNA_CACHECHECK = true;')
         pg = ctx.new_page()
         tag = f'{w}x{h}'
 

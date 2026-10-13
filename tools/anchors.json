@@ -104,5 +104,356 @@
   "Achteras",
   "Wielen",
   "Remsysteem"
- ]
+ ],
+ "contains": [
+  [
+   "Aandrijflijn",
+   "Motor F4Rt"
+  ],
+  [
+   "Aandrijflijn",
+   "Automaatversnellingsbak"
+  ],
+  [
+   "Aandrijflijn",
+   "Aandrijfassen"
+  ],
+  [
+   "Aandrijflijn",
+   "Startmotor"
+  ],
+  [
+   "Motor F4Rt",
+   "Motorblok"
+  ],
+  [
+   "Motor F4Rt",
+   "Krukmechanisme"
+  ],
+  [
+   "Motor F4Rt",
+   "Cilinderkop"
+  ],
+  [
+   "Motor F4Rt",
+   "Distributie"
+  ],
+  [
+   "Motor F4Rt",
+   "Hulpaandrijving"
+  ],
+  [
+   "Motor F4Rt",
+   "Turbo en uitlaatspruitstuk"
+  ],
+  [
+   "Motor F4Rt",
+   "Smering"
+  ],
+  [
+   "Hulpaandrijving",
+   "Dynamo"
+  ],
+  [
+   "Turbo en uitlaatspruitstuk",
+   "Turbocompressor"
+  ],
+  [
+   "Automaatversnellingsbak",
+   "Koppelomvormer"
+  ],
+  [
+   "Automaatversnellingsbak",
+   "Tandwielsets"
+  ],
+  [
+   "Automaatversnellingsbak",
+   "Koppelingen en remmen"
+  ],
+  [
+   "Automaatversnellingsbak",
+   "Differentieel"
+  ],
+  [
+   "Automaatversnellingsbak",
+   "Klepblok"
+  ],
+  [
+   "Aandrijfassen",
+   "Aandrijfas links"
+  ],
+  [
+   "Aandrijfassen",
+   "Aandrijfas rechts"
+  ],
+  [
+   "Carrosserie",
+   "Carrosseriekooi"
+  ],
+  [
+   "Carrosserie",
+   "Motorkap"
+  ],
+  [
+   "Carrosserie",
+   "Achterklep"
+  ],
+  [
+   "Carrosserie",
+   "Voorbumper"
+  ],
+  [
+   "Carrosserie",
+   "Achterbumper"
+  ],
+  [
+   "Carrosserie",
+   "Portier linksvoor"
+  ],
+  [
+   "Carrosserie",
+   "Portier rechtsvoor"
+  ],
+  [
+   "Carrosserie",
+   "Portier linksachter"
+  ],
+  [
+   "Carrosserie",
+   "Portier rechtsachter"
+  ],
+  [
+   "Carrosserie",
+   "Koplamp links"
+  ],
+  [
+   "Carrosserie",
+   "Koplamp rechts"
+  ],
+  [
+   "Carrosserie",
+   "Achterlicht links"
+  ],
+  [
+   "Carrosserie",
+   "Achterlicht rechts"
+  ],
+  [
+   "Portier linksvoor",
+   "Buitenspiegel links"
+  ],
+  [
+   "Portier rechtsvoor",
+   "Buitenspiegel rechts"
+  ],
+  [
+   "Interieur",
+   "Dashboard"
+  ],
+  [
+   "Interieur",
+   "Middenconsole"
+  ],
+  [
+   "Interieur",
+   "Stoelen"
+  ],
+  [
+   "Stoelen",
+   "Bestuurdersstoel"
+  ],
+  [
+   "Stoelen",
+   "Passagiersstoel"
+  ],
+  [
+   "Stoelen",
+   "Achterbank"
+  ],
+  [
+   "Vooras en stuurinrichting",
+   "Stuurinrichting"
+  ],
+  [
+   "Stuurinrichting",
+   "Stuurwiel"
+  ],
+  [
+   "Vooras en stuurinrichting",
+   "Wielophanging linksvoor"
+  ],
+  [
+   "Vooras en stuurinrichting",
+   "Wielophanging rechtsvoor"
+  ],
+  [
+   "Wielophanging linksvoor",
+   "Veerpoot linksvoor"
+  ],
+  [
+   "Wielophanging rechtsvoor",
+   "Veerpoot rechtsvoor"
+  ],
+  [
+   "Wielophanging linksvoor",
+   "Remklauw linksvoor"
+  ],
+  [
+   "Wielophanging rechtsvoor",
+   "Remklauw rechtsvoor"
+  ],
+  [
+   "Achteras",
+   "Wielophanging linksachter"
+  ],
+  [
+   "Achteras",
+   "Wielophanging rechtsachter"
+  ],
+  [
+   "Wielophanging linksachter",
+   "Remklauw linksachter"
+  ],
+  [
+   "Wielophanging rechtsachter",
+   "Remklauw rechtsachter"
+  ],
+  [
+   "Wielen",
+   "Wiel linksvoor"
+  ],
+  [
+   "Wielen",
+   "Wiel rechtsvoor"
+  ],
+  [
+   "Wielen",
+   "Wiel linksachter"
+  ],
+  [
+   "Wielen",
+   "Wiel rechtsachter"
+  ],
+  [
+   "Remsysteem",
+   "Parkeerrem"
+  ],
+  [
+   "Koeling en luchtinlaat",
+   "Radiateur"
+  ],
+  [
+   "Koeling en luchtinlaat",
+   "Intercooler"
+  ],
+  [
+   "Elektrisch systeem",
+   "Accu"
+  ]
+ ],
+ "content": {
+  "Krukmechanisme": [
+   {
+    "re": "^Krukas$",
+    "min": 1
+   },
+   {
+    "re": "^Zuiger$",
+    "min": 4
+   }
+  ],
+  "Cilinderkop": [
+   {
+    "re": "^(Inlaat|Uitlaat)klep ",
+    "min": 16,
+    "groups": true
+   }
+  ],
+  "Turbocompressor": [
+   {
+    "re": "Compressorwiel",
+    "min": 1
+   },
+   {
+    "re": "Turbinewiel",
+    "min": 1
+   }
+  ],
+  "Dynamo": [
+   {
+    "re": ".",
+    "min": 6,
+    "parts": true
+   }
+  ],
+  "Koppelomvormer": [
+   {
+    "re": "Pompwiel|Pomp",
+    "min": 1
+   },
+   {
+    "re": "Turbine",
+    "min": 1
+   },
+   {
+    "re": "Stator|Leidwiel",
+    "min": 1
+   }
+  ],
+  "Differentieel": [
+   {
+    "re": "Kroonwiel|Tandkrans",
+    "min": 1
+   },
+   {
+    "re": "Satelliet",
+    "min": 2
+   }
+  ],
+  "Remklauw linksvoor": [
+   {
+    "re": "Remblok",
+    "min": 2
+   },
+   {
+    "re": "Zuiger",
+    "min": 1
+   }
+  ],
+  "Wiel linksvoor": [
+   {
+    "re": "^Band",
+    "min": 1
+   },
+   {
+    "re": "^Velg",
+    "min": 1
+   },
+   {
+    "re": "^Wielbout",
+    "min": 5
+   }
+  ],
+  "Bestuurdersstoel": [
+   {
+    "re": ".",
+    "min": 8,
+    "parts": true
+   }
+  ],
+  "Dashboard": [
+   {
+    "re": ".",
+    "min": 10,
+    "parts": true
+   }
+  ],
+  "Accu": [
+   {
+    "re": ".",
+    "min": 4,
+    "parts": true
+   }
+  ]
+ }
 }

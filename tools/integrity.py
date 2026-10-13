@@ -44,11 +44,20 @@ CHECK = r"""(ANCHORS) => {
   const A = ANCHORS, count = new Map();
   for (const n of L.ALL) count.set(n.name, (count.get(n.name) || 0) + 1);
   for (const [k, list] of Object.entries(A)) {
-    if (k === 'root_children_order' || k === 'onderstel_children') continue;
+    if (k === 'root_children_order' || k === 'onderstel_children' || k === 'contains' || k === 'content') continue;
     for (const name of list) { const c = count.get(name) || 0; if (c !== 1) anchorErr.push(`anker "${name}" (${k}) komt ${c}x voor, moet 1x`); }
   }
   const rc = L.ROOT.kids.map(k => k.name).join(' | '), want = A.root_children_order.join(' | ');
   if (rc !== want) anchorErr.push(`hoofdgroepen: "${rc}" in plaats van "${want}"`);
+  const byN = new Map(); for (const n of L.ALL) if (!byN.has(n.name)) byN.set(n.name, n);
+  const under = (n, a) => { for (let p = n; p; p = p.parent) if (p === a) return true; return false; };
+  for (const [anc, des] of (A.contains || [])) { const a = byN.get(anc), d = byN.get(des); if (a && d && !under(d, a)) anchorErr.push(`"${des}" hoort onder "${anc}" te hangen`); }
+  for (const [anc, rules] of Object.entries(A.content || {})) {
+    const a = byN.get(anc); if (!a) continue;
+    const sub = []; (function w(n) { sub.push(n); n.kids.forEach(w); })(a); sub.shift();
+    for (const r of rules) { const re = new RegExp(r.re, "i"); const c = sub.filter(n => (r.groups ? n.asm : r.parts ? !n.asm : true) && re.test(n.name)).length;
+      if (c < r.min) anchorErr.push(`"${anc}" bevat ${c} knopen die op /${r.re}/ passen${r.groups ? ' (groepen)' : r.parts ? ' (onderdelen)' : ''}, minimaal ${r.min}`); }
+  }
   const on = L.ALL.find(n => n.name === 'Onderstel');
   if (on) { const oc = on.kids.map(k => k.name).slice().sort().join(' | '), ow = A.onderstel_children.slice().sort().join(' | '); if (oc !== ow) anchorErr.push(`Onderstel bevat "${oc}" in plaats van "${ow}"`); }
   // Doorsteken: het hoogste punt van een onderdeel buiten de carrosserie mag niet boven de bovenste carrosseriehuid
@@ -69,9 +78,31 @@ CHECK = r"""(ANCHORS) => {
       o.set(top.x, 2.5, top.z); rc.set(o, down); rc.far = 3;
       const hit = rc.intersectObjects(bodyMeshes, false)[0];
       checked++;
-      if (hit && top.y > hit.point.y + 0.004) err.push(`steekt boven de carrosserie uit (${((top.y - hit.point.y) * 100).toFixed(1)} cm door ${hit.object.userData.node.name}): ${path(n)}`);
+      if (!hit) continue;
+      const hood = (() => { for (let p = hit.object.userData.node; p; p = p.parent) if (p.name === 'Motorkap') return true; return false; })();
+      const gap = hit.point.y - top.y;
+      if (gap < -0.004) err.push(`steekt boven de carrosserie uit (${(-gap * 100).toFixed(1)} cm door ${hit.object.userData.node.name}): ${path(n)}`);
+      else if (hood && gap < 0.025) err.push(`te weinig ruimte onder de motorkap (${(gap * 100).toFixed(1)} cm, minimaal 2,5 cm onder de buitenhuid): ${path(n)}`);
     }
     if (!checked) warn.push('doorsteekcontrole: niets gecontroleerd');
+    // Zijkant: onder de gordellijn mogen onderdelen buiten de carrosserie niet buiten de huid steken.
+    if (typeof surfX === 'function' && typeof YT === 'function' && typeof YB === 'function') {
+      const EXC = /^(Band|Velg|Wielbout|Naafdop|Ventiel|Ventieldop|Bandenspanningssensor|Balansgewicht|Balanceergewicht|Tankklep|Tankdop|Uitlaateindstuk|Uitlaatsierstuk)/;
+      const wheels = L.ALL.find(n => n.name === 'Wielen');
+      for (const n of L.ALL) {
+        if (n.asm || isBody(n) || EXC.test(n.name) || (wheels && under(n, wheels))) continue;
+        const a = n.obj.geometry.attributes.position, step = Math.max(1, Math.floor(a.count / 300));
+        let worst = 0;
+        for (let i = 0; i < a.count; i += step) {
+          w.fromBufferAttribute(a, i).applyMatrix4(n.obj.matrixWorld);
+          if (w.z > ZF - 0.05 || w.z < ZR + 0.05) continue;
+          if (w.y > YT(w.z) - 0.01 || w.y < YB(w.z) + 0.02) continue;
+          const ex = Math.abs(w.x) - (surfX(w.z, w.y) - 0.003);
+          if (ex > worst) worst = ex;
+        }
+        if (worst > 0.002) err.push(`steekt zijdelings door de huid (${(worst * 100).toFixed(1)} cm): ${path(n)}`);
+      }
+    }
   }
   const presetErr = [];
   if (L.checkPresets) presetErr.push(...L.checkPresets());
