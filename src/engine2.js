@@ -1,8 +1,8 @@
 /* ===================== motor F4Rt 811: distributie, hulpaandrijving, inlaat, turbo, smering, koeling ===================== */
 // distributievlak (z, y) bij x = XT; looprichting van de riem; poelies met tandkopstraal
 const TIM = [[0, 0, 0.0281, 1], [0.099, 0.093, 0.0255, 1], [CAMZ, CAMY, 0.0569, 1], [-CAMZ, CAMY, 0.0569, 1], [-0.11, 0.249, 0.028, 1], [-0.086, 0.089, 0.03, 1]];
-// hulpaandrijvingsvlak (z, y) bij x = XA: krukaspoelie, aircocompressor, dynamo, geleiderol, spanner (tegen de rug)
-const ACC = [[0, 0, 0.07, 1], [0.161, -0.16, 0.0595, 1], [0.19, 0.34, 0.0245, 1], [0.127, 0.23, 0.03, 1], [0.096, 0.11, 0.03, -1]];
+// hulpaandrijvingsvlak (z, y) bij x = XA, in looprichting: krukaspoelie, aircocompressor, stuurpomp, dynamo, geleiderol, spanner (tegen de rug)
+const ACC = [[0, 0, 0.07, 1], [0.161, -0.16, 0.0595, 1], [ENG_PS[2], ENG_PS[1], ENG_PS_R, 1], [0.19, 0.34, 0.0245, 1], [0.127, 0.23, 0.03, 1], [0.096, 0.11, 0.03, -1]];
 function pulley(r, w, key) {
   return G.lathe('x', [[0.008, -w / 2], [r, -w / 2], [r, -w / 2 + 0.003], [r - 0.004, -w / 2 + 0.006], [r - 0.004, w / 2 - 0.006], [r, w / 2 - 0.003], [r, w / 2], [0.008, w / 2]], 36, key);
 }
@@ -52,8 +52,8 @@ function buildAccessory() {
     xf(front(shapeOf([[-0.215, -0.2], [-0.17, -0.2], [-0.17, 0.05], [-0.18, 0.2], [-0.19, 0.29], [-0.215, 0.29]]), 0.02), [0, 0, 0.115]),
     xf(G.cyl('z', 0.012, 0.012, 0.035, 12), [-0.205, 0.27, 0.142]), xf(G.cyl('z', 0.012, 0.012, 0.04, 12), [-0.205, -0.115, 0.145]), xf(G.cyl('z', 0.014, 0.014, 0.03, 12), [-0.2, 0.07, 0.14]),
   ]));
-  const tp = ACC[4], piv = [0.045, 0.1];
-  return A('Hulpaandrijving', { d: 'Multiriem 7PK1795 die alleen de dynamo en de aircocompressor aandrijft; de stuurbekrachtiging is elektrohydraulisch en zit niet op de riem.', ex: [-0.42, -0.1, 0.26], spec: [['Riem', '7PK1795 (7 ribben, 1795 mm)'], ['Verbruikers', 'dynamo, aircocompressor']] }, [
+  const tp = ACC[5], piv = [0.045, 0.1];
+  return A('Hulpaandrijving', { d: `Multiriem 7PK1795 die de aircocompressor, de stuurpomp en de dynamo aandrijft, met een automatische spanner op de rug en een vaste geleiderol. De riemloop in het model is ${Math.round(belt.len * 1000)} mm; de opgegeven lengte is 1795 mm. De riemaangedreven stuurpomp is aannemelijk voor deze motor.`, ex: [-0.42, -0.1, 0.26], spec: [['Riem', '7PK1795 (7 ribben, 1795 mm)'], ['Verbruikers', 'aircocompressor, stuurpomp (aannemelijk), dynamo']] }, [
     P('Multiriem', xf(belt.geo, [XA, 0, 0]), MAT.belt, { d: `Poly-V-riem met zeven ribben; de spanner drukt op de rug. Riemlengte in het model ${Math.round(belt.len * 1000)} mm (opgave 1795 mm; de exacte riemloop is niet gevonden).`, ex: [-0.1, 0, 0] }),
     P('Krukaspoelie', merge([engPolyV(0.07, 0.026, 'Crank'), xf(G.cyl('x', 0.021, 0.021, 0.055, 20), [0.03, 0, 0]), xf(G.cyl('x', 0.05, 0.05, 0.004, 32), [0.012, 0, 0])]), MAT.darkSteel, { d: 'Krukaspoelie met zeven groeven (Ø140 mm geschat); of hij een trillingsdemper heeft is niet gevonden.', p: [XA, 0, 0], ex: [-0.06, -0.03, 0] }),
     P('Poeliebout krukas', hexBolt(0.06, 0.012, 'x'), MAT.darkSteel, { d: 'Krukaspoeliebout: aanhalen plus 115° ± 15°; herbruikbaar zolang de lengte onder de kop ≤ 49,1 mm is.', p: [XA - 0.015, 0, 0], ex: [-0.12, -0.03, 0] }),
@@ -62,12 +62,13 @@ function buildAccessory() {
       P('Spannerrol', pulley(0.03, 0.027, 'engAccT'), MAT.alu, { d: 'Gladde rol met lager, tegen de rug van de riem.', p: [XA, tp[1], tp[0]], ex: [-0.05, 0, 0] }),
       P('Bevestigingsbout spanner', hexBolt(0.1, 0.01, 'x'), MAT.darkSteel, { d: 'Bout waarmee de spanner op de accessoiresteun zit.', p: [-0.335, piv[1], piv[0]], ex: [-0.09, 0, 0] }),
     ]),
-    A('Geleiderol multiriem', { d: 'Vaste geleiderol in de multiriemloop.', p: [XA, ACC[3][1], ACC[3][0]], ex: [-0.06, 0.04, 0] }, [
+    A('Geleiderol multiriem', { d: 'Vaste geleiderol in de multiriemloop.', p: [XA, ACC[4][1], ACC[4][0]], ex: [-0.06, 0.04, 0] }, [
       P('Rol met lager', pulley(0.03, 0.027, 'engAccI'), MAT.alu, { d: 'Gladde rol met lager.', ex: [0, 0, 0] }),
       P('Bout geleiderol', hexBolt(0.1, 0.01, 'x'), MAT.darkSteel, { d: 'Bout van de geleiderol, aanhaalmoment 5,8 daN·m.', p: [-0.018, 0, 0], ex: [-0.07, 0, 0] }),
     ]),
-    P('Accessoiresteun', bracket, MAT.aluCast, { d: 'Multifunctionele steun op het blok waaraan dynamo, aircocompressor en spanner vastzitten.', ex: [0.0, 0.0, 0.08] }),
-    buildAlternator([-0.27, ACC[2][1], ACC[2][0]]),
+    P('Accessoiresteun', bracket, MAT.aluCast, { d: 'Multifunctionele steun op het blok waaraan dynamo, aircocompressor en spanner vastzitten; de stuurpomp zit via de pompsteun op dezelfde steun.', ex: [0.0, 0.0, 0.08] }),
+    buildAlternator([-0.27, ACC[3][1], ACC[3][0]]),
+    engBuildPump(),
     buildAcCompressor([-0.27, ACC[1][1], ACC[1][0]]),
   ]);
 }

@@ -14,6 +14,7 @@ const ENG_CAM_RB = 0.0165, ENG_ROLL_R = 0.0085;
 const ENG_BRIDGE_T = 0.024, ENG_COVER_Y = CAMY + ENG_BRIDGE_T + 0.001, ENG_COVER_H = 0.04;
 const ENG_COVER_TOP = ENG_COVER_Y + ENG_COVER_H;
 const XT = -0.245, XA = -0.345;                       // vlak van distributieriem en multiriem
+const ENG_PS = [-0.27, -0.005, 0.255], ENG_PS_R = 0.058;   // stuurpomp: oorsprong (pompas, x-niveau van de pomp), tipstraal van de poelie
 const ENG_TURBO = [0.07, 0.14, -0.255];               // hartlijn turbo-as (lagerhuis)
 const ENG_TB = [-0.236, 0.14, 0.21];                  // gasklephuis (as van de doorlaat langs x)
 const ENG_RAIL = [0, 0.35, 0.165];
@@ -29,6 +30,8 @@ const ENG_PORTS = {
   throttleIn: { p: [ENG_TB[0] - 0.026, ENG_TB[1], ENG_TB[2]], dir: [-1, 0, 0] },              // ingang gasklephuis (koude laadlucht)
   thermostatOut: { p: [0.252, 0.358, 0.04], dir: [0, 1, 0] },                                   // waterstuk naar bovenste radiateurslang
   waterPumpIn: { p: [-0.155, 0.0, 0.158], dir: [0, 0, 1] },                                     // aanvoerstomp waterpomp (onderste radiateurslang)
+  psOut: { p: [ENG_PS[0] + 0.008, ENG_PS[1] - 0.065, ENG_PS[2] + 0.02], dir: [0, -1, 0] },       // hogedrukuitgang stuurpomp (einde van de stalen pijpstomp; drukslang naar het stuurhuis)
+  psIn: { p: [ENG_PS[0] - 0.03, ENG_PS[1], ENG_PS[2] + 0.065], dir: [0, 0, 1] },                // aanzuigstomp stuurpomp (zuigslang uit het reservoir)
   fuelRailIn: { p: [0.205, ENG_RAIL[1] - 0.044, ENG_RAIL[2]], dir: [0, -1, 0] },                              // snelkoppeling brandstofrail
 };
 // punt op afstand d buiten een aansluiting, langs dir (motorframe)
