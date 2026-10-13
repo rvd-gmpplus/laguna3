@@ -1,30 +1,25 @@
-import sys, time, threading, http.server, socketserver, functools, json
-from playwright.sync_api import sync_playwright
-S = sys.argv[1]; OUT = sys.argv[2]
-Handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=S+'/test')
-class Q(http.server.SimpleHTTPRequestHandler):
-    def log_message(self,*a): pass
-srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Q, directory=S+'/test'))
-port = srv.server_address[1]
-threading.Thread(target=srv.serve_forever, daemon=True).start()
-steps = json.loads(sys.argv[3]) if len(sys.argv) > 3 else []
-with sync_playwright() as p:
-    b = p.chromium.launch(args=['--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist'])
+"""Screenshots met stappen per viewport.
+
+    python3 tools/shot.py UITVOERMAP 'JSON'
+
+JSON: [["naam", breedte, hoogte, ["eval:JS", "wait:ms", "click:selector", "shot:bestandsnaam"]], ...]
+Voorbeeld: [["desk",1280,800,["shot:gemonteerd","eval:__laguna.preset('main'); __laguna.finishAll(); 1","wait:800","shot:hoofdgroepen"]]]
+"""
+import sys, os, json
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from harness import session
+
+OUT = sys.argv[1]
+steps = json.loads(sys.argv[2]) if len(sys.argv) > 2 else [["desk", 1280, 800, ["shot:gemonteerd"]]]
+os.makedirs(OUT, exist_ok=True)
+with session() as s:
     for (name, w, h, actions) in steps:
-        pg = b.new_page(viewport={'width': w, 'height': h}, device_scale_factor=1)
-        logs = []
-        pg.on('console', lambda m: logs.append(f'{m.type}: {m.text}'))
-        pg.on('pageerror', lambda e: logs.append(f'PAGEERROR: {e}'))
-        t0 = time.time()
-        pg.goto(f'http://127.0.0.1:{port}/index.html', wait_until='load')
-        pg.wait_for_timeout(1500)
-        print(name, 'load+1.5s', round(time.time()-t0,1), 's')
+        pg = s.page(w, h, scale=1, touch=w < 700)
         for a in actions:
-            if a.startswith('eval:'): print('  eval ->', pg.evaluate(a[5:]))
+            if a.startswith('eval:'): print(name, 'eval ->', str(pg.evaluate(a[5:]))[:300])
             elif a.startswith('wait:'): pg.wait_for_timeout(int(a[5:]))
             elif a.startswith('click:'): pg.click(a[6:])
-            elif a.startswith('shot:'): pg.screenshot(path=f'{OUT}/{a[5:]}.png', timeout=150000); print('  shot', a[5:])
-        for l in logs[:40]: print('  ', l[:300])
+            elif a.startswith('shot:'):
+                pg.screenshot(path=os.path.join(OUT, a[5:] + '.png'), timeout=180000); print(name, 'shot', a[5:])
         pg.close()
-    b.close()
-srv.shutdown()
+    s.report()
