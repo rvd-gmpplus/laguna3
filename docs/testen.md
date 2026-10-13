@@ -85,7 +85,7 @@ Publicatierooktest. Zet de CDN-versie zoals `build.py` hem in `index.html` schri
 - geen horizontale scroll op 1280 × 800 en 390 × 844;
 - via `curl` en de proxy: elk CDN-bestand bestaat en is byte voor byte gelijk aan het lokale pakket, en de stylesheet van Google Fonts is bereikbaar.
 
-Na publicatie moet de inhoud van de gepubliceerde URL gelijk zijn aan `index.html`. Dat controleert dit script niet; de orkestrator leest de URL terug.
+Na publicatie moet de inhoud van de gepubliceerde URL gelijk zijn aan `index.html`. Dat controleert dit script niet. De orkestrator leest de URL terug en zoekt `index.html` byte voor byte in de teruggelezen pagina: het bestand moet er precies één keer en aaneengesloten in staan, met alleen het paginaskelet van de host eromheen. De uitkomst staat in de tabel hieronder.
 
 ### `python3 tools/tri.py`
 
@@ -126,7 +126,7 @@ De kolom "Na golf 1" is de tussenstand van 13 oktober 2026 rond 11:30 UTC, ongew
 | `ITEST_GATES=1 python3 tools/itest.py` | niet vastgelegd na golf 1 | 79 van 79 op `6eca637` en opnieuw 79 van 79 op de eindstand `ead92f6` (11: 369 tekenopdrachten, p95 0,7 ms) |
 | `pubsmoke.py` | OK | OK: `ready` na 14,8 s (1280 x 800) en 7,2 s (390 x 844), grens 20 s; three r147; geen horizontale scroll |
 | `ui_inner.py` | bestond nog niet | 0 eerste treffers op 256 ingesloten knopen (na golf 2 waren het er 52) |
-| URL na publicatie gelijk aan `index.html` | niet van toepassing | nog niet gemeten: op het moment van schrijven was er niet gepubliceerd. De orkestrator leest de URL terug. |
+| URL na publicatie gelijk aan `index.html` | niet van toepassing | Gelijk. Versie 2 van de URL, teruggelezen op 13 oktober om 17:00 UTC, bevat `index.html` van `8095a3e` (618.341 bytes, md5 `dc2bc3b0…`) precies één keer en aaneengesloten. Daaromheen staan alleen het vaste paginaskelet van de host (531 bytes: doctype, charset, viewport en basisstijl tot en met `<body>`) en de afsluiting `</body></html>` (15 bytes). |
 
 ## Bekende beperkingen
 

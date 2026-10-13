@@ -154,4 +154,4 @@ Alles uit elkaar: [docs/screenshots/alles-uit-elkaar.png](docs/screenshots/alles
 
 Telefoonweergave: [docs/screenshots/mobiel.png](docs/screenshots/mobiel.png)
 
-De screenshots in `docs/screenshots/` stammen uit de eerste versie en zijn bij het schrijven van deze tekst (eindstand `ead92f6`) nog niet vernieuwd. De orkestrator vervangt ze onder dezelfde bestandsnamen; tot dan tonen ze niet de eindstand.
+De screenshots in `docs/screenshots/` tonen de eindstand: ze zijn in `8095a3e` opnieuw gemaakt uit dezelfde build als `index.html`, op 1280 × 800 (`mobiel.png` op 390 × 844 met pixelverhouding 2) en met software-rendering in de container.
