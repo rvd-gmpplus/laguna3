@@ -101,7 +101,7 @@ function buildCooling() {
   const sluit = [[-0.1, 0.1], [0.1, 0.1], [-0.1, -0.1], [0.1, -0.1]];
   const cIn = ENG_PORTS.compIn;
   const hoseAir = sysHose('Aanzuigslang turbo', 'Voert de gefilterde lucht van het luchtfilterhuis naar de compressorinlaat van de turbo.', [[0.38, 0.7365, 1.535], [0.37, 0.725, 1.48], [0.34, 0.665, 1.40], [0.30, 0.60, 1.31], [0.24, 0.53, 1.235], [0.17, 0.495, 1.226], sysE(cIn, 0.08), sysE(cIn, 0.03), sysP(cIn.p)], 0.03, { n0: 'Klem luchtfilterhuis', n1: 'Klem turbo', seg: 56, rad: 12, ex: [0.1, 0.12, -0.1] });
-  const inlaat = A('Luchtinlaat', { d: 'Aanzuigtraject: luchtgeleider achter de grille, luchtfilterhuis met papieren element en de aanzuigslang naar de turbocompressor. De motor meet de belasting met een druksensor in het inlaatspruitstuk, dus er zit geen luchtmassameter in.', ex: [0.2, 0.3, 0.15] }, [
+  const inlaat = A('Luchtinlaat', { d: 'Aanzuigtraject: luchtgeleider achter de grille, luchtfilterhuis met papieren element en de aanzuigslang naar de turbocompressor. De motor meet de belasting met een druksensor (MAP) op het inlaatspruitstuk; een luchtmassameter komt in de onderdelenlijsten voor deze motor niet voor (aannemelijk).', ex: [0.2, 0.3, 0.15] }, [
     P('Luchtgeleider', merge([tube([[0.27, 0.62, 2.235], [0.325, 0.595, 2.15], [0.355, 0.575, 2.05], [0.355, 0.575, 1.94], [0.37, 0.62, 1.86], [0.36, 0.66, AB[2] + 0.145]], 0.025, 36, 12), xf(G.cyl('z', 0.034, 0.025, 0.03, 14), [0.27, 0.62, 2.24])]), MAT.plastic, { d: 'Kunststof kanaal dat koele buitenlucht achter de grille opvangt en naar het luchtfilterhuis leidt.', ex: [0, 0.08, 0.2] }),
     P('Luchtfilterhuis', merge([box(0.24, 0.1, 0.27, 0.02), xf(G.box(0.26, 0.008, 0.29), [0, 0.05, 0])]), MAT.plastic, { d: 'Onderbak van het luchtfilter met rand voor het deksel.', p: [AB[0] - 0.02, AB[1] - 0.04, AB[2]], ex: [0, -0.1, 0] }),
     P('Luchtfilterelement', cache('sysAirEl', () => merge([G.rbox(0.22, 0.03, 0.25, 0.006), ...[-0.08, -0.04, 0, 0.04, 0.08].map(x => xf(G.box(0.006, 0.014, 0.24), [x, 0.02, 0]))])), MAT.filter, { d: 'Geplisseerd papieren filterelement.', p: [AB[0] - 0.02, AB[1] + 0.005, AB[2]], ex: [0, 0.09, 0], inner: true }),
@@ -201,7 +201,7 @@ function buildExhaust() {
     P('Hitteschild tunnel', plan(shapeOf([[-0.07, 0.8], [0.11, 0.8], [0.11, 0.2], [0.09, -0.5], [-0.05, -0.5], [-0.07, 0.2]]), 0.003), MAT.heat, { d: 'Plaat boven de pijp in de middentunnel; houdt de hitte van de vloer.', p: [0, 0.313, 0], ex: [0, 0.1, 0] }),
     P('Hitteschild tank', plan(shapeOf([[-0.12, -0.72], [0.2, -0.72], [0.2, -1.12], [-0.12, -1.12]]), 0.003), MAT.heat, { d: 'Plaat tussen de uitlaatpijp en de brandstoftank.', p: [0.05, 0.145, 0], ex: [0, -0.1, 0] }),
   ]);
-  return A('Uitlaatsysteem', { d: 'De uitlaat van de turbo tot de bumper: voorkatalysator direct op de turbine, downpipe, flexstuk, middendemper, einddemper en twee eindstukken, met hitteschilden en rubber ophangingen. Lambdasondes zitten voor en na de katalysator.', ex: [0, -0.8, -0.3] }, [voorkat, downpipe, flenzen, flex, tussen, midden, achterpijp, einddemper, hangers, hitte]);
+  return A('Uitlaatsysteem', { d: 'De uitlaat van de turbo tot de bumper: voorkatalysator direct op de turbine, downpipe, flexstuk, middendemper, einddemper en twee eindstukken (aannemelijk), met hitteschilden en rubber ophangingen. Lambdasondes zitten voor en na de katalysator.', ex: [0, -0.8, -0.3] }, [voorkat, downpipe, flenzen, flex, tussen, midden, achterpijp, einddemper, hangers, hitte]);
 }
 
 /* ============================ brandstofsysteem ============================ */
@@ -246,12 +246,12 @@ function buildFuel() {
     P('Toevoerleiding', tube([[MP[0] + 0.04, MP[1] + 0.045, MP[2] + 0.03], [-0.2, 0.355, -0.8], [-0.4, 0.3, -0.7], [-0.42, 0.13, -0.6], [-0.42, 0.13, 0.4], [-0.38, 0.14, 0.9], [-0.1, 0.33, 1.0], [0.1, 0.5, 1.06], [0.21, 0.62, 1.2], [0.22, 0.66, 1.45], [0.2, 0.66, 1.6], sysE(rail, 0.045), sysP(rail.p)], 0.004, 140, 6), MAT.steel, { d: 'Stalen brandstofleiding met kunststof mantel, aan de vloer vastgeklikt.', ex: [0, 0.1, 0] }),
     ...[[-0.42, 0.13, -0.3], [-0.42, 0.13, 0.2], [-0.4, 0.135, 0.65]].map((p, i) => P(`Leidingclip ${i + 1}`, G.box(0.016, 0.012, 0.02), MAT.plastic, { d: 'Kunststof clip die de brandstofleiding aan de vloer klikt.', p, ex: [0, 0.06, 0] })),
   ]);
-  const evap = A('Dampsysteem', { d: 'Opvang van benzinedampen (EVAP): de koolstoffilter vangt dampen uit de tank op en laat ze via het spoelventiel door de motor verbranden. De leiding naar het inlaatspruitstuk is niet weergegeven.', ex: [-0.1, -0.1, -0.1] }, [
+  const evap = A('Dampsysteem', { d: 'Opvang van benzinedampen (EVAP): het koolstoffilter vangt dampen uit de tank op en laat ze via het spoelventiel door de motor verbranden. De leiding naar het inlaatspruitstuk is niet weergegeven.', ex: [-0.1, -0.1, -0.1] }, [
     P('Koolstoffilter', merge([G.rbox(0.09, 0.2, 0.09, 0.02), xf(G.cyl('z', 0.008, 0.008, 0.05, 8), [0, 0.07, 0.065])]), MAT.plastic, { d: 'Houder met actieve kool die benzinedampen uit de tank vasthoudt.', p: [-0.4, 0.2, -1.22], ex: [-0.08, -0.1, 0] }),
     P('Spoelventiel', merge([G.cyl('y', 0.014, 0.014, 0.05, 12), xf(G.rbox(0.02, 0.014, 0.02, 0.004), [0, 0.03, 0.016])]), MAT.darkSteel, { d: 'Magneetventiel dat de dampen gestuurd naar het inlaatspruitstuk laat stromen.', p: [-0.32, 0.22, -1.22], ex: [0.06, 0.1, 0] }),
     P('Rolloverventiel', G.cyl('y', 0.014, 0.014, 0.03, 10), MAT.plastic, { d: 'Ventiel op de tank dat bij kantelen de dampleiding afsluit.', p: [0.2, TY + 0.1, TZ + 0.1], ex: [0, 0.14, 0] }),
-    P('Dampleiding', tube([[0.2, TY + 0.115, TZ + 0.1], [0.3, 0.36, -1.0], [-0.1, 0.37, -1.12], [-0.38, 0.27, -1.2], [-0.4, 0.22, -1.22]], 0.007, 28, 6), MAT.sysHose, { d: 'Dunne kunststof slang van de tank naar de koolstoffilter.', ex: [0, 0.1, 0] }),
-    P('Spoelleiding', tube([[-0.4, 0.22, -1.22], [-0.36, 0.22, -1.22], [-0.32, 0.22, -1.22]], 0.006, 6, 6), MAT.sysHose, { d: 'Korte slang van de filter naar het spoelventiel.', ex: [0, 0.08, 0] }),
+    P('Dampleiding', tube([[0.2, TY + 0.115, TZ + 0.1], [0.3, 0.36, -1.0], [-0.1, 0.37, -1.12], [-0.38, 0.27, -1.2], [-0.4, 0.22, -1.22]], 0.007, 28, 6), MAT.sysHose, { d: 'Dunne kunststof slang van de tank naar het koolstoffilter.', ex: [0, 0.1, 0] }),
+    P('Spoelleiding', tube([[-0.4, 0.22, -1.22], [-0.36, 0.22, -1.22], [-0.32, 0.22, -1.22]], 0.006, 6, 6), MAT.sysHose, { d: 'Korte slang van het koolstoffilter naar het spoelventiel.', ex: [0, 0.08, 0] }),
   ]);
   return A('Brandstofsysteem', { d: 'Brandstoftank van 66 liter onder de achterbank met pompmodule, vulsysteem aan de rechterzijde, toevoerleiding naar de motor en het dampsysteem.', spec: [['Tankinhoud', '66 l'], ['Brandstof', 'loodvrije benzine (Euro 95)'], ['Tankklep', 'rechterachterscherm']], ex: [-0.5, -0.5, -1.0] }, [tank, pompmodule, vul, toevoer, evap]);
 }
@@ -265,7 +265,7 @@ function buildElectrical() {
   const PZ = BZ - 0.08;                                  // z van de polen
   const W = 0.16, L = 0.20, Hh = 0.15;
   const cellGeo = cache('sysCell', () => G.box(W - 0.02, Hh - 0.04, (L - 0.02) / 6 - 0.004));
-  const accu = A('Accu', { d: '12-voltaccu in de motorruimte, in een accubak met afdekkap, poolklemmen, hoofdhouder en een ontgassingsslang. Naast de accubak zit de zekerings- en relaisdoos van de motorruimte.', spec: [['Spanning', '12 V'], ['Plaats', 'motorruimte rechtsvoor (aannemelijk)']], ex: [-0.15, 0.3, 0.1] }, [
+  const accu = A('Accu', { d: '12-voltaccu in de motorruimte, in een accubak met afdekkap, poolklemmen, hoofdhouder en een ontgassingsslang. Naast de accubak zit de zekerings- en relaisdoos van de motorruimte.', spec: [['Spanning', '12 V'], ['Plaats', 'motorruimte rechtsvoor (geschat; bronnen verschillen)']], ex: [-0.15, 0.3, 0.1] }, [
     P('Accubak', G.rbox(W, Hh, L, 0.012), MAT.sysBattery, { d: 'Kunststof accubak met de zes cellen.', p: [BX, BY, BZ] }),
     P('Accudeksel', G.rbox(W + 0.002, 0.018, L + 0.002, 0.006), MAT.plasticGrey, { d: 'Deksel met ontgassingskanaal.', p: [BX, BY + Hh / 2 + 0.009, BZ], ex: [0, 0.2, 0] }),
     A('Cellen', { d: 'De zes in serie geschakelde cellen van de accu (2 volt per cel), in de accubak onder het deksel.', ex: [0, 0.1, 0], inner: true }, [0, 1, 2, 3, 4, 5].map(k => P(`Cel ${k + 1}`, cellGeo, MAT.sysBattery, { d: 'Loodzuurcel van 2 volt, in serie geschakeld met de andere cellen.', p: [BX, BY - 0.004, BZ + (k - 2.5) * ((L - 0.02) / 6)], ex: [0, k * 0.02, (k - 2.5) * 0.03], inner: true }))),
