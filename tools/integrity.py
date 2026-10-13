@@ -85,13 +85,17 @@ CHECK = r"""(ANCHORS) => {
       if (!top || top.y < 0.45) continue;
       if (typeof HW === 'function' && Math.abs(top.x) > HW(top.z) - 0.08) continue;   // tegen de flank: deze controle kijkt alleen van boven
       o.set(top.x, 2.5, top.z); rc.set(o, down); rc.far = 3;
-      const hit = rc.intersectObjects(bodyMeshes, false)[0];
+      const hits = rc.intersectObjects(bodyMeshes, false), hit = hits[0];
       checked++;
       if (!hit) continue;
-      const hood = (() => { for (let p = hit.object.userData.node; p; p = p.parent) if (p.name === 'Motorkap') return true; return false; })();
+      const inHood = h => { for (let p = h.object.userData.node; p; p = p.parent) if (p.name === 'Motorkap') return true; return false; };
+      const hood = inHood(hit);
       const gap = hit.point.y - top.y;
+      // laagste laag van de motorkap boven dit punt (buitenhuid, binnenframe of isolatiemat): daar moet het onderdeel 5 mm onder blijven
+      const low = hood ? hits.filter(inHood).reduce((m, h) => (h.point.y < m.point.y ? h : m), hit) : null;
       if (gap < -0.004) err.push(`steekt boven de carrosserie uit (${(-gap * 100).toFixed(1)} cm door ${hit.object.userData.node.name}): ${path(n)}`);
       else if (hood && gap < 0.025) err.push(`te weinig ruimte onder de motorkap (${(gap * 100).toFixed(1)} cm, minimaal 2,5 cm onder de buitenhuid): ${path(n)}`);
+      else if (low && low.point.y - top.y < 0.005) err.push(`raakt een laag van de motorkap (${((top.y - low.point.y) * 100).toFixed(1)} cm door ${low.object.userData.node.name}; minimaal 0,5 cm eronder): ${path(n)}`);
     }
     if (!checked) warn.push('doorsteekcontrole: niets gecontroleerd');
     // Zijkant: onder de gordellijn mogen onderdelen buiten de carrosserie niet buiten de huid steken.
