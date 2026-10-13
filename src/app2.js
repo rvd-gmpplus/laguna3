@@ -316,7 +316,11 @@ function uiLevels(w) {
   return L;
 }
 function uiExplodeX(w) { let x = 0; for (const lv of uiLevels(w)) { let s = 0; for (const a of lv) s += a.target; x += s / lv.length; } return x; }
-function uiApplyX(w, x, now) { uiLevels(w).forEach((lv, r) => { const t = clamp(x - r, 0, 1); for (const a of lv) now ? uiSetNow(a, t) : setTarget(a, t, 0, 0.6); }); }
+function uiApplyX(w, x, now) {
+  uiLevels(w).forEach((lv, r) => { const t = clamp(x - r, 0, 1); for (const a of lv) now ? uiSetNow(a, t) : setTarget(a, t, 0, 0.6); });
+  // Een opgetild onderdeel gaat terug zodra zijn groep dichtgaat, anders zweeft het buiten de gesloten auto.
+  if (uiLifted && !uiOpen(uiLifted.parent)) uiDrop();
+}
 const uiFmt = (v, d = 1) => v.toFixed(d).replace('.', ',');
 let uiDrag = false, uiPlayS = null;
 function uiSyncExplode(fromSlider) {
@@ -471,9 +475,10 @@ function uiRunPreset(id) {
   return ok;
 }
 function uiTourCaption(p, i, n) {
-  if (!p) { els.tourBar.hidden = true; uiUiChanged(); return; }
+  if (!p) { els.tourBar.hidden = true; if (window.innerWidth < 920) layoutView(); uiUiChanged(); return; }
   els.tourText.innerHTML = `<b>Rondleiding ${i + 1} van ${n} · ${esc(p.label)}</b>${esc(p.note)}`;
   els.tourBar.hidden = false;
+  if (window.innerWidth < 920) layoutView();
   uiUiChanged();
 }
 function uiSyncTour() { uiSyncCats(); }
@@ -859,6 +864,14 @@ function layoutView() {
     VIEW.t = Math.min(H * 0.3, Math.max(title.bottom, acts.bottom) + 4);
     const bottom = els.sheet.dataset.state === 'open' ? sheet.top : Math.min(dockTop, sheet.top);
     VIEW.b = Math.max(0, H - bottom + 4);
+    // Tijdens de rondleiding staat het bijschrift als balk onder de titel: het beeld begint eronder.
+    if (!els.tourBar.hidden) { const tb = els.tourBar.getBoundingClientRect(); if (tb.height > 0) VIEW.t = Math.max(VIEW.t, Math.min(H * 0.45, tb.bottom + 4)); }
+    // Altijd een bruikbaar vrij beeld: op een kort scherm (telefoon liggend) overlapt het dock dan liever het beeld.
+    const minH = Math.min(160, H * 0.4);
+    if (H - VIEW.t - VIEW.b < minH) {
+      VIEW.b = Math.max(0, H - VIEW.t - minH);
+      if (H - VIEW.t - VIEW.b < minH) VIEW.t = Math.max(0, H - VIEW.b - minH);
+    }
   }
   // Kleine verschuivingen van de bediening (een focusrand, een paar pixels in het dock) verschuiven het beeld niet:
   // anders springt de scène onder de vinger weg tussen aanwijzen en tikken.

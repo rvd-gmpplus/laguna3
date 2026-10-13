@@ -454,6 +454,13 @@ with session() as s:
       renderer.info.reset(); renderer.render(scene, camera);
       return { hidden, shownOnOpen, hiddenAgain, shownIsolated, saved: renderer.info.render.calls - callsHidden }; })()""")
     check('12 inner: verborgen bij dichte ouder, zichtbaar zodra die uitklapt en bij isoleren', r['hidden'] and r['shownOnOpen'] and r['hiddenAgain'] and r['shownIsolated'], json.dumps(r))
+    # 12b. I2: dichtschuiven met de explosieschuif of setExplode laat een opgetild onderdeel zakken
+    r = pg.evaluate("""(() => { const L = __laguna; L.preset('assembled'); L.finishAll();
+      L.tapNode(L.byName('Subframe')); L.finishAll(); L.tapNode(L.byName('Langsbalk links')); L.finishAll();
+      const lifted = L.liftedNode() ? L.liftedNode().name : null;
+      L.setExplode(0); L.finishAll();
+      return { lifted, after: L.liftedNode() ? L.liftedNode().name : null }; })()""")
+    check('12b opgetild onderdeel zakt terug bij setExplode(0)', r['lifted'] == 'Langsbalk links' and r['after'] is None, json.dumps(r))
     # 13. samengevoegd tekenen van gesloten groepen (batching)
     pg.evaluate("__laguna.preset('assembled'); __laguna.finishAll()")
     pg.wait_for_timeout(200)
