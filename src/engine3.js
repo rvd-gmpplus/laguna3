@@ -17,7 +17,7 @@ function buildAlternator(p) {
     P('Voorschild', merge([shieldF, ears]), MAT.aluCast, { d: 'Aluminium voorschild (aandrijfzijde) met bevestigingsogen en ventilatieopeningen.', ex: [-0.15, 0, 0] }),
     P('Voorlager', annulus(0.0085, 0.017, 0.01, 'x', 18), MAT.bearing, { d: 'Kogellager in het voorschild.', p: [-0.056, 0, 0], ex: [-0.125, 0, 0] }),
     P('Ventilator', merge([blades(8, 0.028, 0.054, 0.008, 0.0016, 0.3, 'x'), G.cyl('x', 0.054, 0.054, 0.0015, 24)]), MAT.steel, { d: 'Interne ventilator op de rotor voor de koeling.', p: [-0.033, 0, 0], ex: [-0.1, 0, 0] }),
-    A('Rotor', { d: 'Klauwpoolrotor met veldspoel en sleepringen.', ex: [-0.07, 0, 0], inner: true }, [
+    A('Rotor', { d: 'Klauwpoolrotor met veldspoel en sleepringen.', ex: [-0.07, 0, 0] }, [
       P('Rotoras', G.cyl('x', 0.0085, 0.0085, 0.15, 12), MAT.steel, { d: 'Rotoras.', p: [-0.01, 0, 0], ex: [0, 0, 0] }),
       P('Klauwpool voor', claw, MAT.darkSteel, { d: 'Klauwpool met zes vingers.', p: [-0.02, 0, 0], ex: [-0.03, 0, 0] }),
       P('Klauwpool achter', claw, MAT.darkSteel, { d: 'Tweede klauwpool, vingers in elkaar grijpend.', p: [0.02, 0, 0], r: [PI / 6, PI, 0], ex: [0.03, 0, 0] }),
@@ -109,7 +109,7 @@ function buildFlexplate() {
 function buildEngineCover() {
   const top = 0.473, cap = cache('engTopCover', () => merge([xf(G.rbox(0.4, 0.016, 0.22, 0.008), [0, -0.008, 0]), ...[-0.12, -0.04, 0.04, 0.12].map(x => xf(G.box(0.05, 0.003, 0.16), [x, 0.0005, 0]))]));
   const grom = [[0.188, 0.06], [-0.14, 0.075], [-0.05, -0.085]];
-  return A('Motorafdekkap', { d: 'Kunststof afdekkap bovenop de motor met akoestische schuimlaag, op rubber nokken.', ex: [0, 0.62, -0.12] }, [
+  return A('Motorafdekkap', { d: 'Kunststof afdekkap bovenop de motor met akoestische schuimlaag, op rubber nokken.', ex: [0, 1.05, -0.12] }, [
     P('Afdekkap', cap, MAT.plastic, { d: 'Kunststof afdekkap (vorm geschat).', p: [0, top - 0.0005, 0], ex: [0, 0, 0] }),
     P('Akoestische schuimlaag', G.rbox(0.38, 0.006, 0.2, 0.003), MAT.engFoam, { d: 'Schuimlaag aan de onderkant die motorgeluid dempt.', p: [0, top - 0.019, 0], ex: [0, -0.05, 0] }),
     ...grom.map(([x, z], k) => P(`Rubber nok ${k + 1}`, G.cyl('y', 0.0065, 0.0065, 0.024, 10), MAT.rubber, { d: 'Rubber nok waarop de afdekkap klemt.', p: [x, ENG_COVER_TOP + 0.012, z], ex: [0, -0.1, 0] })),
@@ -150,12 +150,12 @@ function engBuildPump() {
       P('Achterdeksel', rear, MAT.aluCast, { d: 'Achterdeksel met de pompkamer, de boring voor de stroomregelklep en de aansluiting voor de hogedrukpijp.', ex: [0, 0, 0] }),
       P('Voorhuis', front, MAT.aluCast, { d: 'Voorhuis met de neus waarin de aandrijfas draait.', ex: [-0.07, 0, 0] }),
       P('O-ring pomphuis', G.torus('x', 0.0405, 0.0012, 28, 5), MAT.rubber, { d: 'Afdichtring tussen voorhuis en achterdeksel.', p: [-0.004, 0, 0], ex: [-0.02, 0, 0] }),
-      A('Pompelement', { d: 'Pompelement: nokring, rotor met tien schoepen, drukplaat en de aandrijfas met lager en asafdichting.', ex: [-0.035, 0, 0], inner: true }, [
+      P('Aandrijfas', G.cyl('x', 0.009, 0.009, 0.108, 12), MAT.steel, { d: 'Pompas met spiebaan voor de rotor; het uiteinde steekt uit de neus van het voorhuis en draagt de poelie.', p: [-0.0375, 0, 0], ex: [-0.095, 0, 0] }),
+      A('Pompelement', { d: 'Pompelement: nokring, rotor met tien schoepen, drukplaat, lager en asafdichting van de pompas.', ex: [-0.035, 0, 0], inner: true }, [
         P('Nokring', ring, MAT.steel, { d: 'Ring met ovale binnenzijde waarlangs de schoepen glijden; door de ovale vorm ontstaan twee pompkamers.', ex: [0, 0, 0] }),
-        A('Aandrijfas met lager', { d: 'Aandrijfas met kogellager en asafdichting in het voorhuis.', ex: [-0.06, 0, 0] }, [
-          P('Aandrijfas', G.cyl('x', 0.009, 0.009, 0.108, 12), MAT.steel, { d: 'Pompas met spiebaan voor de rotor.', p: [-0.0375, 0, 0], ex: [0, 0, 0] }),
-          P('Kogellager', annulus(0.009, 0.0185, 0.01, 'x', 20), MAT.bearing, { d: 'Kogellager van de pompas.', p: [-0.025, 0, 0], ex: [-0.02, 0, 0] }),
-          P('Asafdichting', annulus(0.009, 0.0165, 0.006, 'x', 20), MAT.rubber, { d: 'Radiale asafdichting in de neus van het voorhuis.', p: [-0.053, 0, 0], ex: [-0.05, 0, 0] }),
+        A('Lager en asafdichting', { d: 'Kogellager en radiale asafdichting van de pompas in de neus van het voorhuis.', ex: [-0.06, 0, 0] }, [
+          P('Kogellager', annulus(0.009, 0.0185, 0.01, 'x', 20), MAT.bearing, { d: 'Kogellager van de pompas.', p: [-0.025, 0, 0], ex: [0.0, 0, 0] }),
+          P('Asafdichting', annulus(0.009, 0.0165, 0.006, 'x', 20), MAT.rubber, { d: 'Radiale asafdichting in de neus van het voorhuis.', p: [-0.053, 0, 0], ex: [-0.03, 0, 0] }),
         ]),
         A('Rotor met schoepen', { d: 'Rotor met tien schoepen (aantal geschat).', ex: [0.03, 0, 0] }, [
           P('Rotor', G.cyl('x', 0.0225, 0.0225, 0.016, 24), MAT.darkSteel, { d: 'Rotor met tien gleuven voor de schoepen, op de pompas.', p: [0.005, 0, 0], ex: [0, 0, 0] }),
