@@ -180,20 +180,9 @@ def settle(pg, ms=180):
     pg.wait_for_timeout(ms)
 
 
-_CDP = {}
-
-
 def tap(pg, touch, x, y, **kw):
     if touch:
-        # Tik met de tijdstempels van het gebaar zelf (zoals een echt toestel ze meegeeft): 60 ms tussen neer en op.
-        # touchscreen.tap van Playwright stempelt het loslaten pas als het neerzetten is afgehandeld; onder zware
-        # belasting (SwiftShader, zes agents) duurt dat soms langer dan 500 ms en lijkt de tik dan echt lang drukken.
-        cdp = _CDP.get(id(pg))
-        if cdp is None:
-            cdp = _CDP[id(pg)] = pg.context.new_cdp_session(pg)
-        t0 = time.time()
-        cdp.send('Input.dispatchTouchEvent', {'type': 'touchStart', 'touchPoints': [{'x': x, 'y': y, 'id': 1}], 'timestamp': t0})
-        cdp.send('Input.dispatchTouchEvent', {'type': 'touchEnd', 'touchPoints': [], 'timestamp': t0 + 0.06})
+        pg.touchscreen.tap(x, y)
     else:
         pg.mouse.click(x, y, **kw)
 
@@ -262,6 +251,9 @@ def run_view(s, tag, w, h, touch):
     for i in range(40):
         if i % 6 == 0:
             preset(pg, states[(i // 6) % len(states)])
+            # op de telefoon verandert het paneel van hoogte na een preset; de camera past zich ~160 ms later
+            # opnieuw in (ResizeObserver). Eerst dat laten gebeuren, anders verschuift het beeld tussen aanwijzen en tikken.
+            pg.wait_for_timeout(350); settle(pg, 60)
         p = pg.evaluate(f'window.__T.randomPoint({rnd.randrange(1, 10 ** 6)})')
         if not p:
             misses += 1

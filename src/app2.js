@@ -565,10 +565,20 @@ function uiStartPress(d) {
   uiCancelPress();
   const s = uiPressS = { d, raf: 0, zero: 0 };
   s.show = setTimeout(() => { els.press.style.transform = `translate(${d.x}px, ${d.y}px)`; els.press.hidden = false; void els.press.offsetWidth; els.press.classList.add('run'); }, 150);
-  s.fire = setTimeout(() => {
-    // gewapend: eerst wachtende invoer laten afhandelen, dan pas doorvoeren als de vinger er nog ligt
-    s.raf = requestAnimationFrame(() => { s.zero = setTimeout(() => { if (uiPressS === s && !d.ended) uiCommitPress(d); }, 0); });
-  }, UI_PRESS_MS);
+  // gewapend: eerst wachtende invoer laten afhandelen, dan pas doorvoeren als de vinger er nog ligt. Kwam een timer
+  // te laat (de hoofddraad was bezig, er kan invoer in de rij staan), dan opnieuw kijken tot de draad weer vrij is.
+  s.tries = 0;
+  const later = (ms, fn) => { const due = performance.now() + ms; s.fire = setTimeout(() => fn(performance.now() - due), ms); };
+  const check = lag => {
+    if (uiPressS !== s || d.ended) return;
+    if (lag > 40 && s.tries++ < 40) { later(30, check); return; }
+    s.raf = requestAnimationFrame(() => later(0, lag2 => {
+      if (uiPressS !== s || d.ended) return;
+      if (lag2 > 40 && s.tries++ < 40) { later(30, check); return; }
+      uiCommitPress(d);
+    }));
+  };
+  later(UI_PRESS_MS, check);
 }
 canvas.addEventListener('pointerdown', e => {
   uiPtrs.set(e.pointerId, e.pointerType);
