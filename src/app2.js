@@ -953,7 +953,7 @@ function uiAfterAnim() {
   uiSyncExplode();
   if (uiHoverPos && !down) uiDoHover();
 }
-let last = performance.now(), uiWasActive = false;
+let last = performance.now(), uiWasActive = false, uiBatchDrawT = 0;
 function loop(now) {
   requestAnimationFrame(loop);
   const dt = Math.min(0.1, Math.max(0, (now - last) / 1000)); last = now;
@@ -967,13 +967,15 @@ function loop(now) {
     needs = false;
     uiMeasure(now, active);
   }
-  if (uiBatchOn && (uiBatchQ.size || uiBatchJob) && uiBatchStep(active ? 3 : 10)) needs = true;
+  // batches bouwen in de vrije tijd van het frame; opnieuw tekenen als de rij leeg is of hoogstens elke 300 ms
+  // (een weergave per batch zou in software-WebGL de opbouw zelf vertragen)
+  if (uiBatchOn && (uiBatchQ.size || uiBatchJob) && uiBatchStep(active ? 3 : (now - uiReadyT < 8000 ? 25 : 10)) && (!uiBatchQ.size && !uiBatchJob || now - uiBatchDrawT > 300)) { needs = true; uiBatchDrawT = now; }
   if (uiWasActive && !active) { needs = true; uiAfterAnim(); }
   uiWasActive = active;
 }
 
 /* ---------- start ---------- */
-let uiReady = false;
+let uiReady = false, uiReadyT = 0;
 applyVisibility();
 resize();
 select(ROOT);
@@ -985,7 +987,7 @@ controls.update();
 renderer.render(scene, camera);
 LOADING.classList.add('gone');
 uiInitHint();
-requestAnimationFrame(t => { last = t; uiReady = true; loop(t); });
+requestAnimationFrame(t => { last = t; uiReady = true; uiReadyT = performance.now(); loop(t); });
 uiWarmMaterials();
 { const errs = appCheckPresets(); if (errs.length) console.warn('presets: ' + errs.join('; ')); }
 // labelbreedtes opnieuw meten zodra de lettertypen er zijn
@@ -1053,7 +1055,8 @@ window.__laguna = {
   finishAll, ROOT, ALL, MESHES, PRESETS, byName,
   select: uiApi(select), tapNode: uiApi(tapNode), focusNodes: uiApi(focusNodes),
   setTarget: uiApi(setTarget, true), explodeAllUnder: uiApi(explodeAllUnder, true), collapseAll: uiApi(collapseAll, true), isolate: uiApi(isolate, true),
-  get ready() { return uiReady; },
+  // klaar: gebouwd, eerste keer getekend en de batches van de beginstand staan klaar (hoogstens 8 s wachten daarop)
+  get ready() { return uiReady && (!uiBatchOn || (!uiBatchQ.size && !uiBatchJob) || performance.now() - uiReadyT > 8000); },
   byPath: uiByPath,
   preset: id => { hideHint(true); return uiRunPreset(id); },
   presetList: () => PRESETS.filter(appPresetOk).map(p => ({ id: p.id, cat: p.cat, label: p.label, key: p.key || null, subject: p.tour ? [] : appSubject(p).map(n => n.name), tour: !!p.tour })),
