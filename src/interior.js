@@ -282,8 +282,8 @@ function intConsole() {
     intPart('Keuzehendelhoes', boot, MAT.rubber, 'Rubber hoes die de poort afdicht.', { ex: [0, 0.08, 0] }),
     intPart('Keuzehendel', merge([xf(G.cyl('y', 0.007, 0.007, 0.07, 10), [0, 0.035, 0]), knob]), MAT.leather, 'Hendel met lederen knop.', { ex: [0, 0.16, 0] }),
     intPart('Ontgrendelknop hendel', xf(G.cyl('z', 0.006, 0.006, 0.01, 10), [0, 0.075, -0.018]), MAT.chrome, 'Drukknop in de knop die de hendel uit de parkeerstand vrijgeeft.', { ex: [0, 0.18, -0.06] }),
-    intPart('Keuzehendelhuis', G.rbox(0.1, 0.08, 0.16, 0.012), MAT.darkSteel, 'Mechaniekhuis met de poort onder de plaat.', { p: [0, -0.06, 0], inner: true, ex: [0, -0.08, 0] }),
-    intPart('Keuzekabel', tube([[0, -0.06, 0.08], [0, -0.09, 0.16], [0, -0.1, 0.24]], 0.005, 12, 6), MAT.steel, 'Schakelkabel naar de automaatbak, hier kort weergegeven; de aansluiting op de bak hoort bij de aandrijflijn.', { inner: true, ex: [0, -0.1, 0.1] }),
+    intPart('Keuzehendelhuis', G.rbox(0.1, 0.07, 0.16, 0.012), MAT.darkSteel, 'Mechaniekhuis met de poort onder de plaat.', { p: [0, -0.045, 0], inner: true, ex: [0, -0.08, 0] }),
+    intPart('Keuzekabel', tube([[0, -0.05, 0.08], [0, -0.062, 0.16], [0, -0.07, 0.24]], 0.005, 12, 6), MAT.steel, 'Schakelkabel naar de automaatbak, hier kort weergegeven; de aansluiting op de bak hoort bij de aandrijflijn.', { inner: true, ex: [0, -0.1, 0.1] }),
   ]);
   const arm = A('Armsteun middenconsole', { d: 'Armsteun met opbergvak en 12 V-aansluiting.', p: [0, 0.525, -0.26], ex: [0, 0.14, -0.05] }, [
     intPart('Armsteunkussen', bx(0.2, 0.035, 0.3, 0.015, [0, 0.0175, 0]), MAT.leather, 'Gevoerd deksel van de armsteun.', { ex: [0, 0.14, -0.06] }),
@@ -293,9 +293,9 @@ function intConsole() {
     intPart('Aansluiting 12 V', merge([xf(G.cyl('z', 0.013, 0.013, 0.014, 14), [0, -0.025, 0.125])]), MAT.darkSteel, 'Aansluiting van 12 V in het opbergvak.', { inner: true, ex: [0, 0, 0.08] }),
   ]);
   return A('Middenconsole', { d: 'Middenconsole met keuzehendel, joystick van de navigatie, kaartlezer, startknop, parkeerremschakelaar, bekerhouders en armsteun.', ex: [0, 0.12, 0.05] }, [
-    intPart('Consolebehuizing', G.rbox(0.24, 0.26, 0.87, 0.04), MAT.dash, 'Kunststof console over de vloertunnel.', { p: [0, 0.36, 0.015], ex: [0, -0.06, 0] }),
+    intPart('Consolebehuizing', G.rbox(0.24, 0.08, 0.87, 0.03), MAT.dash, 'Kunststof console op de vloertunnel, boven het tapijt.', { p: [0, 0.45, 0.015], ex: [0, -0.06, 0] }),
     intPart('Consoleinzetstuk', G.rbox(0.15, 0.004, 0.52, 0.002), MAT.blackGloss, 'Pianozwart inzetstuk op de console (hoogglans).', { p: [0, 0.491, 0.0], ex: [0, 0.05, 0] }),
-    intPart('Consolevoorpaneel', G.rbox(0.24, 0.22, 0.175, 0.03), MAT.dash, 'Voorste deel van de console onder de klimaatbediening, loopt door in het dashboard.', { p: [0, 0.51, 0.5125], ex: [0, 0, 0.1] }),
+    intPart('Consolevoorpaneel', G.rbox(0.24, 0.21, 0.175, 0.03), MAT.dash, 'Voorste deel van de console onder de klimaatbediening, loopt door in het dashboard.', { p: [0, 0.515, 0.5125], ex: [0, 0, 0.1] }),
     sel,
     intPart('Kaartlezer', G.rbox(0.1, 0.03, 0.03, 0.008), MAT.plastic, 'Lezer voor de handsfree Renault-kaart; de exacte plaats is voor dit model niet gevonden (aannemelijk hier).', { p: [0, 0.575, 0.418], ex: [0, 0, -0.1] }),
     intPart('Startknop', G.cyl('z', 0.015, 0.015, 0.012, 20), MAT.chrome, 'Start-/stopknop van de motor.', { p: [0.08, 0.575, 0.413], ex: [0, 0, -0.12] }),
@@ -309,24 +309,24 @@ function intConsole() {
       intPart('Bekerhouder rechts', cup, MAT.plastic, 'Bekerhouder rechts in de console.', { p: [-0.055, 0.49, -0.06], ex: [-0.03, 0.08, 0] }),
     ]),
     arm,
-    A('Achterventilatie console', { d: 'Luchtkanaal door de tunnel naar de roosters aan de achterkant van de console.', ex: [0, -0.06, -0.12] }, [
-      intPart('Luchtkanaal achterbank', G.rbox(0.1, 0.04, 0.8, 0.012), MAT.plasticGrey, 'Kanaal dat de lucht van de klimaatunit naar de achterpassagiers leidt.', { p: [0, 0.34, 0.0], inner: true, ex: [0, -0.1, 0] }),
-      intPart('Achterrooster links', G.rbox(0.07, 0.03, 0.015, 0.006), MAT.satin, 'Rooster voor de achterpassagiers.', { p: [0.05, 0.4, -0.428], ex: [0.03, 0, -0.1] }),
-      intPart('Achterrooster rechts', G.rbox(0.07, 0.03, 0.015, 0.006), MAT.satin, 'Rooster voor de achterpassagiers.', { p: [-0.05, 0.4, -0.428], ex: [-0.03, 0, -0.1] }),
+    A('Achterventilatie console', { d: 'Luchtkanaal in de console, boven de tunnel, naar de roosters aan de achterkant van de console.', ex: [0, -0.06, -0.12] }, [
+      intPart('Luchtkanaal achterbank', G.rbox(0.1, 0.04, 0.8, 0.012), MAT.plasticGrey, 'Kanaal dat de lucht van de klimaatunit naar de achterpassagiers leidt, in de console boven de tunnel.', { p: [0, 0.43, 0.0], inner: true, ex: [0, -0.1, 0] }),
+      intPart('Achterrooster links', G.rbox(0.07, 0.03, 0.015, 0.006), MAT.satin, 'Rooster voor de achterpassagiers.', { p: [0.05, 0.44, -0.428], ex: [0.03, 0, -0.1] }),
+      intPart('Achterrooster rechts', G.rbox(0.07, 0.03, 0.015, 0.006), MAT.satin, 'Rooster voor de achterpassagiers.', { p: [-0.05, 0.44, -0.428], ex: [-0.03, 0, -0.1] }),
     ]),
   ]);
 }
 /* ---------- bekleding, pedalen, spiegel ---------- */
 function intTrim() {
   const bx = intBx, cy = intCy;
-  const carpet = front(shapeOf([[-0.8, 0.235], [-0.13, 0.235], [-0.11, 0.36], [0.11, 0.36], [0.13, 0.235], [0.8, 0.235], [0.8, 0.215], [-0.8, 0.215]]), 1.65); carpet.translate(0, 0, 0.125);
+  const carpet = front(shapeOf([[-0.8, 0.25], [-0.169, 0.25], [-0.128, 0.41], [0.128, 0.41], [0.169, 0.25], [0.8, 0.25], [0.8, 0.24], [0.164, 0.24], [0.12, 0.4], [-0.12, 0.4], [-0.164, 0.24], [-0.8, 0.24]]), 1.65); carpet.translate(0, 0, 0.125);
   const handle = (s, z, n) => intPart(`Dakgreep ${n} ${sideName(s)}`, merge([bx(0.022, 0.024, 0.15, 0.008, [0, 0, 0]), bx(0.03, 0.03, 0.025, 0.006, [0, 0.01, 0.075]), bx(0.03, 0.03, 0.025, 0.006, [0, 0.01, -0.075])]), MAT.plasticGrey, 'Handgreep boven het portier met klapscharnier.', { p: [s * 0.6, intRoofY(z, 0.6) - 0.03, z], ex: [s * 0.1, -0.08, 0] });
   const visor = s => { const zc = 0.27; return A(`Zonneklep ${sideName(s)}`, { d: 'Zonneklep met make-upspiegel en verlichting; schuin langs de voorruitrand gemonteerd.', p: [s * 0.36, intRoofY(zc, 0.36) - 0.012, zc], r: [0.3, 0, 0], ex: [0, 0.3, 0.1] }, [
     intPart('Zonnekleppaneel', G.rbox(0.4, 0.012, 0.17, 0.006), MAT.fabric, 'Gevoerd paneel van de zonneklep.', { ex: [0, 0.06, 0] }),
     intPart('Make-upspiegel', G.rbox(0.14, 0.002, 0.07, 0.001), MAT.reflector, 'Spiegel onder het klepje, met lampje.', { p: [0, -0.007, 0], ex: [0, -0.06, 0] }),
     intPart('Zonneklepas', xf(G.cyl('x', 0.004, 0.004, 0.3, 8), [0, 0.0, -0.09]), MAT.steel, 'Draaias langs de dakrand.', { ex: [0, 0.04, -0.05] }),
   ]); };
-  const mat = (s, n) => intPart(`Vloermat ${n}`, G.rbox(0.4, 0.012, 0.5, 0.005), MAT.rubber, 'Losse vloermat voor de voetruimte.', { p: [s * 0.37, 0.241, 0.55], ex: [0, 0.1, 0.1] });
+  const mat = (s, n) => intPart(`Vloermat ${n}`, G.rbox(0.4, 0.012, 0.5, 0.005), MAT.rubber, 'Losse vloermat voor de voetruimte.', { p: [s * 0.37, 0.256, 0.55], ex: [0, 0.1, 0.1] });
   const sill = (s, z, len, n) => intPart(`Instaplijst ${n} ${sideName(s)}`, G.rbox(0.05, 0.01, len, 0.004), MAT.plasticGrey, 'Kunststof dorpellijst bij het instappen.', { p: [s * (surfX(z, 0.26) - 0.05), 0.248, z], ex: [s * 0.1, 0.05, 0] });
   const curtain = s => { const pts = []; for (let i = 0; i <= 12; i++) { const z = 0.2 - 1.9 * i / 12, p = ghPt(z, 0.31); pts.push([s * Math.abs(p[0]) * 0.965, p[1] - 0.014, z]); } return intPart(`Gordijnairbag ${sideName(s)}`, tube(pts, 0.009, 36, 6), MAT.fabric, 'Opgerolde gordijnairbag langs de dakrand boven de hemel, beschermt hoofd en schouders bij een zijdelingse botsing; in het model zonder dakrailbekleding, dus zichtbaar aan de dakrand.', { ex: [s * 0.1, 0.1, 0] }); };
   const roofZ = -0.02, lampY = intRoofY(roofZ, 0);
@@ -343,7 +343,7 @@ function intTrim() {
     curtain(1), curtain(-1),
     ]),
     A('Vloerbekleding', { d: 'Vloerbedekking met losse matten en de dorpellijsten.', ex: [0, -0.1, 0] }, [
-    intPart('Vloerbedekking', carpet, MAT.carpet, 'Getufte vloerbedekking over vloer en tunnel.', { ex: [0, -0.22, 0] }),
+    intPart('Vloerbedekking', carpet, MAT.carpet, 'Getufte vloerbedekking als dunne laag op de vloer en over de tunnel; de uitlaat in de tunnel blijft eronder vrij.', { ex: [0, -0.22, 0] }),
     mat(1, 'bestuurder'), mat(-1, 'passagier'),
     sill(1, 0.2, 0.8, 'voor'), sill(-1, 0.2, 0.8, 'voor'), sill(1, -0.85, 0.6, 'achter'), sill(-1, -0.85, 0.6, 'achter'),
     ]),
