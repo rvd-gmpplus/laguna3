@@ -369,9 +369,8 @@ function intPedals() {
 }
 function intMirror() {
   const zc = 0.46, yg = YR(zc) - 0.012, tilt = Math.atan((YR(zc - 0.05) - YR(zc + 0.05)) / 0.1), hy = yg - 0.09, hz = zc - 0.04;
-  return A('Binnenspiegel', { d: 'Automatisch dimmende binnenspiegel met regensensor, hangend aan de voorruit.', ex: [0, 0.32, 0.2] }, [
+  return A('Binnenspiegel', { d: 'Automatisch dimmende binnenspiegel, hangend aan de voorruit; de regen- en lichtsensor zit bij de carrosserie, achter de voorruit.', ex: [0, 0.32, 0.2] }, [
     intPart('Spiegelvoet binnen', G.rbox(0.04, 0.012, 0.05, 0.004), MAT.plastic, 'Voet die op de voorruit is gelijmd.', { p: [0, yg - 0.007, zc], r: [tilt, 0, 0], ex: [0, 0.06, 0.04] }),
-    intPart('Regensensor', G.rbox(0.08, 0.012, 0.06, 0.004), MAT.plasticGrey, 'Regen- en lichtsensor tegen de ruit, onder het sensorhuis.', { p: [0, YR(zc + 0.07) - 0.017, zc + 0.07], r: [tilt, 0, 0], ex: [0, 0.04, 0.08] }),
     intPart('Spiegelarm', rodBetween([0, yg - 0.012, zc], [0, hy + 0.03, hz], 0.006, 8), MAT.plastic, 'Arm tussen voet en spiegelhuis.', { ex: [0, 0.04, 0] }),
     intPart('Spiegelhuis binnen', G.rbox(0.26, 0.065, 0.035, 0.015), MAT.plastic, 'Behuizing van de binnenspiegel.', { p: [0, hy, hz], ex: [0, -0.03, 0] }),
     intPart('Spiegelglas binnen', G.box(0.24, 0.05, 0.003), MAT.reflector, 'Elektrochroom spiegelglas dat automatisch dimt.', { p: [0, hy, hz - 0.019], ex: [0, 0, -0.08] }),
