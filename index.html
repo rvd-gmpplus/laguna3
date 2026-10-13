@@ -545,6 +545,7 @@ const sideName = s => (s > 0 ? 'links' : 'rechts');
 const ZF = 2.345, ZR = -2.35;                       // lengte 4695 mm
 const AXF = 1.365, AXR = -1.391, AY = 0.33;         // wielbasis 2756 mm, bandstraal 225/45 R18
 const ARCH = 0.395, TRACK = 0.775;
+const TRACK_F = 0.7785, TRACK_R = 0.756;            // halve spoorbreedte voor en achter (1557 en 1512 mm, brochure april 2011)
 const WS0 = 1.06, WS1 = 0.32, RW0 = -1.20, SP = -2.16;
 function pchip(pts) {
   const n = pts.length, xs = pts.map(p => p[0]), ys = pts.map(p => p[1]), h = [], dl = [], m = new Array(n);
