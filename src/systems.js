@@ -185,9 +185,9 @@ function buildExhaust() {
   const EZ = -2.0, EY = 0.165;
   const endGeo = cache('sysEnd', () => merge([xf(G.rbox(0.66, 0.13, 0.28, 0.05), [0, 0, 0]), xf(G.cyl('z', 0.026, 0.026, 0.06, 14), [0.05, 0, 0.16])]));
   const einddemper = A('Einddemper', { d: 'Dwarsgeplaatste einddemper achter de achteras, met aan beide kanten een uitlaatpijp naar een verchroomd eindstuk (twee chromen eindstukken: aannemelijk voor deze uitvoering).', ex: [0, -0.1, -0.18] }, [
-    P('Demperhuis eind', endGeo, MAT.exhaust, { d: 'Dwarsgeplaatste einddemper van geplooid plaatstaal.', p: [0, EY, EZ] }),
-    ...[1, -1].map(s => P(`Uitlaatpijp ${sideName(s)}`, tube([[s * 0.33, EY, EZ - 0.02], [s * 0.45, 0.19, -2.05], [s * 0.54, 0.24, -2.1], [s * 0.6, 0.29, -2.17], [s * 0.6, 0.3, -2.21]], 0.02, 20, 10), MAT.exhaust, { d: 'Buis van de einddemper naar het chromen eindstuk onder de bumper.', ex: [s * 0.08, -0.04, -0.06] })),
-    ...[1, -1].map(s => P(`Uitlaateindstuk ${sideName(s)}`, annulus(0.0305, 0.037, 0.075, 'z', 22), MAT.chrome, { d: 'Verchroomd eindstuk, zichtbaar onder de achterbumper.', p: [s * 0.6, 0.3, -2.25], ex: [s * 0.04, 0, -0.18] })),
+    P('Demperhuis eind', endGeo, MAT.exhaust, { d: 'Dwarsgeplaatste einddemper van geplooid plaatstaal.', p: [0, EY, EZ], ex: [0, 0, 0] }),
+    ...[1, -1].map(s => P(`Uitlaatpijp ${sideName(s)}`, tube([[s * 0.33, EY, EZ - 0.02], [s * 0.45, 0.19, -2.05], [s * 0.54, 0.24, -2.1], [s * 0.6, 0.29, -2.17], [s * 0.6, 0.3, -2.21]], 0.02, 20, 10), MAT.exhaust, { d: 'Buis van de einddemper naar het chromen eindstuk onder de bumper.', ex: [s * 0.015, 0, -0.03] })),
+    ...[1, -1].map(s => P(`Uitlaateindstuk ${sideName(s)}`, annulus(0.0305, 0.037, 0.075, 'z', 22), MAT.chrome, { d: 'Verchroomd eindstuk, zichtbaar onder de achterbumper.', p: [s * 0.6, 0.3, -2.25], ex: [s * 0.015, 0, -0.1] })),
   ]);
   const hang = (n, x, yp, z, yb) => {
     const y0 = yp + pipeR + 0.008, len = yb - y0 - 0.004;
@@ -275,7 +275,7 @@ function buildElectrical() {
     P('Poolklem min', merge([G.cyl('y', 0.013, 0.013, 0.02, 12), xf(G.box(0.014, 0.02, 0.03), [-0.016, 0, 0])]), MAT.steel, { d: 'Poolklem op de minpool, met de massakabel naar de carrosserie.', p: [BX - 0.05, BY + Hh / 2 + 0.045, PZ], ex: [-0.04, 0.33, 0] }),
     P('Afdekkap plus', G.cyl('y', 0.02, 0.02, 0.026, 14), MAT.red, { d: 'Rode afdekkap over de pluspool tegen kortsluiting.', p: [BX + 0.05, BY + Hh / 2 + 0.065, PZ], ex: [0, 0.42, 0] }),
     P('Accuafkoppelunit', merge([G.rbox(0.05, 0.03, 0.04, 0.006), xf(G.cyl('x', 0.006, 0.006, 0.03, 8), [0.04, 0, 0])]), MAT.plasticGrey, { d: 'Afkoppelunit met pyrotechnische klem die de voeding bij een aanrijding onderbreekt.', p: [BX + 0.05 + 0.04, BY + Hh / 2 + 0.03, PZ], ex: [0.14, 0.3, 0] }),
-    P('Accuhouder', merge([G.box(W + 0.05, 0.01, 0.025), xf(G.cyl('y', 0.004, 0.004, 0.2, 6), [W / 2 + 0.018, -0.09, 0]), xf(G.cyl('y', 0.004, 0.004, 0.2, 6), [-W / 2 - 0.018, -0.09, 0])]), MAT.darkSteel, { d: 'Beugel die de accu op de bak houdt, met twee trekstangen.', p: [BX, BY + Hh / 2 + 0.024, PZ + 0.02], ex: [0, 0.36, 0] }),
+    P('Accuhouder', merge([G.box(W + 0.05, 0.01, 0.025), xf(G.cyl('y', 0.004, 0.004, 0.2, 6), [W / 2 + 0.018, -0.09, 0]), xf(G.cyl('y', 0.004, 0.004, 0.2, 6), [-W / 2 - 0.018, -0.09, 0])]), MAT.darkSteel, { d: 'Beugel die de accu op de bak houdt, met twee trekstangen.', p: [BX, BY + Hh / 2 + 0.024, PZ + 0.02], ex: [0, 0.52, 0] }),   // trekstangen (0,2 m lang) eindigen uitgeklapt boven het opgetilde deksel
     P('Accubak onderplaat', G.box(W + 0.07, 0.014, L), MAT.darkSteel, { d: 'Draagplaat van de accu op de langsligger.', p: [BX, BY - Hh / 2 - 0.007, BZ], ex: [0, -0.12, 0] }),
     P('Ontgassingsslang', tube([[BX - 0.03, BY + Hh / 2 - 0.01, PZ + 0.01], [BX - 0.03, BY + 0.0, BZ - 0.115], [BX - 0.03, BY - 0.1, BZ - 0.115]], 0.006, 12, 6), MAT.sysHose, { d: 'Slangetje dat accugassen naar buiten voert.', ex: [-0.04, -0.1, 0] }),
   ]);
