@@ -316,7 +316,11 @@ function uiLevels(w) {
   return L;
 }
 function uiExplodeX(w) { let x = 0; for (const lv of uiLevels(w)) { let s = 0; for (const a of lv) s += a.target; x += s / lv.length; } return x; }
-function uiApplyX(w, x, now) { uiLevels(w).forEach((lv, r) => { const t = clamp(x - r, 0, 1); for (const a of lv) now ? uiSetNow(a, t) : setTarget(a, t, 0, 0.6); }); }
+function uiApplyX(w, x, now) {
+  uiLevels(w).forEach((lv, r) => { const t = clamp(x - r, 0, 1); for (const a of lv) now ? uiSetNow(a, t) : setTarget(a, t, 0, 0.6); });
+  // Een opgetild onderdeel gaat terug zodra zijn groep dichtgaat, anders zweeft het buiten de gesloten auto.
+  if (uiLifted && !uiOpen(uiLifted.parent)) uiDrop();
+}
 const uiFmt = (v, d = 1) => v.toFixed(d).replace('.', ',');
 let uiDrag = false, uiPlayS = null;
 function uiSyncExplode(fromSlider) {
