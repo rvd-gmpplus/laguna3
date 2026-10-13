@@ -464,10 +464,10 @@ function buildBody() {
   const sideRoof = A('Zijwanden en dak', { d: 'Stijlen, dakrails, dak met dakbogen, de vaste kwartsruiten en de dakantenne.', ex: [0, 0.32, 0] }, [
     P('Dakpaneel', roof, MAT.paint, { d: 'Dakplaat van staal, gelast op de dakrails (geen panoramadak: dat was een optie).', ex: [0, 0.16, 0] }),
     A('Dakbogen', { d: 'Drie dwarsliggers onder het dakpaneel.', ex: [0, 0.1, 0] }, [[0.18, 'voor'], [-0.45, 'midden'], [-1.05, 'achter']].map(([z, nm]) => P(`Dakboog ${nm}`, (() => { const pts = []; for (let i = 0; i <= 12; i++) { const w = bodQR / 2 + (1 - bodQR) * i / 12; const p = ghPt(z, w); pts.push([p[0] * 0.97, p[1] - 0.025, z]); } return tube(pts, 0.012, 24, 6); })(), MAT.paintIn, { d: 'Dwarsligger onder het dakpaneel.', ex: [0, -0.04, z * 0.05] }))),
-    ...both(s => P(`Dakrail ${sn(s)}`, bodGhSide(s, -0.95, WS1, 30, () => [bodQG + 0.03, bodQR], 4), MAT.paint, { d: 'Zijdelingse dakligger boven de portieren.', ex: [s * 0.08, 0.04, 0] })),
+    ...both(s => P(`Dakrail ${sn(s)}`, bodGhSide(s, -0.95, WS1, 30, () => [bodQG + 0.03, bodQR], 10), MAT.paint, { d: 'Zijdelingse dakligger boven de portieren.', ex: [s * 0.08, 0.04, 0] })),
     ...both(s => P(`A-stijl ${sn(s)}`, bodGhSide(s, WS1, WS0, 24, z => [aPillarLo(z), bodQR], 5, bodDense(0.78, 0.95, 6)), MAT.paint, { d: 'Voorste dakstijl langs de voorruit.', ex: [s * 0.08, 0.04, 0.04] })),
     ...both(s => P(`B-stijl ${sn(s)}`, G.box(0.05, 0.8, 0.1), MAT.paintIn, { d: 'Verstevigd profiel in de middenstijl met de slotbeugel van het voorportier.', p: [s * 0.735, 0.66, -0.17], r: [-0.21, 0, 0], ex: [s * 0.05, 0, 0] })),
-    ...both(s => P(`C-stijl ${sn(s)}`, bodGhSide(s, SP, -0.95, 34, z => [cPillarLo(z), z < RW0 ? qScr(z) : bodQR], 8, bodDense(-1.25, -1.15, 5)), MAT.paint, { d: 'Achterste dakstijl met de karakteristieke kromming boven de kwartsruit.', ex: [s * 0.1, 0.04, -0.04] })),
+    ...both(s => P(`C-stijl ${sn(s)}`, bodGhSide(s, SP, -0.95, 34, z => [cPillarLo(z), z < RW0 ? qScr(z) : bodQR], 16, bodDense(-1.27, -1.15, 6)), MAT.paint, { d: 'Achterste dakstijl met de karakteristieke kromming boven de kwartsruit.', ex: [s * 0.1, 0.04, -0.04] })),
     ...both(quarter),
     A('Dakantenne', { d: 'Korte antennemast achter op het dak.', ex: [0, 0.14, -0.04] }, [
       P('Antennevoet', G.rbox(0.04, 0.025, 0.08, 0.012), MAT.blackGloss, { d: 'Antennevoet met versterker.', p: [0.0, YR(-1.0) + 0.008, -1.0], ex: [0, 0.03, 0] }),
@@ -591,7 +591,9 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
       ...both(fog),
       ...both(s => P(`Chroomwenkbrauw ${sn(s)}`, brow(s), MAT.bodChrome, { d: 'Chromen balk boven de mistlamp, naar buiten oplopend.', ex: [s * 0.08, 0.04, 0.08] })),
     ]),
-    P('Onderlip', merge([lowSide(L, 1.80, ZF, 60, z => [S1 * 0.45, bodSY(z, YB(z) + 0.022)], 3, bodDense(2.2, ZF, 16), -0.003), lowSide(R, 1.80, ZF, 60, z => [S1 * 0.45, bodSY(z, YB(z) + 0.022)], 3, bodDense(2.2, ZF, 16), -0.003)]), MAT.plastic, { d: 'Zwarte spoilerlip onder de bumper.', ex: [0, -0.08, 0.06] }),
+    // de lip loopt tot de hartlijn door (s = 0), zodat de twee helften op de neuspunt aansluiten: eerder bleef daar een V-vormig gat met
+    // spitse zwarte punten onder de chroomlijst
+    P('Onderlip', merge([L, R].map(sd => lowSide(sd, 1.80, ZF, 60, z => [0, bodSY(z, YB(z) + 0.022)], 4, bodDense(2.2, ZF, 16), -0.003))), MAT.plastic, { d: 'Zwarte spoilerlip onder de bumper.', ex: [0, -0.08, 0.06] }),
     ...both(s => P(`Sierstrip onderlip ${sn(s)}`, lowSide(s, 1.76, 2.15, 14, z => [bodSY(z, YB(z) + 0.028), bodSY(z, YB(z) + 0.046)], 1, [], -0.004), MAT.bodBright, { d: 'Zilveren strip langs de bumperzijde die doorloopt in de dorpelsierlijst.', ex: [s * 0.06, -0.03, 0] })),
     A('Koplampsproeiers', { d: 'Twee uitschuifbare koplampsproeiers onder de bi-xenon koplampen.', ex: [0, 0.02, 0.08] }, both(s => { const z = 2.0, y = bodHLlo(z) - 0.035, p = bodAt(z, y, 0.004), nn = bodNormalAt(z, y);
       return A(`Koplampsproeier ${sn(s)}`, { d: 'Uitschuifbare koplampsproeier (Initiale Paris: koplampsproeiers bij de bi-xenon).', ex: [s * 0.1, 0, 0.1] }, [
@@ -632,6 +634,7 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   ]);
   // plaat op de bodem, gekanteld met het bumpervlak; voorvlak ca. 5 mm onder de huid
   const rzA = bodRearZ(0, rPlateY - 0.045), rzB = bodRearZ(0, rPlateY + 0.045), rTilt = -Math.atan2(rzA - rzB, 0.09), rPlateZ = (rzA + rzB) / 2 + rcD - 0.0055;
+  const zVal = (() => { let lo = ZR, hi = bodZT; for (let i = 0; i < 30; i++) { const m = (lo + hi) / 2; if (YB(m) >= 0.366) lo = m; else hi = m; } return hi; })();
   const rearBumper = A('Achterbumper', { d: 'Bumperschaal met kentekenuitsparing, richel onder de achterklep, reflectoren, parkeersensoren en uitsparingen voor de dubbele uitlaat (aannemelijk voor deze motor).', ex: [0, -0.04, -0.7] }, [
     P('Bumperschaal achter', shellR, MAT.paint, { d: 'Gespoten kunststof bumperschaal met de richel onder de achterklep.', ex: [0, 0, 0] }),
     P('Kentekenuitsparing', recess, MAT.paint, { d: 'Verdiepte kentekenuitsparing in carrosseriekleur: schuin naar binnen lopende wanden rond de plaat en een vlakke bodem.', ex: [0, 0, -0.06] }),
@@ -642,7 +645,9 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     ...both(s => P(`Kentekenverlichting ${sn(s)}`, G.rbox(0.06, 0.008, 0.012, 0.003), MAT.lensClear, { d: 'Kentekenverlichting in de bovenwand van de uitsparing, schijnt omlaag op de plaat.', p: [s * 0.2, (rcY1 + rcYi1) / 2 - 0.0015, (bodRearZ(0.2, rcY1) + bodRearZ(0.2, rcYi1)) / 2 + 0.0035], ex: [s * 0.02, 0.04, 0] })),
     // donkere onderschort (foto's fase 2): band van ca. 9 cm langs de onderrand, op de achterzijde tot vlak onder de kentekenuitsparing;
     // de uitlaateindstukken (uitlaatsysteem, y 0,30) liggen aan de onderrand
-    P('Onderschort', merge([L, R].map(sd => lowSide(sd, -2.02, ZR + 2e-4, 40, z => { const yt = Math.min(0.368, YB(z) + 0.09); return YB(z) >= yt - 0.002 ? [0, 1e-4] : [0, bodSY(z, yt)]; }, 8, bodDense(-2.3, bodZT, 6).concat(bodDense(ZR, -2.3, 8)), -0.0025))), MAT.bodValance, { d: 'Donkergrijze kunststof onderschort langs de onderrand van de achterbumper (ca. 9 cm hoog), met aan de onderrand de uitsparingen voor de uitlaat.', ex: [0, -0.08, -0.04] }),
+    // de band stopt waar de onderkant van de staartpunt boven 0,366 komt (z ca. -2,29): daarachter bleef een strook zonder hoogte over die als
+    // dunne staande lijn midden door de kentekenplaat te zien was
+    P('Onderschort', merge([L, R].map(sd => lowSide(sd, -2.02, zVal, 40, z => [0, bodSY(z, Math.max(YB(z) + 0.002, Math.min(0.368, YB(z) + 0.09)))], 8, bodDense(-2.3, bodZT, 6).concat(bodDense(zVal, -2.3, 4)), -0.0025))), MAT.bodValance, { d: 'Donkergrijze kunststof onderschort langs de onderrand van de achterbumper (ca. 9 cm hoog), met aan de onderrand de uitsparingen voor de uitlaat.', ex: [0, -0.08, -0.04] }),
     P('Mistachterlicht', G.rbox(0.1, 0.03, 0.012, 0.006), MAT.lensRed, { d: 'Mistachterlicht onderin de bumper aan de bestuurderszijde (positie geschat uit fase 2-foto\'s).', p: [0.62, 0.34, bodRearZ(0.62, 0.34) - 0.004], ex: [0.04, 0, -0.08] }),
     P('Reflector rechts', G.rbox(0.1, 0.03, 0.01, 0.006), MAT.lensRed, { d: 'Rode reflector onderin de bumper.', p: [-0.62, 0.34, bodRearZ(0.62, 0.34) - 0.004], ex: [-0.04, 0, -0.08] }),
     A('Parkeersensoren achter', { d: 'Vier ultrasone sensoren van de parkeerhulp achter (standaard op Initiale Paris), onder en naast de kentekenuitsparing.', ex: [0, 0.03, -0.12] }, [[0.5, 0.43], [0.17, 0.345], [-0.17, 0.345], [-0.5, 0.43]].map(([x, y], i) => P(`Parkeersensor achter ${i + 1}`, G.cyl('z', 0.011, 0.011, 0.02, 12), MAT.paint, { d: 'Ultrasone parkeersensor achter (standaard op Initiale Paris).', p: [x, y, bodRearZ(x, y) + 0.006], ex: [0, 0.02, -0.06] }))),
