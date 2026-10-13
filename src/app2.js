@@ -672,6 +672,7 @@ function uiEnter(shift) {
   if (a) { doExplode(a); return; }
   if (n.asm) doCollapse(n); else { uiPush(); uiLift(n); uiAfterAction(); }
 }
+if (!uiTouch) els.search.placeholder += ' (toets /)';
 window.addEventListener('keydown', e => {
   const t = e.target;
   if (!els.helpDlg.hidden) { if (e.key === 'Escape') { e.preventDefault(); uiHelp(false); } return; }
@@ -684,6 +685,8 @@ window.addEventListener('keydown', e => {
   if (e.key === 'Enter') { if (onCtl) return; e.preventDefault(); uiStopPlay(); uiStopTour(); hideHint(); uiEnter(e.shiftKey); return; }
   if (e.key === 'Backspace') { e.preventDefault(); uiStopPlay(); uiStopTour(); uiUndo(); return; }
   if (e.key === '?') { e.preventDefault(); uiHelp(true); return; }
+  // U17: / springt naar het zoekveld van de onderdelenlijst (op de telefoon gaat het paneel daarvoor open)
+  if (e.key === '/') { e.preventDefault(); hideHint(); showTab('tree'); if (window.innerWidth < 920) setSheet('open'); els.search.focus(); els.search.select(); return; }
   // pijltjes (niet op een bedieningselement): door de boom lopen. Omhoog = bovenliggende groep, omlaag = eerste deel,
   // links/rechts = vorige/volgende op hetzelfde niveau (audit U29). Selecteren en in beeld houden, niets uitklappen.
   if (!onCtl && /^Arrow(Up|Down|Left|Right)$/.test(e.key)) {
