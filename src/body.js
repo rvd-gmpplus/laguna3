@@ -37,8 +37,9 @@ const bodYTm = pchip([[-2.268, 0.985], [-2.25, 0.994], [-2.20, 0.999], [-2.10, 0
   [-0.155, 0.946], [0.095, 0.942], [0.345, 0.934], [0.595, 0.924], [0.845, 0.911], [0.98, 0.895], [1.095, 0.872], [1.345, 0.825], [1.595, 0.795], [1.845, 0.765], [2.0, 0.725], [2.095, 0.69],
   [2.20, 0.648], [2.30, 0.605], [2.345, 0.565]]);
 function YT(z) { return z < bodZT ? bodYLEDGE : bodYTm(z); }
-// hartlijn van het dek (motorkap, torpedo, achterklep tussen lip en staartvlak); onder het glas niet zichtbaar
-const bodYD = pchip([[-2.268, 1.045], [-2.258, 1.057], [-2.24, 1.072], [-2.21, 1.088], [-2.17, 1.099], [-2.11, 1.118], [-1.95, 1.02], [-1.85, 0.99], [-1.0, 0.99], [0.0, 0.97], [0.6, 0.95], [0.88, 0.935], [1.0, 0.962], [1.06, 0.975], [1.20, 0.979], [1.345, 0.971],
+// hartlijn van het dek (motorkap, torpedo, achterklep tussen lip en staartvlak); onder het glas niet zichtbaar.
+// Achter de lip daalt het dek vlotter naar het staartvlak (geen dikke plank boven de achterlichten)
+const bodYD = pchip([[-2.268, 1.025], [-2.258, 1.038], [-2.24, 1.054], [-2.21, 1.072], [-2.17, 1.091], [-2.11, 1.118], [-1.95, 1.02], [-1.85, 0.99], [-1.0, 0.99], [0.0, 0.97], [0.6, 0.95], [0.88, 0.935], [1.0, 0.962], [1.06, 0.975], [1.20, 0.979], [1.345, 0.971],
   [1.595, 0.932], [1.845, 0.887], [1.975, 0.852], [2.095, 0.811], [2.20, 0.752], [2.27, 0.69], [2.30, 0.645], [2.325, 0.60], [2.345, 0.565]]);
 const bodDP = pchip([[-2.3, 2.6], [-1.9, 2.8], [1.0, 4.2], [1.9, 4.2], [2.22, 3.2], [2.345, 2.4]]);  // exponent van het dekprofiel (vlak midden, afgeronde randen)
 // daklijn op de hartlijn (voorruit bol, dak als een boog, vlakke achterruit onder ca. 14 graden)
@@ -47,7 +48,7 @@ const YR = pchip([[-2.11, 1.13], [-1.905, 1.181], [-1.655, 1.246], [-1.405, 1.31
 // karakterlijn op de flank: van de voorwielboog oplopend naar de bovenrand van het achterlicht
 const bodYC = pchip([[-2.2, 0.985], [-1.98, 0.975], [-1.4, 0.93], [-1.0, 0.90], [0.0, 0.852], [0.95, 0.80], [1.3, 0.785]]);
 // bovenaanzicht: boven de bumperrichel loopt de staart ronder in dan de bumper (hoekstraal ca. 0,3 m); factor op x
-const bodKU = pchip([[-2.268, 0.905], [-2.22, 0.91], [-2.15, 0.938], [-2.05, 0.976], [-1.95, 0.996], [-1.85, 1.0]]);
+const bodKU = pchip([[-2.268, 0.925], [-2.22, 0.93], [-2.15, 0.952], [-2.05, 0.982], [-1.95, 0.997], [-1.85, 1.0]]);
 const bodKY0 = bodYLEDGE + 0.01, bodKY1 = 0.14;          // overgang van bumperbreedte naar de smallere bovenstaart
 const S1 = 0.14, S2 = 0.22, S3 = 0.60, S4 = 0.72, BUL = 0.016, CRW = 0.03;
 const sstep = t => { const u = clamp(t, 0, 1); return u * u * (3 - 2 * u); };
@@ -129,8 +130,18 @@ function bodGh(z) {
   const xe = xb - bodTUMB * (ye - yb), xr = xe - rr * 0.8;
   return { yb, xb, yc, cr, yre, rr, ye, xe, xr };
 }
+// voet van de C-stijl: tussen SP en SP + bodCPL gaat de kasdoorsnede geleidelijk over in een bolle dekdoorsnede (zelfde x, hoogte
+// volgens het dekprofiel met de daklijn als top), zodat C-stijl en onderhoeken van de achterruit zonder trede in het dek achter de ruit lopen
+const bodCPL = 0.30;
+const bodMorph = z => (z >= SP + bodCPL ? 0 : sstep((SP + bodCPL - z) / bodCPL));
 function bodGhHalf(z, q, g) {
+  const b = bodMorph(z);
   g = g || bodGh(z);
+  const r = bodGhHalf0(z, q, g);
+  if (b > 0) { const yd = g.yb + (g.yc - g.yb) * (1 - Math.pow(clamp(r[0] / g.xb, 0, 1), bodDP(z))); r[1] = lerp(r[1], yd, b); }
+  return r;
+}
+function bodGhHalf0(z, q, g) {
   if (q <= bodQS) { const t = q / bodQS; return [g.xb + (g.xe - g.xb) * t + 0.012 * Math.sin(PI * t) * Math.min(1, (g.ye - g.yb) / 0.2), g.yb + (g.ye - g.yb) * t]; }
   if (q <= bodQR) { const a = (q - bodQS) / (bodQR - bodQS) * HALF; return [g.xr + (g.xe - g.xr) * Math.cos(a), g.ye + (g.yre - g.ye) * Math.sin(a)]; }
   const t = (q - bodQR) / (1 - bodQR), x = g.xr * (1 - t); return [x, g.yre + g.cr * t * (2 - t)];
@@ -140,12 +151,25 @@ function ghPt(z, w) {
   return [sd * x, y, z];
 }
 // parameter q (halve kas) op hoogte y langs de zijruit
-function bodQAtY(z, y) { const g = bodGh(z); return clamp((y - g.yb) / Math.max(1e-6, g.ye - g.yb), 0, 1) * bodQS; }
+function bodQAtY(z, y) {
+  const g = bodGh(z);
+  if (bodMorph(z) > 0) return bodQFind(z, y, g, bodQS);
+  return clamp((y - g.yb) / Math.max(1e-6, g.ye - g.yb), 0, 1) * bodQS;
+}
+// q bij hoogte y door halvering (in de overgangszone van de C-stijlvoet; y stijgt monotoon met q)
+function bodQFind(z, y, g, qMax = 1) {
+  let lo = 0, hi = qMax;
+  if (y <= bodGhHalf(z, 0, g)[1]) return 0;
+  if (y >= bodGhHalf(z, qMax, g)[1]) return qMax;
+  for (let i = 0; i < 30; i++) { const m = (lo + hi) / 2; if (bodGhHalf(z, m, g)[1] < y) lo = m; else hi = m; }
+  return (lo + hi) / 2;
+}
 /* ---------- buitenhuid voor andere onderdelen ---------- */
 function surfX(z, y) {
   const yt = YT(z);
   if (y <= yt || z < SP || z > WS0) return ringX(z, Math.min(y, bodSec(z).yd));
   const g = bodGh(z);
+  if (bodMorph(z) > 0) return y >= g.yc ? 0 : bodGhHalf(z, bodQFind(z, y, g), g)[0];
   if (y <= g.ye) return bodGhHalf(z, bodQAtY(z, y), g)[0];
   if (y <= g.yre) { const a = Math.asin(clamp((y - g.ye) / Math.max(1e-6, g.yre - g.ye), 0, 1)); return g.xr + (g.xe - g.xr) * Math.cos(a); }
   if (y >= g.yc) return 0;
