@@ -14,7 +14,7 @@ std('bodPillarGloss', 0x08090b, 0.05, 0.3, { envMapIntensity: 0.35 });
 std('bodValance', 0x2b2d31, 0, 0.66);                                     // donkergrijs kunststof van de onderschort achter
 // chroom van de sierlijsten (raamomlijsting, gordel, voorbumper): volledig metallisch, glad en met een donkerder basis dan bodBright, zodat het
 // de omgeving met contrast spiegelt (heldere lichtvlakken naast donkere vloer) in plaats van vlak wit te lezen
-std('bodChrome', 0xb9c0c7, 1, 0.07, { envMapIntensity: 1.35 });
+std('bodChrome', 0xa9b0b7, 1, 0.06, { envMapIntensity: 2.1 });
 std('bodGrille', 0x1d1f23, 0.35, 0.24, { envMapIntensity: 1.1 });             // glanzend zwart kunststof van de inlaatlamellen
 const bodSY = (z, y) => sAtY(z, y);
 const bodSAtXLow = (z, x) => { const c = bodSec(z); return x / Math.max(1e-6, c.hw - c.bul - c.rb) * S1; };   // s op de onderkant bij |x|
@@ -133,7 +133,7 @@ function bodTrim(s, zu, a, b, out = 0.003, crown = 0, nv = 1, P = bodPGh) {
 }
 // raamomlijsting (Initiale Paris, cerclage chromé): de bovenband ligt op het vrijwel staande buitenvlak van de dakrail (q 0,542 tot 0,570, ca. 15 mm),
 // met een rubberlijn van 4 mm tussen chroom en lak; daaronder het zwarte raamkader tot de ruit
-const bodQV = 0.556, bodTW = 0.0075, bodTR = 0.004;
+const bodQV = 0.557, bodTW = 0.0085, bodTR = 0.004;
 // gordellijst onderaan de ruit langs een pad op q = 0: schaduwlijn (3 mm) naar de lak, bolle chroomband (15 mm) en rubberlip (4 mm) naar het
 // glas; samen 21 mm langs de ruit, zodat de zichtbare ruitlijn binnen de silhouetmaat blijft (ca. 2 cm boven de gordel)
 function bodBeltTrim(s, path) {
