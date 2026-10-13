@@ -1,6 +1,6 @@
 # Laguna III explosietekening
 
-Interactieve 3D-explosietekening van een Renault Laguna III hatchback (fase 2, 2011) in de uitvoering Initiale Paris: zilvergrijs (Gris Platine D69), met de 2.0 Turbo F4Rt-motor (170 pk) en de zestraps automaat Jatco JF613E (Renault AJ0). Het model bestaat uit [NA SAMENVOEGEN] losse onderdelen in [NA SAMENVOEGEN] groepen, in [NA SAMENVOEGEN] lagen diep. Elke groep klapt apart uit en in, tot op klepspie, zuigerveer en remzuiger. Alle geometrie wordt in code opgebouwd; er zijn geen 3D-bestanden.
+Interactieve 3D-explosietekening van een Renault Laguna III hatchback (fase 2, 2011) in de uitvoering Initiale Paris: zilvergrijs (Gris Platine D69), met de 2.0 Turbo F4Rt-motor (170 pk) en de zestraps automaat Jatco JF613E (Renault AJ0). Het model bestaat uit 2.394 losse onderdelen in 484 groepen, tot 8 lagen diep (2.878 knopen, 599.972 driehoeken). Elke groep klapt apart uit en in, tot op klepspie, zuigerveer en remzuiger. Alle geometrie wordt in code opgebouwd; er zijn geen 3D-bestanden.
 
 ![Gemonteerd](docs/screenshots/gemonteerd.png)
 
@@ -50,7 +50,7 @@ Met de pijltjestoetsen links en rechts wissel je tussen de modi.
 
 Onderin staan de presets in zes categorieën: Overzicht, Motor, Aandrijving, Onderstel, Carrosserie en Interieur. Elke preset bereik je met twee klikken (categorie, dan item). De presets volgen een vaste overgang: eerst klapt dicht wat dicht moet, dan beweegt de camera naar de eindkadrering terwijl open gaat wat open moet, alles samen hoogstens 2,5 seconden. Een preset toont alleen de onderdelen die erbij horen; de rest staat op de achtergrond of is verborgen.
 
-- Aantal presets: [NA SAMENVOEGEN] (in de eerste golf waren het er 31, de rondleiding meegeteld).
+- Aantal presets: 37, de rondleiding meegeteld (in de eerste golf waren het er 31): Overzicht 6, Motor 11, Aandrijving 6, Onderstel 7, Carrosserie 4, Interieur 3. In de herstelronde van golf 2 kwamen er zes bij: Stuurpomp, Koeling en luchtinlaat, Uitlaatsysteem, Accu, Stuurinrichting en Parkeerrem.
 - `Rondleiding` in Overzicht speelt de belangrijkste presets na elkaar af met een bijschrift per stap, ongeveer vijf seconden per stap. `Stop rondleiding` of Esc breekt af.
 - De lijst van presets staat in `src/presets.js`.
 
@@ -62,7 +62,7 @@ Het paneel rechts (op de telefoon onderaan) heeft drie tabbladen.
 |---|---|
 | Onderdeel | Kruimelpad, naam, beschrijving, specificaties en de onderdelen waaruit de selectie bestaat. Knoppen: Uitklappen of Inklappen, Duik hierheen (bij een onderdeel), Groter geheel, Alles hieronder uit, Isoleren, In beeld. |
 | Onderdelen | De volledige boom met zoekfunctie, bijvoorbeeld "klepveer". Een treffer openen klapt het pad ernaartoe uit en selecteert het onderdeel. |
-| Weergave | Spreiding (40 tot 220 %), Labels, Röntgen (carrosserie doorzichtig), Kleuren per systeem, Langzaam draaien, zes camerastanden (Voor, Zij, Achter, Boven, ¾ voor, ¾ achter) en de knoppen Alles uitklappen, Alles inklappen en Alles tonen. |
+| Weergave | Spreiding (40 tot 220 %), Labels, Röntgen (carrosserie doorzichtig), Kleuren per systeem, Langzaam draaien, zes camerastanden (Voor, Zij, Achter, Boven, ¾ voor, ¾ achter), de schakelaar `Gesloten groepen samenvoegen` (gebundeld renderen, standaard aan) en de knoppen Alles uitklappen, Alles inklappen en Alles tonen. |
 
 Labels zijn genummerde bijschriften met een lijntje naar het onderdeel. Ze verschijnen bij de kinderen van de laatst uitgeklapte groep en vermijden elkaar en de bediening.
 
@@ -77,6 +77,8 @@ De toetsen werken zodra de pagina de focus heeft; het canvas krijgt die bij de e
 | Backspace | Stap terug |
 | Esc | Menu sluiten, afspelen of rondleiding stoppen, de hele auto selecteren |
 | ? | Uitleg van de bediening |
+| / | Springt naar het zoekveld van de onderdelenlijst (op de telefoon opent het paneel daarvoor) |
+| Pijl omhoog, omlaag, links, rechts (niet op een knop) | Door de boom lopen: omhoog is de bovenliggende groep, omlaag het eerste deel, links en rechts de vorige of volgende op hetzelfde niveau. Er klapt niets uit. |
 | Pijl omhoog of omlaag, Home, End | Door een geopend presetmenu lopen |
 
 ### Beeldkwaliteit
@@ -111,6 +113,7 @@ python3 tools/integrity.py    # boom, ankers, doorsteken, presets
 python3 tools/silhouette.py   # carrosserie tegen het gemeten silhouet
 python3 tools/itest.py        # bediening op desktop en telefoon
 python3 tools/pubsmoke.py     # de CDN-versie in de verpakking van de host
+python3 tools/ui_inner.py     # ingesloten (inner) onderdelen mogen van buitenaf niet zichtbaar zijn
 ```
 
 Voorbereiding, alle scripts en de resultaten staan in [docs/testen.md](docs/testen.md).
@@ -130,7 +133,12 @@ Voorbereiding, alle scripts en de resultaten staan in [docs/testen.md](docs/test
 - Niet in het model: 4Control (vierwielbesturing) en het panoramadak. Beide waren opties.
 - De stuurbekrachtiging is hydraulisch met een pomp op de multiriem. Dat is aannemelijk voor deze motor, niet met een eigen bron bevestigd.
 - De prestaties zijn alleen in een container met software-rendering gemeten. Op een echte telefoon is de framesnelheid niet getest; de pagina schakelt zelf over op een lichte weergave als hij haperen gaat.
-- Gebundeld renderen van gesloten groepen (minder tekenopdrachten): [NA SAMENVOEGEN] of dit standaard aan staat.
+- Gebundeld renderen van gesloten groepen staat standaard aan (schakelaar in Weergave). Zonder bundelen heeft de gemonteerde auto 1.680 tekenopdrachten, met bundelen 369. De grens van 1.500 geldt dus alleen met bundelen.
+- De Aandrijflijn heeft 245.794 driehoeken tegen een budget van 240.000. De hele auto (599.972) blijft binnen het budget van 700.000.
+- De multiriem is in het model 1.569 mm lang tegen 1.795 mm (7PK1795); de beschrijving in de pagina zegt dat. De positie van de stuurpomp en de routes van de slangen zijn schematisch.
+- De voorste langsliggers snijden de aandrijfassen. Dit was al zo en is niet opgelost.
+- Niet gebouwd: UX-punt U19 en een zijkolomindeling voor telefoons in liggende stand.
+- Alle laadtijden zijn in een container met software-rendering gemeten (de pagina is daar na 5 tot 21 seconden klaar, afhankelijk van de belasting van de machine). Ze zeggen niets over een echt apparaat.
 - De gedragingen van de webview van een telefoon-app (lang drukken, sneltoetsen in een iframe) zijn niet te testen in de container. De stijlregels ervoor zijn wel getoetst.
 - Niet elke 2.0T 170 automaat uit fase 2 is overal geleverd. Zie [docs/specificaties-en-bronnen.md](docs/specificaties-en-bronnen.md) onder Leverbaarheid.
 
@@ -146,4 +154,4 @@ Alles uit elkaar: [docs/screenshots/alles-uit-elkaar.png](docs/screenshots/alles
 
 Telefoonweergave: [docs/screenshots/mobiel.png](docs/screenshots/mobiel.png)
 
-De screenshots worden na de laatste samenvoeging opnieuw gemaakt. Tot dan tonen ze nog de eerste versie. [NA SAMENVOEGEN]
+De screenshots in `docs/screenshots/` stammen uit de eerste versie en zijn bij het schrijven van deze tekst (eindstand `ead92f6`) nog niet vernieuwd. De orkestrator vervangt ze onder dezelfde bestandsnamen; tot dan tonen ze niet de eindstand.

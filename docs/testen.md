@@ -19,7 +19,7 @@ python3 tools/smoke.py         # haalt three.js 0.147.0 zelf op (npm) als dat no
 
 Chromium start met `--use-angle=swiftshader --enable-unsafe-swiftshader --ignore-gpu-blocklist`. De harness zet `window.__LAGUNA_CACHECHECK = true`, zodat een botsing van cache-sleutels in `core.js` als consolefout verschijnt. Een script faalt bij elke console-fout of -waarschuwing, behalve het ontbrekende `favicon.ico`.
 
-De pagina zet `window.__laguna` met hulpfuncties voor tests, waaronder `finishAll()` om animaties direct af te ronden, `state()`, `preset(id)`, `checkPresets()`, `pickNodeAt(x, y)`, `hoverTarget(x, y)`, `setExplode(v)`, `labelRects()`, `freeView()` en `profileFrames(naam, aantal)`. De oude functies blijven werken; nieuwe haken komen erbij.
+De pagina zet `window.__laguna` met hulpfuncties voor tests, waaronder `finishAll()` om animaties direct af te ronden, `state()`, `preset(id)`, `checkPresets()`, `pickNodeAt(x, y)`, `hoverTarget(x, y)`, `setExplode(v)`, `labelRects()`, `freeView()`, `profileFrames(naam, aantal)`, `timing()` (de opstarttijdlijn in milliseconden sinds het begin van de navigatie), `batchFlush()` (alle wachtende batches direct bouwen) en `batchStats()`. Een eigen `THREE.Raycaster` in een testscript moet `ray.layers.enableAll()` aanzetten: gebundeld renderen zet de losse meshes van gesloten groepen op laag 1, en een raycaster die alleen laag 0 ziet, mist ze (`integrity.py`, `silhouette.py` en `ui_inner.py` doen dit). De oude functies blijven werken; nieuwe haken komen erbij.
 
 Het gebruikte bestand is de testversie (`python3 build.py --test-only MAP`): die laadt three.js lokaal. De gepubliceerde `index.html` laadt het van jsDelivr en wordt door `pubsmoke.py` apart getoetst.
 
@@ -27,7 +27,7 @@ Het gebruikte bestand is de testversie (`python3 build.py --test-only MAP`): die
 
 ### `python3 build.py --lint`
 
-Controleert zonder iets te schrijven: dubbele functienamen op het hoogste niveau over alle bestanden in `ORDER`, dubbele materiaalnamen in `std()` en `phys()`, en de syntaxis van het samengevoegde script met `node --check`. Een fout wordt teruggerekend naar bestand en regel. Exitcode 1 bij een fout, anders `lint ok`. Cache-sleutels met een voorvoegsel worden hier niet gecontroleerd; botsingen vangt de testmodus van `cache()`. [NA SAMENVOEGEN]: vermeld of de lint daarvoor is uitgebreid.
+Controleert zonder iets te schrijven: dubbele functienamen op het hoogste niveau over alle bestanden in `ORDER`, dubbele materiaalnamen in `std()` en `phys()`, en de syntaxis van het samengevoegde script met `node --check`. Een fout wordt teruggerekend naar bestand en regel. Exitcode 1 bij een fout, anders `lint ok`. Cache-sleutels met een voorvoegsel worden hier niet gecontroleerd en de lint is daarvoor niet uitgebreid; botsingen vangt de testmodus van `cache()`.
 
 ### `python3 tools/smoke.py`
 
@@ -43,7 +43,7 @@ Fouten:
 - een onderdeel buiten de omhullende van de auto (|x| ≤ 1,15, y van −0,08 tot 1,62, |z| ≤ 2,48);
 - carrosserie buiten ZR tot ZF (6 mm marge voor kentekenplaten); carrosserie breder dan 0,915 (zonder spiegels) of 1,035 (met spiegels); een niet-carrosserie-onderdeel breder dan 1,035. Dit zijn de nieuwe lengte- en breedtegrenzen uit audit C08;
 - een onderdeel buiten de carrosserie dat boven de carrosserie uitsteekt, gemeten met een straal van boven op het hoogste punt (meer dan 4 mm);
-- te weinig ruimte onder de motorkap: minder dan 2,5 cm tussen het hoogste punt van een onderdeel en de buitenhuid van de kap;
+- te weinig ruimte onder de motorkap, met twee regels: minder dan 2,5 cm tussen het hoogste punt van een onderdeel en de buitenhuid van de kap, en minder dan 0,5 cm tussen dat punt en de laagste laag van de motorkap (binnenframe of isolatiemat);
 - een onderdeel dat zijdelings meer dan 2 mm door de huid steekt, onder de schouderlijn en boven de onderkant (uitzonderingen: banden, velgen, wielbouten, naafdoppen, ventielen, banden-spanningssensoren, balansgewichten, tankklep en -dop, uitlaateindstukken);
 - ankers: elke naam uit `tools/anchors.json` komt precies één keer voor; de acht kinderen van de wortel staan in de afgesproken volgorde; `Onderstel` heeft precies de vier afgesproken kinderen; de `contains`-paren hangen goed; de `content`-regels halen hun minimum;
 - presets (via `checkPresets()`): elke naam bestaat precies één keer, `open`, `deep`, `select` en `labels` liggen onder de `iso`-groep (bevatting), id's, sneltoetsen en categorieën kloppen en de rondleiding noemt bestaande presets.
@@ -71,9 +71,10 @@ Interactietest op desktop (muis) en telefoon (touch). Per controle een regel `ok
 | 9 | Elke preset is bereikbaar met categorie plus item; de sneltoetsen 0 tot 9 werken. |
 | 10 | Geen console-fouten of -waarschuwingen; geen horizontale scroll op de telefoon; de donkere modus geeft de verwachte achtergrond. |
 | 11 | Informatie: tekenopdrachten in Gemonteerd en `profileFrames('Motor F4Rt', 120)` (p50, p95, max). Met `ITEST_GATES=1` worden dit controles: tekenopdrachten hoogstens 1.500 en p95 hoogstens 8 ms. |
-| 12 | `inner`: een ingesloten knop is onzichtbaar en niet aanklikbaar zolang de ouder dicht is, zichtbaar zodra die uitklapt, weer verborgen na inklappen en zichtbaar bij isoleren. |
+| 12 | `inner`: een ingesloten knop is onzichtbaar en niet aanklikbaar zolang de ouder dicht is, zichtbaar zodra die uitklapt, weer verborgen na inklappen en zichtbaar bij isoleren. 12b: een opgetild onderdeel zakt terug bij `setExplode(0)`. |
+| 13 | Gebundeld renderen: minder tekenopdrachten in Gemonteerd (1.680 zonder, 369 met bundelen, grens 1.500 met), aanwijzen van een onderdeel in een gebundelde groep, een klik selecteert dat onderdeel en laat zijn groep los tekenen, openen maakt direct los en na het dichtklappen is de groep weer samengevoegd. |
 
-`ITEST_SHOTS=MAP` bewaart screenshots van de stappen. `ITEST_GATES=1` zet controle 11 als poort aan; zonder die variabele blijft 11 alleen informatie. Controles voor gebundeld renderen (tekenopdrachten met bundelen, picken in een gebundelde groep, ontbundelen bij openen, opnieuw bundelen na sluiten): [NA SAMENVOEGEN] of ze in `tools/itest.py` staan.
+`ITEST_SHOTS=MAP` bewaart screenshots van de stappen. `ITEST_GATES=1` zet controle 11 als poort aan; zonder die variabele blijft 11 alleen informatie. De controles voor gebundeld renderen (nummer 13) staan in `tools/itest.py`. Het script telt op de eindstand 79 controles over desktop en telefoon samen. Omdat gebundeld renderen losse meshes naar laag 1 verplaatst, zetten alle raycasters in de tools alle lagen aan.
 
 ### `python3 tools/pubsmoke.py`
 
@@ -102,33 +103,40 @@ Breder dan 700 pixels is desktop, smaller is touch. Stappen: `eval:`, `wait:`, `
 
 ### `python3 tools/ui_inner.py`
 
-Controleert in de gemonteerde stand vanuit ten minste 200 richtingen rond de hele auto en rond elke hoofdgroep afzonderlijk geïsoleerd of een `inner`-knop de eerste treffer van buitenaf is: dan zou het verbergen een gat in de auto laten. Dit script is nieuw in golf 2. [NA SAMENVOEGEN]: bestaat het in de samengevoegde boom, wat is de uitvoer (aantal overtreders per eigenaar)?
+Controleert in de gemonteerde stand vanuit ten minste 200 richtingen rond de hele auto en rond elke hoofdgroep afzonderlijk geïsoleerd of een `inner`-knop de eerste treffer van buitenaf is: dan zou het verbergen een gat in de auto laten. Dit script is nieuw in golf 2 en staat in de samengevoegde boom. Opties: `--strict` (exitcode 1 bij een zichtbare ingesloten knoop), `--json`, en `UI_INNER_DIRS` voor het aantal richtingen. Uitvoer op de eindstand: 256 ingesloten knopen in de boom, 200 richtingen per weergave, 39.200 stralen op de hele auto en 20.000 per hoofdgroep, 0 eerste treffers op een ingesloten onderdeel, dus 0 overtreders voor elke eigenaar. Direct na de samenvoeging van golf 2 waren er 52 zichtbare ingesloten knopen (carrosserie, interieur, onderstel, systemen, aandrijving en motor); de herstelronde heeft ze opgelost.
 
 ## Resultaten
 
-De kolom "Na golf 1" is de tussenstand van 13 oktober 2026 rond 11:30 UTC, ongewijzigd uit het overdrachtsdocument van golf 1. De kolom "Eindstand" wordt na de laatste samenvoeging ingevuld.
+De kolom "Na golf 1" is de tussenstand van 13 oktober 2026 rond 11:30 UTC, ongewijzigd uit het overdrachtsdocument van golf 1. De kolom "Eindstand" is gemeten op commit `ead92f6`, behalve waar een rij anders zegt. Alle tijden komen uit een container met software-rendering.
 
 | Test | Na golf 1 | Eindstand |
 |---|---|---|
-| `build.py --lint` | ok | [NA SAMENVOEGEN] |
-| Boom | 1.762 knopen, 303 groepen, 1.459 onderdelen, diepte 7 | [NA SAMENVOEGEN] |
-| Driehoeken | 419.554 | [NA SAMENVOEGEN] |
-| Tekenopdrachten gemonteerd (grens 1.500) | 1.052 | [NA SAMENVOEGEN] |
-| Tekenopdrachten gemonteerd met gebundeld renderen | niet aanwezig | [NA SAMENVOEGEN] |
-| Tekenopdrachten volledig uitgeklapt (grens 3.000) | niet vastgelegd na golf 1 | [NA SAMENVOEGEN] |
-| Frametijd `profileFrames('Motor F4Rt', 120)` (p95 grens 8 ms) | p50 0,3 ms, p95 0,6 ms | [NA SAMENVOEGEN] |
-| `buildCar()` (grens 600 ms) | niet vastgelegd na golf 1 | [NA SAMENVOEGEN] |
-| `smoke.py` | geen console-fouten | [NA SAMENVOEGEN] |
-| `integrity.py` | 13 fouten, alle in domeinen van golf 2; 0 ankerfouten; 0 presetfouten | [NA SAMENVOEGEN] |
-| `silhouette.py` | OK, 46 van 46 stations binnen tolerantie | [NA SAMENVOEGEN] |
-| `itest.py` (twee keer achter elkaar) | 71 van 72 (een telefoontik als lang drukken gelezen onder belasting) | [NA SAMENVOEGEN] |
-| `ITEST_GATES=1 python3 tools/itest.py` | niet vastgelegd na golf 1 | [NA SAMENVOEGEN] |
-| `pubsmoke.py` | OK | [NA SAMENVOEGEN] |
-| `ui_inner.py` | bestond nog niet | [NA SAMENVOEGEN] |
-| URL na publicatie gelijk aan `index.html` | niet van toepassing | [NA SAMENVOEGEN] |
+| `build.py --lint` | ok | ok |
+| Boom | 1.762 knopen, 303 groepen, 1.459 onderdelen, diepte 7 | 2.878 knopen, 484 groepen, 2.394 onderdelen, diepte 8 |
+| Driehoeken | 419.554 | 599.972 (budget 700.000). Aandrijflijn 245.794 (budget 240.000, dus 5.794 erboven), Carrosserie 130.026, Onderstel 109.916, Interieur 67.608, Koeling en luchtinlaat 18.700, Uitlaatsysteem 12.832, Brandstofsysteem 7.608, Elektrisch systeem 7.488 |
+| Tekenopdrachten gemonteerd (grens 1.500) | 1.052 | 1.680 zonder bundelen (boven de grens) |
+| Tekenopdrachten gemonteerd met gebundeld renderen | niet aanwezig | 369 (41 groepen, 301 batchmeshes, 1.612 losse meshes vervangen, 21,6 MB van 42,2 MB) |
+| Tekenopdrachten volledig uitgeklapt (grens 3.000) | niet vastgelegd na golf 1 | 1.495 in één weergave van `smoke.py` (396.652 driehoeken in beeld) |
+| Frametijd `profileFrames('Motor F4Rt', 120)` (p95 grens 8 ms) | p50 0,3 ms, p95 0,6 ms | p50 0,5 ms, p95 0,7 ms, max 1,9 ms (uit `itest.py` op `ead92f6`; op `6eca637` gelijk) |
+| `buildCar()` (grens 600 ms) | niet vastgelegd na golf 1 | 526 ms (`buildCar` 1.147 min `buildStart` 621 in `__laguna.timing()`, één meting) |
+| `smoke.py` | geen console-fouten | geen console-fouten of -waarschuwingen; telefoon scrollt niet horizontaal; laadtijd 20,6 s op 1280 x 800 en 17,9 s op 390 x 844 |
+| `integrity.py` | 13 fouten, alle in domeinen van golf 2; 0 ankerfouten; 0 presetfouten | 0 fouten, 0 ankerfouten, 0 presetfouten, 124 waarschuwingen (vooral uitklapvector nul bij ankers) |
+| `silhouette.py` | OK, 46 van 46 stations binnen tolerantie | OK, 46 van 46 stations binnen tolerantie (20 zijaanzicht, 17 bovenaanzicht, 9 raamlijn; 318 carrosseriemeshes gemeten) |
+| `itest.py` (twee keer achter elkaar) | 71 van 72 (een telefoontik als lang drukken gelezen onder belasting) | 78 van 78 na de samenvoeging van golf 2; 79 van 79 op `6eca637` en op `ead92f6` (zie de volgende rij). Een tweede achtereenvolgende run op dezelfde commit is niet vastgelegd. |
+| `ITEST_GATES=1 python3 tools/itest.py` | niet vastgelegd na golf 1 | 79 van 79 op `6eca637` en opnieuw 79 van 79 op de eindstand `ead92f6` (11: 369 tekenopdrachten, p95 0,7 ms) |
+| `pubsmoke.py` | OK | OK: `ready` na 14,8 s (1280 x 800) en 7,2 s (390 x 844), grens 20 s; three r147; geen horizontale scroll |
+| `ui_inner.py` | bestond nog niet | 0 eerste treffers op 256 ingesloten knopen (na golf 2 waren het er 52) |
+| URL na publicatie gelijk aan `index.html` | niet van toepassing | nog niet gemeten: op het moment van schrijven was er niet gepubliceerd. De orkestrator leest de URL terug. |
 
 ## Bekende beperkingen
 
+- De metingen komen uit een container met software-rendering (SwiftShader). Laadtijden daar (5 tot 21 seconden, afhankelijk van de belasting van de machine) zeggen niets over een echt apparaat.
+- De frametijd is alleen JavaScript-tijd. Zonder gebundeld renderen heeft de gemonteerde auto 1.680 tekenopdrachten; gebundeld renderen staat standaard aan en brengt dat op 369. De grens van 1.500 geldt dus alleen met bundelen.
+- De Aandrijflijn heeft 245.794 driehoeken tegen een budget van 240.000. De hele auto (599.972) blijft binnen 700.000.
+- De getekende multiriem is 1.569 mm lang tegen 1.795 mm (7PK1795).
+- De voorste langsliggers snijden de aandrijfassen. Dat was al zo en is niet opgelost.
+- De positie van de stuurpomp en de routes van de slangen zijn schematisch.
+- UX-punt U19 en een zijkolomindeling voor telefoons in liggende stand zijn niet gebouwd.
 - In SwiftShader (software-rendering) duurt een frame tijdens grote animaties enkele seconden. Een echte GPU is veel sneller. Op oudere telefoons kan "Alles uit elkaar" wel haperen. De pagina schakelt dan zelf over op een lichte weergave.
 - Screenshots van grote explosies hebben in de testomgeving een lange time-out nodig.
 - De gemeten frametijd is alleen JavaScript-tijd (explosie-update en labelindeling, zonder `render`). Echte GPU-tijd is in de container niet te meten; er is geen GPU en geen telefoon.
