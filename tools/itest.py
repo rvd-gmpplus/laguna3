@@ -396,8 +396,12 @@ def run_view(s, tag, w, h, touch):
     for p in plist:
         pg.click(f'[data-cat="{p["cat"]}"]')
         item = pg.locator(f'[data-preset="{p["id"]}"]')
+        # een lang menu scrolt (zoals bij de gebruiker): eerst in beeld scrollen, dan binnen venster en menu
+        item.scroll_into_view_if_needed()
         box = item.bounding_box()
-        if not box or box['x'] < 0 or box['y'] < 0 or box['x'] + box['width'] > w + 0.5 or box['y'] + box['height'] > h + 0.5:
+        mb = pg.locator('#menu').bounding_box()
+        if not box or not mb or box['x'] < 0 or box['y'] < 0 or box['x'] + box['width'] > w + 0.5 or box['y'] + box['height'] > h + 0.5 \
+                or box['y'] < mb['y'] - 0.5 or box['y'] + box['height'] > mb['y'] + mb['height'] + 0.5:
             miss.append(p['label'] + ' afgekapt ' + str(box))
         item.click()
         pg.wait_for_timeout(60)

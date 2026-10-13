@@ -937,13 +937,18 @@ function uiWarmMaterials() {
   for (const b of [...bases, ...Object.values(SYS_MATS)]) todo.push(uiSelMat(b), uiHvMat(b));
   todo.push(...Object.values(SYS_MATS), GHOST, GHOST_HL, uiGhostHv);
   const geo = new THREE.BoxGeometry(0.001, 0.001, 0.001);
+  // kleine oefenscène met dezelfde soorten en aantallen lichten en dezelfde omgeving als de echte scène: dezelfde
+  // shaderprogramma's, maar compile() hoeft niet elke keer alle 2.400 meshes van de auto langs
+  const ws = new THREE.Scene();
+  scene.traverse(o => { if (o.isLight) ws.add(o.clone()); });
   const step = () => {
     const batch = todo.splice(0, 4);
     if (!batch.length) { geo.dispose(); return; }
+    ws.environment = scene.environment;
     const g = new THREE.Group();
     for (const mat of batch) { const m = new THREE.Mesh(geo, mat); m.position.set(0, -40, 0); g.add(m); }
-    scene.add(g);
-    try { renderer.compile(scene, camera); } catch (_) { } finally { scene.remove(g); }
+    ws.add(g);
+    try { renderer.compile(ws, camera); } catch (_) { } finally { ws.remove(g); }
     setTimeout(step, 40);
   };
   setTimeout(step, 600);
