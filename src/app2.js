@@ -766,7 +766,9 @@ function updateLabels() {
   const max = W < 600 ? 10 : 24;
   uiCands.length = 0;
   if (SEL && !SEL.asm && SEL.ev && LABELS) uiCands.push(SEL);
-  if (g) for (const k of g.bySize) { if (uiCands.length >= max) break; if (k !== SEL && k.ev) uiCands.push(k); }
+  const lp = uiLabelForce && ACTIVE_PRESET ? appPresetById.get(ACTIVE_PRESET) : null;
+  const only = lp && lp.labelOnly && g && g.name === lp.labels ? lp.labelOnly : null;
+  if (g) for (const k of g.bySize) { if (uiCands.length >= max) break; if (k !== SEL && k.ev && (!only || only.includes(k.name))) uiCands.push(k); }
   // nieuwe teksten eerst toewijzen, dan in één keer meten
   while (labelPool.length < uiCands.length) uiNewLabel();
   for (let i = 0; i < uiCands.length; i++) {
