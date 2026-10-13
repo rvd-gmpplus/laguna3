@@ -16,6 +16,8 @@ Controles (zie de app-brief):
   9  elke preset bereikbaar met categorie + item; sneltoetsen 0-9
   10 geen console-fouten of -waarschuwingen, geen horizontale scroll op de telefoon, donkere modus
   11 tekenopdrachten in Gemonteerd en profileFrames('Motor F4Rt', 120) (informatie)
+  12 ingesloten onderdelen verborgen bij een dichte ouder
+  13 batching: minder tekenopdrachten, aanwijzen en selecteren in een samengevoegde groep, openen maakt los, dichtklappen weer samen
 """
 import sys, os, random, json
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -444,10 +446,44 @@ with session() as s:
       renderer.info.reset(); renderer.render(scene, camera);
       return { hidden, shownOnOpen, hiddenAgain, shownIsolated, saved: renderer.info.render.calls - callsHidden }; })()""")
     check('12 inner: verborgen bij dichte ouder, zichtbaar zodra die uitklapt en bij isoleren', r['hidden'] and r['shownOnOpen'] and r['hiddenAgain'] and r['shownIsolated'], json.dumps(r))
-    # 11. tekenopdrachten en frametijd
+    # 13. samengevoegd tekenen van gesloten groepen (batching)
     pg.evaluate("__laguna.preset('assembled'); __laguna.finishAll()")
     pg.wait_for_timeout(200)
+    r = pg.evaluate("""(() => { const L = __laguna; L.batching(false); const off = L.drawCalls(); L.batching(true);
+      const st = L.batchFlush(); const on = L.drawCalls(); return { off, on, st }; })()""")
+    calls_off = r['off']
+    check('13 batching: minder tekenopdrachten in Gemonteerd (<= 1500)', r['on'] < r['off'] and r['on'] <= 1500, f"{r['off']} -> {r['on']}; {json.dumps(r['st'])}")
+    # een onderdeel binnen een samengevoegde groep aanwijzen en (modus Info) selecteren
+    r = pg.evaluate("""(() => { const L = __laguna; L.setMode('select');
+      const names = L.batchedGroups().map(L.byName).sort((a, b) => b.rad - a.rad);
+      const v = L.freeView(), rc = canvas.getBoundingClientRect(); L.ROOT.obj.updateMatrixWorld(true);
+      for (const g of names) for (const m of g.meshes) { const n = m.userData.node; if (!n.ev) continue;
+        const p = n.lc.clone().applyMatrix4(m.matrixWorld).project(camera);
+        const x = Math.round(rc.left + (p.x * 0.5 + 0.5) * rc.width), y = Math.round(rc.top + (-p.y * 0.5 + 0.5) * rc.height);
+        if (x < v.x + 8 || x > v.x + v.w - 8 || y < v.y + 8 || y > v.y + v.h - 8 || document.elementFromPoint(x, y) !== canvas) continue;
+        const hit = L.pickNodeAt(x, y); if (!hit) continue;
+        let a = hit; while (a && a !== g) a = a.parent; if (!a) continue;
+        return [x, y, hit.name, g.name]; }
+      return null; })()""")
+    if check('13 batching: punt op een onderdeel in een samengevoegde groep', r, str(r)):
+        pg.mouse.click(r[0], r[1]); pg.wait_for_timeout(120); settle(pg, 60)
+        st = pg.evaluate("(() => { const L = __laguna; L.drawCalls(); const s = L.sel(); const b = new Set(L.batchedGroups()); let a = s, hit = false; for (; a; a = a.parent) if (b.has(a.name)) hit = true; return [s.name, hit]; })()")
+        check('13 batching: klik selecteert dat onderdeel en zijn groep wordt los getekend', st[0] == r[2] and not st[1], f'aangewezen {r[2]} in {r[3]}, geselecteerd {st[0]}, nog samengevoegd: {st[1]}')
+        shot(pg, 'itest_desk_batch_selectie')
+        pg.evaluate("__laguna.setMode('part')")
+    # openen haalt de groep direct uit de batch; dichtklappen voegt hem na de animatie weer samen
+    r = pg.evaluate("""(() => { const L = __laguna; L.preset('assembled'); L.finishAll(); L.batchFlush(); L.drawCalls();
+      const g = L.batchedGroups().map(L.byName).find(n => n.kids.some(k => k.asm || !k.inner)); if (!g) return null;
+      L.setTarget(g, 1); L.drawCalls(); const unOnOpen = !L.batchedGroups().includes(g.name);
+      L.finishAll(); L.setTarget(g, 0); L.drawCalls(); const unWhileAnim = !L.batchedGroups().includes(g.name);
+      L.finishAll(); L.drawCalls(); const again = L.batchedGroups().includes(g.name);
+      return { group: g.name, unOnOpen, unWhileAnim, again }; })()""")
+    check('13 batching: openen maakt direct los, na het dichtklappen weer samengevoegd', r and r['unOnOpen'] and r['unWhileAnim'] and r['again'], json.dumps(r))
+    # 11. tekenopdrachten en frametijd
+    pg.evaluate("__laguna.preset('assembled'); __laguna.finishAll(); __laguna.batchFlush()")
+    pg.wait_for_timeout(200)
     calls = pg.evaluate("(() => { renderer.info.reset(); renderer.render(scene, camera); return renderer.info.render.calls; })()")
+    print(f'info 13 tekenopdrachten Gemonteerd zonder batching: {calls_off}, met batching: {calls}')
     prof = pg.evaluate("__laguna.profileFrames('Motor F4Rt', 120)")
     print(f'info 11 tekenopdrachten Gemonteerd: {calls} (drempel 1500); profileFrames Motor F4Rt: p50 {prof["p50"]} ms, p95 {prof["p95"]} ms, max {prof["max"]} ms (drempel p95 8 ms)')
     if os.environ.get('ITEST_GATES'):
