@@ -62,7 +62,7 @@ for (const n of ALL) {
   n.exv.copy(dir.normalize().multiplyScalar(dist));
 }
 const byName = name => uiNames.get(name);
-function byPath(path) {
+function uiByPath(path) {
   const segs = String(path).split('/').map(s => s.trim()).filter(Boolean);
   let n = ROOT;
   if (segs[0] === ROOT.name) segs.shift();
@@ -136,11 +136,11 @@ function uiStepOff(dt) {
   }
   return true;
 }
-let LIFTED = null;
+let uiLifted = null;
 function uiLiftDist(n) { return clamp(0.6 * n.rad, 0.02, 0.25); }
 function uiLift(n) {
   if (!n || !n.parent) return;
-  if (LIFTED && LIFTED !== n) uiDrop();
+  if (uiLifted && uiLifted !== n) uiDrop();
   const g = n.parent, dir = n.exv.clone();
   if (dir.lengthSq() < 1e-10) {
     ROOT.obj.updateMatrixWorld(true);
@@ -149,13 +149,13 @@ function uiLift(n) {
     if (dir.lengthSq() < 1e-10) dir.set(0, 1, 0);
   }
   n.liftV.copy(dir.normalize().multiplyScalar(uiLiftDist(n)));
-  LIFTED = n;
+  uiLifted = n;
   uiOffTo(n, 0.45);
 }
 function uiDrop() {
-  if (!LIFTED) return;
-  LIFTED.liftV.set(0, 0, 0); uiOffTo(LIFTED, 0.35);
-  LIFTED = null;
+  if (!uiLifted) return;
+  uiLifted.liftV.set(0, 0, 0); uiOffTo(uiLifted, 0.35);
+  uiLifted = null;
 }
 function subtree(n, out = []) { out.push(n); n.kids.forEach(k => subtree(k, out)); return out; }
 function explodeAllUnder(n) { subtree(n).forEach(a => { if (a.asm) setTarget(a, 1, (a.depth - n.depth) * (REDUCED ? 0 : 0.32)); }); }
@@ -163,7 +163,7 @@ function collapseTree(n) {
   const list = subtree(n).filter(a => a.asm);
   const md = Math.max(...list.map(a => a.depth));
   list.forEach(a => setTarget(a, 0, (md - a.depth) * (REDUCED ? 0 : 0.1)));
-  if (LIFTED && isUnder(LIFTED, n)) uiDrop();
+  if (uiLifted && isUnder(uiLifted, n)) uiDrop();
 }
 function collapseAll() { collapseTree(ROOT); }
 function ancestors(n) { const a = []; for (let p = n.parent; p; p = p.parent) a.unshift(p); return a; }
@@ -422,7 +422,7 @@ function uiSnap() {
   return {
     t: ASMS.map(n => n.target),
     pull: ALL.filter(n => n.pull.lengthSq() > 0).map(n => [n.id, n.pull.x, n.pull.y, n.pull.z]),
-    lift: LIFTED ? LIFTED.id : null,
+    lift: uiLifted ? uiLifted.id : null,
     iso: ISO.map(n => n.id), xray: XRAY, sys: SYSCOL, spread: SPREAD,
     sel: (SEL || ROOT).id, ctx: CTX ? CTX.id : null, force: uiLabelForce, preset: ACTIVE_PRESET,
     cam: [camera.position.clone(), controls.target.clone()],

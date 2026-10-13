@@ -12,7 +12,7 @@ const PRESETS = [
   // Overzicht
   { id: 'assembled', cat: 'Overzicht', label: 'Gemonteerd', key: '0', note: 'De complete auto in elkaar: Laguna III hatchback fase 2, Initiale Paris.', cam: { dir: [1, 0.42, 1.08], pad: 1.04 } },
   { id: 'main', cat: 'Overzicht', label: 'Hoofdgroepen', key: '1', note: 'De acht hoofdgroepen uit elkaar: carrosserie, interieur, aandrijflijn, onderstel en vier systemen.', open: [appCar], labels: appCar, cam: { dir: [1, 0.5, 1.08], pad: 1.04 } },
-  { id: 'bodyOff', cat: 'Overzicht', label: 'Carrosserie eraf', note: 'Carrosserie en interieur opgetild, zodat motor, automaat en onderstel op hun plek te zien zijn.', pull: { 'Carrosserie': [0, 1.4, 0], 'Interieur': [0, 0.5, 0] }, labels: appCar, cam: { dir: [1, 0.85, 1.05], pad: 1.04 } },
+  { id: 'bodyOff', cat: 'Overzicht', label: 'Carrosserie eraf', note: 'Carrosserie en interieur opgetild, zodat motor, automaat en onderstel op hun plek te zien zijn.', pull: { 'Carrosserie': [0, 1.4, 0], 'Interieur': [0, 0.5, 0] }, labels: appCar, cam: { dir: [1, 0.3, 0.8], pad: 1.04 } },
   { id: 'xray', cat: 'Overzicht', label: 'Röntgen', key: '8', note: 'Carrosserie doorzichtig: de techniek in de gemonteerde auto, van opzij.', xray: true, cam: { dir: [1, 0.12, 0.02], pad: 1.03 } },
   { id: 'everything', cat: 'Overzicht', label: 'Alles uit elkaar', key: '9', note: 'Elke groep uitgeklapt tot op het kleinste onderdeel, gekleurd per hoofdgroep.', deep: [appCar], sys: true, labels: appCar, cam: { dir: [1, 0.6, 1.0], pad: 1.0 } },
   { id: 'tour', cat: 'Overzicht', label: 'Rondleiding', note: 'Speelt de belangrijkste presets na elkaar af, met uitleg bij elke stap.', tour: true },
@@ -69,7 +69,7 @@ function appPresetErrors(p) {
   }
   return err;
 }
-function checkPresets() {
+function appCheckPresets() {
   const err = [], ids = new Set(), keys = new Set();
   for (const p of PRESETS) {
     if (ids.has(p.id)) err.push(`preset-id "${p.id}" komt twee keer voor`); ids.add(p.id);

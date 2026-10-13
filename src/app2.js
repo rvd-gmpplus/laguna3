@@ -33,7 +33,7 @@ function uiDeepestOpen(p) { let a = null; pathFrom(p).forEach(x => { if (x.asm &
 /* ---------- selectie en paneel ---------- */
 function select(n, opts = {}) {
   n = n || uiScopeRoot();
-  if (LIFTED && LIFTED !== n) uiDrop();
+  if (uiLifted && uiLifted !== n) uiDrop();
   SEL = n;
   applyMats();
   renderPanel();
@@ -52,7 +52,7 @@ function renderPanel() {
   els.name.textContent = n.name;
   let state;
   if (n.asm) state = uiOpen(n) ? '<span class="state open">Uitgeklapt</span>' : (n.target > 0 ? '<span class="state">Deels uitgeklapt</span>' : '<span class="state">Ingeklapt</span>');
-  else state = n === LIFTED ? '<span class="state open">Uitgelicht</span>' : '<span class="state">Onderdeel</span>';
+  else state = n === uiLifted ? '<span class="state open">Uitgelicht</span>' : '<span class="state">Onderdeel</span>';
   const isoTxt = ISO.includes(n) ? ' · geïsoleerd' : '';
   els.meta.innerHTML = `${state}${n.asm ? fmtCount(n) : (n.parent ? 'in ' + esc(n.parent.name) : '')}${isoTxt}`;
   els.desc.textContent = n.d || '';
@@ -143,7 +143,7 @@ function uiCollapseAt(p) {
 }
 function uiBackground() {
   const r = uiScopeRoot();
-  if (SEL === r && !LIFTED) return;
+  if (SEL === r && !uiLifted) return;
   uiPush(); uiDrop(); select(r); uiAfterAction();
 }
 // Dubbelklik: alle dichte groepen op het pad van de isolatiewortel (of de auto) tot en met de ouder van P openen, laag voor laag.
@@ -330,7 +330,7 @@ els.explode.addEventListener('input', () => {
   uiSyncExplode(true); requestRender();
 });
 els.explode.addEventListener('change', () => { uiDrag = false; updateGround(); uiAfterAction(); });
-function setExplodeValue(v) {
+function uiSetExplodeValue(v) {
   uiStopPlay(); uiPush();
   const w = uiWorking();
   uiApplyX(w, clamp(v, 0, 1) * uiLevels(w).length, false);
@@ -616,7 +616,8 @@ function uiInitHint() {
     : 'Klik op een onderdeel om het uit te klappen · dubbelklik om er direct naartoe te gaan · rechtsklik om in te klappen';
   setTimeout(hideHint, 9000);
 }
-function hideHint() {
+function hideHint(instant) {
+  if (instant === true && !els.hint.hidden) { els.hint.hidden = true; els.hint.classList.add('gone'); try { window.localStorage.setItem(uiHintKey, '1'); } catch (_) { } uiUiChanged(); return; }
   if (els.hint.hidden || els.hint.classList.contains('gone')) return;
   els.hint.classList.add('gone');
   try { window.localStorage.setItem(uiHintKey, '1'); } catch (_) { }
@@ -790,7 +791,7 @@ function uiFits(x, y, w, h) {
   }
   return true;
 }
-function labelRects() { return uiSpots.slice(0, uiNPlaced).map(p => ({ name: p.k.name, x: p.x, y: p.y, w: p.w, h: p.h })); }
+function uiLabelRects() { return uiSpots.slice(0, uiNPlaced).map(p => ({ name: p.k.name, x: p.x, y: p.y, w: p.w, h: p.h })); }
 
 /* ---------- formaat en vrij beeld ---------- */
 let uiLastFit = null, uiRefitTimer = 0;
@@ -958,7 +959,7 @@ LOADING.classList.add('gone');
 uiInitHint();
 requestAnimationFrame(t => { last = t; uiReady = true; loop(t); });
 uiWarmMaterials();
-{ const errs = checkPresets(); if (errs.length) console.warn('presets: ' + errs.join('; ')); }
+{ const errs = appCheckPresets(); if (errs.length) console.warn('presets: ' + errs.join('; ')); }
 // labelbreedtes opnieuw meten zodra de lettertypen er zijn
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { for (const n of ALL) n._lw = null; uiUiChanged(); layoutView(); });
 
@@ -1003,7 +1004,7 @@ function uiState() {
   return {
     open: ASMS.filter(n => n.target > 0.5).map(n => n.name), selected: (SEL || ROOT).name, iso: ISO.map(n => n.name), xray: XRAY,
     explode: { group: w.name, value: L ? +(uiExplodeX(w) / L).toFixed(4) : 0, levels: L }, history: uiHist.length,
-    lifted: LIFTED ? LIFTED.name : null, preset: ACTIVE_PRESET, mode: MODE, tour: !!appTour, playing: !!uiPlayS, sys: SYSCOL,
+    lifted: uiLifted ? uiLifted.name : null, preset: ACTIVE_PRESET, mode: MODE, tour: !!appTour, playing: !!uiPlayS, sys: SYSCOL,
   };
 }
 function uiFrameOf(names) {
@@ -1017,25 +1018,30 @@ function uiFrameOf(names) {
   const inside = b.x0 >= v.x0 - 1 && b.y0 >= v.y0 - 1 && b.x1 <= v.x1 + 1 && b.y1 <= v.y1 + 1;
   return { box, view, inside, cover: +(ix * iy / Math.max(1, view.w * view.h)).toFixed(4) };
 }
+// Testkoppeling. Aanroepen die de stand veranderen tellen als interactie: de hint verdwijnt direct
+// en de presetmarkering vervalt (een preset die je daarna kiest, zet hem weer).
+const uiApi = (f, changes) => (...a) => { hideHint(true); const r = f(...a); if (changes) { clearPreset(); uiAfterAction(); } return r; };
 window.__laguna = {
-  finishAll, ROOT, ALL, MESHES, PRESETS, select, tapNode, byName, focusNodes, setTarget, explodeAllUnder, collapseAll, isolate,
+  finishAll, ROOT, ALL, MESHES, PRESETS, byName,
+  select: uiApi(select), tapNode: uiApi(tapNode), focusNodes: uiApi(focusNodes),
+  setTarget: uiApi(setTarget, true), explodeAllUnder: uiApi(explodeAllUnder, true), collapseAll: uiApi(collapseAll, true), isolate: uiApi(isolate, true),
   get ready() { return uiReady; },
-  byPath,
-  preset: id => uiRunPreset(id),
+  byPath: uiByPath,
+  preset: id => { hideHint(true); return uiRunPreset(id); },
   presetList: () => PRESETS.filter(appPresetOk).map(p => ({ id: p.id, cat: p.cat, label: p.label, key: p.key || null, subject: p.tour ? [] : appSubject(p).map(n => n.name), tour: !!p.tour })),
-  checkPresets,
+  checkPresets: appCheckPresets,
   state: uiState,
   pickAt: (x, y) => { const n = pick(x, y); return n ? n.name : null; },
   pickNodeAt: (x, y, loose) => pick(x, y, loose),
   hoverTarget: uiHoverTarget,
   hoverNode: (x, y) => uiActTarget(pick(x, y)),
   sel: () => SEL,
-  liftedNode: () => LIFTED,
+  liftedNode: () => uiLifted,
   nodeById: id => uiById.get(id),
   undo: () => uiUndo(),
-  setExplode: setExplodeValue,
+  setExplode: uiSetExplodeValue,
   play: uiPlay,
-  labelRects,
+  labelRects: uiLabelRects,
   uiRects,
   frameOf: uiFrameOf,
   freeView: () => { const v = uiFreeView(); return { x: v.x0, y: v.y0, w: v.x1 - v.x0, h: v.y1 - v.y0 }; },
