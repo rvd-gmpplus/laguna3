@@ -3,7 +3,7 @@
 const LOADING = document.getElementById('loading');
 // tijdlijn van het opstarten (ms sinds het begin van de navigatie), uit te lezen via __laguna.timing
 const uiTiming = { script: Math.round(performance.now()) };
-if (!window.THREE || !THREE.OrbitControls || !THREE.BufferGeometryUtils) {
+if (!window.THREE || !THREE.OrbitControls || !THREE.BufferGeometryUtils || !THREE.RoomEnvironment || !THREE.RoundedBoxGeometry) {
   LOADING.textContent = 'De 3D-bibliotheek kon niet worden geladen. Controleer de verbinding en laad de pagina opnieuw.';
   throw new Error('three.js ontbreekt');
 }

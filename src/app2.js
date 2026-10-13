@@ -88,10 +88,15 @@ function renderPanel() {
   uiUiDirty = true;
 }
 // Na elke gebruikershandeling: paneel, boom, schuif, presetknoppen en stap-terug bijwerken.
+// I5/I6: schakelaars en spreidingsschuif volgen de stand ook na presets, stap terug en de rondleiding
+function uiSyncToggles() {
+  $('tXray').checked = XRAY; $('tSys').checked = SYSCOL; els.legend.hidden = !SYSCOL;
+  const sp = Math.round(SPREAD * 100); $('spread').value = String(sp); $('spreadOut').textContent = sp + '%';
+}
 function uiAfterAction() {
   renderPanel();
   if (treeVisible()) renderTree();
-  uiSyncExplode(); uiSyncCats(); uiSyncUndo();
+  uiSyncExplode(); uiSyncCats(); uiSyncUndo(); uiSyncToggles();
   uiHideTip();
   uiSyncLabels();
   requestRender();
@@ -124,7 +129,7 @@ function uiAct(p) {
 function tapNode(n) { uiAct(n); }
 function doExplode(g) {
   uiPush();
-  setTarget(g, 1);
+  setTarget(g, 1); updateGround();
   CTX = g; uiLabelForce = false; clearPreset();
   select(g);
   uiSoftFrame([g]);
@@ -132,7 +137,7 @@ function doExplode(g) {
 }
 function doCollapse(a) {
   uiPush();
-  collapseTree(a);
+  collapseTree(a); updateGround(); // I4: de vloer volgt de eindstand
   CTX = a.parent && uiOpen(a.parent) ? a.parent : null; uiLabelForce = false; clearPreset();
   select(a);
   uiAfterAction();
