@@ -569,6 +569,17 @@ function uiStartPress(d) {
     s.raf = requestAnimationFrame(() => { s.zero = setTimeout(() => { if (uiPressS === s && !d.ended) uiCommitPress(d); }, 0); });
   }, UI_PRESS_MS);
 }
+canvas.addEventListener('pointerdown', e => {
+  uiPtrs.set(e.pointerId, e.pointerType);
+  pointers = uiPtrs.size;
+  try { canvas.focus({ preventScroll: true }); } catch (_) { }
+  uiHideTip();
+  if (uiPtrs.size === 1) {
+    down = { id: e.pointerId, x: e.clientX, y: e.clientY, t: e.timeStamp, type: e.pointerType, button: e.button, shift: e.shiftKey, consumed: false, ended: false };
+    down.pick = pick(e.clientX, e.clientY, e.pointerType !== 'mouse'); // de pick van deze tik, ook voor een dubbeltik
+    if (e.pointerType !== 'mouse' && e.button === 0) uiStartPress(down);
+  } else { if (down) down.ended = true; down = null; uiCancelPress(); }
+});
 canvas.addEventListener('pointermove', e => {
   if (down && down.id === e.pointerId && Math.hypot(e.clientX - down.x, e.clientY - down.y) >= 7) uiCancelPress();
   if (e.pointerType !== 'mouse' || e.buttons) { if (!els.tip.hidden) uiHideTip(); return; }
