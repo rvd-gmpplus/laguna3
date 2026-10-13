@@ -234,7 +234,7 @@ function buildFuel() {
   // vulsysteem: rechts achter (aan de passagierskant), klep in het scherm
   const flapY = 0.86, flapZ = -1.72;
   const vul = A('Vulsysteem', { d: 'Vulpijp met tankdop en tankklep in het rechter achterscherm. De vulpijp loopt boven het achterwiel langs naar de tank.', ex: [-0.2, 0.1, -0.1] }, [
-    P('Vulpijp', tube([[-0.44, 0.30, -1.0], [-0.46, 0.31, -1.2], [-0.47, 0.32, -1.45], [-0.5, 0.5, -1.52], [-0.52, 0.72, -1.55], [-0.62, 0.80, -1.6], [-0.76, 0.84, -1.66], [-(fx - 0.03), flapY, flapZ]], 0.022, 56, 10), MAT.plastic, { d: 'Kunststof vulpijp van de tankklep naar de tank.', ex: [-0.04, 0, 0] }),
+    P('Vulpijp', tube([[-0.44, 0.30, -1.0], [-0.45, 0.34, -1.08], [-0.455, 0.385, -1.22], [-0.435, 0.42, -1.33], [-0.40, 0.45, -1.43], [-0.40, 0.60, -1.52], [-0.44, 0.74, -1.58], [-0.62, 0.80, -1.62], [-0.76, 0.84, -1.66], [-(fx - 0.03), flapY, flapZ]], 0.022, 64, 10), MAT.plastic, { d: 'Kunststof vulpijp van de tankklep naar de tank.', ex: [-0.04, 0, 0] }),
     P('Vulhals', G.cyl('x', 0.04, 0.04, 0.034, 20), MAT.plastic, { d: 'Vulhals achter de tankklep waar de dop in draait.', p: [-(fx - 0.03), flapY, flapZ], ex: [-0.1, 0, 0] }),
     P('Tankdop', merge([G.cyl('x', 0.03, 0.03, 0.012, 20), xf(G.cyl('x', 0.018, 0.018, 0.016, 14), [-0.008, 0, 0])]), MAT.plasticGrey, { d: 'Afsluitdop van de vulpijp, met een bandje aan de vulhals.', p: [-(fx - 0.006), flapY, flapZ], ex: [-0.2, 0.05, 0] }),
     P('Tankklep', merge([G.cyl('x', 0.06, 0.06, 0.006, 28), xf(G.box(0.006, 0.01, 0.04), [0.0, 0.0, -0.06])]), MAT.paint, { d: 'Tankklep in het rechter achterscherm, in lak uitgevoerd.', p: [-(fx + 0.002), flapY, flapZ], ex: [-0.34, 0.05, 0] }),
