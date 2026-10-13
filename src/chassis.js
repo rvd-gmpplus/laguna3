@@ -34,7 +34,7 @@ function frontCorner(s) {
   const arm = plan(shapeOf([[0.37, z0 + 0.1], [0.37, z0 - 0.22], [0.45, z0 - 0.22], [0.735, z0], [0.735, z0 + 0.04], [0.45, z0 + 0.1]]), 0.025);
   const sd = V3(-0.085, 0.425, -0.03);
   const seat = (sg, key) => G.lathe('y', [[0.026, 0], [0.085, sg * 0.004], [0.088, sg * 0.012], [0.084, sg * 0.014], [0.026, sg * 0.006]], 36, key);
-  const strut = A('Veerpoot', { d: 'McPherson-veerpoot: schokdemper met schroefveer, tevens fuseedraaipunt.', p: [0.685, 0.5, z0], q: quatFromTo(V3(0, 1, 0), sd), ex: [0.06, 0.32, 0] }, [
+  const strut = A(`Veerpoot ${n}`, { d: 'McPherson-veerpoot: schokdemper met schroefveer, tevens fuseedraaipunt.', p: [0.685, 0.5, z0], q: quatFromTo(V3(0, 1, 0), sd), ex: [0.06, 0.32, 0] }, [
     P('Schokdemper', merge([xf(G.cyl('y', 0.026, 0.026, 0.27, 20), [0, 0.135, 0]), xf(G.cyl('y', 0.011, 0.011, 0.13, 12), [0, 0.335, 0]), xf(G.box(0.06, 0.04, 0.05), [0, 0.02, 0])]), MAT.darkSteel, { d: 'Gasgevulde schokdemper met zuigerstang.', ex: [0, -0.2, 0] }),
     P('Veerschotel onder', seat(1, 'seatL'), MAT.darkSteel, { d: 'Onderste veerschotel op de demperbuis.', p: [0, 0.19, 0], ex: [0, -0.06, 0] }),
     P('Schroefveer voor', spring(0.074, 0.0065, 0.19, 5.5), MAT.steel, { d: 'Draagt het gewicht van de auto.', p: [0, 0.295, 0] }),
@@ -53,7 +53,7 @@ function frontCorner(s) {
     P('ABS-sensorring', gear(48, 0.05, 0.047, 0.006, 0.04), MAT.steel, { d: 'Getande ring voor de wielsnelheidsmeting.', p: [0.73, AY, z0], ex: [-0.05, 0.12, 0] }),
     P('ABS-sensor', G.cyl('y', 0.007, 0.007, 0.04, 10), MAT.plastic, { d: 'Wielsnelheidssensor voor ABS en ESP.', p: [0.728, AY + 0.07, z0 + 0.04], ex: [-0.05, 0.16, 0.05] }),
     P('Remschijf voor', discGeo(0.1, 0.148, true, 'F'), MAT.iron, { d: 'Geventileerde remschijf.', p: [0.765, AY, z0], ex: [0.14, 0, 0] }),
-    caliper('Remklauw voor', 0.765, z0, 2.79, 0.124, true),
+    caliper(`Remklauw ${n}`, 0.765, z0, 2.79, 0.124, true),
     P('Remslang voor', tube([[0.72, AY + 0.09, z0 - 0.13], [0.69, 0.55, z0 - 0.12], [0.66, 0.62, z0 - 0.05]], 0.006, 24, 8), MAT.rubber, { d: 'Flexibele remleiding naar de klauw.', ex: [0, 0.12, -0.06] }),
     P('Draagarm', arm, MAT.darkSteel, { d: 'Onderste draagarm (triangel) tussen subframe en fusee.', p: [0, 0.225, 0], ex: [0, -0.16, 0] }),
     P('Fuseekogel', merge([G.sphere(0.02, 14), xf(G.cyl('y', 0.008, 0.008, 0.04, 10), [0, 0.02, 0])]), MAT.steel, { d: 'Kogelgewricht tussen draagarm en fusee.', p: [0.735, 0.235, z0 + 0.01], ex: [0.05, -0.1, 0] }),
@@ -69,7 +69,7 @@ function rearCorner(s) {
     P('Wielnaaf achter', merge([G.cyl('x', 0.045, 0.045, 0.05, 24), xf(G.cyl('x', 0.075, 0.075, 0.008, 32), [0.022, 0, 0])]), MAT.steel, { d: 'Naaf met geïntegreerd wiellager op de astap.', p: [0.785, AY, z0], ex: [0.2, 0, 0] }),
     P('Naafmoer', G.cyl('x', 0.014, 0.014, 0.012, 6), MAT.steel, { d: 'Borgmoer van de naaf.', p: [0.822, AY, z0], ex: [0.3, 0, 0] }),
     P('Remschijf achter', discGeo(0.09, 0.13, false, 'R'), MAT.iron, { d: 'Massieve remschijf.', p: [0.77, AY, z0], ex: [0.12, 0, 0] }),
-    caliper('Remklauw achter', 0.77, z0, 2.79, 0.108, false),
+    caliper(`Remklauw ${n}`, 0.77, z0, 2.79, 0.108, false),
     P('Stofschild achter', G.lathe('x', [[0.05, 0], [0.14, 0]], 40, 'shieldR'), MAT.darkSteel, { d: 'Afschermplaat achter de remschijf.', p: [0.728, AY, z0], ex: [-0.06, 0, 0] }),
     P('ABS-sensor achter', G.cyl('y', 0.007, 0.007, 0.04, 10), MAT.plastic, { d: 'Wielsnelheidssensor.', p: [0.73, AY + 0.065, z0 + 0.04], ex: [-0.05, 0.15, 0.05] }),
   ]);

@@ -6,7 +6,7 @@ const ALL = [], ASMS = [];
 const MESHES = [];
 ROOT.obj.traverse(o => { if (o.isMesh) MESHES.push(o); });
 const MAXDEPTH = Math.max(...ALL.map(n => n.depth));
-const SYS_COLORS = { 'Carrosserie': 0x7d93b4, 'Interieur': 0xcaa77a, 'Aandrijflijn': 0xe0782f, 'Koeling en luchtinlaat': 0x2fa6a0, 'Vooras en stuurinrichting': 0x8a64c8, 'Achteras': 0xb062b0, 'Wiel': 0x5b6168, 'Remsysteem': 0xd0443e, 'Uitlaatsysteem': 0x9a6b4b, 'Brandstofsysteem': 0x58a24d, 'Elektrisch systeem': 0xe5c23a };
+const SYS_COLORS = { 'Carrosserie': 0x7d93b4, 'Interieur': 0xcaa77a, 'Aandrijflijn': 0xe0782f, 'Onderstel': 0x8a64c8, 'Koeling en luchtinlaat': 0x2fa6a0, 'Uitlaatsysteem': 0x9a6b4b, 'Brandstofsysteem': 0x58a24d, 'Elektrisch systeem': 0xe5c23a };
 const SYS_MATS = {};
 for (const [k, c] of Object.entries(SYS_COLORS)) SYS_MATS[k] = new THREE.MeshStandardMaterial({ color: c, metalness: 0.15, roughness: 0.55, side: THREE.DoubleSide });
 function sysKey(name) { return name.startsWith('Wiel ') ? 'Wiel' : name; }

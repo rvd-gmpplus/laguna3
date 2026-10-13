@@ -32,7 +32,7 @@ function buildDoor(s, isFront) {
   ];
   if (isFront) {
     const mx = HW(0.86) + 0.06;
-    kids.push(A('Buitenspiegel', { d: 'Elektrisch verstelbare en inklapbare buitenspiegel met geheugenfunctie.', ex: [s * 0.4, 0.22, 0.05] }, [
+    kids.push(A(`Buitenspiegel ${sn}`, { d: 'Elektrisch verstelbare en inklapbare buitenspiegel met geheugenfunctie.', ex: [s * 0.4, 0.22, 0.05] }, [
       P('Spiegelvoet', G.rbox(0.1, 0.045, 0.1, 0.012), MAT.blackGloss, { d: 'Voet waarmee de spiegel op het portier is bevestigd.', p: [s * (mx - 0.03), 1.02, 0.86], ex: [-s * 0.05, -0.06, 0] }),
       P('Spiegelkap', xf(G.sphere(0.06, 24), null, null, [1.85, 1.0, 0.95]), MAT.paint, { d: 'Spiegelkap in carrosseriekleur.', p: [s * (mx + 0.08), 1.06, 0.86], ex: [0, 0.1, 0.06] }),
       P('Spiegelglas', xf(G.sphere(0.052, 20), null, null, [1.8, 0.95, 0.06]), MAT.reflector, { d: 'Verwarmd spiegelglas.', p: [s * (mx + 0.08), 1.06, 0.806], ex: [0, 0, -0.12] }),
