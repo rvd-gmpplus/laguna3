@@ -984,14 +984,18 @@ function loop(now) {
     uiMeasure(now, active);
   }
   // batches bouwen in de vrije tijd van het frame; opnieuw tekenen als de rij leeg is of hoogstens elke 300 ms
-  // (een weergave per batch zou in software-WebGL de opbouw zelf vertragen)
-  if (uiBatchOn && (uiBatchQ.size || uiBatchJob) && uiBatchStep(active ? 3 : (now - uiReadyT < 8000 ? 25 : 10)) && (!uiBatchQ.size && !uiBatchJob || now - uiBatchDrawT > 300)) { needs = true; uiBatchDrawT = now; }
+  // (een weergave per batch zou in software-WebGL de opbouw zelf vertragen); bij het opstarten hoogstens elke 1,5 s,
+  // zodat de eerste batches niet op een rij volle weergaven van de losse auto hoeven te wachten
+  const uiStart = now - uiReadyT < 8000;
+  if (uiBatchOn && (uiBatchQ.size || uiBatchJob) && uiBatchStep(active ? 3 : (uiStart ? 25 : 10)) && (!uiBatchQ.size && !uiBatchJob || now - uiBatchDrawT > (uiStart ? 1500 : 300))) { needs = true; uiBatchDrawT = now; }
+  if (uiTiming.batches === undefined && !uiBatchQ.size && !uiBatchJob) uiTiming.batches = Math.round(now);
   if (uiWasActive && !active) { needs = true; uiAfterAnim(); }
   uiWasActive = active;
 }
 
 /* ---------- start ---------- */
 let uiReady = false, uiReadyT = 0;
+uiTiming.startUp = Math.round(performance.now());
 applyVisibility();
 resize();
 select(ROOT);
@@ -1000,10 +1004,12 @@ uiSyncUndo();
 updateGround();
 { const f = uiFitPoints(uiCollect([ROOT], true), DIRS.iso, 1.04); if (f) { camera.position.copy(f.pos); controls.target.copy(f.target); } uiLastFit = { preset: appPresetById.get('assembled') }; }
 controls.update();
+uiTiming.render0 = Math.round(performance.now());
 renderer.render(scene, camera);
 LOADING.classList.add('gone');
+uiTiming.firstFrame = Math.round(performance.now());
 uiInitHint();
-requestAnimationFrame(t => { last = t; uiReady = true; uiReadyT = performance.now(); loop(t); });
+requestAnimationFrame(t => { last = t; uiReady = true; uiReadyT = performance.now(); uiTiming.interactive = Math.round(uiReadyT); loop(t); });
 uiWarmMaterials();
 { const errs = appCheckPresets(); if (errs.length) console.warn('presets: ' + errs.join('; ')); }
 // labelbreedtes opnieuw meten zodra de lettertypen er zijn
@@ -1071,8 +1077,14 @@ window.__laguna = {
   finishAll, ROOT, ALL, MESHES, PRESETS, byName,
   select: uiApi(select), tapNode: uiApi(tapNode), focusNodes: uiApi(focusNodes),
   setTarget: uiApi(setTarget, true), explodeAllUnder: uiApi(explodeAllUnder, true), collapseAll: uiApi(collapseAll, true), isolate: uiApi(isolate, true),
-  // klaar: gebouwd, eerste keer getekend en de batches van de beginstand staan klaar (hoogstens 8 s wachten daarop)
-  get ready() { return uiReady && (!uiBatchOn || (!uiBatchQ.size && !uiBatchJob) || performance.now() - uiReadyT > 8000); },
+  // klaar: gebouwd, eerste keer getekend en bedienbaar; op de batches van de beginstand wordt hoogstens 2 s gewacht
+  // (tests die gebundelde aantallen meten roepen eerst batchFlush() aan)
+  get ready() {
+    const ok = uiReady && (!uiBatchOn || (!uiBatchQ.size && !uiBatchJob) || performance.now() - uiReadyT > 2000);
+    if (ok && uiTiming.ready === undefined) uiTiming.ready = Math.round(performance.now());
+    return ok;
+  },
+  timing: () => Object.assign({ batchesDone: !uiBatchQ.size && !uiBatchJob }, uiTiming),
   byPath: uiByPath,
   preset: id => { hideHint(true); return uiRunPreset(id); },
   presetList: () => PRESETS.filter(appPresetOk).map(p => ({ id: p.id, cat: p.cat, label: p.label, key: p.key || null, subject: p.tour ? [] : appSubject(p).map(n => n.name), tour: !!p.tour })),

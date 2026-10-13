@@ -2,7 +2,9 @@
 // Model-laag van de app: boom doorlopen, uitklaprichtingen, animatie (uitklappen, uitlichten, optillen),
 // zichtbaarheid (isolatie en ingesloten onderdelen), materialen, camera-inpassing, vloer en de stap-terug-geschiedenis.
 const ROOT = (() => {
-  try { return buildCar(); } catch (e) {
+  const t0 = performance.now();
+  uiTiming.buildStart = Math.round(t0);
+  try { const r = buildCar(); uiTiming.buildCar = Math.round(performance.now() - t0); return r; } catch (e) {
     LOADING.textContent = 'Het model kon niet worden opgebouwd (' + (e && e.message ? e.message : e) + '). Laad de pagina opnieuw.';
     throw e;
   }
@@ -372,30 +374,60 @@ function contextNodes() { return ISO.length ? ISO : [ROOT]; }
 let uiUserCam = false; // de gebruiker heeft de camera zelf verplaatst sinds de laatste inpassing
 
 /* ---------- vloer ---------- */
+// Vloer en schaduw als DataTexture uit JavaScript (geen 2D-canvas: dat tekenen kostte in software-WebGL bij het
+// opstarten seconden; dit zijn een paar tientallen milliseconden).
+function uiRgba(str, fb) {
+  const m = /rgba?\(([^)]+)\)/.exec(str || '');
+  const v = m ? m[1].split(',').map(t => parseFloat(t)) : fb;
+  return [v[0] | 0, v[1] | 0, v[2] | 0, v.length > 3 && isFinite(v[3]) ? v[3] : 1];
+}
+// lineaire overgang door kleurstops [[t, waarde], ...]
+const uiStops = (st, t) => { if (t <= st[0][0]) return st[0][1]; for (let i = 1; i < st.length; i++) if (t <= st[i][0]) { const [t0, a] = st[i - 1], [t1, b] = st[i]; return a + (b - a) * (t - t0) / (t1 - t0); } return st[st.length - 1][1]; };
+function uiDataTex(data, w, h) {
+  const t = new THREE.DataTexture(data, w, h, THREE.RGBAFormat);
+  t.magFilter = THREE.LinearFilter; t.minFilter = THREE.LinearMipmapLinearFilter; t.generateMipmaps = true;
+  t.encoding = THREE.sRGBEncoding; t.needsUpdate = true;
+  return t;
+}
 function gridTexture() {
   const cs = getComputedStyle(document.documentElement);
-  const g1 = cs.getPropertyValue('--grid').trim() || 'rgba(0,0,0,.08)', g2 = cs.getPropertyValue('--grid-strong').trim() || 'rgba(0,0,0,.16)';
-  const S = 1024, cv = document.createElement('canvas'); cv.width = cv.height = S;
-  const x = cv.getContext('2d');
-  const step = S / 48;
-  for (let i = 0; i <= 48; i++) {
-    x.strokeStyle = i % 6 === 0 ? g2 : g1; x.lineWidth = i % 6 === 0 ? 2 : 1;
-    x.beginPath(); x.moveTo(i * step, 0); x.lineTo(i * step, S); x.stroke();
-    x.beginPath(); x.moveTo(0, i * step); x.lineTo(S, i * step); x.stroke();
+  const c1 = uiRgba(cs.getPropertyValue('--grid').trim(), [0, 0, 0, 0.08]), c2 = uiRgba(cs.getPropertyValue('--grid-strong').trim(), [0, 0, 0, 0.16]);
+  const S = 1024, N = 48, step = S / N;
+  // dekking per kolom (= per rij): 49 lijnen, elke zesde dikker en sterker, met zachte randen
+  const lineA = new Float32Array(S);
+  for (let i = 0; i <= N; i++) {
+    const w = i % 6 === 0 ? 2 : 1, al = i % 6 === 0 ? c2[3] : c1[3], pos = i * step;
+    for (let x = Math.max(0, Math.floor(pos - 2)); x <= Math.min(S - 1, Math.ceil(pos + 2)); x++) {
+      const cov = clamp(w / 2 + 0.5 - Math.abs(x + 0.5 - pos), 0, 1) * al;
+      if (cov > lineA[x]) lineA[x] = cov;
+    }
   }
-  x.globalCompositeOperation = 'destination-in';
-  const rg = x.createRadialGradient(S / 2, S / 2, S * 0.05, S / 2, S / 2, S / 2);
-  rg.addColorStop(0, 'rgba(0,0,0,1)'); rg.addColorStop(0.55, 'rgba(0,0,0,.75)'); rg.addColorStop(1, 'rgba(0,0,0,0)');
-  x.fillStyle = rg; x.fillRect(0, 0, S, S);
-  const t = new THREE.CanvasTexture(cv); t.encoding = THREE.sRGBEncoding; t.anisotropy = 4;
-  return t;
+  const mask = [[0, 1], [0.55, 0.75], [1, 0]], r0 = S * 0.05, r1 = S / 2;
+  const d = new Uint8Array(S * S * 4), [R, G, B] = c2;
+  for (let y = 0; y < S; y++) {
+    const ay = lineA[y], dy = y + 0.5 - S / 2;
+    for (let x = 0; x < S; x++) {
+      const ax = lineA[x];
+      let a = ax + ay - ax * ay;
+      if (a > 0) a *= uiStops(mask, (Math.hypot(x + 0.5 - S / 2, dy) - r0) / (r1 - r0));
+      const k = (y * S + x) * 4;
+      d[k] = R; d[k + 1] = G; d[k + 2] = B; d[k + 3] = Math.round(a * 255);
+    }
+  }
+  return uiDataTex(d, S, S);
 }
 const ground = new THREE.Mesh(new THREE.PlaneGeometry(36, 36), new THREE.MeshBasicMaterial({ map: gridTexture(), transparent: true, depthWrite: false, toneMapped: false }));
 ground.rotation.x = -HALF; ground.renderOrder = -2;
 scene.add(ground);
-const shadowCv = document.createElement('canvas'); shadowCv.width = 128; shadowCv.height = 256;
-(() => { const x = shadowCv.getContext('2d'); x.save(); x.scale(0.5, 1); const g = x.createRadialGradient(128, 128, 8, 128, 128, 124); g.addColorStop(0, 'rgba(0,0,0,.55)'); g.addColorStop(0.6, 'rgba(0,0,0,.25)'); g.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = g; x.fillRect(0, 0, 256, 256); x.restore(); })();
-const blob = new THREE.Mesh(new THREE.PlaneGeometry(2.9, 5.6), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(shadowCv), transparent: true, depthWrite: false, opacity: 0.85, toneMapped: false }));
+// zachte elliptische schaduw onder de auto
+const blob = new THREE.Mesh(new THREE.PlaneGeometry(2.9, 5.6), new THREE.MeshBasicMaterial({ map: (() => {
+  const w = 64, h = 128, d = new Uint8Array(w * h * 4), st = [[0, 0.55], [0.6, 0.25], [1, 0]];
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const r = Math.hypot((x + 0.5) / w * 256 - 128, (y + 0.5) / h * 256 - 128);
+    d[(y * w + x) * 4 + 3] = Math.round(255 * uiStops(st, (r - 8) / 116));
+  }
+  return uiDataTex(d, w, h);
+})(), transparent: true, depthWrite: false, opacity: 0.85, toneMapped: false }));
 blob.rotation.x = -HALF; blob.renderOrder = -1;
 scene.add(blob);
 let groundTarget = 0;
