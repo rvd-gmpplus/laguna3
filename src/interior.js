@@ -320,15 +320,17 @@ function intConsole() {
 function intTrim() {
   const bx = intBx, cy = intCy;
   const carpet = front(shapeOf([[-0.8, 0.25], [-0.169, 0.25], [-0.128, 0.41], [0.128, 0.41], [0.169, 0.25], [0.8, 0.25], [0.8, 0.24], [0.164, 0.24], [0.12, 0.4], [-0.12, 0.4], [-0.164, 0.24], [-0.8, 0.24]]), 1.65); carpet.translate(0, 0, 0.125);
-  const handle = (s, z, n) => intPart(`Dakgreep ${n} ${sideName(s)}`, merge([bx(0.022, 0.024, 0.15, 0.008, [0, 0, 0]), bx(0.03, 0.03, 0.025, 0.006, [0, 0.01, 0.075]), bx(0.03, 0.03, 0.025, 0.006, [0, 0.01, -0.075])]), MAT.plasticGrey, 'Handgreep boven het portier met klapscharnier.', { p: [s * 0.6, intRoofY(z, 0.6) - 0.03, z], ex: [s * 0.1, -0.08, 0] });
-  const visor = s => { const zc = 0.27; return A(`Zonneklep ${sideName(s)}`, { d: 'Zonneklep met make-upspiegel en verlichting; schuin langs de voorruitrand gemonteerd.', p: [s * 0.36, intRoofY(zc, 0.36) - 0.012, zc], r: [0.3, 0, 0], ex: [0, 0.3, 0.1] }, [
+  // hemeloppervlak (de hemelbekleding ligt 8 mm onder intRoofY, 3,5 % naar binnen) en de helling ervan in lengte- en dwarsrichting
+  const hl = (z, ax) => intRoofY(z, ax / 0.965) - 0.008, hlSlope = (z, ax) => (hl(z + 0.05, ax) - hl(z - 0.05, ax)) / 0.1;
+  const handle = (s, z, n) => intPart(`Dakgreep ${n} ${sideName(s)}`, merge([bx(0.022, 0.024, 0.15, 0.008, [0, 0, 0]), bx(0.03, 0.03, 0.025, 0.006, [0, 0.01, 0.075]), bx(0.03, 0.03, 0.025, 0.006, [0, 0.01, -0.075])]), MAT.plasticGrey, 'Handgreep boven het portier met klapscharnier.', { p: [s * 0.6, hl(z, 0.6) - 0.021, z], r: [-hlSlope(z, 0.6), 0, 0], ex: [s * 0.1, -0.08, 0] });
+  const visor = s => { const zc = 0.27; return A(`Zonneklep ${sideName(s)}`, { d: 'Zonneklep met make-upspiegel en verlichting; schuin langs de voorruitrand gemonteerd.', p: [s * 0.36, hl(zc, 0.36) - 0.009, zc], r: [-hlSlope(zc, 0.36), 0, s * (hl(zc, 0.56) - hl(zc, 0.16)) / 0.4], ex: [0, 0.3, 0.1] }, [
     intPart('Zonnekleppaneel', G.rbox(0.4, 0.012, 0.17, 0.006), MAT.fabric, 'Gevoerd paneel van de zonneklep.', { ex: [0, 0.06, 0] }),
     intPart('Make-upspiegel', G.rbox(0.14, 0.002, 0.07, 0.001), MAT.reflector, 'Spiegel onder het klepje, met lampje.', { p: [0, -0.007, 0], ex: [0, -0.06, 0] }),
     intPart('Zonneklepas', xf(G.cyl('x', 0.004, 0.004, 0.3, 8), [0, 0.0, -0.09]), MAT.steel, 'Draaias langs de dakrand.', { ex: [0, 0.04, -0.05] }),
   ]); };
   const mat = (s, n) => intPart(`Vloermat ${n}`, G.rbox(0.4, 0.012, 0.5, 0.005), MAT.rubber, 'Losse vloermat voor de voetruimte.', { p: [s * 0.37, 0.256, 0.55], ex: [0, 0.1, 0.1] });
   const sill = (s, z, len, n) => intPart(`Instaplijst ${n} ${sideName(s)}`, G.rbox(0.05, 0.01, len, 0.004), MAT.plasticGrey, 'Kunststof dorpellijst bij het instappen.', { p: [s * (surfX(z, 0.26) - 0.05), 0.248, z], ex: [s * 0.1, 0.05, 0] });
-  const curtain = s => { const pts = []; for (let i = 0; i <= 12; i++) { const z = 0.2 - 1.9 * i / 12, p = ghPt(z, 0.31); pts.push([s * Math.abs(p[0]) * 0.965, p[1] - 0.014, z]); } return intPart(`Gordijnairbag ${sideName(s)}`, tube(pts, 0.009, 36, 6), MAT.fabric, 'Opgerolde gordijnairbag langs de dakrand boven de hemel, beschermt hoofd en schouders bij een zijdelingse botsing; in het model zonder dakrailbekleding, dus zichtbaar aan de dakrand.', { ex: [s * 0.1, 0.1, 0] }); };
+  const curtain = s => { const pts = []; for (let i = 0; i <= 12; i++) { const z = 0.2 - 1.9 * i / 12, p = ghPt(z, 0.235); pts.push([s * Math.abs(p[0]) * 0.965, p[1] - 0.036, z]); } return intPart(`Gordijnairbag ${sideName(s)}`, tube(pts, 0.007, 36, 6), MAT.fabric, 'Opgerolde gordijnairbag langs de dakrand, naast de rand van de hemel, beschermt hoofd en schouders bij een zijdelingse botsing; in het model zonder dakrailbekleding, dus zichtbaar aan de dakrand.', { ex: [s * 0.1, 0.1, 0] }); };
   const roofZ = -0.02, lampY = intRoofY(roofZ, 0);
   return A('Bekleding', { d: 'Hemel met zonkleppen, grepen en plafonniers, vloerbedekking met matten, dorpellijsten en de bekleding van de bagageruimte met de luidsprekers van de achterplank en de versterker.', ex: [0, 0.4, 0] }, [
     A('Dakbekleding', { d: 'Hemel met zonkleppen, handgrepen, plafonniers en de opgerolde gordijnairbags.', ex: [0, 0.3, 0] }, [
@@ -370,8 +372,8 @@ function intPedals() {
 function intMirror() {
   const zc = 0.46, yg = YR(zc) - 0.012, tilt = Math.atan((YR(zc - 0.05) - YR(zc + 0.05)) / 0.1), hy = yg - 0.09, hz = zc - 0.04;
   return A('Binnenspiegel', { d: 'Automatisch dimmende binnenspiegel, hangend aan de voorruit; de regen- en lichtsensor zit bij de carrosserie, achter de voorruit.', ex: [0, 0.32, 0.2] }, [
-    intPart('Spiegelvoet binnen', G.rbox(0.04, 0.012, 0.05, 0.004), MAT.plastic, 'Voet die op de voorruit is gelijmd.', { p: [0, yg - 0.007, zc], r: [tilt, 0, 0], ex: [0, 0.06, 0.04] }),
-    intPart('Spiegelarm', rodBetween([0, yg - 0.012, zc], [0, hy + 0.03, hz], 0.006, 8), MAT.plastic, 'Arm tussen voet en spiegelhuis.', { ex: [0, 0.04, 0] }),
+    intPart('Spiegelvoet binnen', G.rbox(0.04, 0.012, 0.05, 0.004), MAT.plastic, 'Voet die op de voorruit is gelijmd.', { p: [0, yg + 0.005, zc], r: [tilt, 0, 0], ex: [0, 0.06, 0.04] }),
+    intPart('Spiegelarm', rodBetween([0, yg - 0.004, zc], [0, hy + 0.03, hz], 0.006, 8), MAT.plastic, 'Arm tussen voet en spiegelhuis.', { ex: [0, 0.04, 0] }),
     intPart('Spiegelhuis binnen', G.rbox(0.26, 0.065, 0.035, 0.015), MAT.plastic, 'Behuizing van de binnenspiegel.', { p: [0, hy, hz], ex: [0, -0.03, 0] }),
     intPart('Spiegelglas binnen', G.box(0.24, 0.05, 0.003), MAT.reflector, 'Elektrochroom spiegelglas dat automatisch dimt.', { p: [0, hy, hz - 0.019], ex: [0, 0, -0.08] }),
   ]);
