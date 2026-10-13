@@ -121,7 +121,7 @@ function buildEngineCover() {
 function engBuildPump() {
   const PXL = XA - ENG_PS[0], R = ENG_PS_R, AE = 0.03, BE = 0.024;
   const ell = (a, b, n = 40) => Array.from({ length: n }, (_, i) => { const t = i / n * PI * 2; return [a * Math.cos(t), b * Math.sin(t)]; });
-  const pulleyGeo = cache('engPsPulley', () => merge([xf(engPolyV(R, 0.026, 'Ps'), [PXL, 0, 0]), xf(G.cyl('x', 0.02, 0.02, 0.004, 20), [PXL - 0.015, 0, 0])]));
+  const pulleyGeo = cache('engPsPulley', () => xf(engPolyV(R, 0.026, 'Ps'), [PXL, 0, 0]));
   const front = G.lathe('x', [[0.0095, -0.056], [0.0185, -0.056], [0.0185, -0.046], [0.046, -0.046], [0.046, -0.004], [0.0095, -0.004]], 32, 'engPsFront');
   const rear = cache('engPsRear', () => merge([
     G.lathe('x', [[0.037, -0.004], [0.046, -0.004], [0.046, 0.052], [0.041, 0.055], [0, 0.055], [0, 0.018], [0.037, 0.018], [0.037, -0.004]], 32),
@@ -144,7 +144,7 @@ function engBuildPump() {
   return A('Stuurpomp', { d: 'Riemaangedreven schottenpomp (aannemelijk voor deze motor; de stuurbekrachtiging van de F4Rt 811 is hydraulisch met variabele assistentie): perst olie uit het reservoir naar het stuurhuis. Opbouw, afmetingen en plaats zijn geschat.', p: ENG_PS, ex: [-0.06, 0, 0.12], spec: [['Aandrijving', 'multiriem 7PK1795, zeven groeven'], ['Status', 'aannemelijk, niet bevestigd']] }, [
     A('Poelie met moer', { d: 'Multiriempoelie met zeven groeven en de moer waarmee hij op de pompas zit.', ex: [-0.14, 0, 0] }, [
       P('Poelie stuurpomp', pulleyGeo, MAT.steel, { d: 'Stalen poelie met zeven groeven voor de multiriem (Ø116 mm, geschat).', ex: [0, 0, 0] }),
-      P('Moer poelie', engNut(0.016, 0.009, 'x'), MAT.darkSteel, { d: 'Moer op het asuiteinde die de poelie vastzet.', p: [PXL - 0.0185, 0, 0], ex: [-0.05, 0, 0] }),
+      P('Moer poelie', engNut(0.016, 0.006, 'x'), MAT.darkSteel, { d: 'Moer op het asuiteinde die de poelie vastzet.', p: [PXL - 0.0135, 0, 0], ex: [-0.05, 0, 0] }),
     ]),
     A('Pomphuis', { d: 'Gegoten aluminium huis in twee delen met afdichtring en doorgaande bouten; de hogedrukaansluiting en de stroomregelklep zitten op het achterdeksel.', ex: [0, 0, 0] }, [
       P('Achterdeksel', rear, MAT.aluCast, { d: 'Achterdeksel met de pompkamer, de boring voor de stroomregelklep en de aansluiting voor de hogedrukpijp.', ex: [0, 0, 0] }),
@@ -153,7 +153,7 @@ function engBuildPump() {
       A('Pompelement', { d: 'Pompelement: nokring, rotor met tien schoepen, drukplaat en de aandrijfas met lager en asafdichting.', ex: [-0.035, 0, 0], inner: true }, [
         P('Nokring', ring, MAT.steel, { d: 'Ring met ovale binnenzijde waarlangs de schoepen glijden; door de ovale vorm ontstaan twee pompkamers.', ex: [0, 0, 0] }),
         A('Aandrijfas met lager', { d: 'Aandrijfas met kogellager en asafdichting in het voorhuis.', ex: [-0.06, 0, 0] }, [
-          P('Aandrijfas', G.cyl('x', 0.009, 0.009, 0.112, 12), MAT.steel, { d: 'Pompas met spiebaan voor de rotor.', p: [-0.036, 0, 0], ex: [0, 0, 0] }),
+          P('Aandrijfas', G.cyl('x', 0.009, 0.009, 0.108, 12), MAT.steel, { d: 'Pompas met spiebaan voor de rotor.', p: [-0.0375, 0, 0], ex: [0, 0, 0] }),
           P('Kogellager', annulus(0.009, 0.0185, 0.01, 'x', 20), MAT.bearing, { d: 'Kogellager van de pompas.', p: [-0.025, 0, 0], ex: [-0.02, 0, 0] }),
           P('Asafdichting', annulus(0.009, 0.0165, 0.006, 'x', 20), MAT.rubber, { d: 'Radiale asafdichting in de neus van het voorhuis.', p: [-0.053, 0, 0], ex: [-0.05, 0, 0] }),
         ]),
