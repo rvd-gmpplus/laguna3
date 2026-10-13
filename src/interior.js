@@ -47,7 +47,7 @@ function frontSeat(s) {
   const cushion = A('Zitting', { d: 'Zitkussen: schuim, verwarmingsmat en lederen bekleding met zijwangen.', ex: [0, 0.16, 0.08] }, [
     intPart('Zitschuim', bx(0.44, 0.085, 0.48, 0.03, [0, 0.17, 0.02]), MAT.intFoam, 'Gevormd polyurethaanschuim van het zitkussen.', { inner: true, ex: [0, 0.03, 0] }),
     intPart('Verwarmingsmat zitting', G.box(0.34, 0.003, 0.38), MAT.heater, 'Verwarmingselement in de zitting; de stoelverwarming heeft drie standen met thermostaat.', { p: [0, 0.2155, 0.03], inner: true, ex: [0, 0.07, 0.03] }),
-    intPart('Zitbekleding', merge([bx(0.5, 0.034, 0.52, 0.015, [0, 0.222, 0.02]), bx(0.07, 0.05, 0.5, 0.02, [0.215, 0.235, 0.02]), bx(0.07, 0.05, 0.5, 0.02, [-0.215, 0.235, 0.02]), bx(0.46, 0.1, 0.03, 0.012, [0, 0.175, 0.275])]), MAT.leather, 'Geperforeerd beige leder (Initiale) met verstevigde zijwangen.', { ex: [0, 0.13, 0.05] }),
+    intPart('Zitbekleding', merge([bx(0.5, 0.11, 0.52, 0.035, [0, 0.172, 0.02]), bx(0.07, 0.05, 0.5, 0.02, [0.215, 0.235, 0.02]), bx(0.07, 0.05, 0.5, 0.02, [-0.215, 0.235, 0.02])]), MAT.leather, 'Geperforeerd beige leder (Initiale) met verstevigde zijwangen.', { ex: [0, 0.13, 0.05] }),
     intPart('Zijkap zitting', G.rbox(0.012, 0.07, 0.42, 0.005), MAT.plastic, 'Kunststof kap aan de portierzijde van het zitkussen met de bedieningsschakelaars.', { p: [s * 0.262, 0.15, 0.01], ex: [s * 0.1, 0, 0] }),
     intPart('Stoelschakelaars', merge([bx(0.012, 0.016, 0.03, 0.004, [s * 0.272, 0.165, 0.09]), bx(0.012, 0.016, 0.03, 0.004, [s * 0.272, 0.138, 0.09]), cy('x', 0.011, 0.012, [s * 0.272, 0.152, 0.14], 10)]), MAT.plasticGrey, 'Schakelaars voor de elektrische stoelverstelling en de verwarming.', { ex: [s * 0.16, 0, 0.02] }),
   ]);
@@ -61,13 +61,13 @@ function frontSeat(s) {
     intPart('Rugschuim', bx(0.46, 0.58, 0.065, 0.03, [0, 0.31, 0.0]), MAT.intFoam, 'Gevormd schuim van de rugleuning.', { inner: true, ex: [0, 0, 0.04] }),
     intPart('Verwarmingsmat rugleuning', G.box(0.34, 0.4, 0.003), MAT.heater, 'Verwarmingselement in de rugleuning.', { p: [0, 0.31, 0.04], inner: true, ex: [0, 0, 0.1] }),
     intPart('Zijairbag', G.rbox(0.05, 0.2, 0.07, 0.015), MAT.plastic, 'Zijairbagmodule in de buitenste zijwang van de rugleuning (thorax en bekken), onder de bekleding verborgen.', { p: [s * 0.215, 0.4, 0.0], inner: true, ex: [s * 0.15, 0, 0] }),
-    intPart('Rugbekleding', merge([bx(0.5, 0.62, 0.03, 0.015, [0, 0.31, 0.055]), bx(0.07, 0.58, 0.06, 0.025, [0.22, 0.3, 0.04]), bx(0.07, 0.58, 0.06, 0.025, [-0.22, 0.3, 0.04])]), MAT.leather, 'Geperforeerd beige leder met verstevigde zijwangen.', { ex: [0, 0, 0.16] }),
-    intPart('Rugachterschaal', G.rbox(0.46, 0.58, 0.012, 0.006), MAT.plastic, 'Kunststof schaal aan de achterkant van de rugleuning.', { p: [0, 0.31, -0.055], ex: [0, 0, -0.14] }),
+    intPart('Rugbekleding', merge([bx(0.5, 0.62, 0.115, 0.035, [0, 0.31, 0.0]), bx(0.07, 0.58, 0.06, 0.025, [0.22, 0.3, 0.05]), bx(0.07, 0.58, 0.06, 0.025, [-0.22, 0.3, 0.05])]), MAT.leather, 'Geperforeerd beige leder met verstevigde zijwangen.', { ex: [0, 0, 0.16] }),
+    intPart('Rugachterschaal', G.rbox(0.46, 0.58, 0.012, 0.006), MAT.plastic, 'Kunststof schaal aan de achterkant van de rugleuning.', { p: [0, 0.31, -0.064], ex: [0, 0, -0.14] }),
     intPart('Hoofdsteunbussen', merge([cy('y', 0.011, 0.04, [0.07, 0.62, -0.02], 10), cy('y', 0.011, 0.04, [-0.07, 0.62, -0.02], 10)]), MAT.plastic, 'Geleidebussen in de bovenkant van de rugleuning.', { ex: [0, 0.02, 0] }),
     drv && intPart('Lendensteunhendel', merge([rodBetween([0.25, 0.24, -0.005], [0.3, 0.24, -0.005], 0.006, 8), rodBetween([0.3, 0.24, -0.005], [0.3, 0.17, -0.005], 0.008, 8)]), MAT.plasticGrey, 'Hendel voor de handmatige lendensteun, aan de portierzijde van de rugleuning.', { ex: [0.12, 0, 0] }),
     hr,
   ]);
-  const buckle = A('Gordelslot met spanner', { d: 'Gordelslot met gordelverklikker en pyrotechnische slotspanner (de bestuurder heeft een dubbele spanner).', p: [-s * 0.235, 0.2, -0.12], ex: [-s * 0.12, 0.1, 0] }, [
+  const buckle = A('Gordelslot met spanner', { d: 'Gordelslot met gordelverklikker en pyrotechnische slotspanner (de bestuurder heeft een dubbele spanner).', p: [-s * 0.235, 0.27, -0.12], ex: [-s * 0.12, 0.1, 0] }, [
     intPart('Slotbehuizing', G.rbox(0.03, 0.07, 0.04, 0.008), MAT.plastic, 'Behuizing van het gordelslot met schakelaar voor de gordelverklikker.', { ex: [0, 0.02, 0] }),
     intPart('Ontgrendelknop', G.rbox(0.016, 0.012, 0.022, 0.004), MAT.red, 'Rode knop om de gordel los te maken.', { p: [0, 0.038, 0.002], ex: [0, 0.05, 0] }),
     intPart('Slotkabel', merge([rodBetween([0, -0.03, 0], [0, -0.1, 0.02], 0.004, 6), rodBetween([0, -0.1, 0.02], [0, -0.1, 0.1], 0.004, 6)]), MAT.steel, 'Stalen kabel tussen het gordelslot en de spanner.', { ex: [0, -0.05, 0] }),
@@ -83,8 +83,8 @@ function intRearBack(cx, w, name, d) {
   return A(name, { d, p: [cx, intRB.y, intRB.z], r: [intRB.tilt, 0, 0], ex: [cx > 0 ? 0.14 : -0.14, 0.12, -0.12] }, [
     intPart('Rugframe', merge([cy('y', 0.009, 0.54, [hw - 0.03, 0.28, -0.03]), cy('y', 0.009, 0.54, [-hw + 0.03, 0.28, -0.03]), cy('x', 0.009, w - 0.06, [0, 0.54, -0.03]), cy('x', 0.009, w - 0.06, [0, 0.02, -0.03])]), MAT.steel, 'Stalen buisframe van het rugleuningdeel.', { inner: true, ex: [0, 0, -0.02] }),
     intPart('Rugschuim', bx(w - 0.02, 0.54, 0.065, 0.03, [0, 0.28, 0]), MAT.intFoam, 'Schuimlaag van het rugleuningdeel.', { inner: true, ex: [0, 0, 0.04] }),
-    intPart('Rugbekleding', bx(w, 0.56, 0.035, 0.015, [0, 0.28, 0.05]), MAT.leather, 'Beige lederen bekleding.', { ex: [0, 0, 0.14] }),
-    intPart('Rugachterbekleding', bx(w - 0.02, 0.54, 0.012, 0.006, [0, 0.28, -0.055]), MAT.carpet, 'Bekleding aan de bagageruimtezijde van het rugleuningdeel.', { ex: [0, 0, -0.14] }),
+    intPart('Rugbekleding', bx(w, 0.56, 0.11, 0.03, [0, 0.28, 0]), MAT.leather, 'Beige lederen bekleding.', { ex: [0, 0, 0.14] }),
+    intPart('Rugachterbekleding', bx(w - 0.02, 0.54, 0.012, 0.006, [0, 0.28, -0.062]), MAT.carpet, 'Bekleding aan de bagageruimtezijde van het rugleuningdeel.', { ex: [0, 0, -0.14] }),
     intPart('Rugvergrendeling', bx(0.04, 0.05, 0.03, 0.008, [cx > 0 ? hw - 0.05 : -hw + 0.05, 0.55, -0.04]), MAT.steel, 'Vergrendeling in de bovenrand die de rugleuning aan de carrosserie vastzet; ontgrendeld met een hendel op de bank of in de bagageruimte.', { ex: [cx > 0 ? 0.06 : -0.06, 0.06, -0.04] }),
     intPart('Scharnierbeugels', merge([bx(0.05, 0.03, 0.06, 0.008, [hw - 0.07, 0.02, -0.04]), bx(0.05, 0.03, 0.06, 0.008, [-hw + 0.07, 0.02, -0.04])]), MAT.darkSteel, 'Beugels waarmee het rugleuningdeel om de onderrand scharniert.', { ex: [0, -0.06, -0.06] }),
   ]);
@@ -101,8 +101,8 @@ function intRearBench() {
   const cush = A('Zitting achterbank', { d: 'Zitkussen van de achterbank: plaat, schuim en lederen bekleding, met de ISOFIX-beugels en de gordelsloten.', p: [0, 0.43, -0.95], ex: [0, 0.06, 0.14] }, [
     intPart('Zitplaat achter', bx(1.2, 0.012, 0.44, 0.005, [0, -0.045, 0]), MAT.darkSteel, 'Stalen plaat onder het zitschuim.', { inner: true, ex: [0, 0.02, 0] }),
     intPart('Zitschuim achter', bx(1.24, 0.07, 0.46, 0.03, [0, -0.015, 0]), MAT.intFoam, 'Schuimlaag van de achterbankzitting.', { inner: true, ex: [0, 0.04, 0] }),
-    intPart('Zitbekleding achter', bx(1.3, 0.05, 0.48, 0.02, [0, 0.03, 0]), MAT.leather, 'Beige lederen bekleding van de zitting.', { ex: [0, 0.1, 0.04] }),
-    ...[1, -1].map(s => intPart(`ISOFIX-beugel ${sideName(s)}`, merge([rodBetween([s * 0.42 - 0.03, 0.035, -0.215], [s * 0.42 + 0.03, 0.035, -0.215], 0.004, 6), rodBetween([s * 0.42 - 0.03, 0.035, -0.215], [s * 0.42 - 0.03, 0.0, -0.225], 0.004, 6), rodBetween([s * 0.42 + 0.03, 0.035, -0.215], [s * 0.42 + 0.03, 0.0, -0.225], 0.004, 6)]), MAT.steel, 'ISOFIX-beugel voor een kinderzitje op de buitenste zitplaats, in de spleet tussen zitting en rugleuning.', { ex: [s * 0.08, 0.04, -0.06] })),
+    intPart('Zitbekleding achter', bx(1.3, 0.12, 0.48, 0.03, [0, 0, 0]), MAT.leather, 'Beige lederen bekleding van de zitting.', { ex: [0, 0.1, 0.04] }),
+    ...[1, -1].map(s => intPart(`ISOFIX-beugel ${sideName(s)}`, merge([rodBetween([s * 0.42 - 0.03, 0.063, -0.25], [s * 0.42 + 0.03, 0.063, -0.25], 0.004, 6), rodBetween([s * 0.42 - 0.03, 0.063, -0.25], [s * 0.42 - 0.03, 0.03, -0.26], 0.004, 6), rodBetween([s * 0.42 + 0.03, 0.063, -0.25], [s * 0.42 + 0.03, 0.03, -0.26], 0.004, 6)]), MAT.steel, 'ISOFIX-beugel voor een kinderzitje op de buitenste zitplaats, in de spleet tussen zitting en rugleuning.', { ex: [s * 0.08, 0.04, -0.06] })),
     ...[[0.2, 'links'], [0, 'midden'], [-0.2, 'rechts']].map(([x, n]) => intPart(`Gordelslot achter ${n}`, merge([bx(0.03, 0.05, 0.04, 0.008, [x, 0.07, -0.2]), bx(0.014, 0.01, 0.02, 0.003, [x, 0.098, -0.2])]), MAT.plastic, 'Gordelslot van de achterbank met gordelverklikker.', { ex: [0, 0.1, 0] })),
   ]);
   const arm = A('Middenarmsteun achter', { d: 'Opklapbare middenarmsteun in het rugleuningdeel met twee bekerhouders, hier opgeklapt weergegeven.', p: [0, intRB.y, intRB.z], r: [intRB.tilt, 0, 0], ex: [0, 0.1, 0.18] }, [
@@ -123,13 +123,13 @@ function intBelts() {
   const bx = intBx, out = [];
   const bandGeo = (pts, w) => merge(pts.slice(1).map((p, i) => intStrip(pts[i], p, w, 0.003)));
   for (const s of [1, -1]) {
-    const n = sideName(s), zB = -0.28, xr = s * (surfX(zB, 0.55) - 0.075), xg = s * (surfX(zB, 1.1) - 0.05), tong = [s * 0.135, 0.505, -0.14];
+    const n = sideName(s), zB = -0.28, xr = s * (surfX(zB, 0.55) - 0.075), xg = s * (surfX(zB, 1.1) - 0.05), tong = [s * 0.135, 0.535, -0.14];
     const grp = [];
     grp.push(
       intPart(`Gordelrolautomaat voor ${n}`, G.rbox(0.06, 0.1, 0.06, 0.01), MAT.plastic, 'Oprolautomaat met gordelspanner en krachtbegrenzer onderin de B-stijl, achter de stijlbekleding verborgen; de bestuurder heeft een dubbele spanner.', { p: [xr, 0.55, zB], inner: true, ex: [s * 0.1, 0, 0] }),
       intPart(`Hoogteversteller voor ${n}`, G.rbox(0.03, 0.2, 0.012, 0.004), MAT.plasticGrey, 'Geleiderail op de B-stijl waarmee de bovenste gordelgeleider in hoogte wordt versteld.', { p: [xg, 1.04, zB - 0.02], ex: [s * 0.1, 0.1, 0] }),
       intPart(`Gordelgeleider voor ${n}`, G.torus('z', 0.018, 0.004, 16, 6), MAT.steel, 'Geleideoog waar de gordelband doorheen loopt.', { p: [xg, 1.1, zB], ex: [s * 0.1, 0.16, 0] }),
-      intPart(`Gordelband voor ${n}`, bandGeo([[xg, 1.1, zB + 0.012], tong, [s * 0.45, 0.535, -0.2], [s * 0.69, 0.5, -0.22], [s * 0.7, 0.33, -0.22]], 0.046), MAT.intBelt, 'Driepuntsgordelband: schouderband van de geleider naar de gordeltong en heupband naar de buitenste verankering.', { ex: [s * 0.1, 0.1, 0.06] }),
+      intPart(`Gordelband voor ${n}`, bandGeo([[xg, 1.1, zB + 0.012], tong, [s * 0.45, 0.56, -0.2], [s * 0.69, 0.52, -0.22], [s * 0.7, 0.33, -0.22]], 0.046), MAT.intBelt, 'Driepuntsgordelband: schouderband van de geleider naar de gordeltong en heupband naar de buitenste verankering.', { ex: [s * 0.1, 0.1, 0.06] }),
       intPart(`Gordeltong voor ${n}`, G.rbox(0.03, 0.05, 0.008, 0.003), MAT.steel, 'Metalen tong op de gordelband die in het gordelslot klikt.', { p: tong, ex: [0, 0.14, 0.04] }),
       intPart(`Gordelverankering voor ${n}`, hexBolt(0.02, 0.014, 'x'), MAT.steel, 'Bout waarmee de heupband aan de buitenkant van de stoel in de drempel is verankerd.', { p: [s * 0.7, 0.33, -0.22], r: [0, s > 0 ? 0 : PI, 0], ex: [s * 0.1, 0, 0] }));
     out.push(A(`Gordel voor ${n}`, { d: 'Driepuntsgordel van de voorstoel: rolautomaat in de B-stijl, hoogteversteller, geleider, band, tong en onderste verankering.', ex: [s * 0.05, 0.12, 0] }, grp));
