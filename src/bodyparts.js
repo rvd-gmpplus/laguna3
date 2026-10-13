@@ -114,7 +114,8 @@ function bodRibbon(s, zq, w, out = 0.004, crown = 0.0015, nv = 4, P = (z, q) => 
 const bodPGh = (z, q) => { const [x, y] = bodGhHalf(z, clamp(q, 0, 1)); return [x, y, z]; };
 function bodTrim(s, zu, a, b, out = 0.003, crown = 0, nv = 1, P = bodPGh) {
   const e = 1e-4, sub = (p, q) => [p[0] - q[0], p[1] - q[1], p[2] - q[2]], dot = (p, q) => p[0] * q[0] + p[1] * q[1] + p[2] * q[2];
-  const der = (z, u) => { const Pz = sub(P(z + e, u), P(z - e, u)).map(v => v / (2 * e)), Pu = sub(P(z, u + e), P(z, u - e)).map(v => v / (2 * e)); return [Pz, Pu]; };
+  // voorwaartse verschillen: aan de rand u = 0 (gordel) klemt P de parameter, een centraal verschil gaf daar de halve afgeleide (dubbele breedte)
+  const der = (z, u) => { const P0 = P(z, u), Pz = sub(P(z + e, u), P0).map(v => v / e), Pu = sub(P(z, u + e), P0).map(v => v / e); return [Pz, Pu]; };
   const pos = [], idx = [], n = zu.length;
   zu.forEach(([z, u], i) => {
     const A0 = zu[Math.max(0, i - 1)], B0 = zu[Math.min(n - 1, i + 1)], tz = B0[0] - A0[0], tu = B0[1] - A0[1];
@@ -133,6 +134,12 @@ function bodTrim(s, zu, a, b, out = 0.003, crown = 0, nv = 1, P = bodPGh) {
 // raamomlijsting (Initiale Paris, cerclage chromé): de bovenband ligt op het vrijwel staande buitenvlak van de dakrail (q 0,542 tot 0,570, ca. 15 mm),
 // met een rubberlijn van 4 mm tussen chroom en lak; daaronder het zwarte raamkader tot de ruit
 const bodQV = 0.556, bodTW = 0.0075, bodTR = 0.004;
+// gordellijst onderaan de ruit langs een pad op q = 0: schaduwlijn (3 mm) naar de lak, bolle chroomband (15 mm) en rubberlip (4 mm) naar het
+// glas; samen 21 mm langs de ruit, zodat de zichtbare ruitlijn binnen de silhouetmaat blijft (ca. 2 cm boven de gordel)
+function bodBeltTrim(s, path) {
+  return { chrome: bodTrim(s, path, -0.0175, -0.0025, 0.003, 0.003, 8),
+    rubber: merge([bodTrim(s, path, -0.021, -0.017, 0.0022, 0, 1), bodTrim(s, path, -0.003, -0.0002, 0.0022, 0, 1)]) };
+}
 // dunne donkere naadlijn op de onderbak langs punten (z, y): het portierrubber dat in de sluitnaad zichtbaar is
 const bodSeamLine = (s, zy, w = 0.0045) => bodRibbon(s, zy, w, 0.0007, 0, 1, (z, y) => { const [x, yy] = halfPt(z, sAtY(z, y)); return [x, yy, z]; });
 const bodQRing = 0.004;                                                       // chroomband ligt zoveel (q) boven de bovenrand van de ruit
@@ -177,8 +184,7 @@ function buildDoor(s, isFront) {
   const ringRub = merge([bodTrim(s, topPath, -bodTW - bodTR, -bodTW + 0.0005, 0.0026, 0, 1)].concat(isFront ? [bodTrim(s, sailPath, bodTW - 0.0005, bodTW + bodTR, 0.0026, 0, 1)] : []));
   // gordellijst onderaan de ruit: bolle chroomband van 15 mm met een donkere rubberlijn naar het glas en een schaduwlijn naar de lak
   const beltPath = bodLinZ(zB0, zB1, 30, 0);
-  const beltGeo = bodTrim(s, beltPath, -0.0195, -0.0045, 0.003, 0.0035, 8);
-  const beltRub = merge([bodTrim(s, beltPath, -0.0235, -0.019, 0.0022, 0, 1), bodTrim(s, beltPath, -0.005, -0.0002, 0.0022, 0, 1)]);
+  const { chrome: beltGeo, rubber: beltRub } = bodBeltTrim(s, beltPath);
   const handleZ = isFront ? 0.03 : -1.015, handleY = isFront ? 0.80 : 0.84;
   const hp = bodAt(handleZ, handleY, 0.012), hn = bodNormalAt(handleZ, handleY);
   // een sierlijst per portier; de lijsten van voor- en achterportier liggen in een lijn en raken elkaar bijna bij de sluitnaad.
@@ -450,6 +456,7 @@ function buildBody() {
   const qEdge = Array.from({ length: 34 }, (_, i) => { const z = bodQZ + 0.0015 + (-0.958 - bodQZ - 0.0015) * (i / 33) ** 1.8; return [z, bodQy(z, bodQtop(z))]; });
   const qFr = z => { const a = bodPGh(z, bodQG), b = bodPGh(z, bodQV - 0.0144); return lerp(0.008, Math.hypot(a[0] - b[0], a[1] - b[1]), sstep((z + 1.12) / 0.13)); };
   // d = -(qFr + k) loopt van de ruit af (het pad heeft stijgende z, de ruit ligt aan de kant d > 0)
+  const qBelt = s => bodBeltTrim(s, bodLinZ(bodQZ - 0.012, -0.96, 14, 0));
   const qTrim = (s, k0, k1, out, crown, nv) => bodTrim(s, qEdge, z => -(qFr(z) + k1), z => -(qFr(z) + k0), out, crown, nv);
   const aPillarLo = z => z < bodSail - 0.004 ? bodQG + 0.03 : z < 0.93 ? Math.min(bodQS - 0.02, bodQy(z, 0.93 + (0.93 - z) * 0.55)) : 0.004;
   const roofW = z => [bodQR / 2, 1 - bodQR / 2];
@@ -458,8 +465,8 @@ function buildBody() {
     P('Ruit', bodGhSide(s, bodQZ, bodQd(0.97) - 0.016, 16, z => [0.006, Math.min(bodQy(z, bodQtop(z)), bodQy(z, 0.97 + (-0.93 - 0.016 - z) * 0.33 / 0.06))], 6, bodDense(bodQZ, -1.15, 6)), MAT.glass, { d: 'Getint veiligheidsglas.', ex: [s * 0.04, 0, 0] }),
     P('Raamkader kwartsruit', bodTrim(s, qEdge, z => -(qFr(z) + 0.0005), 0.002, 0.003, 0, 3), MAT.bodPillar, { d: 'Zwart kader langs de rand van de kwartsruit, onder de chroomband.', ex: [s * 0.05, 0.03, 0] }),
     P('Omlijsting', qTrim(s, 0, 2 * bodTW, 0.0035, 0.003, 6), MAT.bodChrome, { d: 'Chromen band langs de bovenrand en de schuine achterrand van de kwartsruit tot de punt op de gordel, in het verlengde van de omlijsting van het achterportier.', ex: [s * 0.06, 0.02, 0] }),
-    P('Rubberlijn kwartsruit', merge([qTrim(s, 2 * bodTW - 0.0005, 2 * bodTW + bodTR, 0.0026, 0, 1), bodTrim(s, bodLinZ(bodQZ - 0.012, -0.96, 14, 0), -0.0235, -0.019, 0.0022, 0, 1), bodTrim(s, bodLinZ(bodQZ - 0.012, -0.96, 14, 0), -0.005, -0.0002, 0.0022, 0, 1)]), MAT.bodPillar, { d: 'Zwarte rubberlijnen langs de omlijsting en de gordellijst van de kwartsruit.', ex: [s * 0.05, 0.05, 0] }),
-    P('Gordellijn kwartsruit', bodTrim(s, bodLinZ(bodQZ - 0.012, -0.96, 14, 0), -0.0195, -0.0045, 0.003, 0.0035, 8), MAT.bodChrome, { d: 'Chromen sierlijst op de gordellijn onder de kwartsruit, in het verlengde van die van het achterportier.', ex: [s * 0.06, -0.02, 0] }),
+    P('Rubberlijn kwartsruit', merge([qTrim(s, 2 * bodTW - 0.0005, 2 * bodTW + bodTR, 0.0026, 0, 1), qBelt(s).rubber]), MAT.bodPillar, { d: 'Zwarte rubberlijnen langs de omlijsting en de gordellijst van de kwartsruit.', ex: [s * 0.05, 0.05, 0] }),
+    P('Gordellijn kwartsruit', qBelt(s).chrome, MAT.bodChrome, { d: 'Chromen sierlijst op de gordellijn onder de kwartsruit, in het verlengde van die van het achterportier.', ex: [s * 0.06, -0.02, 0] }),
   ]);
   const sideRoof = A('Zijwanden en dak', { d: 'Stijlen, dakrails, dak met dakbogen, de vaste kwartsruiten en de dakantenne.', ex: [0, 0.32, 0] }, [
     P('Dakpaneel', roof, MAT.paint, { d: 'Dakplaat van staal, gelast op de dakrails (geen panoramadak: dat was een optie).', ex: [0, 0.16, 0] }),
