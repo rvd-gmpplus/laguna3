@@ -153,7 +153,7 @@ const G = {
   rbox: (w, h, d, r) => cache(`rb${w}|${h}|${d}|${r}`, () => new THREE.RoundedBoxGeometry(w, h, d, 2, Math.max(0.0005, Math.min(r, Math.min(w, h, d) / 2 - 0.0002)))),
   cyl: (ax, rt, rb, h, seg = 24, open = false) => cache(`c${ax}${rt}|${rb}|${h}|${seg}|${open}`, () => yTo(new THREE.CylinderGeometry(rt, rb, h, seg, 1, open), ax)),
   half: (ax, r, h, start, seg = 16) => cache(`h${ax}${r}|${h}|${start}|${seg}`, () => yTo(new THREE.CylinderGeometry(r, r, h, seg, 1, true, start, PI), ax)),
-  torus: (ax, R, r, seg = 40, rad = 8, arc = PI * 2) => cache(`t${ax}${R}|${r}|${seg}|${arc}`, () => zTo(new THREE.TorusGeometry(R, r, rad, seg, arc), ax)),
+  torus: (ax, R, r, seg = 40, rad = 8, arc = PI * 2) => cache(`t${ax}${R}|${r}|${seg}|${rad}|${arc}`, () => zTo(new THREE.TorusGeometry(R, r, rad, seg, arc), ax)),
   sphere: (r, seg = 16) => cache(`s${r}|${seg}`, () => new THREE.SphereGeometry(r, seg, Math.max(6, seg * 0.6 | 0))),
   lathe: (ax, pts, seg = 32, key) => {
     const build = () => yTo(new THREE.LatheGeometry(pts.map(p => new THREE.Vector2(p[0], p[1])), seg), ax);
@@ -215,7 +215,7 @@ function gear(n, ro, rr, w, hole = 0, ax = 'x') {
   return cache(`g${n}|${ro}|${rr}|${w}|${hole}|${ax}`, () => zTo(extrude(gearShape(n, ro, rr, hole), w, 6), ax));
 }
 function ringGear(n, rOut, rTip, rRoot, w, ax = 'x') {
-  return cache(`rg${n}|${rOut}|${rTip}|${w}|${ax}`, () => {
+  return cache(`rg${n}|${rOut}|${rTip}|${rRoot}|${w}|${ax}`, () => {
     const s = new THREE.Shape(); s.absarc(0, 0, rOut, 0, PI * 2, false);
     const h = new THREE.Path(), st = PI * 2 / n;
     for (let i = 0; i < n; i++) {
@@ -230,7 +230,7 @@ function ringGear(n, rOut, rTip, rRoot, w, ax = 'x') {
   });
 }
 function annulus(rIn, rOut, t, ax = 'x', seg = 40) {
-  return cache(`an${rIn}|${rOut}|${t}|${ax}`, () => yTo(new THREE.LatheGeometry([[rIn, -t / 2], [rOut, -t / 2], [rOut, t / 2], [rIn, t / 2], [rIn, -t / 2]].map(p => new THREE.Vector2(...p)), seg), ax));
+  return cache(`an${rIn}|${rOut}|${t}|${ax}|${seg}`, () => yTo(new THREE.LatheGeometry([[rIn, -t / 2], [rOut, -t / 2], [rOut, t / 2], [rIn, t / 2], [rIn, -t / 2]].map(p => new THREE.Vector2(...p)), seg), ax));
 }
 function hull(P) {
   P = P.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]);
