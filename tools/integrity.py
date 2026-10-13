@@ -51,6 +51,28 @@ CHECK = r"""(ANCHORS) => {
   if (rc !== want) anchorErr.push(`hoofdgroepen: "${rc}" in plaats van "${want}"`);
   const on = L.ALL.find(n => n.name === 'Onderstel');
   if (on) { const oc = on.kids.map(k => k.name).slice().sort().join(' | '), ow = A.onderstel_children.slice().sort().join(' | '); if (oc !== ow) anchorErr.push(`Onderstel bevat "${oc}" in plaats van "${ow}"`); }
+  // Doorsteken: het hoogste punt van een onderdeel buiten de carrosserie mag niet boven de bovenste carrosseriehuid
+  // op dezelfde (x, z) uitkomen (motor door de motorkap, hoofdsteun door het dak, enzovoort).
+  const bodyN = L.ALL.find(n => n.name === 'Carrosserie');
+  if (bodyN) {
+    const bodyMeshes = bodyN.meshes.filter(m => m.visible);
+    const rc = new THREE.Raycaster(), down = new THREE.Vector3(0, -1, 0), o = new THREE.Vector3(), w = new THREE.Vector3();
+    const isBody = n => { for (let p = n; p; p = p.parent) if (p === bodyN) return true; return false; };
+    let checked = 0;
+    for (const n of L.ALL) {
+      if (n.asm || isBody(n)) continue;
+      const a = n.obj.geometry.attributes.position, step = Math.max(1, Math.floor(a.count / 400));
+      let top = null;
+      for (let i = 0; i < a.count; i += step) { w.fromBufferAttribute(a, i).applyMatrix4(n.obj.matrixWorld); if (!top || w.y > top.y) top = w.clone(); }
+      if (!top || top.y < 0.45) continue;
+      if (typeof HW === 'function' && Math.abs(top.x) > HW(top.z) - 0.08) continue;   // tegen de flank: deze controle kijkt alleen van boven
+      o.set(top.x, 2.5, top.z); rc.set(o, down); rc.far = 3;
+      const hit = rc.intersectObjects(bodyMeshes, false)[0];
+      checked++;
+      if (hit && top.y > hit.point.y + 0.004) err.push(`steekt boven de carrosserie uit (${((top.y - hit.point.y) * 100).toFixed(1)} cm door ${hit.object.userData.node.name}): ${path(n)}`);
+    }
+    if (!checked) warn.push('doorsteekcontrole: niets gecontroleerd');
+  }
   const presetErr = [];
   if (L.checkPresets) presetErr.push(...L.checkPresets());
   return { err, warn, presetErr, anchorErr, nodes: L.ALL.length, parts: L.ALL.filter(n => !n.asm).length };
