@@ -207,7 +207,7 @@ function drvPark() {
     P('Parkeerpal', cache('drvPal', () => side(shapeOf([[-0.035, 0], [0.0, 0], [0.012, -0.0085], [0.02, 0], [0.035, 0], [0.035, 0.012], [-0.035, 0.012]]), 0.008)), MAT.darkSteel, { d: 'Pal die in het parkeerrad grijpt en het uitgaande tandwiel blokkeert.', p: [x, 0.0585, 0], ex: [0, 0.06, 0] }),
     P('Palas', G.cyl('x', 0.004, 0.004, 0.016, 10), MAT.steel, { d: 'As waarom de parkeerpal draait.', p: [x, 0.0645, -0.03], ex: [0.04, 0.05, 0] }),
     P('Retourveer parkeerpal', spring(0.0065, 0.0009, 0.012, 3, 'x'), MAT.darkSteel, { d: 'Torsieveer die de pal van het parkeerrad weg trekt.', p: [x + 0.0, 0.0645, -0.03], ex: [-0.04, 0.05, 0] }),
-    P('Parkeerstang', G.cyl('z', 0.003, 0.003, 0.1, 8), MAT.steel, { d: 'Stang die door de keuzeas wordt bediend.', p: [x, 0.0765, 0.07], ex: [0, 0.07, 0.06] }),
+    P('Parkeerstang', G.cyl('z', 0.003, 0.003, 0.07, 8), MAT.steel, { d: 'Stang die door de keuzeas wordt bediend.', p: [x, 0.0765, 0.055], ex: [0, 0.07, 0.06] }),
     P('Parkeernok', G.cyl('z', 0.009, 0.0045, 0.022, 14), MAT.darkSteel, { d: 'Kegelvormige nok op de stang die de pal in het parkeerrad drukt.', p: [x, 0.0765, 0.016], ex: [0, 0.12, 0.0] }),
   ]);
 }
@@ -281,7 +281,7 @@ function drvValve() {
       P('Terugslagkogeltjes', cache('drvBallen', () => merge(Array.from({ length: 13 }, (_, k) => xf(drvOcta(), [cx - 0.08 + (k % 7) * 0.027, ySep + 0.003, cz - 0.05 + Math.floor(k / 7) * 0.09])))), MAT.steel, { d: 'Dertien terugslagkogeltjes van 8 en 5,5 mm in de tussenplaat (aantal geschat).', ex: [0, 0.03, 0.0], inner: true }),
     ]),
     P('Temperatuursensor ATF', merge([G.cyl('y', 0.005, 0.005, 0.02, 10), xf(G.box(0.014, 0.01, 0.014), [0, 0.014, 0])]), MAT.plastic, { d: 'Temperatuursensor (NTC) van de automaatolie in het klepblok.', p: [0.34, yTop + 0.01, 0.1], ex: [0.06, 0.1, 0.1] }),
-    P('Interne kabelboom', tube([[0.25, -0.15, 0.113], [0.25, -0.128, 0.11], [0.2, -0.108, 0.1], [0.34, -0.108, 0.1]], 0.0028, 24, 6), MAT.plastic, { d: 'Kabelboom van de stekker naar de solenoïdes, drukschakelaars en temperatuursensor.', ex: [0.0, 0.2, 0.18] }),
+    P('Interne kabelboom', tube([[0.25, -0.15, 0.113], [0.25, -0.138, 0.11], [0.2, -0.13, 0.1], [0.34, -0.13, 0.1]], 0.0028, 24, 6), MAT.plastic, { d: 'Kabelboom van de stekker naar de solenoïdes, drukschakelaars en temperatuursensor.', ex: [0.0, 0.2, 0.18] }),
   ]);
 }
 
@@ -354,12 +354,13 @@ function drvHousing() {
     G.lathe('x', [[0.147, 0.001], [0.151, 0.004], [0.147, 0.012], [0.145, 0.06], [0.132, 0.108], [0.1255, 0.125]], 40, 'drvBellL'),
     annulus(0.139, 0.157, 0.008, 'x', 40), xf(annulus(0.118, 0.136, 0.008, 'x', 40), [0.121, 0, 0]),
     xf(G.cyl('x', 0.104, 0.104, 0.105, 40, true), [0.0725, dy, dz]), xf(annulus(0.035, 0.104, 0.006, 'x', 40), [0.023, dy, dz]),
-    xf(G.cyl('x', 0.042, 0.042, 0.0415, 24), [0.02075, DRV_ST[0], DRV_ST[1]])]));
+    xf(G.cyl('x', 0.042, 0.042, 0.0415, 24), [0.02075, DRV_ST[0], DRV_ST[1]]),
+    xf(G.cyl('x', 0.05, 0.05, 0.07, 24, true), [0.09, cy, cz]), xf(G.cyl('x', 0.05, 0.05, 0.004, 24), [0.057, cy, cz])]));
   const caseGeo = cache('drvCase', () => merge([
     G.lathe('x', [[0.1255, 0.125], [0.127, 0.13], [0.125, 0.2], [0.123, 0.3], [0.121, 0.385], [0.1235, 0.397]], 40, 'drvCaseL'),
     annulus(0.12, 0.137, 0.008, 'x', 40), xf(annulus(0.12, 0.137, 0.008, 'x', 40), [0.271, 0, 0]),
     ...[0.18, 0.24, 0.3, 0.36].map(x => xf(G.torus('x', 0.1265, 0.0028, 36, 4), [x, 0, 0])),
-    xf(G.cyl('x', 0.104, 0.104, 0.08, 40, true), [0.165, dy, dz]), xf(annulus(0.02, 0.104, 0.006, 'x', 40), [0.205, dy, dz]),
+    xf(G.cyl('x', 0.104, 0.104, 0.08, 40, true), [0.165, dy, dz]), xf(G.cyl('x', 0.05, 0.05, 0.1, 24, true), [0.17, cy, cz]), xf(annulus(0.02, 0.104, 0.006, 'x', 40), [0.205, dy, dz]),
     xf(G.cyl('x', 0.07, 0.07, 0.125, 32, true), [0.2625, cy, cz]), xf(annulus(0.012, 0.07, 0.006, 'x', 32), [0.325, cy, cz]),
     xf(G.rbox(0.25, 0.095, 0.19, 0.01), [0.27, -0.1625, 0.03]),
     xf(G.rbox(0.12, 0.02, 0.09, 0.006), [0.28, 0.133, 0.0]),
