@@ -185,7 +185,7 @@ function engBuildPump() {
     ]),
     A('Stroomregelklep', { d: 'Stroomregel- en overdrukklep: houdt de oliestroom bij hoog toerental constant en begrenst de druk.', p: [0.03, 0, 0], ex: [0, 0, -0.035] }, [
       P('Plunjer', merge([G.cyl('z', 0.0085, 0.0085, 0.028, 14), xf(G.cyl('z', 0.0095, 0.0095, 0.004, 14), [0, 0, 0.007]), xf(G.cyl('z', 0.0095, 0.0095, 0.004, 14), [0, 0, -0.007])]), MAT.steel, { d: 'Plunjer met stuurkanten in de klepboring.', p: [0, 0, -0.026], ex: [0, 0, -0.02], inner: true }),
-      P('Klepveer', engSpring(0.0065, 0.0009, 0.012, 5, 6, 'z'), MAT.steel, { d: 'Drukveer die de plunjer in de uitgangsstand houdt.', p: [0, 0, -0.046], ex: [0, 0, -0.04], inner: true }),
+      P('Klepveer', engSpring(0.0065, 0.0009, 0.012, 5, 10, 'z'), MAT.steel, { d: 'Drukveer die de plunjer in de uitgangsstand houdt.', p: [0, 0, -0.046], ex: [0, 0, -0.04], inner: true }),
       P('Afdichtring plug', annulus(0.0065, 0.0125, 0.002, 'z', 20), MAT.copper, { d: 'Afdichtring onder de plug.', p: [0, 0, -0.053], ex: [0, 0, -0.065] }),
       P('Schroefplug', plug, MAT.darkSteel, { d: 'Plug die de klepboring sluit en de veer voorspant.', p: [0, 0, -0.0585], ex: [0, 0, -0.09] }),
     ]),
