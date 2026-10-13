@@ -376,7 +376,7 @@ function drvHousing() {
       P('Omvormerhuis (klok)', bellGeo, MAT.aluCast, { d: 'Gegoten klok om de omvormer, met de differentieellob en de startmotorbasis.', ex: [0, 0.0, 0.0001] }),
       P('Bouten motorflens', rimBolts('drvBMot', 8, 0.153, 0.0085, 0.2), MAT.darkSteel, { d: 'Bouten die de bak aan het motorblok bevestigen (aantal geschat).', ex: [-0.1, 0.0, 0.0] }),
       P('Keerring omvormerhuis', annulus(0.03, 0.045, 0.009, 'x', 28), MAT.rubber, { d: 'Hoofdkeerring rond de naaf van het pompwiel.', p: [0.1195, 0, 0], ex: [0.08, 0, 0] }),
-      P('O-ring omvormerhuis', G.torus('x', 0.1245, 0.0022, 40, 4), MAT.rubber, { d: 'Afdichting tussen omvormerhuis en transmissiehuis.', p: [0.1255, 0, 0], ex: [0.14, 0, 0] }),
+      P('O-ring omvormerhuis', G.torus('x', 0.1245, 0.0032, 40, 6), MAT.rubber, { d: 'Afdichting tussen omvormerhuis en transmissiehuis.', p: [0.1255, 0, 0], ex: [0.025, 0, 0] }),
     ]),
     A('Transmissiehuis', { d: 'Spuitgietaluminium huis rond de planetaire sets en schakelelementen, met de lobben voor de tussenas en het differentieel en de vlakken voor het klepblok en de steunen. Bakbreedte circa 385 mm incl. omvormerhuis (Planète Renault); hier iets langer weergegeven.', spec: [['Materiaal', 'spuitgietaluminium'], ['Lengte', 'circa 385 mm'], ['Hartafstand', '197 mm (geschat)']], ex: [0.1, 0.8, 0.0] }, [
       P('Transmissiehuis (carter)', caseGeo, MAT.aluCast, { d: 'Gegoten carter met ribben en bevestigingsoren.', ex: [0, 0.0, 0.0001] }),
