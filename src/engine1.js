@@ -241,7 +241,7 @@ function pistonGroup(i) {
     G.cyl('x', 0.0145, 0.0145, 0.056, 16),
   ]));
   const ring = r => G.torus('y', 0.0408, r, 40, 5);
-  return A(`Zuiger en drijfstang ${n}`, { d: `Zuiger-drijfstanggroep van cilinder ${n} (geteld vanaf de vliegwielzijde); ontsteekvolgorde 1-3-4-2.`, p: [XC[i], 0, 0], ex: [XC[i] * 0.2, 0.17, 0] }, [
+  return A(`Zuiger en drijfstang ${n}`, { d: `Zuiger-drijfstanggroep van cilinder ${n} (geteld vanaf de vliegwielzijde); ontsteekvolgorde 1-3-4-2.`, p: [XC[i], 0, 0], ex: [XC[i] * 0.2, 0.13, 0] }, [
     P('Zuiger', piston, MAT.alu, { d: 'Aluminium zuiger, Ø82,69 mm, met drie veergroeven; de zuigerpen ligt 0,8 mm uit het midden en het merkteken "V" wijst naar het vliegwiel.', p: [0, pp, 0], ex: [0, 0.05, 0], spec: [['Diameter', '82,69 mm'], ['Zuigerveren', '3']] }),
     A('Zuigerveren', { d: 'De drie zuigerveren: twee compressieveren en de olieschraapveer.', p: [0, pp, 0], ex: [0, 0.11, 0] }, [
       P('Compressieveer 1', ring(0.0011), MAT.darkSteel, { d: 'Bovenste compressieveer (vuurveer): dicht de verbrandingsruimte af.', p: [0, 0.0245, 0], ex: [0, 0.028, 0] }),
@@ -265,7 +265,7 @@ function pistonGroup(i) {
   ]);
 }
 function buildCrank() {
-  return A('Krukmechanisme', { d: 'Krukas met pulswiel en kettingwiel en de vier zuiger-drijfstanggroepen: zet de op- en neergaande beweging van de zuigers om in draaiing.', ex: [0, -0.3, 0.42], inner: true }, [
+  return A('Krukmechanisme', { d: 'Krukas met pulswiel en kettingwiel en de vier zuiger-drijfstanggroepen: zet de op- en neergaande beweging van de zuigers om in draaiing.', ex: [0, -0.4, 0.4], inner: true }, [
     P('Krukas', crankGeo(), MAT.steel, { d: 'Krukas met vijf hoofdlagertappen en vier krukpennen; zet de zuigerbeweging om in draaiing.', spec: [['Hoofdlagertappen', '5 × Ø54,8 mm'], ['Krukpennen', '4 × Ø48 mm'], ['Slag', '93,0 mm']], ex: [0, 0, 0] }),
     P('Pulswiel krukas', gear(58, 0.074, 0.07, 0.004, 0.041, 'x'), MAT.darkSteel, { d: 'Getand doelwiel aan de vliegwielzijde dat de krukaspositiesensor leest; tandental schematisch.', p: [0.1925, 0, 0], ex: [0.07, 0, 0] }),
     P('Kettingwiel oliepomp', gear(24, 0.031, 0.027, 0.008, 0.019, 'x'), MAT.steel, { d: 'Tandwiel op de krukas dat via een enkele ketting de oliepomp aandrijft.', p: [-0.198, 0, 0], ex: [-0.07, 0, 0] }),
@@ -304,7 +304,7 @@ function valveGroup(cyl, k, sg) {
   const arm = cache('engRff' + key, () => side(shapeOf(circlesHull([[0, pY + 0.0005, 0.0042], [sg * rU, rY - 0.0048, 0.0062], [sg * hU, hY + 0.0022, 0.0052]], 0)), 0.011));
   const name = `${intake ? 'Inlaatklep' : 'Uitlaatklep'} ${cyl + 1}${k ? 'b' : 'a'}`;
   return A(name, { d: `Klepgroep van cilinder ${cyl + 1} (${intake ? 'inlaat' : 'uitlaat'}): klep, veerzitting, steelafdichting, veer, veerschotel, twee spieën, hydraulische klepstoter en rolzwenkarm.`, p: [x, y0, z0], r: [sg * th, 0, 0], ex: [x * 0.6, 0, 0] }, [
-    P(intake ? 'Inlaatklep' : 'Uitlaatklep', valve, intake ? MAT.steel : MAT.darkSteel, { d: intake ? 'Inlaatklep: kop Ø33,5 mm, steel Ø5,47 mm, lengte 110,08 mm.' : 'Uitlaatklep van hittebestendige legering: kop Ø29 mm, steel Ø5,447 mm, lengte 106,87 mm.', ex: [0, -0.075, 0], spec: intake ? [['Kop', 'Ø33,5 mm'], ['Steel', 'Ø5,47 mm'], ['Lengte', '110,08 mm']] : [['Kop', 'Ø29 mm'], ['Steel', 'Ø5,447 mm'], ['Lengte', '106,87 mm']] }),
+    P(intake ? 'Inlaatklep' : 'Uitlaatklep', valve, intake ? MAT.steel : MAT.darkSteel, { d: intake ? 'Inlaatklep: kop Ø33,5 mm, steel Ø5,47 mm, lengte 110,08 mm.' : 'Uitlaatklep van hittebestendige nikkellegering (Nimonic): kop Ø29 mm, steel Ø5,447 mm, lengte 106,87 mm.', ex: [0, -0.075, 0], spec: intake ? [['Kop', 'Ø33,5 mm'], ['Steel', 'Ø5,47 mm'], ['Lengte', '110,08 mm']] : [['Kop', 'Ø29 mm'], ['Steel', 'Ø5,447 mm'], ['Lengte', '106,87 mm']] }),
     P('Klepveerzitting', annulus(0.0035, 0.0145, 0.001, 'y', 20), MAT.steel, { d: 'Onderste veerschotel op de cilinderkop.', p: [0, yB - 0.0005, 0], ex: [0, 0.02, 0] }),
     P('Klepsteelafdichting', G.lathe('y', [[0.0028, 0], [0.0058, 0], [0.0058, 0.007], [0.0042, 0.0095], [0.0028, 0.0095]], 12, 'engStemSeal'), MAT.rubber, { d: 'Rubber afdichting op de klepgeleider die olieverbruik langs de klepsteel voorkomt.', p: [0, yB, 0], ex: [0, 0.034, 0] }),
     P('Klepveer', engSpring(0.01145, 0.0019, 0.036, 6.2), MAT.steel, { d: 'Klepveer van ovaal draad: vrije lengte 41,3 mm, buiten Ø27 mm, binnen Ø18,8 mm.', p: [0, (yS + yB) / 2, 0], ex: [0, 0.06, 0], spec: [['Vrije lengte', '41,3 mm'], ['Buitendiameter', '27 mm']] }),

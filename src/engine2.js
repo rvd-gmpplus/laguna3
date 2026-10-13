@@ -165,18 +165,18 @@ function buildTurbocharger() {
       P('Wastegatehefboom', merge([xf(G.box(0.006, 0.026, 0.004), [-0.034, 0.012, 0.046]), xf(G.cyl('x', 0.003, 0.003, 0.01, 8), [-0.034, 0.0, 0.046])]), MAT.steel, { d: 'Hefboom op de wastegate-as waaraan de actuatorstang trekt.', ex: [0, 0, 0.04] }),
       P('Uitlaatflens met tapeinden', flange, MAT.iron, { d: 'Driegatsflens waarop de voorkatalysator met drie moeren vastzit.', p: [-0.038, 0, 0], ex: [-0.06, 0, 0] }),
     ]),
-    A('Lager- en rotorgroep', { d: 'Middenstuk (CHRA) met de as, beide wielen en de lagers; binnenwerk schematisch weergegeven.', ex: [0, 0.06, -0.06], inner: true }, [
+    A('Lager- en rotorgroep', { d: 'Middenstuk (CHRA) met het watergekoelde lagerhuis, de as, beide wielen en de lagers; binnenwerk schematisch weergegeven.', ex: [0, 0.06, -0.06] }, [
       P('Lagerhuis', merge([G.cyl('x', 0.026, 0.026, 0.05, 20), xf(G.cyl('y', 0.008, 0.008, 0.012, 10), [0, 0.03, 0]), xf(G.rbox(0.022, 0.012, 0.022, 0.004), [0, -0.03, 0]), xf(G.cyl('z', 0.006, 0.006, 0.016, 8), [0.005, 0, 0.027]), xf(G.cyl('z', 0.006, 0.006, 0.016, 8), [-0.005, 0, -0.027])]), MAT.aluCast, { d: 'Lagerhuis met olie-ingang, olie-uitgang en twee koelwateraansluitingen.', ex: [0, 0, 0] }),
       P('Turbinewiel met as', merge([xf(wheel(11, 0.008, 0.0235, 0.022, 0.3, 'engTurbW'), [-0.045, 0, 0]), xf(G.cyl('x', 0.0045, 0.0045, 0.105, 10), [0.0075, 0, 0])]), MAT.darkSteel, { d: 'Turbinewiel van hittebestendige nikkellegering, vast aan de as (circa Ø47 mm).', ex: [-0.11, 0, 0] }),
       P('Compressorwiel', wheel(12, 0.007, 0.0265, 0.024, -0.35, 'engCompW'), MAT.alu, { d: 'Aluminium compressorwiel dat lucht aanzuigt en samenperst (circa Ø53 mm).', p: [0.05, 0, 0], ex: [0.09, 0, 0] }),
       P('Asmoer', engNut(0.006, 0.005, 'x'), MAT.steel, { d: 'Moer die het compressorwiel op de as klemt.', p: [0.0645, 0, 0], ex: [0.11, 0, 0] }),
-      P('Glijlager turbinezijde', annulus(0.0046, 0.0075, 0.01, 'x', 16), MAT.bearing, { d: 'Zwevende glijlagerbus aan de turbinezijde.', p: [-0.015, 0, 0], ex: [-0.02, 0.05, 0] }),
-      P('Glijlager compressorzijde', annulus(0.0046, 0.0075, 0.01, 'x', 16), MAT.bearing, { d: 'Zwevende glijlagerbus aan de compressorzijde.', p: [0.012, 0, 0], ex: [0.02, 0.05, 0] }),
-      P('Axiaallagerset', merge([xf(annulus(0.0058, 0.016, 0.003, 'x', 20), [0.023, 0, 0]), xf(annulus(0.0046, 0.009, 0.004, 'x', 16), [0.0275, 0, 0])]), MAT.bearing, { d: 'Axiaallager: drukplaat en drukring die de as in lengterichting vasthouden.', ex: [0.045, -0.03, 0] }),
-      P('Oliespatring', annulus(0.0046, 0.012, 0.003, 'x', 16), MAT.steel, { d: 'Spatring die olie wegslingert voordat ze bij de compressor komt.', p: [0.032, 0, 0], ex: [0.065, -0.03, 0] }),
-      P('Zuigerveerafdichting compressorzijde', G.torus('x', 0.0062, 0.0006, 14, 4), MAT.darkSteel, { d: 'Zuigerveerafdichting van de as aan de compressorzijde.', p: [0.0355, 0, 0], ex: [0.08, -0.03, 0] }),
-      P('Zuigerveerafdichting turbinezijde', G.torus('x', 0.0062, 0.0006, 14, 4), MAT.darkSteel, { d: 'Zuigerveerafdichting van de as aan de turbinezijde.', p: [-0.031, 0, 0], ex: [-0.075, -0.03, 0] }),
-      P('Hitteschild turbinezijde', annulus(0.012, 0.034, 0.002, 'x', 24), MAT.heat, { d: 'Schild tussen turbinewiel en lagerhuis.', p: [-0.027, 0, 0], ex: [-0.05, -0.03, 0] }),
+      P('Glijlager turbinezijde', annulus(0.0046, 0.0075, 0.01, 'x', 16), MAT.bearing, { d: 'Zwevende glijlagerbus aan de turbinezijde.', p: [-0.015, 0, 0], ex: [-0.02, 0.05, 0], inner: true }),
+      P('Glijlager compressorzijde', annulus(0.0046, 0.0075, 0.01, 'x', 16), MAT.bearing, { d: 'Zwevende glijlagerbus aan de compressorzijde.', p: [0.012, 0, 0], ex: [0.02, 0.05, 0], inner: true }),
+      P('Axiaallagerset', merge([xf(annulus(0.0058, 0.016, 0.003, 'x', 20), [0.023, 0, 0]), xf(annulus(0.0046, 0.009, 0.004, 'x', 16), [0.0275, 0, 0])]), MAT.bearing, { d: 'Axiaallager: drukplaat en drukring die de as in lengterichting vasthouden.', ex: [0.045, -0.03, 0], inner: true }),
+      P('Oliespatring', annulus(0.0046, 0.012, 0.003, 'x', 16), MAT.steel, { d: 'Spatring die olie wegslingert voordat ze bij de compressor komt.', p: [0.032, 0, 0], ex: [0.065, -0.03, 0], inner: true }),
+      P('Zuigerveerafdichting compressorzijde', G.torus('x', 0.0062, 0.0006, 14, 4), MAT.darkSteel, { d: 'Zuigerveerafdichting van de as aan de compressorzijde.', p: [0.0355, 0, 0], ex: [0.08, -0.03, 0], inner: true }),
+      P('Zuigerveerafdichting turbinezijde', G.torus('x', 0.0062, 0.0006, 14, 4), MAT.darkSteel, { d: 'Zuigerveerafdichting van de as aan de turbinezijde.', p: [-0.031, 0, 0], ex: [-0.075, -0.03, 0], inner: true }),
+      P('Hitteschild turbinezijde', annulus(0.012, 0.034, 0.002, 'x', 24), MAT.heat, { d: 'Schild tussen turbinewiel en lagerhuis.', p: [-0.027, 0, 0], ex: [-0.05, -0.03, 0], inner: true }),
     ]),
     A('Compressorhuis', { d: 'Aluminium compressorhuis met omloopklep.', p: [0.055, 0, 0], ex: [0.11, 0, 0] }, [
       P('Compressorhuis', cHouse, MAT.aluCast, { d: 'Slakkenhuis aan de inlaatzijde; de uitlaat gaat via de laadluchtslang naar de intercooler.', ex: [0, 0, 0] }),
@@ -250,7 +250,7 @@ function buildLube() {
       P('Waterslangaansluiting toevoer', tube([[0.04, 0.03, 0.02], [0.06, 0.04, 0.022], [0.075, 0.045, 0.03]], 0.0055, 10, 8), MAT.steel, { d: 'Aansluiting voor de koelvloeistofslang.', ex: [0.04, 0.02, 0] }),
       P('Waterslangaansluiting retour', tube([[-0.04, 0.03, 0.02], [-0.06, 0.04, 0.022], [-0.075, 0.045, 0.03]], 0.0055, 10, 8), MAT.steel, { d: 'Tweede aansluiting voor de koelvloeistofslang.', ex: [-0.04, 0.02, 0] }),
     ]),
-    A('Oliefilter', { d: 'Spin-on oliefilter aan de voorkant van het blok, ongeveer in het midden: Ø76 tot 77 mm, 52 tot 57 mm hoog.', p: [0.03, 0.015, 0.159], ex: [0, 0, 0.24], spec: [['Afmeting', 'Ø76 × 55 mm'], ['Draad', 'M20 × 1,5'], ['Bypassklep', 'opent bij 1 bar']] }, [
+    A('Oliefilter', { d: 'Spin-on oliefilter aan de voorkant van het blok, ongeveer in het midden: Ø76 tot 77 mm, 52 tot 57 mm hoog.', p: [0.03, 0.015, 0.159], ex: [0, 0, 0.24], spec: [['Afmeting', 'Ø76 tot 77 × 52 tot 57 mm'], ['Draad', 'M20 × 1,5'], ['Afdichtring', 'Ø61 mm'], ['Bypassklep', 'opent bij 1 bar']] }, [
       P('Filterhuis', merge([G.lathe('z', [[0.012, 0], [0.0365, 0], [0.038, 0.004], [0.038, 0.046], [0.034, 0.054], [0, 0.056]], 28, 'engOilFilter'), ...[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(k => xf(G.box(0.004, 0.003, 0.03), [0.038 * Math.cos(k * PI / 5), 0.038 * Math.sin(k * PI / 5), 0.03], [0, 0, k * PI / 5]))]), MAT.oilFilter, { d: 'Stalen huis met papieren element, terugslagklep en bypassklep.', ex: [0, 0, 0] }),
       P('Filterelement', merge([annulus(0.012, 0.03, 0.044, 'z', 20)]), MAT.filter, { d: 'Geplooid papieren filterelement.', p: [0, 0, 0.027], ex: [0, 0, 0.08], inner: true }),
       P('Afdichtring filter', G.torus('z', 0.0305, 0.0018, 28, 5), MAT.rubber, { d: 'Rubber afdichtring Ø61 mm.', p: [0, 0, -0.001], ex: [0, 0, -0.03] }),
