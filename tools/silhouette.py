@@ -25,7 +25,7 @@ MEASURE = r"""(cfg) => {
   const skip = n => { for (let p = n; p && p !== body; p = p.parent) if (/Buitenspiegel|Antenne|Ruitenwisser|Wisser|greep/i.test(p.name)) return true; return false; };
   const meshes = body.meshes.filter(m => m.visible && !skip(m.userData.node));
   const glassy = m => m.material && (m.material.name === 'glass' || /ruit|glas/i.test(m.userData.node.name));
-  const rc = new THREE.Raycaster();
+  const rc = new THREE.Raycaster(); rc.layers.enableAll();   // gebundeld tekenen zet losse meshes op laag 1
   const hitDown = (x, z) => { rc.set(new THREE.Vector3(x, 3, z), new THREE.Vector3(0, -1, 0)); rc.far = 4; const h = rc.intersectObjects(meshes, false)[0]; return h ? h.point.y : null; };
   const hitSide = (y, z) => { rc.set(new THREE.Vector3(2.5, y, z), new THREE.Vector3(-1, 0, 0)); rc.far = 2.6; const h = rc.intersectObjects(meshes, false)[0]; return h ? h : null; };
   const top = cfg.top.map(([z]) => hitDown(0, z));

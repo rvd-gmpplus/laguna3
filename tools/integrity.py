@@ -75,6 +75,7 @@ CHECK = r"""(ANCHORS) => {
   if (bodyN) {
     const bodyMeshes = bodyN.meshes.filter(m => m.visible);
     const rc = new THREE.Raycaster(), down = new THREE.Vector3(0, -1, 0), o = new THREE.Vector3(), w = new THREE.Vector3();
+    rc.layers.enableAll();   // gebundeld tekenen zet losse meshes op laag 1
     const isBody = n => { for (let p = n; p; p = p.parent) if (p === bodyN) return true; return false; };
     let checked = 0;
     for (const n of L.ALL) {
