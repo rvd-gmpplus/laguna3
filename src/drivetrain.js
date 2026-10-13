@@ -298,7 +298,7 @@ function drvStarter() {
   const cap = 0.152, bx = (k) => [cap, sy + 0.0085 * (k ? 1 : -1), sz];
   const st = A('Startmotor', {
     d: 'Elektrische startmotor (circa 1 kW, type schematisch) met voorgeschakelde planetaire reductie en solenoïde; het rondsel grijpt in de startkrans van de flexplaat. Zit met drie bouten (flens Ø66 mm) op de koppelomvormerklok.',
-    spec: [['Vermogen', 'circa 1 kW (geschat)'], ['Flensmaat', 'Ø66 mm, 3 bouten'], ['Rondsel', '9 tanden']], p: P0, ex: [-0.12, -0.25, 0.25],
+    spec: [['Vermogen', 'circa 1 kW (geschat)'], ['Flensmaat', 'Ø66 mm, 3 bouten'], ['Rondsel', '9 tanden']], p: P0, ex: [-0.12, -0.25, 0.55],
   }, [
     P('Rondsel', drvG(9, 0.0025, 0.014, 0.006), MAT.steel, { d: 'Rondsel met 9 tanden dat bij het starten naar voren schuift en in de startkrans van de flexplaat grijpt.', ex: [-0.07, 0, 0] }),
     A('Rondselas met vrijloop', { d: 'Aandrijfas met rondsel en vrijloopkoppeling; de vrijloop voorkomt dat de draaiende motor de startmotor meeneemt.', ex: [0.05, 0.2, 0.0], inner: true }, [
