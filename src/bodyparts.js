@@ -248,7 +248,7 @@ function buildBody() {
   const cPillarLo = z => z < -1.212 ? 0.004 : bodQy(z, bodQtop(z) + 0.012);
   const aPillarLo = z => z < bodSail - 0.004 ? bodQG + 0.03 : z < 0.93 ? Math.min(bodQS - 0.02, bodQy(z, 0.93 + (0.93 - z) * 0.55)) : 0.004;
   const roofW = z => [bodQR / 2, 1 - bodQR / 2];
-  const roof = patch((z, w) => ghPt(z, w), RW0, WS1, 40, roofW, 22);
+  const roof = patch((z, w) => ghPt(z, w), RW0 - 0.008, WS1, 40, roofW, 22);   // 4 mm overlap met de achterruit (geen spleet op de naad)
   const quarter = s => A(`Kwartsruit ${sn(s)}`, { d: 'Vaste driehoekige ruit achter het achterportier, in de C-stijl gelijmd.', ex: [s * 0.22, 0.06, -0.05] }, [
     P('Ruit', bodGhSide(s, -1.212, bodQd(0.97) - 0.016, 14, z => [0.006, Math.min(bodQy(z, bodQtop(z)), bodQy(z, 0.97 + (-0.93 - 0.016 - z) * 0.33 / 0.06))], 6, bodDense(-1.212, -1.15, 4)), MAT.glass, { d: 'Getint veiligheidsglas.', ex: [s * 0.04, 0, 0] }),
     P('Omlijsting', tube([[-1.214, 0.975], [-1.205, 1.10], [-1.19, 1.205], [-1.15, 1.245], [-1.05, 1.275], [-0.97, 1.297]].map(([z, y]) => { const q = bodQy(z, y); const p = bodGhAt(z, q, 0.004); return [s * p[0], p[1], p[2]]; }), 0.005, 24, 5), MAT.chrome, { d: 'Chromen omlijsting rond de kwartsruit.', ex: [s * 0.06, 0.02, 0] }),
