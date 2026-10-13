@@ -44,8 +44,8 @@ function drvPlates(key, o, tF, tS) {
   for (let k = 0; k < n; k++) {
     const fr = fricFirst ? k % 2 === 0 : k % 2 === 1, idx = fr ? ++iF : ++iS;
     kids.push(fr
-      ? P(`Frictieplaat ${idx}`, drvG(o.teeth || 18, o.fro / ((o.teeth || 18) / 2 + 1), tF, o.fri), MAT.friction, { d: 'Stalen plaatje met frictievoering aan beide zijden en vertanding aan de buitenrand; draait mee met de trommel.', p: [o.x0 + k * o.st, 0, 0], ex: [(k + 1) * sp, 0, 0], inner: true })
-      : P(`Stalen plaat ${idx}`, annulus(o.sri, o.sro, tS, 'x', 40), MAT.steel, { d: 'Gladde stalen tussenplaat met binnenvertanding (schematisch weergegeven); wordt tegen de frictieplaten geklemd.', p: [o.x0 + k * o.st, 0, 0], ex: [(k + 1) * sp, 0, 0], inner: true }));
+      ? P(`Frictieplaat ${idx}`, drvG(o.teeth || 18, o.fro / ((o.teeth || 18) / 2 + 1), tF, o.fri), MAT.friction, { d: 'Stalen plaatje met frictievoering aan beide zijden en vertanding aan de buitenrand; draait mee met de trommel.', p: [o.x0 + k * o.st, 0, 0], ex: [(k + 1) * sp, 0, 0]})
+      : P(`Stalen plaat ${idx}`, annulus(o.sri, o.sro, tS, 'x', 40), MAT.steel, { d: 'Gladde stalen tussenplaat met binnenvertanding (schematisch weergegeven); wordt tegen de frictieplaten geklemd.', p: [o.x0 + k * o.st, 0, 0], ex: [(k + 1) * sp, 0, 0]}));
   }
   return kids;
 }
@@ -53,27 +53,27 @@ function drvPlates(key, o, tF, tS) {
 function drvPack(name, d, spec, o) {
   const n = o.nF + o.nS, xe = o.x0 + n * o.st, sp = o.sp || 0.014, xw = o.x0 - 0.0195, rD = o.fro + 0.005;
   const kids = [];
-  kids.push(P(o.drumName, drvL('Drum' + name, [[o.hub, xw], [rD, xw], [rD, xe + 0.008], [rD - 0.003, xe + 0.008], [rD - 0.003, xw + 0.003], [o.hub, xw + 0.003]], 40), o.drumMat || MAT.aluCast, { d: o.drumD, ex: [-sp * 3, 0, 0], inner: true }));
+  kids.push(P(o.drumName, drvL('Drum' + name, [[o.hub, xw], [rD, xw], [rD, xe + 0.008], [rD - 0.003, xe + 0.008], [rD - 0.003, xw + 0.003], [o.hub, xw + 0.003]], 40), o.drumMat || MAT.aluCast, { d: o.drumD, ex: [-sp * 3, 0, 0]}));
   kids.push(P('Zuiger', annulus(o.hub + 0.004, rD - 0.004, 0.007, 'x', 40), MAT.aluCast, { d: 'Hydraulische zuiger; de olie uit het klepblok drukt hem tegen het platenpakket. Afdichting met kunststof ringen, schematisch weergegeven.', p: [o.x0 - 0.0125, 0, 0], ex: [-sp * 2, 0, 0], inner: true }));
   kids.push(P('Terugdrukveren', drvRing('drvTv' + name, 8, (o.hub + rD) / 2, () => G.cyl('x', 0.0035, 0.0035, 0.008, 6), 0.2, [0, 0], o.x0 - 0.0045), MAT.darkSteel, { d: 'Terugdrukveren (schematisch weergegeven als veerkolommen, aantal geschat) die de zuiger terugdrukken als de oliedruk wegvalt.', ex: [-sp * 1, 0, 0], inner: true }));
   kids.push(...drvPlates(name, o, 0.0013, 0.0015));
-  kids.push(P('Drukplaat', annulus(o.sri, o.sro, 0.004, 'x', 40), MAT.darkSteel, { d: 'Dikkere stalen plaat achter het pakket; de dikte stelt de speling van het pakket af.', p: [xe + 0.002, 0, 0], ex: [(n + 2) * sp, 0, 0], inner: true }));
-  kids.push(P('Borgring', annulus(o.sro - 0.003, o.sro + 0.001, 0.0022, 'x', 40), MAT.steel, { d: 'Veerring die de drukplaat in de trommel vasthoudt.', p: [xe + 0.0055, 0, 0], ex: [(n + 3) * sp, 0, 0], inner: true }));
+  kids.push(P('Drukplaat', annulus(o.sri, o.sro, 0.004, 'x', 40), MAT.darkSteel, { d: 'Dikkere stalen plaat achter het pakket; de dikte stelt de speling van het pakket af.', p: [xe + 0.002, 0, 0], ex: [(n + 2) * sp, 0, 0]}));
+  kids.push(P('Borgring', annulus(o.sro - 0.003, o.sro + 0.001, 0.0022, 'x', 40), MAT.steel, { d: 'Veerring die de drukplaat in de trommel vasthoudt.', p: [xe + 0.0055, 0, 0], ex: [(n + 3) * sp, 0, 0]}));
   return A(name, { d, spec, ex: o.ex }, kids);
 }
 // planetaire set met zonnewiel, drager, planeetwielen en holwiel; N* = tanden, m = modulus
 function drvPlanets(key, name, d, o) {
   const { m, w, Ns, Np, Nr, n, x } = o, rp = m * (Ns + Np) / 2, kids = [];
-  kids.push(P('Zonnewiel', drvG(Ns, m, w, 0.008), MAT.steel, { d: `Zonnewiel (${Ns} tanden, schematisch weergegeven).`, p: [x, 0, 0], ex: [-0.075, 0, 0], inner: true }));
+  kids.push(P('Zonnewiel', drvG(Ns, m, w, 0.008), MAT.steel, { d: `Zonnewiel (${Ns} tanden, schematisch weergegeven).`, p: [x, 0, 0], ex: [-0.075, 0, 0]}));
   const pl = [];
   for (let k = 0; k < n; k++) {
     const a = k * PI * 2 / n + (o.ph || 0);
-    pl.push(P(`Planeetwiel ${k + 1}`, drvG(Np, m, w, 0.004), MAT.steel, { d: `Planeetwiel (${Np} tanden) op een pen van de drager.`, p: [x, rp * Math.cos(a), rp * Math.sin(a)], ex: [0, 0.08 * Math.cos(a), 0.08 * Math.sin(a)], inner: true }));
+    pl.push(P(`Planeetwiel ${k + 1}`, drvG(Np, m, w, 0.004), MAT.steel, { d: `Planeetwiel (${Np} tanden) op een pen van de drager.`, p: [x, rp * Math.cos(a), rp * Math.sin(a)], ex: [0, 0.08 * Math.cos(a), 0.08 * Math.sin(a)]}));
   }
   kids.push(...pl);
-  kids.push(P('Planeetdrager', cache('drvCar' + key, () => merge([annulus(0.012, rp + 0.012, 0.004, 'x', 36), xf(annulus(0.012, rp + 0.012, 0.004, 'x', 36), [w + 0.008, 0, 0]), ...Array.from({ length: n }, (_, k) => { const a = k * PI * 2 / n + (o.ph || 0); return xf(G.cyl('x', 0.0035, 0.0035, w + 0.012, 8), [(w + 0.008) / 2, rp * Math.cos(a), rp * Math.sin(a)]); })])), MAT.darkSteel, { d: 'Drager met de pennen waarop de planeetwielen draaien.', p: [x - w / 2 - 0.002, 0, 0], ex: [0.075, 0, 0], inner: true }));
-  kids.push(P('Holwiel', ringGear(Nr, m * (Nr / 2 + 1) + 0.008, m * (Nr / 2 - 1), m * (Nr / 2 + 1.25), w + 0.004, 'x'), MAT.steel, { d: `Holwiel met binnenvertanding (${Nr} tanden).`, p: [x, 0, 0], ex: [0.15, 0, 0], inner: true }));
-  return A(name, { d, ex: o.ex }, kids);
+  kids.push(P('Planeetdrager', cache('drvCar' + key, () => merge([annulus(0.012, rp + 0.012, 0.004, 'x', 36), xf(annulus(0.012, rp + 0.012, 0.004, 'x', 36), [w + 0.008, 0, 0]), ...Array.from({ length: n }, (_, k) => { const a = k * PI * 2 / n + (o.ph || 0); return xf(G.cyl('x', 0.0035, 0.0035, w + 0.012, 8), [(w + 0.008) / 2, rp * Math.cos(a), rp * Math.sin(a)]); })])), MAT.darkSteel, { d: 'Drager met de pennen waarop de planeetwielen draaien.', p: [x - w / 2 - 0.002, 0, 0], ex: [0.075, 0, 0]}));
+  kids.push(P('Holwiel', ringGear(Nr, m * (Nr / 2 + 1) + 0.008, m * (Nr / 2 - 1), m * (Nr / 2 + 1.25), w + 0.004, 'x'), MAT.steel, { d: `Holwiel met binnenvertanding (${Nr} tanden).`, p: [x, 0, 0], ex: [0.15, 0, 0]}));
+  return A(name, { d, ex: o.ex, inner: !!o.inner }, kids);
 }
 const drvNeedle = (key, rIn, rOut, t) => annulus(rIn, rOut, t, 'x', 24);
 
@@ -157,18 +157,18 @@ function drvClutches() {
 function drvSets() {
   const rr = (() => {
     const m = 0.0013, x = 0.3405, kids = [];
-    kids.push(P('Zonnewiel voor', drvG(33, m, 0.024, 0.008), MAT.steel, { d: 'Voorste zonnewiel (33 tanden, schematisch).', p: [x - 0.003, 0, 0], ex: [-0.075, 0, 0], inner: true }));
-    kids.push(P('Zonnewiel achter', drvG(49, m, 0.016, 0.008), MAT.steel, { d: 'Achterste zonnewiel (49 tanden, Ø65,5 mm).', p: [x + 0.004, 0, 0], ex: [0.075, 0, 0], inner: true }));
+    kids.push(P('Zonnewiel voor', drvG(33, m, 0.024, 0.008), MAT.steel, { d: 'Voorste zonnewiel (33 tanden, schematisch).', p: [x - 0.003, 0, 0], ex: [-0.075, 0, 0]}));
+    kids.push(P('Zonnewiel achter', drvG(49, m, 0.016, 0.008), MAT.steel, { d: 'Achterste zonnewiel (49 tanden, Ø65,5 mm).', p: [x + 0.004, 0, 0], ex: [0.075, 0, 0]}));
     for (let k = 0; k < 3; k++) {
       const a = k * PI * 2 / 3, ra = 0.040;
-      kids.push(P(`Korte planeet ${k + 1}`, drvG(28, m, 0.014, 0.004), MAT.steel, { d: 'Kort planeetwiel (28 tanden, schematisch).', p: [x - 0.006, ra * Math.cos(a), ra * Math.sin(a)], ex: [0, 0.08 * Math.cos(a), 0.08 * Math.sin(a)], inner: true }));
+      kids.push(P(`Korte planeet ${k + 1}`, drvG(28, m, 0.014, 0.004), MAT.steel, { d: 'Kort planeetwiel (28 tanden, schematisch).', p: [x - 0.006, ra * Math.cos(a), ra * Math.sin(a)], ex: [0, 0.08 * Math.cos(a), 0.08 * Math.sin(a)]}));
     }
     for (let k = 0; k < 3; k++) {
       const a = PI / 3 + k * PI * 2 / 3, ra = 0.047;
-      kids.push(P(`Lange planeet ${k + 1}`, drvG(29, m, 0.026, 0.004), MAT.steel, { d: 'Lang planeetwiel (29 tanden), grijpt in het zonnewiel en het holwiel.', p: [x, ra * Math.cos(a), ra * Math.sin(a)], ex: [0, 0.14 * Math.cos(a), 0.14 * Math.sin(a)], inner: true }));
+      kids.push(P(`Lange planeet ${k + 1}`, drvG(29, m, 0.026, 0.004), MAT.steel, { d: 'Lang planeetwiel (29 tanden), grijpt in het zonnewiel en het holwiel.', p: [x, ra * Math.cos(a), ra * Math.sin(a)], ex: [0, 0.14 * Math.cos(a), 0.14 * Math.sin(a)]}));
     }
-    kids.push(P('Achterste drager', cache('drvCarRR', () => merge([annulus(0.012, 0.064, 0.004, 'x', 36), xf(annulus(0.012, 0.064, 0.004, 'x', 36), [0.032, 0, 0]), ...[0, 1, 2].map(k => xf(G.cyl('x', 0.0035, 0.0035, 0.034, 8), [0.016, 0.040 * Math.cos(k * PI * 2 / 3), 0.040 * Math.sin(k * PI * 2 / 3)])), ...[0, 1, 2].map(k => xf(G.cyl('x', 0.0035, 0.0035, 0.034, 8), [0.016, 0.047 * Math.cos(PI / 3 + k * PI * 2 / 3), 0.047 * Math.sin(PI / 3 + k * PI * 2 / 3)]))])), MAT.darkSteel, { d: 'Drager met de pennen van de korte en lange planeetwielen.', p: [x - 0.018, 0, 0], ex: [0.15, 0, 0], inner: true }));
-    kids.push(P('Holwiel achterste set', ringGear(70, 0.078, 0.0575, 0.0615, 0.03, 'x'), MAT.steel, { d: 'Holwiel met binnenvertanding (tandental schematisch); gekoppeld aan het uitgaande tandwiel.', p: [x, 0, 0], ex: [0.2, 0, 0], inner: true }));
+    kids.push(P('Achterste drager', cache('drvCarRR', () => merge([annulus(0.012, 0.064, 0.004, 'x', 36), xf(annulus(0.012, 0.064, 0.004, 'x', 36), [0.032, 0, 0]), ...[0, 1, 2].map(k => xf(G.cyl('x', 0.0035, 0.0035, 0.034, 8), [0.016, 0.040 * Math.cos(k * PI * 2 / 3), 0.040 * Math.sin(k * PI * 2 / 3)])), ...[0, 1, 2].map(k => xf(G.cyl('x', 0.0035, 0.0035, 0.034, 8), [0.016, 0.047 * Math.cos(PI / 3 + k * PI * 2 / 3), 0.047 * Math.sin(PI / 3 + k * PI * 2 / 3)]))])), MAT.darkSteel, { d: 'Drager met de pennen van de korte en lange planeetwielen.', p: [x - 0.018, 0, 0], ex: [0.15, 0, 0]}));
+    kids.push(P('Holwiel achterste set', ringGear(70, 0.078, 0.0575, 0.0615, 0.03, 'x'), MAT.steel, { d: 'Holwiel met binnenvertanding (tandental schematisch); gekoppeld aan het uitgaande tandwiel.', p: [x, 0, 0], ex: [0.2, 0, 0]}));
     return kids;
   })();
   return A('Tandwielsets', {
@@ -281,7 +281,7 @@ function drvStarter() {
   const P0 = [-0.0065, DRV_ST[0], DRV_ST[1]], [sy, sz] = DRV_SOL;
   const nose = cache('drvStNose', () => merge([G.lathe('x', [[0.0105, 0.004], [0.02, 0.006], [0.027, 0.014], [0.027, 0.047], [0.034, 0.049], [0.034, 0.054]], 28, 'drvStNoseL'),
     annulus(0.02, 0.0345, 0.008, 'x', 28), ...[0.5, 2.6, 4.7].map(a => xf(G.box(0.012, 0.008, 0.014), [0.0495, 0.041 * Math.cos(a), 0.041 * Math.sin(a)]))].map((g, i) => i === 1 ? xf(g, [0.0495, 0, 0]) : g)));
-  const red = drvPlanets('st', 'Planetaire reductie', 'Planetaire reductie tussen anker en rondselas (schematisch weergegeven): zonnewiel op de ankeras, drie planeetwielen, holwiel in het huis en een drager die de rondselas aandrijft.', { m: 0.0011, w: 0.012, Ns: 10, Np: 12, Nr: 34, n: 3, x: 0.063, ph: 0.3, ex: [0.0, 0.1, -0.1] });
+  const red = drvPlanets('st', 'Planetaire reductie', 'Planetaire reductie tussen anker en rondselas (schematisch weergegeven): zonnewiel op de ankeras, drie planeetwielen, holwiel in het huis en een drager die de rondselas aandrijft.', { m: 0.0011, w: 0.012, Ns: 10, Np: 12, Nr: 34, n: 3, x: 0.063, ph: 0.3, ex: [0.0, 0.1, -0.1], inner: true });
   const mount = (nm, d, g, mat, p, ex, inner) => P(nm, g, mat, { d, p, ex, inner });
   const cap = 0.152, bx = (k) => [cap, sy + 0.0085 * (k ? 1 : -1), sz];
   const st = A('Startmotor', {
