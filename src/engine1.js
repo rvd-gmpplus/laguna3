@@ -50,8 +50,10 @@ function engStudNut(len, d, at, ax = 'y') {
   });
 }
 // schroefveer met weinig segmenten (klepveren, 16 stuks)
-// per = punten per winding (6 is genoeg voor een draad van enkele millimeters), ax = aslichting
-function engSpring(R, wire, h, turns, per = 10, ax = 'y') {
+// per = punten per winding; standaard afgeleid van de straal: 6 bij R tot 4 mm, 10 daarboven
+// (met 6 punten wordt een grote veer een zeshoek met apothema 0,866 R), ax = aslichting
+function engSpring(R, wire, h, turns, per = null, ax = 'y') {
+  if (per == null) per = R > 0.004 ? 10 : 6;
   return cache(`engSp${R}|${wire}|${h}|${turns}|${per}|${ax}`, () => {
     const pts = [], N = Math.ceil(turns * per);
     for (let i = 0; i <= N; i++) { const t = i / N, a = t * turns * PI * 2; pts.push(V3(R * Math.cos(a), t * h - h / 2, R * Math.sin(a))); }
@@ -310,8 +312,8 @@ function valveGroup(cyl, k, sg) {
   return A(name, { d: `Klepgroep van cilinder ${cyl + 1} (${intake ? 'inlaat' : 'uitlaat'}): klep, veerzitting, steelafdichting, veer, veerschotel, twee spieën, hydraulische klepstoter en rolzwenkarm.`, p: [x, y0, z0], r: [sg * th, 0, 0], ex: [x * 0.6, 0, 0] }, [
     P(intake ? 'Inlaatklep' : 'Uitlaatklep', valve, intake ? MAT.steel : MAT.darkSteel, { d: intake ? 'Inlaatklep: kop Ø33,5 mm, steel Ø5,47 mm, lengte 110,08 mm.' : 'Uitlaatklep van hittebestendige nikkellegering (Nimonic): kop Ø29 mm, steel Ø5,447 mm, lengte 106,87 mm.', ex: [0, -0.3, 0], spec: intake ? [['Kop', 'Ø33,5 mm'], ['Steel', 'Ø5,47 mm'], ['Lengte', '110,08 mm']] : [['Kop', 'Ø29 mm'], ['Steel', 'Ø5,447 mm'], ['Lengte', '106,87 mm']] }),
     P('Klepveerzitting', annulus(0.0035, 0.0145, 0.001, 'y', 12), MAT.steel, { d: 'Onderste veerschotel op de cilinderkop.', p: [0, yB - 0.0005, 0], ex: [0, 0.02, 0] }),
-    P('Klepsteelafdichting', G.lathe('y', [[0.0028, 0], [0.0058, 0], [0.0058, 0.007], [0.0042, 0.0095], [0.0028, 0.0095]], 8, 'engStemSeal'), MAT.rubber, { d: 'Rubber afdichting op de klepgeleider die olieverbruik langs de klepsteel voorkomt.', p: [0, yB, 0], ex: [0, 0.034, 0] }),
-    P('Klepveer', engSpring(0.01145, 0.0019, 0.036, 6.2, 6), MAT.steel, { d: 'Klepveer van ovaal draad: vrije lengte 41,3 mm, buiten Ø27 mm, binnen Ø18,8 mm.', p: [0, (yS + yB) / 2, 0], ex: [0, 0.06, 0], spec: [['Vrije lengte', '41,3 mm'], ['Buitendiameter', '27 mm']] }),
+    P('Klepsteelafdichting', G.lathe('y', [[0.0028, 0], [0.0058, 0], [0.0058, 0.007], [0.0042, 0.0095], [0.0028, 0.0095]], 12, 'engStemSeal12'), MAT.rubber, { d: 'Rubber afdichting op de klepgeleider die olieverbruik langs de klepsteel voorkomt.', p: [0, yB, 0], ex: [0, 0.034, 0] }),
+    P('Klepveer', engSpring(0.01145, 0.0019, 0.036, 6.2, 10), MAT.steel, { d: 'Klepveer van ovaal draad: vrije lengte 41,3 mm, buiten Ø27 mm, binnen Ø18,8 mm.', p: [0, (yS + yB) / 2, 0], ex: [0, 0.06, 0], spec: [['Vrije lengte', '41,3 mm'], ['Buitendiameter', '27 mm']] }),
     P('Veerschotel', G.lathe('y', [[0.0038, 0], [0.0135, 0.0015], [0.0135, 0.003], [0.0065, 0.0065], [0.0038, 0.0065]], 12, 'engRetainer'), MAT.steel, { d: 'Bovenste veerschotel die de klepveer vasthoudt.', p: [0, yS, 0], ex: [0, 0.088, 0] }),
     P('Klepspie 1', keeper(0), MAT.darkSteel, { d: 'Halve kegelspie die de veerschotel op de klepsteel klemt.', p: [0, L - 0.0045, 0], ex: [0.013, 0.104, 0] }),
     P('Klepspie 2', keeper(PI), MAT.darkSteel, { d: 'Tweede halve kegelspie.', p: [0, L - 0.0045, 0], ex: [-0.013, 0.104, 0] }),
