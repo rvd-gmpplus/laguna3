@@ -640,6 +640,11 @@ canvas.addEventListener('lostpointercapture', e => { if (uiPtrs.has(e.pointerId)
 window.addEventListener('blur', uiPtrReset);
 document.addEventListener('visibilitychange', () => { if (document.hidden) uiPtrReset(); });
 canvas.addEventListener('contextmenu', e => e.preventDefault()); // rechtsklik zelf wordt in pointerup afgehandeld (niet na slepen)
+// Een tik op het canvas is in pointerup al volledig afgehandeld. De browser stuurt daarna nog muis-compatibiliteits-
+// gebeurtenissen en een click, die op het element vallen dat er op dat moment ligt: na het selecteren staat daar vaak
+// een net verschoven label, dat dan een tweede actie uitvoert (bewezen in de itest: tik op Binnenframe motorkap,
+// click op label Koplampsproeiers). touchend afvangen onderdrukt die nagekomen click.
+canvas.addEventListener('touchend', e => { if (e.cancelable) e.preventDefault(); }, { passive: false });
 canvas.addEventListener('wheel', () => { uiStopPlay(); uiStopTour(); hideHint(); uiHideTip(); }, { passive: true });
 
 /* ---------- hint en hulp ---------- */
@@ -732,7 +737,10 @@ function uiNewLabel() {
   const el = document.createElement('button');
   el.className = 'lbl'; el.hidden = true; el.tabIndex = -1;
   el.innerHTML = '<b></b><span></span>';
-  el.addEventListener('click', () => { const k = el._k; if (!k) return; uiStopPlay(); uiStopTour(); hideHint(); uiAct(k); });
+  // alleen een klik die op dit label begon (of een klik zonder aanwijzer: toetsenbord, schermlezer); geen nagekomen
+  // click van een tik die op het canvas begon en waarna het label onder de vinger is geschoven
+  el.addEventListener('pointerdown', e => { el._pd = e.timeStamp; });
+  el.addEventListener('click', e => { const k = el._k; if (!k) return; if (e.detail > 0 && !(el._pd != null && e.timeStamp - el._pd < 2000)) return; el._pd = null; uiStopPlay(); uiStopTour(); hideHint(); uiAct(k); });
   els.labels.appendChild(el);
   const ln = document.createElementNS(uiSvgNs, 'line'); ln.style.display = 'none'; els.leaders.appendChild(ln);
   const dot = document.createElementNS(uiSvgNs, 'circle'); dot.setAttribute('r', '3'); dot.style.display = 'none'; els.leaders.appendChild(dot);
