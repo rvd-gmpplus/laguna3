@@ -628,7 +628,8 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     lowSide(L, -1.778, bodZT, 30, z => [S1 * 0.45, bodSY(z, bodYLEDGE)], 22),
     lowSide(R, -1.778, bodZT, 30, z => [S1 * 0.45, bodSY(z, bodYLEDGE)], 22),
     ...tipL(L).concat(tipL(R)).map(bodCut),
-    bodCap(ZR + 1e-4, -1),
+    // sluitvlak op de staartpunt licht bol (hoogstens 4 mm, binnen ZR - 6 mm): een vlak eindvlak las als lichte rechthoek boven de kentekenuitsparing
+    (() => { const z = ZR + 1e-4, c = bodSec(z); return patch((y, t) => { const X = ringX(z, y), v = 2 * (y - c.yb) / (c.yd - c.yb) - 1; return [X * t, y, z - 0.004 * (1 - t * t) * (1 - v * v)]; }, c.yb + 1e-4, c.yd - 1e-4, 8, () => [-1, 1], 16); })(),
     rFace(-0.315, 0.315, 0.372, rcY0, rcOut, 16, 2), rFace(-0.315, 0.315, rcY1, 0.535, rcOut, 16, 2), rFace(-0.315, -rcX, rcY0, rcY1, rcOut, 2, 8), rFace(rcX, 0.315, rcY0, rcY1, rcOut, 2, 8),
   ]));
   // schuine wanden van de opening (buitenrand op de huid, binnenrand op de bodem) en de bodem
