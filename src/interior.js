@@ -289,7 +289,7 @@ function intConsole() {
     intPart('Armsteunkussen', bx(0.2, 0.035, 0.3, 0.015, [0, 0.0175, 0]), MAT.leather, 'Gevoerd deksel van de armsteun.', { ex: [0, 0.14, -0.06] }),
     intPart('Armsteunscharnier', xf(G.cyl('x', 0.008, 0.008, 0.14, 10), [0, 0.0, -0.14]), MAT.darkSteel, 'Scharnieras achter in de armsteun.', { ex: [0, 0.04, -0.06] }),
     intPart('Armsteunslot', bx(0.04, 0.012, 0.012, 0.004, [0, 0.0, 0.15]), MAT.plasticGrey, 'Sluiting aan de voorkant van het deksel.', { ex: [0, 0.06, 0.06] }),
-    intPart('Opbergbak', bx(0.18, 0.05, 0.26, 0.012, [0, -0.025, 0]), MAT.plastic, 'Opbergvak onder het deksel.', { inner: true, ex: [0, -0.04, 0] }),
+    intPart('Opbergbak', bx(0.18, 0.05, 0.26, 0.012, [0, -0.025, 0]), MAT.plastic, 'Opbergvak onder het deksel.', { ex: [0, -0.04, 0] }),
     intPart('Aansluiting 12 V', merge([xf(G.cyl('z', 0.013, 0.013, 0.014, 14), [0, -0.025, 0.125])]), MAT.darkSteel, 'Aansluiting van 12 V in het opbergvak.', { inner: true, ex: [0, 0, 0.08] }),
   ]);
   return A('Middenconsole', { d: 'Middenconsole met keuzehendel, joystick van de navigatie, kaartlezer, startknop, parkeerremschakelaar, bekerhouders en armsteun.', ex: [0, 0.12, 0.05] }, [
