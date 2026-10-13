@@ -124,13 +124,13 @@ function frontCorner(s) {
     P('Demperbuis', merge([xf(G.cyl('y', 0.025, 0.025, 0.315, 22), [0, 0.1125, 0]), xf(chsRb(0.02, 0.02, 0.026, 0.003), [-0.006, 0.095, -0.038]), xf(G.cyl('y', 0.019, 0.019, 0.01, 18), [0, -0.05, 0])]), MAT.darkSteel, { d: 'Buis van de bitube-schokdemper (Ø50 mm) met aangelaste klemtong voor de koppelstang.', ex: [0, -0.2, 0] }),
     P('Zuigerstang', G.cyl('y', 0.011, 0.011, 0.19, 14), MAT.chrome, { d: 'Verchroomde zuigerstang Ø22 mm.', p: [0, 0.295, 0], ex: [0, 0.02, 0] }),
     P('Veerschotel onder', seat(1, 'chsSeatL'), MAT.darkSteel, { d: 'Onderste veerschotel, aan de demperbuis gelast.', p: [0, 0.105, 0], ex: [0, -0.06, 0] }),
-    P('Veerrubber onder', annulus(0.052, 0.074, 0.004, 'y', 28), MAT.rubber, { d: 'Rubber tussenlaag tussen veer en onderste schotel.', p: [0, 0.114, 0], ex: [0, -0.03, 0] }),
+    P('Veerrubber onder', annulus(0.052, 0.074, 0.004, 'y', 28), MAT.rubber, { d: 'Rubber tussenlaag tussen veer en onderste schotel.', p: [0, 0.114, 0], ex: [0, -0.03, 0], inner: true }),
     P('Schroefveer voor', spring(0.066, 0.0068, 0.2, 5.5), MAT.chsSpring, { d: 'Draagt het voorgewicht van de auto.', p: [0, 0.21, 0] }),
     P('Stofhoes veerpoot', G.lathe('y', bellows(0.032, 0.026, 0.115, 5), 22, 'chsDb'), MAT.rubber, { d: 'Balg over de zuigerstang die vuil uit de demper houdt.', p: [0, 0.165, 0], ex: [0.16, 0.02, 0] }),
-    P('Aanslagrubber', G.cyl('y', 0.024, 0.021, 0.04, 16), MAT.rubber, { d: 'Vangt het inveren aan het einde van de slag op.', p: [0, 0.285, 0], ex: [0.2, 0.06, 0] }),
+    P('Aanslagrubber', G.cyl('y', 0.024, 0.021, 0.04, 16), MAT.rubber, { d: 'Vangt het inveren aan het einde van de slag op.', p: [0, 0.285, 0], ex: [0.2, 0.06, 0], inner: true }),
     P('Veerschotel boven', seat(-1, 'chsSeatU'), MAT.darkSteel, { d: 'Bovenste veerschotel.', p: [0, 0.318, 0], ex: [0, 0.08, 0] }),
-    P('Veerrubber boven', annulus(0.052, 0.074, 0.004, 'y', 28), MAT.rubber, { d: 'Rubber tussenlaag tussen veer en bovenste schotel.', p: [0, 0.31, 0], ex: [0, 0.05, 0] }),
-    P('Veerpootlager', annulus(0.03, 0.052, 0.014, 'y', 28), MAT.bearing, { d: 'Axiaal draaglager zodat de veerpoot met het stuur mee kan draaien.', p: [0, 0.331, 0], ex: [0, 0.12, 0] }),
+    P('Veerrubber boven', annulus(0.052, 0.074, 0.004, 'y', 28), MAT.rubber, { d: 'Rubber tussenlaag tussen veer en bovenste schotel.', p: [0, 0.31, 0], ex: [0, 0.05, 0], inner: true }),
+    P('Veerpootlager', annulus(0.03, 0.052, 0.014, 'y', 28), MAT.bearing, { d: 'Axiaal draaglager zodat de veerpoot met het stuur mee kan draaien.', p: [0, 0.331, 0], ex: [0, 0.12, 0], inner: true }),
     P('Veerpootsteunlager', G.lathe('y', [[0.012, 0], [0.06, 0], [0.062, 0.016], [0.045, 0.026], [0.012, 0.026]], 28, 'chsTopm'), MAT.rubber, { d: 'Rubber-metalen topsteun: koppelt de veerpoot aan de veerpoottoren en dempt trillingen.', p: [0, 0.34, 0], ex: [0, 0.18, 0] }),
     P('Veerpootmoer', chsNut('y', 0.0125, 0.012), MAT.steel, { d: 'Zelfborgende moer bovenop de zuigerstang.', p: [0, 0.372, 0], ex: [0, 0.26, 0] }),
     P('Topsteunmoeren', merge([0, 1, 2].map(k => xf(chsNut('y', 0.0075, 0.009), [0.045 * Math.cos(k * PI * 2 / 3 + 0.5), 0, 0.045 * Math.sin(k * PI * 2 / 3 + 0.5)]))), MAT.steel, { d: 'Drie moeren M8 waarmee de topsteun aan de veerpoottoren zit.', p: [0, 0.368, 0], ex: [0, 0.32, 0] }),
@@ -315,16 +315,16 @@ function buildRearAxle() {
     P('Draaipuntbout', hexBolt(0.15, 0.014, sg > 0 ? 'x' : '-x'), MAT.steel, { d: 'Scharnierbout M14 door de draaipuntbus.', p: [sg * 0.53, 0.32, zp], ex: [sg * -0.2, 0, 0.1] }),
     P('Draaipuntmoer', chsNut('x', 0.0125, 0.014), MAT.steel, { d: 'Zelfborgende moer van de draaipuntbout.', p: [sg * 0.685, 0.32, zp], ex: [sg * 0.25, 0, 0.1] })]);
   const spr = sg => A(`Veer achter ${sideName(sg)}`, { d: 'Schroefveer met rubber ondersteuning, bovenschotel, aanslagrubber en stofhoes; aparte veer en demper (Renault: aparte schroefveren en dempers).', ex: [0, 0.3, 0] }, [
-    P('Veerrubber onder', annulus(0.045, 0.07, 0.006, 'y', 24), MAT.rubber, { d: 'Rubber tussenlaag op het veerpad.', p: [sg * 0.51, 0.348, -1.47], ex: [0, -0.04, 0] }),
+    P('Veerrubber onder', annulus(0.045, 0.07, 0.006, 'y', 24), MAT.rubber, { d: 'Rubber tussenlaag op het veerpad.', p: [sg * 0.51, 0.348, -1.47], ex: [0, -0.04, 0], inner: true }),
     P('Schroefveer achter', spring(0.062, 0.0105, 0.2, 5), MAT.chsSpring, { d: 'Draagt het achtergewicht van de auto.', p: [sg * 0.51, 0.455, -1.47], ex: [0, 0.0, 0] }),
     P('Veerschotel boven', G.lathe('y', [[0.02, 0], [0.068, 0.002], [0.07, -0.008], [0.062, -0.01], [0.02, -0.004]], 22, 'chsSeatR'), MAT.rubber, { d: 'Rubber bovenschotel in de carrosserie (de veer drukt tegen de vloer van de laadruimte).', p: [sg * 0.51, 0.566, -1.47], ex: [0, 0.14, 0] }),
-    P('Aanslagrubber', G.cyl('y', 0.03, 0.026, 0.05, 16), MAT.rubber, { d: 'Vangt het inveren aan het einde van de slag op.', p: [sg * 0.51, 0.535, -1.47], ex: [0, 0.2, 0] }),
-    P('Stofhoes veer', G.lathe('y', bellows(0.034, 0.028, 0.07, 3), 18, 'chsRdb'), MAT.rubber, { d: 'Balg om de aanslagrubber.', p: [sg * 0.51, 0.462, -1.47], ex: [0, 0.1, 0] })]);
+    P('Aanslagrubber', G.cyl('y', 0.03, 0.026, 0.05, 16), MAT.rubber, { d: 'Vangt het inveren aan het einde van de slag op.', p: [sg * 0.51, 0.535, -1.47], ex: [0, 0.2, 0], inner: true }),
+    P('Stofhoes veer', G.lathe('y', bellows(0.034, 0.028, 0.07, 3), 18, 'chsRdb'), MAT.rubber, { d: 'Balg om de aanslagrubber.', p: [sg * 0.51, 0.462, -1.47], ex: [0, 0.1, 0], inner: true })]);
   const dmp = sg => A(`Schokdemper achter ${sideName(sg)}`, { d: 'Bitube-schokdemper (huis Ø45 mm, zuigerstang Ø12,5 mm), onderaan met een oog aan de langsarm, bovenaan met een rubbersteun in de carrosserie.', spec: [['Demperhuis', 'Ø 45 mm'], ['Zuigerstang', 'Ø 12,5 mm']], p: [sg * ax, 0.33, -1.5], q: quatFromTo(V3(0, 1, 0), V3(sg * dB.x, dB.y, dB.z)), ex: [sg * 0.08, 0.26, -0.08] }, [
     P('Demperbuis', merge([G.cyl('y', 0.0225, 0.0225, 0.21, 20).clone().translate(0, 0.105, 0), xf(G.torus('x', 0.013, 0.0065, 14, 6), [0, -0.004, 0])]), MAT.darkSteel, { d: 'Buis van de achterste schokdemper met onderoog.', ex: [0, -0.1, 0] }),
     P('Zuigerstang', G.cyl('y', 0.00625, 0.00625, 0.17, 10), MAT.chrome, { d: 'Verchroomde zuigerstang Ø12,5 mm.', p: [0, 0.23, 0], ex: [0, 0.04, 0] }),
     P('Stofbuis', G.cyl('y', 0.019, 0.019, 0.1, 16), MAT.plastic, { d: 'Kunststof stofbuis over de zuigerstang.', p: [0, 0.21, 0], ex: [0.06, 0.05, 0] }),
-    P('Aanslagrubber', G.cyl('y', 0.017, 0.015, 0.035, 14), MAT.rubber, { d: 'Aanslagrubber in de stofbuis.', p: [0, 0.285, 0], ex: [0.08, 0.1, 0] }),
+    P('Aanslagrubber', G.cyl('y', 0.017, 0.015, 0.035, 14), MAT.rubber, { d: 'Aanslagrubber in de stofbuis.', p: [0, 0.285, 0], ex: [0.08, 0.1, 0], inner: true }),
     P('Bovensteun', G.lathe('y', [[0.006, 0], [0.026, 0], [0.026, 0.012], [0.016, 0.018], [0.006, 0.018]], 18, 'chsDtm'), MAT.rubber, { d: 'Rubber-metalen bovensteun waarmee de demper in de carrosserie hangt.', p: [0, 0.308, 0], ex: [0, 0.16, 0] }),
     P('Bovenmoer', chsNut('y', 0.0085, 0.01), MAT.steel, { d: 'Zelfborgende moer bovenop de zuigerstang.', p: [0, 0.335, 0], ex: [0, 0.26, 0] }),
     P('Onderbout', hexBolt(0.08, 0.012, 'x'), MAT.steel, { d: 'Bout M12 door het onderoog en de dempersteun.', p: [-0.04, 0, 0], ex: [-0.2, 0, 0] }),
