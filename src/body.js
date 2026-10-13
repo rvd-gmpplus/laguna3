@@ -46,7 +46,7 @@ const YR = pchip([[-2.11, 1.13], [-1.905, 1.181], [-1.655, 1.246], [-1.405, 1.31
 // karakterlijn op de flank: van de voorwielboog oplopend naar de bovenrand van het achterlicht
 const bodYC = pchip([[-2.2, 0.985], [-1.98, 0.975], [-1.4, 0.93], [-1.0, 0.90], [0.0, 0.852], [0.95, 0.80], [1.3, 0.785]]);
 // bovenaanzicht: boven de bumperrichel loopt de staart ronder in dan de bumper (hoekstraal ca. 0,3 m); factor op x
-const bodKU = pchip([[-2.268, 0.925], [-2.22, 0.93], [-2.15, 0.955], [-2.05, 0.985], [-1.95, 1.0]]);
+const bodKU = pchip([[-2.268, 0.925], [-2.22, 0.93], [-2.15, 0.955], [-2.05, 0.985], [-1.95, 0.9985], [-1.85, 1.0]]);
 const bodKY0 = bodYLEDGE + 0.01, bodKY1 = 0.14;          // overgang van bumperbreedte naar de smallere bovenstaart
 const S1 = 0.14, S2 = 0.22, S3 = 0.60, S4 = 0.72, BUL = 0.016, CRW = 0.03;
 const sstep = t => { const u = clamp(t, 0, 1); return u * u * (3 - 2 * u); };
@@ -61,7 +61,7 @@ function bodSec(z) {
   const cy = yt - rs * Math.sin(th);
   // in de bumperpunt volgt de bolling van de flank die van het staartvlak (geen knik op de naad)
   const cyb = tip ? bodYTm(bodZT) - 0.072 : cy;
-  const ku = z < -1.95 ? bodKU(Math.max(z, bodZT)) : 1;
+  const ku = z < -1.85 ? bodKU(Math.max(z, bodZT)) : 1;
   return { hw, yb, yt, rb, rs, yd, c, p, cx, cy, cyb, th, xe: xe * ku, xe0: xe, ku, bul };
 }
 function flank(z, y, t, ytop, bul = BUL) {

@@ -196,20 +196,20 @@ function bodMirX(g, s) {
 const bodTLY = (z, f) => lerp(bodTLlo(Math.max(z, bodZT)), bodTLtop(Math.max(z, bodZT)), f);
 function buildTaillight(s) {
   const n = sn(s), xin = 0.34, xs = bodTGseam(0.92);
-  const side = (off, f0, f1) => patch((z, p) => bodLow(z, p, off), bodZT + 0.001, bodTLZ - 0.001, 18, z => sideR(s, bodSY(z, bodTLY(z, f0)), Math.max(bodSY(z, bodTLY(z, f0)) + 1e-4, bodSY(z, bodTLY(z, f1)))), 3, bodDense(-2.06, bodTLZ, 4));
+  const side = (off, f0, f1) => patch((z, p) => bodLow(z, p, off), bodZT, bodTLZ - 0.001, 18, z => sideR(s, bodSY(z, bodTLY(z, f0)), Math.max(bodSY(z, bodTLY(z, f0)) + 1e-4, bodSY(z, bodTLY(z, f1)))), 3, bodDense(-2.06, bodTLZ, 4));
   const face = (x0, x1, f0, f1, off, nx = 8, dy = 0) => { return bodMirX(bodTailGeo(x0, x1, bodTLY(bodZT, f0) + dy, bodTLY(bodZT, f1) - dy, off, 3, nx), s); };
   const [f0, f1, f2, f3] = bodTLF, xo = 1.2;
   return A(`Achterlicht ${n}`, { d: 'Slank horizontaal achterlicht in twee delen, verdeeld over de klepnaad: een deel op het achterscherm dat om de afgeronde hoek de flank in loopt en een deel in de achterklep.', ex: [s * 0.3, 0.1, -0.5] }, [
     A('Buitendeel', { d: 'Vast deel op het achterscherm met achterlicht, remlicht en knipperlicht (LED-uitstraling); loopt onder de schouder in een punt naar voren.', ex: [s * 0.1, 0, -0.06] }, [
-      P('Lens buitendeel', merge([side(-0.003, f2, f3), side(-0.003, f0, f1), face(xs + 0.004, xo, f2, f3, 0.003), face(xs + 0.004, xo, f0, f1, 0.003)]), MAT.lensRed, { d: 'Rode afdeklens met een brede bovenband en een smalle onderstrook, van het staartvlak om de hoek de flank in.', ex: [s * 0.05, 0, -0.06] }),
-      P('Heldere band buitendeel', merge([side(-0.0035, f1, f2), face(xs + 0.004, xo, f1, f2, 0.0035)]), MAT.lensClear, { d: 'Heldere horizontale band in de lens waarachter de knipperlichtunit zit; geeft de witte LED-streep van het fase 2-achterlicht.', ex: [s * 0.07, 0, -0.08] }),
+      P('Lens buitendeel', merge([side(-0.003, f2, f3), side(-0.003, f0, f1), face(xs + 0.003, xo, f2, f3, 0.003), face(xs + 0.003, xo, f0, f1, 0.003)]), MAT.lensRed, { d: 'Rode afdeklens met een brede bovenband en een smalle onderstrook, van het staartvlak om de hoek de flank in.', ex: [s * 0.05, 0, -0.06] }),
+      P('Heldere band buitendeel', merge([side(-0.0035, f1, f2), face(xs + 0.003, xo, f1, f2, 0.0035)]), MAT.lensClear, { d: 'Heldere horizontale band in de lens waarachter de knipperlichtunit zit; geeft de witte LED-streep van het fase 2-achterlicht.', ex: [s * 0.07, 0, -0.08] }),
       P('Lichthuis buitendeel', merge([side(0.05, f0, f3), face(xs + 0.01, xo, f0, f3, -0.05, 8, 0.008)]), MAT.plastic, { d: 'Kunststof behuizing met bevestigingsbouten in het achterscherm.', ex: [-s * 0.04, 0, 0.06] }),
-      P('LED-print buitendeel', merge([side(0.035, f0, f3), face(xs + 0.004, xo, f0, f3, -0.035, 8, 0.02)]), MAT.ecu, { d: 'Printplaat met de lampen van achter-, rem- en knipperlicht.', inner: true, ex: [0, 0, 0.1] }),
-      P('Reflector buitendeel', merge([side(0.02, f0, f3), face(xs + 0.004, xo, f0, f3, -0.02, 8, 0.01)]), MAT.reflector, { d: 'Verchroomde reflector achter de lens; zichtbaar door het rode glas en de heldere band.', ex: [0, 0, 0.05] }),
+      P('LED-print buitendeel', merge([side(0.035, f0, f3), face(xs + 0.003, xo, f0, f3, -0.035, 8, 0.02)]), MAT.ecu, { d: 'Printplaat met de lampen van achter-, rem- en knipperlicht.', inner: true, ex: [0, 0, 0.1] }),
+      P('Reflector buitendeel', merge([side(0.02, f0, f3), face(xs + 0.003, xo, f0, f3, -0.02, 8, 0.01)]), MAT.reflector, { d: 'Verchroomde reflector achter de lens; zichtbaar door het rode glas en de heldere band.', ex: [0, 0, 0.05] }),
     ]),
     A('Binnendeel', { d: 'Deel in de achterklep met achterlicht en achteruitrijlicht; zet de lijnen van het buitendeel over de naad voort.', ex: [s * 0.03, 0.04, -0.08] }, [
-      P('Lens binnendeel', merge([face(xin, xs - 0.004, f2, f3, 0.003), face(xin, xs - 0.004, f0, f1, 0.003)]), MAT.lensRed, { d: 'Rode lens van het binnendeel (achterlicht): bovenband en onderstrook.', ex: [0, 0.03, -0.06] }),
-      P('Lens achteruitrijlicht', face(xin, xs - 0.004, f1, f2, 0.0035), MAT.lensClear, { d: 'Heldere middenband over het achteruitrijlicht, in lijn met de heldere band van het buitendeel.', ex: [0, 0, -0.1] }),
+      P('Lens binnendeel', merge([face(xin, xs, f2, f3, 0.003), face(xin, xs, f0, f1, 0.003)]), MAT.lensRed, { d: 'Rode lens van het binnendeel (achterlicht): bovenband en onderstrook.', ex: [0, 0.03, -0.06] }),
+      P('Lens achteruitrijlicht', face(xin, xs, f1, f2, 0.0035), MAT.lensClear, { d: 'Heldere middenband over het achteruitrijlicht, in lijn met de heldere band van het buitendeel.', ex: [0, 0, -0.1] }),
       P('Reflector binnendeel', face(xin + 0.004, xs - 0.008, f0, f3, -0.012, 8, 0.006), MAT.reflector, { d: 'Verchroomde reflector achter de lenzen.', ex: [0, 0, 0.04] }),
       P('Lichthuis binnendeel', face(xin + 0.01, xs - 0.01, f0, f3, -0.028, 8, 0.008), MAT.plastic, { d: 'Behuizing in de achterklep.', ex: [0, 0, 0.06] }),
       P('Lampdrager binnendeel', face(xin + 0.03, xs - 0.03, f0, f3, -0.018, 8, 0.02), MAT.ecu, { d: 'Lampdrager met fittingen en stekker.', inner: true, ex: [0, 0, 0.1] }),
@@ -286,8 +286,8 @@ function buildBody() {
   const rfLo = z => { if (z < AXR - ARCH) return bodSY(z, bodYLEDGE + 0.003); if (z <= AXR + ARCH) return Math.max(archS(z), bodSY(z, 0.25)); return bodSY(z, 0.304); };
   const rfHi = z => { if (z <= bodTLZ) return tlLow(z) - 0.002; if (z <= -1.27) return S4 - 0.0008; return bodSY(z, bodRDloZ(z) - 0.004); };
   const rearFender = s => merge([
-    lowSide(s, bodZT + 0.001, -0.667, 70, z => [rfLo(z), rfHi(z)], 20, ARCH_BREAKS.concat([-1.271, -1.269, bodTLZ, bodTLZ - 0.001], bodDense(-1.27, -0.66, 10), bodDense(bodZT, bodTLZ, 5))),
-    lowSide(s, bodZT + 0.001, SP, 16, z => [z <= bodTLZ ? bodTLhi(z) + 0.001 : S4, Math.max(S4 + 1e-4, bodSAtX(z, bodTGdx(z)) - 0.003)], 4, bodDense(bodZT, -2.2, 4)),
+    lowSide(s, bodZT, -0.667, 70, z => [rfLo(z), rfHi(z)], 20, ARCH_BREAKS.concat([-1.271, -1.269, bodTLZ, bodTLZ - 0.001], bodDense(-1.27, -0.66, 10), bodDense(bodZT, bodTLZ, 5))),
+    lowSide(s, bodZT, SP, 16, z => [z <= bodTLZ ? bodTLhi(z) + 0.001 : S4, Math.max(S4 + 1e-4, bodSAtX(z, bodTGdx(z)) - 0.003)], 4, bodDense(bodZT, -2.2, 4)),
     bodMirX(bodTailGeo(bodTGseam(0.7) + 0.003, 1.2, bodYLEDGE + 0.004, bodTLY(bodZT, 0), 0, 8, 4), s),
     bodMirX(bodTailGeo(bodTGseam(1.0) + 0.003, 1.2, bodTLY(bodZT, 1), bodSec(bodZT).yd - 0.002, 0, 4, 4), s),
     archLip(s, AXR),
@@ -410,7 +410,7 @@ function buildBody() {
       P('EU-strook', G.box(0.045, 0.11, 0.005), MAT.plateBlue, { d: 'Blauwe strook met de landcode, zonder tekst weergegeven.', p: [0.2375, rPlateY, rPlateZ - 0.0005], r: [rTilt, 0, 0], ex: [0.06, 0, -0.02] }),
     ]),
     ...both(s => P(`Kentekenverlichting ${sn(s)}`, G.rbox(0.06, 0.008, 0.025, 0.003), MAT.lensClear, { d: 'Kentekenverlichting in de bovenrand van de uitsparing.', p: [s * 0.2, rcY1 - 0.03, bodRearZ(0.2, rcY1 - 0.03) + 0.014], ex: [s * 0.02, 0.04, 0] })),
-    P('Onderschort', merge([lowSide(L, -2.0, bodZT, 10, z => [S1 * 0.4, bodSY(z, YB(z) + 0.05)], 2, [], -0.003), lowSide(R, -2.0, bodZT, 10, z => [S1 * 0.4, bodSY(z, YB(z) + 0.05)], 2, [], -0.003), lowSide(L, ZR + 0.02, bodZT, 6, z => [S1 * 0.4, bodSY(z, YB(z) + 0.05)], 2, [], -0.003), lowSide(R, ZR + 0.02, bodZT, 6, z => [S1 * 0.4, bodSY(z, YB(z) + 0.05)], 2, [], -0.003)]), MAT.plasticGrey, { d: 'Donkergrijze onderschort van de achterbumper.', ex: [0, -0.08, -0.04] }),
+    P('Onderschort', merge([lowSide(L, -2.0, bodZT, 10, z => [S1 * 0.4, bodSY(z, YB(z) + 0.05)], 2, [], -0.003), lowSide(R, -2.0, bodZT, 10, z => [S1 * 0.4, bodSY(z, YB(z) + 0.05)], 2, [], -0.003), lowSide(L, -2.285, bodZT, 4, z => [S1 * 0.4, bodSY(z, YB(z) + 0.05)], 2, [], -0.003), lowSide(R, -2.285, bodZT, 4, z => [S1 * 0.4, bodSY(z, YB(z) + 0.05)], 2, [], -0.003)]), MAT.plasticGrey, { d: 'Donkergrijze strook langs de onderrand van de achterbumper.', ex: [0, -0.08, -0.04] }),
     P('Mistachterlicht', G.rbox(0.1, 0.03, 0.012, 0.006), MAT.lensRed, { d: 'Mistachterlicht onderin de bumper aan de bestuurderszijde (positie geschat uit fase 2-foto\'s).', p: [0.62, 0.34, bodRearZ(0.62, 0.34) - 0.004], ex: [0.04, 0, -0.08] }),
     P('Reflector rechts', G.rbox(0.1, 0.03, 0.01, 0.006), MAT.lensRed, { d: 'Rode reflector onderin de bumper.', p: [-0.62, 0.34, bodRearZ(0.62, 0.34) - 0.004], ex: [-0.04, 0, -0.08] }),
     A('Parkeersensoren achter', { d: 'Vier ultrasone sensoren van de parkeerhulp achter (standaard op Initiale Paris), onder en naast de kentekenuitsparing.', ex: [0, 0.03, -0.12] }, [[0.5, 0.43], [0.17, 0.345], [-0.17, 0.345], [-0.5, 0.43]].map(([x, y], i) => P(`Parkeersensor achter ${i + 1}`, G.cyl('z', 0.011, 0.011, 0.02, 12), MAT.paint, { d: 'Ultrasone parkeersensor achter (standaard op Initiale Paris).', p: [x, y, bodRearZ(x, y) + 0.006], ex: [0, 0.02, -0.06] }))),
@@ -433,8 +433,8 @@ function buildBody() {
   // profiel (dz, dy) t.o.v. de onderrand van de ruit: bovenvlak met lichte opkrul, scherpe achterrand, onderzijde terug naar het dek
   const lipPr = [[0.012, 0.004], [-0.012, 0.010], [-0.032, 0.012], [-0.047, 0.018], [-0.046, 0.011], [-0.03, 0.002], [-0.01, -0.008], [0.004, -0.012]];
   const lipY0 = x => halfPt(SP, bodSAtX(SP, x))[1];
-  const lip = patch((x, v) => { const i = Math.min(lipPr.length - 2, Math.floor(v)), f = v - i, a = lipPr[i], b = lipPr[i + 1], w = 1 - 0.35 * (x / 0.66) ** 4;
-    return [x, lipY0(x) + lerp(a[1], b[1], f) * w, SP + lerp(a[0], b[0], f) * w]; }, -0.66, 0.66, 28, () => [0, lipPr.length - 1], lipPr.length - 1);
+  const lip = patch((x, v) => { const i = Math.min(lipPr.length - 2, Math.floor(v)), f = v - i, a = lipPr[i], b = lipPr[i + 1], w = 1 - (x / 0.58) ** 8;
+    return [x, lipY0(x) + lerp(a[1], b[1], f) * w, SP + lerp(a[0], b[0], f) * w]; }, -0.58, 0.58, 28, () => [0, lipPr.length - 1], lipPr.length - 1);
   const wPiv = [0.32, halfPt(SP + 0.06, bodSAtX(SP + 0.06, 0.32))[1] + 0.03, SP + 0.06];
   const wTip = (() => { const z = -1.5; const w = 0.5 - 0.5 * 0.55 / bodGh(z).xr * 0.98; const p = ghPt(z, w); return [0.5, p[1] + 0.03, z]; })();
   const tailgate = A('Achterklep', { d: 'Grote achterklep met de hele achterruit, typerend voor de vijfdeurs hatchback, met spoilerlip, derde remlicht en achterruitenwisser.', ex: [0, 0.42, -0.5] }, [
