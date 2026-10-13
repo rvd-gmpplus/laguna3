@@ -6,7 +6,7 @@ const chsMF = TRACK_F + 0.047, chsMR = TRACK_R + 0.047;
 std('chsCaliper', 0x5c6168, 0.55, 0.5);
 std('chsSpring', 0x25272a, 0.55, 0.5);
 std('chsRimFace', 0xd3d7dc, 0.92, 0.2, { envMapIntensity: 1.2 });
-std('chsRimWell', 0x8f949a, 0.8, 0.4);
+std('chsRimWell', 0x6b7077, 0.65, 0.5);
 const chsSP = V3(0.64, 0.40, AXF), chsSD = V3(-0.2, 0.975, -0.03).normalize();   // veerpoot: fuseeklem en richting
 function chsMat(p, r) { return new THREE.Matrix4().compose(V3(...p), new THREE.Quaternion().setFromEuler(new THREE.Euler(...r)), V3(1, 1, 1)); }
 const chsPt = (M, p) => V3(...p).applyMatrix4(M).toArray();
@@ -339,14 +339,15 @@ function buildWheel(s, front) {
   const tire = G.lathe('x', [[0.2286, -0.103], [0.248, -0.111], [0.29, -0.1135], [0.312, -0.109], [0.324, -0.098], [0.329, -0.083], [0.33, -0.078], [0.33, -0.058], [0.3265, -0.058], [0.3265, -0.046], [0.33, -0.046],
     [0.33, -0.016], [0.3265, -0.016], [0.3265, -0.006], [0.33, -0.006], [0.33, 0.006], [0.3265, 0.006], [0.3265, 0.016], [0.33, 0.016], [0.33, 0.046], [0.3265, 0.046], [0.3265, 0.058], [0.33, 0.058], [0.33, 0.078], [0.329, 0.083], [0.324, 0.098], [0.312, 0.109], [0.29, 0.1135], [0.248, 0.111], [0.2286, 0.103]], 64, 'chsTire');
   const rimB = cache('chsRimBarrel', () => yTo(new THREE.LatheGeometry([[0.2286, -0.106], [0.236, -0.108], [0.236, -0.103], [0.229, -0.098], [0.222, -0.088], [0.205, -0.07], [0.205, 0.04], [0.214, 0.085], [0.226, 0.092], [0.236, 0.098], [0.236, 0.106], [0.2286, 0.106]].map(p => new THREE.Vector2(...p)), 72), 'x'));
-  // sterwerk: tien taps toelopende spaken (breed bij de velgrand, smal bij de naaf) op een naafplaat; de spaken liggen schuin (diepe schotel)
+  // sterwerk: tien taps toelopende spaken (breed bij de velgrand, smal bij de naaf) op een naafplaat; de spaken lopen van de naaf
+  // schuin naar buiten tot vlak achter de buitenste velgrand (zoals op de persfoto), zodat er geen kale velgring zichtbaar is
   const star = cache('chsRimStar', () => {
     const list = [];
     const pad = yTo(new THREE.LatheGeometry([[0.0335, 0.047], [0.072, 0.047], [0.072, 0.064], [0.06, 0.068], [0.0335, 0.068]].map(p => new THREE.Vector2(...p)), 40), 'z');
     list.push(pad);
     for (let k = 0; k < 10; k++) {
       const sp = extrude(shapeOf([[-0.011, 0.06], [0.011, 0.06], [0.016, 0.12], [0.028, 0.222], [-0.028, 0.222], [-0.016, 0.12]]), 0.018);
-      sp.applyMatrix4(new THREE.Matrix4().set(1, 0, 0, 0, 0, 1, 0, 0, 0, -0.108, 1, 0, 0, 0, 0, 1));
+      sp.applyMatrix4(new THREE.Matrix4().set(1, 0, 0, 0, 0, 1, 0, 0, 0, 0.16, 1, -0.0096, 0, 0, 0, 1));
       sp.translate(0, 0, 0.064);
       sp.rotateZ(k * PI / 5);
       list.push(sp);
