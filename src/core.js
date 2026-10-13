@@ -38,13 +38,21 @@ controls.autoRotateSpeed = 0.7;
 
 const pmrem = new THREE.PMREMGenerator(renderer);
 scene.environment = pmrem.fromScene(new THREE.RoomEnvironment(), 0.04).texture;
-scene.add(new THREE.HemisphereLight(0xffffff, 0x3c434b, 0.35));
+const uiHemi = new THREE.HemisphereLight(0xffffff, 0x3c434b, 0.35);
+scene.add(uiHemi);
 const sun = new THREE.DirectionalLight(0xffffff, 1.2);
 sun.position.set(4, 9, 6);
 scene.add(sun);
 const rim = new THREE.DirectionalLight(0xdfe8ff, 0.35);
 rim.position.set(-6, 3, -5);
 scene.add(rim);
+// donkere modus: meer omgevings- en randlicht, zodat zwarte en donkergrijze onderdelen loskomen van de achtergrond
+function uiThemeLights() {
+  const dark = getComputedStyle(document.documentElement).getPropertyValue('color-scheme').trim() === 'dark';
+  uiHemi.intensity = dark ? 0.75 : 0.35; rim.intensity = dark ? 0.75 : 0.35;
+  uiHemi.groundColor.setHex(dark ? 0x5a636d : 0x3c434b);
+}
+uiThemeLights();
 
 /* ---------- materialen ---------- */
 const MAT = {};
