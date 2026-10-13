@@ -93,8 +93,11 @@ Haperen de eerste frames (gemiddeld meer dan 40 ms over 20 frames tijdens een an
 | `src/` | Broncode in delen: opmaak, geometrie, carrosserie, motor, aandrijflijn, onderstel, interieur, systemen, app-logica en presets. |
 | `build.py` | Voegt `src/` samen tot `index.html`, controleert de broncode en maakt een testversie. |
 | `tools/` | Testscripts (Playwright, headless Chromium) en `anchors.json` met de ankernamen. |
+| `tools/orkestratie/` | Hulpscripts van de bouwsessie: screenshotsets, eindcijfers, volledige testset in één keer, ruimtebezetting en eigendomscontrole. Zie de README in die map. |
 | `docs/` | Specificaties met bronnen, ontwerp en architectuur, testverslag, premortem, screenshots. |
 | `docs/v1/index.html` | De eerste versie van de pagina, bewaard als terugvaloptie. |
+| `docs/onderzoek/` | Onderzoeksnotities met bronnen: exterieur, motor, automaat, onderstel en interieur, beslissingen bij tegenstrijdige bronnen, UX-audit. |
+| `handomdraai.md` | Korte stand van de repo en advies voor de volgende ronde. |
 
 ## Bouwen en testen
 

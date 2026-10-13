@@ -61,10 +61,13 @@ Stand 13 okt 2026, 18:05 UTC. Golf 2 klaar, live. Twee punten open.
 - Visuele poort klein: plakken van max ca. 18 beelden, elk beeld 1x lezen, notities direct naar bestand, harde eindtijd. Eerste poort zonder die grenzen liep vast.
 - Poortmeldingen zelf naleggen in preset-screenshots. Galerijcamera kan misleiden: dashboard en motorruimte waren vals alarm.
 
+## Bewaard in repo
+
+- Onderzoek: `docs/onderzoek/` (maten en kenmerken exterieur in `exterieur.md` sectie 7, motor, automaat, onderstel en interieur, beslissingen, UX-audit met U19). Index: `docs/onderzoek/README.md`.
+- Hulpscripts: `tools/orkestratie/` (`finaltests.sh`, `gallery.py`, `presetshots.py`, `docshots.py`, `stats.py`, `pickview.py`, `zone.py`, `mergecheck.py`). Paden relatief aan repo. Uitleg: `tools/orkestratie/README.md`.
+
 ## Vluchtig: scratchpad, weg als container stopt
 
 - Pad: `/tmp/claude-0/-home-user-laguna3/30068ba5-ed5c-5f1b-b200-1ce4840ed639/scratchpad`
-- Onderzoek: `research/exterieur.md` (maten, kenmerken in sectie 7), `research/img/` (referentiefoto's, niet in repo zetten: rechten derden).
-- Plan: `plan/stand.md`, `plan/herstel-visueel.md`.
-- Hulpscripts in `tools/`: `gallery.py`, `presetshots.py`, `docshots.py`, `finaltests.sh`, `mergecheck.py`, `zone.py`, `stats.py`, `pickview.py`.
-- Voor carrosserieronde eerst `research/exterieur.md` en hulpscripts in repo zetten.
+- Referentiefoto's `research/img/`. Niet in repo: rechten derden. Bronlinks staan in de notities.
+- Werkplan: `plan/stand.md`, `plan/herstel-visueel.md`. Inhoud zit al in dit bestand en in `docs/`.
