@@ -542,33 +542,31 @@ const uiPtrs = new Map();
 let down = null, pointers = 0, uiLastTap = null, uiPressS = null;
 function uiCancelPress() {
   if (!uiPressS) return;
-  clearTimeout(uiPressS.show); clearTimeout(uiPressS.fire);
+  clearTimeout(uiPressS.show); clearTimeout(uiPressS.fire); clearTimeout(uiPressS.zero); cancelAnimationFrame(uiPressS.raf);
   els.press.hidden = true; els.press.classList.remove('run');
   uiPressS = null;
 }
+// Lang drukken, tikken en dubbeltikken worden beslist op de tijdstempels van het gebaar zelf (event.timeStamp),
+// niet op het moment waarop een handler toevallig draait. De timer toont de ring en wapent het lang drukken;
+// vóór het doorvoeren laat hij wachtende invoer eerst afhandelen (een animatieframe en daarna een nul-timeout).
+// Komt er in die tijd een pointerup of pointercancel binnen, dan beslist die (op zijn eigen tijdstempel).
+const UI_PRESS_MS = 500;
+function uiCommitPress(d, fromUp) {
+  if (d.consumed || (d.ended && !fromUp)) return;
+  d.consumed = true;
+  if (uiPressS && uiPressS.d === d) uiCancelPress();
+  try { navigator.vibrate && navigator.vibrate(12); } catch (_) { }
+  if (d.pick) uiCollapseAt(d.pick);
+}
 function uiStartPress(d) {
   uiCancelPress();
-  uiPressS = {
-    show: setTimeout(() => { els.press.style.transform = `translate(${d.x}px, ${d.y}px)`; els.press.hidden = false; void els.press.offsetWidth; els.press.classList.add('run'); }, 150),
-    fire: setTimeout(() => {
-      d.consumed = true; uiPressS = null;
-      els.press.hidden = true; els.press.classList.remove('run');
-      try { navigator.vibrate && navigator.vibrate(12); } catch (_) { }
-      if (d.pick) uiCollapseAt(d.pick);
-    }, 500),
-  };
+  const s = uiPressS = { d, raf: 0, zero: 0 };
+  s.show = setTimeout(() => { els.press.style.transform = `translate(${d.x}px, ${d.y}px)`; els.press.hidden = false; void els.press.offsetWidth; els.press.classList.add('run'); }, 150);
+  s.fire = setTimeout(() => {
+    // gewapend: eerst wachtende invoer laten afhandelen, dan pas doorvoeren als de vinger er nog ligt
+    s.raf = requestAnimationFrame(() => { s.zero = setTimeout(() => { if (uiPressS === s && !d.ended) uiCommitPress(d); }, 0); });
+  }, UI_PRESS_MS);
 }
-canvas.addEventListener('pointerdown', e => {
-  uiPtrs.set(e.pointerId, e.pointerType);
-  pointers = uiPtrs.size;
-  try { canvas.focus({ preventScroll: true }); } catch (_) { }
-  uiHideTip();
-  if (uiPtrs.size === 1) {
-    down = { id: e.pointerId, x: e.clientX, y: e.clientY, t: performance.now(), type: e.pointerType, button: e.button, shift: e.shiftKey, consumed: false };
-    down.pick = pick(e.clientX, e.clientY, e.pointerType !== 'mouse'); // de pick van deze tik, ook voor een dubbeltik
-    if (e.pointerType !== 'mouse' && e.button === 0) uiStartPress(down);
-  } else { down = null; uiCancelPress(); }
-});
 canvas.addEventListener('pointermove', e => {
   if (down && down.id === e.pointerId && Math.hypot(e.clientX - down.x, e.clientY - down.y) >= 7) uiCancelPress();
   if (e.pointerType !== 'mouse' || e.buttons) { if (!els.tip.hidden) uiHideTip(); return; }
@@ -581,14 +579,18 @@ canvas.addEventListener('pointerup', e => {
   uiPtrs.delete(e.pointerId); pointers = uiPtrs.size;
   if (!down || down.id !== e.pointerId) return;
   const d = down; down = null;
+  d.ended = true;
   uiCancelPress();
   if (d.consumed) return;
-  const moved = Math.hypot(e.clientX - d.x, e.clientY - d.y), dt = performance.now() - d.t;
-  if (moved >= 7 || dt >= 600) return; // slepen is nooit een klik
+  const moved = Math.hypot(e.clientX - d.x, e.clientY - d.y), dt = e.timeStamp - d.t;
+  if (moved >= 7) return; // slepen is nooit een klik
+  // lang drukken op touch: beslist door de duur van het gebaar zelf, ook als de timer nog niet aan de beurt was
+  if (d.type !== 'mouse' && d.button === 0 && dt >= UI_PRESS_MS) { uiCommitPress(d, true); return; }
+  if (dt >= 600) return;
   if (d.button === 2) { if (d.type === 'mouse') { d.pick ? uiCollapseAt(d.pick) : uiBackground(); } return; }
   if (d.button !== 0) return;
-  const now = performance.now(), L = uiLastTap;
-  if (L && now - L.t < 420 && Math.hypot(e.clientX - L.x, e.clientY - L.y) < 26 && L.type === d.type) {
+  const now = e.timeStamp, L = uiLastTap;
+  if (L && now - L.t < 420 && now - L.t >= 0 && Math.hypot(e.clientX - L.x, e.clientY - L.y) < 26 && L.type === d.type) {
     uiLastTap = null;
     if (L.pick) uiDive(L.pick); // altijd het onderdeel van de eerste tik
     return;
@@ -597,8 +599,8 @@ canvas.addEventListener('pointerup', e => {
   if (d.shift) { d.pick ? uiCollapseAt(d.pick) : uiBackground(); return; }
   uiAct(d.pick);
 });
-const uiPtrReset = () => { uiPtrs.clear(); pointers = 0; down = null; uiCancelPress(); };
-canvas.addEventListener('pointercancel', e => { uiPtrs.delete(e.pointerId); pointers = uiPtrs.size; if (down && down.id === e.pointerId) down = null; uiCancelPress(); });
+const uiPtrReset = () => { uiPtrs.clear(); pointers = 0; if (down) down.ended = true; down = null; uiCancelPress(); };
+canvas.addEventListener('pointercancel', e => { uiPtrs.delete(e.pointerId); pointers = uiPtrs.size; if (down && down.id === e.pointerId) { down.ended = true; down = null; } uiCancelPress(); });
 canvas.addEventListener('lostpointercapture', e => { if (uiPtrs.has(e.pointerId) && down && down.id === e.pointerId && down.type !== 'mouse') { uiPtrs.delete(e.pointerId); pointers = uiPtrs.size; } });
 window.addEventListener('blur', uiPtrReset);
 document.addEventListener('visibilitychange', () => { if (document.hidden) uiPtrReset(); });
