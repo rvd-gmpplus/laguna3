@@ -435,9 +435,9 @@ function driveshaft(name, a, b, o) {
   if (o.mid) kids.push(A('Tussenas', { d: 'Lange binnenstam van de rechter aandrijfas (circa 350 mm) die in een kogellager achter het blok draait; zo komt de rechter as op dezelfde lengte als de linker.', ex: [-0.05, 0.15, 0.0] }, [
     P('Tussenas (stam)', drvL('Tus', [[0.0125, 0.0], [0.0125, 0.052], [0.0155, 0.058], [0.0155, o.mid - 0.02], [0.0125, o.mid - 0.02], [0.0125, o.mid]], 18), MAT.steel, { d: 'Stalen stam met bakzijde 30 spiebanen, die in het zijwiel van het differentieel steekt.', ex: [0, 0, 0.0001] }),
     P('Tussenaslager', merge([annulus(0.0175, 0.031, 0.014, 'x', 32)]), MAT.bearing, { d: 'Kogellager 35 × 62 × 14 mm van de tussenas.', p: [o.mid * 0.8, 0, 0], ex: [0.0, 0.1, 0.0] }),
-    P('Lagerhuis tussenas', merge([annulus(0.031, 0.038, 0.016, 'x', 32), xf(G.box(0.016, 0.016, 0.03), [0, 0, 0.0295]), xf(G.box(0.05, 0.05, 0.008), [0, 0, 0.0475])]), MAT.aluCast, { d: 'Lagerhuis dat de tussenas aan de achterkant van het motorblok steunt (positie en vorm schematisch weergegeven).', p: [o.mid * 0.8, 0, 0], ex: [0.0, 0.0, 0.2] }),
+    P('Lagerhuis tussenas', merge([annulus(0.031, 0.038, 0.016, 'x', 32), xf(G.box(0.016, 0.016, 0.024), [0, 0, 0.0235]), xf(G.box(0.05, 0.05, 0.008), [0, 0, 0.0375])]), MAT.aluCast, { d: 'Lagerhuis dat de tussenas aan de achterkant van het motorblok steunt (positie en vorm schematisch weergegeven).', p: [o.mid * 0.8, 0, 0], ex: [0.0, 0.0, 0.2] }),
     P('Lagerborgring tussenas', annulus(0.0155, 0.0205, 0.002, 'x', 20), MAT.steel, { d: 'Borgring op de tussenas.', p: [o.mid * 0.8 + 0.0095, 0, 0], ex: [0.0, 0.0, 0.1] }),
-    ...[-1, 1].map((k, i) => P(`Lagerhuisbout ${i + 1}`, drvBolt(0.02, 0.007, 'z'), MAT.darkSteel, { d: 'Bout van het lagerhuis aan het motorblok.', p: [o.mid * 0.8 + k * 0.018, 0, 0.0435], ex: [0, 0, -0.3] })),
+    ...[-1, 1].map((k, i) => P(`Lagerhuisbout ${i + 1}`, drvBolt(0.02, 0.007, 'z'), MAT.darkSteel, { d: 'Bout van het lagerhuis aan het motorblok.', p: [o.mid * 0.8 + k * 0.018, 0, 0.0335], ex: [0, 0, -0.3] })),
   ]));
   const j0 = o.mid || 0;                           // de tripode begint na de tussenas
   kids.push(A('Binnenste homokineet (tripode)', { d: 'Glijdende tripode-koppeling aan de bakzijde (huis circa Ø87 mm): vangt de lengteverandering van de ophanging op. Schematisch weergegeven.', ex: [-0.04 + j0 * 0, 0.0, 0.0] }, [
@@ -459,29 +459,29 @@ function driveshaft(name, a, b, o) {
   ]));
   const balls = Array.from({ length: 8 }, (_, k) => P(`Kogel ${k + 1}`, G.sphere(0.0072, 10), MAT.chrome, { d: 'Stalen kogel die het koppel tussen binnenste naaf en klok overbrengt.', p: [outerX + 0.036, 0.0335 * Math.cos(k * PI / 4), 0.0335 * Math.sin(k * PI / 4)], ex: [0, 0.07 * Math.cos(k * PI / 4), 0.07 * Math.sin(k * PI / 4)], inner: true }));
   kids.push(A('Buitenste homokineet (kogelkoppeling)', { d: 'Vaste kogelkoppeling aan de wielzijde (Rzeppa, 8 kogels, buitendiameter circa 90 mm): laat sturen en veren toe. Maten en opbouw volgens catalogus, schematisch weergegeven.', ex: [0.06, 0, 0] }, [
-    P('Koppelingsklok', drvL('CvB' + name, [[0.031, outerX], [0.0455, outerX + 0.006], [0.0455, outerX + 0.05], [0.036, outerX + 0.066], [0.0165, outerX + 0.074], [0.0165, L + 0.055]], 32), MAT.steel, { d: 'Klok met de uitwendige loopbanen voor de kogels en de gegroefde stompas voor de naaf (27 spiebanen, M22 × 1,5).', ex: [0.12, 0, 0] }),
+    P('Koppelingsklok', drvL('CvB' + name, [[0.031, outerX], [0.0455, outerX + 0.006], [0.0455, outerX + 0.05], [0.036, outerX + 0.066], [0.0165, outerX + 0.074], [0.0165, L + 0.05]], 32), MAT.steel, { d: 'Klok met de uitwendige loopbanen voor de kogels en de gegroefde stompas voor de naaf (27 spiebanen, M22 × 1,5).', ex: [0.12, 0, 0] }),
     P('Kogelkooi', G.lathe('x', [[0.026, outerX + 0.012], [0.04, outerX + 0.026], [0.04, outerX + 0.046], [0.026, outerX + 0.06]], 24, 'drvCage' + name), MAT.drvBrass, { d: 'Kooi die de acht kogels op hun plaats houdt.', ex: [0.04, 0, 0], inner: true }),
     ...balls,
     P('Binnenring kogelkoppeling', G.lathe('x', [[0.0125, outerX + 0.014], [0.0255, outerX + 0.016], [0.0255, outerX + 0.056], [0.0125, outerX + 0.058]], 24, 'drvInRace' + name), MAT.darkSteel, { d: 'Binnenste naaf met loopbanen, op de schacht gespied.', ex: [-0.04, 0, 0], inner: true }),
     P('Borgring kogelkoppeling', annulus(0.0125, 0.0165, 0.0018, 'x', 20), MAT.steel, { d: 'Borgring die de binnenring op de schacht houdt.', p: [outerX + 0.062, 0, 0], ex: [-0.1, 0, 0], inner: true }),
   ]));
-  kids.push(P('Naafmoer met ring', merge([G.cyl('x', 0.0165, 0.0165, 0.016, 6), xf(annulus(0.0115, 0.03, 0.004, 'x', 24), [-0.008, 0, 0])]), MAT.steel, { d: 'Naafmoer M22 × 1,5 met onderlegring (sleutelmaat 30 mm) die de as in de naaf klemt; wordt met borglijm vastgezet.', p: [hubX + 0.048, 0, 0], ex: [0.2, 0, 0] }));
+  kids.push(P('Naafmoer met ring', merge([G.cyl('x', 0.0165, 0.0165, 0.016, 6), xf(annulus(0.0115, 0.03, 0.004, 'x', 24), [-0.008, 0, 0])]), MAT.steel, { d: 'Naafmoer M22 × 1,5 met onderlegring (sleutelmaat 30 mm) die de as in de naaf klemt; wordt met borglijm vastgezet.', p: [hubX + 0.041, 0, 0], ex: [0.2, 0, 0] }));
   return A(name, { d: o.d, spec: o.spec, p: a, q, ex: o.ex }, kids);
 }
 
 /* ---------- motorsteunen ---------- */
 function drvMounts() {
-  const rodA = [-0.10, -0.10, -0.115], sub = toPT([-0.23, 0.27, 1.2]).toArray();
+  const rodA = [0.12, -0.10, -0.115], sub = toPT([-0.01, 0.27, 1.2]).toArray();
   const bolt = (nm, d, p, ax, ex, r) => P(nm, drvBolt(0.025, 0.01, ax), MAT.darkSteel, { d, p, r, ex });
-  const gx = GB_X + 0.345;
+  const gx = GB_X + 0.335;
   return A('Motorsteunen', { d: 'Rubber-metalen steunen die motor en bak trillingsarm in de carrosserie ophangen: rechter pendelsteun aan de distributiezijde, linker bak-steun en een koppelstang onder de motor. Opbouw en afmetingen waar onbekend schematisch weergegeven.', ex: [0, 0.7, 0] }, [
-    A('Motorsteun distributiezijde', { d: 'Rechter bovensteun (pendelsteun) met limiteur: rubber-metalen steun van aluminium, circa 198 × 61 × 53 mm, boven op het distributiedeksel tussen cilinderkop en torenbevestiging.', spec: [['Afmetingen', '198 × 61 × 53 mm'], ['Uitvoering', 'rubber-metaal, aluminium']], ex: [-0.15, 0.1, 0] }, [
-      P('Beugel motorzijde', merge([G.rbox(0.085, 0.02, 0.05, 0.004), xf(G.box(0.02, 0.07, 0.05), [0.0325, -0.045, 0])]), MAT.alu, { d: 'Aluminium beugel met voet op de cilinderkop.', p: [-0.2575, 0.447, 0.062], ex: [0.0, 0.0, 0.0001] }),
+    A('Motorsteun distributiezijde', { d: 'Rechter bovensteun (pendelsteun) met limiteur: rubber-metalen steun van aluminium, circa 198 × 61 × 53 mm, boven op het distributiedeksel, met de beugel naar de torenbevestiging van de carrosserie.', spec: [['Afmetingen', '198 × 61 × 53 mm'], ['Uitvoering', 'rubber-metaal, aluminium']], ex: [-0.15, 0.1, 0] }, [
+      P('Beugel motorzijde', G.rbox(0.074, 0.02, 0.05, 0.004), MAT.alu, { d: 'Aluminium beugel die met twee bouten boven op het distributiedeksel zit.', p: [-0.263, 0.447, 0.062], ex: [0.0, 0.0, 0.0001] }),
       P('Rubber pendelsteun', G.cyl('x', 0.024, 0.024, 0.05, 20), MAT.rubber, { d: 'Rubberelement dat de trillingen dempt.', p: [-0.33, 0.447, 0.062], ex: [-0.08, 0, 0] }),
       P('Limiteur', merge([G.cyl('x', 0.01, 0.01, 0.09, 12), xf(G.cyl('x', 0.016, 0.016, 0.006, 16), [0.045, 0, 0])]), MAT.darkSteel, { d: 'Begrenzer die de beweging van de motor bij hoge belasting beperkt.', p: [-0.335, 0.447, 0.062], ex: [-0.16, 0.06, 0] }),
       P('Beugel carrosseriezijde', merge([G.rbox(0.04, 0.06, 0.05, 0.005), xf(G.box(0.04, 0.012, 0.05), [0.0, -0.03, 0])]), MAT.alu, { d: 'Aluminium beugel naar de torenbevestiging van de carrosserie (vorm schematisch).', p: [-0.375, 0.447, 0.062], ex: [-0.24, 0, 0] }),
-      bolt('Bout beugel 1', 'Bout die de beugel aan de cilinderkop bevestigt.', [-0.23, 0.4635, 0.045], 'y', [0, 0.1, 0], [PI, 0, 0]),
-      bolt('Bout beugel 2', 'Bout die de beugel aan de cilinderkop bevestigt.', [-0.23, 0.4635, 0.079], 'y', [0, 0.1, 0.06], [PI, 0, 0]),
+      bolt('Bout beugel 1', 'Bout die de beugel aan het distributiedeksel bevestigt.', [-0.24, 0.4635, 0.045], 'y', [0, 0.1, 0], [PI, 0, 0]),
+      bolt('Bout beugel 2', 'Bout die de beugel aan het distributiedeksel bevestigt.', [-0.24, 0.4635, 0.079], 'y', [0, 0.1, 0.06], [PI, 0, 0]),
       bolt('Bout carrosseriebeugel 1', 'Bout die de steun aan de carrosserie bevestigt.', [-0.355, 0.447, 0.045], '-x', [-0.3, 0.05, 0]),
       bolt('Bout carrosseriebeugel 2', 'Bout die de steun aan de carrosserie bevestigt.', [-0.355, 0.447, 0.079], '-x', [-0.3, -0.05, 0]),
     ]),
