@@ -163,8 +163,11 @@ function reveal(n) {
   let i = 0;
   for (const a of ancestors(n)) if (!uiOpen(a)) setTarget(a, 1, (i++) * (REDUCED ? 0 : 0.18));
   CTX = n.parent || null; uiLabelForce = false; clearPreset();
+  // telefoon: paneel terug naar de smalle stand, zodat je ziet wat er gebeurt
+  if (window.innerWidth < 920 && els.sheet.dataset.state === 'open') setSheet('peek');
   select(n);
   focusNodes([n], null, n.asm ? 1.12 : 1.6, { min: 0.3, dur: Math.max(0.95, i * 0.18 + 0.55) });
+  uiLastFit = { nodes: [n], dir: null, pad: n.asm ? 1.12 : 1.6, opt: { min: 0.3 } };
   uiAfterAction();
 }
 function uiUp() {
@@ -842,7 +845,8 @@ function uiSetDpr(v) { if (Math.abs(v - uiDpr) < 1e-3) return; uiDpr = v; render
 function uiSetLite(on) {
   uiAdapted = true; uiLite = on;
   const cc = on ? 0 : 1;
-  for (const m of [MAT.paint, HL.get(MAT.paint), uiHV.get(MAT.paint)]) if (m) { m.clearcoat = cc; m.needsUpdate = true; }
+  MAT.paint.clearcoat = cc; MAT.paint.needsUpdate = true;
+  for (const m of [uiHV.get(MAT.paint), uiSL.get(MAT.paint)]) if (m) { m.clearcoat = on ? 0 : 0.2; m.needsUpdate = true; }
   els.qualityRow.hidden = false; els.qualityNote.hidden = !on; els.quality.checked = !on;
   uiSetDpr(uiPickDpr(false));
   requestRender();
@@ -860,6 +864,25 @@ function uiNearFar() {
   const d = camera.position.distanceTo(controls.target);
   const near = clamp(d / 250, 0.004, 0.08), far = Math.max(80, d * 30);
   if (Math.abs(near - camera.near) / camera.near > 0.2 || Math.abs(far - camera.far) / camera.far > 0.2) { camera.near = near; camera.far = far; camera.updateProjectionMatrix(); }
+}
+// Markeer-, aanwijs- en systeemmaterialen vooraf compileren (in kleine stukjes na de eerste weergave),
+// zodat de eerste keer aanwijzen of selecteren niet hapert op het compileren van een shader.
+function uiWarmMaterials() {
+  const todo = [];
+  const bases = [...new Set(MESHES.map(m => m.userData.base))];
+  for (const b of [...bases, ...Object.values(SYS_MATS)]) todo.push(uiSelMat(b), uiHvMat(b));
+  todo.push(...Object.values(SYS_MATS), GHOST, GHOST_HL, uiGhostHv);
+  const geo = new THREE.BoxGeometry(0.001, 0.001, 0.001);
+  const step = () => {
+    const batch = todo.splice(0, 4);
+    if (!batch.length) { geo.dispose(); return; }
+    const g = new THREE.Group();
+    for (const mat of batch) { const m = new THREE.Mesh(geo, mat); m.position.set(0, -40, 0); g.add(m); }
+    scene.add(g);
+    try { renderer.compile(scene, camera); } catch (_) { } finally { scene.remove(g); }
+    setTimeout(step, 40);
+  };
+  setTimeout(step, 600);
 }
 canvas.addEventListener('webglcontextlost', e => e.preventDefault());
 canvas.addEventListener('webglcontextrestored', () => requestRender());
@@ -914,6 +937,7 @@ renderer.render(scene, camera);
 LOADING.classList.add('gone');
 uiInitHint();
 requestAnimationFrame(t => { last = t; uiReady = true; loop(t); });
+uiWarmMaterials();
 { const errs = checkPresets(); if (errs.length) console.warn('presets: ' + errs.join('; ')); }
 // labelbreedtes opnieuw meten zodra de lettertypen er zijn
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { for (const n of ALL) n._lw = null; uiUiChanged(); layoutView(); });

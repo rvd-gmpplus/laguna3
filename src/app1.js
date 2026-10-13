@@ -190,18 +190,22 @@ function applyVisibility() {
   })(ROOT, false, true);
   uiVisDirty = false;
 }
-const uiHV = new Map();
-function uiHvMat(base) {
-  let m = uiHV.get(base);
-  if (!m) {
-    m = base.clone();
-    m.emissive = new THREE.Color(0x2f86ff);
-    m.emissiveIntensity = 0.38;
-    if (m.transparent) m.opacity = Math.max(m.opacity, 0.5);
-    uiHV.set(base, m);
-  }
+// Markering door de kleur zelf te verschuiven (een optelsom met emissive verdwijnt op glanzend, licht metaal:
+// gemeten 218 -> 222 in rood op de lak). Minder metaal en minder reflectie, zodat de tint ook op de lak leesbaar is.
+function uiTint(base, hex, k) {
+  const m = base.clone(), c = new THREE.Color(hex);
+  if (m.color) m.color.lerp(c, k);
+  m.emissive = c.clone(); m.emissiveIntensity = 0.28;
+  if (m.metalness != null) m.metalness = Math.min(m.metalness, 0.15);
+  if (m.roughness != null) m.roughness = Math.max(m.roughness, 0.5);
+  if (m.envMapIntensity != null) m.envMapIntensity = Math.min(m.envMapIntensity, 1) * 0.45;
+  if (m.clearcoat) m.clearcoat = 0.15;
+  if (m.transparent) m.opacity = Math.max(m.opacity, 0.55);
   return m;
 }
+const uiHV = new Map(), uiSL = new Map();
+function uiHvMat(base) { let m = uiHV.get(base); if (!m) { m = uiTint(base, 0x3d8cff, 0.7); uiHV.set(base, m); } return m; }
+function uiSelMat(base) { let m = uiSL.get(base); if (!m) { m = uiTint(base, 0xf2c230, 0.75); uiSL.set(base, m); } return m; }
 const uiGhostHv = new THREE.MeshStandardMaterial({ color: 0x5aa0ff, emissive: 0x2f86ff, emissiveIntensity: 0.3, transparent: true, opacity: 0.3, depthWrite: false, side: THREE.DoubleSide });
 let uiSelSet = new Set(), uiHovSet = new Set(), uiHovNode = null;
 function uiMatFor(m) {
@@ -210,7 +214,7 @@ function uiMatFor(m) {
   if (SYSCOL && n.sys) mat = SYS_MATS[n.sys] || mat;
   const ghost = XRAY && n.isBody;
   if (ghost) mat = GHOST;
-  if (uiSelSet.has(m)) return ghost ? GHOST_HL : hlMat(mat);
+  if (uiSelSet.has(m)) return ghost ? GHOST_HL : uiSelMat(mat);
   if (uiHovSet.has(m)) return ghost ? uiGhostHv : uiHvMat(mat);
   return mat;
 }
