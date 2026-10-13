@@ -97,6 +97,7 @@ function uiAfterAction() {
   renderPanel();
   if (treeVisible()) renderTree();
   uiSyncExplode(); uiSyncCats(); uiSyncUndo(); uiSyncToggles();
+  applyMats(); // I3: geen gele selectietint meer op een groep die open is gegaan
   uiHideTip();
   uiSyncLabels();
   requestRender();
