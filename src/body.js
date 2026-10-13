@@ -26,7 +26,8 @@ function pchip(pts) {
   };
 }
 // grootste halve breedte (bovenaanzicht, zonder spiegels): smalle, ronde neus en staart
-const HW = pchip([[-2.35, 0.29], [-2.335, 0.40], [-2.30, 0.50], [-2.268, 0.60], [-2.22, 0.725], [-2.15, 0.79], [-2.05, 0.82], [-1.90, 0.852], [-1.75, 0.874], [-1.50, 0.891], [-1.20, 0.893],
+// staart: de taper begint al bij z -1,9, zodat de hoeken in bovenaanzicht ronder lopen (binnen de planmarge van 5 cm)
+const HW = pchip([[-2.35, 0.29], [-2.335, 0.40], [-2.30, 0.50], [-2.268, 0.595], [-2.22, 0.708], [-2.15, 0.770], [-2.05, 0.807], [-1.90, 0.847], [-1.75, 0.874], [-1.50, 0.891], [-1.20, 0.893],
   [1.20, 0.893], [1.40, 0.891], [1.60, 0.884], [1.80, 0.86], [1.95, 0.82], [2.05, 0.782], [2.15, 0.715], [2.22, 0.625], [2.27, 0.48], [2.30, 0.33], [2.325, 0.22], [2.345, 0.07]]);
 // onderkant carrosserie (bumperranden en dorpel; in de wielbogen snijdt de boog)
 const YB = pchip([[-2.35, 0.53], [-2.335, 0.47], [-2.30, 0.38], [-2.268, 0.31], [-2.20, 0.287], [-2.10, 0.271], [-2.00, 0.26], [-1.90, 0.249], [-1.80, 0.244], [-1.60, 0.215], [-1.30, 0.19], [-1.0, 0.18],
@@ -46,7 +47,7 @@ const YR = pchip([[-2.11, 1.13], [-1.905, 1.181], [-1.655, 1.246], [-1.405, 1.31
 // karakterlijn op de flank: van de voorwielboog oplopend naar de bovenrand van het achterlicht
 const bodYC = pchip([[-2.2, 0.985], [-1.98, 0.975], [-1.4, 0.93], [-1.0, 0.90], [0.0, 0.852], [0.95, 0.80], [1.3, 0.785]]);
 // bovenaanzicht: boven de bumperrichel loopt de staart ronder in dan de bumper (hoekstraal ca. 0,3 m); factor op x
-const bodKU = pchip([[-2.268, 0.925], [-2.22, 0.93], [-2.15, 0.955], [-2.05, 0.985], [-1.95, 0.9985], [-1.85, 1.0]]);
+const bodKU = pchip([[-2.268, 0.905], [-2.22, 0.91], [-2.15, 0.938], [-2.05, 0.976], [-1.95, 0.996], [-1.85, 1.0]]);
 const bodKY0 = bodYLEDGE + 0.01, bodKY1 = 0.14;          // overgang van bumperbreedte naar de smallere bovenstaart
 const S1 = 0.14, S2 = 0.22, S3 = 0.60, S4 = 0.72, BUL = 0.016, CRW = 0.03;
 const sstep = t => { const u = clamp(t, 0, 1); return u * u * (3 - 2 * u); };
