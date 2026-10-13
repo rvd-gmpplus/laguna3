@@ -36,7 +36,7 @@ def ensure_three():
 def build_test(test_dir=None):
     """Bouwt src/ naar test_dir/index.html met three/ als symlink. Geeft de map terug."""
     test_dir = test_dir or tempfile.mkdtemp(prefix='laguna-test-')
-    r = subprocess.run([sys.executable, os.path.join(ROOT, 'build.py'), test_dir], capture_output=True, text=True)
+    r = subprocess.run([sys.executable, os.path.join(ROOT, 'build.py'), '--test-only', test_dir], capture_output=True, text=True)
     if r.returncode != 0:
         raise SystemExit('bouw mislukt:\n' + r.stderr + r.stdout)
     link = os.path.join(test_dir, 'three')

@@ -38,6 +38,8 @@ Open `index.html` in een moderne browser. Het bestand laadt three.js r147 van js
 ```bash
 python3 build.py                 # schrijft index.html (three.js via CDN)
 python3 build.py /pad/naar/test  # maakt ook test/index.html die three.js uit ./three/ laadt
+python3 build.py --lint          # controleert alleen (dubbele namen, syntaxis)
+python3 build.py --test-only MAP # alleen de testversie, laat index.html ongemoeid
 ```
 
 Voor de testversie: `npm pack three@0.147.0`, uitpakken en de map `package` als `test/three` neerzetten (symlink volstaat). Zie [docs/testen.md](docs/testen.md).

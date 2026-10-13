@@ -4,6 +4,7 @@ Gebruik:
   python3 build.py                 schrijft index.html (three.js via CDN)
   python3 build.py MAP             schrijft ook MAP/index.html die three.js uit MAP/three/ laadt
   python3 build.py --lint          controleert alleen, schrijft niets
+  python3 build.py --test-only MAP schrijft alleen MAP/index.html (gebruikt door de tests; laat index.html ongemoeid)
 
 Controles (de bouw stopt bij een fout):
   - dubbele functienamen op het hoogste niveau over alle bestanden (die zouden elkaar stil overschrijven)
@@ -77,6 +78,7 @@ def page(head, js, prefix):
 
 def main(argv):
     lint_only = '--lint' in argv
+    test_only = '--test-only' in argv
     args = [a for a in argv if not a.startswith('--')]
     sources = [(f, read(f)) for f in ORDER]
     errors = lint(sources)
@@ -91,15 +93,19 @@ def main(argv):
     head = read('head.html')
     js = '\n'.join(text for _, text in sources)
     out = os.path.join(HERE, 'index.html')
-    with open(out, 'w', encoding='utf-8') as f:
-        f.write(page(head, js, CDN))
+    if test_only and not args:
+        print('--test-only vraagt een map', file=sys.stderr)
+        return 2
+    if not test_only:
+        with open(out, 'w', encoding='utf-8') as f:
+            f.write(page(head, js, CDN))
     if args:
         test_dir = args[0]
         os.makedirs(test_dir, exist_ok=True)
         body = page(head, js, 'three/')
         with open(os.path.join(test_dir, 'index.html'), 'w', encoding='utf-8') as f:
             f.write('<!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"></head><body>\n' + body + '</body></html>')
-    print('ok', os.path.getsize(out), 'bytes')
+    print('ok', 'testversie' if test_only else f'{os.path.getsize(out)} bytes')
     return 0
 
 
