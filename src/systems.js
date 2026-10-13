@@ -185,9 +185,9 @@ function buildExhaust() {
   const EZ = -2.0, EY = 0.165;
   const endGeo = cache('sysEnd', () => merge([xf(G.rbox(0.66, 0.13, 0.28, 0.05), [0, 0, 0]), xf(G.cyl('z', 0.026, 0.026, 0.06, 14), [0.05, 0, 0.16])]));
   const einddemper = A('Einddemper', { d: 'Dwarsgeplaatste einddemper achter de achteras, met aan beide kanten een uitlaatpijp naar een verchroomd eindstuk (twee chromen eindstukken: aannemelijk voor deze uitvoering).', ex: [0, -0.1, -0.18] }, [
-    P('Demperhuis eind', endGeo, MAT.exhaust, { d: 'Dwarsgeplaatste einddemper van geplooid plaatstaal.', p: [0, EY, EZ] }),
-    ...[1, -1].map(s => P(`Uitlaatpijp ${sideName(s)}`, tube([[s * 0.33, EY, EZ - 0.02], [s * 0.45, 0.19, -2.05], [s * 0.54, 0.24, -2.1], [s * 0.6, 0.29, -2.17], [s * 0.6, 0.3, -2.21]], 0.02, 20, 10), MAT.exhaust, { d: 'Buis van de einddemper naar het chromen eindstuk onder de bumper.', ex: [s * 0.08, -0.04, -0.06] })),
-    ...[1, -1].map(s => P(`Uitlaateindstuk ${sideName(s)}`, annulus(0.0305, 0.037, 0.075, 'z', 22), MAT.chrome, { d: 'Verchroomd eindstuk, zichtbaar onder de achterbumper.', p: [s * 0.6, 0.3, -2.25], ex: [s * 0.04, 0, -0.18] })),
+    P('Demperhuis eind', endGeo, MAT.exhaust, { d: 'Dwarsgeplaatste einddemper van geplooid plaatstaal.', p: [0, EY, EZ], ex: [0, 0, 0] }),
+    ...[1, -1].map(s => P(`Uitlaatpijp ${sideName(s)}`, tube([[s * 0.33, EY, EZ - 0.02], [s * 0.45, 0.19, -2.05], [s * 0.54, 0.24, -2.1], [s * 0.6, 0.29, -2.17], [s * 0.6, 0.3, -2.21]], 0.02, 20, 10), MAT.exhaust, { d: 'Buis van de einddemper naar het chromen eindstuk onder de bumper.', ex: [s * 0.015, 0, -0.03] })),
+    ...[1, -1].map(s => P(`Uitlaateindstuk ${sideName(s)}`, annulus(0.0305, 0.037, 0.075, 'z', 22), MAT.chrome, { d: 'Verchroomd eindstuk, zichtbaar onder de achterbumper.', p: [s * 0.6, 0.3, -2.25], ex: [s * 0.015, 0, -0.1] })),
   ]);
   const hang = (n, x, yp, z, yb) => {
     const y0 = yp + pipeR + 0.008, len = yb - y0 - 0.004;
