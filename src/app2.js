@@ -733,6 +733,69 @@ function uiLabelGroup() {
   if (CTX && uiOpen(CTX) && CTX.amt > 0.6) return CTX;
   return null;
 }
+// Labelanker op de gelabelde knoop zelf. Het midden van het kader (n.lc) ligt bij een groep vaak op een ander deel of
+// in de lucht, zeker als de groep zelf is uitgeklapt (Stuurpomp: Pomphuis en Stroomregelklep). Daarom ankert elk
+// label op een representatief mesh: bij een onderdeel het mesh zelf, bij een groep een groot, niet-ingesloten mesh zo
+// dicht mogelijk bij het midden van de groep. Het punt ligt in de eigen coördinaten van dat mesh, zodat het anker
+// meebeweegt als de groep uitklapt: het midden van het mesh als dat binnenin ligt, anders (ring, holle bus) het midden
+// van de driehoek die het dichtst bij dat midden ligt. Eén keer per knoop berekend (lui), per geometrie gedeeld; geen
+// raycasts per frame.
+const uiGeoAnchor = new WeakMap();
+function uiGeoPoint(geo) {
+  let p = uiGeoAnchor.get(geo);
+  if (p) return p;
+  if (!geo.boundingBox) geo.computeBoundingBox();
+  const c = geo.boundingBox.getCenter(V3(0, 0, 0)), pos = geo.attributes.position, idx = geo.index;
+  const nt = idx ? idx.count / 3 : pos.count / 3, C = [c.x, c.y, c.z], cross = [0, 0, 0], q = [[], [], []];
+  let bd = Infinity; p = c.clone();
+  for (let t = 0; t < nt; t++) {
+    for (let j = 0; j < 3; j++) { const v = idx ? idx.getX(3 * t + j) : 3 * t + j; q[j][0] = pos.getX(v); q[j][1] = pos.getY(v); q[j][2] = pos.getZ(v); }
+    const x = (q[0][0] + q[1][0] + q[2][0]) / 3, y = (q[0][1] + q[1][1] + q[2][1]) / 3, z = (q[0][2] + q[1][2] + q[2][2]) / 3;
+    const dd = (x - c.x) * (x - c.x) + (y - c.y) * (y - c.y) + (z - c.z) * (z - c.z);
+    if (dd < bd) { bd = dd; p.set(x, y, z); }
+    // stralen vanuit het midden langs +x, +y en +z: hoe vaak snijden ze het oppervlak (oneven = midden ligt binnenin)
+    for (let ax = 0; ax < 3; ax++) {
+      const u = (ax + 1) % 3, w = (ax + 2) % 3, pu = C[u], pw = C[w];
+      const d = (q[1][u] - q[0][u]) * (q[2][w] - q[0][w]) - (q[2][u] - q[0][u]) * (q[1][w] - q[0][w]);
+      if (Math.abs(d) < 1e-14) continue;
+      const l1 = ((q[1][u] - pu) * (q[2][w] - pw) - (q[2][u] - pu) * (q[1][w] - pw)) / d;
+      const l2 = ((q[2][u] - pu) * (q[0][w] - pw) - (q[0][u] - pu) * (q[2][w] - pw)) / d;
+      const l3 = 1 - l1 - l2;
+      if (l1 < 0 || l2 < 0 || l3 < 0) continue;
+      if (l1 * q[0][ax] + l2 * q[1][ax] + l3 * q[2][ax] > C[ax]) cross[ax]++;
+    }
+  }
+  // dicht, bol deel: het midden zelf (valt in elk aanzicht binnen het silhouet); ring, buis of open schaal: het
+  // dichtstbijzijnde stukje oppervlak
+  if (cross[0] % 2 && cross[1] % 2 && cross[2] % 2) p.copy(c);
+  uiGeoAnchor.set(geo, p);
+  return p;
+}
+const uiBox = new THREE.Box3(), uiBs = V3(0, 0, 0);
+// maat voor hoe groot een mesh in beeld komt: grootste vlak van zijn kader plus een toeslag voor dikte, zodat een
+// huis het wint van een dunne ring of een lange bout
+function uiMeshSize(m) {
+  uiBox.setFromObject(m).getSize(uiBs);
+  const d = [uiBs.x, uiBs.y, uiBs.z].sort((x, y) => y - x);
+  return d[0] * d[1] + 4 * d[1] * d[2];
+}
+function uiMakeAnchors(k) {
+  if (!k.asm) return [{ m: k.obj, p: uiGeoPoint(k.obj.geometry), node: k }];
+  if (!k.meshes.length) return [];
+  // ingesloten meshes (binnen k) zijn alleen te zien als hun groep open is; die komen pas na de rest
+  const isIn = m => { for (let q = m.userData.node; q && q !== k; q = q.parent) if (q.inner) return true; return false; };
+  const info = k.meshes.map(m => ({ m, inner: isIn(m), size: uiMeshSize(m), d: m.userData.node.wc.distanceTo(k.wc) }));
+  const outer = info.filter(x => !x.inner), big = Math.max(...(outer.length ? outer : info).map(x => x.size));
+  const rank = x => (x.size >= 0.5 * big ? 0 : 2) + (x.inner ? 1 : 0);
+  info.sort((x, y) => rank(x) - rank(y) || x.d - y.d);
+  return info.slice(0, 6).map(x => ({ m: x.m, p: uiGeoPoint(x.m.geometry), node: x.m.userData.node }));
+}
+function uiLabelAnchor(k, out) {
+  const a = k._la || (k._la = uiMakeAnchors(k));
+  let c = a[0];
+  for (const x of a) if (x.node.ev) { c = x; break; }
+  return c ? out.copy(c.p).applyMatrix4(c.m.matrixWorld) : out.copy(k.lc).applyMatrix4(k.obj.matrixWorld);
+}
 function uiNewLabel() {
   const el = document.createElement('button');
   el.className = 'lbl'; el.hidden = true; el.tabIndex = -1;
@@ -795,7 +858,7 @@ function updateLabels() {
   let shown = 0;
   for (let i = 0; i < uiCands.length; i++) {
     const k = uiCands[i], el = labelPool[i];
-    uiAnchor.copy(k.lc).applyMatrix4(k.obj.matrixWorld).project(camera);
+    uiLabelAnchor(k, uiAnchor).project(camera);
     const ax = (uiAnchor.x * 0.5 + 0.5) * W, ay = (-uiAnchor.y * 0.5 + 0.5) * H;
     const w = k._lw || 100, h = k._lh || 22;
     let found = false, dx = 0, dy = 0;
