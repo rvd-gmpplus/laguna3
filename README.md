@@ -159,4 +159,4 @@ Alles uit elkaar: [docs/screenshots/alles-uit-elkaar.png](docs/screenshots/alles
 
 Telefoonweergave: [docs/screenshots/mobiel.png](docs/screenshots/mobiel.png)
 
-De screenshots in `docs/screenshots/` tonen de eindstand: ze zijn opnieuw gemaakt uit de build van `index.html` in `60909fe`, op 1280 × 800 (`mobiel.png` op 390 × 844 met pixelverhouding 2) en met software-rendering in de container.
+De screenshots in `docs/screenshots/` tonen de eindstand: ze zijn opnieuw gemaakt uit de bron van `ff42dbd` (dezelfde stand als de build van `index.html` in `5b6cefa`), op 1280 × 800 (`mobiel.png` op 390 × 844 met pixelverhouding 2) en met software-rendering in de container.
