@@ -145,6 +145,7 @@ for (const n of ALL) {
   if (n.stay) { const anc = uiOpenAnc(n); if (anc) { n.stayO = anc; STAYS.push(n); if (!o) (anc.opn.lead ? anc.opn.lead : anc).opn.stays.push(n); } else console.error('openmodus: ' + n.name + ' heeft stay maar geen opener erboven'); }
 }
 // needs: deze opener kan pas open als een andere open is (panoramadak: eerst het zonnescherm)
+for (const n of OPENERS) n.opn.vis = uiOpenVis(n);
 for (const n of OPENERS) { const o = n.opn; if (!o.needSpec) continue; const m = uiRef(o.needSpec, n.name); if (m && m.opn && !m.opn.lead) { o.needN = m; m.opn.needBy.push(n); } else console.error('openmodus: needs van ' + n.name + ' lost niet op'); }
 for (const n of ALL) {
   if (!n.strut) continue;
@@ -202,13 +203,15 @@ function uiOpenApply(n) {
   for (const f of n.opn.followers) { f.ou = n.ou; uiPlace(f); if (f.ou === 0) f.obj.quaternion.copy(f.q0); if (f.stay) uiStayFix(f); }
   for (const k of n.opn.stays) uiStayFix(k);
 }
+// raakt het open of dicht gaan van deze opener de zichtbaarheid van ingesloten delen (bij de ouder of eronder)
+function uiOpenVis(n) { const sub = k => k.inner || (k.asm && k.kids.some(sub)); return !!((n.parent && n.parent.innerKids) || (n.asm && n.kids.some(sub)) || n.opn.followers.some(f => f.parent && f.parent.innerKids)); }
 function uiSetOpen(n, v, instant) {
   if (typeof n === 'string') n = uiRef(n, 'setOpen');
   if (!n || !n.opn || n.opn.lead) return false;
   v = clamp(+v || 0, 0, 1);
   if (v > 0 && n.opn.needN && n.opn.needN.ot === 0) uiSetOpen(n.opn.needN, 1, instant);
   if (v === 0) for (const d of n.opn.needBy) if (d.ot > 0) uiSetOpen(d, 0, instant);
-  if ((n.ot > 0) !== (v > 0) || (n.ou > 0) !== (v > 0)) uiVisDirty = true;
+  if (n.opn.vis && ((n.ot > 0) !== (v > 0) || (n.ou > 0) !== (v > 0))) uiVisDirty = true;
   if (instant || REDUCED) { n.ot = v; n.ou = v; n.opk = 1; uiOpenAnim.delete(n); uiOpenApply(n); uiStrutSync(); return true; }
   if (n.ot === v && (uiOpenAnim.has(n) || n.ou === v)) return true;
   n.ot = v; n.opa0 = n.ou; n.opk = 0;
@@ -223,7 +226,7 @@ function stepOpen(dt) {
     n.opk = Math.min(1, n.opk + dt / n.opd);
     n.ou = n.opk >= 1 ? n.ot : n.opa0 + (n.ot - n.opa0) * ease(n.opk);
     uiOpenApply(n);
-    if (was !== (n.ou > 0)) uiVisDirty = true;
+    if (n.opn.vis && was !== (n.ou > 0)) uiVisDirty = true;
     if (n.opk >= 1) uiOpenAnim.delete(n);
   }
   uiStrutSync();
@@ -233,15 +236,14 @@ const uiAnyOpen = () => OPENERS.some(n => n.ou > 0 || n.ot > 0);
 // telescopen: richten van a naar b zolang hun leider open is; daarna terug naar de gebouwde stand
 function uiStrutSync() {
   if (!STRUTS.length) return;
-  let world = false;
   for (const n of STRUTS) {
     const s = n.strut;
     if (s.leadN.ou === 0) {
       if (s.dirty) { uiPlace(n); n.obj.quaternion.copy(n.q0); if (s.rodN) uiPlace(s.rodN); s.dirty = false; }
       continue;
     }
-    if (!world) { ROOT.obj.updateMatrixWorld(true); world = true; }
     const par = n.parent.obj;
+    par.updateWorldMatrix(true, false); s.na.obj.updateWorldMatrix(true, false); s.nb.obj.updateWorldMatrix(true, false);
     const a = par.worldToLocal(s.na.obj.localToWorld(uiOv.copy(s.pa)));
     const b = par.worldToLocal(s.nb.obj.localToWorld(uiOv2.copy(s.pb)));
     if (s.d0 === undefined) s.d0 = s.restLen || s.pb.distanceTo(s.pa);
@@ -719,7 +721,7 @@ function uiBatchClean() {
   for (let i = ALL.length - 1; i >= 0; i--) {
     const n = ALL[i];
     if (!n.asm) { n._bc = !uiSelSet.has(n.obj) && !uiHovSet.has(n.obj); continue; }
-    let c = n.target === 0 && n.amt === 0 && !uiAnim.has(n);
+    let c = n.target === 0 && n.amt === 0 && !uiAnim.has(n) && !(n.strut && n.strut.dirty);
     if (c) for (const k of n.kids) { if (k.inner) continue; if (!k._bc || k.hasOff || k.ou > 0 || (k.strut && k.strut.dirty) || (k.stayO && k.stayO.ou > 0)) { c = false; break; } }
     n._bc = c;
   }
