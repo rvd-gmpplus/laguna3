@@ -236,13 +236,32 @@ function buildFuel() {
     P('Vlotter', G.sphere(0.02, 10), MAT.red, { d: 'Drijver aan de arm van de niveausensor.', p: [MP[0] + 0.065, MP[1] - 0.13, MP[2] - 0.03], ex: [0.1, -0.1, 0], inner: true }),
     P('Steunstangen module', merge([xf(G.cyl('y', 0.004, 0.004, 0.1, 6), [0.05, 0, 0.04]), xf(G.cyl('y', 0.004, 0.004, 0.1, 6), [-0.05, 0, -0.04])]), MAT.steel, { d: 'Twee stangen met veer die de beker tegen de tankbodem drukken.', p: [MP[0], MP[1] - 0.05, MP[2]], ex: [0, -0.05, 0.1], inner: true }),
   ]);
-  // vulsysteem: rechts achter (aan de passagierskant), klep in het scherm
-  const flapY = 0.86, flapZ = -1.72;
-  const vul = A('Vulsysteem', { d: 'Vulpijp met tankdop en tankklep in het rechter achterscherm. De vulpijp loopt boven het achterwiel langs naar de tank.', ex: [-0.2, 0.1, -0.1] }, [
-    P('Vulpijp', tube([[-0.426, 0.30, -1.0], [-0.458, 0.304, -1.01], [-0.467, 0.34, -1.07], [-0.467, 0.3475, -1.14], [-0.467, 0.3475, -1.2], [-0.455, 0.37, -1.26], [-0.447, 0.40, -1.32], [-0.40, 0.45, -1.43], [-0.40, 0.60, -1.52], [-0.44, 0.74, -1.58], [-0.62, 0.80, -1.62], [-0.76, 0.84, -1.66], [-(fx - 0.03), flapY, flapZ]], 0.0185, 64, 10), MAT.plastic, { d: 'Kunststof vulpijp van de tankklep naar de tank.', ex: [-0.04, 0, 0] }),
-    P('Vulhals', G.cyl('x', 0.04, 0.04, 0.034, 20), MAT.plastic, { d: 'Vulhals achter de tankklep waar de dop in draait.', p: [-(fx - 0.03), flapY, flapZ], ex: [-0.1, 0, 0] }),
-    P('Tankdop', merge([G.cyl('x', 0.03, 0.03, 0.012, 20), xf(G.cyl('x', 0.018, 0.018, 0.016, 14), [-0.008, 0, 0])]), MAT.plasticGrey, { d: 'Afsluitdop van de vulpijp, met een bandje aan de vulhals.', p: [-(fx - 0.006), flapY, flapZ], ex: [-0.2, 0.05, 0] }),
-    P('Tankklep', merge([G.cyl('x', 0.06, 0.06, 0.006, 28), xf(G.box(0.006, 0.01, 0.04), [0.0, 0.0, -0.06])]), MAT.paint, { d: 'Tankklep in het rechter achterscherm, in lak uitgevoerd.', p: [-(fx + 0.002), flapY, flapZ], ex: [-0.34, 0.05, 0] }),
+  // vulsysteem: rechts achter (aan de passagierskant); de klep zit in het rechter achterscherm, met een tankkom erachter. De opening in het
+  // scherm (bodTkZ, bodTkY) staat in bodyparts.js. Capless (HB2 1.73): geen dop, maar een klep in de vulhals die het pistool opent.
+  const flapY = (bodTkY[0] + bodTkY[1]) / 2, flapZ = (bodTkZ[0] + bodTkZ[1]) / 2;
+  const tkFloor = fx - 0.05, tkMouth = fx - 0.022, tkNeck = fx - 0.056;       // x (positief, rechterkant) van de bodem, de monding en de achterkant van de hals
+  const tkSkin = (z, y, out) => { const p = bodAt(z, y, out); return [-p[0], p[1], p[2]]; };
+  // klep: schaal die de huid volgt (2 mm over de rand van de opening), met een binnenvlak en vier randen
+  const flapZ0 = bodTkZ[0] - 0.002, flapZ1 = bodTkZ[1] + 0.002, flapY0 = bodTkY[0] - 0.002, flapY1 = bodTkY[1] + 0.002, fo = 0.0015, fi = -0.004;
+  const flapGeo = cache('sysFlapR', () => merge([
+    patch((z, t) => tkSkin(z, lerp(flapY0, flapY1, t), fo), flapZ0, flapZ1, 10, () => [0, 1], 8),
+    patch((z, t) => tkSkin(z, lerp(flapY0, flapY1, t), fi), flapZ0, flapZ1, 10, () => [0, 1], 8),
+    ...[flapZ0, flapZ1].map(zz => patch((y, t) => tkSkin(zz, y, lerp(fo, fi, t)), flapY0, flapY1, 8, () => [0, 1], 1)),
+    ...[flapY0, flapY1].map(yy => patch((z, t) => tkSkin(z, yy, lerp(fo, fi, t)), flapZ0, flapZ1, 10, () => [0, 1], 1)),
+  ]));
+  // tankkom: vier wanden van de rand van de opening naar de bodem en een bodem met de hals
+  const tkBowl = cache('sysTankkom', () => merge([
+    ...[bodTkZ[0], bodTkZ[1]].map(zz => patch((y, t) => [-lerp(-tkSkin(zz, y, -0.004)[0], tkFloor, t), y, zz], bodTkY[0], bodTkY[1], 8, () => [0, 1], 4)),
+    ...bodTkY.map(yy => patch((z, t) => [-lerp(-tkSkin(z, yy, -0.004)[0], tkFloor, t), yy, z], bodTkZ[0], bodTkZ[1], 8, () => [0, 1], 4)),
+    patch((z, t) => [-tkFloor, lerp(bodTkY[0], bodTkY[1], t), z], bodTkZ[0], bodTkZ[1], 6, () => [0, 1], 6),
+  ]));
+  const vul = A('Vulsysteem', { d: 'Vulpijp met capless vulhals en tankklep in het rechter achterscherm. De vulpijp loopt boven het achterwiel langs naar de tank. Een dop is er niet: in de vulhals zit een klep die het pistool opent.', ex: [-0.2, 0.1, -0.1] }, [
+    P('Vulpijp', tube([[-0.426, 0.30, -1.0], [-0.458, 0.304, -1.01], [-0.467, 0.34, -1.07], [-0.467, 0.3475, -1.14], [-0.467, 0.3475, -1.2], [-0.455, 0.37, -1.26], [-0.447, 0.40, -1.32], [-0.40, 0.45, -1.43], [-0.40, 0.60, -1.52], [-0.44, 0.74, -1.58], [-0.62, 0.80, -1.62], [-0.76, 0.84, -1.66], [-tkNeck, flapY, flapZ]], 0.0185, 64, 10), MAT.plastic, { d: 'Kunststof vulpijp van de vulhals naar de tank.', ex: [-0.04, 0, 0] }),
+    P('Vulhals', merge([G.cyl('x', 0.028, 0.028, tkMouth - tkNeck, 20), xf(G.torus('x', 0.029, 0.004, 20, 6), [-(tkMouth - tkNeck) / 2, 0, 0])]), MAT.plastic, { d: 'Capless vulhals achter de tankklep: een korte hals met een rand waarin het pistool past.', p: [-(tkNeck + tkMouth) / 2, flapY, flapZ], ex: [-0.1, 0, 0] }),
+    P('Vulklep', merge([G.cyl('x', 0.0235, 0.0235, 0.003, 20), xf(G.cyl('z', 0.0025, 0.0025, 0.03, 8), [0.002, 0.022, 0]), xf(G.torus('x', 0.0235, 0.0035, 20, 6), [0.0015, 0, 0])]), MAT.plasticGrey, { d: 'Capless vulklep (klep B in de vulpijp, HB2 1.73): geen dop en geen bandje. Een veer houdt de klep dicht; het pistool duwt hem open. Niet met de vingers indrukken. Op de benzineversie laat een restrictor alleen een loodvrij pistool toe (vorm schematisch).', p: [-(tkMouth - 0.012), flapY, flapZ], ex: [-0.2, 0.05, 0] }),
+    P('Tankkom', tkBowl, MAT.paintIn, { d: 'Kom in het rechter achterscherm achter de tankklep, met de hals van de vulpijp op de bodem (vorm schematisch).', ex: [-0.12, 0.02, 0] }),
+    P('Tankklep', flapGeo, MAT.paint, { d: 'Tankklep in het rechter achterscherm, in lak uitgevoerd. Opent na ontgrendelen door op de achterrand te drukken en draait dan ongeveer 140 graden om de scharnierrand aan de voorkant (hoek geschat).', ex: [-0.34, 0.05, 0],
+      open: { type: 'hinge', pivot: tkSkin(bodTkZ[1] + 0.004, flapY, 0.004), axis: [0, 1, 0], angle: 140 * PI / 180, min: 100 * PI / 180, label: 'Tankklep', look: { dir: [-1, 0.3, -0.5], nodes: ['Tankklep', 'Vulsysteem'] } } }),
     sysClamp('Klem vulpijp', [-0.44, 0.304, -1.004], V3(1, 0, 0), 0.0185, V3(0.5, 0, 0)),
   ]);
   // leidingen
