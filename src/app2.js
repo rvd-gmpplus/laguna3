@@ -1120,6 +1120,7 @@ controls.addEventListener('start', () => { camAnim = null; uiUserCam = true; hid
 function uiTick(dt) {
   let active = stepExplode(dt);
   if (uiStepOff(dt)) active = true;
+  if (stepOpen(dt)) active = true;
   if (uiStepPlay(dt)) active = true;
   if (stepCam(dt)) active = true;
   if (stepGround(dt)) active = true;
@@ -1186,6 +1187,8 @@ function finishAll() {
   uiAnim.clear();
   for (const n of uiOffAnim) { n.odelay = 0; n.ok = 1; n.off.copy(n.off1); if (n.off.lengthSq() === 0) n.hasOff = false; uiPlace(n); }
   uiOffAnim.clear();
+  for (const n of uiOpenAnim) { n.opk = 1; n.ou = n.ot; uiOpenApply(n); }
+  if (uiOpenAnim.size) { uiOpenAnim.clear(); uiStrutSync(); }
   if (uiPlayS) { const s = uiPlayS; uiPlayS = null; uiApplyX(s.w, s.x1, true); updateGround(); }
   if (camAnim) { camera.position.copy(camAnim.p1); controls.target.copy(camAnim.t1); camAnim = null; }
   applyVisibility();
@@ -1285,4 +1288,8 @@ window.__laguna = {
   batchStats: uiBatchStats,
   batchedGroups: () => [...uiBatched].map(g => g.name),
   drawCalls: () => { renderer.info.reset(); renderer.render(scene, camera); return renderer.info.render.calls; },
+  // openmodus (kern): leiders met hun stand; setOpen(naam, 0..1, direct); openAll(0..1, direct)
+  openers: () => OPENERS.map(n => ({ name: n.name, label: n.opn.label || n.name, type: n.opn.type, open: +n.ou.toFixed(4), target: n.ot, followers: n.opn.followers.map(f => f.name) })),
+  setOpen: (name, v, instant) => { const r = uiSetOpen(name, v, instant); requestRender(); return r; },
+  openAll: (v, instant) => { for (const n of OPENERS) uiSetOpen(n, v, instant); requestRender(); return OPENERS.length; },
 };

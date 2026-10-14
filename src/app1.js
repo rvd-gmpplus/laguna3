@@ -82,12 +82,125 @@ let uiVisDirty = true;
 const uiOpen = n => !!n && n.asm && n.target > 0.5;
 function placeKids(n) {
   const s = n.amt * SPREAD;
-  for (const k of n.kids) { k.obj.position.copy(k.base).addScaledVector(k.exv, s); if (k.hasOff) k.obj.position.add(k.off); }
+  for (const k of n.kids) {
+    if (k.ou > 0) uiOpenPose(k); else k.obj.position.copy(k.base);
+    k.obj.position.addScaledVector(k.exv, s);
+    if (k.hasOff) k.obj.position.add(k.off);
+  }
 }
 function uiPlace(k) {
-  k.obj.position.copy(k.base);
+  if (k.ou > 0) uiOpenPose(k); else k.obj.position.copy(k.base);
   if (k.parent) k.obj.position.addScaledVector(k.exv, k.parent.amt * SPREAD);
   if (k.hasOff) k.obj.position.add(k.off);
+}
+
+/* ---------- openmodus: scharnieren, schuiven, volgers en telescopen ---------- */
+// Een knoop met `open` draait om een scharnier of schuift, bovenop de uitklapregel:
+//   pos = pivot + R(u * angle) * (base - pivot) + exv * amt * SPREAD + off,  quat = R * q0
+// Bij 'slide' eerst `tilt` (eerste deel van u, als die er is), dan `move`. u is de geanimeerde openstand.
+// Een volger (`follow`) beweegt met de u van zijn leider. Een telescoop (`strut`) wordt na elke stap
+// van punt a naar punt b gericht; zijn kind `rod` schuift mee.
+const OPENERS = [];            // leiders, in boomvolgorde
+const uiOpenAnim = new Set();  // leiders die bewegen
+const STRUTS = [];
+const uiOq = new THREE.Quaternion(), uiOq2 = new THREE.Quaternion(), uiOv = V3(0, 0, 0), uiOv2 = V3(0, 0, 0);
+const UI_Z = V3(0, 0, 1);
+for (const n of ALL) {
+  n.ou = 0; n.ot = 0; n.opk = 1; n.opa0 = 0; n.opd = 0.9;
+  n.q0 = n.obj.quaternion.clone();
+  const o = n.opn;
+  if (o) {
+    o.type = o.type || 'hinge';
+    if (o.pivot) o.pv = V3(...o.pivot);
+    if (o.axis) o.ax = V3(...o.axis).normalize();
+    if (o.move) o.mv = V3(...o.move);
+    if (o.tilt) { o.tpv = V3(...o.tilt.pivot); o.tax = V3(...o.tilt.axis).normalize(); o.tang = o.tilt.angle; o.tf = o.tilt.part != null ? o.tilt.part : 0.35; }
+    o.dur = o.dur || (REDUCED ? 0.01 : 0.9);
+    o.followers = [];
+  }
+  if (n.strut) STRUTS.push(n);
+}
+for (const n of ALL) {
+  const o = n.opn;
+  if (!o) continue;
+  if (o.follow) {
+    const lead = uiNames.get(o.follow);
+    if (lead && lead.opn) { lead.opn.followers.push(n); o.lead = lead; } else console.warn('openmodus: volger ' + n.name + ' zonder leider ' + o.follow);
+  } else OPENERS.push(n);
+}
+for (const n of STRUTS) {
+  const s = n.strut;
+  s.na = s.a.node ? uiNames.get(s.a.node) : null; s.nb = s.b.node ? uiNames.get(s.b.node) : null;
+  s.pa = V3(...s.a.p); s.pb = V3(...s.b.p);
+  s.rodN = s.rod ? n.kids.find(k => k.name === s.rod) : null;
+  s.dirty = false;
+}
+// pose van een openende knoop in het frame van zijn ouder (zonder uitklapverschuiving)
+function uiOpenPose(k) {
+  const o = k.opn, u = k.ou, p = k.obj.position;
+  if (o.type === 'slide') {
+    p.copy(k.base); k.obj.quaternion.copy(k.q0);
+    let us = u;
+    if (o.tax) {
+      const ut = o.mv ? Math.min(1, u / o.tf) : u;
+      us = o.mv ? Math.max(0, (u - o.tf) / (1 - o.tf)) : 0;
+      uiOq.setFromAxisAngle(o.tax, o.tang * ut);
+      p.sub(o.tpv).applyQuaternion(uiOq).add(o.tpv);
+      k.obj.quaternion.premultiply(uiOq);
+    }
+    if (o.mv) p.addScaledVector(o.mv, us);
+    return;
+  }
+  uiOq.setFromAxisAngle(o.ax, o.angle * u);
+  p.copy(k.base).sub(o.pv).applyQuaternion(uiOq).add(o.pv);
+  k.obj.quaternion.copy(k.q0).premultiply(uiOq);
+}
+function uiOpenApply(n) {
+  uiPlace(n);
+  for (const f of n.opn.followers) { f.ou = n.ou; uiPlace(f); if (f.ou === 0) f.obj.quaternion.copy(f.q0); }
+  if (n.ou === 0) n.obj.quaternion.copy(n.q0);
+}
+function uiSetOpen(n, v, instant) {
+  if (typeof n === 'string') n = uiNames.get(n);
+  if (!n || !n.opn || n.opn.lead) return false;
+  v = clamp(+v || 0, 0, 1);
+  if (instant || REDUCED) { n.ot = v; n.ou = v; n.opk = 1; uiOpenAnim.delete(n); uiOpenApply(n); uiStrutSync(); return true; }
+  if (n.ot === v && (uiOpenAnim.has(n) || n.ou === v)) return true;
+  n.ot = v; n.opa0 = n.ou; n.opk = 0;
+  n.opd = Math.max(0.05, n.opn.dur * Math.max(0.45, Math.abs(v - n.ou)));
+  uiOpenAnim.add(n);
+  return true;
+}
+function stepOpen(dt) {
+  if (!uiOpenAnim.size) return false;
+  for (const n of uiOpenAnim) {
+    n.opk = Math.min(1, n.opk + dt / n.opd);
+    n.ou = n.opk >= 1 ? n.ot : n.opa0 + (n.ot - n.opa0) * ease(n.opk);
+    uiOpenApply(n);
+    if (n.opk >= 1) uiOpenAnim.delete(n);
+  }
+  uiStrutSync();
+  return true;
+}
+const uiAnyOpen = () => OPENERS.some(n => n.ou > 0 || n.ot > 0);
+// telescopen: richten van a naar b; in rust (alles dicht) terug naar de gebouwde stand
+function uiStrutSync() {
+  if (!STRUTS.length) return;
+  const any = uiAnyOpen();
+  if (!any) { for (const n of STRUTS) if (n.strut.dirty) { n.obj.quaternion.copy(n.q0); uiPlace(n); if (n.strut.rodN) uiPlace(n.strut.rodN); n.strut.dirty = false; } return; }
+  ROOT.obj.updateMatrixWorld(true);
+  for (const n of STRUTS) {
+    const s = n.strut, par = n.parent.obj;
+    const a = s.na ? par.worldToLocal(s.na.obj.localToWorld(uiOv.copy(s.pa))) : uiOv.copy(s.pa);
+    const b = s.nb ? par.worldToLocal(s.nb.obj.localToWorld(uiOv2.copy(s.pb))) : uiOv2.copy(s.pb);
+    if (s.d0 === undefined) s.d0 = s.restLen || b.distanceTo(a);
+    const d = b.distanceTo(a);
+    n.obj.position.copy(a);
+    uiOq2.setFromUnitVectors(UI_Z, b.sub(a).normalize());
+    n.obj.quaternion.copy(uiOq2);
+    if (s.rodN) { s.rodN.obj.position.copy(s.rodN.base); s.rodN.obj.position.z += d - s.d0; }
+    s.dirty = true;
+  }
 }
 function setTarget(n, t, delay = 0, dur = DUR) {
   if (!n || !n.asm) return;
@@ -529,7 +642,7 @@ function uiBatchClean() {
     const n = ALL[i];
     if (!n.asm) { n._bc = !uiSelSet.has(n.obj) && !uiHovSet.has(n.obj); continue; }
     let c = n.target === 0 && n.amt === 0 && !uiAnim.has(n);
-    if (c) for (const k of n.kids) { if (k.inner) continue; if (!k._bc || k.hasOff) { c = false; break; } }
+    if (c) for (const k of n.kids) { if (k.inner) continue; if (!k._bc || k.hasOff || k.ou > 0 || (k.strut && k.strut.dirty)) { c = false; break; } }
     n._bc = c;
   }
 }
