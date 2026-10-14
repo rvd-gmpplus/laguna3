@@ -45,7 +45,7 @@ Let op de aard van de bronnen: de Revue Technique-uittreksels (R11 t/m R16) gaan
 | Kleppen | 16 (4 per cilinder), 2 bovenliggende nokkenassen (DOHC), kleppen in V-opstelling | R1, R11 | Bevestigd |
 | Kleptrein | Rolzwenkarmen ("linguets à rouleaux") met hydraulische speling-opvangers ("butées hydrauliques"), geen speling instellen | R11 (F4R 714/715) | Aannemelijk voor 811 |
 | Nokkenasaandrijving | Getande distributieriem, 126 tanden, 27 mm breed, 1200 mm lang, spoed 9,525 mm; drijft ook de waterpomp aan | R17, R31, R11 ("pompe à eau ... entraînée par la courroie de distribution") | Bevestigd |
-| Faseversteller | Hydraulische verstelling op de **inlaat**nokkenas, aangestuurd door een elektroklep op het kleppendeksel. Type (aan/uit of traploos) niet vastgesteld voor 811 | R28 (onderdeel bestaat voor 811), R11 (werking F4R 714) | Aannemelijk |
+| Faseversteller | Geen faseversteller (vaste kleptiming). De eerdere vermelding steunde op een catalogusvermelding (R28) en op het handboek van de atmosferische F4R 714 (R11). | Renault-persmap 2007, Planete Renault F4RT | Bevestigd |
 | Inspuiting | Meerpunts sequentieel in het inlaatkanaal (indirect), geen directe inspuiting. Injectoren Siemens of Magneti Marelli volgens catalogus | R1, R30; "indirect injection" ook genoemd door gebruikers van de F4Rt (reddit-zoekresultaat) | Bevestigd (multipoint); fabrikant Aannemelijk |
 | Ontsteking | Vier losse penbobines ("bobine crayon"), direct op de bougies; bougies M14 × 1,25, 19 mm draad, sleutel 16 mm | R26, R25 | Bevestigd (bobines), Bevestigd (bougiemaat, twee catalogi) |
 | Gasklephuis | Elektrisch bediend (drive-by-wire). OE-nummer 8200619046; op de Laguna II fase 2 F4Rt 774/776/784/786 is het een VDO-Siemens huis | R29, R37 | Aannemelijk voor 811 |
@@ -601,7 +601,7 @@ Het model heeft 318 onderdelen. Wat ontbreekt of afwijkt volgens dit onderzoek:
 
 ## 7. Open vragen
 
-1. Is de faseversteller van de F4Rt 811 aan/uit of traploos, en zit hij op de inlaat- of de uitlaatas (inlaat is Aannemelijk)?
+1. Vervallen: de F4Rt 811 heeft geen faseversteller (Renault-persmap 2007).
 2. Exacte laaddruk, wastegate-opening en turbo-referentie voor de 811 (alleen familie bekend).
 3. Welke kant van het blok de turbo precies op zit (links/midden/rechts) en de hoek van de motor in de auto.
 4. Plaats van de peilstok, de oliekoeler en het filter aan het blok van de Laguna III.

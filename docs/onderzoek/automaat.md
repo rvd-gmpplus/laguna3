@@ -20,10 +20,10 @@ Het interne model in `src/drivetrain.js` (twee planetaire sets, C1, C2, B1, B2, 
 | Ontwerp | "Gebaseerd op het Lepelletier-systeem", ontwikkeld voor FWD; ~10% korter en lichter dan een 5-traps | Jatco-persbericht (noot 2) en ATRA/Gears-artikel jan/feb 2012 | **Bevestigd** |
 | Gekoppeld aan 2.0T | Planete Renault: "Essence: 2.0 l 16v, 2.0 T, V6 3.5 l". Koppelcapaciteit "Essence 330 Nm" tegenover 270 Nm van de F4Rt | Planete Renault; Auto-Doc (F4R 811 + AJ0) | Bevestigd |
 | Motorcode van deze auto | F4R 811 (2.0 16V Turbo 170 pk, 2007-2015) | Auto-Doc, Renault-handboek noemt "F4R Turbo" | Aannemelijk (nummer 811 uit onderdelencatalogus) |
-| Overbrengingsverhoudingen (Mitsubishi F6AJA, officieel handboek) | 1e **4,199**; 2e **2,405**; 3e **1,583**; 4e **1,161**; 5e **0,855**; 6e **0,685**; achteruit **3,457**; eindoverbrenging **3,571**; stall-ratio omvormer **1,96** | Mitsubishi Group 23D "Automatic Transaxle Overhaul" (F6AJA) en gearboxlist.com (zelfde cijfers) | Bevestigd voor F6AJA; **Aannemelijk** voor Renault AJ0 (zelfde basisbak, Renault-cijfers niet gevonden) |
-| Eindoverbrenging nagerekend | (45 / 42) x (70 / 21) = 3,571. Klopt met het handboek | Tandentallen uit Maktrans-onderdelenlijst (uitgaand tandwiel 42, tussenas 45/21, kroonwiel 70) | Geschat (reken-controle, bevestigt de bron) |
+| Overbrengingsverhoudingen (Mitsubishi F6AJA, officieel handboek) | 1e **4,199**; 2e **2,405**; 3e **1,583**; 4e **1,161**; 5e **0,855**; 6e **0,685**; achteruit **3,457**; eindoverbrenging **3,571**; stall-ratio omvormer **1,96** | Mitsubishi Group 23D "Automatic Transaxle Overhaul" (F6AJA) en gearboxlist.com (zelfde cijfers) | Bevestigd voor de AJ0 in de Laguna III 2.0T via de snelheden per 1000 tpm in de Renault-persmap 2007 (binnen 0,2 %) |
+| Eindoverbrenging nagerekend | Van de 2.0T: 3,804 (persmap, rapport de pont 1/3,804); de 3,571 van de F6AJA geldt niet voor deze auto. Met de Mitsubishi-tandentallen (45 / 42) x (70 / 21) = 3,571, dat klopt met het F6AJA-handboek | Tandentallen uit Maktrans-onderdelenlijst (uitgaand tandwiel 42, tussenas 45/21, kroonwiel 70) | Geschat (reken-controle, bevestigt de bron) |
 | Let op: eindoverbrenging per toepassing verschillend | Tussenas ook als 45/22 en kroonwiel ook als 69 tanden helicoidaal verkrijgbaar, dus er zijn minstens twee eindoverbrengingen (bijv. 3,409 bij 45/22) | Maktrans (JF613E-INT-4522, JF613E-RG-69) | Aannemelijk; welke in de 2.0T zit is **Niet gevonden** |
-| Plausibiliteit topsnelheid | Band 225/45 R18, omtrek ca. 2,07 m; 220 km/h geeft in 6e (0,685 x 3,571) ca. 4330 tpm, onder het maximum van 5000 tpm bij het vermogenspunt | Eigen berekening | Geschat (plausibel, geen bewijs) |
+| Plausibiliteit topsnelheid | Band 225/45 R18, omtrek ca. 2,07 m; 220 km/h geeft in de 6e circa 4840 tpm (persmap: 45,44 km/h per 1000 tpm) | Renault-persmap 2007 | Bevestigd (afgeleid uit de opgave) |
 | ATF-type | **Elf Elfmatic J6** ("Renault AJ0/AJ8", Nissan Matic J, Matic-J-klasse; viscositeit 33 mm2/s bij 40 C, 7,4 bij 100 C). Mitsubishi schrijft DiaQueen ATF-J3 voor, dezelfde klasse | Elf-catalogus, Schmierstoff-Versand (Elf-datablad), ak24parts, Mitsubishi-handboek | **Bevestigd** |
 | ATF-inhoud | **8 liter**, "lubrifiee a vie" (levensduurvulling volgens Renault) | Planete Renault | Bevestigd (twee bronnen noemen 7,6 tot 8,1 l: Go4Trans 7,6 l; gearboxlist 8,1 l) |
 | Gewicht | **93 kg droog** | Planete Renault | Aannemelijk (een bron). Gevuld, geschat ca. 100 kg (93 + 8 l x 0,87 + restolie in omvormer) |
@@ -301,7 +301,7 @@ Legenda: aantal, status. Status **A** = Aannemelijk, **B** = Bevestigd, **G** = 
 
 ## 7. Open punten
 
-- Renault-specifieke overbrengingsverhoudingen en eindoverbrenging van de AJ0 in de 2.0T: niet gevonden; Mitsubishi-waarden gebruikt.
+- Renault-tandentallen voor de eindoverbrenging 3,804: niet gevonden.
 - Tekening van de interne koppeling tussen reductieset, 3-5-R-trommel en FR/RR (Lepelletier-bedrading): niet gevonden.
 - Type oliepomp, aantal planeetwielen in reductieset en differentieel, aantal klemmen per manchet, trillingsdemper, wielmoerkoppel, steunbeugel van het tussenlager: niet gevonden.
 - Of de berline (BT) dezelfde aandrijfaslengtes heeft als de Coupe (DT): catalogi tonen dezelfde AJ0-lengtes (640/962), maar Coupe-specifiek.

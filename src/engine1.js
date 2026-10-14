@@ -355,7 +355,6 @@ function engCoverGeo() {
     const L = [cover];
     [-0.17, -0.088, 0, 0.088, 0.17].forEach(x => L.push(xf(G.box(0.008, 0.006, 0.16), [x, ENG_COVER_TOP + 0.002, 0])));
     L.push(xf(G.cyl('y', 0.024, 0.024, 0.006, 20), [-0.17, ENG_COVER_TOP + 0.002, -0.05]));     // vulhals
-    L.push(xf(G.cyl('y', 0.017, 0.017, 0.005, 16), [-0.185, ENG_COVER_TOP + 0.002, 0.06]));     // opname VVT-klep
     return merge(L);
   });
 }
@@ -383,28 +382,6 @@ function buildIgnition() {
   XC.forEach((x, i) => kids.push(P(`Bobinebout ${i + 1}`, hexBolt(0.02, 0.006), MAT.darkSteel, { d: 'Bout die de bobine op het kleppendeksel vastzet.', p: [x + 0.024, ENG_COVER_TOP + 0.006, -0.006], r: [PI, 0, 0], ex: [0, 0.19, 0] })));
   return A('Ontsteking', { d: 'Losse penbobines met bougies, één per cilinder.', ex: [0, 0.3, 0.22] }, kids);
 }
-function buildPhaser() {
-  const P0 = [XT, CAMY, CAMZ];
-  return A('Faseversteller', { d: 'Hydraulische nokkenasverstelling op de inlaatnokkenas; tegelijk het distributiewiel van die as. Of hij aan/uit of traploos werkt is voor de F4Rt 811 niet vastgesteld; binnenwerk schematisch weergegeven.', p: P0, ex: [-0.07, 0.24, 0.09] }, [
-    P('Huis met distributiewiel', merge([gear(38, 0.0569, 0.0545, 0.027, 0.03, 'x'), xf(annulus(0.016, 0.046, 0.008, 'x', 32), [-0.017, 0, 0])]), MAT.steel, { d: 'Huis met 38 tanden waarover de distributieriem loopt (tandental afgeleid uit de 2 : 1-overbrenging).', spec: [['Tanden', '38 (geschat)']], ex: [0, 0, 0] }),
-    P('Vleugelrotor', merge([G.cyl('x', 0.024, 0.024, 0.022, 20), ...[0, 1, 2, 3].map(k => xf(G.box(0.022, 0.016, 0.008), [0, 0.032 * Math.cos(k * HALF), 0.032 * Math.sin(k * HALF)], [k * HALF, 0, 0]))]), MAT.darkSteel, { d: 'Rotor met vier vleugels op de nokkenas; oliedruk aan een van beide kanten verdraait hem ten opzichte van het huis.', ex: [-0.05, 0, 0], inner: true }),
-    P('Vergrendelpen', G.cyl('x', 0.003, 0.003, 0.012, 8), MAT.steel, { d: 'Pen die rotor en huis bij lage oliedruk vergrendelt (start).', p: [0, 0.034, 0.008], ex: [-0.04, 0.03, 0], inner: true }),
-    P('Vergrendelveer', engSpring(0.0022, 0.0004, 0.008, 4, 6, 'x'), MAT.steel, { d: 'Veer achter de vergrendelpen.', p: [0.008, 0.034, 0.008], ex: [-0.025, 0.04, 0], inner: true }),
-    P('Centrale bout', hexBolt(0.05, 0.012, 'x'), MAT.darkSteel, { d: 'Centrale bout van de faseversteller; vervangen bij demontage.', p: [-0.022, 0, 0], ex: [-0.09, 0, 0] }),
-    P('Afdekplaat', G.lathe('x', [[0, -0.003], [0.015, -0.003], [0.016, 0], [0.015, 0.003], [0, 0.003]], 20, 'engPhaserCap'), MAT.aluCast, { d: 'Afdekdop (obturateur) voor in het huis.', p: [-0.029, 0, 0], ex: [-0.13, 0, 0] }),
-  ]);
-}
-function buildVvtValve() {
-  const P0 = [-0.185, ENG_COVER_TOP, 0.06];
-  return A('VVT-elektroklep', { d: 'Olieregelventiel op het kleppendeksel dat de olie naar de faseversteller stuurt; binnenwerk schematisch weergegeven.', p: P0, ex: [0, 0.55, 0.1] }, [
-    P('Spoelhuis met stekker', merge([xf(G.cyl('y', 0.013, 0.013, 0.018, 16), [0, 0.011, 0]), xf(G.rbox(0.018, 0.012, 0.02, 0.003), [0, 0.012, 0.019]), xf(G.box(0.036, 0.004, 0.012), [0.012, 0.003, 0])]), MAT.plastic, { d: 'Elektromagneet met stekker, door de motorcomputer gestuurd.', ex: [0, 0, 0] }),
-    P('Schuifventiel met veer', G.cyl('y', 0.0065, 0.0065, 0.04, 12), MAT.steel, { d: 'Schuif met terugstelveer die de oliekanalen opent en sluit.', p: [0, -0.018, 0], ex: [0, -0.03, 0] }),
-    P('Zeefje', annulus(0.003, 0.0066, 0.004, 'y', 12), MAT.steel, { d: 'Zeefje dat vuil uit de stuurolie houdt.', p: [0, -0.04, 0], ex: [0, -0.06, 0] }),
-    P('O-ring boven', engORing(0.0068, 0.0011), MAT.rubber, { d: 'O-ring tussen klep en deksel.', p: [0, -0.003, 0], ex: [0, -0.012, 0.02] }),
-    P('O-ring onder', engORing(0.0068, 0.0011), MAT.rubber, { d: 'Tweede O-ring.', p: [0, -0.024, 0], ex: [0, -0.04, 0.02] }),
-    P('Bevestigingsbout', hexBolt(0.016, 0.006), MAT.darkSteel, { d: 'Bout van de elektroklep.', p: [0.026, 0.006, 0], r: [PI, 0, 0], ex: [0, 0.06, 0] }),
-  ]);
-}
 function buildHead() {
   const hs = shapeOf(rrectPts(0.43, 0.204, 0.02));
   XC.forEach(x => hs.holes.push(circlePath(x, 0, 0.013)));
@@ -426,7 +403,7 @@ function buildHead() {
   XM.forEach((x, i) => [0.093, -0.093].forEach((z, j) => bridgeBolts.push(P(`Lagerbrugbout ${i * 2 + j + 1}`, hexBolt(0.045, 0.007), MAT.darkSteel, { d: 'Bout van de nokkenaslagerbrug.', p: [x, CAMY + ENG_BRIDGE_T, z], r: [PI, 0, 0], ex: [0, 0.04, 0] }))));
   [-0.2, -0.1, 0.1, 0.2].forEach((x, i) => [0.088, -0.088].forEach((z, j) => coverBolts.push(P(`Kleppendekselbout ${i * 2 + j + 1}`, hexBolt(0.03, 0.006), MAT.steel, { d: 'Bout van het kleppendeksel.', p: [x, ENG_COVER_TOP, z], r: [PI, 0, 0], ex: [0, 0.07, 0] }))));
   const camSealG = annulus(0.014, 0.0205, 0.007, 'x', 24), plugG = G.lathe('x', [[0, -0.003], [0.017, -0.003], [0.017, 0.003], [0, 0.003]], 20, 'engCamPlug');
-  return A('Cilinderkop', { d: 'Aluminium cilinderkop met twee bovenliggende nokkenassen in één lagerbrug, 16 kleppen met rolzwenkarmen (zoals bij de F4R-familie, aannemelijk voor de 811) en hydraulische klepstoters, faseversteller, kleppendeksel en ontsteking.', ex: [0, 0.3, 0] }, [
+  return A('Cilinderkop', { d: 'Aluminium cilinderkop met twee bovenliggende nokkenassen in één lagerbrug, 16 kleppen met rolzwenkarmen (zoals bij de F4R-familie, aannemelijk voor de 811) en hydraulische klepstoters, vaste kleptiming (geen faseversteller), kleppendeksel en ontsteking.', ex: [0, 0.3, 0] }, [
     P('Cilinderkop (gietstuk)', merge([head, ...ports]), MAT.aluCast, { d: 'Aluminium cilinderkop met ingeperste klepzittingen en klepgeleiders, inlaatpoorten aan de voorzijde en uitlaatpoorten aan de achterzijde.', spec: [['Materiaal', 'aluminium'], ['Hoogte', '138,15 mm'], ['Kleppen', '16 (4 per cilinder)']], ex: [0, 0.09, 0] }),
     P('Koppakking', gasket, MAT.darkSteel, { d: 'Koppakking tussen blok en kop, geklemde dikte circa 0,65 mm (meerlaags staal aangenomen).', spec: [['Dikte geklemd', '0,65 mm']], ex: [0, 0.025, 0] }),
     A('Cilinderkopbouten', { d: 'Tien cilinderkopbouten (Torx); herbruikbaar tot 117,5 mm lengte onder de kop.', ex: [0, 0.27, 0] }, XM.flatMap((x, i) => [0.074, -0.074].map((z, j) => P(`Cilinderkopbout ${i * 2 + j + 1}`, headBolt, MAT.darkSteel, { d: 'Rekbout die kop en koppakking op het blok klemt.', p: [x, DECK + 0.084, z], r: [PI, 0, 0], ex: [0, 0.05 + (i % 2) * 0.012, 0] })))),
@@ -440,18 +417,16 @@ function buildHead() {
       P('Afdichtdop nokkenas inlaat', plugG, MAT.steel, { d: 'Afdichtdop in de lagerboring aan de vliegwielzijde (bouchon d\'étanchéité).', p: [0.2135, CAMY, CAMZ], ex: [0.07, 0, 0.07] }),
       P('Afdichtdop nokkenas uitlaat', plugG, MAT.steel, { d: 'Afdichtdop in de lagerboring aan de vliegwielzijde.', p: [0.2135, CAMY, -CAMZ], ex: [0.07, 0, -0.07] }),
     ]),
-    buildPhaser(),
     A('Nokkenaslagerbrug', { d: 'Eén lagerbrug (carter-chapeau de paliers) die beide nokkenassen draagt, met vloeibare pakking op het vlak.', ex: [0, 0.3, 0] }, [
       P('Lagerbrug', engBridgeGeo(), MAT.aluCast, { d: 'Aluminium ladder met de bovenste helften van de twaalf nokkenaslagers.', ex: [0, 0, 0] }),
       A('Lagerbrugbouten', { d: 'Bouten van de lagerbrug (aantal geschat).', ex: [0, 0.03, 0] }, bridgeBolts),
     ]),
     A('Kleppendeksel', { d: 'Kleppendeksel met pakking, bouten en olievuldop.', ex: [0, 0.45, 0] }, [
-      P('Deksel', engCoverGeo(), MAT.aluCast, { d: 'Deksel over de lagerbrug met doorvoeren voor de vier bobines en een opname voor de VVT-elektroklep.', ex: [0, 0, 0] }),
+      P('Deksel', engCoverGeo(), MAT.aluCast, { d: 'Deksel over de lagerbrug met doorvoeren voor de vier bobines.', ex: [0, 0, 0] }),
       P('Kleppendekselpakking', coverGasket, MAT.rubber, { d: 'Rubber pakking onder het kleppendeksel.', ex: [0, -0.025, 0] }),
       A('Kleppendekselbouten', { d: 'Acht bouten van het kleppendeksel (aantal geschat).', ex: [0, 0.05, 0] }, coverBolts),
       P('Olievuldop', merge([G.cyl('y', 0.021, 0.021, 0.016, 20), xf(G.box(0.03, 0.006, 0.006), [0, 0.01, 0])]), MAT.plastic, { d: 'Dop van de olievulopening.', p: [-0.17, ENG_COVER_TOP + 0.011, -0.05], ex: [0, 0.09, 0] }),
     ]),
-    buildVvtValve(),
     buildIgnition(),
   ]);
 }

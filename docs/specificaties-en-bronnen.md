@@ -15,7 +15,7 @@ Onderzoek in twee rondes: 12 oktober 2026 voor het eerste model, 13 oktober 2026
 
 | Onderwerp | Besluit | Status |
 |---|---|---|
-| Automaat | Jatco JF613E, Renault-code AJ0, Lepelletier-opbouw. Niet Aisin: de enige bron voor "Aisin" is een automatisch gegenereerde reviewpagina over de 204 pk GT. | Bevestigd (type); verhoudingen uit het handboek van de zusterbak Mitsubishi F6AJA, voor Renault niet gevonden |
+| Automaat | Jatco JF613E, Renault-code AJ0, Lepelletier-opbouw. Niet Aisin: de enige bron voor "Aisin" is een automatisch gegenereerde reviewpagina over de 204 pk GT. Ook een Poolse ATF-dienstverlener noemt TF-80SC, zonder typeplaatje of nummer. De Renault-overbrengingen sluiten de TF-80SC uit. | Bevestigd (type); verhoudingen uit het handboek van de zusterbak Mitsubishi F6AJA, die met de Renault-persmap 2007 binnen 0,2 % kloppen |
 | Stuurbekrachtiging | Hydraulisch met variabele assistentie, pomp aangedreven door de multiriem. Geen elektropomp (GEP): die staat bij de 2.0 140 (M4R) en de dCi 130. Het motoronderzoek noemde "électro-hydraulique" op grond van algemene bronnen; de Renault-persmap voor de F4Rt 811 zegt "hydraulique variable". | Aannemelijk (riemaandrijving), Bevestigd (hydraulisch met variabele assistentie) |
 | Remmen | Voor geventileerd 296 × 26 mm, zwevende klauw met zuiger Ø57. Achter massief 300 × 11 mm (niet 260), gecombineerde klauw met zuiger Ø38 en kabel naar de elektrische parkeerrem. | Bevestigd |
 | ABS-encoder | Magnetische codeerring in de wiellagereenheid, geen getande ring. | Bevestigd |
@@ -55,14 +55,15 @@ Onderzoek in twee rondes: 12 oktober 2026 voor het eerste model, 13 oktober 2026
 | Opbouw | 4 cilinders in lijn, 16 kleppen, twee bovenliggende nokkenassen, kleppen in V-opstelling | fastcarcheck, L'argus, mymotorlist | Bevestigd |
 | Cilinderinhoud | 1998 cm³ | AutoScout24, fastcarcheck | Bevestigd |
 | Boring × slag | 82,7 × 93,0 mm | fastcarcheck, L'argus | Bevestigd (sommige bronnen ronden af op 82,0) |
-| Compressieverhouding | 9,5 : 1 (L'argus noemt 9,0 : 1) | Encycarpedia, Automoli, Autodata, Vehiclespecs, fastcarcheck | Bevestigd; afwijkende bron genoteerd |
+| Compressieverhouding | 9,5 : 1 (L'argus noemt 9,0 : 1) | Renault-persmap 2007, Encycarpedia, Automoli, Autodata, Vehiclespecs, fastcarcheck | Bevestigd; afwijkende bron genoteerd |
 | Vermogen | 125 kW (170 pk) bij 5000 tpm | fastcarcheck, L'argus | Bevestigd |
 | Koppel | 270 Nm bij 3250 tpm | fastcarcheck, AutoScout24 | Bevestigd |
 | Blok en kop | Gietijzeren blok, aluminium kop | Planète Renault, Wikipedia | Bevestigd |
 | Cilindernummering | Cilinder 1, hoofdlager 1 en kruktap 1 liggen aan de vliegwielzijde | Revue technique F4R | Aannemelijk (conventie bevestigd voor lagers en kruktappen) |
 | Kleptrein | Rolzwenkarmen met hydraulische speling-opvangers, geen speling instellen | Revue technique F4R (Mégane II) | Aannemelijk voor de 811 |
 | Distributie | Getande riem, 126 tanden, 27 mm breed, spoed 9,525 mm; drijft ook de waterpomp aan | Autodoc, Revue technique | Bevestigd |
-| Nokkenasverstelling | Hydraulische faseversteller op de inlaatnokkenas met elektroklep op het kleppendeksel. Het type (aan/uit of traploos) is niet vastgesteld. De eerdere vermelding "bevestigd door meerdere eigenaren" is vervallen: de forumpost betrof één vraag over een Vel Satis. | Autodoc (VVT-magneetventiel voor de F4Rt 811 bestaat), Revue technique F4R | Aannemelijk |
+| Nokkenasverstelling | Geen: vaste kleptiming. Renault-persmap 2007 noemt bij de F4Rt 811 "diagramme variable ... non"; Planète Renault: de F4RT "se passe de déphaseur d'arbre à cames". TecDoc-catalogi tonen wel F4R-faseverstellers voor deze motorcode; dat is uitbreiding per motorfamilie. | Renault-persmap 2007, Planète Renault F4RT | Bevestigd |
+| Toerenbegrenzer | 6250 tpm | Renault-persmap 2007 | Bevestigd |
 | Inspuiting | Meerpunts sequentieel in het inlaatkanaal, geen directe inspuiting | fastcarcheck, L'argus | Bevestigd; fabrikant van de injectoren Aannemelijk |
 | Ontsteking | Vier losse penbobines direct op de bougies; bougies M14 × 1,25 | Piecesauto, Autodoc, Oscaro | Bevestigd |
 | Gasklep | Elektrisch bediend (drive-by-wire) | Autodoc, forum Laguna II | Aannemelijk |
@@ -75,7 +76,7 @@ Onderzoek in twee rondes: 12 oktober 2026 voor het eerste model, 13 oktober 2026
 | Dynamo | Valeo TG15C-reeks, 150 A, riempoelie met 7 groeven | Autodoc | Bevestigd |
 | Aircocompressor | Denso-type, R134a, 7 ribben | Autodoc | Aannemelijk |
 | Waterpomp | Aangedreven door de distributieriem | Autodoc, Revue technique | Bevestigd |
-| Olie en koelvloeistof | Circa 5,4 l en circa 7,7 l | Motul-tabel, Automoli | Aannemelijk |
+| Olie en koelvloeistof | Olie 5,4 l inclusief filter (Bevestigd: persmap en handboek); koelvloeistof circa 7,7 l (Aannemelijk) | Renault-persmap 2007, lagunanotice, Motul-tabel, Automoli | Bevestigd (olie) |
 | Plaats in de auto | Dwars voorin; distributiezijde rechts, vliegwiel en bak links; inlaatzijde naar voren, turbo en uitlaat naar achteren | L'argus, Rensatis, Revue technique | Bevestigd (dwars), Aannemelijk (zijden) |
 | Motorsteunen | Rechter bovensteun aan de distributiezijde, linkersteun aan de bak, koppelstang onderaan | Autodoc | Aannemelijk |
 | Motor-ECU | Plaats en type | | Niet gevonden |
@@ -93,7 +94,7 @@ Onderzoek in twee rondes: 12 oktober 2026 voor het eerste model, 13 oktober 2026
 | Solenoïdes en schakelaars | 8 solenoïdes (6 lineair, 2 aan/uit); 5 drukschakelaars bij de Renault-uitvoering | ATRA, Transmission Digest, Automatic Choice | Bevestigd |
 | Oliezeef | Op de pomp, geen losse onderpan met filter | Mitsubishi-handboek, forum Laguna 2.0T 170 | Aannemelijk |
 | Koeling | Watergekoelde ATF-koeler in het carter, twee leidingen op het zijdeksel | Planète Renault, Mitsubishi-handboek | Bevestigd |
-| Overbrengingen (F6AJA) | 1e 4,199; 2e 2,405; 3e 1,583; 4e 1,161; 5e 0,855; 6e 0,685; achteruit 3,457; eindoverbrenging 3,571 | Mitsubishi Group 23D-handboek, gearboxlist.com | Bevestigd voor F6AJA; Aannemelijk voor de Renault AJ0 (Renault-cijfers niet gevonden) |
+| Overbrengingen (F6AJA) | 1e 4,199; 2e 2,405; 3e 1,583; 4e 1,161; 5e 0,855; 6e 0,685; achteruit 3,457; eindoverbrenging 3,804 (Renault-persmap 2007); 3,571 is de Mitsubishi-waarde | Mitsubishi Group 23D-handboek, gearboxlist.com, Renault-persmap 2007 | Bevestigd: de snelheden per 1000 tpm in de Renault-persmap 2007 passen binnen 0,2 % bij deze verhoudingen |
 | Tandentallen | Uitgaand 42, tussenas 45 en 21, kroonwiel 70 | Maktrans | Aannemelijk |
 | ATF | Elf Elfmatic J6 (Renault AJ0/AJ8), 8 liter | Elf-catalogus, Planète Renault | Bevestigd |
 | Gewicht en lengte | 93 kg droog, 385 mm inclusief omvormerhuis | Planète Renault | Aannemelijk |
@@ -177,7 +178,7 @@ De Laguna III 2.0T 170 automaat Initiale in fase 2 bestaat niet op elke markt. B
 - Plaats van de motor-ECU, de claxons, de accu (links of rechts) en de startknop.
 - Merk van de remklauwen en van de stuurpomp.
 - Overhangen: fabriek 1014 en 925 mm, model 980 en 959 mm, beelden circa 920 en 840 mm.
-- Renault-overbrengingsverhoudingen van de AJ0.
+- Renault-tandentallen voor de eindoverbrenging 3,804.
 
 ## Bronnen
 
@@ -207,12 +208,13 @@ De Laguna III 2.0T 170 automaat Initiale in fase 2 bestaat niet op elke markt. B
 - [mymotorlist, Renault F4R](https://mymotorlist.com/engines/renault/f4r/)
 - [L'argus, Laguna Estate 2.0T 170 Privilège BVA](https://www.largus.fr/fiche-technique/Renault/Laguna+Estate/III+K91/2007/Break/20T+170ch+Privil%C3%A8ge+BVA-956859.html)
 - [Autodoc, onderdelencatalogus Laguna III 2.0 16V Turbo (F4R 811)](https://www.autodoc.parts/spares/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo)
-- [Autodoc, VVT-magneetventiel F4Rt 811](https://www.autodoc.co.uk/car-parts/control-valve-camshaft-adjustment-15036/renault/laguna/laguna-coupe-dt0-1/27534-2-0-16v-turbo)
+- [Autodoc, VVT-magneetventiel F4Rt 811 (catalogusvermelding, weerlegd door de persmap)](https://www.autodoc.co.uk/car-parts/control-valve-camshaft-adjustment-15036/renault/laguna/laguna-coupe-dt0-1/27534-2-0-16v-turbo)
 - [Mitsubishi Turbocharger, 49377-07303](https://www.mitsubishi-turbo.com/product/49377-07303-turbocharger)
 - [Europe Turbo, 49377-07303 voor Laguna 3 2.0 16V Turbo 170](https://www.europeturbo.fr/turbo-compresseur/turbo-pour-renault-laguna-3-20-16v-turbo-170-cv-49377-07303-24746.html)
 - [Alfi-Turbo, 49377-07343](https://alfi-turbo.com/gb/remanufactured-turbos/1312-turbo-20i-165-170-180-hp-49377-07343.html)
 - [Planète Renault, F4RT (Vel Satis, TCe 180)](https://www.planeterenault.com/1-gamme/45-moteurs/1060-f4rt-tce-180)
-- [Planète Renault, faseversteller F4Rt (forum)](https://www.planeterenault.com/forum/post494491.html)
+- [Planète Renault, faseversteller F4Rt (forum, catalogusvermelding, weerlegd door de persmap)](https://www.planeterenault.com/forum/post494491.html)
+- [Planète Renault, motorpagina F4RT](https://www.planeterenault.com/1-gamme/45-moteurs/1060-f4rt-tce-180)
 - [Wikipedia, Renault F-Type engine](https://en.wikipedia.org/wiki/Renault_F-Type_engine)
 - [Revue technique, hoofdstuk Moteur essence 2.0 16V (F4R)](https://fr.scribd.com/document/700721270/01a)
 - [Rensatis, RTA Vel Satis, turbo F4R](https://www.rensatis.com/moteur_f4r-199.html)

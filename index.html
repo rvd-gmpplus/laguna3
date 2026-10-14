@@ -188,6 +188,43 @@ input[type=range]{width:100%;accent-color:var(--ink)}
 .dlg dt{font-weight:700}
 .dlg dd{margin:0;color:var(--ink-2)}
 .dlg .btnrow{justify-content:flex-end;margin-top:14px}
+/* ---------- openmodus ---------- */
+.open-row{display:contents}
+#openSeg{margin-left:auto}
+#openCtl{display:none}
+#app.omode #modes,#app.omode #explode,#app.omode #explodeOut,#app.omode #play,#app.omode .xlbl{display:none}
+#app.omode #openCtl{display:inline-flex}
+#app.omode .xctl{padding:4px 6px}
+#app.omode #btnExplodeAll,#app.omode #btnCollapseAll,#app.omode label[for="spread"],#app.omode #spread{display:none}
+#openCtl button[aria-expanded="true"]{background:var(--ink);color:var(--bg)}
+#openCount{font-family:var(--f-mono);font-weight:500;font-size:11px;opacity:.75}
+#openList{display:flex;flex-wrap:wrap;gap:6px;box-sizing:border-box;max-width:100%;max-height:min(34vh,220px);overflow:auto;overscroll-behavior:contain;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:8px;box-shadow:var(--shadow)}
+#openList button{border:1px solid var(--line);background:var(--chip);border-radius:999px;padding:5px 11px;font-size:12.5px;font-weight:700}
+#openList button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);border-color:transparent}
+/* ---------- onderdeelnummers ---------- */
+.pn{margin:0 0 14px}
+.pn-warn{margin:0 0 8px;padding:7px 10px;border-radius:9px;border:1px solid var(--line);background:var(--chip);font-size:12px;line-height:1.4;max-width:62ch}
+.pn-status{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin:0 0 8px;font-size:13.5px}
+.pn-status .state{display:inline-block;padding:1px 8px;border-radius:999px;border:1px solid var(--line);font-weight:700;font-size:11.5px}
+.pn-status .state.ok{background:var(--accent);color:var(--on-accent);border-color:transparent}
+.pn-status button{border:0;background:none;padding:0;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.pn-status small{color:var(--ink-2);font-size:12px}
+.pn h4{margin:10px 0 4px;font-family:var(--f-mono);font-size:10.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
+.pn-nums{list-style:none;margin:0;padding:0;font-size:13px}
+.pn-nums li{display:flex;flex-wrap:wrap;gap:2px 10px;padding:2px 0}
+.pn-nums b,.pn-tab td.num{font-family:var(--f-mono);font-weight:500;font-size:12.5px;font-variant-numeric:tabular-nums;user-select:all}
+.pn-nums span{color:var(--ink-2);font-size:12px}
+.pn-tab{width:100%;border-collapse:collapse;font-size:12.5px}
+.pn-tab th{text-align:left;font-weight:500;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);padding:2px 8px 2px 0}
+.pn-tab td{padding:3px 8px 3px 0;border-top:1px solid var(--line);vertical-align:top}
+.pn-tab td.num{white-space:nowrap}
+.pn p.pn-txt{margin:0 0 4px;font-size:12.5px}
+.pn-src{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12.5px}
+.pn-src a{color:var(--focus)}
+.pn-info{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;margin:0;font-size:12.5px}
+.pn-info dt{color:var(--ink-2)}
+.pn-info dd{margin:0;min-width:0}
+.pn-info dd small{display:block;color:var(--ink-2);font-size:11px}
 /* ---------- desktop ---------- */
 @media (min-width:920px){
   #sheet{top:calc(12px + env(safe-area-inset-top,0px));right:16px;bottom:16px;width:var(--panel-w);border-radius:16px;overflow:hidden}
@@ -197,7 +234,16 @@ input[type=range]{width:100%;accent-color:var(--ink)}
 }
 /* ---------- mobiel ---------- */
 @media (max-width:919.98px){
-  #sheet{left:0;right:0;bottom:0;border-radius:18px 18px 0 0;border-bottom:0;padding-bottom:env(safe-area-inset-bottom,0px);max-height:calc(100% - 96px - env(safe-area-inset-top,0px));transition:height .28s ease}
+  /* openmodus: de segmentknop krijgt een eigen regel onder de titel, over de volle breedte */
+  #topbar{flex-wrap:wrap}
+  .title{flex:1 1 0}
+  .open-row{display:block;order:3;flex:0 0 100%;pointer-events:none}
+  #openSeg{display:flex;margin-left:0;pointer-events:auto}
+  #app.omode .dock-main{flex-direction:row;align-items:stretch}
+  #app.omode #openCtl{flex:1 1 auto;min-width:0}
+  #app.omode #openCtl button{min-width:0;padding-left:2px;padding-right:2px}
+  #app.omode .xctl{flex:0 0 auto}
+  #sheet{left:0;right:0;bottom:0;border-radius:18px 18px 0 0;border-bottom:0;padding-bottom:env(safe-area-inset-bottom,0px);max-height:calc(100% - 140px - env(safe-area-inset-top,0px));transition:height .28s ease}
   #sheet[data-state="peek"]{height:auto}
   #sheet[data-state="peek"] .tabs,#sheet[data-state="peek"] .tabpanels{display:none}
   #sheet[data-state="open"]{height:64%}
@@ -218,7 +264,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
   .xlbl span::after{content:none}
   .sel-actions .btn{padding:7px 10px;font-size:12.5px}
   .sub{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  #hint,#tourBar{left:50%;top:calc(76px + env(safe-area-inset-top,0px));max-width:calc(100% - 32px);box-sizing:border-box}
+  #hint,#tourBar{left:50%;top:calc(124px + env(safe-area-inset-top,0px));max-width:calc(100% - 32px);box-sizing:border-box}
   /* rondleiding: een volle, lage balk onder de titel in plaats van een smalle hoge kolom */
   #tourBar{left:12px;right:12px;transform:none;max-width:none;gap:8px;padding:6px 6px 6px 12px}
   #tourText{flex:1 1 auto;min-width:0;font-size:12.5px;line-height:1.3;max-height:calc(3.9em + 14px);overflow:hidden}
@@ -253,6 +299,12 @@ input[type=range]{width:100%;accent-color:var(--ink)}
 }
 @media (max-width:919.98px) and (max-height:520px) and (orientation:landscape){
   .title .eyebrow,.title .sub{display:none}
+  /* de segmentknop staat op deze lage schermen tussen de titel en de knoppen in plaats van op een eigen regel */
+  h1 span{display:none}
+  .open-row{order:0;flex:0 0 auto}
+  #openSeg{display:inline-flex}
+  #openSeg button{flex:0 0 auto;padding:5px 10px;min-height:0}
+  #app.omode #openCtl{flex:0 1 auto}
   /* het bijschrift van de rondleiding neemt de plaats van de titel in, links van de knoppen */
   #tourBar{top:calc(6px + env(safe-area-inset-top,0px));right:156px;z-index:7}
   .dock-main{flex-direction:row;align-items:stretch;flex-wrap:nowrap}
@@ -310,6 +362,10 @@ input[type=range]{width:100%;accent-color:var(--ink)}
       <h1>Laguna III <span>Initiale Paris</span></h1>
       <p class="sub">2011 · 5-deurs hatchback · zilvergrijs · <b>F4Rt 2.0 Turbo 170 pk</b><span class="long"> · 6-traps automaat</span></p>
     </div>
+    <div class="open-row"><div class="seg" id="openSeg" role="radiogroup" aria-label="Wat doet een klik: uitklappen of openen">
+      <button role="radio" aria-checked="true" tabindex="0" data-omode="expand" title="Een klik klapt de groep van het onderdeel uit (sneltoets O wisselt)">Uitklappen</button>
+      <button role="radio" aria-checked="false" tabindex="-1" data-omode="open" title="Een klik opent een portier, de kap, de klep en andere openers (sneltoets O wisselt)">Openen</button>
+    </div></div>
     <div class="top-actions">
       <button class="iconbtn" id="help" aria-label="Uitleg over de bediening" aria-haspopup="dialog">?</button>
       <button class="iconbtn" id="btnParts" aria-label="Onderdelenlijst openen" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg></button>
@@ -321,8 +377,9 @@ input[type=range]{width:100%;accent-color:var(--ink)}
     <div class="sel-head">
       <div class="crumbs" id="crumbs"></div>
       <h2 id="selName" aria-live="polite">Renault Laguna III</h2>
-      <p class="meta" id="selMeta"></p>
+      <p class="meta" id="selMeta" aria-live="polite"></p>
       <div class="sel-actions">
+        <button class="btn primary" id="actOpen" hidden>Openen</button>
         <button class="btn primary" id="actToggle">Uitklappen</button>
         <button class="btn primary" id="actDive" hidden>Duik hierheen</button>
         <button class="btn" id="actUp" title="Klap de eerstvolgende dichte groep erboven uit">Groter geheel</button>
@@ -342,10 +399,15 @@ input[type=range]{width:100%;accent-color:var(--ink)}
         <dl class="spec" id="selSpec"></dl>
         <p class="kids-title" id="kidsTitle">Bestaat uit</p>
         <div class="kids" id="selKids"></div>
+        <div class="pn" id="pnBox" role="group" aria-labelledby="pnTitle">
+          <p class="kids-title" id="pnTitle">Onderdeelnummers</p>
+          <p class="pn-warn" id="pnWarn">Controleer het nummer altijd op het chassisnummer (VIN) bij de dealer of webwinkel; catalogi verschillen per bouwdatum en uitvoering.</p>
+          <div id="pnBody"></div>
+        </div>
         <p class="note">Schematisch 3D-model: vormen, maten en posities van onderdelen zijn benaderd en niet geschikt als montagevoorschrift. Technische gegevens komen uit openbare specificaties en werkplaatshandboeken van deze auto en, waar vermeld, van zustermotoren (F4R) of de zusterbak (Mitsubishi F6AJA); niet elk gegeven is voor deze uitvoering bevestigd.</p>
       </section>
       <section id="tab-tree" role="tabpanel" aria-labelledby="tabbtn-tree" hidden>
-        <input id="treeSearch" type="search" placeholder="Zoek een onderdeel, bijv. klepveer" autocomplete="off" aria-describedby="treeInfo">
+        <input id="treeSearch" type="search" placeholder="Zoek een onderdeel of nummer, bijv. klepveer" autocomplete="off" aria-describedby="treeInfo">
         <p id="treeInfo" aria-live="polite"></p>
         <div class="tree" id="tree" role="tree" aria-label="Onderdelenboom"></div>
       </section>
@@ -373,6 +435,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
     </div>
   </aside>
   <nav id="dock" aria-label="Bediening">
+    <div id="openList" role="group" aria-label="Alle openers" hidden></div>
     <div class="dock-main">
       <div class="seg" id="modes" role="radiogroup" aria-label="Wat doet een klik op een onderdeel">
         <span class="seg-lbl" aria-hidden="true">Klik</span>
@@ -380,6 +443,11 @@ input[type=range]{width:100%;accent-color:var(--ink)}
         <button role="radio" aria-checked="false" tabindex="-1" data-mode="layers" title="Klik klapt de buitenste dichte groep uit, van buiten naar binnen"><span class="long">Laag voor laag</span><span class="short">Lagen</span></button>
         <button role="radio" aria-checked="false" tabindex="-1" data-mode="collapse" title="Klik klapt de groep in waar het onderdeel uitgeklapt in zit">Inklappen</button>
         <button role="radio" aria-checked="false" tabindex="-1" data-mode="select" title="Klik toont alleen de gegevens">Info</button>
+      </div>
+      <div class="seg" id="openCtl" role="group" aria-label="Openers">
+        <button id="btnOpenAll" title="Alle openers open">Alles open</button>
+        <button id="btnCloseAll" title="Alle openers dicht">Alles dicht</button>
+        <button id="btnOpenList" aria-expanded="false" aria-controls="openList" title="Kies een opener uit de lijst">Openers <span id="openCount"></span></button>
       </div>
       <div class="xctl" id="xctl">
         <label for="explode" class="xlbl"><span>Explosie</span><b id="explodeName">Renault Laguna III</b></label>
@@ -412,15 +480,17 @@ input[type=range]{width:100%;accent-color:var(--ink)}
       <dt>Vasthouden</dt><dd>Klapt de groep in waar het onderdeel in zit (de ring loopt vol).</dd>
       <dt>Eén vinger · twee vingers</dt><dd>Draaien · knijpen om te zoomen en schuiven.</dd></dl></div>
     <h3>Bediening onderin</h3><dl>
+      <dt>Uitklappen · Openen</dt><dd>Bovenin: Uitklappen haalt groepen uit elkaar, Openen laat portieren, kap, klep en andere openers draaien of schuiven. Bij Openen opent een klik de buitenste dichte opener op het onderdeel, daarna de volgende naar binnen; zijn ze open, dan sluit de binnenste. Rechtsklik, Shift+klik of vasthouden sluit de binnenste open opener. Het dock heeft dan Alles open, Alles dicht en een lijst van alle openers.</dd>
       <dt>Klik: …</dt><dd>Onderdeel (standaard), Laag voor laag (van buiten naar binnen), Inklappen of alleen Info.</dd>
       <dt>Explosie</dt><dd>Schuif om de gekozen groep laag voor laag uit elkaar te halen; Demonteren en Monteren spelen dat af.</dd>
-      <dt>Presets</dt><dd>Zes categorieën met kant-en-klare standen, ook de rondleiding.</dd>
+      <dt>Presets</dt><dd>Zeven categorieën met kant-en-klare standen, ook de rondleiding.</dd>
       <dt>Groter geheel</dt><dd>In het paneel: klapt de eerstvolgende dichte groep erboven uit.</dd>
       <dt>Stap terug</dt><dd>Maakt de laatste handeling ongedaan.</dd></dl>
     <h3>Toetsen</h3><dl>
       <dt><kbd>Enter</kbd></dt><dd>Selectie uitklappen; is die al open, dan het grotere geheel. <kbd>Shift</kbd>+<kbd>Enter</kbd> klapt in.</dd>
       <dt><kbd>Backspace</kbd></dt><dd>Stap terug.</dd>
       <dt><kbd>&uarr;</kbd> <kbd>&darr;</kbd> <kbd>&larr;</kbd> <kbd>&rarr;</kbd></dt><dd>Door de onderdelen lopen: bovenliggende groep, eerste deel, vorige of volgende op hetzelfde niveau.</dd>
+      <dt><kbd>O</kbd></dt><dd>Wisselt tussen Uitklappen en Openen. In Openen opent <kbd>Enter</kbd> de opener van de selectie en sluit <kbd>Shift</kbd>+<kbd>Enter</kbd> hem.</dd>
       <dt><kbd>Esc</kbd></dt><dd>Menu sluiten of de hele auto selecteren.</dd>
       <dt><kbd>0</kbd> – <kbd>9</kbd></dt><dd>Gemonteerd, Hoofdgroepen, Motor, Motor tot op de bout, Automaat, Onderstel, Carrosserie, Interieur, Röntgen, Alles uit elkaar.</dd>
       <dt><kbd>/</kbd></dt><dd>Zoek een onderdeel in de onderdelenlijst.</dd>
@@ -763,7 +833,10 @@ function mkNode(obj, name, o) {
     id: NID++, name, d: o.d || '', spec: o.spec || null, obj, kids: [], parent: null, asm: false,
     ex: o.ex ? V3(...o.ex) : null, exs: o.exs != null ? o.exs : 1, mode: o.mode || null, axis: o.axis ? V3(...o.axis) : null, step: o.step || 0,
     u: 0, amt: 0, target: 0, delay: 0, base: null, exv: V3(0, 0, 0), sys: null, depth: 0, count: 0, lc: null, rad: 0, tag: o.tag || null,
-    inner: !!o.inner   // ingesloten: onzichtbaar zolang de bovenliggende groep dicht is (de app verbergt het dan)
+    inner: !!o.inner,  // ingesloten: onzichtbaar zolang de bovenliggende groep dicht is (de app verbergt het dan)
+    opn: o.open || null,    // openmodus: scharnier of schuif (zie docs/ontwerp-en-architectuur.md, "Openmodus")
+    strut: o.strut || null, // telescoop (gasveer) die de app tussen twee punten richt
+    stay: !!o.stay          // blijft op zijn plek als de opener erboven draait (carrosseriezijde van een scharnier)
   };
   obj.userData.node = n;
   if (o.p) obj.position.set(...o.p);
@@ -1672,7 +1745,7 @@ function buildBody() {
   const hoodS = z => bodHoodS(z) + 0.0018;
   const hoodBr = bodDense(2.2, bodHoodZ1 - 0.002, 10).concat([bodHoodZ1 - 0.0005]);
   const hoodIn = (off, a, b, da) => bodDeck(a, b, 28, z => Math.min(0.995, bodHoodS(z) + da), 12, bodDense(2.1, b, 4), off);
-  const hood = A('Motorkap', { d: 'Motorkap van staal met binnenframe, isolatie, scharnieren, slotbeugel, veiligheidshaak en sproeiers.', ex: [0, 0.52, 0.3] }, [
+  const hood = A('Motorkap', { d: 'Motorkap van staal met binnenframe, isolatie, scharnieren, slotbeugel, veiligheidshaak en sproeiers.', ex: [0, 0.52, 0.3], open: { type: 'hinge', pivot: [0, bodSec(1.2).yd - 0.09, 1.16], axis: [1, 0, 0], angle: -0.87, label: 'Motorkap', look: { dir: [0.25, 0.9, 1], nodes: ['Motorkap', 'Aandrijflijn'] } } }, [
     P('Buitenpaneel motorkap', bodDeck(WS0 + 0.004, bodHoodZ1 - 0.0003, 60, z => Math.min(0.9995, hoodS(z)), 30, hoodBr), MAT.paint, { d: 'Buitenhuid van de motorkap met twee vouwlijnen van de koplampen naar de voorruit.', ex: [0, 0.14, 0] }),
     P('Binnenframe motorkap', hoodIn(0.03, 1.15, 2.26, 0.012), MAT.paintIn, { d: 'Verstevigend binnenframe met de bevestigingspunten van scharnieren en slotbeugel.', ex: [0, 0, 0] }),
     P('Motorkapisolatie', hoodIn(0.04, 1.22, 2.12, 0.04), MAT.carpet, { d: 'Geluids- en hitte-isolatiemat aan de onderzijde.', ex: [0, -0.1, 0] }),
@@ -1683,7 +1756,7 @@ function buildBody() {
     P('Slotbeugel motorkap', tube([[-0.02, 0.0, 0], [-0.02, -0.04, 0], [0.02, -0.04, 0], [0.02, 0, 0]].map(([x, y]) => [x, bodSec(2.2).yd - 0.05 + y, 2.2]), 0.004, 12, 6), MAT.steel, { d: 'Beugel aan het binnenframe die in het motorkapslot op de frontmodule grijpt.', ex: [0, -0.08, 0.04] }),
     P('Veiligheidshaak', G.rbox(0.015, 0.05, 0.03, 0.004), MAT.steel, { d: 'Tweede vanghaak die de kap vasthoudt als het slot ontgrendeld is.', p: [0.06, bodSec(2.18).yd - 0.075, 2.18], ex: [0, -0.07, 0] }),
     P('Motorkapsteun', rodBetween([-0.34, 0.757, 2.06], [-0.08, 0.757, 2.06], 0.005, 8), MAT.steel, { d: 'Steunstang die de geopende kap ondersteunt; in rusttoestand ligt hij vastgeklikt langs de bovenste dwarsbalk van de frontmodule.', ex: [-0.04, 0.06, 0] }),
-    P('Kapafdichting', tube([-0.6, -0.3, 0, 0.3, 0.6].map(x => [x, bodSec(1.14).yd - 0.035 - 0.1 * x * x, 1.145]), 0.008, 20, 6), MAT.rubber, { d: 'Rubber afdichting tussen kap en torpedobak.', ex: [0, -0.05, -0.04] }),
+    P('Kapafdichting', tube([-0.6, -0.3, 0, 0.3, 0.6].map(x => [x, bodSec(1.14).yd - 0.035 - 0.1 * x * x, 1.145]), 0.008, 20, 6), MAT.rubber, { d: 'Rubber afdichting tussen kap en torpedobak.', stay: true, ex: [0, -0.05, -0.04] }),
     ...both(s => A(`Ruitensproeier ${sn(s)}`, { d: 'Sproeier van de ruitensproeierinstallatie aan de achterrand van de kap.', ex: [0, 0.05, 0] }, [
       P('Sproeierkop', G.rbox(0.022, 0.009, 0.018, 0.004), MAT.plastic, { d: 'Kunststof sproeierkop met twee straalopeningen.', p: [s * 0.28, halfPt(1.17, bodSAtX(1.17, 0.28))[1] + 0.005, 1.17], ex: [0, 0.04, 0] }),
       P('Sproeierslang', tube([[s * 0.28, halfPt(1.17, bodSAtX(1.17, 0.28))[1] - 0.02, 1.17], [s * 0.15, bodSec(1.3).yd - 0.05, 1.3], [0, bodSec(1.4).yd - 0.05, 1.4]], 0.003, 12, 5), MAT.rubber, { d: 'Toevoerslang onder de kap.', ex: [0, -0.03, 0] }),
@@ -1911,6 +1984,11 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     windscreen, buildHeadlight(L), buildHeadlight(R), buildTaillight(L), buildTaillight(R), wipers,
   ]);
 }
+
+/* ===================== panoramadak ===================== */
+// Elektrisch panoramadak van de Laguna III hatchback (optie): een beweegbaar glaspaneel voor (kantelen en
+// schuiven over het vaste paneel), een vast glaspaneel achter, dwarsbalk, cassette, zonneschermen en luchtgeleider.
+// Eigenaar: carrosserie. Wordt aangeroepen vanuit bodyparts.js (groep 'Zijwanden en dak').
 
 /* ===================== motor F4Rt 811: maten, aansluitpunten, blok, krukmechanisme, cilinderkop ===================== */
 // Motorframe: oorsprong op de krukas-as, x langs de krukas (+x = vliegwiel- en versnellingsbakzijde = links in de auto),
@@ -2269,7 +2347,6 @@ function engCoverGeo() {
     const L = [cover];
     [-0.17, -0.088, 0, 0.088, 0.17].forEach(x => L.push(xf(G.box(0.008, 0.006, 0.16), [x, ENG_COVER_TOP + 0.002, 0])));
     L.push(xf(G.cyl('y', 0.024, 0.024, 0.006, 20), [-0.17, ENG_COVER_TOP + 0.002, -0.05]));     // vulhals
-    L.push(xf(G.cyl('y', 0.017, 0.017, 0.005, 16), [-0.185, ENG_COVER_TOP + 0.002, 0.06]));     // opname VVT-klep
     return merge(L);
   });
 }
@@ -2297,28 +2374,6 @@ function buildIgnition() {
   XC.forEach((x, i) => kids.push(P(`Bobinebout ${i + 1}`, hexBolt(0.02, 0.006), MAT.darkSteel, { d: 'Bout die de bobine op het kleppendeksel vastzet.', p: [x + 0.024, ENG_COVER_TOP + 0.006, -0.006], r: [PI, 0, 0], ex: [0, 0.19, 0] })));
   return A('Ontsteking', { d: 'Losse penbobines met bougies, één per cilinder.', ex: [0, 0.3, 0.22] }, kids);
 }
-function buildPhaser() {
-  const P0 = [XT, CAMY, CAMZ];
-  return A('Faseversteller', { d: 'Hydraulische nokkenasverstelling op de inlaatnokkenas; tegelijk het distributiewiel van die as. Of hij aan/uit of traploos werkt is voor de F4Rt 811 niet vastgesteld; binnenwerk schematisch weergegeven.', p: P0, ex: [-0.07, 0.24, 0.09] }, [
-    P('Huis met distributiewiel', merge([gear(38, 0.0569, 0.0545, 0.027, 0.03, 'x'), xf(annulus(0.016, 0.046, 0.008, 'x', 32), [-0.017, 0, 0])]), MAT.steel, { d: 'Huis met 38 tanden waarover de distributieriem loopt (tandental afgeleid uit de 2 : 1-overbrenging).', spec: [['Tanden', '38 (geschat)']], ex: [0, 0, 0] }),
-    P('Vleugelrotor', merge([G.cyl('x', 0.024, 0.024, 0.022, 20), ...[0, 1, 2, 3].map(k => xf(G.box(0.022, 0.016, 0.008), [0, 0.032 * Math.cos(k * HALF), 0.032 * Math.sin(k * HALF)], [k * HALF, 0, 0]))]), MAT.darkSteel, { d: 'Rotor met vier vleugels op de nokkenas; oliedruk aan een van beide kanten verdraait hem ten opzichte van het huis.', ex: [-0.05, 0, 0], inner: true }),
-    P('Vergrendelpen', G.cyl('x', 0.003, 0.003, 0.012, 8), MAT.steel, { d: 'Pen die rotor en huis bij lage oliedruk vergrendelt (start).', p: [0, 0.034, 0.008], ex: [-0.04, 0.03, 0], inner: true }),
-    P('Vergrendelveer', engSpring(0.0022, 0.0004, 0.008, 4, 6, 'x'), MAT.steel, { d: 'Veer achter de vergrendelpen.', p: [0.008, 0.034, 0.008], ex: [-0.025, 0.04, 0], inner: true }),
-    P('Centrale bout', hexBolt(0.05, 0.012, 'x'), MAT.darkSteel, { d: 'Centrale bout van de faseversteller; vervangen bij demontage.', p: [-0.022, 0, 0], ex: [-0.09, 0, 0] }),
-    P('Afdekplaat', G.lathe('x', [[0, -0.003], [0.015, -0.003], [0.016, 0], [0.015, 0.003], [0, 0.003]], 20, 'engPhaserCap'), MAT.aluCast, { d: 'Afdekdop (obturateur) voor in het huis.', p: [-0.029, 0, 0], ex: [-0.13, 0, 0] }),
-  ]);
-}
-function buildVvtValve() {
-  const P0 = [-0.185, ENG_COVER_TOP, 0.06];
-  return A('VVT-elektroklep', { d: 'Olieregelventiel op het kleppendeksel dat de olie naar de faseversteller stuurt; binnenwerk schematisch weergegeven.', p: P0, ex: [0, 0.55, 0.1] }, [
-    P('Spoelhuis met stekker', merge([xf(G.cyl('y', 0.013, 0.013, 0.018, 16), [0, 0.011, 0]), xf(G.rbox(0.018, 0.012, 0.02, 0.003), [0, 0.012, 0.019]), xf(G.box(0.036, 0.004, 0.012), [0.012, 0.003, 0])]), MAT.plastic, { d: 'Elektromagneet met stekker, door de motorcomputer gestuurd.', ex: [0, 0, 0] }),
-    P('Schuifventiel met veer', G.cyl('y', 0.0065, 0.0065, 0.04, 12), MAT.steel, { d: 'Schuif met terugstelveer die de oliekanalen opent en sluit.', p: [0, -0.018, 0], ex: [0, -0.03, 0] }),
-    P('Zeefje', annulus(0.003, 0.0066, 0.004, 'y', 12), MAT.steel, { d: 'Zeefje dat vuil uit de stuurolie houdt.', p: [0, -0.04, 0], ex: [0, -0.06, 0] }),
-    P('O-ring boven', engORing(0.0068, 0.0011), MAT.rubber, { d: 'O-ring tussen klep en deksel.', p: [0, -0.003, 0], ex: [0, -0.012, 0.02] }),
-    P('O-ring onder', engORing(0.0068, 0.0011), MAT.rubber, { d: 'Tweede O-ring.', p: [0, -0.024, 0], ex: [0, -0.04, 0.02] }),
-    P('Bevestigingsbout', hexBolt(0.016, 0.006), MAT.darkSteel, { d: 'Bout van de elektroklep.', p: [0.026, 0.006, 0], r: [PI, 0, 0], ex: [0, 0.06, 0] }),
-  ]);
-}
 function buildHead() {
   const hs = shapeOf(rrectPts(0.43, 0.204, 0.02));
   XC.forEach(x => hs.holes.push(circlePath(x, 0, 0.013)));
@@ -2340,7 +2395,7 @@ function buildHead() {
   XM.forEach((x, i) => [0.093, -0.093].forEach((z, j) => bridgeBolts.push(P(`Lagerbrugbout ${i * 2 + j + 1}`, hexBolt(0.045, 0.007), MAT.darkSteel, { d: 'Bout van de nokkenaslagerbrug.', p: [x, CAMY + ENG_BRIDGE_T, z], r: [PI, 0, 0], ex: [0, 0.04, 0] }))));
   [-0.2, -0.1, 0.1, 0.2].forEach((x, i) => [0.088, -0.088].forEach((z, j) => coverBolts.push(P(`Kleppendekselbout ${i * 2 + j + 1}`, hexBolt(0.03, 0.006), MAT.steel, { d: 'Bout van het kleppendeksel.', p: [x, ENG_COVER_TOP, z], r: [PI, 0, 0], ex: [0, 0.07, 0] }))));
   const camSealG = annulus(0.014, 0.0205, 0.007, 'x', 24), plugG = G.lathe('x', [[0, -0.003], [0.017, -0.003], [0.017, 0.003], [0, 0.003]], 20, 'engCamPlug');
-  return A('Cilinderkop', { d: 'Aluminium cilinderkop met twee bovenliggende nokkenassen in één lagerbrug, 16 kleppen met rolzwenkarmen (zoals bij de F4R-familie, aannemelijk voor de 811) en hydraulische klepstoters, faseversteller, kleppendeksel en ontsteking.', ex: [0, 0.3, 0] }, [
+  return A('Cilinderkop', { d: 'Aluminium cilinderkop met twee bovenliggende nokkenassen in één lagerbrug, 16 kleppen met rolzwenkarmen (zoals bij de F4R-familie, aannemelijk voor de 811) en hydraulische klepstoters, vaste kleptiming (geen faseversteller), kleppendeksel en ontsteking.', ex: [0, 0.3, 0] }, [
     P('Cilinderkop (gietstuk)', merge([head, ...ports]), MAT.aluCast, { d: 'Aluminium cilinderkop met ingeperste klepzittingen en klepgeleiders, inlaatpoorten aan de voorzijde en uitlaatpoorten aan de achterzijde.', spec: [['Materiaal', 'aluminium'], ['Hoogte', '138,15 mm'], ['Kleppen', '16 (4 per cilinder)']], ex: [0, 0.09, 0] }),
     P('Koppakking', gasket, MAT.darkSteel, { d: 'Koppakking tussen blok en kop, geklemde dikte circa 0,65 mm (meerlaags staal aangenomen).', spec: [['Dikte geklemd', '0,65 mm']], ex: [0, 0.025, 0] }),
     A('Cilinderkopbouten', { d: 'Tien cilinderkopbouten (Torx); herbruikbaar tot 117,5 mm lengte onder de kop.', ex: [0, 0.27, 0] }, XM.flatMap((x, i) => [0.074, -0.074].map((z, j) => P(`Cilinderkopbout ${i * 2 + j + 1}`, headBolt, MAT.darkSteel, { d: 'Rekbout die kop en koppakking op het blok klemt.', p: [x, DECK + 0.084, z], r: [PI, 0, 0], ex: [0, 0.05 + (i % 2) * 0.012, 0] })))),
@@ -2354,18 +2409,16 @@ function buildHead() {
       P('Afdichtdop nokkenas inlaat', plugG, MAT.steel, { d: 'Afdichtdop in de lagerboring aan de vliegwielzijde (bouchon d\'étanchéité).', p: [0.2135, CAMY, CAMZ], ex: [0.07, 0, 0.07] }),
       P('Afdichtdop nokkenas uitlaat', plugG, MAT.steel, { d: 'Afdichtdop in de lagerboring aan de vliegwielzijde.', p: [0.2135, CAMY, -CAMZ], ex: [0.07, 0, -0.07] }),
     ]),
-    buildPhaser(),
     A('Nokkenaslagerbrug', { d: 'Eén lagerbrug (carter-chapeau de paliers) die beide nokkenassen draagt, met vloeibare pakking op het vlak.', ex: [0, 0.3, 0] }, [
       P('Lagerbrug', engBridgeGeo(), MAT.aluCast, { d: 'Aluminium ladder met de bovenste helften van de twaalf nokkenaslagers.', ex: [0, 0, 0] }),
       A('Lagerbrugbouten', { d: 'Bouten van de lagerbrug (aantal geschat).', ex: [0, 0.03, 0] }, bridgeBolts),
     ]),
     A('Kleppendeksel', { d: 'Kleppendeksel met pakking, bouten en olievuldop.', ex: [0, 0.45, 0] }, [
-      P('Deksel', engCoverGeo(), MAT.aluCast, { d: 'Deksel over de lagerbrug met doorvoeren voor de vier bobines en een opname voor de VVT-elektroklep.', ex: [0, 0, 0] }),
+      P('Deksel', engCoverGeo(), MAT.aluCast, { d: 'Deksel over de lagerbrug met doorvoeren voor de vier bobines.', ex: [0, 0, 0] }),
       P('Kleppendekselpakking', coverGasket, MAT.rubber, { d: 'Rubber pakking onder het kleppendeksel.', ex: [0, -0.025, 0] }),
       A('Kleppendekselbouten', { d: 'Acht bouten van het kleppendeksel (aantal geschat).', ex: [0, 0.05, 0] }, coverBolts),
       P('Olievuldop', merge([G.cyl('y', 0.021, 0.021, 0.016, 20), xf(G.box(0.03, 0.006, 0.006), [0, 0.01, 0])]), MAT.plastic, { d: 'Dop van de olievulopening.', p: [-0.17, ENG_COVER_TOP + 0.011, -0.05], ex: [0, 0.09, 0] }),
     ]),
-    buildVvtValve(),
     buildIgnition(),
   ]);
 }
@@ -2400,6 +2453,8 @@ function buildTiming() {
     P('Distributieriem', xf(belt.geo, [XT, 0, 0]), MAT.belt, { d: `HNBR-riem met glasvezelkoord en afgeronde tanden; riemlengte in het model ${Math.round(belt.len * 1000)} mm (opgave 1200 mm).`, ex: [-0.09, 0, 0] }),
     P('Krukastandwiel', gear(19, 0.0281, 0.0258, 0.03, 0.019, 'x'), MAT.steel, { d: 'Tandwiel met 19 tanden op de krukasneus (afgeleid uit de 2 : 1-overbrenging).', p: [XT, 0, 0], ex: [-0.045, -0.02, 0], spec: [['Tanden', '19 (geschat)']] }),
     P('Spie krukastandwiel', G.box(0.024, 0.004, 0.005), MAT.darkSteel, { d: 'Spie (clavette) die het krukastandwiel op de krukas vastzet.', p: [XT, 0.0205, 0], ex: [-0.03, 0.04, 0] }),
+    P('Nokkenaswiel inlaat', merge([gear(38, 0.0569, 0.0545, 0.027, 0.012, 'x'), xf(G.cyl('x', 0.022, 0.022, 0.012, 20), [0.016, 0, 0])]), MAT.steel, { d: 'Distributiewiel van de inlaatnokkenas, 38 tanden (afgeleid). De F4Rt 811 heeft vaste kleptiming en geen faseversteller (Renault-persmap 2007).', p: [XT, CAMY, CAMZ], ex: [-0.045, 0.02, 0.03], spec: [['Tanden', '38 (geschat)'], ['Kleptiming', 'vast']] }),
+    P('Moer nokkenaswiel inlaat', engNut(0.016, 0.009, 'x'), MAT.darkSteel, { d: 'Moer van het inlaatnokkenaswiel; vervangen bij demontage.', p: [XT - 0.019, CAMY, CAMZ], ex: [-0.1, 0.02, 0.03] }),
     P('Nokkenaswiel uitlaat', merge([gear(38, 0.0569, 0.0545, 0.027, 0.012, 'x'), xf(G.cyl('x', 0.022, 0.022, 0.012, 20), [0.016, 0, 0])]), MAT.steel, { d: 'Distributiewiel van de uitlaatnokkenas, 38 tanden (afgeleid).', p: [XT, CAMY, -CAMZ], ex: [-0.045, 0.02, -0.03], spec: [['Tanden', '38 (geschat)']] }),
     P('Moer nokkenaswiel uitlaat', engNut(0.016, 0.009, 'x'), MAT.darkSteel, { d: 'Moer van het uitlaatnokkenaswiel; vervangen bij demontage.', p: [XT - 0.019, CAMY, -CAMZ], ex: [-0.1, 0.02, -0.03] }),
     A('Spanrol', { d: 'Halfautomatische spanrol met excentrische verstelling: bij het afstellen worden de merkstrepen uitgelijnd.', p: [XT, TIM[5][1], TIM[5][0]], ex: [-0.07, -0.02, -0.05] }, [
@@ -2589,7 +2644,7 @@ function buildLube() {
   const pick = cache('engPickup', () => tube([[-0.168, -0.135, 0.02], [-0.15, -0.165, 0.03], [-0.05, -0.178, 0.03], [0.03, -0.182, 0.02]], 0.0085, 20, 8));
   const PCV = [0.1, ENG_COVER_TOP + 0.008, -0.065];
   const sep = cache('engSeparator', () => merge([G.rbox(0.13, 0.016, 0.034, 0.006), xf(G.cyl('x', 0.007, 0.007, 0.018, 10), [0.072, 0.003, 0]), xf(G.cyl('z', 0.006, 0.006, 0.016, 10), [-0.05, 0.003, -0.022])]));
-  return A('Smering', { d: 'Smeersysteem: carterpan, kettinggedreven tandwielpomp, aanzuigbuis met zeef, watergekoelde oliekoeler met spin-on filter, peilstok, turbo-olieleidingen en carterventilatie.', ex: [0, -0.55, -0.18], spec: [['Olie-inhoud', 'circa 5,4 l'], ['Filter', 'spin-on, M20 × 1,5']] }, [
+  return A('Smering', { d: 'Smeersysteem: carterpan, kettinggedreven tandwielpomp, aanzuigbuis met zeef, watergekoelde oliekoeler met spin-on filter, peilstok, turbo-olieleidingen en carterventilatie.', ex: [0, -0.55, -0.18], spec: [['Olie-inhoud', '5,4 l inclusief filter'], ['Filter', 'spin-on, M20 × 1,5']] }, [
     A('Carterpan', { d: 'Onderste carter met pakking en minimaal 18 bouten.', ex: [0, -0.12, 0] }, [
       P('Pan', pan, MAT.aluCast, { d: 'Carterpan: het oliereservoir onder het blok, met oliebak bij de vliegwielzijde.', ex: [0, 0, 0] }),
       P('Schotplaat', xf(G.box(0.3, 0.002, 0.15), [0.03, -0.085, 0]), MAT.steel, { d: 'Keerplaat in de pan die het klotsen van de olie tegengaat (schematisch).', ex: [0, 0.06, 0], inner: true }),
@@ -2687,8 +2742,8 @@ function buildEngineCooling() {
 
 function buildEngine() {
   return A('Motor F4Rt', {
-    d: 'Renault F4Rt 811: 2,0-liter viercilinder-turbomotor met gietijzeren blok, aluminium kop, 16 kleppen met rolzwenkarmen (zoals bij de F4R-familie, aannemelijk voor de 811), faseversteller op de inlaatnokkenas, distributieriem en meerpuntsinjectie. Dwars voorin; inlaatzijde naar voren en turbo achter (aannemelijk).',
-    spec: [['Motorcode', 'F4Rt 811'], ['Opbouw', '4 in lijn, 16V DOHC'], ['Cilinderinhoud', '1998 cm³'], ['Boring × slag', '82,7 × 93,0 mm'], ['Compressie', '9,5 : 1 (één bron noemt 9,0 : 1)'], ['Brandstofsysteem', 'meerpuntsinjectie'], ['Inductie', 'Mitsubishi TD04 + intercooler'], ['Vermogen', '125 kW (170 pk) bij 5000 tpm'], ['Koppel', '270 Nm bij 3250 tpm'], ['Ontsteekvolgorde', '1-3-4-2 (aannemelijk)'], ['Nokkenasaandrijving', 'distributieriem']],
+    d: 'Renault F4Rt 811: 2,0-liter viercilinder-turbomotor met gietijzeren blok, aluminium kop, 16 kleppen met rolzwenkarmen (zoals bij de F4R-familie, aannemelijk voor de 811), vaste kleptiming zonder faseversteller, distributieriem en meerpuntsinjectie. Dwars voorin; inlaatzijde naar voren en turbo achter (aannemelijk).',
+    spec: [['Motorcode', 'F4Rt 811'], ['Opbouw', '4 in lijn, 16V DOHC'], ['Cilinderinhoud', '1998 cm³'], ['Boring × slag', '82,7 × 93,0 mm'], ['Compressie', '9,5 : 1 (Renault-persmap 2007; L\'argus noemt 9,0 : 1)'], ['Kleptiming', 'vast, geen faseversteller'], ['Toerenbegrenzer', '6250 tpm'], ['Brandstofsysteem', 'meerpuntsinjectie'], ['Inductie', 'Mitsubishi TD04 + intercooler'], ['Vermogen', '125 kW (170 pk) bij 5000 tpm'], ['Koppel', '270 Nm bij 3250 tpm'], ['Ontsteekvolgorde', '1-3-4-2 (aannemelijk)'], ['Nokkenasaandrijving', 'distributieriem']],
     ex: [0, 0.25, 0],
   }, [
     buildBlock(), buildCrank(), buildHead(), buildTiming(), buildAccessory(), buildIntake(), buildTurbo(), buildLube(), buildEngineCooling(),
@@ -3088,7 +3143,7 @@ function drvSets() {
   })();
   return A('Tandwielsets', {
     d: 'De drie planetaire tandwielsets (reductieset, voorste set en achterste set) die samen de zes versnellingen en de achteruit vormen (Lepelletier-opbouw). De koppeling tussen de sets onderling is schematisch weergegeven.',
-    spec: [['Aantal sets', '3'], ['Voorste set', '4 planeetwielen'], ['Eindoverbrenging', '3,571 (42/45 en 21/70 tanden)']], ex: [0, 0.2, 0.12], inner: true,
+    spec: [['Aantal sets', '3'], ['Voorste set', '4 planeetwielen'], ['Eindoverbrenging', '3,804 volgens Renault; de getekende tandentallen (Mitsubishi F6AJA) geven 3,571, de Renault-tandentallen zijn niet gevonden']], ex: [0, 0.2, 0.12], inner: true,
   }, [
     drvPlanets('fr', 'Voorste planetaire set', 'Voorste set (FR) met vier planeetwielen; de drager is de naaf van het uitgaande tandwiel. Tandentallen schematisch weergegeven.', { m: 0.0024, w: 0.02, Ns: 20, Np: 12, Nr: 44, n: 4, x: 0.2195, ex: [-0.1, 0.1, 0] }),
     A('Achterste planetaire set', { d: 'Achterste set (RR) van het Ravigneaux-type: twee zonnewielen op één drager met korte en lange planeetwielen en een holwiel dat het uitgaande tandwiel aandrijft. Rij-indeling van de planeetwielen schematisch weergegeven.', ex: [0.12, 0.1, 0] }, rr),
@@ -3132,7 +3187,7 @@ function drvDiff() {
   const hub = cache('drvDiffCase', () => merge([
     G.lathe('x', [[0.032, -0.072], [0.032, -0.052], [0.05, -0.046], [0.064, -0.028], [0.064, 0.028], [0.05, 0.046], [0.032, 0.052], [0.032, 0.072]], 36, 'drvDiffHousing'),
     annulus(0.05, 0.072, 0.01, 'x', 36)]));
-  return A('Differentieel', { d: 'Verdeelt het koppel over beide voorwielen en laat ze in bochten verschillend snel draaien; het kroonwiel heeft 70 tanden. Het aantal planeetwielen van het differentieel is niet gevonden: schematisch weergegeven met twee satellietwielen.', spec: [['Kroonwiel', '70 tanden'], ['Eindoverbrenging', '3,571 (45/42 × 70/21)']], p: DIFF, ex: [0.0, -0.1, -0.5], inner: true }, [
+  return A('Differentieel', { d: 'Verdeelt het koppel over beide voorwielen en laat ze in bochten verschillend snel draaien; het kroonwiel heeft 70 tanden. Het aantal planeetwielen van het differentieel is niet gevonden: schematisch weergegeven met twee satellietwielen.', spec: [['Kroonwiel', '70 tanden'], ['Eindoverbrenging', '3,804 volgens Renault; de getekende tandentallen (Mitsubishi F6AJA) geven 3,571, de Renault-tandentallen zijn niet gevonden']], p: DIFF, ex: [0.0, -0.1, -0.5], inner: true }, [
     P('Kroonwiel', drvG(70, DRV_GM, 0.022, 0.07), MAT.steel, { d: 'Kroonwiel met 70 tanden, met tien bouten (144 N·m) aan het differentieelhuis; wordt door het rondsel van 21 tanden aangedreven.', p: [0.006, 0, 0], ex: [-0.09, 0, 0] }),
     P('Kroonwielbouten', drvBoltRing('drvKroonB', 10, 0.0775, 0.02, 0.008, '-x', 0.1, [0, 0], 0.017), MAT.darkSteel, { d: 'Tien bouten die het kroonwiel aan het differentieelhuis bevestigen.', ex: [-0.15, 0, 0] }),
     P('Differentieelhuis', hub, MAT.iron, { d: 'Gegoten huis dat met het kroonwiel meedraait; in het handboek niet te demonteren.', ex: [0.0, 0.0, 0.0001] }),
@@ -3284,8 +3339,8 @@ function drvHousing() {
     A('Transmissiehuis', { d: 'Spuitgietaluminium huis rond de planetaire sets en schakelelementen, met de lobben voor de tussenas en het differentieel en de vlakken voor het klepblok en de steunen. Bakbreedte circa 385 mm incl. omvormerhuis (Planète Renault); hier iets langer weergegeven.', spec: [['Materiaal', 'spuitgietaluminium'], ['Lengte', 'circa 385 mm'], ['Hartafstand', '197 mm (geschat)']], ex: [0.1, 0.8, 0.0] }, [
       P('Transmissiehuis (carter)', caseGeo, MAT.aluCast, { d: 'Gegoten carter met ribben en bevestigingsoren.', ex: [0, 0.0, 0.0001] }),
       P('Bouten huisverbinding', rimBolts('drvBHuis', 12, 0.1285, 0.1295, 0.1), MAT.darkSteel, { d: 'Torx-bouten tussen omvormerhuis en transmissiehuis.', ex: [-0.12, 0.0, 0.0] }),
-      P('Vulplug', drvBolt(0.02, 0.012, 'z'), MAT.darkSteel, { d: 'Plug in het huis voor het bijvullen van ATF (de positie van vul- en peilpunt is voor de AJ0 niet gevonden).', p: [0.345, 0.02, 0.133], r: [PI, 0, 0], ex: [0, 0.0, 0.14] }),
-      P('Aftapplug', drvBolt(0.02, 0.012, 'z'), MAT.darkSteel, { d: 'Aftapplug onder in het huis.', p: [0.325, -0.19, 0.133], r: [PI, 0, 0], ex: [0, -0.04, 0.14] }),
+      P('Vulplug', drvBolt(0.02, 0.012, 'z'), MAT.darkSteel, { d: 'Vulpunt van de ATF. Bij de AJ0 in de Laguna wordt gevuld via een vulkanaal met afdekplaat (6 N·m), bereikbaar vanuit de motorruimte; het peil wordt gesteld met een peilbout met overloopbuisje onder in het carter. Plaats in het model schematisch.', p: [0.345, 0.02, 0.133], r: [PI, 0, 0], ex: [0, 0.0, 0.14] }),
+      P('Aftapplug', drvBolt(0.02, 0.012, 'z'), MAT.darkSteel, { d: 'Peilbout onder in het huis (8 N·m) met daarachter een overloopbuisje (inbus 5 mm, 8 N·m). Bij aftappen komt eerst circa 1 l uit de peilbout en daarna ruim 1 l na het verwijderen van het buisje.', p: [0.325, -0.19, 0.133], r: [PI, 0, 0], ex: [0, -0.04, 0.14] }),
       P('Ontluchtingsnippel', G.cyl('y', 0.004, 0.004, 0.02, 10), MAT.brass || MAT.drvBrass, { d: 'Nippel voor de ontluchtingsslang van de bak.', p: [0.16, 0.135, 0.0], ex: [0.0, 0.1, 0] }),
       P('Ontluchtingsslang', tube([[0.16, 0.145, 0.0], [0.16, 0.17, 0.0], [0.185, 0.18, 0.03]], 0.003, 16, 6), MAT.rubber, { d: 'Slangetje dat de bak ontlucht zonder dat er olie of water in komt.', ex: [0.0, 0.18, 0] }),
     ]),
@@ -3320,7 +3375,7 @@ function drvOutside() {
 function buildGearbox() {
   return A('Automaatversnellingsbak', {
     d: 'Zestraps automaat Jatco JF613E (Renault-code AJ0, gebaseerd op het Lepelletier-systeem) met koppelomvormer, drie planetaire sets, vijf schakelelementen plus vrijloop en ingebouwd differentieel; dwars links naast de motor. De interne koppeling van de sets en alle kleine onderdelen zijn schematisch weergegeven.',
-    spec: [['Type', 'Jatco JF613E (Renault AJ0)'], ['Overbrengingen', '4,199 / 2,405 / 1,583 / 1,161 / 0,855 / 0,685, achteruit 3,457 (zusterbak Mitsubishi F6AJA)'], ['Eindoverbrenging', '3,571'], ['ATF', 'Elf Elfmatic J6, circa 8 liter'], ['Droog gewicht', 'circa 93 kg'], ['Lengte', 'circa 385 mm']],
+    spec: [['Type', 'Jatco JF613E (Renault AJ0)'], ['Overbrengingen', '4,199 / 2,405 / 1,583 / 1,161 / 0,855 / 0,685, achteruit 3,457 (Mitsubishi F6AJA-handboek; de snelheden per 1000 tpm in de Renault-persmap kloppen hier binnen 0,2 % mee)'], ['Eindoverbrenging', '3,804 (Renault-persmap 2007)'], ['ATF', 'Elf Elfmatic J6, circa 8 liter'], ['Droog gewicht', 'circa 93 kg'], ['Lengte', 'circa 385 mm']],
     p: [GB_X, 0, 0], ex: [0.66, 0, 0],
   }, [
     ...drvHousing(),
@@ -4613,6 +4668,13 @@ function buildCar() {
   return car;
 }
 
+/* ===================== onderdeelnummers ===================== */
+// Gegevens, geen code. Gemaakt door de orkestrator uit de geverifieerde onderzoeksbestanden; niet met de hand bewerken.
+// units: id -> { n: naam, st: 'past' | 'vin' | 'nietgevonden', oe: [[nummer, opmerking]], am: [[merk, nummer, opmerking]],
+//                var: varianttekst, per: verpakking, src: [[url, label]], info: [[label, waarde, bron]] }
+// map: pad zonder wortel -> [unit-id, 'zelf' | 'deel' | 'set', regel]. Een pad zonder regel is 'niet onderzocht'.
+const PN_DATA = { meta: { vehicle: '', tecdoc: 23370, checked: '', note: '' }, units: {}, map: {} };
+
 /* ===================== opbouw en explosielogica ===================== */
 // Model-laag van de app: boom doorlopen, uitklaprichtingen, animatie (uitklappen, uitlichten, optillen),
 // zichtbaarheid (isolatie en ingesloten onderdelen), materialen, camera-inpassing, vloer en de stap-terug-geschiedenis.
@@ -4697,13 +4759,195 @@ let uiVisDirty = true;
 const uiOpen = n => !!n && n.asm && n.target > 0.5;
 function placeKids(n) {
   const s = n.amt * SPREAD;
-  for (const k of n.kids) { k.obj.position.copy(k.base).addScaledVector(k.exv, s); if (k.hasOff) k.obj.position.add(k.off); }
+  for (const k of n.kids) {
+    if (k.ou > 0) uiOpenPose(k); else k.obj.position.copy(k.base);
+    k.obj.position.addScaledVector(k.exv, s);
+    if (k.hasOff) k.obj.position.add(k.off);
+  }
 }
 function uiPlace(k) {
-  k.obj.position.copy(k.base);
+  if (k.ou > 0) uiOpenPose(k); else k.obj.position.copy(k.base);
   if (k.parent) k.obj.position.addScaledVector(k.exv, k.parent.amt * SPREAD);
   if (k.hasOff) k.obj.position.add(k.off);
 }
+
+/* ---------- openmodus: scharnieren, schuiven, volgers, vaste delen en telescopen ---------- */
+// Een knoop met `open` draait om een scharnier of schuift, bovenop de uitklapregel:
+//   pos = pivot + R(u * angle) * (base - pivot) + exv * amt * SPREAD + off,  quat = R * q0
+// 'slide': eerst `tilt` (eerste deel van u, standaard 35 %), dan `move` (recht) of `arc` (draaien om een
+// verre as, zodat een paneel de kromming van het dak volgt). u is de geanimeerde openstand (0 tot 1).
+// Een volger (`follow`) beweegt met de u van zijn leider. Een knoop met `stay` in de deelboom van een
+// opener blijft staan als die opener draait (carrosseriezijde van een scharnier, afdichting). Een volger
+// met `stay` beweegt in het frame van de rustende opener (motorkapsteun onder de motorkap).
+// Een telescoop (`strut`) wordt na elke stap van punt a naar punt b gericht; zijn kind `rod` schuift mee.
+// `needs`: openen opent eerst die andere opener; sluiten van die andere sluit eerst deze.
+// Verwijzingen (follow, needs, strut.a.node, strut.b.node, strut.lead) zijn een pad vanaf de wortel of een unieke naam.
+const OPENERS = [];            // leiders, in boomvolgorde
+const uiOpenAnim = new Set();  // leiders die bewegen
+const STRUTS = [], STAYS = [];
+const uiOq = new THREE.Quaternion(), uiOq2 = new THREE.Quaternion(), uiOv = V3(0, 0, 0), uiOv2 = V3(0, 0, 0);
+const uiOm = new THREE.Matrix4(), uiOm2 = new THREE.Matrix4(), uiOm3 = new THREE.Matrix4(), uiOs = V3(1, 1, 1);
+const UI_Z = V3(0, 0, 1);
+function uiRef(ref, who) {
+  if (!ref) return null;
+  const n = ref.includes('/') ? uiByPath(ref) : (uiNameCount.get(ref) === 1 ? uiNames.get(ref) : null);
+  if (!n) console.error('openmodus: verwijzing ' + JSON.stringify(ref) + ' van ' + who + ' lost niet op' + (uiNameCount.get(ref) > 1 ? ' (naam niet uniek, gebruik een pad)' : ''));
+  return n;
+}
+const uiPathOf = n => { const a = []; for (let k = n; k; k = k.parent) a.unshift(k.name); return a.join('/'); };
+const uiOpenAnc = n => { for (let p = n.parent; p; p = p.parent) if (p.opn) return p; return null; };
+for (const n of ALL) {
+  n.ou = 0; n.ot = 0; n.opk = 1; n.opa0 = 0; n.opd = 0.9;
+  n.q0 = n.obj.quaternion.clone(); n.s0 = n.obj.scale.clone();
+  const o = n.opn;
+  if (o) {
+    o.type = o.type || 'hinge';
+    if (o.pivot) o.pv = V3(...o.pivot);
+    if (o.axis) o.ax = V3(...o.axis).normalize();
+    if (o.move) o.mv = V3(...o.move);
+    if (o.arc) { o.apv = V3(...o.arc.pivot); o.aax = V3(...o.arc.axis).normalize(); o.aang = o.arc.angle; }
+    if (o.tilt) { o.tpv = V3(...o.tilt.pivot); o.tax = V3(...o.tilt.axis).normalize(); o.tang = o.tilt.angle; o.tf = o.tilt.part != null ? o.tilt.part : 0.35; }
+    o.dur = o.dur || (REDUCED ? 0.01 : 0.9);
+    o.followers = []; o.stays = []; o.struts = []; o.needBy = [];
+    if (o.type === 'hinge' && (!o.pv || !o.ax || typeof o.angle !== 'number')) console.error('openmodus: scharnier ' + n.name + ' mist pivot, axis of angle');
+  }
+}
+for (const n of ALL) {
+  const o = n.opn;
+  if (o && o.follow) {
+    const lead = uiRef(o.follow, n.name);
+    if (lead && lead.opn && !lead.opn.follow) { lead.opn.followers.push(n); o.lead = lead; } else console.error('openmodus: volger ' + n.name + ' zonder leider ' + o.follow);
+  } else if (o) OPENERS.push(n);
+  if (o && o.needs) o.needSpec = o.needs;
+  if (n.stay) { const anc = uiOpenAnc(n); if (anc) { n.stayO = anc; STAYS.push(n); if (!o) (anc.opn.lead ? anc.opn.lead : anc).opn.stays.push(n); } else console.error('openmodus: ' + n.name + ' heeft stay maar geen opener erboven'); }
+}
+// needs: deze opener kan pas open als een andere open is (panoramadak: eerst het zonnescherm)
+for (const n of OPENERS) { const o = n.opn; if (!o.needSpec) continue; const m = uiRef(o.needSpec, n.name); if (m && m.opn && !m.opn.lead) { o.needN = m; m.opn.needBy.push(n); } else console.error('openmodus: needs van ' + n.name + ' lost niet op'); }
+for (const n of ALL) {
+  if (!n.strut) continue;
+  const s = n.strut;
+  if (!s.a || !s.b || !s.a.node || !s.b.node) { console.error('openmodus: telescoop ' + n.name + ' heeft a.node en b.node nodig'); continue; }
+  s.na = uiRef(s.a.node, n.name); s.nb = uiRef(s.b.node, n.name);
+  s.pa = V3(...s.a.p); s.pb = V3(...s.b.p);
+  s.rodN = s.rod ? n.kids.find(k => k.name === s.rod) : null;
+  let lead = s.lead ? uiRef(s.lead, n.name) : null;
+  if (!lead && s.nb) lead = s.nb.opn ? s.nb : uiOpenAnc(s.nb);
+  if (lead && lead.opn && lead.opn.lead) lead = lead.opn.lead;
+  if (!s.na || !s.nb || !lead) { console.error('openmodus: telescoop ' + n.name + ' onvolledig'); continue; }
+  s.leadN = lead; s.dirty = false; lead.opn.struts.push(n); STRUTS.push(n);
+}
+// pose van een openende knoop in het frame van zijn ouder (zonder uitklapverschuiving)
+function uiOpenPose(k) {
+  const o = k.opn, u = k.ou, p = k.obj.position;
+  p.copy(k.base); k.obj.quaternion.copy(k.q0);
+  if (o.type === 'slide') {
+    let us = u;
+    const more = o.mv || o.apv;
+    if (o.tax) {
+      const ut = more ? Math.min(1, u / o.tf) : u;
+      us = more ? Math.max(0, (u - o.tf) / (1 - o.tf)) : 0;
+      uiOq.setFromAxisAngle(o.tax, o.tang * ut);
+      p.sub(o.tpv).applyQuaternion(uiOq).add(o.tpv);
+      k.obj.quaternion.premultiply(uiOq);
+    }
+    if (o.apv) { uiOq.setFromAxisAngle(o.aax, o.aang * us); p.sub(o.apv).applyQuaternion(uiOq).add(o.apv); k.obj.quaternion.premultiply(uiOq); }
+    if (o.mv) p.addScaledVector(o.mv, us);
+    return;
+  }
+  uiOq.setFromAxisAngle(o.ax, o.angle * u);
+  p.sub(o.pv).applyQuaternion(uiOq).add(o.pv);
+  k.obj.quaternion.premultiply(uiOq);
+}
+// vaste delen: Lk' = A^-1 * Ocur^-1 * X * A * Lk (X = rustmatrix van de opener O, A = tussenliggende groepen)
+function uiStayFix(k) {
+  const O = k.stayO;
+  if (O.ou === 0) { if (!k.opn) { uiPlace(k); k.obj.quaternion.copy(k.q0); k.obj.scale.copy(k.s0); } return; }
+  O.obj.updateMatrix();
+  uiOm.identity();
+  for (let p = k.parent; p && p !== O; p = p.parent) { p.obj.updateMatrix(); uiOm.premultiply(p.obj.matrix); }   // A
+  uiOv.copy(O.base); if (O.parent) uiOv.addScaledVector(O.exv, O.parent.amt * SPREAD); if (O.hasOff) uiOv.add(O.off);
+  uiOm2.compose(uiOv, O.q0, O.s0);                                   // X
+  uiOm3.copy(O.obj.matrix).invert().multiply(uiOm2).multiply(uiOm);   // Ocur^-1 * X * A
+  if (!k.opn) { k.obj.position.copy(k.base); if (k.parent) k.obj.position.addScaledVector(k.exv, k.parent.amt * SPREAD); if (k.hasOff) k.obj.position.add(k.off); k.obj.quaternion.copy(k.q0); k.obj.scale.copy(k.s0); }
+  k.obj.updateMatrix();
+  uiOm2.copy(uiOm).invert().multiply(uiOm3).multiply(k.obj.matrix);
+  uiOm2.decompose(k.obj.position, k.obj.quaternion, uiOs); k.obj.scale.copy(uiOs);
+}
+function uiOpenApply(n) {
+  uiPlace(n);
+  if (n.ou === 0) { n.obj.quaternion.copy(n.q0); }
+  for (const f of n.opn.followers) { f.ou = n.ou; uiPlace(f); if (f.ou === 0) f.obj.quaternion.copy(f.q0); if (f.stay) uiStayFix(f); }
+  for (const k of n.opn.stays) uiStayFix(k);
+}
+function uiSetOpen(n, v, instant) {
+  if (typeof n === 'string') n = uiRef(n, 'setOpen');
+  if (!n || !n.opn || n.opn.lead) return false;
+  v = clamp(+v || 0, 0, 1);
+  if (v > 0 && n.opn.needN && n.opn.needN.ot === 0) uiSetOpen(n.opn.needN, 1, instant);
+  if (v === 0) for (const d of n.opn.needBy) if (d.ot > 0) uiSetOpen(d, 0, instant);
+  if ((n.ot > 0) !== (v > 0) || (n.ou > 0) !== (v > 0)) uiVisDirty = true;
+  if (instant || REDUCED) { n.ot = v; n.ou = v; n.opk = 1; uiOpenAnim.delete(n); uiOpenApply(n); uiStrutSync(); return true; }
+  if (n.ot === v && (uiOpenAnim.has(n) || n.ou === v)) return true;
+  n.ot = v; n.opa0 = n.ou; n.opk = 0;
+  n.opd = Math.max(0.05, n.opn.dur * Math.max(0.45, Math.abs(v - n.ou)));
+  uiOpenAnim.add(n);
+  return true;
+}
+function stepOpen(dt) {
+  if (!uiOpenAnim.size) return false;
+  for (const n of uiOpenAnim) {
+    const was = n.ou > 0;
+    n.opk = Math.min(1, n.opk + dt / n.opd);
+    n.ou = n.opk >= 1 ? n.ot : n.opa0 + (n.ot - n.opa0) * ease(n.opk);
+    uiOpenApply(n);
+    if (was !== (n.ou > 0)) uiVisDirty = true;
+    if (n.opk >= 1) uiOpenAnim.delete(n);
+  }
+  uiStrutSync();
+  return true;
+}
+const uiAnyOpen = () => OPENERS.some(n => n.ou > 0 || n.ot > 0);
+// telescopen: richten van a naar b zolang hun leider open is; daarna terug naar de gebouwde stand
+function uiStrutSync() {
+  if (!STRUTS.length) return;
+  let world = false;
+  for (const n of STRUTS) {
+    const s = n.strut;
+    if (s.leadN.ou === 0) {
+      if (s.dirty) { uiPlace(n); n.obj.quaternion.copy(n.q0); if (s.rodN) uiPlace(s.rodN); s.dirty = false; }
+      continue;
+    }
+    if (!world) { ROOT.obj.updateMatrixWorld(true); world = true; }
+    const par = n.parent.obj;
+    const a = par.worldToLocal(s.na.obj.localToWorld(uiOv.copy(s.pa)));
+    const b = par.worldToLocal(s.nb.obj.localToWorld(uiOv2.copy(s.pb)));
+    if (s.d0 === undefined) s.d0 = s.restLen || s.pb.distanceTo(s.pa);
+    const d = b.distanceTo(a);
+    n.obj.position.copy(a);
+    uiOq2.setFromUnitVectors(UI_Z, b.sub(a).normalize());
+    n.obj.quaternion.copy(uiOq2);
+    if (s.rodN) { s.rodN.obj.position.copy(s.rodN.base); s.rodN.obj.position.z += d - s.d0; }
+    s.dirty = true;
+  }
+}
+// knopen die in de eindstand anders staan (voor camera en kaders): openers, volgers, vaste delen, telescopen
+function uiOpenFinalNodes() {
+  const out = [];
+  for (const n of OPENERS) if (n.ou > 0 || n.ot > 0) { out.push(n, ...n.opn.followers, ...n.opn.stays, ...n.opn.struts); for (const t of n.opn.struts) if (t.strut.rodN) out.push(t.strut.rodN); }
+  return out;
+}
+function uiOpenFinalPose() {
+  for (const n of OPENERS) if (n.ou > 0 || n.ot > 0) {
+    n.ou = n.ot;
+    if (n.ou > 0) { uiOpenPose(n); n.obj.position.addScaledVector(n.exv, n.parent.target * uiSpreadEnd); } else n.obj.quaternion.copy(n.q0);
+    for (const f of n.opn.followers) { f.ou = n.ou; if (f.ou > 0) { uiOpenPose(f); f.obj.position.addScaledVector(f.exv, f.parent.target * uiSpreadEnd); } else f.obj.quaternion.copy(f.q0); if (f.stay) uiStayFix(f); }
+    for (const k of n.opn.stays) uiStayFix(k);
+  }
+  const keep = STRUTS.map(t => t.strut.dirty);
+  uiStrutSync();
+  STRUTS.forEach((t, i) => { t.strut.dirty = keep[i]; });
+}
+
 function setTarget(n, t, delay = 0, dur = DUR) {
   if (!n || !n.asm) return;
   t = clamp(+t || 0, 0, 1);
@@ -4789,12 +5033,15 @@ function isUnder(n, a) { for (let p = n; p; p = p.parent) if (p === a) return tr
 /* ---------- zichtbaarheid en materialen ---------- */
 let ISO = [];
 let XRAY = false, SYSCOL = false, SEL = null;
+let OPENMODE = false;   // klikmodus Openen (bediening in app2.js): een klik opent of sluit openers in plaats van uit te klappen
 const uiPickable = [];
 let uiPickVer = 0;
 function uiInScope(a) { return !ISO.length || ISO.some(r => isUnder(a, r)); }
 // Ingesloten onderdelen (inner) zijn niet te zien zolang hun oudergroep dicht is; dan tekenen we ze niet.
 // Staat de ouder zelf buiten de isolatie (je isoleert het ingesloten deel), dan is er niets dat het verbergt.
-function uiInnerHidden(n) { const p = n.parent; return !!(n.inner && p && p.target === 0 && p.amt < 1e-4 && uiInScope(p)); }
+// een open opener (de ouder zelf of een broer) legt de ingesloten delen van die ouder bloot
+const uiOpenNear = (p, fin) => (fin ? p.ot : p.ou) > 0 || p.kids.some(k => k.opn && (fin ? (k.opn.lead ? k.opn.lead.ot : k.ot) : k.ou) > 0);
+function uiInnerHidden(n) { const p = n.parent; return !!(n.inner && p && p.target === 0 && p.amt < 1e-4 && uiInScope(p) && !uiOpenNear(p, false)); }
 function applyVisibility() {
   const onPath = new Set();
   for (const r of ISO) for (let a = r.parent; a; a = a.parent) onPath.add(a);
@@ -4837,7 +5084,8 @@ function uiMatFor(m) {
   return mat;
 }
 function applyMats() {
-  const showHl = SEL && SEL !== ROOT && !ISO.includes(SEL) && (!SEL.asm || SEL.target <= 0.5);
+  // een gekozen opener (portier, kap) krijgt geen gele tint: hij is het doel van de klik en zou anders geel blijven
+  const showHl = SEL && SEL !== ROOT && !ISO.includes(SEL) && (!SEL.asm || SEL.target <= 0.5) && !(OPENMODE && SEL.opn);
   uiSelSet = showHl ? new Set(SEL.meshes) : new Set();
   for (const m of MESHES) m.material = uiMatFor(m);
 }
@@ -4860,15 +5108,19 @@ let W = 1, H = 1;
 const DIRS = { iso: V3(1, 0.42, 1.08), front: V3(0.12, 0.22, 1), rear: V3(-0.15, 0.3, -1), side: V3(1, 0.1, 0.02), top: V3(0.0001, 1, 0.12), under: V3(0.25, -1, 0.15), isoRear: V3(-1, 0.45, -1) };
 let uiSpreadEnd = 1;
 // Eindstand voorspellen: posities na afloop van alle lopende animaties, met de zichtbaarheid van de eindstand.
-function uiPredHidden(n) { const p = n.parent; return !!(n.inner && p && p.target === 0 && uiInScope(p)); }
+function uiPredHidden(n) { const p = n.parent; return !!(n.inner && p && p.target === 0 && uiInScope(p) && !uiOpenNear(p, true)); }
 function uiWithFinal(fn) {
+  const moved = uiOpenFinalNodes();
+  for (const n of moved) { (n._q || (n._q = new THREE.Quaternion())).copy(n.obj.quaternion); n._s = n.obj.scale.clone(); n._u = n.ou; }
   for (const n of ALL) if (n.parent) {
     (n._p || (n._p = V3(0, 0, 0))).copy(n.obj.position);
     n.obj.position.copy(n.base).addScaledVector(n.exv, n.parent.target * uiSpreadEnd).add(n.pull).add(n.liftV);
   }
+  if (moved.length) uiOpenFinalPose();
   ROOT.obj.updateMatrixWorld(true);
   try { return fn(); } finally {
     for (const n of ALL) if (n.parent) n.obj.position.copy(n._p);
+    for (const n of moved) { n.obj.quaternion.copy(n._q); n.obj.scale.copy(n._s); n.ou = n._u; }
     ROOT.obj.updateMatrixWorld(true);
   }
 }
@@ -5067,10 +5319,10 @@ function stepGround(dt) {
 const uiHist = [];
 function uiSnap() {
   return {
-    t: ASMS.map(n => n.target),
+    t: ASMS.map(n => n.target), o: OPENERS.map(n => n.ot),
     pull: ALL.filter(n => n.pull.lengthSq() > 0).map(n => [n.id, n.pull.x, n.pull.y, n.pull.z]),
     lift: uiLifted ? uiLifted.id : null,
-    iso: ISO.map(n => n.id), xray: XRAY, sys: SYSCOL, spread: SPREAD,
+    iso: ISO.map(n => n.id), xray: XRAY, sys: SYSCOL, spread: SPREAD, om: OPENMODE,
     sel: (SEL || ROOT).id, ctx: CTX ? CTX.id : null, force: uiLabelForce, preset: ACTIVE_PRESET,
     cam: [camera.position.clone(), controls.target.clone()],
   };
@@ -5083,11 +5335,12 @@ function uiPush() {
 function uiRestore(s, instant) {
   ISO = s.iso.map(id => uiById.get(id)).filter(Boolean);
   ASMS.forEach((n, i) => setTarget(n, s.t[i], 0, 0.7));
+  OPENERS.forEach((n, i) => uiSetOpen(n, s.o ? s.o[i] : 0));
   for (const n of ALL) if (n.pull.lengthSq() > 0) { n.pull.set(0, 0, 0); uiOffTo(n, 0.7); }
   for (const [id, x, y, z] of s.pull) { const n = uiById.get(id); if (n) { n.pull.set(x, y, z); uiOffTo(n, 0.7); } }
   uiDrop();
   if (s.lift != null) { const n = uiById.get(s.lift); if (n) uiLift(n); }
-  XRAY = s.xray; SYSCOL = s.sys;
+  XRAY = s.xray; SYSCOL = s.sys; OPENMODE = !!s.om;
   if (SPREAD !== s.spread) uiSetSpread(s.spread, true);
   CTX = s.ctx != null ? uiById.get(s.ctx) : null; uiLabelForce = !!s.force;
   uiVisDirty = true; applyVisibility();
@@ -5144,7 +5397,7 @@ function uiBatchClean() {
     const n = ALL[i];
     if (!n.asm) { n._bc = !uiSelSet.has(n.obj) && !uiHovSet.has(n.obj); continue; }
     let c = n.target === 0 && n.amt === 0 && !uiAnim.has(n);
-    if (c) for (const k of n.kids) { if (k.inner) continue; if (!k._bc || k.hasOff) { c = false; break; } }
+    if (c) for (const k of n.kids) { if (k.inner) continue; if (!k._bc || k.hasOff || k.ou > 0 || (k.strut && k.strut.dirty) || (k.stayO && k.stayO.ou > 0)) { c = false; break; } }
     n._bc = c;
   }
 }
@@ -5186,7 +5439,7 @@ function uiBatchSync() {
 // matrix van mesh naar groep in de gemonteerde stand (basisposities), onafhankelijk van de huidige explosie
 function uiBaseRel(o, top) {
   uiBm.identity();
-  for (; o && o !== top; o = o.parent) { const n = o.userData.node; uiBl.compose(n ? n.base : o.position, o.quaternion, o.scale); uiBm.premultiply(uiBl); }
+  for (; o && o !== top; o = o.parent) { const n = o.userData.node; uiBl.compose(n ? n.base : o.position, n ? n.q0 : o.quaternion, n ? n.s0 : o.scale); uiBm.premultiply(uiBl); }
   return uiBm;
 }
 function uiBatchAdd(job, m) {
@@ -5285,10 +5538,15 @@ function uiBatchStats() {
 //   pull: { naam: [dx,dy,dz] } hele groep verschuiven (in het frame van de ouder), xray, sys (kleuren per systeem),
 //   spread (standaard 1), cam: { dir: [x,y,z], pad }, select: naam, labels: naam (van welke groep de kinderen een label krijgen),
 //   labelOnly: [namen] alleen deze kinderen van de labelgroep krijgen een label,
-//   frame: [namen] wat in beeld moet (standaard iso, anders de hele auto).
+//   frame: [namen] wat in beeld moet (standaard iso, anders de hele auto),
+//   opens: [openers] of 'all': de modus Openen met precies deze openers open (pad of unieke naam; een volger telt als zijn
+//   leider). Zonder frame is het kader de open.look.nodes van de eerste opener, met zijn look.dir als richting. Alle andere
+//   presets zetten de modus terug op Uitklappen en sluiten de openers.
+//   soon: true wacht op een opener van een andere eigenaar: oplossen de namen nog niet, dan verschijnt de preset niet in de
+//   menu's en geeft checkPresets() geen fout; checkPresets(true) toetst ook deze presets.
 // Alleen ankernamen uit contract §8 / tools/anchors.json. Een preset waarvan een naam niet oplost, verschijnt niet in de menu's.
 const appCar = 'Renault Laguna III';
-const appCats = ['Overzicht', 'Motor', 'Aandrijving', 'Onderstel', 'Carrosserie', 'Interieur'];
+const appCats = ['Overzicht', 'Motor', 'Aandrijving', 'Onderstel', 'Carrosserie', 'Interieur', 'Openen'];
 const PRESETS = [
   // Overzicht
   { id: 'assembled', cat: 'Overzicht', label: 'Gemonteerd', key: '0', note: 'De complete auto in elkaar: Laguna III hatchback fase 2, Initiale Paris.', cam: { dir: [1, 0.42, 1.08], pad: 1.04 } },
@@ -5333,6 +5591,13 @@ const PRESETS = [
   { id: 'interior', cat: 'Interieur', label: 'Interieur', key: '7', note: 'Dashboard, middenconsole, stoelen, bekleding en pedalen uit elkaar.', iso: ['Interieur'], open: ['Interieur', 'Stoelen'], cam: { dir: [0.9, 0.85, 0.7], pad: 1.04 } },
   { id: 'driverSeat', cat: 'Interieur', label: 'Bestuurdersstoel', note: 'Bestuurdersstoel tot op de onderdelen: zitting, rugleuning en hoofdsteun.', iso: ['Bestuurdersstoel'], deep: ['Bestuurdersstoel'], cam: { dir: [1, 0.45, 0.8], pad: 1.05 } },
   { id: 'dash', cat: 'Interieur', label: 'Dashboard', note: 'Dashboard met instrumentenpaneel en bedieningsdelen uit elkaar.', iso: ['Dashboard'], deep: ['Dashboard'], cam: { dir: [0.3, 0.45, -1], pad: 1.05 } },
+  // Openen
+  { id: 'openHood', cat: 'Openen', label: 'Motorruimte', note: 'Motorkap open: de motorruimte van boven en voren, met de kap in de eindstand.', opens: ['Motorkap'] },
+  { id: 'openDoors', cat: 'Openen', label: 'Instappen', note: 'De vier portieren open, schuin van boven.', opens: ['Portier linksvoor', 'Portier rechtsvoor', 'Portier linksachter', 'Portier rechtsachter'], frame: [appCar], cam: { dir: [1, 0.85, 0.55], pad: 1.04 }, soon: true },
+  { id: 'openTrunk', cat: 'Openen', label: 'Bagageruimte', note: 'Achterklep open, hoedenplank mee omhoog en het grote deel van de achterbank neergeklapt.', opens: ['Achterklep', 'Rugleuning achterbank groot deel'], frame: [appCar], cam: { dir: [-0.8, 0.6, -1], pad: 1.05 }, soon: true },
+  { id: 'openFuel', cat: 'Openen', label: 'Tanken', note: 'Tankklep open met de vulhals in het rechter achterscherm.', opens: ['Tankklep'], frame: [appCar], cam: { dir: [-1, 0.35, -0.75], pad: 1.04 }, soon: true },
+  { id: 'openRoof', cat: 'Openen', label: 'Panoramadak', note: 'Zonnescherm open en het voorste glaspaneel gekanteld en naar achteren geschoven.', opens: ['Zonnescherm voor', 'Schuifdak'], frame: [appCar], cam: { dir: [0.6, 1.1, 0.55], pad: 1.04 }, soon: true },
+  { id: 'openAll', cat: 'Openen', label: 'Alles open', note: 'Elke opener open: portieren, kap, klep, ruiten, spiegels en wat er verder opengaat.', opens: 'all', frame: [appCar], cam: { dir: [1, 0.55, 1.08], pad: 1.04 } },
 ];
 const appTourSteps = ['assembled', 'main', 'bodyOff', 'engine', 'head', 'turbo', 'gearbox', 'gearsets', 'chassis', 'brakeLF', 'interior', 'everything', 'assembled'];
 const appPresetById = new Map(PRESETS.map(p => [p.id, p]));
@@ -5340,8 +5605,14 @@ const appPresetById = new Map(PRESETS.map(p => [p.id, p]));
 function appPresetNames(p) {
   return [...(p.iso || []), ...(p.open || []), ...(p.deep || []), ...Object.keys(p.pull || {}), ...(p.select ? [p.select] : []), ...(p.labels ? [p.labels] : []), ...(p.frame || [])];
 }
+// verwijzing naar een opener (pad of unieke naam) zonder consolefout; geeft de leider van de opener, anders null
+function appOpenRef(ref) {
+  const n = !ref ? null : ref.includes('/') ? uiByPath(ref) : (uiNameCount.get(ref) === 1 ? uiNames.get(ref) : null);
+  return n && n.opn ? (n.opn.lead || n) : null;
+}
 function appPresetErrors(p) {
   const err = [];
+  if (p.opens && p.opens !== 'all') for (const ref of p.opens) if (!appOpenRef(ref)) err.push(`preset "${p.label}": opener "${ref}" bestaat niet of is geen opener`);
   for (const name of new Set(appPresetNames(p))) {
     const c = uiNameCount.get(name) || 0;
     if (c === 0) err.push(`preset "${p.label}": naam "${name}" bestaat niet`);
@@ -5356,21 +5627,39 @@ function appPresetErrors(p) {
   }
   return err;
 }
-function appCheckPresets() {
+function appCheckPresets(strict) {
   const err = [], ids = new Set(), keys = new Set();
   for (const p of PRESETS) {
     if (ids.has(p.id)) err.push(`preset-id "${p.id}" komt twee keer voor`); ids.add(p.id);
     if (p.key) { if (keys.has(p.key)) err.push(`sneltoets ${p.key} komt twee keer voor`); keys.add(p.key); }
     if (!appCats.includes(p.cat)) err.push(`preset "${p.label}": onbekende categorie ${p.cat}`);
-    err.push(...appPresetErrors(p));
+    if (!p.soon || strict || !appPresetErrors(p).length) err.push(...appPresetErrors(p));
   }
   for (const id of appTourSteps) if (!appPresetById.has(id)) err.push(`rondleiding: preset "${id}" bestaat niet`);
   return err;
 }
 const appPresetOk = p => p.tour || appPresetErrors(p).length === 0;
 function appSubject(p) {
+  if (p.opens && p.opens !== 'all' && !p.frame) { // het kader van de eerste opener (open.look.nodes), anders de opener zelf
+    const l = appOpenRef(p.opens[0]), lk = l && l.opn.look, out = [];
+    for (const r of lk && lk.nodes ? lk.nodes : [l]) { const m = typeof r === 'string' ? (r.includes('/') ? uiByPath(r) : uiNames.get(r)) : r; if (m && !out.includes(m)) out.push(m); }
+    if (out.length) return out;
+  }
   const names = p.frame || (p.iso && p.iso.length ? p.iso : [appCar]);
   return names.map(byName).filter(Boolean);
+}
+// camerarichting van een preset: cam.dir, anders de look.dir van zijn eerste opener, anders het ¾-aanzicht
+function appPresetDir(p) {
+  if (p.cam && p.cam.dir) return V3(...p.cam.dir);
+  const l = p.opens && p.opens !== 'all' ? appOpenRef(p.opens[0]) : null, d = l && l.opn.look && l.opn.look.dir;
+  return d ? V3(...d) : DIRS.iso;
+}
+// openers die een preset open wil hebben (leiders)
+function appWantOpen(p) {
+  const out = new Set();
+  if (p.opens === 'all') OPENERS.forEach(n => out.add(n));
+  else for (const r of p.opens || []) { const l = appOpenRef(r); if (l) out.add(l); }
+  return out;
 }
 
 /* ---------- toepassen in fasen: (1) dicht wat dicht moet (diepste eerst), (2) camera naar de eindkadrering
@@ -5380,6 +5669,11 @@ function appApplyPreset(p, opt = {}) {
   uiStopPlay();
   if (!opt.tour) uiStopTour();
   if (!opt.noHistory) uiPush();
+  // modus en openers: alleen een preset met opens zet Openen aan; elke andere zet Uitklappen terug en sluit de openers
+  OPENMODE = opt.openMode != null ? opt.openMode : !!p.opens;
+  const wantOpen = appWantOpen(p);
+  for (const n of OPENERS) if (!wantOpen.has(n)) uiSetOpen(n, 0);   // eerst sluiten (needs sluit mee), dan openen
+  for (const n of wantOpen) uiSetOpen(n, 1);
   const want = new Set();
   for (const name of p.open || []) want.add(byName(name));
   for (const name of p.deep || []) subtree(byName(name)).forEach(a => { if (a.asm) want.add(a); });
@@ -5423,7 +5717,7 @@ function appApplyPreset(p, opt = {}) {
   const camDelay = closing.length ? closeT * 0.6 : 0;
   const camDur = clamp(Math.max(0.9, openSpan + closeT - camDelay), 0.9, 2.5 - camDelay);
   const cam = p.cam || {};
-  focusNodes(appSubject(p), cam.dir ? V3(...cam.dir) : DIRS.iso, cam.pad || 1.06, { dur: camDur, delay: camDelay });
+  focusNodes(appSubject(p), appPresetDir(p), cam.pad || 1.06, { dur: camDur, delay: camDelay });
   if (REDUCED) finishAll();
   uiAfterAction();
   requestRender();
@@ -5464,7 +5758,7 @@ document.documentElement.lang = 'nl';
 const $ = id => document.getElementById(id);
 const els = {
   sheet: $('sheet'), crumbs: $('crumbs'), name: $('selName'), meta: $('selMeta'), desc: $('selDesc'), spec: $('selSpec'), kids: $('selKids'), kidsTitle: $('kidsTitle'),
-  toggle: $('actToggle'), all: $('actAll'), up: $('actUp'), dive: $('actDive'), iso: $('actIsolate'), focus: $('actFocus'),
+  toggle: $('actToggle'), open: $('actOpen'), all: $('actAll'), up: $('actUp'), dive: $('actDive'), iso: $('actIsolate'), focus: $('actFocus'),
   tree: $('tree'), search: $('treeSearch'), treeInfo: $('treeInfo'), labels: $('labels'), leaders: $('leaders'), hint: $('hint'), presets: $('presets'), legend: $('legend'),
   menu: $('menu'), tip: $('tip'), press: $('press'), explode: $('explode'), explodeName: $('explodeName'), explodeOut: $('explodeOut'), play: $('play'), undo: $('undo'),
   help: $('help'), helpDlg: $('helpDlg'), tourBar: $('tourBar'), tourText: $('tourText'), tourStop: $('tourStop'), dock: $('dock'), topbar: $('topbar'),
@@ -5512,7 +5806,8 @@ function renderPanel() {
   });
   els.name.textContent = n.name;
   let state;
-  if (n.asm) state = uiOpen(n) ? '<span class="state open">Uitgeklapt</span>' : (n.target > 0 ? '<span class="state">Deels uitgeklapt</span>' : '<span class="state">Ingeklapt</span>');
+  if (OPENMODE && n.opn && !n.opn.lead) state = n.ot > 0 ? '<span class="state open">Open</span>' : '<span class="state">Dicht</span>';
+  else if (n.asm) state = uiOpen(n) ? '<span class="state open">Uitgeklapt</span>' : (n.target > 0 ? '<span class="state">Deels uitgeklapt</span>' : '<span class="state">Ingeklapt</span>');
   else state = n === uiLifted ? '<span class="state open">Uitgelicht</span>' : '<span class="state">Onderdeel</span>';
   const isoTxt = ISO.includes(n) ? ' · geïsoleerd' : '';
   els.meta.innerHTML = `${state}${n.asm ? fmtCount(n) : (n.parent ? 'in ' + esc(n.parent.name) : '')}${isoTxt}`;
@@ -5521,6 +5816,7 @@ function renderPanel() {
   els.spec.hidden = !n.spec;
   els.kids.innerHTML = '';
   els.kidsTitle.hidden = !n.asm;
+  renderPn(n);
   if (n.asm) {
     els.kidsTitle.textContent = `Bestaat uit (${n.kids.length})`;
     const MAXK = 80;
@@ -5536,10 +5832,15 @@ function renderPanel() {
       els.kids.appendChild(b);
     }
   }
-  els.toggle.hidden = !n.asm;
+  const plan = OPENMODE ? uiOpenPlan(n) : null;
+  els.open.hidden = !plan;
+  if (plan) { els.open.textContent = plan.open ? 'Openen' : 'Sluiten'; els.open.setAttribute('aria-label', (plan.open ? 'Openen: ' : 'Sluiten: ') + uiOpenLabel(plan.n)); els.open.title = (plan.open ? 'Opent ' : 'Sluit ') + uiOpenLabel(plan.n) + ' (Enter)'; }
+  // in Openen is er niets uit te klappen of te isoleren: alleen de opener en In beeld blijven
+  els.toggle.hidden = !n.asm || OPENMODE;
   els.toggle.textContent = n.asm && uiOpen(n) ? 'Inklappen' : 'Uitklappen';
-  els.all.hidden = !n.asm;
-  els.dive.hidden = n.asm;
+  els.all.hidden = !n.asm || OPENMODE;
+  els.dive.hidden = n.asm || OPENMODE;
+  els.up.hidden = OPENMODE; els.iso.hidden = OPENMODE;
   els.up.disabled = !uiClosedAbove(n);
   els.up.title = els.up.disabled ? 'Alles boven deze selectie is al uitgeklapt' : 'De dichte groep boven de selectie uitklappen (Enter)';
   const isoOn = ISO.length === 1 && ISO[0] === n;
@@ -5548,6 +5849,93 @@ function renderPanel() {
   syncSheetHeight();
   uiUiDirty = true;
 }
+/* ---------- onderdeelnummers ---------- */
+// Gegevens uit PN_DATA (src/partnumbers.js). map: pad zonder wortel -> [eenheid, 'zelf' | 'deel' | 'set', regel].
+// 'zelf': het onderdeel is zelf de verkoopeenheid; 'deel' of 'set': het zit in de eenheid en wordt daarmee besteld.
+// Een knoop zonder regel is niet onderzocht. De pagina toont alleen wat er staat en voegt zelf geen nummers toe.
+let uiPnIdx = new Map(), uiPnUnitNode = new Map(), uiPnBad = [], uiPnCov = new Map();
+const uiPnCompact = t => String(t).toLowerCase().replace(/[\s.\-\/]/g, '');
+const uiPnHasNum = r => !!r && ((r.u.oe && r.u.oe.length > 0) || (r.u.am && r.u.am.length > 0));
+function uiPnBuild() {
+  uiPnIdx = new Map(); uiPnUnitNode = new Map(); uiPnBad = []; uiPnCov = new Map();
+  for (const [path, e] of Object.entries(PN_DATA.map || {})) {
+    const n = uiByPath(path), id = Array.isArray(e) ? e[0] : null, u = id != null && PN_DATA.units ? PN_DATA.units[id] : null;
+    if (!n) { uiPnBad.push(path + ': pad bestaat niet'); continue; }
+    if (!u) { uiPnBad.push(path + ': eenheid ' + id + ' ontbreekt'); continue; }
+    const kind = e[1] === 'deel' || e[1] === 'set' ? e[1] : 'zelf';
+    const q = [...(u.oe || []).map(x => x[0]), ...(u.am || []).map(x => x[1])].map(uiPnCompact).join(' ');
+    uiPnIdx.set(n, { id, kind, rule: e[2] || '', u, q });
+    if (kind === 'zelf' && !uiPnUnitNode.has(id)) uiPnUnitNode.set(id, n);
+  }
+}
+function uiPnCheck() { return uiPnBad.slice(); }
+function uiPnRec(n) { return uiPnIdx.get(n) || null; }
+// aantal onderdelen onder n waarvoor een nummer bekend is (een eenheid met nummer telt voor al haar onderdelen)
+function uiPnCover(n) {
+  let c = uiPnCov.get(n);
+  if (c != null) return c;
+  const r = uiPnRec(n);
+  c = uiPnHasNum(r) ? n.count : (n.asm ? n.kids.reduce((a, k) => a + uiPnCover(k), 0) : 0);
+  uiPnCov.set(n, c);
+  return c;
+}
+function renderPn(n) {
+  const box = $('pnBody'), mk = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+  box.textContent = '';
+  const r = uiPnRec(n), u = r && r.u, st = mk('p', 'pn-status');
+  let badge, ok = false;
+  if (r && r.kind === 'zelf' && u.st === 'past') { badge = 'Past volgens catalogus'; ok = true; }
+  else if (r && r.kind === 'zelf' && u.st === 'vin') badge = 'Variant: kies op VIN';
+  else if (r && r.kind === 'zelf' && u.st === 'nietgevonden') badge = 'Niet gevonden';
+  else if (r && r.kind !== 'zelf') badge = r.kind === 'set' ? 'Deel van set' : 'Deel van';
+  else if (!n.asm || uiPnCover(n) === 0) badge = 'Niet onderzocht';
+  if (badge) st.appendChild(mk('span', 'state' + (ok ? ' ok' : ''), badge));
+  if (r && r.kind !== 'zelf') {
+    const un = uiPnUnitNode.get(r.id);
+    if (un && un !== n) { const b = mk('button', null, u.n || un.name); b.type = 'button'; b.onclick = () => reveal(un); st.appendChild(b); }
+    else st.appendChild(mk('b', null, u.n || r.id));
+    if (r.rule) st.appendChild(mk('small', null, r.rule));
+  } else if (r && u.n && u.n !== n.name) st.appendChild(mk('small', null, u.n));
+  if (n.asm) {
+    const sub = n.kids.reduce((a, k) => a + uiPnCover(k), 0);
+    if (sub > 0) st.appendChild(mk('small', null, `Hieronder hebben ${sub} van ${n.count} onderdelen een nummer.`));
+  }
+  box.appendChild(st);
+  if (uiPnHasNum(r)) {
+    const head = (txt) => box.appendChild(mk('h4', null, txt));
+    if (u.oe && u.oe.length) {
+      head(r.kind === 'zelf' ? (u.oe.length > 1 ? 'Renault-nummers' : 'Renault-nummer') : 'Renault-nummer van ' + (u.n || r.id));
+      const ul = mk('ul', 'pn-nums');
+      for (const [num, note] of u.oe) { const li = mk('li'); li.appendChild(mk('b', null, num)); if (note) li.appendChild(mk('span', null, note)); ul.appendChild(li); }
+      box.appendChild(ul);
+    }
+    if (u.am && u.am.length) {
+      head('Andere fabrikanten');
+      const t = mk('table', 'pn-tab'), hr = t.createTHead().insertRow();
+      for (const h of ['Merk', 'Nummer', 'Opmerking']) hr.appendChild(mk('th', null, h));
+      const tb = t.createTBody();
+      for (const [merk, num, note] of u.am) { const tr = tb.insertRow(); tr.appendChild(mk('td', null, merk)); tr.appendChild(mk('td', 'num', num)); tr.appendChild(mk('td', null, note || '')); }
+      box.appendChild(t);
+    }
+  }
+  if (u && u.var) { box.appendChild(mk('h4', null, 'Variant')); box.appendChild(mk('p', 'pn-txt', u.var)); }
+  if (u && u.per) { box.appendChild(mk('h4', null, 'Verpakking')); box.appendChild(mk('p', 'pn-txt', u.per)); }
+  const links = u && (u.src || []).filter(x => x && /^https?:\/\//i.test(x[0]));
+  if (links && links.length) {
+    box.appendChild(mk('h4', null, 'Bronnen'));
+    const d = mk('div', 'pn-src');
+    for (const [url, label] of links) { const a = mk('a', null, label || url); a.href = url; a.target = '_blank'; a.rel = 'noopener'; d.appendChild(a); }
+    box.appendChild(d);
+  }
+  if (u && u.info && u.info.length) {
+    box.appendChild(mk('h4', null, 'Onderhoud'));
+    const dl = mk('dl', 'pn-info');
+    for (const [label, waarde, bron] of u.info) { dl.appendChild(mk('dt', null, label)); const dd = mk('dd', null, waarde); if (bron) dd.appendChild(mk('small', null, bron)); dl.appendChild(dd); }
+    box.appendChild(dl);
+  }
+  if (PN_DATA.meta && PN_DATA.meta.checked && (r || n.asm)) box.appendChild(mk('p', 'pn-txt', 'Gegevens gecontroleerd op ' + PN_DATA.meta.checked + '.'));
+}
+
 // Na elke gebruikershandeling: paneel, boom, schuif, presetknoppen en stap-terug bijwerken.
 // I5/I6: schakelaars en spreidingsschuif volgen de stand ook na presets, stap terug en de rondleiding
 function uiSyncToggles() {
@@ -5557,7 +5945,7 @@ function uiSyncToggles() {
 function uiAfterAction() {
   renderPanel();
   if (treeVisible()) renderTree();
-  uiSyncExplode(); uiSyncCats(); uiSyncUndo(); uiSyncToggles();
+  uiSyncExplode(); uiSyncCats(); uiSyncUndo(); uiSyncToggles(); uiSyncOpenUi();
   applyMats(); // I3: geen gele selectietint meer op een groep die open is gegaan
   uiHideTip();
   uiSyncLabels();
@@ -5577,6 +5965,7 @@ function clearPreset() { if (ACTIVE_PRESET) { ACTIVE_PRESET = null; uiSyncCats()
 // staat G al open, dan wordt P geselecteerd en uitgelicht. Een klik klapt nooit een groep boven G uit.
 function uiAct(p) {
   if (!p) { uiBackground(); return; }
+  if (OPENMODE) { uiOpenAct(p); return; }
   if (p.asm) { // label of lijst van een groep
     if (MODE === 'collapse') { if (uiOpen(p)) doCollapse(p); else { uiPush(); select(p); uiAfterAction(); } return; }
     if (MODE === 'select' || uiOpen(p)) { uiPush(); select(p); uiAfterAction(); return; }
@@ -5605,6 +5994,7 @@ function doCollapse(a) {
   uiAfterAction();
 }
 function uiCollapseAt(p) {
+  if (OPENMODE) { uiOpenClose(p); return; }
   const a = uiDeepestOpen(p);
   if (a) { doCollapse(a); return; }
   uiPush(); select(p); uiAfterAction();
@@ -5626,6 +6016,15 @@ function uiDive(p) {
   uiAfterAction();
 }
 function reveal(n) {
+  if (OPENMODE) { // in Openen klapt niets uit: alleen selecteren en in beeld brengen
+    uiPush();
+    if (window.innerWidth < 920 && els.sheet.dataset.state === 'open') setSheet('peek');
+    select(n);
+    focusNodes([n], null, n.asm ? 1.12 : 1.6, { min: 0.3 });
+    uiLastFit = { nodes: [n], dir: null, pad: n.asm ? 1.12 : 1.6, opt: { min: 0.3 } };
+    uiAfterAction();
+    return;
+  }
   uiPush();
   if (ISO.length && !uiInScope(n)) { ISO = []; applyVisibility(); updateGround(); }
   let i = 0;
@@ -5682,6 +6081,109 @@ els.iso.onclick = () => {
 };
 els.focus.onclick = () => { const nodes = [SEL]; focusNodes(nodes, null, SEL.asm ? 1.08 : 1.6, { min: 0.25 }); uiLastFit = { nodes, dir: null, pad: SEL.asm ? 1.08 : 1.6, opt: { min: 0.25 } }; };
 
+/* ---------- openmodus: bediening ---------- */
+// Openers (OPENERS in app1.js) draaien of schuiven open. In de modus Openen doet een klik dat in plaats van uitklappen.
+// Klikregel: neem de openers op het pad van het geraakte onderdeel, van buiten naar binnen (volgers tellen als hun leider).
+// De eerste dichte opener gaat open; zijn ze allemaal open, dan sluit de binnenste. Een klik op de ruit van een dicht
+// portier opent dus het portier, daarna de ruit; een tweede klik op de ruit sluit de ruit weer. Rechtsklik, Shift+klik en
+// lang drukken sluiten de binnenste open opener op het pad. Ingang: alles dicht (Gemonteerd); uitgang: alle openers dicht.
+const uiOpenLabel = n => (n.opn && n.opn.label) || n.name;
+function uiOpenPath(p) {
+  const chain = []; for (let a = p; a; a = a.parent) chain.unshift(a);
+  const out = [];
+  for (const a of chain) if (a.opn) { const l = a.opn.lead || a; if (!out.includes(l)) out.push(l); }
+  return out;
+}
+// wat een klik op p nu doet: { n: de opener, open: true om te openen, false om te sluiten } of null
+function uiOpenPlan(p) {
+  const list = p ? uiOpenPath(p) : [];
+  if (!list.length) return null;
+  const closed = list.find(n => n.ot === 0);
+  return closed ? { n: closed, open: true } : { n: list[list.length - 1], open: false };
+}
+// camera bij openen: richting en kader uit open.look, het kader in de eindstand (focusNodes rekent de doelstand mee)
+function uiOpenFrame(nodes, dir, pad) {
+  const opt = { min: 0.3 };
+  focusNodes(nodes, dir, pad, opt);
+  uiLastFit = { nodes, dir, pad, opt };
+}
+function uiOpenTo(n, open) {
+  uiStopPlay(); uiStopTour(); hideHint();
+  uiPush();
+  uiSetOpen(n, open ? 1 : 0);
+  clearPreset(); CTX = null; uiLabelForce = false;
+  if (open) { // bij sluiten beweegt de camera niet
+    const lk = n.opn.look || {}, nodes = (lk.nodes || []).map(r => uiRef(r, n.name)).filter(Boolean);
+    uiOpenFrame(nodes.length ? nodes : [n], lk.dir ? V3(...lk.dir) : null, 1.1);
+  }
+  select(n);
+  uiAfterAction();
+}
+function uiOpenAct(p) {
+  const pl = uiOpenPlan(p);
+  if (pl) uiOpenTo(pl.n, pl.open);
+  else { uiPush(); select(p); uiAfterAction(); }
+}
+function uiOpenClose(p) {
+  const open = p ? uiOpenPath(p).filter(n => n.ot > 0) : [];
+  if (open.length) uiOpenTo(open[open.length - 1], false);
+  else if (p) { uiPush(); select(p); uiAfterAction(); }
+}
+function uiOpenAllTo(v) {
+  uiStopPlay(); uiStopTour(); hideHint();
+  uiPush();
+  for (const n of OPENERS) uiSetOpen(n, v ? 1 : 0);
+  clearPreset();
+  if (v) uiOpenFrame([ROOT], DIRS.iso, 1.04);
+  uiAfterAction();
+}
+function uiSetOpenMode(on) {
+  on = !!on;
+  if (on === OPENMODE) return;
+  uiStopPlay(); uiStopTour();
+  uiPush();
+  if (on) {
+    appApplyPreset(appPresetById.get('assembled'), { noHistory: true, openMode: true });
+    uiLastFit = { preset: appPresetById.get('assembled') };
+  } else {
+    OPENMODE = false;
+    for (const n of OPENERS) uiSetOpen(n, 0);
+  }
+  clearPreset();
+  uiUiChanged();
+  uiAfterAction();
+}
+const uiOpenBtns = [...document.querySelectorAll('#openSeg [data-omode]')];
+uiOpenBtns.forEach((b, i) => {
+  b.addEventListener('click', () => { hideHint(); uiSetOpenMode(b.dataset.omode === 'open'); });
+  b.addEventListener('keydown', e => { if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return; const j = (i + (e.key === 'ArrowRight' ? 1 : uiOpenBtns.length - 1)) % uiOpenBtns.length; uiSetOpenMode(uiOpenBtns[j].dataset.omode === 'open'); uiOpenBtns[j].focus(); e.preventDefault(); });
+});
+$('btnOpenAll').onclick = () => uiOpenAllTo(true);
+$('btnCloseAll').onclick = () => uiOpenAllTo(false);
+els.open.onclick = () => { const pl = uiOpenPlan(SEL); if (pl) uiOpenTo(pl.n, pl.open); };
+// openerlijst: een knop per opener (aria-pressed = open), bereikbaar met toetsenbord en schermlezer
+const uiOpenChips = OPENERS.map(n => {
+  const b = document.createElement('button');
+  b.type = 'button'; b.textContent = uiOpenLabel(n); b.setAttribute('aria-pressed', 'false');
+  b.onclick = () => uiOpenTo(n, n.ot === 0);
+  $('openList').appendChild(b);
+  return [n, b];
+});
+let uiOpenListOn = false;
+$('btnOpenList').onclick = () => { uiOpenListOn = !uiOpenListOn; $('btnOpenList').setAttribute('aria-expanded', String(uiOpenListOn)); uiSyncOpenUi(); uiUiChanged(); layoutView(); };
+function uiSyncOpenUi() {
+  $('app').classList.toggle('omode', OPENMODE);
+  uiOpenBtns.forEach(b => { const on = (b.dataset.omode === 'open') === OPENMODE; b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1; });
+  let open = 0;
+  for (const [n, b] of uiOpenChips) { const on = n.ot > 0; if (on) open++; if (b.getAttribute('aria-pressed') !== String(on)) b.setAttribute('aria-pressed', String(on)); }
+  const txt = open + '/' + OPENERS.length;
+  if ($('openCount').textContent !== txt) $('openCount').textContent = txt;
+  const showList = OPENMODE && uiOpenListOn;
+  if ($('openList').hidden === showList) $('openList').hidden = !showList;
+  if (uiOpenWas !== OPENMODE) { uiOpenWas = OPENMODE; uiUiChanged(); layoutView(); }
+}
+let uiOpenWas = false;
+
 /* ---------- onderdelenboom ---------- */
 const openRows = new Set([ROOT.id]);
 function treeVisible() { return !$('tab-tree').hidden && (window.innerWidth >= 920 || els.sheet.dataset.state === 'open'); }
@@ -5704,7 +6206,8 @@ function renderTree() {
   els.tree.innerHTML = '';
   const ul = document.createElement('ul');
   if (q.length >= 2) {
-    const all = ALL.filter(n => n.norm.includes(q)), hits = all.slice(0, 80);
+    const qn = uiPnCompact(q), byNum = qn.length >= 3 && /\d/.test(qn);   // een zoekterm met cijfers zoekt ook in de nummers
+    const all = ALL.filter(n => n.norm.includes(q) || (byNum && (uiPnIdx.get(n) || { q: '' }).q.includes(qn))), hits = all.slice(0, 80);
     els.treeInfo.textContent = all.length ? (all.length === 1 ? '1 treffer' : `${all.length} treffers`) + (all.length > hits.length ? `, de eerste ${hits.length} staan hieronder` : '') : 'Geen onderdeel gevonden met die naam.';
     hits.forEach(n => { const li = treeRow(n, 1); const small = document.createElement('div'); small.className = 'tpath'; small.textContent = ancestors(n).slice(1).map(a => a.name).join(' › ') || 'hele auto'; li.appendChild(small); ul.appendChild(li); });
   } else {
@@ -5977,12 +6480,14 @@ function pick(cx, cy, loose) {
 // Wat een klik in de huidige modus zou raken.
 function uiActTarget(p) {
   if (!p) return null;
+  if (OPENMODE) { const pl = uiOpenPlan(p); return pl ? pl.n : p; }
   if (MODE === 'part') return uiOpen(p.parent) ? p : p.parent;
   if (MODE === 'layers') return pathFrom(p).find(x => x.asm && !uiOpen(x)) || p;
   if (MODE === 'collapse') return uiDeepestOpen(p) || p;
   return p;
 }
 function uiTipText(p, t) {
+  if (OPENMODE) { const pl = uiOpenPlan(p); return pl ? `${uiOpenLabel(pl.n)} · <i>klik om te ${pl.open ? 'openen' : 'sluiten'}</i>` : `${p.name} · <i>niets te openen</i>`; }
   if (MODE === 'collapse') return t.asm ? `${t.name} · ${fmtCount(t)} · klik om in te klappen` : `${p.name} · <i>niets uitgeklapt om in te klappen</i>`;
   if (MODE === 'select') return `${p.name} · <i>klik voor gegevens</i>`;
   if (t.asm) return `${t.name} · ${fmtCount(t)} · klik om uit te klappen`;
@@ -6009,7 +6514,7 @@ function uiDoHover() {
   const t = uiActTarget(p);
   if (uiSetHover(t)) requestRender();
   uiShowTip(uiTipText(p, t), uiHoverPos.x, uiHoverPos.y);
-  canvas.style.cursor = 'pointer';
+  canvas.style.cursor = OPENMODE && !uiOpenPlan(p) ? '' : 'pointer';
 }
 function uiHoverTarget(x, y) { const p = pick(x, y); const t = uiActTarget(p); return t ? t.name : null; }
 
@@ -6089,6 +6594,7 @@ canvas.addEventListener('pointerup', e => {
   const now = e.timeStamp, L = uiLastTap;
   if (L && now - L.t < 420 && now - L.t >= 0 && Math.hypot(e.clientX - L.x, e.clientY - L.y) < 26 && L.type === d.type) {
     uiLastTap = null;
+    if (OPENMODE) return; // in Openen is dubbelklik gelijk aan een enkele klik: de eerste klik heeft al gedaan wat er te doen was
     if (L.pick) uiDive(L.pick); // altijd het onderdeel van de eerste tik
     return;
   }
@@ -6144,6 +6650,10 @@ els.helpDlg.addEventListener('click', e => { if (e.target === els.helpDlg) uiHel
 /* ---------- toetsenbord (werkt zodra de pagina de focus heeft; het canvas krijgt die bij de eerste aanraking) ---------- */
 function uiEnter(shift) {
   const n = SEL || ROOT;
+  if (OPENMODE) { // Enter opent of sluit de opener van de selectie, Shift+Enter sluit de binnenste open opener
+    if (shift) uiOpenClose(n); else { const pl = uiOpenPlan(n); if (pl) uiOpenTo(pl.n, pl.open); }
+    return;
+  }
   if (shift) { if (n.asm && uiOpen(n)) doCollapse(n); else if (!n.asm) uiCollapseAt(n); return; }
   if (n.asm && !uiOpen(n)) { doExplode(n); return; }
   const a = uiClosedAbove(n);
@@ -6163,6 +6673,7 @@ window.addEventListener('keydown', e => {
   if (e.key === 'Enter') { if (onCtl) return; e.preventDefault(); uiStopPlay(); uiStopTour(); hideHint(); uiEnter(e.shiftKey); return; }
   if (e.key === 'Backspace') { e.preventDefault(); uiStopPlay(); uiStopTour(); uiUndo(); return; }
   if (e.key === '?') { e.preventDefault(); uiHelp(true); return; }
+  if (e.key === 'o' || e.key === 'O') { e.preventDefault(); hideHint(); uiSetOpenMode(!OPENMODE); return; }
   // U17: / springt naar het zoekveld van de onderdelenlijst (op de telefoon gaat het paneel daarvoor open)
   if (e.key === '/') { e.preventDefault(); hideHint(); showTab('tree'); if (window.innerWidth < 920) setSheet('open'); els.search.focus(); els.search.select(); return; }
   // pijltjes (niet op een bedieningselement): door de boom lopen. Omhoog = bovenliggende groep, omlaag = eerste deel,
@@ -6339,6 +6850,7 @@ function uiMeasureUi() {
   const add = (id, el) => { if (!el || el.hidden) return; const r = el.getBoundingClientRect(); if (r.width > 0 && r.height > 0) out.push({ id, x: r.left, y: r.top, w: r.width, h: r.height }); };
   add('panel', els.sheet);
   add('modes', $('modes')); add('explode', $('xctl')); add('presets', els.presets);
+  add('openSeg', $('openSeg')); add('openCtl', $('openCtl')); add('openList', $('openList'));
   add('title', els.topbar.querySelector('.title')); add('topActions', els.topbar.querySelector('.top-actions'));
   if (!els.hint.hidden && !els.hint.classList.contains('gone')) add('hint', els.hint);
   if (!els.menu.hidden) add('menu', els.menu);
@@ -6445,14 +6957,14 @@ function layoutView() {
   const acts = els.topbar.querySelector('.top-actions').getBoundingClientRect();
   const sheet = els.sheet.getBoundingClientRect();
   let dockTop = H;
-  for (const el of [$('modes'), $('xctl'), els.presets]) { const r = el.getBoundingClientRect(); if (r.height > 0 && r.top < dockTop) dockTop = r.top; }
+  for (const el of [$('modes'), $('xctl'), els.presets, $('openCtl'), $('openList')]) { const r = el.getBoundingClientRect(); if (r.height > 0 && r.top < dockTop) dockTop = r.top; }
   if (wide) {
     VIEW.l = 0; VIEW.r = Math.max(0, W - sheet.left + 8);
     VIEW.t = Math.min(H * 0.3, title.bottom + 6);
     VIEW.b = Math.max(0, H - dockTop + 6);
   } else {
     VIEW.l = 0; VIEW.r = 0;
-    VIEW.t = Math.min(H * 0.3, Math.max(title.bottom, acts.bottom) + 4);
+    VIEW.t = Math.min(H * 0.3, Math.max(title.bottom, acts.bottom, $('openSeg').getBoundingClientRect().bottom) + 4);
     const bottom = els.sheet.dataset.state === 'open' ? sheet.top : Math.min(dockTop, sheet.top);
     VIEW.b = Math.max(0, H - bottom + 4);
     // Tijdens de rondleiding staat het bijschrift als balk onder de titel: het beeld begint eronder.
@@ -6479,7 +6991,7 @@ function uiRefitNow() {
   clearTimeout(uiRefitTimer); uiRefitTimer = 0;
   if (uiUserCam || !uiLastFit) return;
   const f = uiLastFit;
-  if (f.preset) { const c = f.preset.cam || {}; focusNodes(appSubject(f.preset), c.dir ? V3(...c.dir) : DIRS.iso, c.pad || 1.06, { dur: 0.4 }); }
+  if (f.preset) { const c = f.preset.cam || {}; focusNodes(appSubject(f.preset), appPresetDir(f.preset), c.pad || 1.06, { dur: 0.4 }); }
   else focusNodes(f.nodes, f.dir, f.pad, Object.assign({}, f.opt || {}, { dur: 0.4 }));
 }
 function uiRefitSoon() {
@@ -6581,6 +7093,7 @@ controls.addEventListener('start', () => { camAnim = null; uiUserCam = true; hid
 function uiTick(dt) {
   let active = stepExplode(dt);
   if (uiStepOff(dt)) active = true;
+  if (stepOpen(dt)) active = true;
   if (uiStepPlay(dt)) active = true;
   if (stepCam(dt)) active = true;
   if (stepGround(dt)) active = true;
@@ -6624,6 +7137,7 @@ let uiReady = false, uiReadyT = 0;
 uiTiming.startUp = Math.round(performance.now());
 applyVisibility();
 resize();
+uiPnBuild();
 select(ROOT);
 uiBuildCats();
 uiSyncUndo();
@@ -6647,6 +7161,8 @@ function finishAll() {
   uiAnim.clear();
   for (const n of uiOffAnim) { n.odelay = 0; n.ok = 1; n.off.copy(n.off1); if (n.off.lengthSq() === 0) n.hasOff = false; uiPlace(n); }
   uiOffAnim.clear();
+  for (const n of uiOpenAnim) { n.opk = 1; n.ou = n.ot; uiOpenApply(n); }
+  if (uiOpenAnim.size) { uiOpenAnim.clear(); uiStrutSync(); }
   if (uiPlayS) { const s = uiPlayS; uiPlayS = null; uiApplyX(s.w, s.x1, true); updateGround(); }
   if (camAnim) { camera.position.copy(camAnim.p1); controls.target.copy(camAnim.t1); camAnim = null; }
   applyVisibility();
@@ -6687,7 +7203,7 @@ function uiState() {
   return {
     open: ASMS.filter(n => n.target > 0.5).map(n => n.name), selected: (SEL || ROOT).name, iso: ISO.map(n => n.name), xray: XRAY,
     explode: { group: w.name, value: L ? +(uiExplodeX(w) / L).toFixed(4) : 0, levels: L }, history: uiHist.length,
-    lifted: uiLifted ? uiLifted.name : null, preset: ACTIVE_PRESET, mode: MODE, tour: !!appTour, playing: !!uiPlayS, sys: SYSCOL,
+    lifted: uiLifted ? uiLifted.name : null, preset: ACTIVE_PRESET, mode: MODE, openMode: OPENMODE, openers: OPENERS.filter(n => n.ot > 0).map(n => n.name), tour: !!appTour, playing: !!uiPlayS, sys: SYSCOL,
   };
 }
 function uiFrameOf(names) {
@@ -6746,6 +7262,13 @@ window.__laguna = {
   batchStats: uiBatchStats,
   batchedGroups: () => [...uiBatched].map(g => g.name),
   drawCalls: () => { renderer.info.reset(); renderer.render(scene, camera); return renderer.info.render.calls; },
+  // openmodus (kern): leiders met hun stand; setOpen(naam, 0..1, direct); openAll(0..1, direct)
+  openers: () => OPENERS.map(n => ({ name: n.name, label: n.opn.label || n.name, type: n.opn.type, open: +n.ou.toFixed(4), target: n.ot, followers: n.opn.followers.map(f => f.name) })),
+  setOpenMode: on => { hideHint(true); uiSetOpenMode(on); return OPENMODE; },
+  openPlan: x => { const n = typeof x === 'string' ? byName(x) : x; const pl = n && uiOpenPlan(n); return pl ? { opener: pl.n.name, open: pl.open } : null; },
+  pnRebuild: uiPnBuild, pnCheck: uiPnCheck, pnOf: x => { const n = typeof x === 'string' ? (uiByPath(x) || byName(x)) : x; const r = n && uiPnRec(n); return r ? { kind: r.kind, unit: r.id, rule: r.rule || null } : null; },
+  setOpen: (name, v, instant) => { const r = uiSetOpen(name, v, instant); requestRender(); return r; },
+  openAll: (v, instant) => { for (const n of OPENERS) uiSetOpen(n, v, instant); requestRender(); return OPENERS.length; },
 };
 
 </script>

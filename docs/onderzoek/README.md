@@ -8,6 +8,7 @@ Werknotities uit de bouwsessie van 13 oktober 2026. Ze zijn de bron voor maten, 
 | `motor-f4rt.md` | Motor F4Rt 811: opbouw, maten, distributie, hulpaandrijving, turbo en een onderdelenlijst. |
 | `automaat.md` | Automaat AJ0 (Jatco JF613E) en de voorste aandrijfassen. |
 | `onderstel-interieur.md` | Onderstel, remmen, wielen, besturing, interieur en uitrusting. |
+| `kennisbasis.md` | Kennisbasis uit de verwerking van het gebruikersrapport (14 oktober 2026). |
 | `beslissingen.md` | Keuzes waar bronnen elkaar tegenspraken: stuurpomp, automaattype, remschijf achter, ABS-ring en 4Control. |
 | `ux-audit.md` | Gebruikbaarheidsaudit van versie 1 met de punten U01 tot U30. De README en `docs/testen.md` verwijzen naar U19. |
 
