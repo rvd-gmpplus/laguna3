@@ -77,7 +77,7 @@ function panFollow(zc, ze, lev) {
 function panScreen(z0, z1, n, level) {
   const w = (z0 - z1) / n, out = [];
   for (let i = 0; i < n; i++) {
-    const za = z0 - i * w, zb = za - w, steps = n - 1 - i, lev = level + 0.0012 * steps, zc = (za + zb) / 2;
+    const za = z0 - i * w, zb = za - w, steps = n - 1 - i, lev = level + 0.0012 * i, zc = (za + zb) / 2;
     out.push({ i, za, zb, lev, steps, open: steps ? panFollow(zc, zc - steps * w, lev) : null });
   }
   return out;
@@ -103,8 +103,8 @@ function buildPanorama() {
   const sealF = P('Afdichting opening voor', tube(panLoop(PAN_OF[0] - 0.012, PAN_OF[1] + 0.012, PAN_X + 0.012, -0.001, 8), 0.0045, 80, 6, true), MAT.rubber, { d: 'Rubber afdichting rond de voorste opening waarop het schuifglas dichtligt.', ex: [0, 0.1, 0.04] });
   const sealR = P('Afdichting opening achter', tube(panLoop(PAN_OR[0] - 0.012, PAN_OR[1] + 0.012, PAN_X + 0.012, -0.001, 8), 0.0045, 80, 6, true), MAT.rubber, { d: 'Rubber afdichting rond de achterste opening waarop het vaste glas rust.', ex: [0, 0.1, -0.04] });
   const frame = P('Dakframe', merge([
-    ...[PAN_OF, PAN_OR].map(([z0, z1]) => merge([panSlab(z1, z0, PAN_XO, 0.545, -0.026, -0.0185, 14, 1), panSlab(z1, z0, -0.545, -PAN_XO, -0.026, -0.0185, 14, 1),
-      panSlab(z0, z0 + 0.03, -0.545, 0.545, -0.026, -0.0185, 1, 14), panSlab(z1 - 0.03, z1, -0.545, 0.545, -0.026, -0.0185, 1, 14)]))]),
+    ...[PAN_OF, PAN_OR].map(([z0, z1]) => merge([panSlab(z1, z0, PAN_XO, 0.545, -0.0285, -0.0215, 14, 1), panSlab(z1, z0, -0.545, -PAN_XO, -0.0285, -0.0215, 14, 1),
+      panSlab(z0, z0 + 0.03, -0.545, 0.545, -0.0285, -0.0215, 1, 14), panSlab(z1 - 0.03, z1, -0.545, 0.545, -0.0285, -0.0215, 1, 14)]))]),
     MAT.darkSteel, { d: 'Stalen frame onder de dakplaat rond de twee openingen waaraan afdichtingen, goten en rails zijn bevestigd (vorm geschat).', ex: [0, -0.12, 0] });
   const rail = s => P(`Geleiderail ${s > 0 ? 'links' : 'rechts'}`, merge([panSlab(PAN_GF[1], PAN_GF[0], s * 0.495, s * 0.53, -0.027, -0.018, 20, 1), panSlab(PAN_GF[1], PAN_GF[0], s * 0.53, s * 0.54, -0.027, -0.006, 20, 1)]), MAT.bodPillar, { d: 'Zwarte geleiderail langs de opening waarin de schuifschoenen van het voorste glas lopen; kunststof glijders slijten het eerst (dat geeft geluid en speling).', ex: [s * 0.16, -0.1, 0] });
   /* ---- luchtgeleider (volger van het schuifglas, 0,04 m omhoog) ---- */
@@ -118,22 +118,22 @@ function buildPanorama() {
     const leader = A(`Zonnescherm ${nm}`, { d: `Handbediend rolgordijn onder het ${nm}e glaspaneel, in dit model een stapel lamellen die in de cassette schuift (schematisch). Met de zwarte greep open of dicht; het dak werkt alleen met geopend scherm.`, ex: [0, -0.12, nm === 'voor' ? 0.1 : -0.1],
       open: { ...lead.open, label: `Zonnescherm ${nm}`, look: { dir: [0.3, 1, -0.3], nodes: [`Zonnescherm ${nm}`] } } }, [
       P(`Schermdoek ${nm} 1`, strip(lead), MAT.fabric, { d: 'Eerste lamel van het zonnescherm, met de greep.', ex: [0, -0.04, 0] }),
-      P(`Schermgreep ${nm}`, G.rbox(0.05, 0.008, 0.018, 0.003), MAT.bodPillar, { d: 'Kleine zwarte greep op de rand van het zonnescherm om het te openen en te sluiten.', p: panP(lead.za - 0.012, 0, lead.lev - 0.0045), ex: [0, -0.06, 0] }),
+      P(`Schermgreep ${nm}`, G.rbox(0.05, 0.005, 0.018, 0.002), MAT.bodPillar, { d: 'Kleine zwarte greep onder de rand van het zonnescherm om het te openen en te sluiten.', p: panP(lead.za - 0.012, 0, lead.lev - 0.0035), ex: [0, -0.06, 0] }),
     ]);
     const rest = lam.slice(1).map(l => P(`Schermdoek ${nm} ${l.i + 1}`, strip(l), MAT.fabric, { d: l.steps ? 'Lamel van het zonnescherm; schuift naar de cassette en stapelt zich daar.' : 'Laatste lamel van het zonnescherm, vast in de cassette (de rol).', ex: [0, -0.05, 0],
       open: l.steps ? { ...l.open, follow: `Zonnescherm ${nm}` } : undefined }));
     const zc0 = cassZ[0], zc1 = cassZ[1];
-    const cass = P(`Schermcassette ${nm}`, merge([panSlab(zc1, zc0, -0.49, 0.49, -0.026, -0.0235, 2, 10), panSlab(zc1, zc1 + 0.004, -0.49, 0.49, -0.0235, -0.008, 1, 10), panSlab(zc1, zc0, 0.486, 0.49, -0.0235, -0.008, 2, 1), panSlab(zc1, zc0, -0.49, -0.486, -0.0235, -0.008, 2, 1)]), MAT.darkSteel, { d: `Cassette (rolhuis) van het ${nm}e zonnescherm; het scherm schuift er onder in (vorm geschat).`, ex: [0, -0.1, 0] });
+    const cass = P(`Schermcassette ${nm}`, merge([panSlab(zc1, zc0, -0.49, 0.49, -0.0295, -0.027, 2, 10), panSlab(zc1, zc1 + 0.004, -0.49, 0.49, -0.027, -0.008, 1, 10), panSlab(zc1, zc0, 0.486, 0.49, -0.027, -0.008, 2, 1), panSlab(zc1, zc0, -0.49, -0.486, -0.027, -0.008, 2, 1)]), MAT.darkSteel, { d: `Cassette (rolhuis) van het ${nm}e zonnescherm; het scherm schuift er onder in (vorm geschat).`, ex: [0, -0.1, 0] });
     return [leader, ...rest, cass];
   };
-  const scrF = screen('voor', 0.165, -0.58, 8, -0.0205, [-0.50, -0.60]);
-  const scrR = screen('achter', -0.61, -1.17, 6, -0.0205, [-1.11, -1.19]);
+  const scrF = screen('voor', 0.165, -0.58, 8, -0.0185, [-0.50, -0.60]);
+  const scrR = screen('achter', -0.61, -1.17, 6, -0.0185, [-1.11, -1.19]);
   /* ---- motor, kabelboom, waterafvoer ---- */
   const motor = A('Dakmotor', { d: 'Elektromotor (aandrijving met wormwiel) van het schuifdak, naast de rail voorin (Webasto op een onderzocht exemplaar van fase 1; plaats geschat). Anti-klem: stopt en zet enkele centimeters terug als het glas weerstand voelt.', ex: [0.1, -0.1, 0.2] }, [
-    P('Motorhuis dakmotor', merge([xf(G.rbox(0.05, 0.02, 0.07, 0.006), [0, 0, 0]), xf(G.cyl('z', 0.011, 0.011, 0.06, 14), [0, 0.0, 0.06])]), MAT.darkSteel, { d: 'Motor met overbrengingskast op het frame.', p: panP(0.15, 0.575, -0.016), ex: [0.06, -0.04, 0] }),
-    P('Wormwiel dakmotor', merge([xf(G.cyl('x', 0.008, 0.008, 0.05, 10), [0, 0, 0.09])]), MAT.steel, { d: 'Wormas die de schuifkabels aandrijft.', p: panP(0.15, 0.575, -0.016), ex: [0.1, 0, 0.05] }),
+    P('Motorhuis dakmotor', merge([xf(G.rbox(0.06, 0.016, 0.04, 0.005), [0, 0, 0]), xf(G.cyl('x', 0.009, 0.009, 0.07, 14), [0.065, 0.0, 0])]), MAT.darkSteel, { d: 'Motor met overbrengingskast op de plaatstrook voor het schuifglas (plaats geschat).', p: panP(0.255, 0.3, -0.0145), ex: [0.06, -0.04, 0] }),
+    P('Wormwiel dakmotor', G.cyl('z', 0.007, 0.007, 0.05, 10), MAT.steel, { d: 'Wormas die de schuifkabels aandrijft.', p: panP(0.255, 0.36, -0.0145), ex: [0.1, 0, 0.05] }),
   ]);
-  const harness = P('Kabelboom dakmotor', tube([panP(0.15, 0.575, -0.016), panP(0.26, 0.56, -0.017), panP(0.27, 0.45, -0.017), panP(0.27, 0.3, -0.017), panP(0.27, 0.1, -0.017)], 0.004, 24, 5), MAT.rubber, { d: 'Kabelboom van de dakmotor langs de voorste dakstrook naar de hemelconsole.', ex: [0, -0.1, 0.1] });
+  const harness = P('Kabelboom dakmotor', tube([panP(0.255, 0.27, -0.0145), panP(0.255, 0.15, -0.0145), panP(0.255, 0.05, -0.0145), panP(0.255, 0.0, -0.0145)], 0.0035, 16, 5), MAT.rubber, { d: 'Kabelboom van de dakmotor langs de voorste dakstrook naar de hemelconsole.', ex: [0, -0.1, 0.1] });
   const hose = (pts, nm, s) => P(`Afvoerslang ${nm}`, tube(pts, 0.006, 40, 6), MAT.rubber, { d: 'Afvoerslang die regenwater uit de goot van het dakframe door de stijl naar de wielkast leidt (verloop geschat).', ex: [s * 0.1, -0.1, 0] });
   const pillar = (z, q, s, dy) => { const h = bodGhHalf(z, q); return [s * (h[0] - 0.026), h[1] - 0.028 + dy, z]; };
   const hoses = [1, -1].flatMap(s => [

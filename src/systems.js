@@ -261,7 +261,7 @@ function buildFuel() {
     P('Vulklep', merge([G.cyl('x', 0.0235, 0.0235, 0.003, 20), xf(G.cyl('z', 0.0025, 0.0025, 0.03, 8), [0.002, 0.022, 0]), xf(G.torus('x', 0.0235, 0.0035, 20, 6), [0.0015, 0, 0])]), MAT.plasticGrey, { d: 'Capless vulklep (klep B in de vulpijp, HB2 1.73): geen dop en geen bandje. Een veer houdt de klep dicht; het pistool duwt hem open. Niet met de vingers indrukken. Op de benzineversie laat een restrictor alleen een loodvrij pistool toe (vorm schematisch).', p: [-(tkMouth - 0.012), flapY, flapZ], ex: [-0.2, 0.05, 0] }),
     P('Tankkom', tkBowl, MAT.paintIn, { d: 'Kom in het rechter achterscherm achter de tankklep, met de hals van de vulpijp op de bodem (vorm schematisch).', ex: [-0.12, 0.02, 0] }),
     P('Tankklep', flapGeo, MAT.paint, { d: 'Tankklep in het rechter achterscherm, in lak uitgevoerd. Opent na ontgrendelen door op de achterrand te drukken en draait dan ongeveer 140 graden om de scharnierrand aan de voorkant (hoek geschat).', ex: [-0.34, 0.05, 0],
-      open: { type: 'hinge', pivot: tkSkin(bodTkZ[1] + 0.004, flapY, 0.004), axis: [0, 1, 0], angle: 140 * PI / 180, min: 100 * PI / 180, label: 'Tankklep', look: { dir: [-1, 0.3, -0.5], nodes: ['Tankklep', 'Vulsysteem'] } } }),
+      open: { type: 'hinge', pivot: tkSkin(bodTkZ[1] + 0.004, flapY, 0.004), axis: [0, 1, 0], angle: 140 * PI / 180, min: 100 * PI / 180, label: 'Tankklep', look: { dir: [-1, 0.3, -0.5], nodes: ['Tankklep', 'Achterscherm rechts'] } } }),
     sysClamp('Klem vulpijp', [-0.44, 0.304, -1.004], V3(1, 0, 0), 0.0185, V3(0.5, 0, 0)),
   ]);
   // leidingen
