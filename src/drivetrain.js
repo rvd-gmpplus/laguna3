@@ -96,7 +96,7 @@ function drvConverter() {
   return A('Koppelomvormer', {
     d: 'Hydraulische koppeling tussen motor en versnellingsbak: het pompwiel stuwt olie naar het turbinewiel, het leidwiel vergroot het koppel bij het wegrijden en de overbruggingskoppeling schakelt het slip uit vanaf de tweede versnelling.',
     spec: [['Elementen', '3 (pompwiel, turbinewiel, leidwiel)'], ['Overbrugging', 'lock-up in 2e tot en met 6e'], ['Buitendiameter', 'circa 275 mm (geschat)']],
-    ex: [0, 0, 0.42], inner: true,
+    ex: [0, 0, 0.42],
   }, [
     P('Omvormerdeksel', merge([cover, G.cyl('x', 0.012, 0.012, 0.016, 12)]), MAT.steel, { d: 'Voorste schaal van de omvormer, aan het pompwiel gelast; met vier nokken naar de flexplaat van de motor.', ex: [-0.02, 0, 0] }),
     P('Omvormernokken', drvRing('drvNokken', 4, 0.115, () => G.cyl('x', 0.006, 0.006, 0.02, 10), PI / 4, [0, 0], -0.0035), MAT.darkSteel, { d: 'Vier nokken op het deksel waarmee de omvormer aan de flexplaat wordt geschroefd.', ex: [-0.045, 0, 0] }),
