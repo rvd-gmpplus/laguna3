@@ -216,7 +216,7 @@ Aanleiding was de melding van de gebruiker dat het interieur (beige leder, de ba
 - De frametijd is alleen JavaScript-tijd. Zonder gebundeld renderen heeft de gemonteerde auto 1.726 tekenopdrachten; gebundeld renderen staat standaard aan en brengt dat op 390. De grens van 1.500 geldt dus alleen met bundelen.
 - De Aandrijflijn heeft 237.310 driehoeken tegen een budget van 240.000 en zit dus binnen budget. De hele auto (630.368) blijft binnen 700.000.
 - Het aandeel labelankers dat achter een ander deel ligt (84 van 345) en de spikkels op de motorkap in het bovenaanzicht zijn open; zie de twee secties hierboven en de README.
-- Golf 4: de metingen aan de openmodus komen uit software-rendering. Tekenopdrachten en JavaScript-tijd zijn het meetbare deel; er is geen echte telefoon of GPU. De eindhoeken zijn geschat uit foto's, het instructieboekje en het werkplaatshandboek, niet gemeten aan de echte auto.
+- Golf 4: de metingen aan de openmodus komen uit software-rendering. Tekenopdrachten en JavaScript-tijd zijn het meetbare deel; er is geen echte telefoon of GPU. De eindhoeken zijn geschat uit foto's, het instructieboekje en het werkplaatshandboek; aan de echte auto is niets gemeten.
 - De testset van de carrosserieronde liep op `9c731c8`. Op `ff42dbd` (alleen de eindstukken van de uitlaat veranderd) zijn alleen `integrity.py`, `ui_inner.py`, `smoke.py` en de publicatierooktest opnieuw gedraaid. De visuele poort (poort 5) is op `9c731c8` gedraaid en niet opnieuw na de uitlaatreparatie.
 - De getekende multiriem is 1.569 mm lang tegen 1.795 mm (7PK1795).
 - De voorste langsliggers snijden de aandrijfassen. Dat was al zo en is niet opgelost.

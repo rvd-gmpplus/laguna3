@@ -45,7 +45,7 @@ Stand `g4final2` op `7f54e61`. De orkestrator past deze cijfers aan op de eindco
 3. Varianten op VIN: 71 verkoopeenheden hebben meer dan een uitvoering. Met het VIN van de gebruiker kunnen die worden vastgelegd.
 4. ATF: het werkplaatshandboek MR 415 noemt ELF MATIC S6, 7,6 l totaal en 3,5 l na aftappen in een tabel die de AJX noemt. `docs/onderzoek/beslissingen.md` noemt Elfmatic J6. Inhoud en norm zijn een open punt.
 5. Geen 4Control in het model. Dat was een optie.
-6. Hoeken en slagen van de openers zijn geschat uit foto's, het instructieboekje en het werkplaatshandboek, niet gemeten aan de echte auto.
+6. Hoeken en slagen van de openers zijn geschat uit foto's, het instructieboekje en het werkplaatshandboek; aan de echte auto is niets gemeten.
 7. S7 uit de carrosserieronde: 7 van 9 op `9c731c8`, deels kenmerk 4 en 8; de poort is na de uitlaatreparatie niet opnieuw gedraaid.
 8. Donkere spikkels op de motorkap in het bovenaanzicht, vaste plek. Vermoedelijk software-rasterisatie, niet bewezen. Op een echte GPU nakijken.
 9. Oud en bekend: voorste langsliggers snijden aandrijfassen; multiriem 1.569 mm tegen 1.795 mm echt; torsiebalk boven de vlakke vloer; de veer achter steekt door de voorrand van de bagagevloer; 84 van de 345 labelankers liggen achter een ander deel.
@@ -87,6 +87,6 @@ Stand `g4final2` op `7f54e61`. De orkestrator past deze cijfers aan op de eindco
 ## Vluchtig: scratchpad, weg als container stopt
 
 - Pad: `/tmp/claude-0/-home-user-laguna3/30068ba5-ed5c-5f1b-b200-1ce4840ed639/scratchpad`
-- Map `golf4/`: feitenblad `docs-feiten.md`, de volledige premortems `premortem-A.md` en `premortem-B.md`, `feiten-mechanismen.md`, `feiten-panorama.md`, `mr415-feiten.md`, `kennisbasis-gebruiker.md`, de plannen `plan.md` en `plan-v2.md`, en de verificatiegegevens van de nummers in `golf4/verify/`.
+- Map `golf4/`: feitenblad `docs-feiten.md`, de volledige premortems `premortem-A.md` en `premortem-B.md`, `feiten-mechanismen.md`, `feiten-panorama.md`, `mr415-feiten.md`, `kennisbasis-gebruiker.md`, de plannen `plan.md` en `plan-v2.md`, en de onderzoeks- en verificatiegegevens van de nummers in `golf4/pn/` (per plak de ruwe uitvoer, de geverifieerde uitvoer, het verslag en de opgehaalde pagina's).
 - Testuitvoer van de eindstand `g4final2/` en de poortuitslag, voor zover nog aanwezig.
 - Referentiefoto's `research/img/`. Niet in repo: rechten derden. Bronlinks staan in de notities.
