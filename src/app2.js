@@ -56,7 +56,8 @@ function renderPanel() {
   else state = n === uiLifted ? '<span class="state open">Uitgelicht</span>' : '<span class="state">Onderdeel</span>';
   const isoTxt = ISO.includes(n) ? ' · geïsoleerd' : '';
   els.meta.innerHTML = `${state}${n.asm ? fmtCount(n) : (n.parent ? 'in ' + esc(n.parent.name) : '')}${isoTxt}`;
-  els.desc.textContent = n.d || '';
+  // in Openen past de uitleg bij de wortel bij de modus (de beschrijving zelf noemt het uitklappen)
+  els.desc.textContent = (OPENMODE && n === ROOT) ? (n.d || '').replace(/ Klik op een onderdeel om het uit te klappen.*$/, '') + ' Openen: klik op de motorkap, een portier, een ruit, een spiegel, de achterklep, de tankklep of het panoramadak om het te openen; nog een klik sluit het weer.' : (n.d || '');
   els.spec.innerHTML = (n.spec || []).map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('');
   els.spec.hidden = !n.spec;
   els.kids.innerHTML = '';
