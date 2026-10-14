@@ -3,7 +3,8 @@ import sys, os
 repo, out = sys.argv[1], sys.argv[2]
 sys.path.insert(0, os.path.join(repo, 'tools'))
 from harness import session
-SHOTS = [('gemonteerd', 'assembled'), ('hoofdgroepen', 'main'), ('alles-uit-elkaar', 'everything'), ('motor-f4rt', 'engine'), ('automaat', 'gearbox'), ('rontgen', 'xray')]
+SHOTS = [('gemonteerd', 'assembled'), ('hoofdgroepen', 'main'), ('alles-uit-elkaar', 'everything'), ('motor-f4rt', 'engine'), ('automaat', 'gearbox'), ('rontgen', 'xray'),
+         ('openen-motorruimte', 'openHood'), ('openen-instappen', 'openDoors'), ('openen-bagageruimte', 'openTrunk'), ('openen-panoramadak', 'openRoof'), ('openen-alles', 'openAll')]
 os.makedirs(out, exist_ok=True)
 with session() as s:
     pg = s.page(1280, 800)
