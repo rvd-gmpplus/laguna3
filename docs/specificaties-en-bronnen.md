@@ -21,7 +21,7 @@ Onderzoek in twee rondes: 12 oktober 2026 voor het eerste model, 13 oktober 2026
 | ABS-encoder | Magnetische codeerring in de wiellagereenheid, geen getande ring. | Bevestigd |
 | Velgen | 18 inch met band 225/45 R18 en tien tapse spaken blijft in het model. 18 inch is leverbaar en standaard op de Britse Initiale Lux; voor een Nederlandse Initiale Paris uit 2011 is 17 inch even goed mogelijk. | Aannemelijk |
 | 4Control | Niet in het model. Het was op de Initiale een optie van 2000 euro (Franse prijslijst 2011); het model toont de standaard H-as. | Bevestigd (optie) |
-| Panoramadak | Niet in het model (optie, 850 euro bij Initiale in Frankrijk). | Bevestigd (optie) |
+| Panoramadak | In het model: elektrisch panoramadak met schuivend voorglas en vast achterglas. De auto van de gebruiker heeft het; het is een optie bij de Initiale (850 euro in Frankrijk). Afmetingen in het model: voorste glas z 0,20 tot -0,50 (opening in het dak vanaf 0,22), dwarsbalk -0,50 tot -0,58, achterste glas -0,58 tot -1,11, breedte plus en min 0,47. Deze maten zijn geschat uit foto's. | Bevestigd (optie), Geschat (afmetingen) |
 | Stoelen | Elektrisch met geheugen (bestuurder), verwarming, handmatige lendensteun. Geen massage en geen ventilatie. Geperforeerd leder, beige of donker (Dark Carbon); het model houdt beige. | Bevestigd |
 | Audio | Bose met tien luidsprekers. | Bevestigd (aantal), Geschat (posities) |
 | Kleur | Gris Platine, code D69 (Britse naam Mercury). | Bevestigd |
