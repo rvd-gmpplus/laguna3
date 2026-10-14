@@ -188,8 +188,10 @@ function buildExhaust() {
   const endGeo = cache('sysEndFlat', () => merge([xf(G.rbox(0.66, 0.075, 0.26, 0.03), [0, 0, 0]), xf(G.cyl('z', 0.026, 0.026, 0.05, 14), [0.05, 0, 0.14])]));
   const einddemper = A('Einddemper', { d: 'Dwarsgeplaatste einddemper achter de achteras, met aan beide kanten een uitlaatpijp naar een verchroomd eindstuk (twee chromen eindstukken: aannemelijk voor deze uitvoering).', ex: [0, -0.1, -0.18] }, [
     P('Demperhuis eind', endGeo, MAT.sysDemper, { d: 'Dwarsgeplaatste einddemper van geplooid plaatstaal.', p: [0, EY, EZ], ex: [0, 0, 0] }),
-    ...[1, -1].map(s => P(`Uitlaatpijp ${sideName(s)}`, tube([[s * 0.29, EY, EZ - 0.07], [s * 0.36, 0.1985, -2.035], [s * 0.45, 0.203, -2.085], [s * 0.55, 0.208, -2.14], [s * 0.61, 0.21, -2.19], [s * 0.62, 0.21, -2.235]], 0.02, 20, 10), MAT.sysDemper, { d: 'Korte, vrijwel rechte buis van het uiteinde van de einddemper naar het chromen eindstuk onder de achterrand van de bumper.', ex: [s * 0.015, 0, -0.03] })),
-    ...[1, -1].map(s => P(`Uitlaateindstuk ${sideName(s)}`, annulus(0.0305, 0.037, 0.075, 'z', 22), MAT.chrome, { d: 'Verchroomd eindstuk, zichtbaar onder de achterrand van de bumper.', p: [s * 0.62, 0.21, -2.235], ex: [s * 0.015, 0, -0.1] })),
+    // de buis loopt strak onder de bumperonderkant op (1 tot 3 cm vrij) en het eindstuk zit met de bovenrand tegen de
+    // achterrand van de bumper in de zwarte uitsparing (onderkant bumper bij x 0,6: y 0,28 op z -2,19 en 0,30 op z -2,25)
+    ...[1, -1].map(s => P(`Uitlaatpijp ${sideName(s)}`, tube([[s * 0.29, EY, EZ - 0.07], [s * 0.36, 0.212, -2.03], [s * 0.45, 0.228, -2.075], [s * 0.53, 0.24, -2.12], [s * 0.585, 0.252, -2.165], [s * 0.6, 0.262, -2.2]], 0.02, 20, 10), MAT.sysDemper, { d: 'Korte buis van het uiteinde van de einddemper, strak onder de bumper oplopend naar het chromen eindstuk.', ex: [s * 0.015, 0, -0.03] })),
+    ...[1, -1].map(s => P(`Uitlaateindstuk ${sideName(s)}`, annulus(0.026, 0.031, 0.06, 'z', 22), MAT.chrome, { d: 'Klein verchroomd eindstuk (62 mm), weggestoken onder de achterrand van de bumper in de zwarte uitsparing.', p: [s * 0.6, 0.268, -2.218], ex: [s * 0.015, 0, -0.1] })),
   ]);
   const hang = (n, x, yp, z, yb) => {
     const yt = yp + pipeR, len = yb - yt - 0.010;                    // rubber tussen de tap van de pijpbeugel (tot yt + 6 mm) en het vloerplaatje (4 mm)
