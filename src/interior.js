@@ -158,7 +158,7 @@ function intBelts() {
   const bx = intBx, out = [];
   const bandGeo = (pts, w) => merge(pts.slice(1).map((p, i) => intStrip(pts[i], p, w, 0.003)));
   for (const s of [1, -1]) {
-    const n = sideName(s), zB = -0.28, xr = s * (surfX(zB, 0.55) - 0.075), xg = s * (surfX(zB, 1.1) - 0.05), tong = [s * 0.135, 0.535, -0.14];
+    const n = sideName(s), zB = -0.28, xr = s * (surfX(zB, 0.55) - 0.087), xg = s * (surfX(zB, 1.1) - 0.05), tong = [s * 0.135, 0.535, -0.14];
     const grp = [];
     grp.push(
       intPart(`Gordelrolautomaat voor ${n}`, G.rbox(0.06, 0.1, 0.06, 0.01), MAT.plastic, 'Oprolautomaat met gordelspanner en krachtbegrenzer onderin de B-stijl, achter de stijlbekleding verborgen; de bestuurder heeft een dubbele spanner.', { p: [xr, 0.55, zB], ex: [s * 0.1, 0, 0] }),
