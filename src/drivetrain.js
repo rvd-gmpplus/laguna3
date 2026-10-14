@@ -96,7 +96,7 @@ function drvConverter() {
   return A('Koppelomvormer', {
     d: 'Hydraulische koppeling tussen motor en versnellingsbak: het pompwiel stuwt olie naar het turbinewiel, het leidwiel vergroot het koppel bij het wegrijden en de overbruggingskoppeling schakelt het slip uit vanaf de tweede versnelling.',
     spec: [['Elementen', '3 (pompwiel, turbinewiel, leidwiel)'], ['Overbrugging', 'lock-up in 2e tot en met 6e'], ['Buitendiameter', 'circa 275 mm (geschat)']],
-    ex: [0, 0, 0.42], inner: true,
+    ex: [0, 0, 0.42],
   }, [
     P('Omvormerdeksel', merge([cover, G.cyl('x', 0.012, 0.012, 0.016, 12)]), MAT.steel, { d: 'Voorste schaal van de omvormer, aan het pompwiel gelast; met vier nokken naar de flexplaat van de motor.', ex: [-0.02, 0, 0] }),
     P('Omvormernokken', drvRing('drvNokken', 4, 0.115, () => G.cyl('x', 0.006, 0.006, 0.02, 10), PI / 4, [0, 0], -0.0035), MAT.darkSteel, { d: 'Vier nokken op het deksel waarmee de omvormer aan de flexplaat wordt geschroefd.', ex: [-0.045, 0, 0] }),
@@ -258,7 +258,7 @@ function drvValve() {
   const sw = (i) => P(`Drukschakelaar ${i + 1}`, G.cyl('y', 0.006, 0.006, 0.018, 10), MAT.plasticGrey, { d: 'Drukschakelaar die meldt of een schakelelement onder druk staat (vijf stuks bij de Renault-uitvoering).', p: [0.2 + i * 0.03, yTop + 0.009, -0.05], ex: [0, 0.06, -0.06 - i * 0.012] });
   const acc = (i) => P(`Accumulator ${i + 1}`, G.cyl('y', 0.011, 0.011, 0.03, 14), MAT.drvBrass, { d: 'Accumulatorzuiger met veer die de drukstoot bij het schakelen dempt (3-5-R, hoge koppeling, lage koppeling, 2-6).', p: [0.21 + i * 0.04, yLow - 0.0225, 0.0], ex: [0, -0.1, 0.03 * (i - 1.5)] });
   const spool = (nm, d, x, z, l) => P(nm, drvRing('drvSpool' + nm, 1, 0, () => merge([G.cyl('x', 0.0045, 0.0045, l, 10), ...[-0.35, 0, 0.35].map(f => xf(G.cyl('x', 0.0065, 0.0065, 0.007, 12), [f * l, 0, 0]))]), 0, [0, 0], 0), MAT.steel, { d, p: [x, yUp + 0.005, z], ex: [0, 0.06, z * 1.5], inner: true });
-  return A('Klepblok', { d: 'Hydraulische besturing van de bak: het klepblok met acht solenoïdes (zes lineair, twee aan/uit) en vijf drukschakelaars regelt de oliedruk naar de koppelingen en remmen. Zit in het huis onder een afdekdeksel. Inwendige kleppen schematisch weergegeven.', ex: [0.0, -0.3, 0.0], inner: true }, [
+  return A('Klepblok', { d: 'Hydraulische besturing van de bak: het klepblok met acht solenoïdes (zes lineair, twee aan/uit) en vijf drukschakelaars regelt de oliedruk naar de koppelingen en remmen. Zit in het huis onder een afdekdeksel. Inwendige kleppen schematisch weergegeven.', ex: [0.0, -0.3, 0.0] }, [
     A('Kleplichaam', { d: 'Onderste en bovenste blok met kanalen, een tussenplaat met twee pakkingen en de bouten.', ex: [0, 0.05, 0.0] }, [
       P('Onderste klepblok', G.rbox(W, 0.014, D, 0.002), MAT.aluCast, { d: 'Onderste helft van het klepblok met kanalen.', p: [cx, yLow, cz], ex: [0, -0.12, 0] }),
       P('Pakking onder', G.box(W, 0.001, D), MAT.drvPaper, { d: 'Pakking tussen onderste blok en tussenplaat.', p: [cx, yG1, cz], ex: [0, -0.08, 0] }),
