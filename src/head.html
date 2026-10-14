@@ -188,6 +188,43 @@ input[type=range]{width:100%;accent-color:var(--ink)}
 .dlg dt{font-weight:700}
 .dlg dd{margin:0;color:var(--ink-2)}
 .dlg .btnrow{justify-content:flex-end;margin-top:14px}
+/* ---------- openmodus ---------- */
+.open-row{display:contents}
+#openSeg{margin-left:auto}
+#openCtl{display:none}
+#app.omode #modes,#app.omode #explode,#app.omode #explodeOut,#app.omode #play,#app.omode .xlbl{display:none}
+#app.omode #openCtl{display:inline-flex}
+#app.omode .xctl{padding:4px 6px}
+#app.omode #btnExplodeAll,#app.omode #btnCollapseAll,#app.omode label[for="spread"],#app.omode #spread{display:none}
+#openCtl button[aria-expanded="true"]{background:var(--ink);color:var(--bg)}
+#openCount{font-family:var(--f-mono);font-weight:500;font-size:11px;opacity:.75}
+#openList{display:flex;flex-wrap:wrap;gap:6px;box-sizing:border-box;max-width:100%;max-height:min(34vh,220px);overflow:auto;overscroll-behavior:contain;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:8px;box-shadow:var(--shadow)}
+#openList button{border:1px solid var(--line);background:var(--chip);border-radius:999px;padding:5px 11px;font-size:12.5px;font-weight:700}
+#openList button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);border-color:transparent}
+/* ---------- onderdeelnummers ---------- */
+.pn{margin:0 0 14px}
+.pn-warn{margin:0 0 8px;padding:7px 10px;border-radius:9px;border:1px solid var(--line);background:var(--chip);font-size:12px;line-height:1.4;max-width:62ch}
+.pn-status{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin:0 0 8px;font-size:13.5px}
+.pn-status .state{display:inline-block;padding:1px 8px;border-radius:999px;border:1px solid var(--line);font-weight:700;font-size:11.5px}
+.pn-status .state.ok{background:var(--accent);color:var(--on-accent);border-color:transparent}
+.pn-status button{border:0;background:none;padding:0;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.pn-status small{color:var(--ink-2);font-size:12px}
+.pn h4{margin:10px 0 4px;font-family:var(--f-mono);font-size:10.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
+.pn-nums{list-style:none;margin:0;padding:0;font-size:13px}
+.pn-nums li{display:flex;flex-wrap:wrap;gap:2px 10px;padding:2px 0}
+.pn-nums b,.pn-tab td.num{font-family:var(--f-mono);font-weight:500;font-size:12.5px;font-variant-numeric:tabular-nums;user-select:all}
+.pn-nums span{color:var(--ink-2);font-size:12px}
+.pn-tab{width:100%;border-collapse:collapse;font-size:12.5px}
+.pn-tab th{text-align:left;font-weight:500;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);padding:2px 8px 2px 0}
+.pn-tab td{padding:3px 8px 3px 0;border-top:1px solid var(--line);vertical-align:top}
+.pn-tab td.num{white-space:nowrap}
+.pn p.pn-txt{margin:0 0 4px;font-size:12.5px}
+.pn-src{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12.5px}
+.pn-src a{color:var(--focus)}
+.pn-info{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;margin:0;font-size:12.5px}
+.pn-info dt{color:var(--ink-2)}
+.pn-info dd{margin:0;min-width:0}
+.pn-info dd small{display:block;color:var(--ink-2);font-size:11px}
 /* ---------- desktop ---------- */
 @media (min-width:920px){
   #sheet{top:calc(12px + env(safe-area-inset-top,0px));right:16px;bottom:16px;width:var(--panel-w);border-radius:16px;overflow:hidden}
@@ -197,7 +234,16 @@ input[type=range]{width:100%;accent-color:var(--ink)}
 }
 /* ---------- mobiel ---------- */
 @media (max-width:919.98px){
-  #sheet{left:0;right:0;bottom:0;border-radius:18px 18px 0 0;border-bottom:0;padding-bottom:env(safe-area-inset-bottom,0px);max-height:calc(100% - 96px - env(safe-area-inset-top,0px));transition:height .28s ease}
+  /* openmodus: de segmentknop krijgt een eigen regel onder de titel, over de volle breedte */
+  #topbar{flex-wrap:wrap}
+  .title{flex:1 1 0}
+  .open-row{display:block;order:3;flex:0 0 100%;pointer-events:none}
+  #openSeg{display:flex;margin-left:0;pointer-events:auto}
+  #app.omode .dock-main{flex-direction:row;align-items:stretch}
+  #app.omode #openCtl{flex:1 1 auto;min-width:0}
+  #app.omode #openCtl button{min-width:0;padding-left:2px;padding-right:2px}
+  #app.omode .xctl{flex:0 0 auto}
+  #sheet{left:0;right:0;bottom:0;border-radius:18px 18px 0 0;border-bottom:0;padding-bottom:env(safe-area-inset-bottom,0px);max-height:calc(100% - 140px - env(safe-area-inset-top,0px));transition:height .28s ease}
   #sheet[data-state="peek"]{height:auto}
   #sheet[data-state="peek"] .tabs,#sheet[data-state="peek"] .tabpanels{display:none}
   #sheet[data-state="open"]{height:64%}
@@ -218,7 +264,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
   .xlbl span::after{content:none}
   .sel-actions .btn{padding:7px 10px;font-size:12.5px}
   .sub{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  #hint,#tourBar{left:50%;top:calc(76px + env(safe-area-inset-top,0px));max-width:calc(100% - 32px);box-sizing:border-box}
+  #hint,#tourBar{left:50%;top:calc(124px + env(safe-area-inset-top,0px));max-width:calc(100% - 32px);box-sizing:border-box}
   /* rondleiding: een volle, lage balk onder de titel in plaats van een smalle hoge kolom */
   #tourBar{left:12px;right:12px;transform:none;max-width:none;gap:8px;padding:6px 6px 6px 12px}
   #tourText{flex:1 1 auto;min-width:0;font-size:12.5px;line-height:1.3;max-height:calc(3.9em + 14px);overflow:hidden}
@@ -310,6 +356,10 @@ input[type=range]{width:100%;accent-color:var(--ink)}
       <h1>Laguna III <span>Initiale Paris</span></h1>
       <p class="sub">2011 · 5-deurs hatchback · zilvergrijs · <b>F4Rt 2.0 Turbo 170 pk</b><span class="long"> · 6-traps automaat</span></p>
     </div>
+    <div class="open-row"><div class="seg" id="openSeg" role="radiogroup" aria-label="Wat doet een klik: uitklappen of openen">
+      <button role="radio" aria-checked="true" tabindex="0" data-omode="expand" title="Een klik klapt de groep van het onderdeel uit (sneltoets O wisselt)">Uitklappen</button>
+      <button role="radio" aria-checked="false" tabindex="-1" data-omode="open" title="Een klik opent een portier, de kap, de klep en andere openers (sneltoets O wisselt)">Openen</button>
+    </div></div>
     <div class="top-actions">
       <button class="iconbtn" id="help" aria-label="Uitleg over de bediening" aria-haspopup="dialog">?</button>
       <button class="iconbtn" id="btnParts" aria-label="Onderdelenlijst openen" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg></button>
@@ -321,8 +371,9 @@ input[type=range]{width:100%;accent-color:var(--ink)}
     <div class="sel-head">
       <div class="crumbs" id="crumbs"></div>
       <h2 id="selName" aria-live="polite">Renault Laguna III</h2>
-      <p class="meta" id="selMeta"></p>
+      <p class="meta" id="selMeta" aria-live="polite"></p>
       <div class="sel-actions">
+        <button class="btn primary" id="actOpen" hidden>Openen</button>
         <button class="btn primary" id="actToggle">Uitklappen</button>
         <button class="btn primary" id="actDive" hidden>Duik hierheen</button>
         <button class="btn" id="actUp" title="Klap de eerstvolgende dichte groep erboven uit">Groter geheel</button>
@@ -342,10 +393,15 @@ input[type=range]{width:100%;accent-color:var(--ink)}
         <dl class="spec" id="selSpec"></dl>
         <p class="kids-title" id="kidsTitle">Bestaat uit</p>
         <div class="kids" id="selKids"></div>
+        <div class="pn" id="pnBox" role="group" aria-labelledby="pnTitle">
+          <p class="kids-title" id="pnTitle">Onderdeelnummers</p>
+          <p class="pn-warn" id="pnWarn">Controleer het nummer altijd op het chassisnummer (VIN) bij de dealer of webwinkel; catalogi verschillen per bouwdatum en uitvoering.</p>
+          <div id="pnBody"></div>
+        </div>
         <p class="note">Schematisch 3D-model: vormen, maten en posities van onderdelen zijn benaderd en niet geschikt als montagevoorschrift. Technische gegevens komen uit openbare specificaties en werkplaatshandboeken van deze auto en, waar vermeld, van zustermotoren (F4R) of de zusterbak (Mitsubishi F6AJA); niet elk gegeven is voor deze uitvoering bevestigd.</p>
       </section>
       <section id="tab-tree" role="tabpanel" aria-labelledby="tabbtn-tree" hidden>
-        <input id="treeSearch" type="search" placeholder="Zoek een onderdeel, bijv. klepveer" autocomplete="off" aria-describedby="treeInfo">
+        <input id="treeSearch" type="search" placeholder="Zoek een onderdeel of nummer, bijv. klepveer" autocomplete="off" aria-describedby="treeInfo">
         <p id="treeInfo" aria-live="polite"></p>
         <div class="tree" id="tree" role="tree" aria-label="Onderdelenboom"></div>
       </section>
@@ -373,6 +429,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
     </div>
   </aside>
   <nav id="dock" aria-label="Bediening">
+    <div id="openList" role="group" aria-label="Alle openers" hidden></div>
     <div class="dock-main">
       <div class="seg" id="modes" role="radiogroup" aria-label="Wat doet een klik op een onderdeel">
         <span class="seg-lbl" aria-hidden="true">Klik</span>
@@ -380,6 +437,11 @@ input[type=range]{width:100%;accent-color:var(--ink)}
         <button role="radio" aria-checked="false" tabindex="-1" data-mode="layers" title="Klik klapt de buitenste dichte groep uit, van buiten naar binnen"><span class="long">Laag voor laag</span><span class="short">Lagen</span></button>
         <button role="radio" aria-checked="false" tabindex="-1" data-mode="collapse" title="Klik klapt de groep in waar het onderdeel uitgeklapt in zit">Inklappen</button>
         <button role="radio" aria-checked="false" tabindex="-1" data-mode="select" title="Klik toont alleen de gegevens">Info</button>
+      </div>
+      <div class="seg" id="openCtl" role="group" aria-label="Openers">
+        <button id="btnOpenAll" title="Alle openers open">Alles open</button>
+        <button id="btnCloseAll" title="Alle openers dicht">Alles dicht</button>
+        <button id="btnOpenList" aria-expanded="false" aria-controls="openList" title="Kies een opener uit de lijst">Openers <span id="openCount"></span></button>
       </div>
       <div class="xctl" id="xctl">
         <label for="explode" class="xlbl"><span>Explosie</span><b id="explodeName">Renault Laguna III</b></label>
@@ -412,15 +474,17 @@ input[type=range]{width:100%;accent-color:var(--ink)}
       <dt>Vasthouden</dt><dd>Klapt de groep in waar het onderdeel in zit (de ring loopt vol).</dd>
       <dt>Eén vinger · twee vingers</dt><dd>Draaien · knijpen om te zoomen en schuiven.</dd></dl></div>
     <h3>Bediening onderin</h3><dl>
+      <dt>Uitklappen · Openen</dt><dd>Bovenin: Uitklappen haalt groepen uit elkaar, Openen laat portieren, kap, klep en andere openers draaien of schuiven. Bij Openen opent een klik de buitenste dichte opener op het onderdeel, daarna de volgende naar binnen; zijn ze open, dan sluit de binnenste. Rechtsklik, Shift+klik of vasthouden sluit de binnenste open opener. Het dock heeft dan Alles open, Alles dicht en een lijst van alle openers.</dd>
       <dt>Klik: …</dt><dd>Onderdeel (standaard), Laag voor laag (van buiten naar binnen), Inklappen of alleen Info.</dd>
       <dt>Explosie</dt><dd>Schuif om de gekozen groep laag voor laag uit elkaar te halen; Demonteren en Monteren spelen dat af.</dd>
-      <dt>Presets</dt><dd>Zes categorieën met kant-en-klare standen, ook de rondleiding.</dd>
+      <dt>Presets</dt><dd>Zeven categorieën met kant-en-klare standen, ook de rondleiding.</dd>
       <dt>Groter geheel</dt><dd>In het paneel: klapt de eerstvolgende dichte groep erboven uit.</dd>
       <dt>Stap terug</dt><dd>Maakt de laatste handeling ongedaan.</dd></dl>
     <h3>Toetsen</h3><dl>
       <dt><kbd>Enter</kbd></dt><dd>Selectie uitklappen; is die al open, dan het grotere geheel. <kbd>Shift</kbd>+<kbd>Enter</kbd> klapt in.</dd>
       <dt><kbd>Backspace</kbd></dt><dd>Stap terug.</dd>
       <dt><kbd>&uarr;</kbd> <kbd>&darr;</kbd> <kbd>&larr;</kbd> <kbd>&rarr;</kbd></dt><dd>Door de onderdelen lopen: bovenliggende groep, eerste deel, vorige of volgende op hetzelfde niveau.</dd>
+      <dt><kbd>O</kbd></dt><dd>Wisselt tussen Uitklappen en Openen. In Openen opent <kbd>Enter</kbd> de opener van de selectie en sluit <kbd>Shift</kbd>+<kbd>Enter</kbd> hem.</dd>
       <dt><kbd>Esc</kbd></dt><dd>Menu sluiten of de hele auto selecteren.</dd>
       <dt><kbd>0</kbd> – <kbd>9</kbd></dt><dd>Gemonteerd, Hoofdgroepen, Motor, Motor tot op de bout, Automaat, Onderstel, Carrosserie, Interieur, Röntgen, Alles uit elkaar.</dd>
       <dt><kbd>/</kbd></dt><dd>Zoek een onderdeel in de onderdelenlijst.</dd>

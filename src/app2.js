@@ -3,7 +3,7 @@ document.documentElement.lang = 'nl';
 const $ = id => document.getElementById(id);
 const els = {
   sheet: $('sheet'), crumbs: $('crumbs'), name: $('selName'), meta: $('selMeta'), desc: $('selDesc'), spec: $('selSpec'), kids: $('selKids'), kidsTitle: $('kidsTitle'),
-  toggle: $('actToggle'), all: $('actAll'), up: $('actUp'), dive: $('actDive'), iso: $('actIsolate'), focus: $('actFocus'),
+  toggle: $('actToggle'), open: $('actOpen'), all: $('actAll'), up: $('actUp'), dive: $('actDive'), iso: $('actIsolate'), focus: $('actFocus'),
   tree: $('tree'), search: $('treeSearch'), treeInfo: $('treeInfo'), labels: $('labels'), leaders: $('leaders'), hint: $('hint'), presets: $('presets'), legend: $('legend'),
   menu: $('menu'), tip: $('tip'), press: $('press'), explode: $('explode'), explodeName: $('explodeName'), explodeOut: $('explodeOut'), play: $('play'), undo: $('undo'),
   help: $('help'), helpDlg: $('helpDlg'), tourBar: $('tourBar'), tourText: $('tourText'), tourStop: $('tourStop'), dock: $('dock'), topbar: $('topbar'),
@@ -51,7 +51,8 @@ function renderPanel() {
   });
   els.name.textContent = n.name;
   let state;
-  if (n.asm) state = uiOpen(n) ? '<span class="state open">Uitgeklapt</span>' : (n.target > 0 ? '<span class="state">Deels uitgeklapt</span>' : '<span class="state">Ingeklapt</span>');
+  if (OPENMODE && n.opn && !n.opn.lead) state = n.ot > 0 ? '<span class="state open">Open</span>' : '<span class="state">Dicht</span>';
+  else if (n.asm) state = uiOpen(n) ? '<span class="state open">Uitgeklapt</span>' : (n.target > 0 ? '<span class="state">Deels uitgeklapt</span>' : '<span class="state">Ingeklapt</span>');
   else state = n === uiLifted ? '<span class="state open">Uitgelicht</span>' : '<span class="state">Onderdeel</span>';
   const isoTxt = ISO.includes(n) ? ' · geïsoleerd' : '';
   els.meta.innerHTML = `${state}${n.asm ? fmtCount(n) : (n.parent ? 'in ' + esc(n.parent.name) : '')}${isoTxt}`;
@@ -60,6 +61,7 @@ function renderPanel() {
   els.spec.hidden = !n.spec;
   els.kids.innerHTML = '';
   els.kidsTitle.hidden = !n.asm;
+  renderPn(n);
   if (n.asm) {
     els.kidsTitle.textContent = `Bestaat uit (${n.kids.length})`;
     const MAXK = 80;
@@ -75,10 +77,15 @@ function renderPanel() {
       els.kids.appendChild(b);
     }
   }
-  els.toggle.hidden = !n.asm;
+  const plan = OPENMODE ? uiOpenPlan(n) : null;
+  els.open.hidden = !plan;
+  if (plan) { els.open.textContent = plan.open ? 'Openen' : 'Sluiten'; els.open.setAttribute('aria-label', (plan.open ? 'Openen: ' : 'Sluiten: ') + uiOpenLabel(plan.n)); els.open.title = (plan.open ? 'Opent ' : 'Sluit ') + uiOpenLabel(plan.n) + ' (Enter)'; }
+  // in Openen is er niets uit te klappen of te isoleren: alleen de opener en In beeld blijven
+  els.toggle.hidden = !n.asm || OPENMODE;
   els.toggle.textContent = n.asm && uiOpen(n) ? 'Inklappen' : 'Uitklappen';
-  els.all.hidden = !n.asm;
-  els.dive.hidden = n.asm;
+  els.all.hidden = !n.asm || OPENMODE;
+  els.dive.hidden = n.asm || OPENMODE;
+  els.up.hidden = OPENMODE; els.iso.hidden = OPENMODE;
   els.up.disabled = !uiClosedAbove(n);
   els.up.title = els.up.disabled ? 'Alles boven deze selectie is al uitgeklapt' : 'De dichte groep boven de selectie uitklappen (Enter)';
   const isoOn = ISO.length === 1 && ISO[0] === n;
@@ -87,6 +94,93 @@ function renderPanel() {
   syncSheetHeight();
   uiUiDirty = true;
 }
+/* ---------- onderdeelnummers ---------- */
+// Gegevens uit PN_DATA (src/partnumbers.js). map: pad zonder wortel -> [eenheid, 'zelf' | 'deel' | 'set', regel].
+// 'zelf': het onderdeel is zelf de verkoopeenheid; 'deel' of 'set': het zit in de eenheid en wordt daarmee besteld.
+// Een knoop zonder regel is niet onderzocht. De pagina toont alleen wat er staat en voegt zelf geen nummers toe.
+let uiPnIdx = new Map(), uiPnUnitNode = new Map(), uiPnBad = [], uiPnCov = new Map();
+const uiPnCompact = t => String(t).toLowerCase().replace(/[\s.\-\/]/g, '');
+const uiPnHasNum = r => !!r && ((r.u.oe && r.u.oe.length > 0) || (r.u.am && r.u.am.length > 0));
+function uiPnBuild() {
+  uiPnIdx = new Map(); uiPnUnitNode = new Map(); uiPnBad = []; uiPnCov = new Map();
+  for (const [path, e] of Object.entries(PN_DATA.map || {})) {
+    const n = uiByPath(path), id = Array.isArray(e) ? e[0] : null, u = id != null && PN_DATA.units ? PN_DATA.units[id] : null;
+    if (!n) { uiPnBad.push(path + ': pad bestaat niet'); continue; }
+    if (!u) { uiPnBad.push(path + ': eenheid ' + id + ' ontbreekt'); continue; }
+    const kind = e[1] === 'deel' || e[1] === 'set' ? e[1] : 'zelf';
+    const q = [...(u.oe || []).map(x => x[0]), ...(u.am || []).map(x => x[1])].map(uiPnCompact).join(' ');
+    uiPnIdx.set(n, { id, kind, rule: e[2] || '', u, q });
+    if (kind === 'zelf' && !uiPnUnitNode.has(id)) uiPnUnitNode.set(id, n);
+  }
+}
+function uiPnCheck() { return uiPnBad.slice(); }
+function uiPnRec(n) { return uiPnIdx.get(n) || null; }
+// aantal onderdelen onder n waarvoor een nummer bekend is (een eenheid met nummer telt voor al haar onderdelen)
+function uiPnCover(n) {
+  let c = uiPnCov.get(n);
+  if (c != null) return c;
+  const r = uiPnRec(n);
+  c = uiPnHasNum(r) ? n.count : (n.asm ? n.kids.reduce((a, k) => a + uiPnCover(k), 0) : 0);
+  uiPnCov.set(n, c);
+  return c;
+}
+function renderPn(n) {
+  const box = $('pnBody'), mk = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+  box.textContent = '';
+  const r = uiPnRec(n), u = r && r.u, st = mk('p', 'pn-status');
+  let badge, ok = false;
+  if (r && r.kind === 'zelf' && u.st === 'past') { badge = 'Past volgens catalogus'; ok = true; }
+  else if (r && r.kind === 'zelf' && u.st === 'vin') badge = 'Variant: kies op VIN';
+  else if (r && r.kind === 'zelf' && u.st === 'nietgevonden') badge = 'Niet gevonden';
+  else if (r && r.kind !== 'zelf') badge = r.kind === 'set' ? 'Deel van set' : 'Deel van';
+  else if (!n.asm || uiPnCover(n) === 0) badge = 'Niet onderzocht';
+  if (badge) st.appendChild(mk('span', 'state' + (ok ? ' ok' : ''), badge));
+  if (r && r.kind !== 'zelf') {
+    const un = uiPnUnitNode.get(r.id);
+    if (un && un !== n) { const b = mk('button', null, u.n || un.name); b.type = 'button'; b.onclick = () => reveal(un); st.appendChild(b); }
+    else st.appendChild(mk('b', null, u.n || r.id));
+    if (r.rule) st.appendChild(mk('small', null, r.rule));
+  } else if (r && u.n && u.n !== n.name) st.appendChild(mk('small', null, u.n));
+  if (n.asm) {
+    const sub = n.kids.reduce((a, k) => a + uiPnCover(k), 0);
+    if (sub > 0) st.appendChild(mk('small', null, `Hieronder hebben ${sub} van ${n.count} onderdelen een nummer.`));
+  }
+  box.appendChild(st);
+  if (uiPnHasNum(r)) {
+    const head = (txt) => box.appendChild(mk('h4', null, txt));
+    if (u.oe && u.oe.length) {
+      head(r.kind === 'zelf' ? (u.oe.length > 1 ? 'Renault-nummers' : 'Renault-nummer') : 'Renault-nummer van ' + (u.n || r.id));
+      const ul = mk('ul', 'pn-nums');
+      for (const [num, note] of u.oe) { const li = mk('li'); li.appendChild(mk('b', null, num)); if (note) li.appendChild(mk('span', null, note)); ul.appendChild(li); }
+      box.appendChild(ul);
+    }
+    if (u.am && u.am.length) {
+      head('Andere fabrikanten');
+      const t = mk('table', 'pn-tab'), hr = t.createTHead().insertRow();
+      for (const h of ['Merk', 'Nummer', 'Opmerking']) hr.appendChild(mk('th', null, h));
+      const tb = t.createTBody();
+      for (const [merk, num, note] of u.am) { const tr = tb.insertRow(); tr.appendChild(mk('td', null, merk)); tr.appendChild(mk('td', 'num', num)); tr.appendChild(mk('td', null, note || '')); }
+      box.appendChild(t);
+    }
+  }
+  if (u && u.var) { box.appendChild(mk('h4', null, 'Variant')); box.appendChild(mk('p', 'pn-txt', u.var)); }
+  if (u && u.per) { box.appendChild(mk('h4', null, 'Verpakking')); box.appendChild(mk('p', 'pn-txt', u.per)); }
+  const links = u && (u.src || []).filter(x => x && /^https?:\/\//i.test(x[0]));
+  if (links && links.length) {
+    box.appendChild(mk('h4', null, 'Bronnen'));
+    const d = mk('div', 'pn-src');
+    for (const [url, label] of links) { const a = mk('a', null, label || url); a.href = url; a.target = '_blank'; a.rel = 'noopener'; d.appendChild(a); }
+    box.appendChild(d);
+  }
+  if (u && u.info && u.info.length) {
+    box.appendChild(mk('h4', null, 'Onderhoud'));
+    const dl = mk('dl', 'pn-info');
+    for (const [label, waarde, bron] of u.info) { dl.appendChild(mk('dt', null, label)); const dd = mk('dd', null, waarde); if (bron) dd.appendChild(mk('small', null, bron)); dl.appendChild(dd); }
+    box.appendChild(dl);
+  }
+  if (PN_DATA.meta && PN_DATA.meta.checked && (r || n.asm)) box.appendChild(mk('p', 'pn-txt', 'Gegevens gecontroleerd op ' + PN_DATA.meta.checked + '.'));
+}
+
 // Na elke gebruikershandeling: paneel, boom, schuif, presetknoppen en stap-terug bijwerken.
 // I5/I6: schakelaars en spreidingsschuif volgen de stand ook na presets, stap terug en de rondleiding
 function uiSyncToggles() {
@@ -96,7 +190,7 @@ function uiSyncToggles() {
 function uiAfterAction() {
   renderPanel();
   if (treeVisible()) renderTree();
-  uiSyncExplode(); uiSyncCats(); uiSyncUndo(); uiSyncToggles();
+  uiSyncExplode(); uiSyncCats(); uiSyncUndo(); uiSyncToggles(); uiSyncOpenUi();
   applyMats(); // I3: geen gele selectietint meer op een groep die open is gegaan
   uiHideTip();
   uiSyncLabels();
@@ -116,6 +210,7 @@ function clearPreset() { if (ACTIVE_PRESET) { ACTIVE_PRESET = null; uiSyncCats()
 // staat G al open, dan wordt P geselecteerd en uitgelicht. Een klik klapt nooit een groep boven G uit.
 function uiAct(p) {
   if (!p) { uiBackground(); return; }
+  if (OPENMODE) { uiOpenAct(p); return; }
   if (p.asm) { // label of lijst van een groep
     if (MODE === 'collapse') { if (uiOpen(p)) doCollapse(p); else { uiPush(); select(p); uiAfterAction(); } return; }
     if (MODE === 'select' || uiOpen(p)) { uiPush(); select(p); uiAfterAction(); return; }
@@ -144,6 +239,7 @@ function doCollapse(a) {
   uiAfterAction();
 }
 function uiCollapseAt(p) {
+  if (OPENMODE) { uiOpenClose(p); return; }
   const a = uiDeepestOpen(p);
   if (a) { doCollapse(a); return; }
   uiPush(); select(p); uiAfterAction();
@@ -165,6 +261,15 @@ function uiDive(p) {
   uiAfterAction();
 }
 function reveal(n) {
+  if (OPENMODE) { // in Openen klapt niets uit: alleen selecteren en in beeld brengen
+    uiPush();
+    if (window.innerWidth < 920 && els.sheet.dataset.state === 'open') setSheet('peek');
+    select(n);
+    focusNodes([n], null, n.asm ? 1.12 : 1.6, { min: 0.3 });
+    uiLastFit = { nodes: [n], dir: null, pad: n.asm ? 1.12 : 1.6, opt: { min: 0.3 } };
+    uiAfterAction();
+    return;
+  }
   uiPush();
   if (ISO.length && !uiInScope(n)) { ISO = []; applyVisibility(); updateGround(); }
   let i = 0;
@@ -221,6 +326,109 @@ els.iso.onclick = () => {
 };
 els.focus.onclick = () => { const nodes = [SEL]; focusNodes(nodes, null, SEL.asm ? 1.08 : 1.6, { min: 0.25 }); uiLastFit = { nodes, dir: null, pad: SEL.asm ? 1.08 : 1.6, opt: { min: 0.25 } }; };
 
+/* ---------- openmodus: bediening ---------- */
+// Openers (OPENERS in app1.js) draaien of schuiven open. In de modus Openen doet een klik dat in plaats van uitklappen.
+// Klikregel: neem de openers op het pad van het geraakte onderdeel, van buiten naar binnen (volgers tellen als hun leider).
+// De eerste dichte opener gaat open; zijn ze allemaal open, dan sluit de binnenste. Een klik op de ruit van een dicht
+// portier opent dus het portier, daarna de ruit; een tweede klik op de ruit sluit de ruit weer. Rechtsklik, Shift+klik en
+// lang drukken sluiten de binnenste open opener op het pad. Ingang: alles dicht (Gemonteerd); uitgang: alle openers dicht.
+const uiOpenLabel = n => (n.opn && n.opn.label) || n.name;
+function uiOpenPath(p) {
+  const chain = []; for (let a = p; a; a = a.parent) chain.unshift(a);
+  const out = [];
+  for (const a of chain) if (a.opn) { const l = a.opn.lead || a; if (!out.includes(l)) out.push(l); }
+  return out;
+}
+// wat een klik op p nu doet: { n: de opener, open: true om te openen, false om te sluiten } of null
+function uiOpenPlan(p) {
+  const list = p ? uiOpenPath(p) : [];
+  if (!list.length) return null;
+  const closed = list.find(n => n.ot === 0);
+  return closed ? { n: closed, open: true } : { n: list[list.length - 1], open: false };
+}
+// camera bij openen: richting en kader uit open.look, het kader in de eindstand (focusNodes rekent de doelstand mee)
+function uiOpenFrame(nodes, dir, pad) {
+  const opt = { min: 0.3 };
+  focusNodes(nodes, dir, pad, opt);
+  uiLastFit = { nodes, dir, pad, opt };
+}
+function uiOpenTo(n, open) {
+  uiStopPlay(); uiStopTour(); hideHint();
+  uiPush();
+  uiSetOpen(n, open ? 1 : 0);
+  clearPreset(); CTX = null; uiLabelForce = false;
+  if (open) { // bij sluiten beweegt de camera niet
+    const lk = n.opn.look || {}, nodes = (lk.nodes || []).map(r => uiRef(r, n.name)).filter(Boolean);
+    uiOpenFrame(nodes.length ? nodes : [n], lk.dir ? V3(...lk.dir) : null, 1.1);
+  }
+  select(n);
+  uiAfterAction();
+}
+function uiOpenAct(p) {
+  const pl = uiOpenPlan(p);
+  if (pl) uiOpenTo(pl.n, pl.open);
+  else { uiPush(); select(p); uiAfterAction(); }
+}
+function uiOpenClose(p) {
+  const open = p ? uiOpenPath(p).filter(n => n.ot > 0) : [];
+  if (open.length) uiOpenTo(open[open.length - 1], false);
+  else if (p) { uiPush(); select(p); uiAfterAction(); }
+}
+function uiOpenAllTo(v) {
+  uiStopPlay(); uiStopTour(); hideHint();
+  uiPush();
+  for (const n of OPENERS) uiSetOpen(n, v ? 1 : 0);
+  clearPreset();
+  if (v) uiOpenFrame([ROOT], DIRS.iso, 1.04);
+  uiAfterAction();
+}
+function uiSetOpenMode(on) {
+  on = !!on;
+  if (on === OPENMODE) return;
+  uiStopPlay(); uiStopTour();
+  uiPush();
+  if (on) {
+    appApplyPreset(appPresetById.get('assembled'), { noHistory: true, openMode: true });
+    uiLastFit = { preset: appPresetById.get('assembled') };
+  } else {
+    OPENMODE = false;
+    for (const n of OPENERS) uiSetOpen(n, 0);
+  }
+  clearPreset();
+  uiUiChanged();
+  uiAfterAction();
+}
+const uiOpenBtns = [...document.querySelectorAll('#openSeg [data-omode]')];
+uiOpenBtns.forEach((b, i) => {
+  b.addEventListener('click', () => { hideHint(); uiSetOpenMode(b.dataset.omode === 'open'); });
+  b.addEventListener('keydown', e => { if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return; const j = (i + (e.key === 'ArrowRight' ? 1 : uiOpenBtns.length - 1)) % uiOpenBtns.length; uiSetOpenMode(uiOpenBtns[j].dataset.omode === 'open'); uiOpenBtns[j].focus(); e.preventDefault(); });
+});
+$('btnOpenAll').onclick = () => uiOpenAllTo(true);
+$('btnCloseAll').onclick = () => uiOpenAllTo(false);
+els.open.onclick = () => { const pl = uiOpenPlan(SEL); if (pl) uiOpenTo(pl.n, pl.open); };
+// openerlijst: een knop per opener (aria-pressed = open), bereikbaar met toetsenbord en schermlezer
+const uiOpenChips = OPENERS.map(n => {
+  const b = document.createElement('button');
+  b.type = 'button'; b.textContent = uiOpenLabel(n); b.setAttribute('aria-pressed', 'false');
+  b.onclick = () => uiOpenTo(n, n.ot === 0);
+  $('openList').appendChild(b);
+  return [n, b];
+});
+let uiOpenListOn = false;
+$('btnOpenList').onclick = () => { uiOpenListOn = !uiOpenListOn; $('btnOpenList').setAttribute('aria-expanded', String(uiOpenListOn)); uiSyncOpenUi(); uiUiChanged(); layoutView(); };
+function uiSyncOpenUi() {
+  $('app').classList.toggle('omode', OPENMODE);
+  uiOpenBtns.forEach(b => { const on = (b.dataset.omode === 'open') === OPENMODE; b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1; });
+  let open = 0;
+  for (const [n, b] of uiOpenChips) { const on = n.ot > 0; if (on) open++; if (b.getAttribute('aria-pressed') !== String(on)) b.setAttribute('aria-pressed', String(on)); }
+  const txt = open + '/' + OPENERS.length;
+  if ($('openCount').textContent !== txt) $('openCount').textContent = txt;
+  const showList = OPENMODE && uiOpenListOn;
+  if ($('openList').hidden === showList) $('openList').hidden = !showList;
+  if (uiOpenWas !== OPENMODE) { uiOpenWas = OPENMODE; uiUiChanged(); layoutView(); }
+}
+let uiOpenWas = false;
+
 /* ---------- onderdelenboom ---------- */
 const openRows = new Set([ROOT.id]);
 function treeVisible() { return !$('tab-tree').hidden && (window.innerWidth >= 920 || els.sheet.dataset.state === 'open'); }
@@ -243,7 +451,8 @@ function renderTree() {
   els.tree.innerHTML = '';
   const ul = document.createElement('ul');
   if (q.length >= 2) {
-    const all = ALL.filter(n => n.norm.includes(q)), hits = all.slice(0, 80);
+    const qn = uiPnCompact(q), byNum = qn.length >= 3 && /\d/.test(qn);   // een zoekterm met cijfers zoekt ook in de nummers
+    const all = ALL.filter(n => n.norm.includes(q) || (byNum && (uiPnIdx.get(n) || { q: '' }).q.includes(qn))), hits = all.slice(0, 80);
     els.treeInfo.textContent = all.length ? (all.length === 1 ? '1 treffer' : `${all.length} treffers`) + (all.length > hits.length ? `, de eerste ${hits.length} staan hieronder` : '') : 'Geen onderdeel gevonden met die naam.';
     hits.forEach(n => { const li = treeRow(n, 1); const small = document.createElement('div'); small.className = 'tpath'; small.textContent = ancestors(n).slice(1).map(a => a.name).join(' › ') || 'hele auto'; li.appendChild(small); ul.appendChild(li); });
   } else {
@@ -516,12 +725,14 @@ function pick(cx, cy, loose) {
 // Wat een klik in de huidige modus zou raken.
 function uiActTarget(p) {
   if (!p) return null;
+  if (OPENMODE) { const pl = uiOpenPlan(p); return pl ? pl.n : p; }
   if (MODE === 'part') return uiOpen(p.parent) ? p : p.parent;
   if (MODE === 'layers') return pathFrom(p).find(x => x.asm && !uiOpen(x)) || p;
   if (MODE === 'collapse') return uiDeepestOpen(p) || p;
   return p;
 }
 function uiTipText(p, t) {
+  if (OPENMODE) { const pl = uiOpenPlan(p); return pl ? `${uiOpenLabel(pl.n)} · <i>klik om te ${pl.open ? 'openen' : 'sluiten'}</i>` : `${p.name} · <i>niets te openen</i>`; }
   if (MODE === 'collapse') return t.asm ? `${t.name} · ${fmtCount(t)} · klik om in te klappen` : `${p.name} · <i>niets uitgeklapt om in te klappen</i>`;
   if (MODE === 'select') return `${p.name} · <i>klik voor gegevens</i>`;
   if (t.asm) return `${t.name} · ${fmtCount(t)} · klik om uit te klappen`;
@@ -548,7 +759,7 @@ function uiDoHover() {
   const t = uiActTarget(p);
   if (uiSetHover(t)) requestRender();
   uiShowTip(uiTipText(p, t), uiHoverPos.x, uiHoverPos.y);
-  canvas.style.cursor = 'pointer';
+  canvas.style.cursor = OPENMODE && !uiOpenPlan(p) ? '' : 'pointer';
 }
 function uiHoverTarget(x, y) { const p = pick(x, y); const t = uiActTarget(p); return t ? t.name : null; }
 
@@ -628,6 +839,7 @@ canvas.addEventListener('pointerup', e => {
   const now = e.timeStamp, L = uiLastTap;
   if (L && now - L.t < 420 && now - L.t >= 0 && Math.hypot(e.clientX - L.x, e.clientY - L.y) < 26 && L.type === d.type) {
     uiLastTap = null;
+    if (OPENMODE) return; // in Openen is dubbelklik gelijk aan een enkele klik: de eerste klik heeft al gedaan wat er te doen was
     if (L.pick) uiDive(L.pick); // altijd het onderdeel van de eerste tik
     return;
   }
@@ -683,6 +895,10 @@ els.helpDlg.addEventListener('click', e => { if (e.target === els.helpDlg) uiHel
 /* ---------- toetsenbord (werkt zodra de pagina de focus heeft; het canvas krijgt die bij de eerste aanraking) ---------- */
 function uiEnter(shift) {
   const n = SEL || ROOT;
+  if (OPENMODE) { // Enter opent of sluit de opener van de selectie, Shift+Enter sluit de binnenste open opener
+    if (shift) uiOpenClose(n); else { const pl = uiOpenPlan(n); if (pl) uiOpenTo(pl.n, pl.open); }
+    return;
+  }
   if (shift) { if (n.asm && uiOpen(n)) doCollapse(n); else if (!n.asm) uiCollapseAt(n); return; }
   if (n.asm && !uiOpen(n)) { doExplode(n); return; }
   const a = uiClosedAbove(n);
@@ -702,6 +918,7 @@ window.addEventListener('keydown', e => {
   if (e.key === 'Enter') { if (onCtl) return; e.preventDefault(); uiStopPlay(); uiStopTour(); hideHint(); uiEnter(e.shiftKey); return; }
   if (e.key === 'Backspace') { e.preventDefault(); uiStopPlay(); uiStopTour(); uiUndo(); return; }
   if (e.key === '?') { e.preventDefault(); uiHelp(true); return; }
+  if (e.key === 'o' || e.key === 'O') { e.preventDefault(); hideHint(); uiSetOpenMode(!OPENMODE); return; }
   // U17: / springt naar het zoekveld van de onderdelenlijst (op de telefoon gaat het paneel daarvoor open)
   if (e.key === '/') { e.preventDefault(); hideHint(); showTab('tree'); if (window.innerWidth < 920) setSheet('open'); els.search.focus(); els.search.select(); return; }
   // pijltjes (niet op een bedieningselement): door de boom lopen. Omhoog = bovenliggende groep, omlaag = eerste deel,
@@ -878,6 +1095,7 @@ function uiMeasureUi() {
   const add = (id, el) => { if (!el || el.hidden) return; const r = el.getBoundingClientRect(); if (r.width > 0 && r.height > 0) out.push({ id, x: r.left, y: r.top, w: r.width, h: r.height }); };
   add('panel', els.sheet);
   add('modes', $('modes')); add('explode', $('xctl')); add('presets', els.presets);
+  add('openSeg', $('openSeg')); add('openCtl', $('openCtl')); add('openList', $('openList'));
   add('title', els.topbar.querySelector('.title')); add('topActions', els.topbar.querySelector('.top-actions'));
   if (!els.hint.hidden && !els.hint.classList.contains('gone')) add('hint', els.hint);
   if (!els.menu.hidden) add('menu', els.menu);
@@ -984,14 +1202,14 @@ function layoutView() {
   const acts = els.topbar.querySelector('.top-actions').getBoundingClientRect();
   const sheet = els.sheet.getBoundingClientRect();
   let dockTop = H;
-  for (const el of [$('modes'), $('xctl'), els.presets]) { const r = el.getBoundingClientRect(); if (r.height > 0 && r.top < dockTop) dockTop = r.top; }
+  for (const el of [$('modes'), $('xctl'), els.presets, $('openCtl'), $('openList')]) { const r = el.getBoundingClientRect(); if (r.height > 0 && r.top < dockTop) dockTop = r.top; }
   if (wide) {
     VIEW.l = 0; VIEW.r = Math.max(0, W - sheet.left + 8);
     VIEW.t = Math.min(H * 0.3, title.bottom + 6);
     VIEW.b = Math.max(0, H - dockTop + 6);
   } else {
     VIEW.l = 0; VIEW.r = 0;
-    VIEW.t = Math.min(H * 0.3, Math.max(title.bottom, acts.bottom) + 4);
+    VIEW.t = Math.min(H * 0.3, Math.max(title.bottom, acts.bottom, $('openSeg').getBoundingClientRect().bottom) + 4);
     const bottom = els.sheet.dataset.state === 'open' ? sheet.top : Math.min(dockTop, sheet.top);
     VIEW.b = Math.max(0, H - bottom + 4);
     // Tijdens de rondleiding staat het bijschrift als balk onder de titel: het beeld begint eronder.
@@ -1018,7 +1236,7 @@ function uiRefitNow() {
   clearTimeout(uiRefitTimer); uiRefitTimer = 0;
   if (uiUserCam || !uiLastFit) return;
   const f = uiLastFit;
-  if (f.preset) { const c = f.preset.cam || {}; focusNodes(appSubject(f.preset), c.dir ? V3(...c.dir) : DIRS.iso, c.pad || 1.06, { dur: 0.4 }); }
+  if (f.preset) { const c = f.preset.cam || {}; focusNodes(appSubject(f.preset), appPresetDir(f.preset), c.pad || 1.06, { dur: 0.4 }); }
   else focusNodes(f.nodes, f.dir, f.pad, Object.assign({}, f.opt || {}, { dur: 0.4 }));
 }
 function uiRefitSoon() {
@@ -1164,6 +1382,7 @@ let uiReady = false, uiReadyT = 0;
 uiTiming.startUp = Math.round(performance.now());
 applyVisibility();
 resize();
+uiPnBuild();
 select(ROOT);
 uiBuildCats();
 uiSyncUndo();
@@ -1229,7 +1448,7 @@ function uiState() {
   return {
     open: ASMS.filter(n => n.target > 0.5).map(n => n.name), selected: (SEL || ROOT).name, iso: ISO.map(n => n.name), xray: XRAY,
     explode: { group: w.name, value: L ? +(uiExplodeX(w) / L).toFixed(4) : 0, levels: L }, history: uiHist.length,
-    lifted: uiLifted ? uiLifted.name : null, preset: ACTIVE_PRESET, mode: MODE, tour: !!appTour, playing: !!uiPlayS, sys: SYSCOL,
+    lifted: uiLifted ? uiLifted.name : null, preset: ACTIVE_PRESET, mode: MODE, openMode: OPENMODE, openers: OPENERS.filter(n => n.ot > 0).map(n => n.name), tour: !!appTour, playing: !!uiPlayS, sys: SYSCOL,
   };
 }
 function uiFrameOf(names) {
@@ -1290,6 +1509,9 @@ window.__laguna = {
   drawCalls: () => { renderer.info.reset(); renderer.render(scene, camera); return renderer.info.render.calls; },
   // openmodus (kern): leiders met hun stand; setOpen(naam, 0..1, direct); openAll(0..1, direct)
   openers: () => OPENERS.map(n => ({ name: n.name, label: n.opn.label || n.name, type: n.opn.type, open: +n.ou.toFixed(4), target: n.ot, followers: n.opn.followers.map(f => f.name) })),
+  setOpenMode: on => { hideHint(true); uiSetOpenMode(on); return OPENMODE; },
+  openPlan: x => { const n = typeof x === 'string' ? byName(x) : x; const pl = n && uiOpenPlan(n); return pl ? { opener: pl.n.name, open: pl.open } : null; },
+  pnRebuild: uiPnBuild, pnCheck: uiPnCheck, pnOf: x => { const n = typeof x === 'string' ? (uiByPath(x) || byName(x)) : x; const r = n && uiPnRec(n); return r ? { kind: r.kind, unit: r.id, rule: r.rule || null } : null; },
   setOpen: (name, v, instant) => { const r = uiSetOpen(name, v, instant); requestRender(); return r; },
   openAll: (v, instant) => { for (const n of OPENERS) uiSetOpen(n, v, instant); requestRender(); return OPENERS.length; },
 };

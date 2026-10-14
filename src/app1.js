@@ -356,6 +356,7 @@ function isUnder(n, a) { for (let p = n; p; p = p.parent) if (p === a) return tr
 /* ---------- zichtbaarheid en materialen ---------- */
 let ISO = [];
 let XRAY = false, SYSCOL = false, SEL = null;
+let OPENMODE = false;   // klikmodus Openen (bediening in app2.js): een klik opent of sluit openers in plaats van uit te klappen
 const uiPickable = [];
 let uiPickVer = 0;
 function uiInScope(a) { return !ISO.length || ISO.some(r => isUnder(a, r)); }
@@ -406,7 +407,8 @@ function uiMatFor(m) {
   return mat;
 }
 function applyMats() {
-  const showHl = SEL && SEL !== ROOT && !ISO.includes(SEL) && (!SEL.asm || SEL.target <= 0.5);
+  // een gekozen opener (portier, kap) krijgt geen gele tint: hij is het doel van de klik en zou anders geel blijven
+  const showHl = SEL && SEL !== ROOT && !ISO.includes(SEL) && (!SEL.asm || SEL.target <= 0.5) && !(OPENMODE && SEL.opn);
   uiSelSet = showHl ? new Set(SEL.meshes) : new Set();
   for (const m of MESHES) m.material = uiMatFor(m);
 }
@@ -643,7 +645,7 @@ function uiSnap() {
     t: ASMS.map(n => n.target), o: OPENERS.map(n => n.ot),
     pull: ALL.filter(n => n.pull.lengthSq() > 0).map(n => [n.id, n.pull.x, n.pull.y, n.pull.z]),
     lift: uiLifted ? uiLifted.id : null,
-    iso: ISO.map(n => n.id), xray: XRAY, sys: SYSCOL, spread: SPREAD,
+    iso: ISO.map(n => n.id), xray: XRAY, sys: SYSCOL, spread: SPREAD, om: OPENMODE,
     sel: (SEL || ROOT).id, ctx: CTX ? CTX.id : null, force: uiLabelForce, preset: ACTIVE_PRESET,
     cam: [camera.position.clone(), controls.target.clone()],
   };
@@ -661,7 +663,7 @@ function uiRestore(s, instant) {
   for (const [id, x, y, z] of s.pull) { const n = uiById.get(id); if (n) { n.pull.set(x, y, z); uiOffTo(n, 0.7); } }
   uiDrop();
   if (s.lift != null) { const n = uiById.get(s.lift); if (n) uiLift(n); }
-  XRAY = s.xray; SYSCOL = s.sys;
+  XRAY = s.xray; SYSCOL = s.sys; OPENMODE = !!s.om;
   if (SPREAD !== s.spread) uiSetSpread(s.spread, true);
   CTX = s.ctx != null ? uiById.get(s.ctx) : null; uiLabelForce = !!s.force;
   uiVisDirty = true; applyVisibility();
