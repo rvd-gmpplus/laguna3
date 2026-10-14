@@ -151,17 +151,18 @@ function renderPn(n) {
     if (u.oe && u.oe.length) {
       head(r.kind === 'zelf' ? (u.oe.length > 1 ? 'Renault-nummers' : 'Renault-nummer') : 'Renault-nummer van ' + (u.n || r.id));
       const ul = mk('ul', 'pn-nums');
-      for (const [num, note] of u.oe) { const li = mk('li'); li.appendChild(mk('b', null, num)); if (note) li.appendChild(mk('span', null, note)); ul.appendChild(li); }
+      for (const [num, note, lvl] of u.oe) { const li = mk('li'); li.appendChild(mk('b', null, num)); if (lvl) li.appendChild(uiPnLvl(mk, lvl)); if (note) li.appendChild(mk('span', null, note)); ul.appendChild(li); }
       box.appendChild(ul);
     }
     if (u.am && u.am.length) {
       head('Andere fabrikanten');
       const t = mk('table', 'pn-tab'), hr = t.createTHead().insertRow();
-      for (const h of ['Merk', 'Nummer', 'Opmerking']) hr.appendChild(mk('th', null, h));
+      for (const h of ['Merk', 'Nummer', 'Bewijs', 'Opmerking']) hr.appendChild(mk('th', null, h));
       const tb = t.createTBody();
-      for (const [merk, num, note] of u.am) { const tr = tb.insertRow(); tr.appendChild(mk('td', null, merk)); tr.appendChild(mk('td', 'num', num)); tr.appendChild(mk('td', null, note || '')); }
+      for (const [merk, num, note, lvl] of u.am) { const tr = tb.insertRow(); tr.appendChild(mk('td', null, merk)); tr.appendChild(mk('td', 'num', num)); const td = mk('td'); if (lvl) td.appendChild(uiPnLvl(mk, lvl)); tr.appendChild(td); tr.appendChild(mk('td', null, note || '')); }
       box.appendChild(t);
     }
+    box.appendChild(mk('p', 'pn-txt', 'Bewijs: A staat in de catalogus voor dit type (2.0 16V Turbo 170 pk, F4R 811) op de juiste plaats; B is het Renault-nummer van zo\'n artikel; C is een kruisverwijzing van een A- of B-nummer.'));
   }
   if (u && u.var) { box.appendChild(mk('h4', null, 'Variant')); box.appendChild(mk('p', 'pn-txt', u.var)); }
   if (u && u.per) { box.appendChild(mk('h4', null, 'Verpakking')); box.appendChild(mk('p', 'pn-txt', u.per)); }
@@ -178,7 +179,24 @@ function renderPn(n) {
     for (const [label, waarde, bron] of u.info) { dl.appendChild(mk('dt', null, label)); const dd = mk('dd', null, waarde); if (bron) dd.appendChild(mk('small', null, bron)); dl.appendChild(dd); }
     box.appendChild(dl);
   }
+  const inf = PN_DATA.info && PN_DATA.info[uiPathOf(n).replace(/^[^/]+\//, '')];
+  if (inf && inf.length) {
+    box.appendChild(mk('h4', null, 'Onderhoud en bekende problemen'));
+    const dl = mk('dl', 'pn-info');
+    for (const [label, waarde, bron, zeker] of inf) {
+      dl.appendChild(mk('dt', null, label));
+      const dd = mk('dd', null, waarde);
+      if (bron || zeker) { const sm = mk('small', null, (zeker ? zeker + (bron ? ', ' : '') : '')); if (bron && /^https?:\/\//i.test(bron)) { const a = mk('a', null, 'bron'); a.href = bron; a.target = '_blank'; a.rel = 'noopener'; sm.appendChild(a); } else if (bron) sm.appendChild(document.createTextNode(bron)); dd.appendChild(sm); }
+      dl.appendChild(dd);
+    }
+    box.appendChild(dl);
+  }
   if (PN_DATA.meta && PN_DATA.meta.checked && (r || n.asm)) box.appendChild(mk('p', 'pn-txt', 'Gegevens gecontroleerd op ' + PN_DATA.meta.checked + '.'));
+}
+function uiPnLvl(mk, lvl) {
+  const e = mk('span', 'pn-lvl', lvl);
+  e.title = { A: 'In de catalogus voor dit type, op de juiste plaats', B: 'Renault-nummer van een artikel dat voor dit type in de catalogus staat', C: 'Kruisverwijzing van een A- of B-nummer' }[lvl] || '';
+  return e;
 }
 
 // Na elke gebruikershandeling: paneel, boom, schuif, presetknoppen en stap-terug bijwerken.
