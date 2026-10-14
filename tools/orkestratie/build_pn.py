@@ -120,12 +120,12 @@ for p, rows in MR_INFO.items():
 used = set(v[0] for v in pmap.values())
 units = {k: v for k, v in units.items() if k in used}
 meta = {'vehicle': 'Renault Laguna III hatchback (BT0/1) 2.0 16V Turbo 170 pk, F4R 811, automaat AJ0', 'tecdoc': 23370,
-        'checked': '15 oktober 2026', 'note': 'Nummers gecontroleerd tegen opnieuw opgehaalde catalogusbronnen; controleer altijd op chassisnummer.'}
+        'checked': '14 en 15 oktober 2026', 'note': 'Nummers met bewijs A tot C gecontroleerd tegen opnieuw opgehaalde catalogusbronnen; D komt alleen uit een advertentie. Controleer altijd op chassisnummer.'}
 data = {'meta': meta, 'units': units, 'map': pmap, 'info': info}
 js = ("/* ===================== onderdeelnummers ===================== */\n"
       "// Gegevens, geen code. Gemaakt door de orkestrator uit de geverifieerde onderzoeksbestanden (build_pn.py); niet met de hand bewerken.\n"
       "// units: id -> { n, st: 'past' | 'vin' | 'nietgevonden', oe: [[nummer, opmerking, bewijs]], am: [[merk, nummer, opmerking, bewijs]],\n"
-      "//                var, per, note, src: [[url, label]] }; bewijs A, B of C (zie het paneel).\n"
+      "//                var, per, note, src: [[url, label]] }; bewijs A, B, C of D (zie het paneel).\n"
       "// map: pad zonder wortel -> [unit-id, 'zelf' | 'deel' | 'set', regel]. Een pad zonder regel is 'niet onderzocht'.\n"
       "// info: pad zonder wortel -> [[label, waarde, bron, zekerheid]] (onderhoud en bekende problemen).\n"
       "const PN_DATA = " + json.dumps(data, ensure_ascii=False, separators=(',', ':')) + ";\n")
