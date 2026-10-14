@@ -103,7 +103,8 @@ function uiPlace(k) {
 // opener blijft staan als die opener draait (carrosseriezijde van een scharnier, afdichting). Een volger
 // met `stay` beweegt in het frame van de rustende opener (motorkapsteun onder de motorkap).
 // Een telescoop (`strut`) wordt na elke stap van punt a naar punt b gericht; zijn kind `rod` schuift mee.
-// Verwijzingen (follow, strut.a.node, strut.b.node, strut.lead) zijn een pad vanaf de wortel of een unieke naam.
+// `needs`: openen opent eerst die andere opener; sluiten van die andere sluit eerst deze.
+// Verwijzingen (follow, needs, strut.a.node, strut.b.node, strut.lead) zijn een pad vanaf de wortel of een unieke naam.
 const OPENERS = [];            // leiders, in boomvolgorde
 const uiOpenAnim = new Set();  // leiders die bewegen
 const STRUTS = [], STAYS = [];
@@ -130,7 +131,7 @@ for (const n of ALL) {
     if (o.arc) { o.apv = V3(...o.arc.pivot); o.aax = V3(...o.arc.axis).normalize(); o.aang = o.arc.angle; }
     if (o.tilt) { o.tpv = V3(...o.tilt.pivot); o.tax = V3(...o.tilt.axis).normalize(); o.tang = o.tilt.angle; o.tf = o.tilt.part != null ? o.tilt.part : 0.35; }
     o.dur = o.dur || (REDUCED ? 0.01 : 0.9);
-    o.followers = []; o.stays = []; o.struts = [];
+    o.followers = []; o.stays = []; o.struts = []; o.needBy = [];
     if (o.type === 'hinge' && (!o.pv || !o.ax || typeof o.angle !== 'number')) console.error('openmodus: scharnier ' + n.name + ' mist pivot, axis of angle');
   }
 }
@@ -140,8 +141,11 @@ for (const n of ALL) {
     const lead = uiRef(o.follow, n.name);
     if (lead && lead.opn && !lead.opn.follow) { lead.opn.followers.push(n); o.lead = lead; } else console.error('openmodus: volger ' + n.name + ' zonder leider ' + o.follow);
   } else if (o) OPENERS.push(n);
+  if (o && o.needs) o.needSpec = o.needs;
   if (n.stay) { const anc = uiOpenAnc(n); if (anc) { n.stayO = anc; STAYS.push(n); if (!o) (anc.opn.lead ? anc.opn.lead : anc).opn.stays.push(n); } else console.error('openmodus: ' + n.name + ' heeft stay maar geen opener erboven'); }
 }
+// needs: deze opener kan pas open als een andere open is (panoramadak: eerst het zonnescherm)
+for (const n of OPENERS) { const o = n.opn; if (!o.needSpec) continue; const m = uiRef(o.needSpec, n.name); if (m && m.opn && !m.opn.lead) { o.needN = m; m.opn.needBy.push(n); } else console.error('openmodus: needs van ' + n.name + ' lost niet op'); }
 for (const n of ALL) {
   if (!n.strut) continue;
   const s = n.strut;
@@ -202,6 +206,8 @@ function uiSetOpen(n, v, instant) {
   if (typeof n === 'string') n = uiRef(n, 'setOpen');
   if (!n || !n.opn || n.opn.lead) return false;
   v = clamp(+v || 0, 0, 1);
+  if (v > 0 && n.opn.needN && n.opn.needN.ot === 0) uiSetOpen(n.opn.needN, 1, instant);
+  if (v === 0) for (const d of n.opn.needBy) if (d.ot > 0) uiSetOpen(d, 0, instant);
   if ((n.ot > 0) !== (v > 0) || (n.ou > 0) !== (v > 0)) uiVisDirty = true;
   if (instant || REDUCED) { n.ot = v; n.ou = v; n.opk = 1; uiOpenAnim.delete(n); uiOpenApply(n); uiStrutSync(); return true; }
   if (n.ot === v && (uiOpenAnim.has(n) || n.ou === v)) return true;
