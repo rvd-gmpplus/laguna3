@@ -299,6 +299,12 @@ input[type=range]{width:100%;accent-color:var(--ink)}
 }
 @media (max-width:919.98px) and (max-height:520px) and (orientation:landscape){
   .title .eyebrow,.title .sub{display:none}
+  /* de segmentknop staat op deze lage schermen tussen de titel en de knoppen in plaats van op een eigen regel */
+  h1 span{display:none}
+  .open-row{order:0;flex:0 0 auto}
+  #openSeg{display:inline-flex}
+  #openSeg button{flex:0 0 auto;padding:5px 10px;min-height:0}
+  #app.omode #openCtl{flex:0 1 auto}
   /* het bijschrift van de rondleiding neemt de plaats van de titel in, links van de knoppen */
   #tourBar{top:calc(6px + env(safe-area-inset-top,0px));right:156px;z-index:7}
   .dock-main{flex-direction:row;align-items:stretch;flex-wrap:nowrap}
