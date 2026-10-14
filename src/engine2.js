@@ -28,6 +28,8 @@ function buildTiming() {
     P('Distributieriem', xf(belt.geo, [XT, 0, 0]), MAT.belt, { d: `HNBR-riem met glasvezelkoord en afgeronde tanden; riemlengte in het model ${Math.round(belt.len * 1000)} mm (opgave 1200 mm).`, ex: [-0.09, 0, 0] }),
     P('Krukastandwiel', gear(19, 0.0281, 0.0258, 0.03, 0.019, 'x'), MAT.steel, { d: 'Tandwiel met 19 tanden op de krukasneus (afgeleid uit de 2 : 1-overbrenging).', p: [XT, 0, 0], ex: [-0.045, -0.02, 0], spec: [['Tanden', '19 (geschat)']] }),
     P('Spie krukastandwiel', G.box(0.024, 0.004, 0.005), MAT.darkSteel, { d: 'Spie (clavette) die het krukastandwiel op de krukas vastzet.', p: [XT, 0.0205, 0], ex: [-0.03, 0.04, 0] }),
+    P('Nokkenaswiel inlaat', merge([gear(38, 0.0569, 0.0545, 0.027, 0.012, 'x'), xf(G.cyl('x', 0.022, 0.022, 0.012, 20), [0.016, 0, 0])]), MAT.steel, { d: 'Distributiewiel van de inlaatnokkenas, 38 tanden (afgeleid). De F4Rt 811 heeft vaste kleptiming en geen faseversteller (Renault-persmap 2007).', p: [XT, CAMY, CAMZ], ex: [-0.045, 0.02, 0.03], spec: [['Tanden', '38 (geschat)'], ['Kleptiming', 'vast']] }),
+    P('Moer nokkenaswiel inlaat', engNut(0.016, 0.009, 'x'), MAT.darkSteel, { d: 'Moer van het inlaatnokkenaswiel; vervangen bij demontage.', p: [XT - 0.019, CAMY, CAMZ], ex: [-0.1, 0.02, 0.03] }),
     P('Nokkenaswiel uitlaat', merge([gear(38, 0.0569, 0.0545, 0.027, 0.012, 'x'), xf(G.cyl('x', 0.022, 0.022, 0.012, 20), [0.016, 0, 0])]), MAT.steel, { d: 'Distributiewiel van de uitlaatnokkenas, 38 tanden (afgeleid).', p: [XT, CAMY, -CAMZ], ex: [-0.045, 0.02, -0.03], spec: [['Tanden', '38 (geschat)']] }),
     P('Moer nokkenaswiel uitlaat', engNut(0.016, 0.009, 'x'), MAT.darkSteel, { d: 'Moer van het uitlaatnokkenaswiel; vervangen bij demontage.', p: [XT - 0.019, CAMY, -CAMZ], ex: [-0.1, 0.02, -0.03] }),
     A('Spanrol', { d: 'Halfautomatische spanrol met excentrische verstelling: bij het afstellen worden de merkstrepen uitgelijnd.', p: [XT, TIM[5][1], TIM[5][0]], ex: [-0.07, -0.02, -0.05] }, [
@@ -217,7 +219,7 @@ function buildLube() {
   const pick = cache('engPickup', () => tube([[-0.168, -0.135, 0.02], [-0.15, -0.165, 0.03], [-0.05, -0.178, 0.03], [0.03, -0.182, 0.02]], 0.0085, 20, 8));
   const PCV = [0.1, ENG_COVER_TOP + 0.008, -0.065];
   const sep = cache('engSeparator', () => merge([G.rbox(0.13, 0.016, 0.034, 0.006), xf(G.cyl('x', 0.007, 0.007, 0.018, 10), [0.072, 0.003, 0]), xf(G.cyl('z', 0.006, 0.006, 0.016, 10), [-0.05, 0.003, -0.022])]));
-  return A('Smering', { d: 'Smeersysteem: carterpan, kettinggedreven tandwielpomp, aanzuigbuis met zeef, watergekoelde oliekoeler met spin-on filter, peilstok, turbo-olieleidingen en carterventilatie.', ex: [0, -0.55, -0.18], spec: [['Olie-inhoud', 'circa 5,4 l'], ['Filter', 'spin-on, M20 × 1,5']] }, [
+  return A('Smering', { d: 'Smeersysteem: carterpan, kettinggedreven tandwielpomp, aanzuigbuis met zeef, watergekoelde oliekoeler met spin-on filter, peilstok, turbo-olieleidingen en carterventilatie.', ex: [0, -0.55, -0.18], spec: [['Olie-inhoud', '5,4 l inclusief filter'], ['Filter', 'spin-on, M20 × 1,5']] }, [
     A('Carterpan', { d: 'Onderste carter met pakking en minimaal 18 bouten.', ex: [0, -0.12, 0] }, [
       P('Pan', pan, MAT.aluCast, { d: 'Carterpan: het oliereservoir onder het blok, met oliebak bij de vliegwielzijde.', ex: [0, 0, 0] }),
       P('Schotplaat', xf(G.box(0.3, 0.002, 0.15), [0.03, -0.085, 0]), MAT.steel, { d: 'Keerplaat in de pan die het klotsen van de olie tegengaat (schematisch).', ex: [0, 0.06, 0], inner: true }),
@@ -315,8 +317,8 @@ function buildEngineCooling() {
 
 function buildEngine() {
   return A('Motor F4Rt', {
-    d: 'Renault F4Rt 811: 2,0-liter viercilinder-turbomotor met gietijzeren blok, aluminium kop, 16 kleppen met rolzwenkarmen (zoals bij de F4R-familie, aannemelijk voor de 811), faseversteller op de inlaatnokkenas, distributieriem en meerpuntsinjectie. Dwars voorin; inlaatzijde naar voren en turbo achter (aannemelijk).',
-    spec: [['Motorcode', 'F4Rt 811'], ['Opbouw', '4 in lijn, 16V DOHC'], ['Cilinderinhoud', '1998 cm³'], ['Boring × slag', '82,7 × 93,0 mm'], ['Compressie', '9,5 : 1 (één bron noemt 9,0 : 1)'], ['Brandstofsysteem', 'meerpuntsinjectie'], ['Inductie', 'Mitsubishi TD04 + intercooler'], ['Vermogen', '125 kW (170 pk) bij 5000 tpm'], ['Koppel', '270 Nm bij 3250 tpm'], ['Ontsteekvolgorde', '1-3-4-2 (aannemelijk)'], ['Nokkenasaandrijving', 'distributieriem']],
+    d: 'Renault F4Rt 811: 2,0-liter viercilinder-turbomotor met gietijzeren blok, aluminium kop, 16 kleppen met rolzwenkarmen (zoals bij de F4R-familie, aannemelijk voor de 811), vaste kleptiming zonder faseversteller, distributieriem en meerpuntsinjectie. Dwars voorin; inlaatzijde naar voren en turbo achter (aannemelijk).',
+    spec: [['Motorcode', 'F4Rt 811'], ['Opbouw', '4 in lijn, 16V DOHC'], ['Cilinderinhoud', '1998 cm³'], ['Boring × slag', '82,7 × 93,0 mm'], ['Compressie', '9,5 : 1 (Renault-persmap 2007; L\'argus noemt 9,0 : 1)'], ['Kleptiming', 'vast, geen faseversteller'], ['Toerenbegrenzer', '6250 tpm'], ['Brandstofsysteem', 'meerpuntsinjectie'], ['Inductie', 'Mitsubishi TD04 + intercooler'], ['Vermogen', '125 kW (170 pk) bij 5000 tpm'], ['Koppel', '270 Nm bij 3250 tpm'], ['Ontsteekvolgorde', '1-3-4-2 (aannemelijk)'], ['Nokkenasaandrijving', 'distributieriem']],
     ex: [0, 0.25, 0],
   }, [
     buildBlock(), buildCrank(), buildHead(), buildTiming(), buildAccessory(), buildIntake(), buildTurbo(), buildLube(), buildEngineCooling(),

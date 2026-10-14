@@ -31,3 +31,12 @@ Dezelfde regel: waar dit document afwijkt van een onderzoeksnotitie, geldt dit d
 | C-stijl | De C-stijl blijft zilver, in lakkleur. | De donkere indruk komt van de zwarte referentieauto. | Besloten |
 | Spoilerlip | 3,6 cm voorbij de glasrand, 7 mm dik, opkrul ongeveer 17 graden. | Tussen twee mislukte waarden: 4,7 cm las als plank, 2,2 cm was onzichtbaar. | Besloten na twee proeven |
 | Wielkasten en vloer | De wielkasten zijn gesloten en de vloer loopt door tot de wielkast. Achter staat een binnenwand op x 0,51 van de vloer tot de kuip, met een sleuf voor torsiebalk en stabilisator en een uitsparing met veerkoker voor de schroefveer. De achterbank gaat om de wielkasten heen. | Gevonden bij het nalopen van de meldingen van de gebruiker over de onderkant: door de wielboog en van onderen was het interieur te zien (beige leder, de bagagevloer en de hemelbekleding). De wielkasten waren een halve cilinder zonder binnenwand, de vloer was in het wielboogbereik 8 cm te smal en de achterbank stak tot x 0,645 de wielkast in. Na de reparatie geven stralen loodrecht door de vier wielbogen 0 interieurtreffers en stralen van onderen in zeven richtingen 2 randgevallen op ruim 60.000. | Gemeten met stralen; die scripts zitten niet in de repo |
+
+## Aanvulling na het gebruikersrapport (14 oktober 2026)
+
+| Onderwerp | Beslissing | Grond | Status in tekst |
+|---|---|---|---|
+| Faseversteller | Geen faseversteller en geen VVT-elektroklep; inlaatnokkenaswiel als gewoon tandwiel van 38 tanden. | Renault-persmap 2007 ("non" bij de F4Rt 811), Planete Renault F4RT. TecDoc-vermeldingen zijn familie-uitbreiding. | Bevestigd |
+| Automaat | Jatco JF613E blijft. | Persmap (AJ0), overbrengingen kloppen met JF613E en niet met TF-80SC. | Bevestigd |
+| Eindoverbrenging | 3,804 in alle beschrijvingen; geometrie blijft schematisch op 42/45/21/70. | Persmap, rapport de pont. | Bevestigd (waarde) |
+| ATF-norm | Elfmatic J6 (Matic J-klasse). JWS 3309 uit het rapport hoort bij Aisin-bakken en wordt niet overgenomen. | Elf-catalogus, persmap. | Bevestigd |
