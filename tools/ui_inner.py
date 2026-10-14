@@ -3,25 +3,40 @@
     python3 tools/ui_inner.py            # rapport; exitcode 0
     python3 tools/ui_inner.py --strict   # exitcode 1 als een ingesloten knoop van buitenaf zichtbaar is
     python3 tools/ui_inner.py --json     # rapport ook als JSON op de laatste regel
+    python3 tools/ui_inner.py --open     # ook met alle openers open en met elke opener afzonderlijk open
 
 In de gemonteerde stand verbergt de app elke `inner`-knoop (met zijn deelboom) zolang zijn ouder dicht is. Dat mag
 alleen als niets ervan van buitenaf te zien is. Deze toets schiet evenwijdige stralen vanuit minstens 200 richtingen
 (Fibonacci-bol) op de hele auto en op elke hoofdgroep apart (geïsoleerd), tegen alle meshes, ook de verborgen
 ingesloten meshes. Is de eerste treffer een mesh onder een ingesloten knoop, dan zou daar een gat in het beeld
 vallen: die knoop wordt gemeld met zijn eigenaar (domeinbestand). Doorzichtige onderdelen (glas) houden geen straal tegen.
+
+Met --open draait dezelfde toets nog eens met alle openers open (openmodus) en daarna met elke opener afzonderlijk
+open. Een opener legt ingesloten delen bloot (`uiOpenNear`); dan telt alleen een ingesloten knoop die in die stand
+nog verborgen is (`uiInnerHidden`) maar van buitenaf als eerste getroffen wordt: door de opening zou een gat in het
+beeld vallen. UI_INNER_OPEN_DIRS (standaard 120) stelt het aantal richtingen per opener in.
 """
 import sys, os, json
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from harness import session
 
 DIRS = int(os.environ.get('UI_INNER_DIRS', '200'))
+ODIRS = int(os.environ.get('UI_INNER_OPEN_DIRS', '120'))
+OPEN = '--open' in sys.argv
 
-JS = r"""((nDirs) => {
+JS = r"""((nDirs, state) => {
+  // state: null (gemonteerd, alles dicht), 'all' (alle openers open) of een getal (alleen die opener open)
   const L = __laguna; L.preset('assembled'); L.finishAll();
+  const leaders = L.ALL.filter(n => n.opn && !n.opn.lead);
+  const pathOf0 = n => { const a = []; for (let k = n; k && k.parent; k = k.parent) a.unshift(k.name); return a.join('/'); };
+  let label = 'dicht';
+  if (state === 'all') { L.openAll(1, true); L.finishAll(); label = 'alle openers open'; }
+  else if (typeof state === 'number') { L.setOpen(pathOf0(leaders[state]), 1, true); L.finishAll(); label = leaders[state].name + ' open'; }
   L.ROOT.obj.updateMatrixWorld(true);
   const MS = L.MESHES.filter(m => !(m.userData.base || m.material).transparent);
-  const top = new Map();  // mesh -> bovenste ingesloten knoop op zijn pad (of null)
-  for (const m of MS) { let t = null; for (let a = m.userData.node; a; a = a.parent) if (a.inner) t = a; top.set(m, t); }
+  const top = new Map();  // mesh -> bovenste ingesloten knoop op zijn pad (of null); met open openers alleen wat nog verborgen is
+  const isHid = a => a.inner && (state === null || uiInnerHidden(a));
+  for (const m of MS) { let t = null; for (let a = m.userData.node; a; a = a.parent) if (isHid(a)) t = a; top.set(m, t); }
   const sph = MS.map(m => { const g = m.geometry; if (!g.boundingSphere) g.computeBoundingSphere(); const s = g.boundingSphere.clone().applyMatrix4(m.matrixWorld); return s; });
   const ray = new THREE.Raycaster(); ray.layers.enableAll();
   const hits = [];
@@ -69,16 +84,15 @@ JS = r"""((nDirs) => {
   }
   const all = MS.map((m, i) => i);
   const views = [scan('hele auto', all, 14)];
-  for (const g of L.ROOT.kids) { const set = new Set(g.meshes); const idx = all.filter(i => set.has(MS[i])); if (idx.length) views.push(scan(g.name, idx, 10)); }
+  if (typeof state !== 'number') for (const g of L.ROOT.kids) { const set = new Set(g.meshes); const idx = all.filter(i => set.has(MS[i])); if (idx.length) views.push(scan(g.name, idx, 10)); }
   const innerNodes = L.ALL.filter(n => n.inner).length;
-  return { innerNodes, views, offenders: [...found.values()].sort((a, b) => b.hits - a.hits) };
+  const nOpen = leaders.length;
+  L.openAll(0, true); L.finishAll();
+  return { innerNodes, views, label, nOpen, offenders: [...found.values()].sort((a, b) => b.hits - a.hits) };
 })"""
 
-with session() as s:
-    pg = s.page(1280, 800, timeout=300000)
-    pg.set_default_timeout(1200000)
-    r = pg.evaluate(JS + f'({DIRS})')
-    print(f"ingesloten knopen in de boom: {r['innerNodes']}; richtingen per weergave: {DIRS}")
+def show(r, dirs):
+    print(f"[{r['label']}] richtingen per weergave: {dirs}")
     for v in r['views']:
         print(f"  {v['view']}: {v['rays']} stralen, {v['inner']} eerste treffers op een ingesloten onderdeel")
     offs = r['offenders']
@@ -94,7 +108,25 @@ with session() as s:
                 print(f"    {o['name']}  ({o['path']})  {o['hits']} treffers [{vs}], bijv. {o['part']}")
     else:
         print('geen ingesloten knoop van buitenaf zichtbaar')
+    return offs
+
+
+with session() as s:
+    pg = s.page(1280, 800, timeout=300000)
+    pg.set_default_timeout(1200000)
+    r = pg.evaluate(JS + f'({DIRS}, null)')
+    print(f"ingesloten knopen in de boom: {r['innerNodes']}")
+    offs = show(r, DIRS)
+    allr = [r]
+    if OPEN:
+        n = r['nOpen']
+        print(f"\nopenmodus: {n} openers")
+        states = [('"all"', DIRS)] + [(str(i), ODIRS) for i in range(n)] if n else []
+        for st, dirs in states:
+            ro = pg.evaluate(JS + f'({dirs}, {st})')
+            allr.append(ro)
+            offs = offs + show(ro, dirs)
     s.report()
     if '--json' in sys.argv:
-        print(json.dumps(r))
+        print(json.dumps(allr if OPEN else r))
     sys.exit(1 if ('--strict' in sys.argv and offs) else 0)
