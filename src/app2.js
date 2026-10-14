@@ -104,8 +104,10 @@ const uiPnCompact = t => String(t).toLowerCase().replace(/[\s.\-\/]/g, '');
 const uiPnHasNum = r => !!r && ((r.u.oe && r.u.oe.length > 0) || (r.u.am && r.u.am.length > 0));
 function uiPnBuild() {
   uiPnIdx = new Map(); uiPnUnitNode = new Map(); uiPnBad = []; uiPnCov = new Map();
+  // paden opzoeken in een vaste tabel: een naam kan zelf een schuine streep bevatten (ABS/ESP-unit)
+  const full = new Map(ALL.map(k => [uiPathOf(k).replace(/^[^/]+\//, ''), k]));
   for (const [path, e] of Object.entries(PN_DATA.map || {})) {
-    const n = uiByPath(path), id = Array.isArray(e) ? e[0] : null, u = id != null && PN_DATA.units ? PN_DATA.units[id] : null;
+    const n = full.get(path) || uiByPath(path), id = Array.isArray(e) ? e[0] : null, u = id != null && PN_DATA.units ? PN_DATA.units[id] : null;
     if (!n) { uiPnBad.push(path + ': pad bestaat niet'); continue; }
     if (!u) { uiPnBad.push(path + ': eenheid ' + id + ' ontbreekt'); continue; }
     const kind = e[1] === 'deel' || e[1] === 'set' ? e[1] : 'zelf';
