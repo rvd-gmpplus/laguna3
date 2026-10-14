@@ -52,6 +52,7 @@ function renderPanel() {
   els.name.textContent = n.name;
   let state;
   if (OPENMODE && n.opn && !n.opn.lead) state = n.ot > 0 ? '<span class="state open">Open</span>' : '<span class="state">Dicht</span>';
+  else if (OPENMODE && n.asm) state = '<span class="state">Gemonteerd</span>';
   else if (n.asm) state = uiOpen(n) ? '<span class="state open">Uitgeklapt</span>' : (n.target > 0 ? '<span class="state">Deels uitgeklapt</span>' : '<span class="state">Ingeklapt</span>');
   else state = n === uiLifted ? '<span class="state open">Uitgelicht</span>' : '<span class="state">Onderdeel</span>';
   const isoTxt = ISO.includes(n) ? ' · geïsoleerd' : '';
@@ -78,7 +79,7 @@ function renderPanel() {
       els.kids.appendChild(b);
     }
   }
-  const plan = OPENMODE ? uiOpenPlan(n) : null;
+  const plan = OPENMODE ? uiPanelPlan(n) : null;
   els.open.hidden = !plan;
   if (plan) { els.open.textContent = plan.open ? 'Openen' : 'Sluiten'; els.open.setAttribute('aria-label', (plan.open ? 'Openen: ' : 'Sluiten: ') + uiOpenLabel(plan.n)); els.open.title = (plan.open ? 'Opent ' : 'Sluit ') + uiOpenLabel(plan.n) + ' (Enter)'; }
   // in Openen is er niets uit te klappen of te isoleren: alleen de opener en In beeld blijven
@@ -165,7 +166,7 @@ function renderPn(n) {
       for (const [merk, num, note, lvl] of u.am) { const tr = tb.insertRow(); tr.appendChild(mk('td', null, merk)); tr.appendChild(mk('td', 'num', num)); const td = mk('td'); if (lvl) td.appendChild(uiPnLvl(mk, lvl)); tr.appendChild(td); tr.appendChild(mk('td', null, note || '')); }
       box.appendChild(t);
     }
-    box.appendChild(mk('p', 'pn-txt', 'Bewijs: A staat in de catalogus voor dit type (2.0 16V Turbo 170 pk, F4R 811) op de juiste plaats; B is het Renault-nummer van zo\'n artikel; C is een kruisverwijzing van een A- of B-nummer.'));
+    box.appendChild(mk('p', 'pn-txt', 'Bewijs: A staat in de catalogus voor dit type (2.0 16V Turbo 170 pk, F4R 811) op de juiste plaats; B is het Renault-nummer van zo\'n artikel; C is een kruisverwijzing van een A- of B-nummer; D komt alleen uit een advertentie voor een gebruikt onderdeel en is niet in een catalogus gecontroleerd.'));
   }
   if (u && u.var) { box.appendChild(mk('h4', null, 'Variant')); box.appendChild(mk('p', 'pn-txt', u.var)); }
   if (u && u.per) { box.appendChild(mk('h4', null, 'Verpakking')); box.appendChild(mk('p', 'pn-txt', u.per)); }
@@ -198,7 +199,7 @@ function renderPn(n) {
 }
 function uiPnLvl(mk, lvl) {
   const e = mk('span', 'pn-lvl', lvl);
-  e.title = { A: 'In de catalogus voor dit type, op de juiste plaats', B: 'Renault-nummer van een artikel dat voor dit type in de catalogus staat', C: 'Kruisverwijzing van een A- of B-nummer' }[lvl] || '';
+  e.title = { A: 'In de catalogus voor dit type, op de juiste plaats', B: 'Renault-nummer van een artikel dat voor dit type in de catalogus staat', C: 'Kruisverwijzing van een A- of B-nummer', D: 'Alleen uit een advertentie voor een gebruikt onderdeel van dit model; niet in een catalogus gecontroleerd' }[lvl] || '';
   return e;
 }
 
@@ -367,6 +368,12 @@ function uiOpenPlan(p) {
   const closed = list.find(n => n.ot === 0);
   return closed ? { n: closed, open: true } : { n: list[list.length - 1], open: false };
 }
+// paneel en Enter: staat de selectie zelf voor een opener (een leider), dan werkt de knop op die opener, ook als een
+// buitenste opener dicht is (de knop past dan bij de badge Open of Dicht); bij een ander onderdeel geldt de klikregel
+function uiPanelPlan(p) {
+  if (p && p.opn && !p.opn.lead) return { n: p, open: p.ot === 0 };
+  return uiOpenPlan(p);
+}
 // camera bij openen: richting en kader uit open.look, het kader in de eindstand (focusNodes rekent de doelstand mee)
 function uiOpenFrame(nodes, dir, pad) {
   const opt = { min: 0.3 };
@@ -426,7 +433,7 @@ uiOpenBtns.forEach((b, i) => {
 });
 $('btnOpenAll').onclick = () => uiOpenAllTo(true);
 $('btnCloseAll').onclick = () => uiOpenAllTo(false);
-els.open.onclick = () => { const pl = uiOpenPlan(SEL); if (pl) uiOpenTo(pl.n, pl.open); };
+els.open.onclick = () => { const pl = uiPanelPlan(SEL); if (pl) uiOpenTo(pl.n, pl.open); };
 // openerlijst: een knop per opener (aria-pressed = open), bereikbaar met toetsenbord en schermlezer
 const uiOpenChips = OPENERS.map(n => {
   const b = document.createElement('button');
@@ -917,7 +924,7 @@ els.helpDlg.addEventListener('click', e => { if (e.target === els.helpDlg) uiHel
 function uiEnter(shift) {
   const n = SEL || ROOT;
   if (OPENMODE) { // Enter opent of sluit de opener van de selectie, Shift+Enter sluit de binnenste open opener
-    if (shift) uiOpenClose(n); else { const pl = uiOpenPlan(n); if (pl) uiOpenTo(pl.n, pl.open); }
+    if (shift) uiOpenClose(n); else { const pl = uiPanelPlan(n); if (pl) uiOpenTo(pl.n, pl.open); }
     return;
   }
   if (shift) { if (n.asm && uiOpen(n)) doCollapse(n); else if (!n.asm) uiCollapseAt(n); return; }
@@ -1533,6 +1540,6 @@ window.__laguna = {
   setOpenMode: on => { hideHint(true); uiSetOpenMode(on); return OPENMODE; },
   openPlan: x => { const n = typeof x === 'string' ? byName(x) : x; const pl = n && uiOpenPlan(n); return pl ? { opener: pl.n.name, open: pl.open } : null; },
   pnRebuild: uiPnBuild, pnCheck: uiPnCheck, pnOf: x => { const n = typeof x === 'string' ? (uiByPath(x) || byName(x)) : x; const r = n && uiPnRec(n); return r ? { kind: r.kind, unit: r.id, rule: r.rule || null } : null; },
-  setOpen: (name, v, instant) => { const r = uiSetOpen(name, v, instant); requestRender(); return r; },
-  openAll: (v, instant) => { for (const n of OPENERS) uiSetOpen(n, v, instant); requestRender(); return OPENERS.length; },
+  setOpen: (name, v, instant) => { const r = uiSetOpen(name, v, instant); uiSyncOpenUi(); renderPanel(); requestRender(); return r; },
+  openAll: (v, instant) => { for (const n of OPENERS) uiSetOpen(n, v, instant); uiSyncOpenUi(); renderPanel(); requestRender(); return OPENERS.length; },
 };
