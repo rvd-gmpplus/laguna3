@@ -605,7 +605,7 @@ function buildBody() {
     ...both(quarter),
     ...both(s => P(`Gasveerbevestiging ${sn(s)}`, merge([G.sphere(0.012, 10), xf(G.rbox(0.012, 0.03, 0.02, 0.004), [s * 0.03, 0.0, 0.0])]), MAT.darkSteel, { d: 'Kogelpen op de C-stijl waarop de gasveer van de achterklep draait (plaats geschat).', p: [s * bodGsA[0], bodGsA[1], bodGsA[2]], ex: [s * 0.04, 0, 0] })),
     A('Dakantenne', { d: 'Korte antennemast achter op het dak.', ex: [0, 0.14, -0.04] }, [
-      P('Antennevoet', G.rbox(0.04, 0.025, 0.05, 0.012), MAT.blackGloss, { d: 'Antennevoet met versterker, op de plaatstrook achter het achterste glaspaneel van het panoramadak.', p: [0.0, YR(-1.14) + 0.008, -1.14], ex: [0, 0.03, 0] }),
+      P('Antennevoet', G.rbox(0.036, 0.018, 0.05, 0.008), MAT.blackGloss, { d: 'Lage antennevoet met versterker, op de plaatstrook achter het achterste glaspaneel van het panoramadak.', p: [0.0, YR(-1.14) + 0.004, -1.14], ex: [0, 0.03, 0] }),
       P('Antennemast', rodBetween([0, YR(-1.14) + 0.015, -1.142], [0, YR(-1.14) + 0.057, -1.158], 0.0035, 8), MAT.plastic, { d: 'Korte afschroefbare antennemast (ca. 8 cm).', ex: [0, 0.08, 0] }),
     ]),
   ]);
