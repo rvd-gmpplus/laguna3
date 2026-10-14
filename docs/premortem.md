@@ -105,3 +105,41 @@ Eindstand van de code is `ff42dbd`. De testset liep op `9c731c8`; `ff42dbd` vera
 - Draad 5 (schaal): 390 tekenopdrachten gemonteerd met bundelen (1.726 zonder), p95 1 ms, grens 8 ms. De Aandrijflijn is met 237.310 driehoeken nu binnen het budget van 240.000; de hele auto telt 630.368 driehoeken. Nog steeds alleen in software-rendering gemeten.
 - Draad 7 (publicatie): versie 5 teruggelezen en gelijk aan `index.html`.
 - Niet gesloten: niet getest op een echte telefoon of GPU; donkere spikkels op de motorkap in het bovenaanzicht (vermoedelijk software-rasterisatie, niet bewezen); 84 van de 345 labelankers liggen achter een ander deel; U19 en de zijkolom voor de telefoon in liggende stand zijn niet gebouwd.
+
+## Premortem golf 4
+
+Voor golf 4 (openmodus, panoramadak, onderdeelnummers en kennisverwerking) liepen twee premortems op het plan. Lens A keek naar de openmodus en het panoramadak, lens B naar de gegevens en het proces. Elke lens had zeven oorzaken, een oordeel, een herbouw, een tegenstander en struikeldraden. De volledige teksten staan in het scratchpad van de bouwsessie (`premortem-A.md` en `premortem-B.md`) en zijn niet in de repo. Hier staat de samenvatting.
+
+### Lens A: openmodus en panoramadak
+
+- Meest waarschijnlijk: de botsingsnorm zonder ondergrens. Een agent met een rode toets en zonder ondergrens verkleint de openingshoek, en het resultaat is groen en onbruikbaar om in te kijken. Gesloten met `open.min` per opener, een asregel (de as ligt aan de scharnierzijde, buiten of op de omtrek) en botsing gemeten als nieuwe overlap ten opzichte van de gesloten stand.
+- Gevaarlijkst: de spookbatch, een batch die de gedraaide stand van een opener inbakt. Geen enkele toets zag dat, omdat alle toetsen eerst `batchFlush()` of `finishAll()` aanroepen. Gesloten met batches uit de gebouwde stand en een eigen proef in opentest. De proef vond echt een spookbatch bij een telescoop, opgelost in `a116db9`.
+- Overige oorzaken: de klikregel in Openen (een klik op de ruit of spiegel nam de klik van het portier over), volgers en gasveren die in het ouderframe rekenden, vlakken die door een opening voor het eerst van dichtbij te zien zijn, het panoramadak in een dak dat er niet voor gebouwd was, en capaciteit (nummeronderzoek en openmodus op dezelfde vier CPU's).
+- Verborgen aanname: de boom die voor het uitklappen is gebouwd, is ook de boom waarin de auto scharniert. Het gevolg zijn vier uitbreidingen: `stay` voor delen aan de carrosseriezijde, `follow` met eigen frame, `strut` met een knoop per eindpunt, en inner-zichtbaarheid per opener.
+- Oordeel: overleefbaar met wijzigingen. De herbouw voegde toe: een ondergrens per opener, de klikregel op de buitenste dichte opener, gebaren en stap terug voor Openen, een camera-eindstand met de openstand erin, een blootlegtoets vanuit de kijkhoek, een drempel voor Alles open, een gebogen slag voor het schuifdak (`arc`, `tilt`), een eigen sortering voor het dakglas, `uiBaseRel` op `q0` en de spookbatchproef.
+
+### Lens B: gegevens en proces
+
+- Meest waarschijnlijk: de verificatie verdubbelt elke ophaalactie en raakt achter. De herbouw voegde plakken toe, een tijdkader met een harde stop en een publiceerbare tussenstand, en bewijs per pagina op schijf. Wat niet geverifieerd is, blijft `niet onderzocht`.
+- Gevaarlijkst: het label `geverifieerd` op een variant die niet past. Op Autodoc betekent "voor dit voertuig" vier schijfmaten, geen versnellingsbak en geen kant, dus het label zegt de gebruiker iets anders dan de bron. De herbouw gaf elk nummer een status (`past volgens catalogus`, `variant: kies op VIN`, `niet gevonden`, `niet onderzocht`) en een bewijsniveau A tot D, en zette een vaste VIN-waarschuwing boven de sectie.
+- Verborgen aanname: de boom van het model is de onderdelenlijst van de auto. De boom is gebouwd voor een explosietekening: sommige knopen zijn schematisch, bouten zijn genummerd om ze uit te klappen en remblokken zijn per stuk gemodelleerd terwijl ze per as worden verkocht. De werkrichting is daarom omgekeerd: van de verkoopeenheid in de catalogus naar de paden, met de rest als `niet onderzocht`.
+- Overige oorzaken: een catalogus achter een scraper, criteria die met statuslabels zonder bron te halen zijn, paden die tijdens de nacht verschuiven, een klik in de geopende kofferbak op een onderdeel dat niet getekend wordt, en een systematische kopie van een catalogus in een openbare repository.
+- Oordeel: fatale fout in deel C (de omvang en de betekenis van `geverifieerd`), overleefbaar met de herbouw. De herbouw wijkt af van de letterlijke vraag om per onderdeel een nummer te noteren: elk onderdeel heeft een record, maar voor veel onderdelen is dat record `niet onderzocht`.
+
+### Struikeldraden die afgingen
+
+| Draad | Wat er gebeurde |
+|---|---|
+| B3, een bron valt weg | Het Firecrawl-tegoed raakte op. De bouwsessie stapte over op Jina en curl. De Renault-catalogi (partsouq, 7zap) zaten achter Cloudflare, dus Renault-nummers komen vooral uit OE-lijsten van artikelen van andere fabrikanten. |
+| A7, spookbatch | De proef vond een spookbatch bij een telescoop. Hersteld in `a116db9`. |
+| A4, frametijd en tekenopdrachten met alles open | De frametijd p95 was 13,8 ms bij `openAll(0)`. Door per object bij te werken is dat 1,4 ms. |
+| B5, paden verschuiven | 11 paden waren fout door een schuine streep in de naam "ABS/ESP-unit". Opgelost met een kaart op het volle pad en een RENAME-lijst in `tools/orkestratie/build_pn.py`. |
+| Presets met oude openernamen | Hersteld in `8845351`. |
+
+Controle van de verificatiepoort: de verifieerder kreeg in elk van de vijf hoofdplakken drie lokvogels, verzonnen of verkeerde nummers. Alle 15 zijn afgewezen. De proefronde en de panoramadakplak hadden geen lokvogels.
+
+### Geaccepteerd, niet gesloten
+
+- Geen echte telefoon of GPU in de container. Tekenopdrachten en JavaScript-tijd zijn het meetbare deel.
+- De uitrusting van deze auto zonder chassisnummer: varianten worden getoond en niet vastgelegd.
+- Databankenrecht: de CSV bevat alleen nummers en URL's, geen productteksten of prijzen. Een juridische toets is niet gedaan.

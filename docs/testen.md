@@ -74,7 +74,24 @@ Interactietest op desktop (muis) en telefoon (touch). Per controle een regel `ok
 | 12 | `inner`: een ingesloten knop is onzichtbaar en niet aanklikbaar zolang de ouder dicht is, zichtbaar zodra die uitklapt, weer verborgen na inklappen en zichtbaar bij isoleren. 12b: een opgetild onderdeel zakt terug bij `setExplode(0)`. |
 | 13 | Gebundeld renderen: minder tekenopdrachten in Gemonteerd (op de eindstand 1.726 zonder en 390 met bundelen, grens 1.500 met), aanwijzen van een onderdeel in een gebundelde groep, een klik selecteert dat onderdeel en laat zijn groep los tekenen, openen maakt direct los en na het dichtklappen is de groep weer samengevoegd. |
 
-`ITEST_SHOTS=MAP` bewaart screenshots van de stappen. `ITEST_GATES=1` zet controle 11 als poort aan; zonder die variabele blijft 11 alleen informatie. De controles voor gebundeld renderen (nummer 13) staan in `tools/itest.py`. Het script telt op de eindstand 79 controles over desktop en telefoon samen, en alle 79 slagen op `9c731c8`. Omdat gebundeld renderen losse meshes naar laag 1 verplaatst, zetten alle raycasters in de tools alle lagen aan.
+| 14 en 15 | Openmodus: in Openen opent een klik op de ruit, de spiegel, de greep of het paneel van een dicht portier het portier; een dubbeltik doet hetzelfde als een klik; de camera-eindstand ligt in het vrije beeld; Alles open en Alles dicht; stap terug na openen; de presets Openen. |
+
+`ITEST_SHOTS=MAP` bewaart screenshots van de stappen. `ITEST_GATES=1` zet controle 11 als poort aan; zonder die variabele blijft 11 alleen informatie. De controles voor gebundeld renderen (nummer 13) staan in `tools/itest.py`. Het script telde voor golf 4 79 controles over desktop en telefoon samen (alle 79 slaagden op `9c731c8`). Met de openmodus zijn het er 149; zie de resultaten van golf 4 hieronder. Omdat gebundeld renderen losse meshes naar laag 1 verplaatst, zetten alle raycasters in de tools alle lagen aan.
+
+### `python3 tools/opentest.py [--only namen] [--out map]`
+
+Toetst elke opener van de modus Openen (26 stuks). `--only` beperkt de run tot de genoemde openers, `--out` bewaart de uitvoer in een map. Per opener zes controles:
+
+| Nr | Controle |
+|---|---|
+| 1 | Eindstand: de gemeten hoek of slag uit de eigen meshes haalt de waarde van de opener. |
+| 2 | Ondergrens: de eindstand haalt `open.min`. Een volger zonder `min` geeft een melding. |
+| 3 | Botsing: 400 monsterpunten van het bewegende deel in 16 stappen tegen alle niet-bewegende meshes. Het telt als botsing bij meer dan 5 mm doordringing die nieuw is ten opzichte van de gesloten stand. Contactparen die bij u = 0 al bestaan worden genegeerd. Uitzonderingen staan in `tools/open_allow.json` (9 regels, elk met reden). |
+| 4 | Blootleggen: een raster van 160 x 100 stralen vanuit de camera van `look`. Toegestaan zijn 0 treffers op verborgen knopen en hoogstens 2 procent stralen die door de opening in het niets verdwijnen. |
+| 5 | Prestaties met alle openers open: tekenopdrachten tegen 3.000, frametijd p95 bij `openAll(1)` en `openAll(0)` tegen 8 ms. |
+| 6 | Spookbatchproef: de batchopbouw wordt onderbroken door een opener; daarna worden alle getoonde batches vergeleken met een verse opbouw. |
+
+De uitzonderingen in `tools/open_allow.json` zijn contacten die bij de echte auto bestaan. Ze zijn voor domeineigenaars alleen-lezen. Voorbeelden: de slotbeugel van de motorkap die in het motorkapslot grijpt, en de raamsleuf, de ruitgeleiders en het portierrubber waar het glas van een zijruit doorheen zakt.
 
 ### `python3 tools/pubsmoke.py`
 
@@ -103,7 +120,15 @@ Breder dan 700 pixels is desktop, smaller is touch. Stappen: `eval:`, `wait:`, `
 
 ### `python3 tools/ui_inner.py`
 
-Controleert in de gemonteerde stand vanuit ten minste 200 richtingen rond de hele auto en rond elke hoofdgroep afzonderlijk geïsoleerd of een `inner`-knop de eerste treffer van buitenaf is: dan zou het verbergen een gat in de auto laten. Dit script is nieuw in golf 2 en staat in de samengevoegde boom. Opties: `--strict` (exitcode 1 bij een zichtbare ingesloten knoop), `--json`, en `UI_INNER_DIRS` voor het aantal richtingen. Uitvoer op de eindstand (`9c731c8`): 253 ingesloten knopen in de boom, 200 richtingen per weergave, 39.200 stralen op de hele auto en 20.000 per hoofdgroep, 0 eerste treffers op een ingesloten onderdeel, dus 0 overtreders voor elke eigenaar. De opbergbak in de middenconsole is in de carrosserieronde niet meer als ingesloten gemarkeerd, omdat dit script er door de zijruit een treffer op vond; daarom zijn het 253 knopen en niet meer 256. Direct na de samenvoeging van golf 2 waren er 52 zichtbare ingesloten knopen (carrosserie, interieur, onderstel, systemen, aandrijving en motor); de herstelronde heeft ze opgelost.
+Controleert in de gemonteerde stand vanuit ten minste 200 richtingen rond de hele auto en rond elke hoofdgroep afzonderlijk geïsoleerd of een `inner`-knop de eerste treffer van buitenaf is: dan zou het verbergen een gat in de auto laten. Dit script is nieuw in golf 2 en staat in de samengevoegde boom. Opties: `--strict` (exitcode 1 bij een zichtbare ingesloten knoop), `--json`, `--open` (zie hieronder) en `UI_INNER_DIRS` voor het aantal richtingen. Uitvoer op de eindstand (`9c731c8`): 253 ingesloten knopen in de boom, 200 richtingen per weergave, 39.200 stralen op de hele auto en 20.000 per hoofdgroep, 0 eerste treffers op een ingesloten onderdeel, dus 0 overtreders voor elke eigenaar. De opbergbak in de middenconsole is in de carrosserieronde niet meer als ingesloten gemarkeerd, omdat dit script er door de zijruit een treffer op vond; daarom zijn het 253 knopen en niet meer 256. Direct na de samenvoeging van golf 2 waren er 52 zichtbare ingesloten knopen (carrosserie, interieur, onderstel, systemen, aandrijving en motor); de herstelronde heeft ze opgelost.
+
+### `python3 tools/ui_inner.py --open`
+
+Dezelfde controle met alles open: welke ingesloten knopen worden zichtbaar als de openers open staan. Een knoop die zichtbaar wordt door een opening is een reden om de `inner`-vlag weg te halen. Na golf 4 zijn op deze manier veel vlaggen weggehaald (onder meer de koppelomvormer en het onderstel).
+
+### `tools/orkestratie/finaltests.sh UITVOERMAP`
+
+Draait de volledige testset in twee parallelle reeksen: lint, smoke, integrity, silhouette, `ui_inner.py --open` en opentest in de ene reeks; `itest.py` met poorten, tri, pubsmoke en stats in de andere. De uitvoer per test staat in de map. Het script is sinds golf 4 uitgebreid met opentest en `ui_inner.py --open`.
 
 ## Resultaten
 
@@ -127,6 +152,33 @@ De kolom "Na golf 1" is de tussenstand van 13 oktober 2026 rond 11:30 UTC, ongew
 | `pubsmoke.py` | OK | OK: `ready` na 14,8 s (1280 x 800) en 7,2 s (390 x 844), grens 20 s; three r147; geen horizontale scroll | OK: `ready` na 7,5 s (1280 x 800) en 7,7 s (390 x 844), grens 20 s; three r147; geen horizontale scroll | OK: `ready` na 5,2 s (1280 x 800) en 8,0 s (390 x 844), grens 20 s; three r147; geen horizontale scroll. Op `ff42dbd` opnieuw OK: `ready` na 12,2 s en 9,9 s onder belasting |
 | `ui_inner.py` | bestond nog niet | 0 eerste treffers op 256 ingesloten knopen (na golf 2 waren het er 52) | 0 eerste treffers op 256 ingesloten knopen | 0 eerste treffers op 253 ingesloten knopen (39.200 stralen op de hele auto, 20.000 per hoofdgroep). Op `ff42dbd` hetzelfde |
 | URL na publicatie gelijk aan `index.html` | niet van toepassing | Gelijk. Versie 2 van de URL, teruggelezen op 13 oktober om 17:00 UTC, bevat `index.html` van `8095a3e` (618.341 bytes, md5 `dc2bc3b0…`) precies één keer en aaneengesloten. Daaromheen staan alleen het vaste paginaskelet van de host (531 bytes: doctype, charset, viewport en basisstijl tot en met `<body>`) en de afsluiting `</body></html>` (15 bytes). | Gelijk. Versie 3 van de URL, teruggelezen op 13 oktober om 17:37 UTC, bevat `index.html` van `60909fe` (620.025 bytes, md5 `d92a8bb2…`) precies één keer en aaneengesloten, met hetzelfde paginaskelet ervoor (531 bytes) en dezelfde afsluiting erna (15 bytes). | Gelijk. Versie 4 van de URL bevat `index.html` uit `ec92a53` (commit `9c03015`, 663.654 bytes, md5 `70b2e62a426312ec788fc851086ab4c6`) precies één keer, met alleen het paginaskelet van de host eromheen (531 bytes ervoor, 15 erna). Versie 5, gepubliceerd op 14 oktober en teruggelezen om 00:02 UTC, bevat `index.html` uit `ff42dbd` (commit `5b6cefa`, 678.887 bytes, md5 `649cbf95397d877f6a361600c42a4afd`) precies één keer en byte voor byte gelijk, met hetzelfde skelet (531 bytes ervoor, 15 erna) |
+
+## Resultaten golf 4
+
+Stand `g4final2` op `7f54e61` (de uitvoer staat in het scratchpad). Deze cijfers zijn de tussenstand die bij het schrijven van deze documentatie bekend was; de orkestrator past ze aan zodra de laatste testset op de eindcommit gedraaid is.
+
+| Test | Uitslag |
+|---|---|
+| `build.py --lint` | ok |
+| `smoke.py` | geen consolemeldingen |
+| `integrity.py` | 0 fouten, 0 ankerfouten, 0 presetfouten |
+| `itest.py` met poorten | 149 van 149 |
+| `ui_inner.py --open` | schoon |
+| `pubsmoke.py` | OK, 6,4 s op de telefoon |
+| `opentest.py` | 26 openers groen op een na: Gordelrolautomaat voor rechts zat 8,8 mm in de bekleding van het open achterportier. Opgelost in `0ac1052` (1,2 cm dieper in de B-stijl). |
+
+Statistieken `g4final2`: 2.993 knopen, 495 groepen, 2.498 onderdelen, diepte 8, 653.628 driehoeken (Aandrijflijn 235.406, Carrosserie 187.002, Interieur 72.984), 223 ingesloten knopen. Tekenopdrachten: 405 gebundeld en 1.852 zonder; met alles open 759. Frametijd p95 bij alles openen en sluiten: 1,4 tot 1,6 ms (grens 8 ms).
+
+De eindhoek of slag van de Olievuldop en de Expansiedop na herstelronde 2 staat nog niet in dit document. Plaats voor de orkestrator: eindstand na herstelronde 2.
+
+Visuele poort golf 4 (9 beoordelaars, 3 plakken, meerderheid per kenmerk):
+
+- Ja: K1 motorkap, K3 zijruiten, K4 spiegels, K7 tankklep, K12 alles open leest als Laguna III.
+- Deels: K2 portieren (de camera dekte de opening af), K6 achterklep (hoedenplank op de kant gezien), K8 panoramadak (glas te licht), K9 slice a en b, K10 bediening (knop Openen bij een open ruit), K11 interieuropeners, K13 dak van binnen.
+- Nee: K5 doppen (beweging niet te zien, camera slecht gericht), K9 slice c (zwevende luidsprekers onder de hoedenplank).
+- Herstelronde 2 liep op deze punten. De uitslag daarna volgt in de eindstand.
+
+De spookbatchproef vond bij de telescoop een echte spookbatch; die is opgelost in `a116db9`.
 
 ## Het itest-randgeval
 
@@ -164,7 +216,8 @@ Aanleiding was de melding van de gebruiker dat het interieur (beige leder, de ba
 - De frametijd is alleen JavaScript-tijd. Zonder gebundeld renderen heeft de gemonteerde auto 1.726 tekenopdrachten; gebundeld renderen staat standaard aan en brengt dat op 390. De grens van 1.500 geldt dus alleen met bundelen.
 - De Aandrijflijn heeft 237.310 driehoeken tegen een budget van 240.000 en zit dus binnen budget. De hele auto (630.368) blijft binnen 700.000.
 - Het aandeel labelankers dat achter een ander deel ligt (84 van 345) en de spikkels op de motorkap in het bovenaanzicht zijn open; zie de twee secties hierboven en de README.
-- De testset liep op `9c731c8`. Op `ff42dbd` (alleen de eindstukken van de uitlaat veranderd) zijn alleen `integrity.py`, `ui_inner.py`, `smoke.py` en de publicatierooktest opnieuw gedraaid. De visuele poort (poort 5) is op `9c731c8` gedraaid en niet opnieuw na de uitlaatreparatie.
+- Golf 4: de metingen aan de openmodus komen uit software-rendering. Tekenopdrachten en JavaScript-tijd zijn het meetbare deel; er is geen echte telefoon of GPU. De eindhoeken zijn geschat uit foto's, het instructieboekje en het werkplaatshandboek, niet gemeten aan de echte auto.
+- De testset van de carrosserieronde liep op `9c731c8`. Op `ff42dbd` (alleen de eindstukken van de uitlaat veranderd) zijn alleen `integrity.py`, `ui_inner.py`, `smoke.py` en de publicatierooktest opnieuw gedraaid. De visuele poort (poort 5) is op `9c731c8` gedraaid en niet opnieuw na de uitlaatreparatie.
 - De getekende multiriem is 1.569 mm lang tegen 1.795 mm (7PK1795).
 - De voorste langsliggers snijden de aandrijfassen. Dat was al zo en is niet opgelost.
 - De positie van de stuurpomp en de routes van de slangen zijn schematisch.

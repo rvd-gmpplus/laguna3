@@ -42,16 +42,18 @@ De aandrijflijn staat dwars en iets achterover gekanteld: `auto = PT_POS + Rx(PT
 | 1 | `core.js` | Renderer, scène, belichting, materialen, geometriehulpen (lathe, extrusie, tandwielen, veren, buizen, schoepen, en sinds de carrosserieronde `notchRect` en `roundPlate`, zie onder), geometriecache en de bouwstenen `A()` (groep) en `P()` (onderdeel). |
 | 2 | `body.js` | Parametrisch carrosserieoppervlak: halve breedte, onder-, schouder- en daklijn als vloeiende krommen langs z, doorsnede met afgeronde hoeken, tumblehome. Exporteert `HW`, `YB`, `YT`, `YR`, `surfX`, `skin`. |
 | 3 | `bodyparts.js` | Panelen uit dat oppervlak gesneden: portieren, schermen, motorkap, achterklep, bumpers, ruiten, verlichting, spiegels, wissers, sierlijsten; `Carrosseriekooi` met onder meer de `Torpedoplaat`. |
-| 4 | `engine1.js` | Motormaten en `ENG_PORTS`, motorblok, krukmechanisme, cilinderkop met nokkenassen en kleppen, ontsteking, faseversteller. |
-| 5 | `engine2.js` | Distributie, hulpaandrijving (multiriem), inlaat en injectie, turbo met spruitstuk, smering, koelcircuit. |
-| 6 | `engine3.js` | Dynamo, aircocompressor, sensoren, kabelboom, flexplaat, afdekkap. |
-| 7 | `drivetrain.js` | Automaat (koppelomvormer, pomp, schakelelementen, planetaire sets, tussenas, differentieel, klepblok), startmotor, aandrijfassen, motorsteunen; `PT_POS`, `PT_TILT`, `GB_X`, `DRV_PORTS`. |
-| 8 | `chassis.js` | Vooras met McPherson-veerpoten, stuurinrichting, torsieas achter, wielen, remmen, remsysteem met parkeerrem. |
-| 9 | `interior.js` | Dashboard, middenconsole, stoelen, gordels, bekleding, pedalen, binnenspiegel. |
-| 10 | `systems.js` | Koeling en luchtinlaat, uitlaat, brandstof, elektra, en `buildCar()`, dat alles samenvoegt. |
-| 11 | `app1.js` | Boom doorlopen, uitklapvectoren berekenen, animatie, zichtbaarheid en materialen, camera-inpassing, vloer, stap-terug-geschiedenis. |
-| 12 | `presets.js` | De presets als gegevens plus één toepassingsmotor en de rondleiding. |
-| 13 | `app2.js` | Selectie, paneel, onderdelenboom, aanwijzen en tikken, toetsenbord, labels, formaat, thema, beeldkwaliteit, renderlus, en `window.__laguna` voor de tests. |
+| 4 | `panorama.js` | Het panoramadak: twee getinte glaspanelen met dwarsbalk, zonneschermen, cassette, luchtgeleider, waterafvoer, hemelbekleding met openingen en de draaiknop. Aangeroepen vanuit `bodyparts.js`; eigenaar is de carrosserie. |
+| 5 | `engine1.js` | Motormaten en `ENG_PORTS`, motorblok, krukmechanisme, cilinderkop met nokkenassen en kleppen, ontsteking, faseversteller. |
+| 6 | `engine2.js` | Distributie, hulpaandrijving (multiriem), inlaat en injectie, turbo met spruitstuk, smering, koelcircuit. |
+| 7 | `engine3.js` | Dynamo, aircocompressor, sensoren, kabelboom, flexplaat, afdekkap. |
+| 8 | `drivetrain.js` | Automaat (koppelomvormer, pomp, schakelelementen, planetaire sets, tussenas, differentieel, klepblok), startmotor, aandrijfassen, motorsteunen; `PT_POS`, `PT_TILT`, `GB_X`, `DRV_PORTS`. |
+| 9 | `chassis.js` | Vooras met McPherson-veerpoten, stuurinrichting, torsieas achter, wielen, remmen, remsysteem met parkeerrem. |
+| 10 | `interior.js` | Dashboard, middenconsole, stoelen, gordels, bekleding, pedalen, binnenspiegel. |
+| 11 | `systems.js` | Koeling en luchtinlaat, uitlaat, brandstof, elektra, en `buildCar()`, dat alles samenvoegt. |
+| 12 | `partnumbers.js` | De onderdeelnummers als gegevens (`PN_DATA`): verkoopeenheden, nummers met bewijsniveau, de map van pad naar eenheid en onderhoudsinformatie. Gemaakt door `tools/orkestratie/build_pn.py`; niet met de hand bewerken. |
+| 13 | `app1.js` | Boom doorlopen, uitklapvectoren berekenen, animatie, zichtbaarheid en materialen, camera-inpassing, vloer, stap-terug-geschiedenis, en het blok openmodus (stand van de openers, volgers, telescopen, bundelen). |
+| 14 | `presets.js` | De presets als gegevens plus één toepassingsmotor en de rondleiding. De categorie Openen gebruikt het veld `opens`. |
+| 15 | `app2.js` | Selectie, paneel (met de sectie Onderdeelnummers), onderdelenboom, aanwijzen en tikken, toetsenbord, labels, formaat, thema, beeldkwaliteit, de bediening van Openen, renderlus, en `window.__laguna` voor de tests. |
 
 Namen van functies en constanten, materialen en cache-sleutels krijgen een voorvoegsel van hun eigenaar (`eng`, `bod`, `chs`, `ui`, `app`), zodat bestanden elkaar niet stil overschrijven.
 
@@ -172,6 +174,81 @@ Dit is de belangrijkste maatregel tegen een te hoog aantal tekenopdrachten in de
 - Aantallen driehoeken: eerste versie 424.000, versie 1 na optimalisatie circa 280.000. Na golf 1: 419.554. Eindstand (gemeten op `9c731c8`): 630.368 (Aandrijflijn 237.310, Carrosserie 165.546, Onderstel 110.204, Interieur 70.328, Koeling en luchtinlaat 18.700, Uitlaatsysteem 13.184, Brandstofsysteem 7.608, Elektrisch systeem 7.488). Het totaal blijft binnen het budget van 700.000. De Aandrijflijn zat na golf 2 boven het eigen budget van 240.000 (250.794) en is in de carrosserieronde met lichtere klepgroepen, zuigerringen, kleine veren, poelies en stator teruggebracht tot 237.310; de grote veren en de keerring van de klepsteel zijn na review weer rond gemaakt.
 - Opstarttijden: `__laguna.timing()` geeft de tijdlijn van het opstarten in milliseconden sinds het begin van de navigatie (`script`, `buildStart`, `buildCar`, `startUp`, `render0`, `firstFrame`, `interactive`, `ready`, `batches`, plus `batchesDone`). De duur van `buildCar()` is `buildCar` min `buildStart`. Op de eindstand (`9c731c8`, software-rendering, één meting uit `stats.json`): script 482, buildStart 688, buildCar 854 (dus 166 ms), startUp 1.608, render0 1.840, firstFrame 3.508, interactive 3.514, ready 5.574, batches 6.828. `ready` wacht hoogstens 2 seconden op de batches van de beginstand. Deze tijden zeggen niets over een echt apparaat.
 
+## Openmodus
+
+Sinds golf 4 heeft de pagina een tweede modus naast Uitklappen: Openen. Een deel gaat dan open zoals bij de echte auto, terwijl de rest gemonteerd blijft. Er zijn 26 openers. De hoeken en slagen zijn geschat uit foto's, het instructieboekje en het werkplaatshandboek; er is geen tekening van de fabrikant gebruikt.
+
+### Engine (`src/core.js` en `src/app1.js`, blok openmodus)
+
+Knoopopties in `A()` en `P()`:
+
+| Optie | Betekenis |
+|---|---|
+| `open` | De opener. `type` is `hinge` of `slide`. Verder `pivot`, `axis`, `angle`, `min` (ondergrens), `label`, `dur`, `look: { dir, nodes }` (waar de camera heen kijkt), `follow` (volger van een leider) en `needs` (eerst die opener openen; sluiten sluit eerst de afhankelijke). Bij `slide` komen `move` (de slag), `arc` (draaien om een verre as, voor de dakkromming) en `tilt` (eerst kantelen over het eerste deel van de beweging) erbij. |
+| `stay` | `true` laat het deel staan als de opener draait: de carrosseriezijde van een scharnier. Een volger met `stay` beweegt in het frame van de rustende opener, zoals de motorkapsteun. |
+| `strut` | Een telescoop: `{ a: { node, p }, b: { node, p }, rod, lead, restLen }`. De gasveren van de achterklep zijn 290 mm in en 495 mm uit. |
+
+In de knoop staan `opn` (de opties), `ou` (stand 0 tot 1), `ot` (doelstand), `stay` en `strut`. Verwijzingen in `follow`, `needs`, `look.nodes` en `strut.a.node` zijn een pad vanaf de wortel (de wortelnaam mag weg) of een naam die maar een keer voorkomt. Een niet-unieke naam geeft een consolefout.
+
+De stand volgt uit: positie = pivot + R(u maal angle)(basis min pivot) + uitklapverschuiving + eigen verschuiving, en draaiing = R maal de basisdraaiing. Uitklappen en openen werken samen: in Openen staat alles gemonteerd. Vaste delen in een draaiende opener worden elk frame teruggezet met de inverse van de openerdraaiing. Telescopen worden elk frame van a naar b gericht, met alleen de betrokken wereldmatrices; de zuigerstang schuift mee met (afstand min rustafstand).
+
+### Bundelen
+
+Batches worden altijd in de gebouwde stand gemaakt: `uiBaseRel` gebruikt basis, `q0` en `s0`. Een groep met een open opener, een volger, een vast deel of een telescoop eronder wordt niet gebundeld, en de groep van een telescoop niet zolang hij uitschuift. Dat sluit de spookbatch uit: een batch die de gedraaide stand inbakt en na het sluiten als dubbele kap of portier in de gemonteerde auto blijft staan. De toetsen roepen eerst `batchFlush()` of `finishAll()` aan en zouden dat niet zien; `tools/opentest.py` heeft daarom een eigen proef (controle 6).
+
+### Ingesloten delen
+
+Een `inner`-knop wordt zichtbaar als een opener erboven open is. De zichtbaarheid wordt alleen bijgewerkt voor openers met ingesloten delen eronder (vlag `vis`), zodat openen niet de hele boom doorloopt. Na golf 4 zijn veel `inner`-vlaggen weggehaald die door een opening zichtbaar werden (onder meer bij de koppelomvormer, het membraan en het reservoirfilter).
+
+### Bediening (`src/app2.js`, `src/head.html`, `src/presets.js`)
+
+- Segmentknop `Uitklappen | Openen` in de bovenbalk, sneltoets O. Ingang: alles gemonteerd, isolatie weg. Uitgang: alle openers dicht.
+- Klikregel: neem de openers op het pad van het geraakte onderdeel, van buiten naar binnen; volgers tellen als hun leider. De eerste dichte opener gaat open. Zijn ze allemaal open, dan sluit de binnenste. Een klik op de ruit of spiegel van een dicht portier opent dus eerst het portier.
+- Dubbelklik is gelijk aan een enkele klik. Rechtsklik, Shift+klik en lang drukken sluiten de binnenste open opener op het pad. Groter geheel, de klikmodi en de explosieschuif zijn verborgen.
+- Bij openen beweegt de camera naar `look` (richting, kader in de eindstand, pad 1,1); bij sluiten niet.
+- Dock: `Alles open`, `Alles dicht`, `Openers n/26` (een lijst met een knop per opener, `aria-pressed`) en Stap terug. Snapshot en stap terug bewaren de openstand (`o`) en de modus (`om`).
+- Paneel: badge Open of Dicht bij een opener, Gemonteerd bij een groep. Staat de selectie zelf voor een opener, dan werkt de knop Openen of Sluiten op die opener; anders volgt hij de klikregel. Enter doet hetzelfde, Shift+Enter sluit de binnenste open opener.
+- Presetcategorie Openen (6): Motorruimte, Instappen, Bagageruimte, Tanken, Panoramadak en Alles open. Een preset zet met het veld `opens` (namen of paden, of `'all'`) openers open. Presets in andere categorieën zetten de modus terug op Uitklappen.
+
+### Contract met de eigenaars
+
+- Een opener heeft een bron voor hoek of slag (in `d` of in de brief) en een ondergrens `open.min`. Zonder ondergrens beloont de botsingstoets kleinere hoeken.
+- Asregel: de as ligt aan de scharnierzijde, buiten of op de omtrek van de delen van de opener. De bestaande scharnierdelen (het scharnierblad van een portier, de kapopzet) als as botsen aantoonbaar. Een volger of telescoop noemt het frame waarin zijn punten gelden; een verwijzing zonder knoop is niet toegestaan.
+- Delen die aan de carrosseriezijde van een scharnier horen, krijgen `stay`.
+- Blootleglijst: wat een opening laat zien, heeft een eigenaar. Voorbeelden: de tankkom in het rechter achterscherm (carrosserie, in dezelfde golf als de Vulklep in `src/systems.js`) en de handschoenenkastbak (interieur). Openers die twee bestanden raken, worden in een golf gebouwd.
+- Botsing is geen schending als het contact al in de gesloten stand bestond. De uitzonderingen staan in `tools/open_allow.json` (9 regels, elk met reden) en zijn voor domeineigenaars alleen-lezen.
+
+### De 26 openers
+
+Hoeken in graden, slag in meter. De eindstand en de ondergrens komen uit `tools/opentest.py`.
+
+| Opener | Soort | Eindstand | Ondergrens | Bijzonderheden |
+|---|---|---|---|---|
+| Motorkap | scharnier achterrand | 65 | 55 | motorkapsteun van 0,50 m als volger met eigen scharnier; aluminium kap |
+| Portier linksvoor, rechtsvoor | scharnier voor de voorrand | 68 | 60 | scharnierblad aan de carrosseriezijde blijft staan |
+| Portier linksachter, rechtsachter | scharnier op de B-stijl | 62 | 55 | |
+| Zijruit (vier) | schuif in het portier | voor 0,39, achter 0,30 | voor 0,35, achter 0,25 | achter blijft een strook staan |
+| Buitenspiegel links, rechts | scharnier | 80 naar achteren | 60 | |
+| Achterklep | scharnier dakrand | 66 | 60 | twee gasveren als telescoop; hoedenplank volgt (30 graden) |
+| Tankklep | scharnier voorrand | 140 | 100 | tankkom in het rechter achterscherm, capless vulhals |
+| Glaspaneel voor (label Schuifdak) | kantelen en schuiven | 0,60 | 0,45 | needs Zonnescherm voor; luchtgeleider volgt |
+| Zonnescherm voor, achter | schuif naar de cassette | 0,65 en 0,47 | | lamellen als volgers |
+| Handschoenenkastklep | scharnier onderrand | 72 | 60 | needs Portier rechtsvoor |
+| Armsteunkussen | scharnier | 66 | 50 | needs Portier linksvoor |
+| Rugleuning groot deel (rechts), klein deel (links) | scharnier | 104 | 80 | needs Achterklep; hoofdsteunen en gordels gaan mee |
+| Middenarmsteun achter | scharnier | 104 | 70 | hangt in Rugleuning groot deel; needs Portier linksachter |
+| Zonneklep links, rechts | scharnier voorrand | 169 | 138 | ligt neergeklapt bijna tegen de voorruit |
+| Bagageruimtevloer | scharnier voorrand | 50 | 50 | needs Achterklep; opbergbak eronder |
+| Olievuldop, Expansiedop | schuif omhoog | zie [testen.md](testen.md) | | needs Motorkap |
+
+### Panoramadak
+
+Het panoramadak (`src/panorama.js`) heeft twee getinte glaspanelen achter elkaar met een dwarsbalk. Het voorste glas kantelt aan de achterrand en schuift 0,60 m naar achteren boven het vaste achterglas, langs de dakkromming (`arc`, `tilt`). Alles ligt op of onder het dakvlak van het model en blijft tussen dakplaat en hemelbekleding. Maten in het autoframe: voorste glas z 0,20 tot -0,50 (opening in het dak vanaf 0,22), dwarsbalk -0,50 tot -0,58, achterste glas -0,58 tot -1,11, glas x plus en min 0,47. Alles is geschat uit foto's.
+
+### Prestaties in Openen
+
+Frametijd p95 bij alles openen en sluiten: 1,4 tot 1,6 ms (grens 8 ms). Tekenopdrachten: 405 gesloten en 759 met alles open (grens 3.000). Dat zijn meetwaarden uit software-rendering.
+
 ## Contracten tussen de eigenaars
 
 De delen bouwen parallel en kennen elkaar alleen via de volgende afspraken. Wie een waarde wijzigt, meldt dat.
@@ -255,6 +332,7 @@ Eindwaarden: de stuurpomp zit binnen zone P (`ENG_PS`, poelie met tipstraal 0,05
    - Onderbouw: einddemper plat en donker onder de vloer, parkeerremunit naar x 0,28 en z −1,40, en drie gemelde contacten (accuhouderstang, vulpijp, remslang achter) nagemeten en opgelost.
    - Meldingen van de gebruiker (telefoon, auto van onderen bekeken): een zwarte streep door het wiel (portierrubber door de achterwielboog, commit `9c731c8`), een raar achterwiel (spaken te diep verzonken, `f10fd54`), een los hangende uitlaat (`c22312d`, later de eindstukken in `ff42dbd`) en bij het nalopen het zicht op het interieur door de wielbogen en van onderen (gesloten wielkasten, vloer tot de wielkast en een achterbank om de wielkasten, `9c731c8`). Elke melding is eerst met stralen en schermafbeeldingen nagerekend.
    - Resultaat: 2.924 knopen, 489 groepen, 2.435 onderdelen, 630.368 driehoeken, 390 tekenopdrachten gemonteerd met bundelen (1.726 zonder), itest met poorten 79 van 79, poort 5 haalt S7 met 7 van 9. Details in [testen.md](testen.md) en [premortem.md](premortem.md). Versie 4 en versie 5 staan op dezelfde URL.
+8. Golf 4 (14 en 15 oktober 2026): de modus Openen met 26 openers, het panoramadak, onderdeelnummers in het paneel en de kennis uit het rapport van de gebruiker en het werkplaatshandboek MR 415. Twee premortems op het plan (openmodus en panoramadak; gegevens en proces), zie [premortem.md](premortem.md). Eindstand van de metingen: stand `g4final2` op `7f54e61` (zie [testen.md](testen.md)). Versie 6 van de URL volgt na publicatie.
 
 ## Bewuste keuzes
 
@@ -264,5 +342,8 @@ Eindwaarden: de stuurpomp zit binnen zone P (`ENG_PS`, poelie met tipstraal 0,05
 - Geen opvulling om een onderdelendoel te halen. Geen groep met meer dan 12 identieke onderdelen die in werkelijkheid niet zo vaak voorkomen.
 - Lettertypes: Saira Condensed (koppen), Atkinson Hyperlegible (tekst), IBM Plex Mono (gegevens).
 - Geen backdrop-blur boven het canvas en een eenvoudige schaduwvlek onder de auto in plaats van echte schaduwen, voor de framesnelheid op telefoons.
-- Het model toont de standaardauto: geen 4Control, geen panoramadak (beide opties).
+- Het model toont de auto van de gebruiker met het panoramadak (een optie, bij Initiale 850 euro in Frankrijk). Geen 4Control: dat blijft een optie die het model niet toont.
+- Openen is een tweede modus naast Uitklappen en vervangt het uitklappen niet. In Openen staat alles gemonteerd.
+- Een opener heeft altijd een ondergrens (`open.min`). Zonder ondergrens zou een botsingstoets agents naar kleine hoeken sturen.
+- Elke onderdeelstatus heeft een bron. `Past volgens catalogus` zegt niet dat het nummer op deze auto past, en de pagina vraagt altijd om controle op het chassisnummer. Wat niet onderzocht is, blijft `Niet onderzocht`.
 - Waar het onderzoek geen bron had, staat de opbouw als schematisch in de beschrijving en in [specificaties-en-bronnen.md](specificaties-en-bronnen.md).

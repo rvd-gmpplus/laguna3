@@ -14,7 +14,7 @@ Bindend voor alle agents. Waar dit document afwijkt van een onderzoeksnotitie, g
 | 4Control | Niet in het model. In de beschrijving van de achteras: "4Control (vierwielbesturing) was op de Initiale een optie; dit model toont de standaard H-as zonder 4Control." | Optie van 2000 euro (Franse prijslijst 2011). | "Bevestigd" (optie) |
 | Stoelen | Elektrisch met geheugen (bestuurder), verwarming, handmatige lendensteun; geen massage of ventilatie. Geperforeerd leder, beige (zoals v1) of donker (Dark Carbon); het model houdt beige. | Renault-handboek fase 2. | "Bevestigd" |
 | Audio | Bose, tien luidsprekers. | UK-brochure. | "Bevestigd" (aantal), posities "Geschat" |
-| Panoramadak | Niet in het model (optie). | UK-brochure. | |
+| Panoramadak | In het model: elektrisch panoramadak met schuivend voorglas en vast achterglas. De auto van de gebruiker heeft het; het is een optie bij de Initiale (850 euro in Frankrijk). Afmetingen in het model: voorste glas z 0,20 tot -0,50 (opening in het dak vanaf 0,22), dwarsbalk -0,50 tot -0,58, achterste glas -0,58 tot -1,11, breedte plus en min 0,47. Deze maten zijn geschat uit foto's. | UK-brochure (optie), de auto van de gebruiker en foto's. | "Bevestigd" (optie), "Geschat" (afmetingen) |
 | Leverbaarheid | De 2.0T 170 automaat in fase 2 was niet in Frankrijk of het VK leverbaar, wel in Nederland tot juli 2013 volgens Autoweek (aannemelijk). Vermelden in de documentatie. | Onderzoek onderstel-interieur. | "Aannemelijk" |
 | Kleur | Gris Platine, code D69 (UK: Mercury). | Onderzoek exterieur, drie bronnen. | "Bevestigd" |
 
