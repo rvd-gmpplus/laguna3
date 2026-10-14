@@ -5,10 +5,15 @@
 //   pull: { naam: [dx,dy,dz] } hele groep verschuiven (in het frame van de ouder), xray, sys (kleuren per systeem),
 //   spread (standaard 1), cam: { dir: [x,y,z], pad }, select: naam, labels: naam (van welke groep de kinderen een label krijgen),
 //   labelOnly: [namen] alleen deze kinderen van de labelgroep krijgen een label,
-//   frame: [namen] wat in beeld moet (standaard iso, anders de hele auto).
+//   frame: [namen] wat in beeld moet (standaard iso, anders de hele auto),
+//   opens: [openers] of 'all': de modus Openen met precies deze openers open (pad of unieke naam; een volger telt als zijn
+//   leider). Zonder frame is het kader de open.look.nodes van de eerste opener, met zijn look.dir als richting. Alle andere
+//   presets zetten de modus terug op Uitklappen en sluiten de openers.
+//   soon: true wacht op een opener van een andere eigenaar: oplossen de namen nog niet, dan verschijnt de preset niet in de
+//   menu's en geeft checkPresets() geen fout; checkPresets(true) toetst ook deze presets.
 // Alleen ankernamen uit contract §8 / tools/anchors.json. Een preset waarvan een naam niet oplost, verschijnt niet in de menu's.
 const appCar = 'Renault Laguna III';
-const appCats = ['Overzicht', 'Motor', 'Aandrijving', 'Onderstel', 'Carrosserie', 'Interieur'];
+const appCats = ['Overzicht', 'Motor', 'Aandrijving', 'Onderstel', 'Carrosserie', 'Interieur', 'Openen'];
 const PRESETS = [
   // Overzicht
   { id: 'assembled', cat: 'Overzicht', label: 'Gemonteerd', key: '0', note: 'De complete auto in elkaar: Laguna III hatchback fase 2, Initiale Paris.', cam: { dir: [1, 0.42, 1.08], pad: 1.04 } },
@@ -53,6 +58,13 @@ const PRESETS = [
   { id: 'interior', cat: 'Interieur', label: 'Interieur', key: '7', note: 'Dashboard, middenconsole, stoelen, bekleding en pedalen uit elkaar.', iso: ['Interieur'], open: ['Interieur', 'Stoelen'], cam: { dir: [0.9, 0.85, 0.7], pad: 1.04 } },
   { id: 'driverSeat', cat: 'Interieur', label: 'Bestuurdersstoel', note: 'Bestuurdersstoel tot op de onderdelen: zitting, rugleuning en hoofdsteun.', iso: ['Bestuurdersstoel'], deep: ['Bestuurdersstoel'], cam: { dir: [1, 0.45, 0.8], pad: 1.05 } },
   { id: 'dash', cat: 'Interieur', label: 'Dashboard', note: 'Dashboard met instrumentenpaneel en bedieningsdelen uit elkaar.', iso: ['Dashboard'], deep: ['Dashboard'], cam: { dir: [0.3, 0.45, -1], pad: 1.05 } },
+  // Openen
+  { id: 'openHood', cat: 'Openen', label: 'Motorruimte', note: 'Motorkap open: de motorruimte van boven en voren, met de kap in de eindstand.', opens: ['Motorkap'] },
+  { id: 'openDoors', cat: 'Openen', label: 'Instappen', note: 'De vier portieren open, schuin van boven.', opens: ['Portier linksvoor', 'Portier rechtsvoor', 'Portier linksachter', 'Portier rechtsachter'], frame: [appCar], cam: { dir: [1, 0.85, 0.55], pad: 1.04 }, soon: true },
+  { id: 'openTrunk', cat: 'Openen', label: 'Bagageruimte', note: 'Achterklep open, hoedenplank mee omhoog en het grote deel van de achterbank neergeklapt.', opens: ['Achterklep', 'Rugleuning achterbank groot deel'], frame: [appCar], cam: { dir: [-0.8, 0.6, -1], pad: 1.05 }, soon: true },
+  { id: 'openFuel', cat: 'Openen', label: 'Tanken', note: 'Tankklep open met de vulhals in het rechter achterscherm.', opens: ['Tankklep'], frame: [appCar], cam: { dir: [-1, 0.35, -0.75], pad: 1.04 }, soon: true },
+  { id: 'openRoof', cat: 'Openen', label: 'Panoramadak', note: 'Zonnescherm open en het voorste glaspaneel gekanteld en naar achteren geschoven.', opens: ['Zonnescherm voor', 'Schuifdak'], frame: [appCar], cam: { dir: [0.6, 1.1, 0.55], pad: 1.04 }, soon: true },
+  { id: 'openAll', cat: 'Openen', label: 'Alles open', note: 'Elke opener open: portieren, kap, klep, ruiten, spiegels en wat er verder opengaat.', opens: 'all', frame: [appCar], cam: { dir: [1, 0.55, 1.08], pad: 1.04 } },
 ];
 const appTourSteps = ['assembled', 'main', 'bodyOff', 'engine', 'head', 'turbo', 'gearbox', 'gearsets', 'chassis', 'brakeLF', 'interior', 'everything', 'assembled'];
 const appPresetById = new Map(PRESETS.map(p => [p.id, p]));
@@ -60,8 +72,14 @@ const appPresetById = new Map(PRESETS.map(p => [p.id, p]));
 function appPresetNames(p) {
   return [...(p.iso || []), ...(p.open || []), ...(p.deep || []), ...Object.keys(p.pull || {}), ...(p.select ? [p.select] : []), ...(p.labels ? [p.labels] : []), ...(p.frame || [])];
 }
+// verwijzing naar een opener (pad of unieke naam) zonder consolefout; geeft de leider van de opener, anders null
+function appOpenRef(ref) {
+  const n = !ref ? null : ref.includes('/') ? uiByPath(ref) : (uiNameCount.get(ref) === 1 ? uiNames.get(ref) : null);
+  return n && n.opn ? (n.opn.lead || n) : null;
+}
 function appPresetErrors(p) {
   const err = [];
+  if (p.opens && p.opens !== 'all') for (const ref of p.opens) if (!appOpenRef(ref)) err.push(`preset "${p.label}": opener "${ref}" bestaat niet of is geen opener`);
   for (const name of new Set(appPresetNames(p))) {
     const c = uiNameCount.get(name) || 0;
     if (c === 0) err.push(`preset "${p.label}": naam "${name}" bestaat niet`);
@@ -76,21 +94,39 @@ function appPresetErrors(p) {
   }
   return err;
 }
-function appCheckPresets() {
+function appCheckPresets(strict) {
   const err = [], ids = new Set(), keys = new Set();
   for (const p of PRESETS) {
     if (ids.has(p.id)) err.push(`preset-id "${p.id}" komt twee keer voor`); ids.add(p.id);
     if (p.key) { if (keys.has(p.key)) err.push(`sneltoets ${p.key} komt twee keer voor`); keys.add(p.key); }
     if (!appCats.includes(p.cat)) err.push(`preset "${p.label}": onbekende categorie ${p.cat}`);
-    err.push(...appPresetErrors(p));
+    if (!p.soon || strict || !appPresetErrors(p).length) err.push(...appPresetErrors(p));
   }
   for (const id of appTourSteps) if (!appPresetById.has(id)) err.push(`rondleiding: preset "${id}" bestaat niet`);
   return err;
 }
 const appPresetOk = p => p.tour || appPresetErrors(p).length === 0;
 function appSubject(p) {
+  if (p.opens && p.opens !== 'all' && !p.frame) { // het kader van de eerste opener (open.look.nodes), anders de opener zelf
+    const l = appOpenRef(p.opens[0]), lk = l && l.opn.look, out = [];
+    for (const r of lk && lk.nodes ? lk.nodes : [l]) { const m = typeof r === 'string' ? (r.includes('/') ? uiByPath(r) : uiNames.get(r)) : r; if (m && !out.includes(m)) out.push(m); }
+    if (out.length) return out;
+  }
   const names = p.frame || (p.iso && p.iso.length ? p.iso : [appCar]);
   return names.map(byName).filter(Boolean);
+}
+// camerarichting van een preset: cam.dir, anders de look.dir van zijn eerste opener, anders het ¾-aanzicht
+function appPresetDir(p) {
+  if (p.cam && p.cam.dir) return V3(...p.cam.dir);
+  const l = p.opens && p.opens !== 'all' ? appOpenRef(p.opens[0]) : null, d = l && l.opn.look && l.opn.look.dir;
+  return d ? V3(...d) : DIRS.iso;
+}
+// openers die een preset open wil hebben (leiders)
+function appWantOpen(p) {
+  const out = new Set();
+  if (p.opens === 'all') OPENERS.forEach(n => out.add(n));
+  else for (const r of p.opens || []) { const l = appOpenRef(r); if (l) out.add(l); }
+  return out;
 }
 
 /* ---------- toepassen in fasen: (1) dicht wat dicht moet (diepste eerst), (2) camera naar de eindkadrering
@@ -100,6 +136,11 @@ function appApplyPreset(p, opt = {}) {
   uiStopPlay();
   if (!opt.tour) uiStopTour();
   if (!opt.noHistory) uiPush();
+  // modus en openers: alleen een preset met opens zet Openen aan; elke andere zet Uitklappen terug en sluit de openers
+  OPENMODE = opt.openMode != null ? opt.openMode : !!p.opens;
+  const wantOpen = appWantOpen(p);
+  for (const n of OPENERS) if (!wantOpen.has(n)) uiSetOpen(n, 0);   // eerst sluiten (needs sluit mee), dan openen
+  for (const n of wantOpen) uiSetOpen(n, 1);
   const want = new Set();
   for (const name of p.open || []) want.add(byName(name));
   for (const name of p.deep || []) subtree(byName(name)).forEach(a => { if (a.asm) want.add(a); });
@@ -143,7 +184,7 @@ function appApplyPreset(p, opt = {}) {
   const camDelay = closing.length ? closeT * 0.6 : 0;
   const camDur = clamp(Math.max(0.9, openSpan + closeT - camDelay), 0.9, 2.5 - camDelay);
   const cam = p.cam || {};
-  focusNodes(appSubject(p), cam.dir ? V3(...cam.dir) : DIRS.iso, cam.pad || 1.06, { dur: camDur, delay: camDelay });
+  focusNodes(appSubject(p), appPresetDir(p), cam.pad || 1.06, { dur: camDur, delay: camDelay });
   if (REDUCED) finishAll();
   uiAfterAction();
   requestRender();

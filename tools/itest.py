@@ -18,6 +18,10 @@ Controles (zie de app-brief):
   11 tekenopdrachten in Gemonteerd en profileFrames('Motor F4Rt', 120) (informatie)
   12 ingesloten onderdelen verborgen bij een dichte ouder
   13 batching: minder tekenopdrachten, aanwijzen en selecteren in een samengevoegde groep, openen maakt los, dichtklappen weer samen
+  14 openmodus: klik op de kap opent hem en verschuift niets erbuiten, tweede klik sluit, dubbelklik zet geen uitklapdoel, wisselen
+     van modus sluit alles, preset Motorruimte, kader van de open kap, pick in de motorruimte, geen batch om een open opener,
+     aanwijstekst, dock en openerlijst, sneltoets O, paneelknop, portierklikken (alleen als het portier een opener is)
+  15 onderdeelnummers: tijdelijke records in het paneel (status, nummers, tabel, bronnen, deel van, groepsaantal) en zoeken op nummer
 """
 import sys, os, random, json, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -125,6 +129,33 @@ window.__T = {
     return null;
   },
   under(n, a) { for (let p = n; p; p = p.parent) if (p === a) return true; return false; },
+  // schermpunt op een mesh in de deelboom van knoop n (de pick moet in die deelboom vallen), binnen het vrije beeld
+  pointIn(n) {
+    const L = this.L(), v = L.freeView(), r = canvas.getBoundingClientRect();
+    L.ROOT.obj.updateMatrixWorld(true);
+    const ms = n.meshes.filter(m => m.userData.node.ev).map(m => { const b = new THREE.Box3().setFromObject(m); return [m, b, b.getSize(new THREE.Vector3()).length()]; }).sort((x, y) => y[2] - x[2]).slice(0, 60);
+    for (const [m, box, sz] of ms) {
+      const c = box.getCenter(new THREE.Vector3()), s = box.getSize(new THREE.Vector3());
+      for (const [fx, fy, fz] of [[0, 0, 0], [0.25, 0.25, 0], [-0.25, 0.25, 0], [0.25, -0.25, 0.2], [-0.3, 0, 0.3], [0, 0.35, -0.3], [0.3, 0.1, 0.3], [0, -0.3, 0.3]]) {
+        const p = new THREE.Vector3(c.x + fx * s.x, c.y + fy * s.y, c.z + fz * s.z).project(camera);
+        const x = Math.round(r.left + (p.x * 0.5 + 0.5) * r.width), y = Math.round(r.top + (-p.y * 0.5 + 0.5) * r.height);
+        if (p.z > 1 || x < v.x + 6 || x > v.x + v.w - 6 || y < v.y + 6 || y > v.y + v.h - 6) continue;
+        if (document.elementFromPoint(x, y) !== canvas) continue;
+        const hit = L.pickNodeAt(x, y);
+        if (hit && this.under(hit, n)) return [x, y, hit.name];
+      }
+    }
+    return null;
+  },
+  // knopen die bij een opener horen en mogen bewegen: zijn deelboom en die van zijn volgers
+  openerIdx(name) {
+    const L = this.L(), o = L.openers().find(q => q.name === name), idx = new Set(this.subtreeIdx(name));
+    for (const f of (o ? o.followers : [])) for (const i of this.subtreeIdx(f)) idx.add(i);
+    return [...idx];
+  },
+  openOpeners() { return this.L().openers().filter(o => o.target > 0 || o.open > 0).map(o => o.name); },
+  noExplode() { return this.L().ALL.filter(n => n.asm && n.target > 0).map(n => n.name); },
+  nodeNamed(root, name) { return (function w(n) { if (n.name === name) return n; for (const k of n.kids) { const r = w(k); if (r) return r; } return null; })(root); },
   collapseOk() {
     const g = window.__col, sub = []; (function w(n) { if (n.asm) sub.push(n); n.kids.forEach(w); })(g);
     const stillOpen = sub.filter(a => a.target > 0).map(a => a.name);
@@ -191,6 +222,12 @@ def long_press(pg, cdp, x, y, ms=700):
     cdp.send('Input.dispatchTouchEvent', {'type': 'touchStart', 'touchPoints': [{'x': x, 'y': y, 'id': 1}]})
     pg.wait_for_timeout(ms)
     cdp.send('Input.dispatchTouchEvent', {'type': 'touchEnd', 'touchPoints': []})
+
+
+def quiet(pg):
+    # op de telefoon verandert het paneel van hoogte na een handeling en past de camera zich ~160 ms later opnieuw in
+    pg.wait_for_timeout(350)
+    settle(pg, 60)
 
 
 def preset(pg, pid):
@@ -342,6 +379,13 @@ def run_view(s, tag, w, h, touch):
     undo_case('preset', lambda: pg.evaluate("__laguna.preset('gearbox')"))
     preset(pg, 'engine')
     undo_case('schuif', lambda: pg.locator('#explode').fill('500'))
+    preset(pg, 'assembled'); pg.wait_for_timeout(450)
+    undo_case('wisselen naar Openen', lambda: pg.evaluate("__laguna.setOpenMode(true)"))
+    pg.evaluate("__laguna.setOpenMode(true)"); settle(pg, 250); quiet(pg)
+    pt = pg.evaluate('window.__T.pointIn(__laguna.byName("Motorkap"))')
+    undo_case('openen van de kap (klik in Openen)', lambda: tap(pg, touch, pt[0], pt[1]))
+    pg.evaluate("__laguna.openAll(0, true); __laguna.setOpenMode(false)"); settle(pg)
+    preset(pg, 'engine')
     s0 = T(pg, 'stateNoHist()')
     pg.evaluate("__laguna.preset('chassis')"); settle(pg)
     pg.evaluate("document.activeElement && document.activeElement.blur()")
@@ -427,6 +471,211 @@ def run_view(s, tag, w, h, touch):
     if touch:
         hs = pg.evaluate("document.documentElement.scrollWidth > window.innerWidth || document.body.scrollWidth > window.innerWidth")
         check(f'10 [{tag}] geen horizontale scroll', not hs)
+
+    # 14. openmodus
+    def hood_click(label, expect_open):
+        quiet(pg)
+        pt = pg.evaluate('window.__T.pointIn(__laguna.byName("Motorkap"))')
+        if not check(f'14 [{tag}] punt op de Motorkap ({label})', pt, str(pt and pt[2])):
+            return
+        before = T(pg, 'positions()')
+        idx = T(pg, 'openerIdx("Motorkap")')
+        pg.evaluate('window.__before = ' + json.dumps(before))
+        tap(pg, touch, pt[0], pt[1])
+        pg.wait_for_timeout(120); settle(pg, 80)
+        quiet(pg)
+        o = pg.evaluate('__laguna.openers().find(q => q.name === "Motorkap")')
+        check(f'14 [{tag}] {"tik" if touch else "klik"} op de kap {label}', (o['target'] > 0) == expect_open and (o['open'] > 0.99) == expect_open, json.dumps(o))
+        if expect_open:
+            mv, who = pg.evaluate(f'window.__T.maxMoveOutside(window.__before, {json.dumps(idx)})')
+            check(f'14 [{tag}] niets buiten de kap en zijn volgers verschuift meer dan 1 mm', mv < 1e-3, f'grootste verschuiving {mv * 1000:.3f} mm ({who})')
+            f = pg.evaluate('__laguna.frameOf("Motorkap")')
+            check(f'14 [{tag}] kader van de geopende kap binnen het vrije beeld', f['inside'] and f['cover'] > 0.05, json.dumps(f))
+        pg.wait_for_timeout(450)
+    pg.evaluate("__laguna.preset('assembled'); __laguna.finishAll()")
+    pg.wait_for_timeout(450)
+    if touch:
+        pg.tap('#openSeg [data-omode="open"]')
+    else:
+        pg.click('#openSeg [data-omode="open"]')
+    settle(pg, 250)
+    st = pg.evaluate('__laguna.state()')
+    seg = pg.evaluate('[...document.querySelectorAll("#openSeg [data-omode]")].map(b => b.getAttribute("aria-checked"))')
+    check(f'14 [{tag}] segmentknop zet de modus Openen', st['openMode'] and seg == ['false', 'true'] and not st['open'], json.dumps(seg) + ' ' + json.dumps(st['open'][:3]))
+    hood_click('(dicht, opent)', True)
+    hood_click('(open, sluit)', False)
+    # aanwijstekst (muis)
+    if not touch:
+        pg.evaluate("__laguna.openAll(0, true); __laguna.focusNodes([__laguna.ROOT], new THREE.Vector3(1, 0.42, 1.08), 1.04)"); settle(pg, 200)
+        pt = pg.evaluate('window.__T.pointIn(__laguna.byName("Motorkap"))')
+        pg.mouse.move(pt[0], pt[1]); pg.wait_for_timeout(250)
+        tx = pg.evaluate("document.getElementById('tip').hidden ? '' : document.getElementById('tip').textContent")
+        wl = pg.evaluate('window.__T.pointIn(__laguna.byName("Wiel linksvoor"))')
+        pg.mouse.move(wl[0], wl[1]); pg.wait_for_timeout(250)
+        tx2 = pg.evaluate("document.getElementById('tip').hidden ? '' : document.getElementById('tip').textContent")
+        check(f'14 [{tag}] aanwijstekst: klik om te openen en niets te openen', 'Motorkap' in tx and 'klik om te openen' in tx and 'niets te openen' in tx2, f'"{tx}" en "{tx2}"')
+        pg.mouse.move(5, 400); pg.wait_for_timeout(100)
+    # dubbelklik of dubbeltik is gelijk aan een enkele klik: de kap staat open en er is niets uitgeklapt
+    pg.evaluate("__laguna.openAll(0, true)"); settle(pg); quiet(pg)
+    pt = pg.evaluate('window.__T.pointIn(__laguna.byName("Motorkap"))')
+    if check(f'14 [{tag}] punt op de kap voor dubbel{"tik" if touch else "klik"}', pt, str(pt and pt[2])):
+        pg.evaluate(f"window.__T.synthDouble({pt[0]}, {pt[1]}, {json.dumps('touch' if touch else 'mouse')}, 250)")
+        pg.wait_for_timeout(100); settle(pg)
+        ex = T(pg, 'noExplode()')
+        o = pg.evaluate('__laguna.openers().find(q => q.name === "Motorkap")')
+        check(f'14 [{tag}] dubbel{"tik" if touch else "klik"} op de kap: geen uitklapdoel boven 0, kap een keer geopend', not ex and o['target'] == 1, f'uitgeklapt: {ex[:3]}, kap {json.dumps(o)}')
+    pg.wait_for_timeout(450)
+    # rechtsklik, Shift+klik en lang drukken sluiten de binnenste open opener
+    for label, how in ([('lang drukken', 'press')] if touch else [('rechtsklik', 'right'), ('Shift+klik', 'shift')]):
+        pg.evaluate("__laguna.openAll(1, true)"); settle(pg)
+        pg.evaluate("__laguna.focusNodes([__laguna.byName('Motorkap'), __laguna.byName('Aandrijflijn')], new THREE.Vector3(0.25, 0.9, 1), 1.1)"); settle(pg, 120); quiet(pg)
+        pt = pg.evaluate('window.__T.pointIn(__laguna.byName("Motorkap"))')
+        if not check(f'14 [{tag}] punt op de open kap ({label})', pt, str(pt and pt[2])):
+            continue
+        if how == 'right':
+            pg.mouse.click(pt[0], pt[1], button='right')
+        elif how == 'shift':
+            pg.keyboard.down('Shift'); pg.mouse.click(pt[0], pt[1]); pg.keyboard.up('Shift')
+        else:
+            long_press(pg, cdp, pt[0], pt[1])
+        pg.wait_for_timeout(100); settle(pg, 120)
+        o = pg.evaluate('__laguna.openers().find(q => q.name === "Motorkap")')
+        check(f'14 [{tag}] {label} sluit de open kap', o['target'] == 0 and o['open'] == 0, json.dumps(o))
+        pg.wait_for_timeout(450)
+    # pick met de kap open raakt de motorruimte, en er is geen batch om een open opener
+    pg.evaluate("__laguna.openAll(0, true)"); settle(pg)
+    preset(pg, 'openHood')
+    pg.wait_for_timeout(350); settle(pg, 80)
+    r = pg.evaluate("""(() => { const L = __laguna, v = L.freeView(), drv = L.byName('Aandrijflijn'); const under = (n, a) => { for (let p = n; p; p = p.parent) if (p === a) return true; return false; };
+      const cnt = () => { let motor = 0, tot = 0; for (let i = 1; i <= 7; i++) for (let j = 1; j <= 7; j++) { const n = L.pickNodeAt(v.x + v.w * (0.2 + 0.6 * i / 8), v.y + v.h * (0.2 + 0.6 * j / 8)); if (n) { tot++; if (under(n, drv)) motor++; } } return [motor, tot]; };
+      const open = cnt(); L.batchFlush(); const b = new Set(L.batchedGroups()), bad = [];
+      for (const o of L.openers()) { if (!(o.open > 0 || o.target > 0)) continue; for (let a = L.byName(o.name); a; a = a.parent) if (b.has(a.name)) bad.push(o.name + ' in ' + a.name); }
+      L.setOpen('Motorkap', 0, true); L.finishAll(); const closed = cnt(); return { open, closed, bad, batched: b.size }; })()""")
+    check(f'14 [{tag}] pickAt met de kap open raakt de motorruimte (dicht: de kap)', r['open'][0] >= 1 and r['closed'][0] == 0, json.dumps(r['open']) + ' tegen ' + json.dumps(r['closed']))
+    check(f'14 [{tag}] batchedGroups bevat geen voorouder van een open opener', not r['bad'], json.dumps(r['bad']) + f' ({r["batched"]} groepen samengevoegd)')
+    # preset Motorruimte en terug
+    preset(pg, 'openHood')
+    st = pg.evaluate('__laguna.state()')
+    f = pg.evaluate('__laguna.frameOf("Motorkap")')
+    check(f'14 [{tag}] preset Motorruimte opent de kap in de modus Openen', st['openMode'] and 'Motorkap' in st['openers'] and st['preset'] == 'openHood' and f['inside'], json.dumps(st['openers']) + ' ' + json.dumps(f))
+    preset(pg, 'assembled')
+    st = pg.evaluate('__laguna.state()')
+    check(f'14 [{tag}] een andere preset zet Uitklappen terug en sluit de openers', not st['openMode'] and not st['openers'] and not T(pg, 'openOpeners()'), json.dumps(st['openers']))
+    # wisselen van modus: Openen aan haalt uitgeklapte groepen dicht en heft isolatie op; uit sluit alle openers
+    pg.evaluate("(() => { const L = __laguna; L.preset('engine'); L.finishAll(); })()")
+    pg.evaluate("__laguna.setOpenMode(true)"); settle(pg)
+    st = pg.evaluate('__laguna.state()')
+    check(f'14 [{tag}] Openen aan: alles dicht en geen isolatie', st['openMode'] and not st['open'] and not st['iso'], json.dumps(st['open'][:3]) + ' ' + json.dumps(st['iso']))
+    pg.evaluate("__laguna.openAll(1, true)"); settle(pg)
+    pg.evaluate("__laguna.setOpenMode(false)"); settle(pg)
+    st = pg.evaluate('__laguna.state()')
+    check(f'14 [{tag}] Openen uit sluit alle openers', not st['openMode'] and not T(pg, 'openOpeners()') and T(pg, 'baseDev()') < 1e-6, json.dumps(T(pg, 'openOpeners()')))
+    # dock: Alles open, Alles dicht en de openerlijst
+    preset(pg, 'assembled'); pg.evaluate("__laguna.setOpenMode(true)"); settle(pg, 250)
+    n_open = pg.evaluate('__laguna.openers().length')
+    def press(sel):
+        pg.tap(sel) if touch else pg.click(sel)
+        settle(pg, 120)
+    press('#btnOpenAll')
+    a = pg.evaluate('__laguna.openers().every(o => o.target === 1 && o.open > 0.99)')
+    press('#btnCloseAll')
+    b = pg.evaluate('__laguna.openers().every(o => o.target === 0 && o.open === 0)')
+    check(f'14 [{tag}] Alles open en Alles dicht ({n_open} openers)', a and b, f'open {a}, dicht {b}')
+    press('#btnOpenList')
+    chips = pg.evaluate('[...document.querySelectorAll("#openList button")].map(b => [b.textContent, b.getAttribute("aria-pressed")])')
+    exp = pg.evaluate('document.getElementById("btnOpenList").getAttribute("aria-expanded")')
+    r = pg.evaluate('(() => { const e = document.getElementById("openList"); const r = e.getBoundingClientRect(), W = innerWidth, H = innerHeight; return [r.left >= 0, r.right <= W + 0.5, r.top >= 0, r.bottom <= H + 0.5]; })()')
+    press('#openList button')
+    after = pg.evaluate('document.querySelector("#openList button").getAttribute("aria-pressed")')
+    o0 = pg.evaluate('__laguna.openers()[0].target')
+    check(f'14 [{tag}] openerlijst: een knop per opener met aria-pressed, een klik opent', len(chips) == n_open and exp == 'true' and after == 'true' and o0 == 1, f'{len(chips)} knoppen, expanded {exp}, pressed na klik {after}')
+    check(f'14 [{tag}] openerlijst past in het scherm', all(r), str(r))
+    press('#btnOpenList'); press('#btnCloseAll')
+    # sneltoets O (desktop)
+    if not touch:
+        pg.evaluate("document.activeElement && document.activeElement.blur()")
+        pg.keyboard.press('o'); settle(pg, 120)
+        k1 = pg.evaluate('__laguna.state().openMode')
+        pg.keyboard.press('o'); settle(pg, 120)
+        k2 = pg.evaluate('__laguna.state().openMode')
+        check(f'14 [{tag}] sneltoets O wisselt de modus', k1 != k2, f'{k1} dan {k2}')
+        if not pg.evaluate('__laguna.state().openMode'):
+            pg.keyboard.press('o'); settle(pg, 120)
+    # paneel: knop Openen of Sluiten bij een opener
+    pg.evaluate("__laguna.openAll(0, true); __laguna.select(__laguna.byName('Motorkap'))"); settle(pg, 80)
+    t1 = pg.evaluate("(() => { const b = document.getElementById('actOpen'); return b.hidden ? null : b.textContent; })()")
+    pg.evaluate("document.getElementById('actOpen').click()"); settle(pg, 120)
+    t2 = pg.evaluate("(() => { const b = document.getElementById('actOpen'); return [b.hidden ? null : b.textContent, __laguna.openers().find(o => o.name === 'Motorkap').target]; })()")
+    check(f'14 [{tag}] paneelknop Openen wordt Sluiten', t1 == 'Openen' and t2[0] == 'Sluiten' and t2[1] == 1, f'{t1} dan {t2}')
+    # portierklikken, alleen als het portier een opener is (doet vanzelf mee na de samenvoeging)
+    doors = [d for d in ['Portier linksvoor', 'Portier rechtsvoor', 'Portier linksachter', 'Portier rechtsachter'] if pg.evaluate(f'__laguna.openers().some(o => o.name === {json.dumps(d)})')]
+    if doors:
+        door = doors[0]
+        for kw in ['ruit', 'spiegel', 'greep', 'paneel']:
+            pg.evaluate("__laguna.openAll(0, true); __laguna.setOpenMode(true)"); settle(pg)
+            pg.evaluate(f"__laguna.focusNodes([__laguna.byName({json.dumps(door)})], new THREE.Vector3(1, 0.3, 0.5), 1.4)"); settle(pg, 200); quiet(pg)
+            nm = pg.evaluate(f"""(() => {{ const L = __laguna, d = L.byName({json.dumps(door)}); const f = []; (function w(n) {{ if (n.norm.includes({json.dumps(kw)}) && n.ev) f.push(n); n.kids.forEach(w); }})(d); return f.length ? f[0].name : null; }})()""")
+            if not nm:
+                check(f'14 [{tag}] {door}: {kw} aanwezig', False, 'geen onderdeel met die naam in het portier')
+                continue
+            pt = pg.evaluate(f"window.__T.pointIn(window.__T.nodeNamed(__laguna.byName({json.dumps(door)}), {json.dumps(nm)}))")
+            if not pt:
+                check(f'14 [{tag}] {door}: punt op {nm} ({kw})', False, 'niet aanklikbaar in dit aanzicht')
+                continue
+            tap(pg, touch, pt[0], pt[1]); pg.wait_for_timeout(120); settle(pg, 120); quiet(pg)
+            o = pg.evaluate(f'__laguna.openers().find(q => q.name === {json.dumps(door)})')
+            check(f'14 [{tag}] klik op {nm} ({kw}) in een dicht {door} opent het portier', o['target'] == 1, json.dumps(o))
+            pg.wait_for_timeout(450)
+    else:
+        print(f'info 14 [{tag}] geen portier als opener: portierklikken overgeslagen')
+    pg.evaluate("__laguna.openAll(0, true); __laguna.setOpenMode(false)"); settle(pg)
+
+    # 15. onderdeelnummers: tijdelijke records (niets hiervan staat in partnumbers.js)
+    if tag == 'desktop':
+        pg.evaluate("__laguna.preset('assembled'); __laguna.finishAll()")
+        pg.evaluate("""(() => {
+          PN_DATA.units.tA = { n: 'Testslot', st: 'past', oe: [['656 01 TEST1', 'slot compleet']], am: [['Testmerk', 'TM-123.456', 'alleen links'], ['Ander merk', 'AM9001', '']], var: 'Alleen benzine', per: 'Per stuk',
+            src: [['https://example.org/bron', 'Bron een'], ['javascript:alert(1)', 'Kwaadaardig']], info: [['Interval', '60000 km', 'testbron']] };
+          PN_DATA.units.tB = { n: 'Teststeun', st: 'vin', oe: [['654 TEST2', '']], am: [] };
+          PN_DATA.units.tC = { n: 'Testafdichting', st: 'nietgevonden', oe: [], am: [] };
+          PN_DATA.map['Carrosserie/Motorkap/Slotbeugel motorkap'] = ['tA', 'zelf'];
+          PN_DATA.map['Carrosserie/Motorkap/Veiligheidshaak'] = ['tA', 'deel', 'zit in het slot'];
+          PN_DATA.map['Carrosserie/Motorkap/Motorkapsteun'] = ['tB', 'zelf'];
+          PN_DATA.map['Carrosserie/Motorkap/Kapafdichting'] = ['tC', 'zelf'];
+          __laguna.pnRebuild(); })()""")
+        def pn(name):
+            pg.evaluate(f"__laguna.select(__laguna.byName({json.dumps(name)}))")
+            return pg.evaluate("""(() => { const b = document.getElementById('pnBody'); return { text: b.textContent, rows: b.querySelectorAll('.pn-tab tbody tr').length,
+              links: [...b.querySelectorAll('a')].map(a => [a.getAttribute('href'), a.target, a.rel]), btn: [...b.querySelectorAll('button')].map(x => x.textContent),
+              warn: document.getElementById('pnWarn').textContent, vis: document.getElementById('pnBox').getBoundingClientRect().height > 0 }; })()""")
+        r = pn('Slotbeugel motorkap')
+        check('15 nummers: past volgens catalogus met nummer, tabel, variant, verpakking en onderhoud', 'Past volgens catalogus' in r['text'] and '656 01 TEST1' in r['text'] and r['rows'] == 2 and 'TM-123.456' in r['text'] and 'Alleen benzine' in r['text'] and 'Per stuk' in r['text'] and '60000 km' in r['text'], r['text'][:200])
+        check('15 nummers: bronlinks met target _blank en rel noopener, geen javascript-link', r['links'] == [['https://example.org/bron', '_blank', 'noopener']], json.dumps(r['links']))
+        check('15 nummers: vaste waarschuwing zichtbaar', r['warn'].startswith('Controleer het nummer altijd op het chassisnummer (VIN) bij de dealer of webwinkel') and r['vis'], r['warn'][:60])
+        r = pn('Veiligheidshaak')
+        check('15 nummers: deel van Testslot met klikbare naam en regel', 'Deel van' in r['text'] and r['btn'] == ['Testslot'] and 'zit in het slot' in r['text'] and '656 01 TEST1' in r['text'], r['text'][:160])
+        pg.evaluate("[...document.querySelectorAll('#pnBody button')].find(b => b.textContent === 'Testslot').click()"); settle(pg, 120)
+        check('15 nummers: een klik op de naam kiest de eenheid', pg.evaluate('__laguna.state().selected') == 'Slotbeugel motorkap', pg.evaluate('__laguna.state().selected'))
+        r = pn('Motorkapsteun')
+        check('15 nummers: variant, kies op VIN', 'Variant: kies op VIN' in r['text'] and '654 TEST2' in r['text'], r['text'][:120])
+        r = pn('Kapafdichting')
+        check('15 nummers: niet gevonden', 'Niet gevonden' in r['text'], r['text'][:120])
+        r = pn('Veiligheidshaak'); r = pn('Ruitensproeier links')
+        check('15 nummers: niet onderzocht zonder record', 'Niet onderzocht' in r['text'], r['text'][:120])
+        r = pn('Motorkap')
+        check('15 nummers: groep toont het aantal onderdelen met een nummer', 'Hieronder hebben 3 van' in r['text'], r['text'][:160])
+        # zoeken op nummer (zonder spaties en streepjes)
+        pg.click('#tabbtn-tree'); pg.fill('#treeSearch', 'tm123456'); pg.wait_for_timeout(200)
+        hits = pg.evaluate("[...document.querySelectorAll('#tree .trow .tn')].map(e => e.textContent)")
+        check('15 nummers: zoeken op een nummer vindt de eenheid en haar onderdelen', 'Slotbeugel motorkap' in hits and 'Veiligheidshaak' in hits and len(hits) == 2, str(hits))
+        pg.fill('#treeSearch', ''); pg.click('#tabbtn-info')
+        pg.evaluate("PN_DATA.map['Carrosserie/Bestaat/niet'] = ['tA', 'zelf']; PN_DATA.map['Carrosserie/Motorkap/Motorkapisolatie'] = ['onbekend', 'zelf']; __laguna.pnRebuild()")
+        bad = pg.evaluate('__laguna.pnCheck()')
+        check('15 nummers: pnCheck meldt een onbekend pad en een onbekende eenheid', len(bad) == 2, json.dumps(bad))
+        pg.evaluate("""(() => { for (const k of Object.keys(PN_DATA.map)) delete PN_DATA.map[k]; for (const k of Object.keys(PN_DATA.units)) delete PN_DATA.units[k]; __laguna.pnRebuild(); })()""")
+        r = pn('Slotbeugel motorkap')
+        check('15 nummers: zonder gegevens niet onderzocht, pnCheck leeg', 'Niet onderzocht' in r['text'] and not pg.evaluate('__laguna.pnCheck()'), r['text'][:100])
+        pg.evaluate("__laguna.select(__laguna.ROOT)")
     pg.close()
 
 
