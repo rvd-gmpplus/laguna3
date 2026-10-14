@@ -92,7 +92,7 @@ function buildPanorama() {
   const glassArc = panArc([PAN_GF[0], panP(PAN_GF[0], 0, gl)[1]], [-0.40, panP(-0.40, 0, gl + 0.04)[1]], aStart - aEnd);
   const glassF = A('Glaspaneel voor', { d: 'Beweegbaar voorste glaspaneel van het panoramadak. Kantelt eerst met de achterrand 4,5 cm omhoog (stand A) en schuift dan 0,60 m naar achteren boven het vaste achterste paneel (stand B tot D, afstanden geschat). Het zonnescherm moet eerst open.', ex: [0, 0.22, 0.1],
     open: { type: 'slide', label: 'Schuifdak', min: 0.45, needs: 'Zonnescherm voor', tilt: { pivot: [0, panP(PAN_GF[0], 0)[1], PAN_GF[0]], axis: [1, 0, 0], angle: tiltAng, part: 0.2 }, arc: { pivot: glassArc.pivot, axis: glassArc.axis, angle: glassArc.angle },
-      look: { dir: [0.35, 1, -0.55], nodes: ['Glaspaneel voor', 'Glaspaneel achter'] } } }, panGlass(PAN_GF[0], PAN_GF[1], 'voor', 'voorste'));
+      look: { dir: [0.3, 1, -0.12], nodes: ['Glaspaneel voor', 'Glaspaneel achter'] } } }, panGlass(PAN_GF[0], PAN_GF[1], 'voor', 'voorste'));
   const glassR = A('Glaspaneel achter', { d: 'Vast achterste glaspaneel van het panoramadak, op de dakplaat gelijmd. Ligt boven de achterbank; het schuifglas schuift er in open stand overheen.', ex: [0, 0.2, -0.1] }, panGlass(PAN_GR[0], PAN_GR[1], 'achter', 'achterste'));
   /* ---- dwarsbalk, omlijsting, afdichtingen, frame en rails ---- */
   const bar = P('Dwarsbalk', panSlab(PAN_OF[1], PAN_OR[0], -PAN_XR, PAN_XR, 0.0008, 0.0065, 2, 14), MAT.bodPanoBar, { d: 'Dwarsbalk tussen de twee glaspanelen, van buiten donker; huisvest de schermcassette van het voorste scherm (vorm geschat).', ex: [0, 0.2, 0] });
@@ -118,7 +118,7 @@ function buildPanorama() {
     const leader = A(`Zonnescherm ${nm}`, { d: `Handbediend rolgordijn onder het ${nm}e glaspaneel, in dit model een stapel lamellen die in de cassette schuift (schematisch). Met de zwarte greep open of dicht; het dak werkt alleen met geopend scherm.`, ex: [0, -0.12, nm === 'voor' ? 0.1 : -0.1],
       open: { ...lead.open, label: `Zonnescherm ${nm}`, look: { dir: [0.3, 1, -0.3], nodes: [`Zonnescherm ${nm}`] } } }, [
       P(`Schermdoek ${nm} 1`, strip(lead), MAT.fabric, { d: 'Eerste lamel van het zonnescherm, met de greep.', ex: [0, -0.04, 0] }),
-      P(`Schermgreep ${nm}`, G.rbox(0.05, 0.005, 0.018, 0.002), MAT.bodPillar, { d: 'Kleine zwarte greep onder de rand van het zonnescherm om het te openen en te sluiten.', p: panP(lead.za - 0.012, 0, lead.lev - 0.0035), ex: [0, -0.06, 0] }),
+      P(`Schermgreep ${nm}`, G.rbox(0.05, 0.005, 0.012, 0.002), MAT.bodPillar, { d: 'Kleine zwarte greep onder de voorrand van het zonnescherm om het te openen en te sluiten; blijft bij een geopend scherm net voor de dwarsrand van het dakframe.', p: panP(lead.za - 0.0045, 0, lead.lev - 0.0035), ex: [0, -0.06, 0] }),
     ]);
     const rest = lam.slice(1).map(l => P(`Schermdoek ${nm} ${l.i + 1}`, strip(l), MAT.fabric, { d: l.steps ? 'Lamel van het zonnescherm; schuift naar de cassette en stapelt zich daar.' : 'Laatste lamel van het zonnescherm, vast in de cassette (de rol).', ex: [0, -0.05, 0],
       open: l.steps ? { ...l.open, follow: `Zonnescherm ${nm}` } : undefined }));
