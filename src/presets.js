@@ -60,10 +60,10 @@ const PRESETS = [
   { id: 'dash', cat: 'Interieur', label: 'Dashboard', note: 'Dashboard met instrumentenpaneel en bedieningsdelen uit elkaar.', iso: ['Dashboard'], deep: ['Dashboard'], cam: { dir: [0.3, 0.45, -1], pad: 1.05 } },
   // Openen
   { id: 'openHood', cat: 'Openen', label: 'Motorruimte', note: 'Motorkap open: de motorruimte van boven en voren, met de kap in de eindstand.', opens: ['Motorkap'] },
-  { id: 'openDoors', cat: 'Openen', label: 'Instappen', note: 'De vier portieren open, schuin van boven.', opens: ['Portier linksvoor', 'Portier rechtsvoor', 'Portier linksachter', 'Portier rechtsachter'], frame: [appCar], cam: { dir: [1, 0.85, 0.55], pad: 1.04 }, soon: true },
-  { id: 'openTrunk', cat: 'Openen', label: 'Bagageruimte', note: 'Achterklep open, hoedenplank mee omhoog en het grote deel van de achterbank neergeklapt.', opens: ['Achterklep', 'Rugleuning achterbank groot deel'], frame: [appCar], cam: { dir: [-0.8, 0.6, -1], pad: 1.05 }, soon: true },
-  { id: 'openFuel', cat: 'Openen', label: 'Tanken', note: 'Tankklep open met de vulhals in het rechter achterscherm.', opens: ['Tankklep'], frame: [appCar], cam: { dir: [-1, 0.35, -0.75], pad: 1.04 }, soon: true },
-  { id: 'openRoof', cat: 'Openen', label: 'Panoramadak', note: 'Zonnescherm open en het voorste glaspaneel gekanteld en naar achteren geschoven.', opens: ['Zonnescherm voor', 'Schuifdak'], frame: [appCar], cam: { dir: [0.6, 1.1, 0.55], pad: 1.04 }, soon: true },
+  { id: 'openDoors', cat: 'Openen', label: 'Instappen', note: 'De vier portieren open, schuin van boven.', opens: ['Portier linksvoor', 'Portier rechtsvoor', 'Portier linksachter', 'Portier rechtsachter'], frame: [appCar], cam: { dir: [1, 0.85, 0.55], pad: 1.04 } },
+  { id: 'openTrunk', cat: 'Openen', label: 'Bagageruimte', note: 'Achterklep open, hoedenplank mee omhoog en het grote deel van de achterbank neergeklapt.', opens: ['Achterklep', 'Rugleuning groot deel'], frame: [appCar], cam: { dir: [-0.8, 0.6, -1], pad: 1.05 } },
+  { id: 'openFuel', cat: 'Openen', label: 'Tanken', note: 'Tankklep open met de vulhals in het rechter achterscherm.', opens: ['Tankklep'], frame: [appCar], cam: { dir: [-1, 0.35, -0.75], pad: 1.04 } },
+  { id: 'openRoof', cat: 'Openen', label: 'Panoramadak', note: 'Zonnescherm open en het voorste glaspaneel gekanteld en naar achteren geschoven.', opens: ['Zonnescherm voor', 'Glaspaneel voor'], frame: [appCar], cam: { dir: [0.6, 1.1, 0.55], pad: 1.04 } },
   { id: 'openAll', cat: 'Openen', label: 'Alles open', note: 'Elke opener open: portieren, kap, klep, ruiten, spiegels en wat er verder opengaat.', opens: 'all', frame: [appCar], cam: { dir: [1, 0.55, 1.08], pad: 1.04 } },
 ];
 const appTourSteps = ['assembled', 'main', 'bodyOff', 'engine', 'head', 'turbo', 'gearbox', 'gearsets', 'chassis', 'brakeLF', 'interior', 'everything', 'assembled'];
