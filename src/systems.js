@@ -356,7 +356,7 @@ function buildCar() {
   const chassis = A('Onderstel', { d: 'Vooras met stuurinrichting, achteras, de vier wielen (225/45 R18; 18 inch is de maat van de UK Initiale Lux, voor een Nederlandse Initiale Paris van 2011 is 17 inch even goed mogelijk) en het remsysteem.', ex: [0, -0.4, 0] },
     [buildFrontAxle(), buildRearAxle(), wheels, buildBrakeSystem()]);
   const car = A('Renault Laguna III', {
-    d: 'Renault Laguna III hatchback (fase 2, 2011) in Initiale Paris-uitvoering, zilvergrijs metallic (Gris Platine), met de 2.0 Turbo F4Rt-motor en zestraps automaat. Klik op een onderdeel om het uit te klappen, dubbelklik om er direct naartoe te gaan, rechtsklik of houd vast om weer in te klappen.',
+    d: 'Renault Laguna III hatchback (fase 2, 2011) in Initiale Paris-uitvoering, zilvergrijs metallic (Gris Platine), met de 2.0 Turbo F4Rt-motor, zestraps automaat en elektrisch panoramadak. Klik op een onderdeel om het uit te klappen, dubbelklik om er direct naartoe te gaan, rechtsklik of houd vast om weer in te klappen.',
     spec: [['Uitvoering', 'Initiale Paris (fase 2)'], ['Carrosserie', '5-deurs hatchback'], ['Motor', '2.0 Turbo F4Rt, 125 kW (170 pk)'], ['Koppel', '270 Nm bij 3250 tpm'], ['Transmissie', '6-traps automaat'], ['Topsnelheid', '220 km/h'], ['0–100 km/h', '9,2 s'], ['Verbruik (gecomb.)', '8,9 l/100 km'], ['CO₂', '210 g/km'], ['Tankinhoud', '66 l'], ['L × B × H', '4695 × 1811 × 1445 mm'], ['Wielbasis', '2756 mm']],
   }, [buildBody(), buildInterior(), buildPowertrain(), chassis, buildCooling(), buildExhaust(), buildFuel(), buildElectrical()]);
   // keuzes voor de eerste twee uitklapniveaus (vectoren in het autoframe, in meters bij 100 %)

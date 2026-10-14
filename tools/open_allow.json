@@ -1,1 +1,11 @@
-[]
+[
+  {"opener": "Motorkap", "mesh": "Carrosserie/Carrosseriekooi/Voorkop/Motorkapslot", "reden": "De slotbeugel van de kap grijpt in het motorkapslot; dat is de sluiting."},
+  {"opener": "Zijruit", "mesh": "Carrosserie/Portier */Raamlijsten en sierlijsten/*", "reden": "Het glas gaat door de raamsleuf op de gordellijn; gordelsierlijst, raamschachtrubbers en chroomlijst zijn de afstrijklippen, in het model gesloten buizen."},
+  {"opener": "Zijruit", "mesh": "Carrosserie/Portier */Binnenpaneel", "reden": "De onderrand van het glas loopt in de ruitgeleiders langs de binnenkant van het portier; het binnenpaneel is een gesloten schaal zonder geleidersleuf."},
+  {"opener": "Zijruit", "mesh": "Carrosserie/Portier */Afdekking B-stijl", "reden": "De achterrand van het glas van het voorportier loopt in de ruitgeleider onder de afdekking van de B-stijl."},
+  {"opener": "Zijruit", "mesh": "Carrosserie/Portier */Naadrubber B-stijl", "reden": "Het naadrubber van de B-stijl ligt voor de geleider waarin de achterrand van het glas zakt."},
+  {"opener": "Zijruit", "mesh": "Carrosserie/Portier */Raamstijl achter", "reden": "De achterrand van het glas van het achterportier loopt in de ruitgeleider in het schuine stijltje."},
+  {"opener": "Zijruit", "mesh": "Carrosserie/Carrosseriekooi/Zijwanden en dak/B-stijl *", "reden": "De voorrand van het glas van het achterportier loopt in de ruitgeleider langs de B-stijl."},
+  {"opener": "Zijruit", "mesh": "Carrosserie/Portier */Buitenspiegel */Spiegelvoet", "reden": "De voorrand van het glas van het voorportier loopt in de ruitgeleider onder de spiegelvoet."},
+  {"opener": "Zijruit", "mesh": "Carrosserie/Portier */Portierrubber", "reden": "Het portierrubber loopt als buis langs de raamsleuf waar het glas doorheen zakt."}
+]
