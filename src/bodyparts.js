@@ -516,7 +516,7 @@ function bodHoodPt(p) {
 }
 // Motorkapsteun (0,50 m): voetpunt F op de rechter voorwielkast, rustpunt E op de steunhouder, grijppunt G in het binnenframe van de kap.
 // F volgt uit G: bij 65 graden staat de stang exact 0,50 m van F naar G (het eind raakt de kap).
-const bodStG = [-0.72, 0.825, 1.45], bodStGw = bodHoodPt(bodStG), bodStL = 0.50;
+const bodStG = [-0.72, 0.838, 1.45], bodStGw = bodHoodPt(bodStG), bodStL = 0.50;
 const bodStF = (() => { const x = -0.745, z = 1.33, dx = bodStGw[0] - x, dz = bodStGw[2] - z; return [x, bodStGw[1] - Math.sqrt(bodStL * bodStL - dx * dx - dz * dz), z]; })();
 const bodStE = [-0.705, 0.684, 1.822];
 // draaiing van de stang om F: van de rustrichting naar de openrichting (as = r0 x r1)
