@@ -94,76 +94,115 @@ function uiPlace(k) {
   if (k.hasOff) k.obj.position.add(k.off);
 }
 
-/* ---------- openmodus: scharnieren, schuiven, volgers en telescopen ---------- */
+/* ---------- openmodus: scharnieren, schuiven, volgers, vaste delen en telescopen ---------- */
 // Een knoop met `open` draait om een scharnier of schuift, bovenop de uitklapregel:
 //   pos = pivot + R(u * angle) * (base - pivot) + exv * amt * SPREAD + off,  quat = R * q0
-// Bij 'slide' eerst `tilt` (eerste deel van u, als die er is), dan `move`. u is de geanimeerde openstand.
-// Een volger (`follow`) beweegt met de u van zijn leider. Een telescoop (`strut`) wordt na elke stap
-// van punt a naar punt b gericht; zijn kind `rod` schuift mee.
+// 'slide': eerst `tilt` (eerste deel van u, standaard 35 %), dan `move` (recht) of `arc` (draaien om een
+// verre as, zodat een paneel de kromming van het dak volgt). u is de geanimeerde openstand (0 tot 1).
+// Een volger (`follow`) beweegt met de u van zijn leider. Een knoop met `stay` in de deelboom van een
+// opener blijft staan als die opener draait (carrosseriezijde van een scharnier, afdichting). Een volger
+// met `stay` beweegt in het frame van de rustende opener (motorkapsteun onder de motorkap).
+// Een telescoop (`strut`) wordt na elke stap van punt a naar punt b gericht; zijn kind `rod` schuift mee.
+// Verwijzingen (follow, strut.a.node, strut.b.node, strut.lead) zijn een pad vanaf de wortel of een unieke naam.
 const OPENERS = [];            // leiders, in boomvolgorde
 const uiOpenAnim = new Set();  // leiders die bewegen
-const STRUTS = [];
+const STRUTS = [], STAYS = [];
 const uiOq = new THREE.Quaternion(), uiOq2 = new THREE.Quaternion(), uiOv = V3(0, 0, 0), uiOv2 = V3(0, 0, 0);
+const uiOm = new THREE.Matrix4(), uiOm2 = new THREE.Matrix4(), uiOm3 = new THREE.Matrix4(), uiOs = V3(1, 1, 1);
 const UI_Z = V3(0, 0, 1);
+function uiRef(ref, who) {
+  if (!ref) return null;
+  const n = ref.includes('/') ? uiByPath(ref) : (uiNameCount.get(ref) === 1 ? uiNames.get(ref) : null);
+  if (!n) console.error('openmodus: verwijzing ' + JSON.stringify(ref) + ' van ' + who + ' lost niet op' + (uiNameCount.get(ref) > 1 ? ' (naam niet uniek, gebruik een pad)' : ''));
+  return n;
+}
+const uiPathOf = n => { const a = []; for (let k = n; k; k = k.parent) a.unshift(k.name); return a.join('/'); };
+const uiOpenAnc = n => { for (let p = n.parent; p; p = p.parent) if (p.opn) return p; return null; };
 for (const n of ALL) {
   n.ou = 0; n.ot = 0; n.opk = 1; n.opa0 = 0; n.opd = 0.9;
-  n.q0 = n.obj.quaternion.clone();
+  n.q0 = n.obj.quaternion.clone(); n.s0 = n.obj.scale.clone();
   const o = n.opn;
   if (o) {
     o.type = o.type || 'hinge';
     if (o.pivot) o.pv = V3(...o.pivot);
     if (o.axis) o.ax = V3(...o.axis).normalize();
     if (o.move) o.mv = V3(...o.move);
+    if (o.arc) { o.apv = V3(...o.arc.pivot); o.aax = V3(...o.arc.axis).normalize(); o.aang = o.arc.angle; }
     if (o.tilt) { o.tpv = V3(...o.tilt.pivot); o.tax = V3(...o.tilt.axis).normalize(); o.tang = o.tilt.angle; o.tf = o.tilt.part != null ? o.tilt.part : 0.35; }
     o.dur = o.dur || (REDUCED ? 0.01 : 0.9);
-    o.followers = [];
+    o.followers = []; o.stays = []; o.struts = [];
+    if (o.type === 'hinge' && (!o.pv || !o.ax || typeof o.angle !== 'number')) console.error('openmodus: scharnier ' + n.name + ' mist pivot, axis of angle');
   }
-  if (n.strut) STRUTS.push(n);
 }
 for (const n of ALL) {
   const o = n.opn;
-  if (!o) continue;
-  if (o.follow) {
-    const lead = uiNames.get(o.follow);
-    if (lead && lead.opn) { lead.opn.followers.push(n); o.lead = lead; } else console.warn('openmodus: volger ' + n.name + ' zonder leider ' + o.follow);
-  } else OPENERS.push(n);
+  if (o && o.follow) {
+    const lead = uiRef(o.follow, n.name);
+    if (lead && lead.opn && !lead.opn.follow) { lead.opn.followers.push(n); o.lead = lead; } else console.error('openmodus: volger ' + n.name + ' zonder leider ' + o.follow);
+  } else if (o) OPENERS.push(n);
+  if (n.stay) { const anc = uiOpenAnc(n); if (anc) { n.stayO = anc; STAYS.push(n); if (!o) (anc.opn.lead ? anc.opn.lead : anc).opn.stays.push(n); } else console.error('openmodus: ' + n.name + ' heeft stay maar geen opener erboven'); }
 }
-for (const n of STRUTS) {
+for (const n of ALL) {
+  if (!n.strut) continue;
   const s = n.strut;
-  s.na = s.a.node ? uiNames.get(s.a.node) : null; s.nb = s.b.node ? uiNames.get(s.b.node) : null;
+  if (!s.a || !s.b || !s.a.node || !s.b.node) { console.error('openmodus: telescoop ' + n.name + ' heeft a.node en b.node nodig'); continue; }
+  s.na = uiRef(s.a.node, n.name); s.nb = uiRef(s.b.node, n.name);
   s.pa = V3(...s.a.p); s.pb = V3(...s.b.p);
   s.rodN = s.rod ? n.kids.find(k => k.name === s.rod) : null;
-  s.dirty = false;
+  let lead = s.lead ? uiRef(s.lead, n.name) : null;
+  if (!lead && s.nb) lead = s.nb.opn ? s.nb : uiOpenAnc(s.nb);
+  if (lead && lead.opn && lead.opn.lead) lead = lead.opn.lead;
+  if (!s.na || !s.nb || !lead) { console.error('openmodus: telescoop ' + n.name + ' onvolledig'); continue; }
+  s.leadN = lead; s.dirty = false; lead.opn.struts.push(n); STRUTS.push(n);
 }
 // pose van een openende knoop in het frame van zijn ouder (zonder uitklapverschuiving)
 function uiOpenPose(k) {
   const o = k.opn, u = k.ou, p = k.obj.position;
+  p.copy(k.base); k.obj.quaternion.copy(k.q0);
   if (o.type === 'slide') {
-    p.copy(k.base); k.obj.quaternion.copy(k.q0);
     let us = u;
+    const more = o.mv || o.apv;
     if (o.tax) {
-      const ut = o.mv ? Math.min(1, u / o.tf) : u;
-      us = o.mv ? Math.max(0, (u - o.tf) / (1 - o.tf)) : 0;
+      const ut = more ? Math.min(1, u / o.tf) : u;
+      us = more ? Math.max(0, (u - o.tf) / (1 - o.tf)) : 0;
       uiOq.setFromAxisAngle(o.tax, o.tang * ut);
       p.sub(o.tpv).applyQuaternion(uiOq).add(o.tpv);
       k.obj.quaternion.premultiply(uiOq);
     }
+    if (o.apv) { uiOq.setFromAxisAngle(o.aax, o.aang * us); p.sub(o.apv).applyQuaternion(uiOq).add(o.apv); k.obj.quaternion.premultiply(uiOq); }
     if (o.mv) p.addScaledVector(o.mv, us);
     return;
   }
   uiOq.setFromAxisAngle(o.ax, o.angle * u);
-  p.copy(k.base).sub(o.pv).applyQuaternion(uiOq).add(o.pv);
-  k.obj.quaternion.copy(k.q0).premultiply(uiOq);
+  p.sub(o.pv).applyQuaternion(uiOq).add(o.pv);
+  k.obj.quaternion.premultiply(uiOq);
+}
+// vaste delen: Lk' = A^-1 * Ocur^-1 * X * A * Lk (X = rustmatrix van de opener O, A = tussenliggende groepen)
+function uiStayFix(k) {
+  const O = k.stayO;
+  if (O.ou === 0) { if (!k.opn) { uiPlace(k); k.obj.quaternion.copy(k.q0); k.obj.scale.copy(k.s0); } return; }
+  O.obj.updateMatrix();
+  uiOm.identity();
+  for (let p = k.parent; p && p !== O; p = p.parent) { p.obj.updateMatrix(); uiOm.premultiply(p.obj.matrix); }   // A
+  uiOv.copy(O.base); if (O.parent) uiOv.addScaledVector(O.exv, O.parent.amt * SPREAD); if (O.hasOff) uiOv.add(O.off);
+  uiOm2.compose(uiOv, O.q0, O.s0);                                   // X
+  uiOm3.copy(O.obj.matrix).invert().multiply(uiOm2).multiply(uiOm);   // Ocur^-1 * X * A
+  if (!k.opn) { k.obj.position.copy(k.base); if (k.parent) k.obj.position.addScaledVector(k.exv, k.parent.amt * SPREAD); if (k.hasOff) k.obj.position.add(k.off); k.obj.quaternion.copy(k.q0); k.obj.scale.copy(k.s0); }
+  k.obj.updateMatrix();
+  uiOm2.copy(uiOm).invert().multiply(uiOm3).multiply(k.obj.matrix);
+  uiOm2.decompose(k.obj.position, k.obj.quaternion, uiOs); k.obj.scale.copy(uiOs);
 }
 function uiOpenApply(n) {
   uiPlace(n);
-  for (const f of n.opn.followers) { f.ou = n.ou; uiPlace(f); if (f.ou === 0) f.obj.quaternion.copy(f.q0); }
-  if (n.ou === 0) n.obj.quaternion.copy(n.q0);
+  if (n.ou === 0) { n.obj.quaternion.copy(n.q0); }
+  for (const f of n.opn.followers) { f.ou = n.ou; uiPlace(f); if (f.ou === 0) f.obj.quaternion.copy(f.q0); if (f.stay) uiStayFix(f); }
+  for (const k of n.opn.stays) uiStayFix(k);
 }
 function uiSetOpen(n, v, instant) {
-  if (typeof n === 'string') n = uiNames.get(n);
+  if (typeof n === 'string') n = uiRef(n, 'setOpen');
   if (!n || !n.opn || n.opn.lead) return false;
   v = clamp(+v || 0, 0, 1);
+  if ((n.ot > 0) !== (v > 0) || (n.ou > 0) !== (v > 0)) uiVisDirty = true;
   if (instant || REDUCED) { n.ot = v; n.ou = v; n.opk = 1; uiOpenAnim.delete(n); uiOpenApply(n); uiStrutSync(); return true; }
   if (n.ot === v && (uiOpenAnim.has(n) || n.ou === v)) return true;
   n.ot = v; n.opa0 = n.ou; n.opk = 0;
@@ -174,26 +213,32 @@ function uiSetOpen(n, v, instant) {
 function stepOpen(dt) {
   if (!uiOpenAnim.size) return false;
   for (const n of uiOpenAnim) {
+    const was = n.ou > 0;
     n.opk = Math.min(1, n.opk + dt / n.opd);
     n.ou = n.opk >= 1 ? n.ot : n.opa0 + (n.ot - n.opa0) * ease(n.opk);
     uiOpenApply(n);
+    if (was !== (n.ou > 0)) uiVisDirty = true;
     if (n.opk >= 1) uiOpenAnim.delete(n);
   }
   uiStrutSync();
   return true;
 }
 const uiAnyOpen = () => OPENERS.some(n => n.ou > 0 || n.ot > 0);
-// telescopen: richten van a naar b; in rust (alles dicht) terug naar de gebouwde stand
+// telescopen: richten van a naar b zolang hun leider open is; daarna terug naar de gebouwde stand
 function uiStrutSync() {
   if (!STRUTS.length) return;
-  const any = uiAnyOpen();
-  if (!any) { for (const n of STRUTS) if (n.strut.dirty) { n.obj.quaternion.copy(n.q0); uiPlace(n); if (n.strut.rodN) uiPlace(n.strut.rodN); n.strut.dirty = false; } return; }
-  ROOT.obj.updateMatrixWorld(true);
+  let world = false;
   for (const n of STRUTS) {
-    const s = n.strut, par = n.parent.obj;
-    const a = s.na ? par.worldToLocal(s.na.obj.localToWorld(uiOv.copy(s.pa))) : uiOv.copy(s.pa);
-    const b = s.nb ? par.worldToLocal(s.nb.obj.localToWorld(uiOv2.copy(s.pb))) : uiOv2.copy(s.pb);
-    if (s.d0 === undefined) s.d0 = s.restLen || b.distanceTo(a);
+    const s = n.strut;
+    if (s.leadN.ou === 0) {
+      if (s.dirty) { uiPlace(n); n.obj.quaternion.copy(n.q0); if (s.rodN) uiPlace(s.rodN); s.dirty = false; }
+      continue;
+    }
+    if (!world) { ROOT.obj.updateMatrixWorld(true); world = true; }
+    const par = n.parent.obj;
+    const a = par.worldToLocal(s.na.obj.localToWorld(uiOv.copy(s.pa)));
+    const b = par.worldToLocal(s.nb.obj.localToWorld(uiOv2.copy(s.pb)));
+    if (s.d0 === undefined) s.d0 = s.restLen || s.pb.distanceTo(s.pa);
     const d = b.distanceTo(a);
     n.obj.position.copy(a);
     uiOq2.setFromUnitVectors(UI_Z, b.sub(a).normalize());
@@ -202,6 +247,24 @@ function uiStrutSync() {
     s.dirty = true;
   }
 }
+// knopen die in de eindstand anders staan (voor camera en kaders): openers, volgers, vaste delen, telescopen
+function uiOpenFinalNodes() {
+  const out = [];
+  for (const n of OPENERS) if (n.ou > 0 || n.ot > 0) { out.push(n, ...n.opn.followers, ...n.opn.stays, ...n.opn.struts); for (const t of n.opn.struts) if (t.strut.rodN) out.push(t.strut.rodN); }
+  return out;
+}
+function uiOpenFinalPose() {
+  for (const n of OPENERS) if (n.ou > 0 || n.ot > 0) {
+    n.ou = n.ot;
+    if (n.ou > 0) { uiOpenPose(n); n.obj.position.addScaledVector(n.exv, n.parent.target * uiSpreadEnd); } else n.obj.quaternion.copy(n.q0);
+    for (const f of n.opn.followers) { f.ou = n.ou; if (f.ou > 0) { uiOpenPose(f); f.obj.position.addScaledVector(f.exv, f.parent.target * uiSpreadEnd); } else f.obj.quaternion.copy(f.q0); if (f.stay) uiStayFix(f); }
+    for (const k of n.opn.stays) uiStayFix(k);
+  }
+  const keep = STRUTS.map(t => t.strut.dirty);
+  uiStrutSync();
+  STRUTS.forEach((t, i) => { t.strut.dirty = keep[i]; });
+}
+
 function setTarget(n, t, delay = 0, dur = DUR) {
   if (!n || !n.asm) return;
   t = clamp(+t || 0, 0, 1);
@@ -292,7 +355,9 @@ let uiPickVer = 0;
 function uiInScope(a) { return !ISO.length || ISO.some(r => isUnder(a, r)); }
 // Ingesloten onderdelen (inner) zijn niet te zien zolang hun oudergroep dicht is; dan tekenen we ze niet.
 // Staat de ouder zelf buiten de isolatie (je isoleert het ingesloten deel), dan is er niets dat het verbergt.
-function uiInnerHidden(n) { const p = n.parent; return !!(n.inner && p && p.target === 0 && p.amt < 1e-4 && uiInScope(p)); }
+// een open opener (de ouder zelf of een broer) legt de ingesloten delen van die ouder bloot
+const uiOpenNear = (p, fin) => (fin ? p.ot : p.ou) > 0 || p.kids.some(k => k.opn && (fin ? (k.opn.lead ? k.opn.lead.ot : k.ot) : k.ou) > 0);
+function uiInnerHidden(n) { const p = n.parent; return !!(n.inner && p && p.target === 0 && p.amt < 1e-4 && uiInScope(p) && !uiOpenNear(p, false)); }
 function applyVisibility() {
   const onPath = new Set();
   for (const r of ISO) for (let a = r.parent; a; a = a.parent) onPath.add(a);
@@ -358,15 +423,19 @@ let W = 1, H = 1;
 const DIRS = { iso: V3(1, 0.42, 1.08), front: V3(0.12, 0.22, 1), rear: V3(-0.15, 0.3, -1), side: V3(1, 0.1, 0.02), top: V3(0.0001, 1, 0.12), under: V3(0.25, -1, 0.15), isoRear: V3(-1, 0.45, -1) };
 let uiSpreadEnd = 1;
 // Eindstand voorspellen: posities na afloop van alle lopende animaties, met de zichtbaarheid van de eindstand.
-function uiPredHidden(n) { const p = n.parent; return !!(n.inner && p && p.target === 0 && uiInScope(p)); }
+function uiPredHidden(n) { const p = n.parent; return !!(n.inner && p && p.target === 0 && uiInScope(p) && !uiOpenNear(p, true)); }
 function uiWithFinal(fn) {
+  const moved = uiOpenFinalNodes();
+  for (const n of moved) { (n._q || (n._q = new THREE.Quaternion())).copy(n.obj.quaternion); n._s = n.obj.scale.clone(); n._u = n.ou; }
   for (const n of ALL) if (n.parent) {
     (n._p || (n._p = V3(0, 0, 0))).copy(n.obj.position);
     n.obj.position.copy(n.base).addScaledVector(n.exv, n.parent.target * uiSpreadEnd).add(n.pull).add(n.liftV);
   }
+  if (moved.length) uiOpenFinalPose();
   ROOT.obj.updateMatrixWorld(true);
   try { return fn(); } finally {
     for (const n of ALL) if (n.parent) n.obj.position.copy(n._p);
+    for (const n of moved) { n.obj.quaternion.copy(n._q); n.obj.scale.copy(n._s); n.ou = n._u; }
     ROOT.obj.updateMatrixWorld(true);
   }
 }
@@ -565,7 +634,7 @@ function stepGround(dt) {
 const uiHist = [];
 function uiSnap() {
   return {
-    t: ASMS.map(n => n.target),
+    t: ASMS.map(n => n.target), o: OPENERS.map(n => n.ot),
     pull: ALL.filter(n => n.pull.lengthSq() > 0).map(n => [n.id, n.pull.x, n.pull.y, n.pull.z]),
     lift: uiLifted ? uiLifted.id : null,
     iso: ISO.map(n => n.id), xray: XRAY, sys: SYSCOL, spread: SPREAD,
@@ -581,6 +650,7 @@ function uiPush() {
 function uiRestore(s, instant) {
   ISO = s.iso.map(id => uiById.get(id)).filter(Boolean);
   ASMS.forEach((n, i) => setTarget(n, s.t[i], 0, 0.7));
+  OPENERS.forEach((n, i) => uiSetOpen(n, s.o ? s.o[i] : 0));
   for (const n of ALL) if (n.pull.lengthSq() > 0) { n.pull.set(0, 0, 0); uiOffTo(n, 0.7); }
   for (const [id, x, y, z] of s.pull) { const n = uiById.get(id); if (n) { n.pull.set(x, y, z); uiOffTo(n, 0.7); } }
   uiDrop();
@@ -642,7 +712,7 @@ function uiBatchClean() {
     const n = ALL[i];
     if (!n.asm) { n._bc = !uiSelSet.has(n.obj) && !uiHovSet.has(n.obj); continue; }
     let c = n.target === 0 && n.amt === 0 && !uiAnim.has(n);
-    if (c) for (const k of n.kids) { if (k.inner) continue; if (!k._bc || k.hasOff || k.ou > 0 || (k.strut && k.strut.dirty)) { c = false; break; } }
+    if (c) for (const k of n.kids) { if (k.inner) continue; if (!k._bc || k.hasOff || k.ou > 0 || (k.strut && k.strut.dirty) || (k.stayO && k.stayO.ou > 0)) { c = false; break; } }
     n._bc = c;
   }
 }
@@ -684,7 +754,7 @@ function uiBatchSync() {
 // matrix van mesh naar groep in de gemonteerde stand (basisposities), onafhankelijk van de huidige explosie
 function uiBaseRel(o, top) {
   uiBm.identity();
-  for (; o && o !== top; o = o.parent) { const n = o.userData.node; uiBl.compose(n ? n.base : o.position, o.quaternion, o.scale); uiBm.premultiply(uiBl); }
+  for (; o && o !== top; o = o.parent) { const n = o.userData.node; uiBl.compose(n ? n.base : o.position, n ? n.q0 : o.quaternion, n ? n.s0 : o.scale); uiBm.premultiply(uiBl); }
   return uiBm;
 }
 function uiBatchAdd(job, m) {
