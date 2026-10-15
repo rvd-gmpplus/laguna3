@@ -425,7 +425,7 @@ function buildHead() {
       P('Deksel', engCoverGeo(), MAT.aluCast, { d: 'Deksel over de lagerbrug met doorvoeren voor de vier bobines.', ex: [0, 0, 0] }),
       P('Kleppendekselpakking', coverGasket, MAT.rubber, { d: 'Rubber pakking onder het kleppendeksel.', ex: [0, -0.025, 0] }),
       A('Kleppendekselbouten', { d: 'Acht bouten van het kleppendeksel (aantal geschat).', ex: [0, 0.05, 0] }, coverBolts),
-      P('Olievuldop', merge([G.cyl('y', 0.021, 0.021, 0.016, 20), xf(G.box(0.03, 0.006, 0.006), [0, 0.01, 0])]), MAT.plastic, { d: 'Dop van de olievulopening; wordt links omhoog getild uit de vulhals (opener, geschat 6 cm).', p: [-0.17, ENG_COVER_TOP + 0.011, -0.05], ex: [0, 0.09, 0], open: { type: 'slide', move: [0, 0.06, 0], needs: 'Motorkap', label: 'Olievuldop', look: { dir: [0.1, 1, 0.5], nodes: ['Kleppendeksel'] } } }),
+      P('Olievuldop', merge([G.cyl('y', 0.021, 0.021, 0.016, 20), xf(G.box(0.03, 0.006, 0.006), [0, 0.01, 0])]), MAT.plastic, { d: 'Dop van de olievulopening; wordt gekanteld omhoog en opzij getild uit de vulhals (opener, geschat 10 cm).', p: [-0.17, ENG_COVER_TOP + 0.011, -0.05], ex: [0, 0.09, 0], open: { type: 'slide', tilt: { pivot: [-0.17, ENG_COVER_TOP + 0.011, -0.05], axis: [0, 0, 1], angle: -0.3 }, move: [-0.14, 0.09, 0], needs: 'Motorkap', label: 'Olievuldop', look: { dir: [-0.7, 0.8, 0.5], nodes: ['Olievuldop'] } } }),
     ]),
     buildIgnition(),
   ]);
