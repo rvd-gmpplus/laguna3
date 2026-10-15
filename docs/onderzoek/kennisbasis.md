@@ -42,7 +42,7 @@ Waar een feit uit het rapport is overgenomen zonder dat de bron opnieuw is gelez
 | Fase 2 | Gepresenteerd op de Mondial in Parijs, oktober 2010 | Bevestigd | uit het rapport (fr.wikipedia) |
 | Fabriek | Sandouville; productie van de Laguna III tot mei 2015, 351.384 stuks in alle carrosserieen | Aannemelijk | uit het rapport (fr.wikipedia) |
 | Motorplaat | Op het blok; motortype, index en nummer | Aannemelijk | uit het rapport ([lagunanotice](https://www.lagunanotice.com/plaques_d_identification_moteur-1020.html)) |
-| Euronorm | Euro 4 in de persmap 2007; voor fase 2 te controleren via de RDW | Bevestigd (fase 1), Open (fase 2) | [Renault-persmap 2007](https://www.planeterenault.com/UserFiles/files/doc/Laguna3Tech.pdf) |
+| Euronorm | Euro 4 in de persmap 2007 (fase 1); volgens de RDW heeft de auto van de gebruiker (eerste toelating 18 februari 2011) EURO 5 A (715/2007*692/2008A) | Bevestigd (fase 1 en RDW) | [Renault-persmap 2007](https://www.planeterenault.com/UserFiles/files/doc/Laguna3Tech.pdf) |
 | Euro NCAP | 5 sterren volwassenen (36 van 37 punten), 4 sterren kinderen, 2 sterren voetgangers (test 2007) | Aannemelijk | uit het rapport ([zercustoms](http://www.zercustoms.com/news/Renault-Laguna-III-Euro-NCAP-Rating.html)) |
 
 ## 3. Maten en massa (berline)
@@ -188,14 +188,30 @@ Prioriteiten voor een exemplaar van circa 15 jaar, uit het rapport overgenomen: 
 ## 13. Open punten
 
 - Renault-tandentallen van de eindoverbrenging 3,804.
-- Of fase 2 (Euro 5) andere waarden heeft voor eindoverbrenging, verbruik en CO2.
+- Of fase 2 (Euro 5) andere waarden heeft voor eindoverbrenging. Verbruik en CO2 van de auto van de gebruiker staan sinds de RDW-gegevens vast (sectie 14).
+- Het motorsuffix van de auto van de gebruiker: 811 of 813. De RDW noemt het niet; MR 415 geeft Euro 5 alleen bij de 813 (sectie 14).
 - Bak van de 3.0 V6 dCi en de 3.5 V6 in de Laguna III (AJ0 of een Aisin-bak).
 - Laaddruk van de F4Rt 811.
 - Minimumdiktes van de remschijven, aanhaalmomenten uit het werkplaatsboek (cilinderkop, wielbouten, subframe, remklauwen), uitlijnwaarden.
 - Aircovulling, koelvloeistof- en remvloeistofinhoud.
 - Exacte uitvoering van deze auto (wielmaat) via RDW of MyRenault. 4Control: niet aanwezig (opgave gebruiker).
 
-## 14. Bronnen
+## 14. De auto van de gebruiker volgens de RDW (15 oktober 2026)
+
+De gebruiker gaf het kenteken op; de gegevens komen uit de open data van de RDW (opendata.rdw.nl). Kenteken en chassisnummer staan niet in de repo.
+
+| Onderwerp | Feit volgens de RDW | Zekerheid | Opmerking |
+|---|---|---|---|
+| Voertuig | Renault Laguna, hatchback, vier deuren, vijf zitplaatsen, grijs | Bevestigd | Past bij het model en bij de kleur Gris Platine. |
+| Motor | Benzine, 4 cilinders, 1998 cc, 125 kW | Bevestigd | Past bij de F4Rt 2.0 turbo 170 pk. Het motorsuffix noemt de RDW niet. |
+| Eerste toelating | 18 februari 2011, ook de eerste tenaamstelling in Nederland | Bevestigd | Fase 2. De auto is daarmee voor 07/2011 gebouwd; dat beslist de bouwdatumgrens van onder meer de spanrol en de geleiderol. |
+| Emissie | EURO 5 A, milieuklasse 715/2007*692/2008A | Bevestigd | MR 415 geeft Euro 5 alleen bij de F4R 813 en bij de 811 alleen Euro 4. Het motorsuffix is dus niet bevestigd; het motorplaatje beslist. De voorkatalysator volgt het emissieniveau (Euro 5). |
+| Verbruik en CO2 | 8,7 l/100 km gecombineerd, 201 g/km | Bevestigd | Fase 1 gaf 8,9 l/100 km en 210 g/km (persmap). |
+| Maten | Lengte 470 cm, wielbasis 276 cm, spoor voor 156 cm en achter 151 cm | Bevestigd | Gelijk aan 4.695 mm, 2.756 mm, 1.557 mm en 1.512 mm in cm afgerond; het model klopt hiermee. |
+| Massa | Ledig 1.381 kg, rijklaar 1.481 kg, toegestaan 2.017 kg | Bevestigd | Niet vergeleken met de 1.467 kg uit de persmap (fase 1, andere definitie, andere uitvoering). Geen onderdeelkeuze gebaseerd op het gewicht. |
+| Bak, velgmaat, onderstel, vierwielbesturing, stuurzijde | Niet in de RDW-gegevens | Open | Geen keuze gebaseerd op spoor of gewicht: zonder onderbouwing is daar niets uit af te leiden. |
+
+## 15. Bronnen
 
 - [Renault, dossier de presse Nouvelle Laguna, augustus 2007, technische kenmerken blz. 32 tot 36](https://www.planeterenault.com/UserFiles/files/doc/Laguna3Tech.pdf)
 - [Planete Renault, La boite de vitesse automatique AJ0](https://www.planeterenault.com/1-gamme/40-technologie/4894-boitevitesse-automatique-aj0)

@@ -220,6 +220,11 @@ input[type=range]{width:100%;accent-color:var(--ink)}
 .pn-tab td{padding:3px 8px 3px 0;border-top:1px solid var(--line);vertical-align:top}
 .pn-tab td.num{white-space:nowrap}
 .pn p.pn-txt{margin:0 0 4px;font-size:12.5px}
+.pn-kzbox{margin:0 0 8px;padding:6px 10px;border-radius:9px;border:1px solid var(--line);background:var(--chip)}
+.pn-kzbox small{display:block;margin-top:4px;color:var(--ink-2);font-size:11px}
+.pn-nums li.pn-kz{padding:2px 6px;border-radius:6px;background:var(--chip)}
+.pn-tab tr.pn-kz td{background:var(--chip)}
+.pn-kz em,.pn-kzbox em{font-style:normal;font-weight:700;font-size:11px;color:var(--ink-2)}
 .pn-src{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12.5px}
 .pn-src a{color:var(--focus)}
 .pn-info{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;margin:0;font-size:12.5px}
@@ -435,7 +440,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
         <div class="kids" id="selKids"></div>
         <div class="pn" id="pnBox" role="group" aria-labelledby="pnTitle">
           <p class="kids-title" id="pnTitle">Onderdeelnummers</p>
-          <p class="pn-warn" id="pnWarn">Controleer het nummer altijd op het chassisnummer (VIN) bij de dealer of webwinkel; catalogi verschillen per bouwdatum en uitvoering.</p>
+          <p class="pn-warn" id="pnWarn">Controleer het nummer altijd op het chassisnummer (VIN) bij de dealer of webwinkel; catalogi verschillen per bouwdatum en uitvoering. Waar een blok Gekozen voor deze auto staat, is de uitvoering vastgesteld volgens de RDW en het chassisnummer van de gebruiker; bij alle andere varianten blijft die controle nodig.</p>
           <div id="pnBody"></div>
         </div>
         <p class="note">Schematisch 3D-model: vormen, maten en posities van onderdelen zijn benaderd en niet geschikt als montagevoorschrift. Technische gegevens komen uit openbare specificaties en werkplaatshandboeken van deze auto en, waar vermeld, van zustermotoren (F4R) of de zusterbak (Mitsubishi F6AJA); niet elk gegeven is voor deze uitvoering bevestigd.</p>

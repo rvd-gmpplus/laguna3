@@ -142,7 +142,7 @@ function renderPn(n) {
   const r = uiPnRec(n), u = r && r.u, st = mk('p', 'pn-status');
   let badge, ok = false;
   if (r && r.kind === 'zelf' && u.st === 'past') { badge = 'Past volgens catalogus'; ok = true; }
-  else if (r && r.kind === 'zelf' && u.st === 'vin') badge = 'Variant: kies op VIN';
+  else if (r && r.kind === 'zelf' && u.st === 'vin') badge = u.kz ? 'Gekozen voor deze auto' : 'Variant: kies op VIN';
   else if (r && r.kind === 'zelf' && u.st === 'nietgevonden') badge = 'Niet gevonden';
   else if (r && r.kind !== 'zelf') badge = r.kind === 'set' ? 'Deel van set' : 'Deel van';
   else if (!n.asm || uiPnCover(n) === 0) badge = 'Niet onderzocht';
@@ -158,12 +158,31 @@ function renderPn(n) {
     if (sub > 0) st.appendChild(mk('small', null, `Hieronder hebben ${sub} van ${n.count} onderdelen een nummer.`));
   }
   box.appendChild(st);
+  const kz = r && r.kind === 'zelf' && u.kz;
+  if (kz) {
+    // De uitvoering voor de auto van de gebruiker, volgens de RDW en het chassisnummer van de gebruiker (zie build_pn.py, VIN_KEUZE).
+    box.appendChild(mk('h4', null, 'Gekozen voor deze auto'));
+    const k = mk('div', 'pn-kzbox');
+    k.appendChild(mk('p', 'pn-txt', kz.v));
+    const gek = [...(kz.o || []), ...(kz.a || []).map(x => x[0] + ' ' + x[1])];
+    if (gek.length) k.appendChild(mk('p', 'pn-txt', 'Nummer: ' + gek.join(', ') + '. Bewijs ' + kz.b + ', zekerheid van de keuze ' + kz.z + '.'));
+    k.appendChild(mk('p', 'pn-txt', kz.g));
+    const bronnen = (kz.s || []).filter(x => /^https:\/\//i.test(x));
+    if (bronnen.length) {
+      const d = mk('div', 'pn-src');
+      for (const url of bronnen) { const a = mk('a', null, url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]); a.href = url; a.target = '_blank'; a.rel = 'noopener'; d.appendChild(a); }
+      k.appendChild(d);
+    }
+    if (PN_DATA.meta && PN_DATA.meta.auto) k.appendChild(mk('small', null, PN_DATA.meta.auto));
+    box.appendChild(k);
+  }
+  const isKz = (oe, am) => !!kz && (oe != null ? (kz.o || []).includes(oe) : (kz.a || []).some(x => x[0] === am[0] && x[1] === am[1]));
   if (uiPnHasNum(r)) {
     const head = (txt) => box.appendChild(mk('h4', null, txt));
     if (u.oe && u.oe.length) {
       head(r.kind === 'zelf' ? (u.oe.length > 1 ? 'Renault-nummers' : 'Renault-nummer') : 'Renault-nummer van ' + (u.n || r.id));
       const ul = mk('ul', 'pn-nums');
-      for (const [num, note, lvl] of u.oe) { const li = mk('li'); li.appendChild(mk('b', null, num)); if (lvl) li.appendChild(uiPnLvl(mk, lvl)); if (note) li.appendChild(mk('span', null, note)); ul.appendChild(li); }
+      for (const [num, note, lvl] of u.oe) { const li = mk('li'); if (isKz(num)) li.className = 'pn-kz'; li.appendChild(mk('b', null, num)); if (isKz(num)) li.appendChild(mk('em', null, 'gekozen')); if (lvl) li.appendChild(uiPnLvl(mk, lvl)); if (note) li.appendChild(mk('span', null, note)); ul.appendChild(li); }
       box.appendChild(ul);
     }
     if (u.am && u.am.length) {
@@ -171,12 +190,12 @@ function renderPn(n) {
       const t = mk('table', 'pn-tab'), hr = t.createTHead().insertRow();
       for (const h of ['Merk', 'Nummer', 'Bewijs', 'Opmerking']) hr.appendChild(mk('th', null, h));
       const tb = t.createTBody();
-      for (const [merk, num, note, lvl] of u.am) { const tr = tb.insertRow(); tr.appendChild(mk('td', null, merk)); tr.appendChild(mk('td', 'num', num)); const td = mk('td'); if (lvl) td.appendChild(uiPnLvl(mk, lvl)); tr.appendChild(td); tr.appendChild(mk('td', null, note || '')); }
+      for (const [merk, num, note, lvl] of u.am) { const tr = tb.insertRow(); if (isKz(null, [merk, num])) tr.className = 'pn-kz'; tr.appendChild(mk('td', null, merk)); tr.appendChild(mk('td', 'num', num)); const td = mk('td'); if (lvl) td.appendChild(uiPnLvl(mk, lvl)); tr.appendChild(td); const tn = mk('td', null, note || ''); if (tr.className === 'pn-kz') tn.appendChild(mk('em', null, (note ? ' ' : '') + 'gekozen')); tr.appendChild(tn); }
       box.appendChild(t);
     }
     box.appendChild(mk('p', 'pn-txt', 'Bewijs: A staat in de catalogus voor dit type (2.0 16V Turbo 170 pk, F4R 811) op de juiste plaats; B is het Renault-nummer van zo\'n artikel; C is een kruisverwijzing van een A- of B-nummer; D komt alleen uit een advertentie voor een gebruikt onderdeel en is niet in een catalogus gecontroleerd.'));
   }
-  if (u && u.var) { box.appendChild(mk('h4', null, 'Variant')); box.appendChild(mk('p', 'pn-txt', u.var)); }
+  if (u && u.var) { box.appendChild(mk('h4', null, kz ? 'Varianten in de catalogus' : 'Variant')); box.appendChild(mk('p', 'pn-txt', u.var)); }
   if (u && u.per) { box.appendChild(mk('h4', null, 'Verpakking')); box.appendChild(mk('p', 'pn-txt', u.per)); }
   const links = u && (u.src || []).filter(x => x && /^https?:\/\//i.test(x[0]));
   if (links && links.length) {

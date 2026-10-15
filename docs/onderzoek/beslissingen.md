@@ -40,3 +40,19 @@ Dezelfde regel: waar dit document afwijkt van een onderzoeksnotitie, geldt dit d
 | Automaat | Jatco JF613E blijft. | Persmap (AJ0), overbrengingen kloppen met JF613E en niet met TF-80SC. | Bevestigd |
 | Eindoverbrenging | 3,804 in alle beschrijvingen; geometrie blijft schematisch op 42/45/21/70. | Persmap, rapport de pont. | Bevestigd (waarde) |
 | ATF-norm | Elfmatic J6 (Matic J-klasse). JWS 3309 uit het rapport hoort bij Aisin-bakken en wordt niet overgenomen. | Elf-catalogus, persmap. | Bevestigd |
+
+## Aanvulling na de RDW-gegevens en het chassisnummer (15 oktober 2026)
+
+Grondslag: de open data van de RDW voor de auto van de gebruiker en het VIN-onderzoek van het chassisnummer van de gebruiker. Kenteken en chassisnummer staan niet in de repo; alleen de afgeleide feiten. De keuzes staan in `VIN_KEUZE` in `tools/orkestratie/build_pn.py` en komen als blok "Gekozen voor deze auto" in het paneel. De status "variant" van de catalogus blijft staan.
+
+| Onderwerp | Beslissing | Grond | Status in tekst |
+|---|---|---|---|
+| Omvang | 14 verkoopeenheden hebben een gekozen uitvoering: de 13 beslissingen van het VIN-onderzoek en de voorkatalysator. De overige 57 eenheden met status variant blijven open. | Een keuze staat alleen vast als de bron de uitvoering voor de auto onderscheidt. | Besloten |
+| Bouwdatum | Alle uitvoeringen met een grens bij 07/2011 volgen uit de eerste toelating van 18 februari 2011 volgens de RDW (spanrol en geleiderol, zekerheid hoog). Grenzen bij 11/2010 (inlaatluchttemperatuursensor, injector, wisserblad achter) steunen ook op het chassisnummer, dat op bouw rond begin 2011 wijst. | De RDW geeft alleen de eerste toelating; gebouwd is de auto eerder of gelijk. De ondergrens komt uit de vergelijking van het volgnummer met openbare bladen van andere auto's (niveau C). | Bevestigd (07/2011), Aannemelijk (11/2010) |
+| Voorkatalysator | Beslist op Euro 5: HELLA 8LE 366 053-321, met de Renault-nummers 208A00750R en 8201057861 uit de OE-lijst van dat artikel. De Renault-keuze tussen die twee is niet gemaakt. | De RDW noemt EURO 5 A. In de bron is HELLA het enige Euro 5-artikel; RIDEX en WALKER zijn Euro 4, VEGAZ en BOSAL Euro 3. Zekerheid middel, want MR 415 geeft Euro 5 alleen bij de F4R 813 en bij de 811 alleen Euro 4. | Aannemelijk |
+| Motorsuffix | Niet beslist. De repo blijft "F4R 811" noemen; het motorplaatje beslist. | De RDW noemt het suffix niet en de Euro 5 past volgens MR 415 bij de 813. Artikelen die in de bron "F4R 811" noemen (onder meer inlaatluchttemperatuursensor en injector) zijn daarom niet bevestigd voor het suffix. | Open |
+| Remschijf voor | 296 x 26 mm met 402060002R, zekerheid middel (VIN-onderzoek zei hoog). | De maat volgt uit de motor (MR 415). Vierwielbesturing is niet vastgesteld; het VIN-onderzoek noemde "geen 4Control" ten onrechte als feit. Het nummer staat in de OE-lijsten van twee fabrikanten. | Aannemelijk |
+| Aandrijfas links | Het Renault-nummer 8200687910 is gekozen; er is geen artikel gemarkeerd. | Het nummer staat in vier OE-lijsten. Het VIN-onderzoek markeerde ook GSP 201268 (8 kogels); de keuze tussen 6 en 8 kogels is niet gemaakt. | Aannemelijk |
+| Niet overgenomen | Toerentalsensor ingaand, vrijloopoelie van de dynamo en aandrijfas rechts. | Bij de sensor staat de uitvoering al in de eenheid en blijft het nummer open (twee Renault-nummers in dezelfde OE-lijst). De andere twee zijn alleen waarschijnlijk. | Open |
+| Spoor en gewicht | Geen onderdeelkeuze gebaseerd op spoorbreedte of gewicht van de RDW. | Spoor 156 en 151 cm en massa ledig 1.381 kg bepalen geen velgmaat, onderstel of vierwielbesturing zonder een bron die dat koppelt. De maten komen overeen met het model (afgerond), het gewicht is niet vergeleken. | Besloten |
+

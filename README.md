@@ -99,6 +99,7 @@ Boven de sectie staat een vaste waarschuwing: controleer het nummer altijd op he
 |---|---|
 | Past volgens catalogus | De catalogus voor dit type (Autodoc type 23370: Laguna III hatchback 2.0 16V Turbo 170 pk, F4R 811) noemt het artikel op de juiste plaats. |
 | Variant: kies op VIN | Meer dan een uitvoering komt in aanmerking; het chassisnummer beslist. |
+| Gekozen voor deze auto | Een variant waarvoor de uitvoering van de auto van de gebruiker is vastgesteld, volgens de RDW en het chassisnummer van de gebruiker. Het blok noemt uitvoering, bewijs, zekerheid en grond; de gekozen nummers staan gemarkeerd in de lijst. |
 | Niet gevonden | Er is naar gezocht en niets bruikbaars gevonden. |
 | Niet onderzocht | Het pad heeft geen regel in de gegevens. |
 | Deel van, Deel van set | Het onderdeel zit in een verkoopeenheid en wordt daarmee besteld. |
@@ -110,7 +111,7 @@ Boven de sectie staat een vaste waarschuwing: controleer het nummer altijd op he
 | C | Een kruisverwijzing van een A- of B-nummer (Spareto). |
 | D | Alleen uit een advertentie voor een gebruikt onderdeel, niet in een catalogus gecontroleerd. Dit geldt alleen voor de twee panoramadaknummers. |
 
-Alle nummers staan ook in [docs/onderdeelnummers.csv](docs/onderdeelnummers.csv) (pad, verkoopeenheid, relatie, status, merk, nummer, bewijs, opmerking en bron; geen productteksten of prijzen). De zoekfunctie in de tab Onderdelen vindt ook een nummer.
+Alle nummers staan ook in [docs/onderdeelnummers.csv](docs/onderdeelnummers.csv) (pad, verkoopeenheid, relatie, status, merk, nummer, bewijs, opmerking, bron en, waar een uitvoering voor de auto van de gebruiker is gekozen, "gekozen voor deze auto" met de uitvoering; geen productteksten of prijzen). De zoekfunctie in de tab Onderdelen vindt ook een nummer.
 
 Labels zijn genummerde bijschriften met een lijntje naar het onderdeel. Ze verschijnen bij de kinderen van de laatst uitgeklapte groep en vermijden elkaar en de bediening.
 
@@ -141,7 +142,7 @@ Haperen de eerste frames (gemiddeld meer dan 40 ms over 20 frames tijdens een an
 | `src/` | Broncode in delen: opmaak, geometrie, carrosserie, motor, aandrijflijn, onderstel, interieur, systemen, app-logica en presets. |
 | `src/panorama.js` | Het panoramadak: dakplaat met twee openingen, glaspanelen, dwarsbalk, zonneschermen met cassette, luchtgeleider en waterafvoer, met hun openers. De hemelbekleding met de afwerkring en de draaiknop in de hemelconsole staan in `src/interior.js`. |
 | `src/partnumbers.js` | De onderdeelnummers als gegevens. Gemaakt door `tools/orkestratie/build_pn.py`; niet met de hand bewerken. |
-| `docs/onderdeelnummers.csv` | Dezelfde nummers als tabel: pad, verkoopeenheid, status, merk, nummer, bewijsniveau, opmerking en bron. |
+| `docs/onderdeelnummers.csv` | Dezelfde nummers als tabel: pad, verkoopeenheid, status, merk, nummer, bewijsniveau, opmerking, bron en de gekozen uitvoering voor de auto van de gebruiker. |
 | `build.py` | Voegt `src/` samen tot `index.html`, controleert de broncode en maakt een testversie. |
 | `tools/` | Testscripts (Playwright, headless Chromium) en `anchors.json` met de ankernamen. |
 | `tools/opentest.py` | Toetst elke opener op eindstand, ondergrens, botsing, blootleggen, prestaties en spookbatch. |

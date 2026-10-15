@@ -644,15 +644,19 @@ def run_view(s, tag, w, h, touch):
             src: [['https://example.org/bron', 'Bron een'], ['javascript:alert(1)', 'Kwaadaardig']], info: [['Interval', '60000 km', 'testbron']] };
           PN_DATA.units.tB = { n: 'Teststeun', st: 'vin', oe: [['654 TEST2', '']], am: [] };
           PN_DATA.units.tC = { n: 'Testafdichting', st: 'nietgevonden', oe: [], am: [] };
+          PN_DATA.units.tD = { n: 'Testopvanger', st: 'vin', var: 'Twee uitvoeringen, voor en na 2011', oe: [['655 TEST3', 'oude uitvoering', 'B'], ['655 TEST4', 'nieuwe uitvoering', 'B']], am: [['Testmerk', 'TM-777', 'nieuwe uitvoering', 'A'], ['Ander merk', 'AM7001', '', 'A']],
+            kz: { o: ['655 TEST4'], a: [['Testmerk', 'TM-777']], v: 'Uitvoering vanaf 2011', b: 'B', z: 'middel', g: 'Volgens de RDW is de auto in 2011 voor het eerst toegelaten.', s: ['https://example.org/kz', 'javascript:alert(2)'] } };
           PN_DATA.map['Carrosserie/Motorkap/Slotbeugel motorkap'] = ['tA', 'zelf'];
           PN_DATA.map['Carrosserie/Motorkap/Veiligheidshaak'] = ['tA', 'deel', 'zit in het slot'];
           PN_DATA.map['Carrosserie/Motorkap/Motorkapsteun'] = ['tB', 'zelf'];
           PN_DATA.map['Carrosserie/Motorkap/Kapafdichting'] = ['tC', 'zelf'];
+          PN_DATA.map['Carrosserie/Motorkap/Steunopvanger'] = ['tD', 'zelf'];
           __laguna.pnRebuild(); })()""")
         def pn(name):
             pg.evaluate(f"__laguna.select(__laguna.byName({json.dumps(name)}))")
             return pg.evaluate("""(() => { const b = document.getElementById('pnBody'); return { text: b.textContent, rows: b.querySelectorAll('.pn-tab tbody tr').length,
               links: [...b.querySelectorAll('a')].map(a => [a.getAttribute('href'), a.target, a.rel]), btn: [...b.querySelectorAll('button')].map(x => x.textContent),
+              kz: b.querySelectorAll('.pn-kz').length, kzlinks: [...b.querySelectorAll('.pn-kzbox a')].map(a => [a.getAttribute('href'), a.target, a.rel]),
               warn: document.getElementById('pnWarn').textContent, vis: document.getElementById('pnBox').getBoundingClientRect().height > 0 }; })()""")
         r = pn('Slotbeugel motorkap')
         check('15 nummers: past volgens catalogus met nummer, tabel, variant, verpakking en onderhoud', 'Past volgens catalogus' in r['text'] and '656 01 TEST1' in r['text'] and r['rows'] == 2 and 'TM-123.456' in r['text'] and 'Alleen benzine' in r['text'] and 'Per stuk' in r['text'] and '60000 km' in r['text'], r['text'][:200])
@@ -664,12 +668,15 @@ def run_view(s, tag, w, h, touch):
         check('15 nummers: een klik op de naam kiest de eenheid', pg.evaluate('__laguna.state().selected') == 'Slotbeugel motorkap', pg.evaluate('__laguna.state().selected'))
         r = pn('Motorkapsteun')
         check('15 nummers: variant, kies op VIN', 'Variant: kies op VIN' in r['text'] and '654 TEST2' in r['text'], r['text'][:120])
+        r = pn('Steunopvanger')
+        check('15 nummers: gekozen uitvoering met blok, markering van de gekozen nummers en variantkop', 'Gekozen voor deze auto' in r['text'] and 'Uitvoering vanaf 2011' in r['text'] and 'Volgens de RDW' in r['text']
+              and 'Variant: kies op VIN' not in r['text'] and 'Varianten in de catalogus' in r['text'] and r['kz'] == 2 and r['kzlinks'] == [['https://example.org/kz', '_blank', 'noopener']], json.dumps([r['kz'], r['kzlinks']]))
         r = pn('Kapafdichting')
         check('15 nummers: niet gevonden', 'Niet gevonden' in r['text'], r['text'][:120])
         r = pn('Veiligheidshaak'); r = pn('Ruitensproeier links')
         check('15 nummers: niet onderzocht zonder record', 'Niet onderzocht' in r['text'], r['text'][:120])
         r = pn('Motorkap')
-        check('15 nummers: groep toont het aantal onderdelen met een nummer', 'Hieronder hebben 3 van' in r['text'], r['text'][:160])
+        check('15 nummers: groep toont het aantal onderdelen met een nummer', 'Hieronder hebben 4 van' in r['text'], r['text'][:160])
         # zoeken op nummer (zonder spaties en streepjes)
         pg.click('#tabbtn-tree'); pg.fill('#treeSearch', 'tm123456'); pg.wait_for_timeout(200)
         hits = pg.evaluate("[...document.querySelectorAll('#tree .trow .tn')].map(e => e.textContent)")
