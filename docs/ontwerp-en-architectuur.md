@@ -214,7 +214,7 @@ Een `inner`-knop wordt zichtbaar als een opener erboven open is. De zichtbaarhei
 
 ### Contract met de eigenaars
 
-- Een opener heeft een bron voor hoek of slag (in `d` of in de brief) en een ondergrens `open.min`. Zonder ondergrens beloont de botsingstoets kleinere hoeken.
+- Een opener heeft een bron voor hoek of slag (in `d` of in de brief) en een ondergrens `open.min` van minstens 0,8 maal de volle hoek of slag; `tools/opentest.py --strikt-min` eist dat van elke leider. Zonder ondergrens beloont de botsingstoets kleinere hoeken, en met een lage ondergrens kan een agent eerst de hoek verkleinen en dan de ondergrens meenemen.
 - Asregel: de as ligt aan de scharnierzijde, buiten of op de omtrek van de delen van de opener. De bestaande scharnierdelen (het scharnierblad van een portier, de kapopzet) als as botsen aantoonbaar. Een volger of telescoop noemt het frame waarin zijn punten gelden; een verwijzing zonder knoop is niet toegestaan.
 - Delen die aan de carrosseriezijde van een scharnier horen, krijgen `stay`.
 - Blootleglijst: wat een opening laat zien, heeft een eigenaar. Voorbeelden: de tankkom in het rechter achterscherm (carrosserie, in dezelfde golf als de Vulklep in `src/systems.js`) en de handschoenenkastbak (interieur). Openers die twee bestanden raken, worden in een golf gebouwd.
@@ -230,18 +230,19 @@ Hoeken in graden, slag in meter. De eindstand en de ondergrens komen uit `tools/
 | Portier linksvoor, rechtsvoor | scharnier voor de voorrand | 68 | 60 | scharnierblad aan de carrosseriezijde blijft staan |
 | Portier linksachter, rechtsachter | scharnier op de B-stijl | 62 | 55 | |
 | Zijruit (vier) | schuif in het portier | voor 0,39, achter 0,30 | voor 0,35, achter 0,25 | achter blijft een strook staan |
-| Buitenspiegel links, rechts | scharnier | 80 naar achteren | 60 | |
+| Buitenspiegel links, rechts | scharnier | 80 naar achteren | 64 | |
 | Achterklep | scharnier dakrand | 66 | 60 | twee gasveren als telescoop; de hoedenplank volgt (24 graden) en hangt aan twee koordjes (telescopen) aan de klep, met de luidsprekers erop |
-| Tankklep | scharnier voorrand | 140 | 100 | tankkom in het rechter achterscherm, capless vulhals |
-| Glaspaneel voor (label Schuifdak) | kantelen en schuiven | 0,60 | 0,45 | needs Zonnescherm voor; luchtgeleider volgt |
-| Zonnescherm voor, achter | schuif naar de cassette | 0,65 en 0,47 | | lamellen als volgers |
+| Tankklep | scharnier voorrand | 140 | 112 | tankkom in het rechter achterscherm, capless vulhals |
+| Glaspaneel voor (label Schuifdak) | kantelen en schuiven | 0,60 | 0,48 | needs Zonnescherm voor; luchtgeleider volgt |
+| Zonnescherm voor, achter | schuif naar de cassette | 0,65 en 0,47 | 0,54 en 0,39 (0,82 maal de rechte slag van de eerste lamel) | lamellen als volgers |
 | Handschoenenkastklep | scharnier onderrand | 72 | 60 | needs Portier rechtsvoor |
-| Armsteunkussen | scharnier | 66 | 50 | needs Portier linksvoor |
-| Rugleuning groot deel (rechts), klein deel (links) | scharnier | 104 | 80 | needs Achterklep; hoofdsteunen en gordels gaan mee |
-| Middenarmsteun achter | scharnier | 104 | 70 | hangt in Rugleuning groot deel; needs Portier linksachter |
+| Armsteunkussen | scharnier | 66 | 53 | needs Portier linksvoor |
+| Rugleuning groot deel (rechts), klein deel (links) | scharnier | 104 | 83 | needs Achterklep; hoofdsteunen en gordels gaan mee |
+| Middenarmsteun achter | scharnier | 104 | 83 | hangt in Rugleuning groot deel; needs Portier linksachter |
 | Zonneklep links, rechts | scharnier voorrand | 169 | 138 | ligt neergeklapt bijna tegen de voorruit |
 | Bagageruimtevloer | scharnier voorrand | 62 | 50 | needs Achterklep; opbergbak eronder |
-| Olievuldop, Expansiedop | schuif omhoog met kanteling | 0,10 en 0,17 | | needs Motorkap; de olievuldop komt uit een open vulhals |
+| Olievuldop | scharnier aan een lip op de rand van de vulhals | 103 | 83 | needs Motorkap; de dop blijft aan de hals zitten (golf 5) |
+| Expansiedop | schuif omhoog met kanteling | 0,17 | 0,14 | needs Motorkap |
 
 ### Panoramadak
 
