@@ -136,6 +136,7 @@ function appApplyPreset(p, opt = {}) {
   uiStopPlay();
   if (!opt.tour) uiStopTour();
   if (!opt.noHistory) uiPush();
+  uiSetDim(null); // U19: een preset begint zonder gedimde rest
   // modus en openers: alleen een preset met opens zet Openen aan; elke andere zet Uitklappen terug en sluit de openers
   OPENMODE = opt.openMode != null ? opt.openMode : !!p.opens;
   const wantOpen = appWantOpen(p);

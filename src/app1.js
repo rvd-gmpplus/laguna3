@@ -393,6 +393,21 @@ function uiTint(base, hex, k) {
   if (m.transparent) m.opacity = Math.max(m.opacity, 0.55);
   return m;
 }
+// U19: bij duiken naar een onderdeel wordt de rest van de auto gedimd (een doorschijnend spookmateriaal), zodat het
+// onderdeel eruit springt en niets ervoor staat. DIM is de focusknoop: alles erbuiten is gedimd. Aanwijzen en klikken
+// blijft werken, maar een klik raakt liever iets in de focus dan een gedimd deel ervoor (zie pick in app2.js).
+let DIM = null, uiDimSet = null, uiDimOn = true;
+// Vlak en eenzijdig getekend: een doorschijnend, dubbelzijdig PBR-materiaal kostte op 2.500 meshes zes keer zoveel tekentijd
+// (twee doorgangen per mesh en de volledige belichting); voor een spook doet een vlakke kleur hetzelfde.
+const uiDimMat = new THREE.MeshBasicMaterial({ color: 0xaab5c2, transparent: true, opacity: 0.14, depthWrite: false, toneMapped: false });
+function uiDimmed(m) { return !!uiDimSet && !uiDimSet.has(m); }
+// Zet de focus: een groep zelf, een onderdeel via zijn ouder (de broers blijven het gezelschap). null of de wortel: uit.
+function uiSetDim(n) {
+  const f = n && uiDimOn ? (n.asm ? n : n.parent) : null, nf = f && f !== ROOT ? f : null;
+  if (nf === DIM) return false;
+  DIM = nf; uiDimSet = nf ? new Set(nf.meshes) : null;
+  return true;
+}
 const uiHV = new Map(), uiSL = new Map();
 function uiHvMat(base) { let m = uiHV.get(base); if (!m) { m = uiTint(base, 0x3d8cff, 0.7); uiHV.set(base, m); } return m; }
 function uiSelMat(base) { let m = uiSL.get(base); if (!m) { m = uiTint(base, 0xf2c230, 0.75); uiSL.set(base, m); } return m; }
@@ -404,9 +419,10 @@ function uiMatFor(m) {
   if (SYSCOL && n.sys) mat = SYS_MATS[n.sys] || mat;
   const ghost = XRAY && n.isBody;
   if (ghost) mat = GHOST;
+  const dim = uiDimmed(m);
   if (uiSelSet.has(m)) return ghost ? GHOST_HL : uiSelMat(mat);
-  if (uiHovSet.has(m)) return ghost ? uiGhostHv : uiHvMat(mat);
-  return mat;
+  if (uiHovSet.has(m)) return ghost || dim ? uiGhostHv : uiHvMat(mat);
+  return dim && !ghost ? uiDimMat : mat;
 }
 function applyMats() {
   // een gekozen opener (portier, kap) krijgt geen gele tint: hij is het doel van de klik en zou anders geel blijven
@@ -647,7 +663,7 @@ function uiSnap() {
     t: ASMS.map(n => n.target), o: OPENERS.map(n => n.ot),
     pull: ALL.filter(n => n.pull.lengthSq() > 0).map(n => [n.id, n.pull.x, n.pull.y, n.pull.z]),
     lift: uiLifted ? uiLifted.id : null,
-    iso: ISO.map(n => n.id), xray: XRAY, sys: SYSCOL, spread: SPREAD, om: OPENMODE,
+    iso: ISO.map(n => n.id), dim: DIM ? DIM.id : null, xray: XRAY, sys: SYSCOL, spread: SPREAD, om: OPENMODE,
     sel: (SEL || ROOT).id, ctx: CTX ? CTX.id : null, force: uiLabelForce, preset: ACTIVE_PRESET,
     cam: [camera.position.clone(), controls.target.clone()],
   };
@@ -666,6 +682,7 @@ function uiRestore(s, instant) {
   uiDrop();
   if (s.lift != null) { const n = uiById.get(s.lift); if (n) uiLift(n); }
   XRAY = s.xray; SYSCOL = s.sys; OPENMODE = !!s.om;
+  uiSetDim(s.dim != null ? uiById.get(s.dim) : null);
   if (SPREAD !== s.spread) uiSetSpread(s.spread, true);
   CTX = s.ctx != null ? uiById.get(s.ctx) : null; uiLabelForce = !!s.force;
   uiVisDirty = true; applyVisibility();
@@ -728,6 +745,7 @@ function uiBatchClean() {
 }
 function uiBatchMat(base, g) {
   if (XRAY && g.isBody) return GHOST;
+  if (DIM && !isUnder(g, DIM) && !isUnder(DIM, g)) return uiDimMat;
   if (SYSCOL && g.sys) return SYS_MATS[g.sys] || base;
   return base;
 }
@@ -746,7 +764,7 @@ function uiUnbatch(g) {
 function uiBatchSync() {
   if (!uiBatchOn) { for (const g of [...uiBatched]) uiUnbatch(g); return; }
   uiBatchClean();
-  uiBatchKey = (XRAY ? 'x' : '') + (SYSCOL ? 's' : '');
+  uiBatchKey = (XRAY ? 'x' : '') + (SYSCOL ? 's' : '') + (DIM ? 'd' + DIM.id : '');
   uiBatchWant.clear();
   // enq: nog geen hogere groep in de rij gezet; daaronder alleen bestaande batches gebruiken (niets dubbel bouwen)
   const walk = (n, enq) => {

@@ -3,7 +3,7 @@ document.documentElement.lang = 'nl';
 const $ = id => document.getElementById(id);
 const els = {
   sheet: $('sheet'), crumbs: $('crumbs'), name: $('selName'), meta: $('selMeta'), desc: $('selDesc'), spec: $('selSpec'), kids: $('selKids'), kidsTitle: $('kidsTitle'),
-  toggle: $('actToggle'), open: $('actOpen'), all: $('actAll'), up: $('actUp'), dive: $('actDive'), iso: $('actIsolate'), focus: $('actFocus'),
+  toggle: $('actToggle'), open: $('actOpen'), all: $('actAll'), up: $('actUp'), dive: $('actDive'), dim: $('actDim'), iso: $('actIsolate'), focus: $('actFocus'),
   tree: $('tree'), search: $('treeSearch'), treeInfo: $('treeInfo'), labels: $('labels'), leaders: $('leaders'), hint: $('hint'), presets: $('presets'), legend: $('legend'),
   menu: $('menu'), tip: $('tip'), press: $('press'), explode: $('explode'), explodeName: $('explodeName'), explodeOut: $('explodeOut'), play: $('play'), undo: $('undo'),
   help: $('help'), helpDlg: $('helpDlg'), tourBar: $('tourBar'), tourText: $('tourText'), tourStop: $('tourStop'), dock: $('dock'), topbar: $('topbar'),
@@ -16,6 +16,11 @@ const fmtCount = n => (n.count === 1 ? '1 onderdeel' : `${n.count} onderdelen`);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const uiTouch = !!(window.matchMedia && matchMedia('(hover: none), (pointer: coarse)').matches);
 if (uiTouch) document.body.classList.add('touch');
+// Indeling van het paneel: onder als lade (telefoon staand), als kolom rechts (bureaublad en telefoon liggend).
+// Dezelfde voorwaarde staat in de mediaquery van head.html (blok 'telefoon liggend: zijkolom').
+const uiMqSide = window.matchMedia ? matchMedia('(max-width: 919.98px) and (max-height: 520px) and (orientation: landscape)') : null;
+const uiSide = () => !!(uiMqSide && uiMqSide.matches);
+const uiSheetBottom = () => window.innerWidth < 920 && !uiSide();
 controls.minDistance = 0.05;
 let uiUiDirty = true;            // schermvlakken van de bediening opnieuw meten
 let uiSyncPending = false;
@@ -34,6 +39,7 @@ function uiDeepestOpen(p) { let a = null; pathFrom(p).forEach(x => { if (x.asm &
 function select(n, opts = {}) {
   n = n || uiScopeRoot();
   if (uiLifted && uiLifted !== n) uiDrop();
+  if (DIM && !isUnder(n, DIM)) uiSetDim(null); // U19: de selectie verlaat de focus (omhoog, breadcrumb, ander deel): de rest komt terug
   SEL = n;
   applyMats();
   renderPanel();
@@ -75,7 +81,7 @@ function renderPanel() {
     });
     if (n.kids.length > MAXK) {
       const b = document.createElement('button'); b.textContent = `… en nog ${n.kids.length - MAXK} (zie Onderdelen)`;
-      b.onclick = () => { showTab('tree'); if (window.innerWidth < 920) setSheet('open'); };
+      b.onclick = () => { showTab('tree'); if (uiSheetBottom()) setSheet('open'); };
       els.kids.appendChild(b);
     }
   }
@@ -87,6 +93,8 @@ function renderPanel() {
   els.toggle.textContent = n.asm && uiOpen(n) ? 'Inklappen' : 'Uitklappen';
   els.all.hidden = !n.asm || OPENMODE;
   els.dive.hidden = n.asm || OPENMODE;
+  els.dim.hidden = !DIM || OPENMODE;
+  if (DIM) els.dim.title = 'De gedimde rest van de auto weer volledig tonen (buiten ' + DIM.name + ')';
   els.up.hidden = OPENMODE; els.iso.hidden = OPENMODE;
   els.up.disabled = !uiClosedAbove(n);
   els.up.title = els.up.disabled ? 'Alles boven deze selectie is al uitgeklapt' : 'De dichte groep boven de selectie uitklappen (Enter)';
@@ -278,6 +286,7 @@ function uiDive(p) {
   let i = 0;
   for (const a of pathFrom(p)) if (a.asm && a !== p && !uiOpen(a)) setTarget(a, 1, (i++) * (REDUCED ? 0 : 0.22));
   CTX = p.parent || p; uiLabelForce = false; clearPreset();
+  if (!OPENMODE) uiSetDim(p); // U19
   select(p);
   focusNodes([p], null, p.asm ? 1.15 : 1.7, { min: 0.3, dur: Math.max(0.95, i * 0.22 + 0.55) });
   uiAfterAction();
@@ -285,7 +294,7 @@ function uiDive(p) {
 function reveal(n) {
   if (OPENMODE) { // in Openen klapt niets uit: alleen selecteren en in beeld brengen
     uiPush();
-    if (window.innerWidth < 920 && els.sheet.dataset.state === 'open') setSheet('peek');
+    if (uiSheetBottom() && els.sheet.dataset.state === 'open') setSheet('peek');
     select(n);
     focusNodes([n], null, n.asm ? 1.12 : 1.6, { min: 0.3 });
     uiLastFit = { nodes: [n], dir: null, pad: n.asm ? 1.12 : 1.6, opt: { min: 0.3 } };
@@ -297,8 +306,9 @@ function reveal(n) {
   let i = 0;
   for (const a of ancestors(n)) if (!uiOpen(a)) setTarget(a, 1, (i++) * (REDUCED ? 0 : 0.18));
   CTX = n.parent || null; uiLabelForce = false; clearPreset();
+  uiSetDim(n); // U19 (de wortel zet het uit)
   // telefoon: paneel terug naar de smalle stand, zodat je ziet wat er gebeurt
-  if (window.innerWidth < 920 && els.sheet.dataset.state === 'open') setSheet('peek');
+  if (uiSheetBottom() && els.sheet.dataset.state === 'open') setSheet('peek');
   select(n);
   focusNodes([n], null, n.asm ? 1.12 : 1.6, { min: 0.3, dur: Math.max(0.95, i * 0.18 + 0.55) });
   uiLastFit = { nodes: [n], dir: null, pad: n.asm ? 1.12 : 1.6, opt: { min: 0.3 } };
@@ -332,11 +342,12 @@ function uiProject(pts) {
   return Number.isFinite(x0) ? { x0, y0, x1, y1 } : null;
 }
 function uiFreeView() { return { x0: VIEW.l, y0: VIEW.t, x1: W - VIEW.r, y1: H - VIEW.b }; }
-function isolate(list) { ISO = list.slice(); applyVisibility(); applyMats(); updateGround(); requestRender(); }
+function isolate(list) { uiSetDim(null); ISO = list.slice(); applyVisibility(); applyMats(); updateGround(); requestRender(); }
 
 els.toggle.onclick = () => { const n = SEL; if (!n.asm) return; uiOpen(n) ? doCollapse(n) : doExplode(n); };
 els.all.onclick = () => { const n = SEL; if (!n.asm) return; uiPush(); explodeAllUnder(n); CTX = n; uiLabelForce = false; clearPreset(); focusNodes([n], null, 1.04); uiLastFit = { nodes: [n], dir: null, pad: 1.04 }; uiAfterAction(); };
 els.up.onclick = uiUp;
+els.dim.onclick = () => { uiPush(); uiSetDim(null); uiAfterAction(); };
 els.dive.onclick = () => uiDive(SEL);
 els.iso.onclick = () => {
   uiPush();
@@ -459,7 +470,7 @@ let uiOpenWas = false;
 
 /* ---------- onderdelenboom ---------- */
 const openRows = new Set([ROOT.id]);
-function treeVisible() { return !$('tab-tree').hidden && (window.innerWidth >= 920 || els.sheet.dataset.state === 'open'); }
+function treeVisible() { return !$('tab-tree').hidden && (!uiSheetBottom() || els.sheet.dataset.state === 'open'); }
 function treeRow(n, level) {
   const li = document.createElement('li'); li.setAttribute('role', 'none');
   const row = document.createElement('div'); row.className = 'trow' + (n === SEL ? ' sel' : ''); row.setAttribute('role', 'treeitem'); row.setAttribute('aria-level', String(level)); row.setAttribute('aria-selected', String(n === SEL));
@@ -502,6 +513,7 @@ function showTab(id) {
   b.addEventListener('keydown', e => { if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return; const j = (i + (e.key === 'ArrowRight' ? 1 : arr.length - 1)) % arr.length; showTab(arr[j]); $('tabbtn-' + arr[j]).focus(); e.preventDefault(); });
 });
 function setSheet(state) {
+  if (uiSide()) state = 'open'; // zijkolom: altijd de volle inhoud, geen peek en geen lade
   els.sheet.dataset.state = state;
   $('sheetToggle').setAttribute('aria-expanded', String(state === 'open'));
   $('sheetToggle').setAttribute('aria-label', state === 'open' ? 'Paneel kleiner maken' : 'Paneel groter maken');
@@ -510,11 +522,13 @@ function setSheet(state) {
   syncSheetHeight(); layoutView(); uiRefitSoon();
   if (treeVisible()) renderTree();
 }
+// Draaien of formaat wisselen tussen lade en zijkolom: stand van het paneel en vrij beeld opnieuw bepalen
+if (uiMqSide) { const f = () => { setSheet(uiSide() ? 'open' : 'peek'); }; uiMqSide.addEventListener ? uiMqSide.addEventListener('change', f) : uiMqSide.addListener(f); }
 $('sheetToggle').onclick = () => setSheet(els.sheet.dataset.state === 'open' ? 'peek' : 'open');
 $('btnParts').onclick = () => { const open = els.sheet.dataset.state === 'open' && !$('tab-tree').hidden; showTab('tree'); setSheet(open ? 'peek' : 'open'); };
 $('btnView').onclick = () => { const open = els.sheet.dataset.state === 'open' && !$('tab-view').hidden; showTab('view'); setSheet(open ? 'peek' : 'open'); };
 function syncSheetHeight() {
-  if (window.innerWidth < 920) document.getElementById('app').style.setProperty('--sheet-h', (els.sheet.dataset.state === 'open' ? 0 : els.sheet.offsetHeight) + 'px');
+  if (uiSheetBottom()) document.getElementById('app').style.setProperty('--sheet-h', (els.sheet.dataset.state === 'open' ? 0 : els.sheet.offsetHeight) + 'px');
 }
 
 /* ---------- weergave-bediening ---------- */
@@ -525,6 +539,7 @@ $('tXray').addEventListener('change', e => { uiPush(); XRAY = e.target.checked; 
 $('tSys').addEventListener('change', e => { uiPush(); SYSCOL = e.target.checked; clearPreset(); applyMats(); uiAfterAction(); });
 $('tRotate').addEventListener('change', e => { controls.autoRotate = e.target.checked; requestRender(); });
 els.quality.addEventListener('change', e => uiSetLite(!e.target.checked));
+$('tDim').addEventListener('change', e => { uiDimOn = e.target.checked; if (!uiDimOn) uiSetDim(null); applyMats(); uiAfterAction(); });
 $('tBatch').addEventListener('change', e => { uiSetBatching(e.target.checked); requestRender(); });
 els.legend.innerHTML = Object.entries(SYS_COLORS).map(([k, c]) => `<span><i style="background:#${c.toString(16).padStart(6, '0')}"></i>${esc(k)}</span>`).join('');
 document.querySelectorAll('[data-cam]').forEach(b => b.addEventListener('click', () => { const nodes = contextNodes(), dir = DIRS[b.dataset.cam]; focusNodes(nodes, dir); uiLastFit = { nodes, dir, pad: 1.08 }; }));
@@ -572,7 +587,7 @@ function uiSyncExplode(fromSlider) {
   els.play.firstChild.innerHTML = uiPlayS ? '<path d="M7 6h3v12H7zM14 6h3v12h-3z"/>' : (v >= 0.999 ? '<path d="M16 5L5 12l11 7z"/>' : '<path d="M8 5l11 7-11 7z"/>');
 }
 els.explode.addEventListener('input', () => {
-  if (!uiDrag) { uiDrag = true; uiStopPlay(); uiStopTour(); hideHint(); uiPush(); }
+  if (!uiDrag) { uiDrag = true; uiStopPlay(); uiStopTour(); hideHint(); uiPush(); uiSetDim(null); applyMats(); }
   const w = uiWorking(), L = uiLevels(w).length;
   uiApplyX(w, (els.explode.value / 1000) * L, true);
   CTX = w; uiLabelForce = false; clearPreset();
@@ -580,7 +595,7 @@ els.explode.addEventListener('input', () => {
 });
 els.explode.addEventListener('change', () => { uiDrag = false; updateGround(); uiAfterAction(); });
 function uiSetExplodeValue(v) {
-  uiStopPlay(); uiPush();
+  uiStopPlay(); uiPush(); uiSetDim(null);
   const w = uiWorking();
   uiApplyX(w, clamp(v, 0, 1) * uiLevels(w).length, false);
   CTX = w; uiLabelForce = false; clearPreset(); updateGround();
@@ -588,7 +603,7 @@ function uiSetExplodeValue(v) {
 }
 function uiPlay() {
   if (uiPlayS) { uiStopPlay(); return; }
-  uiStopTour(); uiPush();
+  uiStopTour(); uiPush(); uiSetDim(null);
   const w = uiWorking(), L = uiLevels(w).length, x0 = uiExplodeX(w);
   const up = x0 / L < 0.999, x1 = up ? L : 0;
   uiPlayS = { w, x: x0, x1, v: (up ? 1 : -1) / 0.8 };
@@ -736,7 +751,10 @@ function pick(cx, cy, loose) {
   camera.updateMatrixWorld(); ROOT.obj.updateMatrixWorld();
   ray.setFromCamera(ndc, camera);
   const list = uiPickList();
-  const hit = ray.intersectObjects(list, false)[0];
+  const hits = ray.intersectObjects(list, false);
+  // U19: een gedimd deel voor de focus slaat de klik over; raakt de straal niets in de focus, dan telt het gedimde deel
+  let hit = hits[0];
+  if (hit && uiDimSet && uiDimmed(hit.object)) { const f = hits.find(h => !uiDimmed(h.object)); if (f) hit = f; }
   if (hit) return hit.object.userData.node;
   if (!loose) return null;
   // vinger naast een klein onderdeel: het dichtstbijzijnde onderdeel binnen 22 px
@@ -948,7 +966,7 @@ window.addEventListener('keydown', e => {
   if (e.key === '?') { e.preventDefault(); uiHelp(true); return; }
   if (e.key === 'o' || e.key === 'O') { e.preventDefault(); hideHint(); uiSetOpenMode(!OPENMODE); return; }
   // U17: / springt naar het zoekveld van de onderdelenlijst (op de telefoon gaat het paneel daarvoor open)
-  if (e.key === '/') { e.preventDefault(); hideHint(); showTab('tree'); if (window.innerWidth < 920) setSheet('open'); els.search.focus(); els.search.select(); return; }
+  if (e.key === '/') { e.preventDefault(); hideHint(); showTab('tree'); if (uiSheetBottom()) setSheet('open'); els.search.focus(); els.search.select(); return; }
   // pijltjes (niet op een bedieningselement): door de boom lopen. Omhoog = bovenliggende groep, omlaag = eerste deel,
   // links/rechts = vorige/volgende op hetzelfde niveau (audit U29). Selecteren en in beeld houden, niets uitklappen.
   if (!onCtl && /^Arrow(Up|Down|Left|Right)$/.test(e.key)) {
@@ -1225,7 +1243,7 @@ let uiLastFit = null, uiRefitTimer = 0;
 const uiViewPrev = { l: -99, r: -99, t: -99, b: -99 };
 let uiViewW = 0, uiViewH = 0;
 function layoutView() {
-  const wide = window.innerWidth >= 920;
+  const wide = !uiSheetBottom(); // bureaublad of telefoon liggend: het paneel staat als kolom rechts
   const title = els.topbar.querySelector('.title').getBoundingClientRect();
   const acts = els.topbar.querySelector('.top-actions').getBoundingClientRect();
   const sheet = els.sheet.getBoundingClientRect();
@@ -1235,6 +1253,7 @@ function layoutView() {
     VIEW.l = 0; VIEW.r = Math.max(0, W - sheet.left + 8);
     VIEW.t = Math.min(H * 0.3, title.bottom + 6);
     VIEW.b = Math.max(0, H - dockTop + 6);
+    if (uiSide() && !els.tourBar.hidden) { const tb = els.tourBar.getBoundingClientRect(); if (tb.height > 0) VIEW.t = Math.max(VIEW.t, Math.min(H * 0.45, tb.bottom + 4)); }
   } else {
     VIEW.l = 0; VIEW.r = 0;
     VIEW.t = Math.min(H * 0.3, Math.max(title.bottom, acts.bottom, $('openSeg').getBoundingClientRect().bottom) + 4);
@@ -1284,7 +1303,7 @@ function resize() {
 window.addEventListener('resize', () => { resize(); uiRefitSoon(); });
 if (window.ResizeObserver) {
   let lastH = 0;
-  new ResizeObserver(() => { syncSheetHeight(); layoutView(); const h = els.sheet.offsetHeight; if (window.innerWidth < 920 && Math.abs(h - lastH) > 24) uiRefitSoon(); lastH = h; }).observe(els.sheet);
+  new ResizeObserver(() => { syncSheetHeight(); layoutView(); const h = els.sheet.offsetHeight; if (uiSheetBottom() && Math.abs(h - lastH) > 24) uiRefitSoon(); lastH = h; }).observe(els.sheet);
   new ResizeObserver(() => layoutView()).observe(els.dock);
 }
 
@@ -1339,7 +1358,7 @@ function uiWarmMaterials() {
   const todo = [];
   const bases = [...new Set(MESHES.map(m => m.userData.base))];
   for (const b of [...bases, ...Object.values(SYS_MATS)]) todo.push(uiSelMat(b), uiHvMat(b));
-  todo.push(...Object.values(SYS_MATS), GHOST, GHOST_HL, uiGhostHv);
+  todo.push(...Object.values(SYS_MATS), GHOST, GHOST_HL, uiGhostHv, uiDimMat);
   const geo = new THREE.BoxGeometry(0.001, 0.001, 0.001);
   // kleine oefenscène met dezelfde soorten en aantallen lichten en dezelfde omgeving als de echte scène: dezelfde
   // shaderprogramma's, maar compile() hoeft niet elke keer alle 2.400 meshes van de auto langs
@@ -1409,6 +1428,7 @@ function loop(now) {
 let uiReady = false, uiReadyT = 0;
 uiTiming.startUp = Math.round(performance.now());
 applyVisibility();
+if (uiSide()) els.sheet.dataset.state = 'open';
 resize();
 uiPnBuild();
 select(ROOT);
@@ -1476,7 +1496,7 @@ function uiState() {
   return {
     open: ASMS.filter(n => n.target > 0.5).map(n => n.name), selected: (SEL || ROOT).name, iso: ISO.map(n => n.name), xray: XRAY,
     explode: { group: w.name, value: L ? +(uiExplodeX(w) / L).toFixed(4) : 0, levels: L }, history: uiHist.length,
-    lifted: uiLifted ? uiLifted.name : null, preset: ACTIVE_PRESET, mode: MODE, openMode: OPENMODE, openers: OPENERS.filter(n => n.ot > 0).map(n => n.name), tour: !!appTour, playing: !!uiPlayS, sys: SYSCOL,
+    lifted: uiLifted ? uiLifted.name : null, preset: ACTIVE_PRESET, dim: DIM ? DIM.name : null, mode: MODE, openMode: OPENMODE, openers: OPENERS.filter(n => n.ot > 0).map(n => n.name), tour: !!appTour, playing: !!uiPlayS, sys: SYSCOL,
   };
 }
 function uiFrameOf(names) {
@@ -1526,6 +1546,8 @@ window.__laguna = {
   freeView: () => { const v = uiFreeView(); return { x: v.x0, y: v.y0, w: v.x1 - v.x0, h: v.y1 - v.y0 }; },
   profileFrames: uiProfileFrames,
   setMode: uiSetMode,
+  dimInfo: () => ({ on: uiDimOn, focus: DIM ? DIM.name : null, dimmed: uiDimSet ? MESHES.filter(m => !uiDimSet.has(m)).length : 0 }),
+  setDimOn: on => { uiDimOn = !!on; $('tDim').checked = uiDimOn; if (!uiDimOn) uiSetDim(null); applyMats(); uiAfterAction(); return uiDimOn; },
   dive: n => uiDive(typeof n === 'string' ? byName(n) : n),
   collapseAt: n => uiCollapseAt(typeof n === 'string' ? byName(n) : n),
   stopTour: uiStopTour,
@@ -1534,6 +1556,8 @@ window.__laguna = {
   batchFlush: () => { uiBatchFlush(); requestRender(); return uiBatchStats(); },
   batchStats: uiBatchStats,
   batchedGroups: () => [...uiBatched].map(g => g.name),
+  // tekentijd (software-rendering, alleen om standen te vergelijken): gemiddelde ms per render, met gl.finish aan beide kanten
+  renderMs: (k = 5) => { const gl = renderer.getContext(); gl.finish(); const t = performance.now(); for (let i = 0; i < k; i++) renderer.render(scene, camera); gl.finish(); return +((performance.now() - t) / k).toFixed(2); },
   drawCalls: () => { renderer.info.reset(); renderer.render(scene, camera); return renderer.info.render.calls; },
   // openmodus (kern): leiders met hun stand; setOpen(naam, 0..1, direct); openAll(0..1, direct)
   openers: () => OPENERS.map(n => ({ name: n.name, label: n.opn.label || n.name, type: n.opn.type, open: +n.ou.toFixed(4), target: n.ot, followers: n.opn.followers.map(f => f.name) })),

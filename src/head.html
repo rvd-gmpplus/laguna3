@@ -316,6 +316,38 @@ input[type=range]{width:100%;accent-color:var(--ink)}
   .seg button{padding:5px 8px}
   .pbtn{width:34px;padding:0;justify-content:center}
 }
+/* telefoon liggend: zijkolom. Het paneel staat als kolom rechts over de volle hoogte (zoals op het bureaublad) en het beeld
+   krijgt de rest; de lade, de peek-stand en de knoppen voor de lade vervallen. Dezelfde voorwaarde staat in app2.js (uiMqSide). */
+@media (max-width:919.98px) and (max-height:520px) and (orientation:landscape){
+  #app{--side-w:calc(clamp(250px,36vw,330px) + env(safe-area-inset-right,0px))}
+  #sheet{top:0;right:0;bottom:0;left:auto;width:var(--side-w);height:auto!important;max-height:none;border-radius:0;border-width:0 0 0 1px;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) 0;overflow:hidden;transition:none}
+  .grab,#btnParts,#btnView{display:none}
+  #topbar{right:var(--side-w)}
+  #dock{bottom:0;right:var(--side-w);padding-bottom:calc(4px + env(safe-area-inset-bottom,0px))}
+  #sheet[data-state="open"]~#dock{display:flex}
+  .sel-head{padding:8px 12px 8px}
+  #selName{font-size:18px}
+  .crumbs{margin-bottom:2px}
+  .sel-actions{margin-top:6px}
+  .tabs{padding:4px 8px 0}
+  .tabs button{padding:6px 8px 7px;font-size:13px}
+  .tabpanels section{padding:10px 12px 16px}
+  #hint{left:calc((100% - var(--side-w)) / 2);top:calc(72px + env(safe-area-inset-top,0px));max-width:calc(100% - var(--side-w) - 32px)}
+  #tourBar{top:calc(6px + env(safe-area-inset-top,0px));right:calc(var(--side-w) + 112px);left:12px;transform:none;max-width:none}
+}
+/* telefoon liggend en klein (568 x 320): smallere kolom, kleinere titel, geen naam bij de explosieschuif */
+@media (max-width:640px) and (max-height:520px) and (orientation:landscape){
+  #app{--side-w:calc(clamp(210px,34vw,330px) + env(safe-area-inset-right,0px))}
+  h1{font-size:20px;white-space:nowrap}
+  .xlbl{display:none}
+  .seg button{padding:5px 5px;font-size:12px}
+  .xctl{padding:3px 4px 3px 8px;gap:4px}
+  .xrow{gap:4px}
+  #explode{min-width:36px}
+  .pbtn{width:30px;height:30px}
+  #selName{font-size:16px}
+  .btn,.sel-actions .btn{padding:6px 8px;font-size:12px}
+}
 /* heel smal (320 px): de explosieregel moet in zijn geheel passen */
 @media (max-width:359.98px){
   .xlbl{display:none}
@@ -382,6 +414,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
       <div class="sel-actions">
         <button class="btn primary" id="actOpen" hidden>Openen</button>
         <button class="btn primary" id="actToggle">Uitklappen</button>
+        <button class="btn" id="actDim" hidden>Rest tonen</button>
         <button class="btn primary" id="actDive" hidden>Duik hierheen</button>
         <button class="btn" id="actUp" title="Klap de eerstvolgende dichte groep erboven uit">Groter geheel</button>
         <button class="btn" id="actAll" title="Deze groep met alles eronder uitklappen">Alles hieronder uit</button>
@@ -421,6 +454,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
           <label class="row" for="tSys"><span>Kleuren per systeem<small>Elke hoofdgroep een eigen kleur</small></span><input class="switch" type="checkbox" role="switch" id="tSys"></label>
           <div class="legend" id="legend" hidden></div>
           <label class="row" for="tRotate"><span>Langzaam draaien<small>Camera draait rond het model</small></span><input class="switch" type="checkbox" role="switch" id="tRotate"></label>
+          <label class="row" for="tDim"><span>Rest dimmen bij duiken<small>De rest van de auto vervaagt, het onderdeel springt eruit</small></span><input class="switch" type="checkbox" role="switch" id="tDim" checked></label>
           <label class="row" for="tBatch"><span>Gesloten groepen samenvoegen<small>Minder tekenopdrachten, zelfde beeld</small></span><input class="switch" type="checkbox" role="switch" id="tBatch" checked></label>
           <label class="row" for="tQuality" id="qualityRow" hidden><span>Volle kwaliteit<small>Scherpte en lakglans</small></span><input class="switch" type="checkbox" role="switch" id="tQuality"></label>
           <p class="qnote" id="qualityNote" hidden>Lichte weergave ingeschakeld voor vloeiende beweging.</p>
@@ -493,7 +527,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
       <dt><kbd>&uarr;</kbd> <kbd>&darr;</kbd> <kbd>&larr;</kbd> <kbd>&rarr;</kbd></dt><dd>Door de onderdelen lopen: bovenliggende groep, eerste deel, vorige of volgende op hetzelfde niveau.</dd>
       <dt><kbd>O</kbd></dt><dd>Wisselt tussen Uitklappen en Openen. In Openen opent <kbd>Enter</kbd> de opener van de selectie en sluit <kbd>Shift</kbd>+<kbd>Enter</kbd> hem.</dd>
       <dt><kbd>Esc</kbd></dt><dd>Menu sluiten of de hele auto selecteren.</dd>
-      <dt><kbd>0</kbd> – <kbd>9</kbd></dt><dd>Gemonteerd, Hoofdgroepen, Motor, Motor tot op de bout, Automaat, Onderstel, Carrosserie, Interieur, Röntgen, Alles uit elkaar.</dd>
+      <dt><kbd>0</kbd> tot <kbd>9</kbd></dt><dd>Gemonteerd, Hoofdgroepen, Motor, Motor tot op de bout, Automaat, Onderstel, Carrosserie, Interieur, Röntgen, Alles uit elkaar.</dd>
       <dt><kbd>/</kbd></dt><dd>Zoek een onderdeel in de onderdelenlijst.</dd>
       <dt><kbd>?</kbd></dt><dd>Deze uitleg.</dd></dl>
     <div class="btnrow"><button class="btn primary" id="helpClose">Sluiten</button></div>
