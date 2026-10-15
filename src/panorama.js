@@ -6,8 +6,9 @@
 // -0,58 tot -1,11, glas x plus en min 0,47, opening in het dak x plus en min 0,50, omlijsting en rails tot 0,52. Alles is Geschat
 // uit foto's en de verhoudingen van de catalogustekening; het exacte aantal schermen en de schuifafstand zijn niet te achterhalen.
 // Alles ligt op of onder het dakvlak van het model (panQ, panP) en blijft tussen dakplaat en hemelbekleding (hoogstens 2,7 cm onder het dak).
-// getint glas (ongeveer 15 procent doorlaat): een dicht scherm leest van buiten als een lichter vlak, een open scherm laat de donkere cabine zien
-phys('bodPanoGlass', { color: 0x050709, metalness: 0.05, roughness: 0.05, transparent: true, opacity: 0.58, depthWrite: false, envMapIntensity: 0.4 });
+// sterk getint glas: bij de auto van de gebruiker van buiten zo goed als zwart (keuze van de gebruiker, 15 oktober 2026);
+// de zonneschermen zijn van buiten daardoor nauwelijks te zien, van binnen blijven glas en lucht zichtbaar
+phys('bodPanoGlass', { color: 0x030405, metalness: 0.05, roughness: 0.05, transparent: true, opacity: 0.92, depthWrite: false, envMapIntensity: 0.4 });
 std('bodPanoFrit', 0x040405, 0, 0.35);                  // zwarte keramische rand (frit) op het glas
 std('bodPanoBar', 0x15161a, 0.3, 0.5);                  // dwarsbalk: donkergrijs tot zwart gelakt
 const PAN_X = 0.47, PAN_XO = 0.50, PAN_XR = 0.52;       // glas, opening in de dakplaat, buitenrand van omlijsting en rails
