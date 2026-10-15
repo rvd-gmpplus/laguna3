@@ -30,7 +30,7 @@ MR_INFO = {
         ['Aanhaalmomenten', 'spanrolmoer 28 Nm; vaste rol 50 Nm; nokkenaspoeliemoeren 30 Nm plus 86 graden; krukaspoeliebout 40 Nm plus 110 graden', 'MR 415, 11A-50 tot 11A-60', MR]],
     'Aandrijflijn/Motor F4Rt/Turbo en uitlaatspruitstuk/Turbocompressor': [['Bovenste turbomoer', '15 Nm plus 75 graden', 'MR 415, 12B-10', MR]],
     'Aandrijflijn/Automaatversnellingsbak': [
-        ['ATF volgens MR 415', 'ELF MATIC S6; totaal 7,6 l, na aftappen 3,5 l, bijvullen 3,2 l; niveau op 40 graden met draaiende motor in P. De tabel in het handboek noemt de AJX; voor de AJ0 noemt de Elf-catalogus Elfmatic J6', 'MR 415, 23A-28 tot 23A-31', MR],
+        ['ATF volgens MR 415', 'Elfmatic J6 (editie 2007) of ELF MATIC S6 (tabel AJX in de edities van 2009); totaal 7,6 l, na aftappen 3,5 l, bijvullen 3,2 l; niveau op 40 graden met draaiende motor in P. Of S6 en J6 dezelfde olie zijn, is niet vastgesteld', 'MR 415, 23A-7 (ES) en 23A-28 tot 23A-31 (EN)', MR],
         ['Niveau- en overloopplug', '8 Nm', 'MR 415, 23A-29', MR], ['Bak aan motor', '44 Nm; koppelomvormer 22, 32, dan 44 Nm', 'MR 415, 23A-10', MR]],
     'Onderstel/Wielen': [['Wielbouten', '145 Nm bij lichtmetalen velgen (eerst 30 Nm, dan kruislings 145 Nm); 130 Nm bij stalen velgen', 'MR 415, 35A-1 tot 35A-4', MR]],
     'Onderstel/Vooras en stuurinrichting/Subframe': [['Subframe', '180 Nm; aan de carrosserie 105 en 62 Nm', 'MR 415, 31A-58', MR]],
@@ -151,8 +151,8 @@ VIN_KEUZE = {
         b='A', z='hoog', s=[AUTODOC], g=G_DATUM + ' Autodoc geeft deze twee spanrollen tot 07/2011. Het Renault-nummer per uitvoering staat niet in de bron; de OE-lijst blijft breed.'),
     'S1-motor-service:U_IDLER': dict(a=[('SKF', 'VKM 26105')], v='Geleiderol voor een auto die voor 07/2011 is gebouwd (binnendiameter 17 mm)',
         b='A', z='hoog', s=[AUTODOC], g=G_DATUM + ' Autodoc splitst de geleiderol op 07/2011: VKM 26105 tot, VKM 26020 vanaf die datum. Het Renault-nummer per uitvoering staat niet in de bron.'),
-    'S1-motor-service:U_ALT': dict(a=[('AS-PL', 'A3169')], v='Dynamo met vaste poelie (diameter 49 mm), transmissiecode AJ0',
-        b='A', z='middel', s=[AUTODOC], g=G_BAK + ' Van de twee dynamo-uitvoeringen in de Autodoc-lijst noemt alleen AS-PL A3169 de transmissiecode AJ0. AS-PL A3800S (vrijloopoelie) noemt geen bak en is dus niet uitgesloten.'),
+    # U_ALT (dynamo) bewust niet gekozen: AS-PL A3169 (vaste poelie) noemt de bak AJ0, maar bij de F4R 813 (waarschijnlijk, Euro 5)
+    # geeft MR 415 (16A) een vrijloopriemschijf; A3169 of A3800S blijft open tot het motorplaatje beslist.
     'S1-motor-service:U_PSPUMP': dict(a=[('RIDEX', '12H0601')], v='Hydraulische, riemgedreven stuurpomp (geen elektro-hydraulische)',
         b='B', z='middel', s=['https://www.ultimatespecs.com/car-specs/Renault/137858/Renault-Laguna-3-Coupe-Phase-2-20T-170-Auto.html', 'https://autocatalogarchive.com/wp-content/uploads/2019/04/Renault-Laguna-2011-UK.pdf'],
         g='De RDW noemt benzine, 1998 cc en 125 kW; dat past bij de 2.0 turbo F4R. Bij de F4R en de M9R is de stuurbekrachtiging hydraulisch met variabele assistentie; een elektropomp hoort bij de M4R en de K9K (persmap en specificaties van de fase-2 2.0T 170 automaat). De Autodoc-lijst noemt beide soorten omdat het type alle bouwjaren omvat.'),
