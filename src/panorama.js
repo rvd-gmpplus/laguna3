@@ -6,7 +6,7 @@
 // -0,58 tot -1,11, glas x plus en min 0,47, opening in het dak x plus en min 0,50, omlijsting en rails tot 0,52. Alles is Geschat
 // uit foto's en de verhoudingen van de catalogustekening; het exacte aantal schermen en de schuifafstand zijn niet te achterhalen.
 // Alles ligt op of onder het dakvlak van het model (panQ, panP) en blijft tussen dakplaat en hemelbekleding (hoogstens 2,7 cm onder het dak).
-phys('bodPanoGlass', { color: 0x0c1013, metalness: 0.05, roughness: 0.05, transparent: true, opacity: 0.5, depthWrite: false, envMapIntensity: 0.9 });
+phys('bodPanoGlass', { color: 0x040506, metalness: 0.05, roughness: 0.05, transparent: true, opacity: 0.8, depthWrite: false, envMapIntensity: 0.55 });
 std('bodPanoFrit', 0x040405, 0, 0.35);                  // zwarte keramische rand (frit) op het glas
 std('bodPanoBar', 0x15161a, 0.3, 0.5);                  // dwarsbalk: donkergrijs tot zwart gelakt
 const PAN_X = 0.47, PAN_XO = 0.50, PAN_XR = 0.52;       // glas, opening in de dakplaat, buitenrand van omlijsting en rails
@@ -108,8 +108,15 @@ function buildPanorama() {
     MAT.darkSteel, { d: 'Stalen frame onder de dakplaat rond de twee openingen waaraan afdichtingen, goten en rails zijn bevestigd (vorm geschat).', ex: [0, -0.12, 0] });
   const rail = s => P(`Geleiderail ${s > 0 ? 'links' : 'rechts'}`, merge([panSlab(PAN_GF[1], PAN_GF[0], s * 0.495, s * 0.53, -0.027, -0.018, 20, 1), panSlab(PAN_GF[1], PAN_GF[0], s * 0.53, s * 0.54, -0.027, -0.006, 20, 1)]), MAT.bodPillar, { d: 'Zwarte geleiderail langs de opening waarin de schuifschoenen van het voorste glas lopen; kunststof glijders slijten het eerst (dat geeft geluid en speling).', ex: [s * 0.16, -0.1, 0] });
   /* ---- luchtgeleider (volger van het schuifglas, 0,04 m omhoog) ---- */
-  const deflector = P('Luchtgeleider', merge([0, 1, 2, 3].map(i => panSlab(PAN_OF[0] - 0.006 * i - 0.002, PAN_OF[0] - 0.006 * i - 0.006, -0.45, 0.45, 0.0005, 0.004 + 0.002 * i, 1, 10))), MAT.bodPillar, { d: 'Zwart lamellennet aan de voorrand van de opening dat windgeruis tegengaat; komt omhoog als het schuifdak opent (vorm geschat).', ex: [0, 0.2, 0.08],
-    open: { type: 'slide', move: [0, 0.04, 0], follow: 'Glaspaneel voor' } });
+  // blad zo breed als de dakopening (x plus en min 0,50), op de voorrand van het frame; armen met scharnierpennen aan de uiteinden houden hem vast
+  const DEF_Z = PAN_OF[0], DEF_X = 0.497;
+  const defBlade = P('Luchtgeleiderblad', merge([0, 1, 2, 3].map(i => panSlab(DEF_Z - 0.006 * i - 0.001, DEF_Z - 0.006 * i - 0.005, -DEF_X, DEF_X, 0.0005, 0.004 + 0.002 * i, 1, 10))), MAT.bodPillar, { d: 'Zwart lamellennet over de volle breedte van de opening, op de voorrand van het dakframe; vangt de wind boven het open dak (vorm geschat).', ex: [0, 0.2, 0.08] });
+  const defArms = P('Armen luchtgeleider', merge([1, -1].flatMap(sg => [
+    rodBetween(panP(DEF_Z - 0.09, sg * 0.486, -0.006), panP(DEF_Z - 0.012, sg * 0.486, 0.0105), 0.0035, 8),
+    xf(G.cyl('x', 0.0055, 0.0055, 0.022, 10), panP(DEF_Z - 0.09, sg * 0.486, -0.006)),
+    xf(G.cyl('x', 0.0045, 0.0045, 0.022, 10), panP(DEF_Z - 0.012, sg * 0.486, 0.0105))])), MAT.darkSteel, { d: 'Twee veerarmpjes met scharnierpennen aan de uiteinden van het blad; ze liggen in de rail en tillen het blad op als het schuifdak opent (vorm geschat).', ex: [0, 0.14, 0.08] });
+  const deflector = A('Luchtgeleider', { d: 'Windgeleider aan de voorrand van de dakopening: een zwart lamellennet op twee veerarmpjes dat omhoog komt als het schuifdak opent, tegen windgeruis (vorm geschat).', ex: [0, 0.2, 0.08],
+    open: { type: 'slide', move: [0, 0.04, 0], min: 0.03, follow: 'Glaspaneel voor' } }, [defBlade, defArms]);
   /* ---- zonneschermen: lamellen die naar de cassette schuiven ---- */
   const screen = (nm, z0, z1, n, level, cassZ, grZ) => {
     const lam = panScreen(z0, z1, n, level);
