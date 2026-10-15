@@ -74,9 +74,10 @@ Interactietest op desktop (muis) en telefoon (touch). Per controle een regel `ok
 | 12 | `inner`: een ingesloten knop is onzichtbaar en niet aanklikbaar zolang de ouder dicht is, zichtbaar zodra die uitklapt, weer verborgen na inklappen en zichtbaar bij isoleren. 12b: een opgetild onderdeel zakt terug bij `setExplode(0)`. |
 | 13 | Gebundeld renderen: minder tekenopdrachten in Gemonteerd (op de eindstand 1.726 zonder en 390 met bundelen, grens 1.500 met), aanwijzen van een onderdeel in een gebundelde groep, een klik selecteert dat onderdeel en laat zijn groep los tekenen, openen maakt direct los en na het dichtklappen is de groep weer samengevoegd. |
 
-| 14 en 15 | Openmodus: in Openen opent een klik op de ruit, de spiegel, de greep of het paneel van een dicht portier het portier; een dubbeltik doet hetzelfde als een klik; de camera-eindstand ligt in het vrije beeld; Alles open en Alles dicht; stap terug na openen; de presets Openen. |
+| 14 | Openmodus: in Openen opent een klik op de ruit, de spiegel, de greep of het paneel van een dicht portier het portier; een dubbeltik doet hetzelfde als een klik; de camera-eindstand ligt in het vrije beeld; Alles open en Alles dicht; stap terug na openen; de presets Openen. |
+| 15 | Onderdeelnummers: de echte gegevens hebben geen onbekend pad of onbekende eenheid; daarna, met alleen tijdelijke records, de statussen, het bewijs, de bronlinks (alleen https, nieuw tabblad), de VIN-waarschuwing, deel van een eenheid, zoeken op nummer en `pnCheck`. |
 
-`ITEST_SHOTS=MAP` bewaart screenshots van de stappen. `ITEST_GATES=1` zet controle 11 als poort aan; zonder die variabele blijft 11 alleen informatie. De controles voor gebundeld renderen (nummer 13) staan in `tools/itest.py`. Het script telde voor golf 4 79 controles over desktop en telefoon samen (alle 79 slaagden op `9c731c8`). Met de openmodus zijn het er 149; zie de resultaten van golf 4 hieronder. Omdat gebundeld renderen losse meshes naar laag 1 verplaatst, zetten alle raycasters in de tools alle lagen aan.
+`ITEST_SHOTS=MAP` bewaart screenshots van de stappen. `ITEST_GATES=1` zet controle 11 als poort aan; zonder die variabele blijft 11 alleen informatie. De controles voor gebundeld renderen (nummer 13) staan in `tools/itest.py`. Het script telde voor golf 4 79 controles over desktop en telefoon samen (alle 79 slaagden op `9c731c8`). Met de openmodus zijn het er 150 (controle 15 toetst ook dat elk pad en elke eenheid in `partnumbers.js` bestaat); zie de resultaten van golf 4 hieronder. Omdat gebundeld renderen losse meshes naar laag 1 verplaatst, zetten alle raycasters in de tools alle lagen aan.
 
 ### `python3 tools/opentest.py [--only namen] [--out map]`
 
@@ -155,28 +156,32 @@ De kolom "Na golf 1" is de tussenstand van 13 oktober 2026 rond 11:30 UTC, ongew
 
 ## Resultaten golf 4
 
-Stand `g4final2` op `7f54e61` (de uitvoer staat in het scratchpad). Deze cijfers zijn de tussenstand die bij het schrijven van deze documentatie bekend was; de orkestrator past ze aan zodra de laatste testset op de eindcommit gedraaid is.
+Eindstand `g4final4` op `3ab6a8d` (de uitvoer staat in het scratchpad). Daarna veranderden alleen de screenshots en de documentatie.
 
 | Test | Uitslag |
 |---|---|
 | `build.py --lint` | ok |
-| `smoke.py` | geen consolemeldingen |
-| `integrity.py` | 0 fouten, 0 ankerfouten, 0 presetfouten |
-| `itest.py` met poorten | 149 van 149 |
-| `ui_inner.py --open` | schoon |
-| `pubsmoke.py` | OK, 6,4 s op de telefoon |
-| `opentest.py` | 26 openers groen op een na: Gordelrolautomaat voor rechts zat 8,8 mm in de bekleding van het open achterportier. Opgelost in `0ac1052` (1,2 cm dieper in de B-stijl). |
+| `smoke.py` | geen consolemeldingen, geen horizontale scroll op de telefoon |
+| `integrity.py` | 0 fouten, 0 ankerfouten, 0 presetfouten, 124 waarschuwingen (uitklapvector nul) |
+| `silhouette.py` | ok |
+| `itest.py` met poorten | 150 van 150 |
+| `ui_inner.py --open` | 223 ingesloten knopen, 0 eerste treffers van buitenaf op de hele auto en per hoofdgroep |
+| `pubsmoke.py` | OK, klaar na 11,6 s op 1280 x 800 en 10,1 s op 390 x 844 (grens 20 s) |
+| `opentest.py` | 26 openers, 0 fouten: eindstand, ondergrens, 0 botsingen, 0 verborgen knopen, stralen in het niets onder 2 procent, spookbatchproef goed. Meldingen alleen voor volgers zonder `open.min`. |
 
-Statistieken `g4final2`: 2.993 knopen, 495 groepen, 2.498 onderdelen, diepte 8, 653.628 driehoeken (Aandrijflijn 235.406, Carrosserie 187.002, Interieur 72.984), 223 ingesloten knopen. Tekenopdrachten: 405 gebundeld en 1.852 zonder; met alles open 759. Frametijd p95 bij alles openen en sluiten: 1,4 tot 1,6 ms (grens 8 ms).
+Statistieken `g4final4`: 3.012 knopen, 499 groepen, 2.513 onderdelen, diepte 8, 659.496 driehoeken (Aandrijflijn 235.534, Carrosserie 187.554, Onderstel 110.204, Interieur 77.612), 223 ingesloten knopen, 43 presets. Tekenopdrachten: 439 gebundeld en 1.867 zonder; met alles open 774 (grens 3.000). Frametijd p95 bij openAll(1) 3,1 ms en bij openAll(0) 2,2 ms (mediaan van drie metingen, grens 8 ms).
 
-De eindhoek of slag van de Olievuldop en de Expansiedop na herstelronde 2 staat nog niet in dit document. Plaats voor de orkestrator: eindstand na herstelronde 2.
+Tussenstanden: `g4final2` op `7f54e61` (opentest een fout: Gordelrolautomaat voor rechts 8,8 mm in de bekleding van het open achterportier, opgelost in `0ac1052`) en `g4final3` op `4fc11cd` (alles groen, maar Carrosserie 199.394 driehoeken door een fijner gaas van de achterportieren; dat gaas is in `3ab6a8d` teruggezet).
 
-Visuele poort golf 4 (9 beoordelaars, 3 plakken, meerderheid per kenmerk):
+Visuele poort golf 4: drie plakken (voorkant en voorportieren, achterkant en dak van buiten, interieur en dak van binnen), per plak drie beoordelaars die elk beeld een keer bekijken, meerderheid per kenmerk. Na elke poort volgde een herstelronde.
 
-- Ja: K1 motorkap, K3 zijruiten, K4 spiegels, K7 tankklep, K12 alles open leest als Laguna III.
-- Deels: K2 portieren (de camera dekte de opening af), K6 achterklep (hoedenplank op de kant gezien), K8 panoramadak (glas te licht), K9 slice a en b, K10 bediening (knop Openen bij een open ruit), K11 interieuropeners, K13 dak van binnen.
-- Nee: K5 doppen (beweging niet te zien, camera slecht gericht), K9 slice c (zwevende luidsprekers onder de hoedenplank).
-- Herstelronde 2 liep op deze punten. De uitslag daarna volgt in de eindstand.
+| Poort | Stand | Ja | Deels | Nee |
+|---|---|---|---|---|
+| 1 | `0ac1052` | 6 | 9 | 2 (K5 doppen, K9 interieur: zwevende luidsprekers onder de hoedenplank) |
+| 2 | `4fc11cd` | 10 | 7 | 0 |
+| 3 | `3ab6a8d` | 10 | 7 | 0 |
+
+Op de eindstand staan op ja: K2 achterportieren, K3 zijruiten voor en achter, K4 spiegels, K5 doppen, K7 tankklep, K8 panoramadak van buiten, K9 (geen doorsteken) bij de voorkant, K10 bediening en K12 alles open leest als Laguna III. Deels: K1 motorkap (de steunstang is op desktop nauwelijks te zien), K2 voorportieren (de B-stijl onder de gordellijn is weinig te onderscheiden), K6 achterklep (de opgetilde hoedenplank leest van achter als vlak liggend), K9 van slice b en c, K11 interieuropeners (camera bij de armsteun en de middenarmsteun), K13 dak van binnen. Tussen poort 2 en 3 gingen K5 en K8 naar ja en K1 en K2 naar deels zonder wijziging aan kap en portieren: de spreiding tussen beoordelaars is van dezelfde orde als de laatste verbeteringen. Daarom is na poort 3 gestopt; de punten staan in `handomdraai.md`.
 
 De spookbatchproef vond bij de telescoop een echte spookbatch; die is opgelost in `a116db9`.
 

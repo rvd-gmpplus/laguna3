@@ -229,7 +229,7 @@ Hoeken in graden, slag in meter. De eindstand en de ondergrens komen uit `tools/
 | Portier linksachter, rechtsachter | scharnier op de B-stijl | 62 | 55 | |
 | Zijruit (vier) | schuif in het portier | voor 0,39, achter 0,30 | voor 0,35, achter 0,25 | achter blijft een strook staan |
 | Buitenspiegel links, rechts | scharnier | 80 naar achteren | 60 | |
-| Achterklep | scharnier dakrand | 66 | 60 | twee gasveren als telescoop; hoedenplank volgt (30 graden) |
+| Achterklep | scharnier dakrand | 66 | 60 | twee gasveren als telescoop; de hoedenplank volgt (24 graden) en hangt aan twee koordjes (telescopen) aan de klep, met de luidsprekers erop |
 | Tankklep | scharnier voorrand | 140 | 100 | tankkom in het rechter achterscherm, capless vulhals |
 | Glaspaneel voor (label Schuifdak) | kantelen en schuiven | 0,60 | 0,45 | needs Zonnescherm voor; luchtgeleider volgt |
 | Zonnescherm voor, achter | schuif naar de cassette | 0,65 en 0,47 | | lamellen als volgers |
@@ -238,8 +238,8 @@ Hoeken in graden, slag in meter. De eindstand en de ondergrens komen uit `tools/
 | Rugleuning groot deel (rechts), klein deel (links) | scharnier | 104 | 80 | needs Achterklep; hoofdsteunen en gordels gaan mee |
 | Middenarmsteun achter | scharnier | 104 | 70 | hangt in Rugleuning groot deel; needs Portier linksachter |
 | Zonneklep links, rechts | scharnier voorrand | 169 | 138 | ligt neergeklapt bijna tegen de voorruit |
-| Bagageruimtevloer | scharnier voorrand | 50 | 50 | needs Achterklep; opbergbak eronder |
-| Olievuldop, Expansiedop | schuif omhoog | zie [testen.md](testen.md) | | needs Motorkap |
+| Bagageruimtevloer | scharnier voorrand | 62 | 50 | needs Achterklep; opbergbak eronder |
+| Olievuldop, Expansiedop | schuif omhoog met kanteling | 0,10 en 0,17 | | needs Motorkap; de olievuldop komt uit een open vulhals |
 
 ### Panoramadak
 
@@ -247,7 +247,7 @@ Het panoramadak (`src/panorama.js`) heeft twee getinte glaspanelen achter elkaar
 
 ### Prestaties in Openen
 
-Frametijd p95 bij alles openen en sluiten: 1,4 tot 1,6 ms (grens 8 ms). Tekenopdrachten: 405 gesloten en 759 met alles open (grens 3.000). Dat zijn meetwaarden uit software-rendering.
+Frametijd p95 bij alles openen en sluiten: 2,2 tot 3,1 ms (grens 8 ms). Tekenopdrachten: 439 gesloten en 774 met alles open (grens 3.000). Dat zijn meetwaarden uit software-rendering.
 
 ## Contracten tussen de eigenaars
 
@@ -332,7 +332,7 @@ Eindwaarden: de stuurpomp zit binnen zone P (`ENG_PS`, poelie met tipstraal 0,05
    - Onderbouw: einddemper plat en donker onder de vloer, parkeerremunit naar x 0,28 en z −1,40, en drie gemelde contacten (accuhouderstang, vulpijp, remslang achter) nagemeten en opgelost.
    - Meldingen van de gebruiker (telefoon, auto van onderen bekeken): een zwarte streep door het wiel (portierrubber door de achterwielboog, commit `9c731c8`), een raar achterwiel (spaken te diep verzonken, `f10fd54`), een los hangende uitlaat (`c22312d`, later de eindstukken in `ff42dbd`) en bij het nalopen het zicht op het interieur door de wielbogen en van onderen (gesloten wielkasten, vloer tot de wielkast en een achterbank om de wielkasten, `9c731c8`). Elke melding is eerst met stralen en schermafbeeldingen nagerekend.
    - Resultaat: 2.924 knopen, 489 groepen, 2.435 onderdelen, 630.368 driehoeken, 390 tekenopdrachten gemonteerd met bundelen (1.726 zonder), itest met poorten 79 van 79, poort 5 haalt S7 met 7 van 9. Details in [testen.md](testen.md) en [premortem.md](premortem.md). Versie 4 en versie 5 staan op dezelfde URL.
-8. Golf 4 (14 en 15 oktober 2026): de modus Openen met 26 openers, het panoramadak, onderdeelnummers in het paneel en de kennis uit het rapport van de gebruiker en het werkplaatshandboek MR 415. Twee premortems op het plan (openmodus en panoramadak; gegevens en proces), zie [premortem.md](premortem.md). Eindstand van de metingen: stand `g4final2` op `7f54e61` (zie [testen.md](testen.md)). Versie 6 van de URL volgt na publicatie.
+8. Golf 4 (14 en 15 oktober 2026): de modus Openen met 26 openers, het panoramadak, onderdeelnummers in het paneel en de kennis uit het rapport van de gebruiker en het werkplaatshandboek MR 415. Twee premortems op het plan (openmodus en panoramadak; gegevens en proces), zie [premortem.md](premortem.md). Eindstand van de metingen: `g4final4` op `3ab6a8d` (zie [testen.md](testen.md)); drie visuele poorten met een herstelronde na elke poort. Versie 6 van de URL volgt na publicatie.
 
 ## Bewuste keuzes
 
