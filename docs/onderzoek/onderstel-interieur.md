@@ -209,7 +209,7 @@ Zie ook de gestructureerde lijst in het antwoord. Kort:
 - Of de accu rechts of links staat (tegenstrijdig).
 - Exacte plek van startknop en kaartlezer.
 - Merk van remklauwen en van de stuurpomp.
-- Of deze exacte Initiale Paris een 4Control-optie had.
+- Of deze exacte Initiale Paris een 4Control-optie had. Beantwoord op 15 oktober 2026: nee (opgave gebruiker).
 - Bevestiging van Autoweek-vermelding (pagina geblokkeerd).
 
 ## Bronnen

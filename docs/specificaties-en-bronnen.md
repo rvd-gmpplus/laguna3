@@ -20,7 +20,7 @@ Onderzoek in twee rondes: 12 oktober 2026 voor het eerste model, 13 oktober 2026
 | Remmen | Voor geventileerd 296 × 26 mm, zwevende klauw met zuiger Ø57. Achter massief 300 × 11 mm (niet 260), gecombineerde klauw met zuiger Ø38 en kabel naar de elektrische parkeerrem. | Bevestigd |
 | ABS-encoder | Magnetische codeerring in de wiellagereenheid, geen getande ring. | Bevestigd |
 | Velgen | 18 inch met band 225/45 R18 en tien tapse spaken blijft in het model. 18 inch is leverbaar en standaard op de Britse Initiale Lux; voor een Nederlandse Initiale Paris uit 2011 is 17 inch even goed mogelijk. | Aannemelijk |
-| 4Control | Niet in het model. Het was op de Initiale een optie van 2000 euro (Franse prijslijst 2011); het model toont de standaard H-as. | Bevestigd (optie) |
+| 4Control | Niet in het model, en niet op de auto van de gebruiker (opgave van de gebruiker, 15 oktober 2026: Initiale Paris zonder 4Control). Het was op de Initiale een optie van 2000 euro (Franse prijslijst 2011); het model toont de standaard H-as. | Bevestigd (gebruiker) |
 | Panoramadak | In het model: elektrisch panoramadak met schuivend voorglas en vast achterglas. De auto van de gebruiker heeft het; het is een optie bij de Initiale (850 euro in Frankrijk). Afmetingen in het model: voorste glas z 0,20 tot -0,50 (opening in het dak vanaf 0,22), dwarsbalk -0,50 tot -0,58, achterste glas -0,58 tot -1,11, breedte plus en min 0,47. Deze maten zijn geschat uit foto's. | Bevestigd (optie), Geschat (afmetingen) |
 | Stoelen | Elektrisch met geheugen (bestuurder), verwarming, handmatige lendensteun. Geen massage en geen ventilatie. Geperforeerd leder, beige of donker (Dark Carbon); het model houdt beige. | Bevestigd |
 | Audio | Bose met tien luidsprekers. | Bevestigd (aantal), Geschat (posities) |
@@ -126,7 +126,7 @@ Onderzoek in twee rondes: 12 oktober 2026 voor het eerste model, 13 oktober 2026
 | Wielbevestiging | 5 × 114,3, centreergat 66,1, wielbouten M14 × 1,5 | koleso.ee, auto-doc.be | Bevestigd (steek en draad), Aannemelijk (centreergat) |
 | Bandenspanningssensor | In het ventiel van elk wiel | Renault-handboek fase 1, Franse brochure 2008 | Bevestigd (principe) |
 | Reservewiel | Standaard geen (bandenreparatieset) | UK-brochure, Renault-persmap | Bevestigd |
-| 4Control | Niet in het model (optie) | Franse prijslijst 2011, Planète Renault | Bevestigd (optie) |
+| 4Control | Niet in het model en niet op de auto van de gebruiker (optie) | Franse prijslijst 2011, Planète Renault | Bevestigd (optie) |
 
 ## Uitvoering Initiale en interieur
 
@@ -174,7 +174,6 @@ De Laguna III 2.0T 170 automaat Initiale in fase 2 bestaat niet op elke markt. B
 ## Open punten
 
 - Standaard wielmaat (17 of 18 inch) en wielontwerp van een Nederlandse Initiale Paris uit 2011.
-- Of deze exacte auto een 4Control-optie had.
 - Plaats van de motor-ECU, de claxons, de accu (links of rechts) en de startknop.
 - Merk van de remklauwen en van de stuurpomp.
 - Overhangen: fabriek 1014 en 925 mm, model 980 en 959 mm, beelden circa 920 en 840 mm.

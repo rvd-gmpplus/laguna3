@@ -116,7 +116,7 @@ Waar een feit uit het rapport is overgenomen zonder dat de bron opnieuw is gelez
 |---|---|---|---|
 | Voorwielophanging | McPherson, stabilisator 24 mm, dempers bitube 50/22 mm | Bevestigd | Persmap |
 | Achteras | Torsieas in H-vorm met meesturend effect, stabilisator 29,6 mm bij de F4Rt, dempers bitube 45/12,5 mm | Bevestigd | Persmap |
-| 4Control | Optie; het model toont de gewone H-as | Bevestigd | repo (Franse prijslijst 2011) |
+| 4Control | Optie; de auto van de gebruiker heeft het niet (opgave gebruiker, 15 oktober 2026); het model toont de gewone H-as | Bevestigd | repo (Franse prijslijst 2011) |
 | Remmen voor | Geventileerd 296 x 26 mm, zwevende klauw met zuiger 57 mm | Bevestigd | Persmap |
 | Remmen achter | Massief 300 x 11 mm, gecombineerde klauw met zuiger 38 mm | Bevestigd | Persmap |
 | Elektronica | ABS, EBV, ESP met CSV en ASR standaard bij de F4Rt | Bevestigd | Persmap |
@@ -193,7 +193,7 @@ Prioriteiten voor een exemplaar van circa 15 jaar, uit het rapport overgenomen: 
 - Laaddruk van de F4Rt 811.
 - Minimumdiktes van de remschijven, aanhaalmomenten uit het werkplaatsboek (cilinderkop, wielbouten, subframe, remklauwen), uitlijnwaarden.
 - Aircovulling, koelvloeistof- en remvloeistofinhoud.
-- Exacte uitvoering van deze auto (4Control, wielmaat) via RDW of MyRenault.
+- Exacte uitvoering van deze auto (wielmaat) via RDW of MyRenault. 4Control: niet aanwezig (opgave gebruiker).
 
 ## 14. Bronnen
 
