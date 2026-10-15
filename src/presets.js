@@ -92,6 +92,11 @@ function appPresetErrors(p) {
     const n = byName(name);
     if (!scope.some(r => isUnder(n, r))) err.push(`preset "${p.label}": "${name}" ligt niet onder ${iso.length ? (p.iso || []).join(' of ') : 'de auto'}`);
   }
+  // labelOnly: namen van kinderen van de labelgroep (niet uniek in de boom); een typefout verbergt anders stil labels
+  if (p.labelOnly && p.labels) {
+    const kids = byName(p.labels).kids.map(k => k.name);
+    for (const name of p.labelOnly) if (!kids.includes(name)) err.push(`preset "${p.label}": labelOnly "${name}" is geen kind van "${p.labels}"`);
+  }
   return err;
 }
 function appCheckPresets(strict) {

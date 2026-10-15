@@ -57,16 +57,12 @@ CHECK = r"""(ANCHORS) => {
     if (SPECIAL.has(k)) continue;
     for (const name of list) { const c = count.get(name) || 0; if (c !== 1) anchorErr.push(`anker "${name}" (${k}) komt ${c}x voor, moet 1x`); }
   }
-  // openers: precies deze leiders in de modus Openen (naam uniek, heeft een opener, is geen volger), niet meer en niet minder
+  // openers: precies deze leiders in de modus Openen, als pad (namen zoals Zijruit komen vier keer voor), niet meer en niet minder
   if (A.openers) {
-    const leaders = L.openers ? L.openers() : [];
-    const have = new Set(leaders.map(o => typeof o === 'string' ? o : o.name));
-    for (const name of A.openers) {
-      const c = count.get(name) || 0;
-      if (c !== 1) anchorErr.push(`opener "${name}" komt ${c}x voor, moet 1x`);
-      else if (!have.has(name)) anchorErr.push(`opener "${name}" is geen leider in de modus Openen`);
-    }
-    for (const name of have) if (!A.openers.includes(name)) anchorErr.push(`opener "${name}" staat niet in anchors.json (openers)`);
+    const leaders = (typeof OPENERS !== 'undefined' && typeof uiPathOf === 'function') ? OPENERS.map(n => uiPathOf(n)) : [];
+    const have = new Set(leaders);
+    for (const p of A.openers) if (!have.has(p)) anchorErr.push(`opener "${p}" bestaat niet of is geen leider in de modus Openen`);
+    for (const p of have) if (!A.openers.includes(p)) anchorErr.push(`opener "${p}" staat niet in anchors.json (openers)`);
     if (have.size !== A.openers.length) anchorErr.push(`${have.size} openers in de pagina, ${A.openers.length} in anchors.json`);
   }
   // presets: precies deze id's (een verdwenen of hernoemde preset is een fout)

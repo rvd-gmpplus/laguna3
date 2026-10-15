@@ -138,6 +138,8 @@ Een preset is alleen gegevens in `src/presets.js`: `id`, `cat` (categorie), `lab
 - `onderstel_children`: Vooras en stuurinrichting, Achteras, Wielen, Remsysteem.
 - `contains`: paren (ouder, nakomeling) die in de boom onder elkaar moeten hangen.
 - `content`: per anker een minimum aantal knopen dat op een patroon past (bijvoorbeeld dat `Krukmechanisme` vier zuigergroepen bevat). Dit vangt een anker met de juiste naam op de verkeerde plek of met de verkeerde inhoud.
+- `openers`: de paden van de 26 leiders in de modus Openen, en `preset_ids`: de 43 preset-id's. `integrity.py` eist dat de pagina precies deze heeft, niet meer en niet minder.
+- `triangle_budgets`: de budgetten aan driehoeken per hoofdgroep en in totaal; `tools/tri.py --gate` bewaakt ze. Alleen-lezen voor domeineigenaars.
 
 `buildCar()` in `systems.js` zet de uitklapvectoren van de acht hoofdgroepen en van de vier kinderen van Onderstel. Alle andere uitklapvectoren zijn van de eigenaar van de groep.
 
