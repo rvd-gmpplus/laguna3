@@ -52,9 +52,28 @@ CHECK = r"""(ANCHORS) => {
   const anchorErr = [];
   const A = ANCHORS, count = new Map();
   for (const n of L.ALL) count.set(n.name, (count.get(n.name) || 0) + 1);
+  const SPECIAL = new Set(['root_children_order', 'onderstel_children', 'contains', 'content', 'openers', 'preset_ids', 'triangle_budgets']);
   for (const [k, list] of Object.entries(A)) {
-    if (k === 'root_children_order' || k === 'onderstel_children' || k === 'contains' || k === 'content') continue;
+    if (SPECIAL.has(k)) continue;
     for (const name of list) { const c = count.get(name) || 0; if (c !== 1) anchorErr.push(`anker "${name}" (${k}) komt ${c}x voor, moet 1x`); }
+  }
+  // openers: precies deze leiders in de modus Openen (naam uniek, heeft een opener, is geen volger), niet meer en niet minder
+  if (A.openers) {
+    const leaders = L.openers ? L.openers() : [];
+    const have = new Set(leaders.map(o => typeof o === 'string' ? o : o.name));
+    for (const name of A.openers) {
+      const c = count.get(name) || 0;
+      if (c !== 1) anchorErr.push(`opener "${name}" komt ${c}x voor, moet 1x`);
+      else if (!have.has(name)) anchorErr.push(`opener "${name}" is geen leider in de modus Openen`);
+    }
+    for (const name of have) if (!A.openers.includes(name)) anchorErr.push(`opener "${name}" staat niet in anchors.json (openers)`);
+    if (have.size !== A.openers.length) anchorErr.push(`${have.size} openers in de pagina, ${A.openers.length} in anchors.json`);
+  }
+  // presets: precies deze id's (een verdwenen of hernoemde preset is een fout)
+  if (A.preset_ids && L.PRESETS) {
+    const ids = L.PRESETS.map(p => p.id);
+    for (const id of A.preset_ids) if (!ids.includes(id)) anchorErr.push(`preset "${id}" bestaat niet meer`);
+    for (const id of ids) if (!A.preset_ids.includes(id)) anchorErr.push(`preset "${id}" staat niet in anchors.json (preset_ids)`);
   }
   const rc = L.ROOT.kids.map(k => k.name).join(' | '), want = A.root_children_order.join(' | ');
   if (rc !== want) anchorErr.push(`hoofdgroepen: "${rc}" in plaats van "${want}"`);

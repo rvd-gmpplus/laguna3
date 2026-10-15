@@ -11,13 +11,14 @@ Controles (de bouw stopt bij een fout):
   - dubbele materiaalnamen in std()/phys()
   - syntaxis van het samengevoegde script via `node --check` (vangt ook dubbele const/let)
 """
-import os, re, sys, shutil, subprocess, tempfile
+import os, re, sys, shutil, subprocess, tempfile, hashlib
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, 'src')
 ORDER = ['core.js', 'body.js', 'bodyparts.js', 'panorama.js', 'engine1.js', 'engine2.js', 'engine3.js', 'drivetrain.js', 'chassis.js', 'interior.js', 'systems.js', 'partnumbers.js', 'app1.js', 'presets.js', 'app2.js']
 LIBS = ['build/three.min.js', 'examples/js/controls/OrbitControls.js', 'examples/js/environments/RoomEnvironment.js', 'examples/js/geometries/RoundedBoxGeometry.js', 'examples/js/utils/BufferGeometryUtils.js']
-CDN = 'https://cdn.jsdelivr.net/npm/three@0.147.0/'
+THREE_VERSION = '0.147.0'  # r147: de laatste three.js met de niet-module examples/js (OrbitControls enz.)
+CDN = f'https://cdn.jsdelivr.net/npm/three@{THREE_VERSION}/'
 
 
 def read(name):
@@ -71,8 +72,18 @@ def lint(sources):
     return errors
 
 
-def page(head, js, prefix):
+def version(head, js, test=False):
+    """Versiestempel: het nummer uit VERSION plus een inhoudshash (7 tekens) van head.html en het samengevoegde script,
+    zodat de pagina zelf zegt uit welke bron hij komt. Niet uit HEAD: de commit die index.html bevat bestaat bij het bouwen nog niet."""
+    with open(os.path.join(HERE, 'VERSION'), encoding='utf-8') as f:
+        num = f.read().strip()
+    h = hashlib.sha256((head + '\n' + js).encode('utf-8')).hexdigest()[:7]
+    return f'{num} (bron {h}{", testversie" if test else ""})'
+
+
+def page(head, js, prefix, test=False):
     tags = '\n'.join(f'<script src="{prefix}{l}"></script>' for l in LIBS)
+    head = head.replace('__LAGUNA_VERSION__', version(head, js, test))
     return f"{head}\n{tags}\n<script>\n{js}\n</script>\n"
 
 
@@ -102,7 +113,7 @@ def main(argv):
     if args:
         test_dir = args[0]
         os.makedirs(test_dir, exist_ok=True)
-        body = page(head, js, 'three/')
+        body = page(head, js, 'three/', test=True)
         with open(os.path.join(test_dir, 'index.html'), 'w', encoding='utf-8') as f:
             f.write('<!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"></head><body>\n' + body + '</body></html>')
     print('ok', 'testversie' if test_only else f'{os.path.getsize(out)} bytes')

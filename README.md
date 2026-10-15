@@ -162,7 +162,7 @@ python3 build.py --lint          # controleert alleen (dubbele namen, syntaxis)
 python3 build.py --test-only MAP # alleen de testversie, laat index.html ongemoeid
 ```
 
-De tests gebruiken three.js 0.147.0 uit een lokaal npm-pakket en een Chromium met software-rendering. De korte route:
+De tests gebruiken three.js 0.147.0 uit een lokaal npm-pakket en een Chromium met software-rendering. Een verse omgeving maak je klaar met `tools/setup.sh` (Playwright uit `requirements.txt`, three.js met hashcontrole). De korte route:
 
 ```bash
 python3 tools/smoke.py        # laden, aantallen, console
@@ -175,7 +175,7 @@ python3 tools/ui_inner.py --open  # ingesloten knopen die zichtbaar worden met a
 python3 tools/opentest.py     # de 26 openers: zes controles per opener
 ```
 
-De hele set in een keer: `tools/orkestratie/finaltests.sh UITVOERMAP`.
+De hele set in een keer, strikt en met één exitcode: `tools/orkestratie/finaltests.sh UITVOERMAP`. De budgetten voor driehoeken staan in `tools/anchors.json` en worden bewaakt door `python3 tools/tri.py --gate`.
 
 Voorbereiding, alle scripts en de resultaten staan in [docs/testen.md](docs/testen.md).
 

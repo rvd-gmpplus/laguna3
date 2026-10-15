@@ -4,7 +4,7 @@ Scripts die de bouwsessie naast de vaste testset gebruikte: screenshots maken, e
 
 | Script | Gebruik | Wat het doet |
 |---|---|---|
-| `finaltests.sh` | `tools/orkestratie/finaltests.sh UITVOERMAP` | Draait de hele testset (lint, smoke, integrity, silhouette, ui_inner (met --open), opentest, itest met poorten, tri, pubsmoke, stats) in twee parallelle reeksen en zet de uitvoer per test in de map. |
+| `finaltests.sh` | `tools/orkestratie/finaltests.sh UITVOERMAP` | Draait de hele testset (lint, smoke, integrity, silhouette, ui_inner met --open --strict, opentest met --strikt-min, itest met poorten, tri met --gate, pubsmoke, stats) in twee parallelle reeksen, zet de uitvoer per test in de map met de duur, en geeft exitcode 1 zodra een test faalt. |
 | `gallery.py` | `python3 tools/orkestratie/gallery.py REPO UITVOERMAP [set]` | Vaste screenshotset. De sets zijn alles (standaard), exterieur, overzicht, motor, aandrijving, onderstel, interieur, golf2 en mobiel. |
 | `presetshots.py` | `python3 tools/orkestratie/presetshots.py REPO UITVOERMAP` | Een screenshot van elke preset, zonder de rondleiding. |
 | `docshots.py` | `python3 tools/orkestratie/docshots.py REPO UITVOERMAP` | De zeven screenshots voor `docs/screenshots`. |

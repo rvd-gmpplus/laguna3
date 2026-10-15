@@ -1533,6 +1533,7 @@ function uiFrameOf(names) {
 // en de presetmarkering vervalt (een preset die je daarna kiest, zet hem weer).
 const uiApi = (f, changes) => (...a) => { hideHint(true); const r = f(...a); if (changes) { clearPreset(); uiAfterAction(); } return r; };
 window.__laguna = {
+  version: (document.querySelector('meta[name="laguna-version"]') || {}).content || null,  // versiestempel uit build.py (VERSION plus inhoudshash)
   finishAll, ROOT, ALL, MESHES, PRESETS, byName,
   select: uiApi(select), tapNode: uiApi(tapNode), focusNodes: uiApi(focusNodes),
   setTarget: uiApi(setTarget, true), explodeAllUnder: uiApi(explodeAllUnder, true), collapseAll: uiApi(collapseAll, true), isolate: uiApi(isolate, true),

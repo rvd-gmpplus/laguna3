@@ -11,25 +11,51 @@ Omgevingsvariabelen:
     THREE_DIR   map met het uitgepakte npm-pakket three@0.147.0 (standaard ~/.cache/laguna/three-0.147.0/package)
     CHROMIUM    pad naar een Chromium-binary (standaard /opt/pw-browsers/chromium als die bestaat)
     LAGUNA_TEST bestaande testmap gebruiken in plaats van opnieuw te bouwen
+    LAGUNA_TIMEOUT_MS wachttijd op laden en `ready` in milliseconden (standaard 120000)
+
+Los aan te roepen: `python3 tools/harness.py --ensure-three` haalt three.js op (met hashcontrole) en drukt de map af.
 """
-import os, sys, json, time, shutil, tempfile, threading, subprocess, functools, contextlib
+import os, sys, json, time, shutil, tempfile, threading, subprocess, functools, contextlib, fcntl, hashlib, base64
 import http.server, socketserver
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, ROOT)
+import build as _build
+THREE_VERSION = _build.THREE_VERSION
+# npm `dist.integrity` van three@0.147.0: het opgehaalde pakket moet hier byte voor byte mee kloppen
+THREE_INTEGRITY = 'sha512-LPTOslYQXFkmvceQjFTNnVVli2LaVF6C99Pv34fJypp8NbQLbTlu3KinZ0zURghS5zEehK+VQyvWuPZ/Sm8fzw=='
 ARGS = ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist']
-IGNORE = ('favicon.ico',)
+# Contract: consolemeldingen die geen fout zijn. Alleen de orkestrator wijzigt deze lijst, elke regel met reden en datum.
+IGNORE = (
+    'favicon.ico',  # de testpagina heeft geen favicon en de browser vraagt hem toch op (golf 1, 13 oktober 2026)
+)
+
+
+def _check_tgz(path):
+    with open(path, 'rb') as f:
+        got = 'sha512-' + base64.b64encode(hashlib.sha512(f.read()).digest()).decode()
+    if got != THREE_INTEGRITY:
+        raise SystemExit(f'three.js-pakket {path} komt niet overeen met de npm-integriteit van three@{THREE_VERSION}: {got}')
 
 
 def ensure_three():
+    """Geeft de map met het uitgepakte npm-pakket; haalt het op als het ontbreekt. Een bestandsvergrendeling voorkomt dat
+    twee gelijktijdige testreeksen allebei `npm pack` draaien."""
     d = os.environ.get('THREE_DIR')
     if d and os.path.isfile(os.path.join(d, 'build', 'three.min.js')):
         return d
-    cache = os.path.expanduser('~/.cache/laguna/three-0.147.0')
+    cache = os.path.expanduser(f'~/.cache/laguna/three-{THREE_VERSION}')
     pkg = os.path.join(cache, 'package')
-    if not os.path.isfile(os.path.join(pkg, 'build', 'three.min.js')):
-        os.makedirs(cache, exist_ok=True)
-        subprocess.run(['npm', 'pack', 'three@0.147.0'], cwd=cache, check=True, capture_output=True)
-        subprocess.run(['tar', 'xzf', 'three-0.147.0.tgz'], cwd=cache, check=True)
+    tgz = os.path.join(cache, f'three-{THREE_VERSION}.tgz')
+    os.makedirs(cache, exist_ok=True)
+    with open(os.path.join(cache, '.lock'), 'w') as lk:
+        fcntl.flock(lk, fcntl.LOCK_EX)
+        if not os.path.isfile(os.path.join(pkg, 'build', 'three.min.js')):
+            subprocess.run(['npm', 'pack', f'three@{THREE_VERSION}'], cwd=cache, check=True, capture_output=True)
+            _check_tgz(tgz)
+            subprocess.run(['tar', 'xzf', tgz], cwd=cache, check=True)
+        elif os.path.isfile(tgz):
+            _check_tgz(tgz)
     return pkg
 
 
@@ -58,9 +84,10 @@ class _Quiet(http.server.SimpleHTTPRequestHandler):
 
 
 class Session:
-    def __init__(self, test_dir):
+    def __init__(self, test_dir, owns_dir=False):
         from playwright.sync_api import sync_playwright
         self.dir = test_dir
+        self.owns_dir = owns_dir  # tijdelijke testmap van deze sessie: wordt bij close() opgeruimd
         self.srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(_Quiet, directory=test_dir))
         self.port = self.srv.server_address[1]
         threading.Thread(target=self.srv.serve_forever, daemon=True).start()
@@ -70,7 +97,9 @@ class Session:
         self.logs = []
         self.load_times = []
 
-    def page(self, w=1280, h=800, scale=1, wait=True, touch=False, timeout=120000):
+    def page(self, w=1280, h=800, scale=1, wait=True, touch=False, timeout=None):
+        # LAGUNA_TIMEOUT_MS: wachttijd op laden en `ready` (standaard 120 s; op een belaste machine of CI hoger zetten)
+        timeout = int(os.environ.get('LAGUNA_TIMEOUT_MS', timeout or 120000))
         ctx = self.browser.new_context(viewport={'width': w, 'height': h}, device_scale_factor=scale, has_touch=touch, is_mobile=touch)
         ctx.add_init_script('window.__LAGUNA_CACHECHECK = true;')
         pg = ctx.new_page()
@@ -93,7 +122,11 @@ class Session:
         return pg
 
     def errors(self):
-        return [l for l in self.logs if 'error' in l.lower() or 'PAGEERROR' in l]
+        """Alle gelogde consolemeldingen: fouten én waarschuwingen tellen (docs/testen.md), behalve IGNORE."""
+        return list(self.logs)
+
+    def warnings(self):
+        return [l for l in self.logs if '] warning:' in l]
 
     def report(self):
         for t, s in self.load_times:
@@ -111,14 +144,17 @@ class Session:
             self._pw.stop()
         finally:
             self.srv.shutdown()
+            if self.owns_dir:
+                shutil.rmtree(self.dir, ignore_errors=True)
 
 
 @contextlib.contextmanager
 def session(test_dir=None):
-    d = test_dir or os.environ.get('LAGUNA_TEST') or build_test()
+    given = test_dir or os.environ.get('LAGUNA_TEST')
+    d = given or build_test()
     if not os.path.exists(os.path.join(d, 'three')):
         os.symlink(ensure_three(), os.path.join(d, 'three'))
-    s = Session(d)
+    s = Session(d, owns_dir=not given)
     try:
         yield s
     finally:
@@ -134,3 +170,10 @@ def screen_pt(pg, node_expr):
     """Schermcoördinaat (CSS-pixels) van het midden van een knoop. node_expr: JS-expressie die een knoop oplevert."""
     return pg.evaluate("""(() => { const n = %s; const w = n.obj.localToWorld(n.lc.clone()); const v = w.project(camera);
         const r = canvas.getBoundingClientRect(); return [r.left + (v.x * 0.5 + 0.5) * r.width, r.top + (-v.y * 0.5 + 0.5) * r.height, v.z]; })()""" % node_expr)
+
+
+if __name__ == '__main__':
+    if '--ensure-three' in sys.argv[1:]:
+        print(ensure_three())
+    else:
+        print(__doc__)

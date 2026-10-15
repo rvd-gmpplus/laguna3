@@ -5,19 +5,21 @@ Alle tests draaien in headless Chromium via Playwright (Python), met WebGL via S
 ## Voorbereiding
 
 ```bash
-pip install playwright
-python3 tools/smoke.py         # haalt three.js 0.147.0 zelf op (npm) als dat nog niet in de cache staat
+tools/setup.sh                 # Playwright uit requirements.txt, three.js 0.147.0 in de cache (met hashcontrole), Chromium
+python3 tools/smoke.py
 ```
 
-`tools/harness.py` regelt de rest: hij bouwt de testmap met een symlink `three/` naar het npm-pakket en start Chromium. Het ophalen van three.js vraagt `npm` en een netwerkverbinding. Instellingen:
+`tools/harness.py` regelt de rest: hij bouwt de testmap met een symlink `three/` naar het npm-pakket en start Chromium. Het ophalen van three.js vraagt `npm` en een netwerkverbinding; het pakket wordt vergeleken met de npm-integriteit (`THREE_INTEGRITY` in de harness) en een bestandsvergrendeling voorkomt dat twee reeksen tegelijk `npm pack` draaien. De versie staat op één plek: `THREE_VERSION` in `build.py`. Een SessionStart-hook (`.claude/hooks/session-start.sh`) draait `tools/setup.sh` in een Claude Code-sessie in de cloud. Instellingen:
 
 | Omgevingsvariabele | Werking |
 |---|---|
 | `THREE_DIR` | Map met het uitgepakte npm-pakket `three@0.147.0` (de map `package`). Standaard `~/.cache/laguna/three-0.147.0/package`; ontbreekt die, dan draait het script `npm pack three@0.147.0` en pakt het uit. |
 | `CHROMIUM` | Pad naar een Chromium-binary. Standaard `/opt/pw-browsers/chromium` als die bestaat, anders de Chromium van Playwright (`playwright install chromium`). |
-| `LAGUNA_TEST` | Een bestaande testmap hergebruiken in plaats van opnieuw te bouwen. |
+| `LAGUNA_TEST` | Een bestaande testmap hergebruiken in plaats van opnieuw te bouwen. Zonder deze variabele ruimt de harness zijn tijdelijke testmap bij het sluiten op. |
+| `LAGUNA_TIMEOUT_MS` | Wachttijd op laden en `ready`, standaard 120000. Op een belaste machine of in CI hoger zetten. |
+| `PUBSMOKE_READY_MS` | Grens voor `ready` in `pubsmoke.py`, standaard 20000 (de grens uit de premortem). |
 
-Chromium start met `--use-angle=swiftshader --enable-unsafe-swiftshader --ignore-gpu-blocklist`. De harness zet `window.__LAGUNA_CACHECHECK = true`, zodat een botsing van cache-sleutels in `core.js` als consolefout verschijnt. Een script faalt bij elke console-fout of -waarschuwing, behalve het ontbrekende `favicon.ico`.
+Chromium start met `--use-angle=swiftshader --enable-unsafe-swiftshader --ignore-gpu-blocklist`. De harness zet `window.__LAGUNA_CACHECHECK = true`, zodat een botsing van cache-sleutels in `core.js` als consolefout verschijnt. Een script faalt bij elke console-fout of -waarschuwing (`harness.errors()` geeft beide), behalve de regels in `IGNORE` in `tools/harness.py`; die lijst is een contract met per regel een reden en datum, en alleen de orkestrator wijzigt hem.
 
 De pagina zet `window.__laguna` met hulpfuncties voor tests, waaronder `finishAll()` om animaties direct af te ronden, `state()`, `preset(id)`, `checkPresets()`, `pickNodeAt(x, y)`, `hoverTarget(x, y)`, `setExplode(v)`, `labelRects()`, `freeView()`, `profileFrames(naam, aantal)`, `timing()` (de opstarttijdlijn in milliseconden sinds het begin van de navigatie), `batchFlush()` (alle wachtende batches direct bouwen) en `batchStats()`. Een eigen `THREE.Raycaster` in een testscript moet `ray.layers.enableAll()` aanzetten: gebundeld renderen zet de losse meshes van gesloten groepen op laag 1, en een raycaster die alleen laag 0 ziet, mist ze (`integrity.py`, `silhouette.py` en `ui_inner.py` doen dit). De oude functies blijven werken; nieuwe haken komen erbij.
 
@@ -79,14 +81,14 @@ Interactietest op desktop (muis) en telefoon (touch). Per controle een regel `ok
 
 `ITEST_SHOTS=MAP` bewaart screenshots van de stappen. `ITEST_GATES=1` zet controle 11 als poort aan; zonder die variabele blijft 11 alleen informatie. De controles voor gebundeld renderen (nummer 13) staan in `tools/itest.py`. Het script telde voor golf 4 79 controles over desktop en telefoon samen (alle 79 slaagden op `9c731c8`). Met de openmodus zijn het er 150 (controle 15 toetst ook dat elk pad en elke eenheid in `partnumbers.js` bestaat); zie de resultaten van golf 4 hieronder. Omdat gebundeld renderen losse meshes naar laag 1 verplaatst, zetten alle raycasters in de tools alle lagen aan.
 
-### `python3 tools/opentest.py [--only namen] [--out map]`
+### `python3 tools/opentest.py [--only namen] [--out map] [--strikt-min]`
 
-Toetst elke opener van de modus Openen (26 stuks). `--only` beperkt de run tot de genoemde openers, `--out` bewaart de uitvoer in een map. Per opener zes controles:
+Toetst elke opener van de modus Openen (26 stuks). `--only` beperkt de run tot de genoemde openers, `--out` bewaart de uitvoer in een map. Met `--strikt-min` (zo draait `finaltests.sh` hem) is een leider zonder `open.min` een fout, en ook een `min` onder 0,8 maal de volle hoek of slag: zo kan een agent een opener niet eerst kleiner maken en dan de ondergrens meenemen. Een volger zonder eigen `min` blijft een melding. Per opener zes controles:
 
 | Nr | Controle |
 |---|---|
 | 1 | Eindstand: de gemeten hoek of slag uit de eigen meshes haalt de waarde van de opener. |
-| 2 | Ondergrens: de eindstand haalt `open.min`. Een volger zonder `min` geeft een melding. |
+| 2 | Ondergrens: de eindstand haalt `open.min`, en `open.min` is minstens 0,8 maal de volle hoek of slag. Een volger zonder `min` geeft een melding; een leider zonder `min` of met een te lage `min` is met `--strikt-min` een fout. |
 | 3 | Botsing: 400 monsterpunten van het bewegende deel in 16 stappen tegen alle niet-bewegende meshes. Het telt als botsing bij meer dan 5 mm doordringing die nieuw is ten opzichte van de gesloten stand. Contactparen die bij u = 0 al bestaan worden genegeerd. Uitzonderingen staan in `tools/open_allow.json` (9 regels, elk met reden). |
 | 4 | Blootleggen: een raster van 160 x 100 stralen vanuit de camera van `look`. Toegestaan zijn 0 treffers op verborgen knopen en hoogstens 2 procent stralen die door de opening in het niets verdwijnen. |
 | 5 | Prestaties met alle openers open: tekenopdrachten tegen 3.000, frametijd p95 bij `openAll(1)` en `openAll(0)` tegen 8 ms. |
@@ -105,9 +107,9 @@ Publicatierooktest. Zet de CDN-versie zoals `build.py` hem in `index.html` schri
 
 Na publicatie moet de inhoud van de gepubliceerde URL gelijk zijn aan `index.html`. Dat controleert dit script niet. De orkestrator leest de URL terug en zoekt `index.html` byte voor byte in de teruggelezen pagina: het bestand moet er precies één keer en aaneengesloten in staan, met alleen het paginaskelet van de host eromheen. De uitkomst staat in de tabel hieronder.
 
-### `python3 tools/tri.py`
+### `python3 tools/tri.py [--gate] [--json UIT.json]`
 
-Telt driehoeken per hoofdgroep en toont de 25 zwaarste onderdelen. Bedoeld om te zien welk domein het budget opeet. Geeft altijd 0 (geen controle).
+Telt driehoeken per hoofdgroep (met het aantal onderdelen per groep, zodat een zwaar deel dat van groep wisselt zichtbaar blijft) en toont de 25 zwaarste onderdelen. Met `--gate` faalt hij boven de budgetten in `tools/anchors.json` (`triangle_budgets`: 700.000 totaal, 240.000 Aandrijflijn, 190.000 Carrosserie, 125.000 Onderstel, 95.000 Interieur, en per systeem). De budgetten zijn alleen-lezen voor domeineigenaars; wijzigen alleen met een reden in `docs/onderzoek/beslissingen.md`. Zonder `--gate` is hij informatie.
 
 ### `python3 tools/shot.py MAP 'JSON'`
 
@@ -129,7 +131,7 @@ Dezelfde controle met alles open: welke ingesloten knopen worden zichtbaar als d
 
 ### `tools/orkestratie/finaltests.sh UITVOERMAP`
 
-Draait de volledige testset in twee parallelle reeksen: lint, smoke, integrity, silhouette, `ui_inner.py --open` en opentest in de ene reeks; `itest.py` met poorten, tri, pubsmoke en stats in de andere. De uitvoer per test staat in de map. Het script is sinds golf 4 uitgebreid met opentest en `ui_inner.py --open`.
+Draait de volledige testset in twee parallelle reeksen: lint, smoke, integrity, silhouette, `ui_inner.py --open --strict` en `opentest.py --strikt-min` in de ene reeks; `itest.py` met poorten, `tri.py --gate`, pubsmoke en stats in de andere. De uitvoer per test staat in de map, met per test de duur en de exitcode op de laatste regel, en `start.txt` en `einde.txt`. Het script geeft exitcode 1 zodra één test faalt en weigert zonder uitvoermap. De lijst van tests staat in `tests.txt`, zodat CI kan zien of er een test uit de set is gevallen.
 
 ## Resultaten
 

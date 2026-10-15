@@ -767,7 +767,7 @@ with session() as s:
         check('11 tekenopdrachten <= 1500', calls <= 1500, str(calls))
         check('11 frametijd p95 <= 8 ms', prof['p95'] <= 8, str(prof['p95']))
     pg.close()
-    errs = s.errors() + [l for l in s.logs if 'warning' in l]
+    errs = s.errors()  # fouten en waarschuwingen (harness.errors telt beide)
     check('10 geen console-fouten of -waarschuwingen', not s.logs, '; '.join(l[:200] for l in s.logs[:5]))
     s.report()
 

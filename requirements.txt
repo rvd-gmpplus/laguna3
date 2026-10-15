@@ -1,0 +1,2 @@
+# Testset (Playwright, Python). Chromium komt uit /opt/pw-browsers of uit `python3 -m playwright install chromium`.
+playwright==1.64.0
