@@ -224,8 +224,15 @@ Voorbereiding, alle scripts en de resultaten staan in [docs/testen.md](docs/test
 | **Automaat** | **Röntgen** |
 | ![Automaat](docs/screenshots/automaat.png) | ![Röntgen](docs/screenshots/rontgen.png) |
 
+| **Openen: alles open** | **Openen: bagageruimte** |
+| ![Alles open](docs/screenshots/openen-alles.png) | ![Bagageruimte](docs/screenshots/openen-bagageruimte.png) |
+| **Openen: motorruimte** | **Openen: panoramadak** |
+| ![Motorruimte](docs/screenshots/openen-motorruimte.png) | ![Panoramadak](docs/screenshots/openen-panoramadak.png) |
+
+Openen, instappen (vier portieren open): [docs/screenshots/openen-instappen.png](docs/screenshots/openen-instappen.png)
+
 Alles uit elkaar: [docs/screenshots/alles-uit-elkaar.png](docs/screenshots/alles-uit-elkaar.png)
 
 Telefoonweergave: [docs/screenshots/mobiel.png](docs/screenshots/mobiel.png)
 
-De screenshots in `docs/screenshots/` tonen de eindstand: ze zijn opnieuw gemaakt uit de bron van `ff42dbd` (dezelfde stand als de build van `index.html` in `5b6cefa`), op 1280 × 800 (`mobiel.png` op 390 × 844 met pixelverhouding 2) en met software-rendering in de container.
+De screenshots in `docs/screenshots/` tonen de stand van golf 4: ze zijn gemaakt uit de bron van `3ab6a8d` met `tools/orkestratie/docshots.py`, via de presets van de pagina, op 1280 x 800 (`mobiel.png` op 390 x 844 met pixelverhouding 2) en met software-rendering in de container.
