@@ -1,5 +1,11 @@
 <title>Laguna III explosietekening</title>
 <meta name="laguna-version" content="__LAGUNA_VERSION__">
+<meta name="description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback (2011, 2.0 Turbo, automaat): 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
+<meta property="og:title" content="Laguna III explosietekening">
+<meta property="og:description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback: 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://rvd-gmpplus.github.io/laguna3/docs/screenshots/gemonteerd.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231b2228'/%3E%3Cpath d='M8 7v18h16v-4H13V7z' fill='%23f2c230'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@400;500&family=Saira+Condensed:wght@500;600;700&display=swap">
@@ -181,6 +187,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
 #loading{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-mono);font-size:13px;color:var(--ink-2);background:var(--bg);text-align:center;padding:0 24px;z-index:50}
 #loading.gone{display:none}
 /* hulp */
+#debug{position:fixed;top:0;left:50%;transform:translateX(-50%);z-index:70;font-family:var(--f-mono);font-size:11px;background:rgba(10,14,18,.78);color:#fff;padding:3px 9px;border-radius:0 0 8px 8px;pointer-events:none;white-space:nowrap}
 #helpDlg{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:rgba(10,14,18,.42);padding:16px}
 .dlg{background:var(--surface-solid);color:var(--ink);border-radius:16px;box-shadow:0 24px 64px rgba(0,0,0,.35);width:min(560px,100%);max-height:calc(100% - 32px);overflow:auto;padding:18px 20px 16px;box-sizing:border-box}
 .dlg h2{margin:0 0 8px;font-family:var(--f-display);font-size:24px}
@@ -540,5 +547,5 @@ input[type=range]{width:100%;accent-color:var(--ink)}
       <dt><kbd>?</kbd></dt><dd>Deze uitleg.</dd></dl>
     <div class="btnrow"><button class="btn primary" id="helpClose">Sluiten</button></div>
   </div></div>
-  <div id="loading">Model opbouwen…</div>
+  <div id="loading">Model opbouwen…<noscript> Deze pagina heeft JavaScript nodig.</noscript></div>
 </div>

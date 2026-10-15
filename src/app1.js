@@ -4,6 +4,7 @@
 const ROOT = (() => {
   const t0 = performance.now();
   uiTiming.buildStart = Math.round(t0);
+  LOADING.textContent = 'Onderdelen bouwen…';
   try { const r = buildCar(); uiTiming.buildCar = Math.round(performance.now() - t0); return r; } catch (e) {
     LOADING.textContent = 'Het model kon niet worden opgebouwd (' + (e && e.message ? e.message : e) + '). Laad de pagina opnieuw.';
     throw e;

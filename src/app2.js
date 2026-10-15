@@ -243,6 +243,7 @@ function uiAfterAction() {
   applyMats(); // I3: geen gele selectietint meer op een groep die open is gegaan
   uiHideTip();
   uiSyncLabels();
+  uiUrlSync();
   requestRender();
 }
 // Labels direct bijwerken (niet pas bij het volgende frame), zodat er nooit een label van een vorige stand blijft staan.
@@ -475,6 +476,7 @@ const uiOpenChips = OPENERS.map(n => {
 let uiOpenListOn = false;
 $('btnOpenList').onclick = () => { uiOpenListOn = !uiOpenListOn; $('btnOpenList').setAttribute('aria-expanded', String(uiOpenListOn)); uiSyncOpenUi(); uiUiChanged(); layoutView(); };
 function uiSyncOpenUi() {
+  uiUrlSync(); // de adresbalk volgt de openstand (ook via de testhaken setOpen en openAll)
   $('app').classList.toggle('omode', OPENMODE);
   uiOpenBtns.forEach(b => { const on = (b.dataset.omode === 'open') === OPENMODE; b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1; });
   let open = 0;
@@ -1423,14 +1425,16 @@ function loop(now) {
   const dt = Math.min(0.1, Math.max(0, (now - last) / 1000)); last = now;
   const active = uiTick(dt);
   controls.update();
+  let drew = false;
   if (active || needs || controls.autoRotate) {
     uiSetDpr(uiPickDpr(active));
     uiNearFar();
     renderer.render(scene, camera);
     updateLabels();
-    needs = false;
+    needs = false; drew = true;
     uiMeasure(now, active);
   }
+  uiDebugFrame(now, dt, drew);
   // labelankers van de groep die opent in kleine porties vooruit bouwen (zie uiAnchorStep)
   if (uiAnchorFrame(active)) needs = true;
   // batches bouwen in de vrije tijd van het frame; opnieuw tekenen als de rij leeg is of hoogstens elke 300 ms
@@ -1441,6 +1445,53 @@ function loop(now) {
   if (uiTiming.batches === undefined && !uiBatchQ.size && !uiBatchJob) uiTiming.batches = Math.round(now);
   if (uiWasActive && !active) { needs = true; uiAfterAnim(); }
   uiWasActive = active;
+}
+
+/* ---------- debug-overlay (?debug=1): tekensnelheid, tekenopdrachten, pixelratio, lichte weergave en versie, zodat een
+   melding van een echt apparaat meetbaar is (docs/telefoontest.md) ---------- */
+const uiVersion = (document.querySelector('meta[name="laguna-version"]') || {}).content || '';
+const uiDebug = (() => { try { return new URLSearchParams(location.search).get('debug') === '1'; } catch (_) { return false; } })();
+const uiDbg = uiDebug ? { el: document.createElement('div'), t: 0, n: 0, acc: 0 } : null;
+if (uiDbg) { uiDbg.el.id = 'debug'; uiDbg.el.setAttribute('aria-hidden', 'true'); document.getElementById('app').appendChild(uiDbg.el); }
+function uiDebugFrame(now, dt, drew) {
+  if (!uiDbg) return;
+  if (drew) uiDbg.n++;
+  uiDbg.acc += dt;
+  if (now - uiDbg.t < 500) return;
+  const i = renderer.info.render, fps = uiDbg.acc > 0 ? uiDbg.n / uiDbg.acc : 0;
+  uiDbg.el.textContent = (uiDbg.n ? fps.toFixed(0) + ' fps' : 'rust') + ' · ' + i.calls + ' tekenopdrachten · ' + Math.round(i.triangles / 1000) + 'k driehoeken · dpr ' + renderer.getPixelRatio().toFixed(2) + (uiLite ? ' · lichte weergave' : '') + ' · versie ' + uiVersion;
+  uiDbg.t = now; uiDbg.n = 0; uiDbg.acc = 0;
+}
+
+/* ---------- deelbare stand in de URL: ?preset=id, of ?open=naam,naam (modus Openen; een naam die vaker voorkomt als pad zonder
+   wortel). De URL volgt de stand met replaceState, zodat de adresbalk altijd een werkende link is. ---------- */
+let uiUrlLast = null;
+function uiUrlSync() {
+  let u; try { u = new URL(location.href); } catch (_) { return; }
+  if (!/^https?:$/.test(u.protocol)) return;
+  const q = u.searchParams; q.delete('preset'); q.delete('open');
+  if (ACTIVE_PRESET && appPresetById.has(ACTIVE_PRESET) && ACTIVE_PRESET !== 'assembled') q.set('preset', ACTIVE_PRESET);
+  else if (OPENMODE) {
+    const open = OPENERS.filter(n => n.ot > 0).map(n => uiNameCount.get(n.name) === 1 ? n.name : uiPathOf(n).replace(/^[^/]+\//, ''));
+    if (open.length) q.set('open', open.join(','));
+  }
+  const s = q.toString(), next = u.pathname + (s ? '?' + s : '') + u.hash;
+  if (next === uiUrlLast) return;
+  uiUrlLast = next;
+  try { history.replaceState(history.state, '', next); } catch (_) { }
+}
+function uiUrlApply() {
+  let q; try { q = new URLSearchParams(location.search); } catch (_) { return; }
+  const pid = q.get('preset'), open = q.get('open');
+  if (pid) {
+    const p = appPresetById.get(pid);
+    if (p && !p.tour && appPresetOk(p)) { appApplyPreset(p, { noHistory: true }); finishAll(); uiLastFit = { preset: p }; return; }
+  }
+  if (open) {
+    const refs = open.split(',').map(x => x.trim()).filter(Boolean);
+    const p = { id: 'url', cat: 'Openen', label: 'Gedeelde stand', note: 'De stand uit de gedeelde link.', opens: refs };
+    if (refs.length && appPresetOk(p)) { appApplyPreset(p, { noHistory: true }); finishAll(); }
+  }
 }
 
 /* ---------- start ---------- */
@@ -1457,10 +1508,12 @@ updateGround();
 { const f = uiFitPoints(uiCollect([ROOT], true), DIRS.iso, 1.04); if (f) { camera.position.copy(f.pos); controls.target.copy(f.target); } uiLastFit = { preset: appPresetById.get('assembled') }; }
 controls.update();
 uiTiming.render0 = Math.round(performance.now());
+LOADING.textContent = 'Eerste weergave…';
 renderer.render(scene, camera);
 LOADING.classList.add('gone');
 uiTiming.firstFrame = Math.round(performance.now());
 uiInitHint();
+uiUrlApply();
 requestAnimationFrame(t => { last = t; uiReady = true; uiReadyT = performance.now(); uiTiming.interactive = Math.round(uiReadyT); loop(t); });
 uiWarmMaterials();
 { const errs = appCheckPresets(); if (errs.length) console.warn('presets: ' + errs.join('; ')); }
@@ -1533,7 +1586,7 @@ function uiFrameOf(names) {
 // en de presetmarkering vervalt (een preset die je daarna kiest, zet hem weer).
 const uiApi = (f, changes) => (...a) => { hideHint(true); const r = f(...a); if (changes) { clearPreset(); uiAfterAction(); } return r; };
 window.__laguna = {
-  version: (document.querySelector('meta[name="laguna-version"]') || {}).content || null,  // versiestempel uit build.py (VERSION plus inhoudshash)
+  version: uiVersion || null,  // versiestempel uit build.py (VERSION plus inhoudshash)
   finishAll, ROOT, ALL, MESHES, PRESETS, byName,
   select: uiApi(select), tapNode: uiApi(tapNode), focusNodes: uiApi(focusNodes),
   setTarget: uiApi(setTarget, true), explodeAllUnder: uiApi(explodeAllUnder, true), collapseAll: uiApi(collapseAll, true), isolate: uiApi(isolate, true),

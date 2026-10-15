@@ -8,6 +8,8 @@ Interactieve 3D-explosietekening van een Renault Laguna III hatchback (fase 2, 2
 
 Open `index.html` in een moderne browser. Het bestand laadt three.js r147 van jsDelivr en lettertypes van Google Fonts. Verder is alles ingebouwd. Het werkt op desktop en telefoon, in licht en donker thema (het thema volgt het systeem).
 
+De adresbalk is een deelbare link: `?preset=engine` opent de preset Motor F4Rt, `?open=Motorkap,Achterklep` opent die delen in de modus Openen, en de pagina houdt de link bij terwijl je klikt. `?debug=1` toont een overlay met tekensnelheid, tekenopdrachten en versie, voor een melding vanaf een echte telefoon (zie [docs/telefoontest.md](docs/telefoontest.md)). De versie staat ook in het hulpvenster (`?`).
+
 De eerste keer toont de pagina een korte hint. Die verdwijnt na de eerste handeling of na negen seconden en komt daarna niet terug (de browser onthoudt dat). De knop `?` rechtsboven opent de uitleg van de bediening.
 
 ## Bediening

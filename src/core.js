@@ -15,7 +15,13 @@ const V3 = (x, y, z) => new THREE.Vector3(x, y, z);
 const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const canvas = document.getElementById('stage');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+// zonder WebGL (of met een geblokkeerde GPU) blijft de laadmelding anders eeuwig op "Model opbouwen" staan
+const renderer = (() => {
+  try { return new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' }); } catch (e) {
+    LOADING.textContent = 'Deze browser kan geen 3D tekenen (WebGL is niet beschikbaar of uitgeschakeld). Probeer een andere browser of zet hardwareversnelling aan.';
+    throw e;
+  }
+})();
 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;

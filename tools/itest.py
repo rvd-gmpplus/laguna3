@@ -22,6 +22,9 @@ Controles (zie de app-brief):
      van modus sluit alles, preset Motorruimte, kader van de open kap, pick in de motorruimte, geen batch om een open opener,
      aanwijstekst, dock en openerlijst, sneltoets O, paneelknop, portierklikken (alleen als het portier een opener is)
   15 onderdeelnummers: tijdelijke records in het paneel (status, nummers, tabel, bronnen, deel van, groepsaantal) en zoeken op nummer
+  16 deelbare stand: ?preset=id laadt die preset, ?open=naam,pad opent die openers, de adresbalk volgt de stand; ?debug=1 toont de
+     overlay met tekenopdrachten en versie; __laguna.version is het versiestempel uit build.py (zou de fout vangen dat een gedeelde
+     link op Gemonteerd opent, of dat de versie in de pagina niet meer bij de bron hoort)
 """
 import sys, os, random, json, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -767,6 +770,26 @@ with session() as s:
         check('11 tekenopdrachten <= 1500', calls <= 1500, str(calls))
         check('11 frametijd p95 <= 8 ms', prof['p95'] <= 8, str(prof['p95']))
     pg.close()
+    # 16. deelbare stand in de URL en de debug-overlay
+    pq = s.page(1280, 800, query='?preset=engine&debug=1')
+    st = pq.evaluate("__laguna.state()")
+    check('16 ?preset=engine laadt de preset Motor F4Rt', st['preset'] == 'engine' and not st['openMode'], json.dumps({'preset': st['preset'], 'openMode': st['openMode']}))
+    pq.wait_for_timeout(900)
+    dbg = pq.evaluate("(document.getElementById('debug') || {}).textContent || ''")
+    check('16 ?debug=1 toont de overlay met tekenopdrachten en versie', 'tekenopdrachten' in dbg and 'versie' in dbg, dbg[:120])
+    ver = pq.evaluate("__laguna.version")
+    check('16 versiestempel uit build.py (nummer plus inhoudshash)', bool(ver) and 'bron' in ver, str(ver))
+    pq.evaluate("__laguna.preset('turbo'); __laguna.finishAll()"); pq.wait_for_timeout(150)
+    check('16 de adresbalk volgt de preset', 'preset=turbo' in pq.evaluate('location.search') and 'debug=1' in pq.evaluate('location.search'), pq.evaluate('location.search'))
+    pq.evaluate("__laguna.setOpenMode(true); __laguna.openAll(0, true); __laguna.setOpen('Motorkap', 1, true); __laguna.setOpen('Renault Laguna III/Carrosserie/Portier linksvoor/Zijruit', 1, true); __laguna.finishAll()")
+    pq.wait_for_timeout(150)
+    q = pq.evaluate("decodeURIComponent(location.search).replace(/\\+/g, ' ')")
+    check('16 de adresbalk volgt de openstand (naam, of pad bij een dubbele naam)', 'open=Motorkap,Carrosserie/Portier linksvoor/Zijruit' in q, q)
+    pq.close()
+    pq = s.page(1280, 800, query='?open=Motorkap,Carrosserie/Portier%20linksvoor/Zijruit')
+    st = pq.evaluate("__laguna.state()")
+    check('16 ?open=... opent precies die openers in de modus Openen', st['openMode'] and sorted(st['openers']) == ['Motorkap', 'Zijruit'], json.dumps({'openMode': st['openMode'], 'openers': st['openers']}))
+    pq.close()
     errs = s.errors()  # fouten en waarschuwingen (harness.errors telt beide)
     check('10 geen console-fouten of -waarschuwingen', not s.logs, '; '.join(l[:200] for l in s.logs[:5]))
     s.report()

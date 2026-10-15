@@ -97,7 +97,8 @@ class Session:
         self.logs = []
         self.load_times = []
 
-    def page(self, w=1280, h=800, scale=1, wait=True, touch=False, timeout=None):
+    def page(self, w=1280, h=800, scale=1, wait=True, touch=False, timeout=None, query=''):
+        """query: optionele querystring zoals '?preset=engine' (deelbare stand) of '?debug=1'."""
         # LAGUNA_TIMEOUT_MS: wachttijd op laden en `ready` (standaard 120 s; op een belaste machine of CI hoger zetten)
         timeout = int(os.environ.get('LAGUNA_TIMEOUT_MS', timeout or 120000))
         ctx = self.browser.new_context(viewport={'width': w, 'height': h}, device_scale_factor=scale, has_touch=touch, is_mobile=touch)
@@ -114,7 +115,7 @@ class Session:
         pg.on('console', on_console)
         pg.on('pageerror', lambda e: self.logs.append(f'[{tag}] PAGEERROR: {e}'))
         t0 = time.time()
-        pg.goto(f'http://127.0.0.1:{self.port}/index.html', wait_until='load', timeout=timeout)
+        pg.goto(f'http://127.0.0.1:{self.port}/index.html{query}', wait_until='load', timeout=timeout)
         if wait:
             pg.wait_for_function('window.__laguna && window.__laguna.ready !== false', timeout=timeout)
             pg.wait_for_timeout(300)
