@@ -75,10 +75,10 @@ function buildCooling() {
     P('Ventilatorstekker', G.rbox(0.03, 0.022, 0.02, 0.004), MAT.plastic, { d: 'Stekker met de voeding en de aansturing van de ventilatormotor.', p: [0.14, RY - 0.17, FZ - 0.05], ex: [0.04, -0.1, -0.1] }),
   ]);
   // ---------- expansievat ----------
-  const EV = [-0.45, 0.70, 1.115];
+  const EV = [-0.45, 0.70, 1.24];   // vat vlak voor de torpedobak (die loopt tot z 1,146), zodat de dop er niet onder zit
   const expansie = A('Expansievat', { d: 'Doorzichtig kunststof expansievat met min- en maxmarkering; vangt de uitzetting van de koelvloeistof op en houdt het systeem onder druk.', spec: [['Dopdruk', '1,4 bar (aannemelijk)']], ex: [-0.18, 0.2, -0.04] }, [
     P('Vat', merge([G.rbox(0.12, 0.13, 0.15, 0.018), xf(G.cyl('y', 0.03, 0.03, 0.02, 16), [0.02, 0.07, 0.0])]), MAT.tank, { d: 'Doorzichtig vat met de niveaumarkering voor koelvloeistof.', p: EV }),
-    P('Expansiedop', merge([G.cyl('y', 0.034, 0.034, 0.016, 16), xf(G.box(0.07, 0.01, 0.014), [0, 0.011, 0])]), MAT.plastic, { d: 'Drukdop met overdrukklep die bij 1,4 bar opent; wordt omhoog getild van het vat (opener, geschat 6 cm).', p: [EV[0] + 0.02, EV[1] + 0.088, EV[2]], ex: [0, 0.14, 0], open: { type: 'slide', move: [0, 0.06, 0], needs: 'Motorkap', label: 'Dop expansievat', look: { dir: [0.5, 1, 0.3], nodes: ['Expansievat'] } } }),
+    P('Expansiedop', merge([G.cyl('y', 0.034, 0.034, 0.016, 16), xf(G.box(0.07, 0.01, 0.014), [0, 0.011, 0])]), MAT.plastic, { d: 'Drukdop met overdrukklep die bij 1,4 bar opent; wordt gekanteld omhoog en naar voren van het vat getild (opener, geschat 10 cm).', p: [EV[0] + 0.02, EV[1] + 0.088, EV[2]], ex: [0, 0.14, 0], open: { type: 'slide', tilt: { pivot: [EV[0] + 0.02, EV[1] + 0.088, EV[2] - 0.03], axis: [1, 0, 0], angle: -0.4 }, move: [0, 0.1, 0.14], needs: 'Motorkap', label: 'Dop expansievat', look: { dir: [0.4, 0.8, 0.9], nodes: ['Expansiedop', 'Koeling en luchtinlaat/Expansievat/Vat'] } } }),
     P('Niveauschakelaar', G.rbox(0.03, 0.026, 0.026, 0.005), MAT.plastic, { d: 'Schakelaar die het dashboard waarschuwt bij een te laag koelvloeistofpeil.', p: [EV[0] + 0.068, EV[1] - 0.02, EV[2]], ex: [0.1, 0, 0] }),
     P('Vathouder', merge([G.box(0.13, 0.012, 0.16), xf(G.box(0.012, 0.09, 0.16), [0.06, 0.05, 0])]), MAT.darkSteel, { d: 'Beugel die het expansievat aan de carrosserie vasthoudt.', p: [EV[0], EV[1] - 0.07, EV[2]], ex: [0, -0.12, 0] }),
   ]);
