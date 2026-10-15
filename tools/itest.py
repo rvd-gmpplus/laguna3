@@ -630,10 +630,16 @@ def run_view(s, tag, w, h, touch):
         print(f'info 14 [{tag}] geen portier als opener: portierklikken overgeslagen')
     pg.evaluate("__laguna.openAll(0, true); __laguna.setOpenMode(false)"); settle(pg)
 
-    # 15. onderdeelnummers: tijdelijke records (niets hiervan staat in partnumbers.js)
+    # 15. onderdeelnummers: de echte gegevens zonder fouten, daarna alleen tijdelijke records (niets hiervan staat in partnumbers.js)
     if tag == 'desktop':
         pg.evaluate("__laguna.preset('assembled'); __laguna.finishAll()")
+        # eerst de echte gegevens: elk pad en elke eenheid in partnumbers.js bestaat
+        bad = pg.evaluate('__laguna.pnCheck()')
+        check('15 nummers: echte gegevens zonder onbekend pad of onbekende eenheid', not bad, json.dumps(bad[:5]))
+        # dan alleen tijdelijke records, zodat de controles niet van de echte gegevens afhangen; aan het eind terug
         pg.evaluate("""(() => {
+          window.__pnBak = { map: Object.assign({}, PN_DATA.map), units: Object.assign({}, PN_DATA.units) };
+          for (const k of Object.keys(PN_DATA.map)) delete PN_DATA.map[k]; for (const k of Object.keys(PN_DATA.units)) delete PN_DATA.units[k];
           PN_DATA.units.tA = { n: 'Testslot', st: 'past', oe: [['656 01 TEST1', 'slot compleet']], am: [['Testmerk', 'TM-123.456', 'alleen links'], ['Ander merk', 'AM9001', '']], var: 'Alleen benzine', per: 'Per stuk',
             src: [['https://example.org/bron', 'Bron een'], ['javascript:alert(1)', 'Kwaadaardig']], info: [['Interval', '60000 km', 'testbron']] };
           PN_DATA.units.tB = { n: 'Teststeun', st: 'vin', oe: [['654 TEST2', '']], am: [] };
@@ -675,7 +681,7 @@ def run_view(s, tag, w, h, touch):
         pg.evaluate("""(() => { for (const k of Object.keys(PN_DATA.map)) delete PN_DATA.map[k]; for (const k of Object.keys(PN_DATA.units)) delete PN_DATA.units[k]; __laguna.pnRebuild(); })()""")
         r = pn('Slotbeugel motorkap')
         check('15 nummers: zonder gegevens niet onderzocht, pnCheck leeg', 'Niet onderzocht' in r['text'] and not pg.evaluate('__laguna.pnCheck()'), r['text'][:100])
-        pg.evaluate("__laguna.select(__laguna.ROOT)")
+        pg.evaluate("Object.assign(PN_DATA.map, window.__pnBak.map); Object.assign(PN_DATA.units, window.__pnBak.units); __laguna.pnRebuild(); __laguna.select(__laguna.ROOT)")
     pg.close()
 
 

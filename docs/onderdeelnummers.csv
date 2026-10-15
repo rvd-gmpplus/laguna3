@@ -3665,6 +3665,8 @@ Brandstofsysteem/Pompmodule/Vlotter;Brandstofpompmodule (pomp, beker, niveausens
 Brandstofsysteem/Vulsysteem;Groep Vulsysteem;zelf;nietgevonden;;;;;;
 Brandstofsysteem/Vulsysteem/Klem vulpijp;Klem vulpijp;zelf;nietgevonden;;;;;;
 Brandstofsysteem/Vulsysteem/Tankklep;Tankklep (gelakt klepdeksel, rechterachterscherm);zelf;nietgevonden;;;;;;
+Brandstofsysteem/Vulsysteem/Tankklep/Tankklep binnenzijde;Tankklep (gelakt klepdeksel, rechterachterscherm);deel;nietgevonden;;;;;;
+Brandstofsysteem/Vulsysteem/Tankklep/Tankklep buitenkant;Tankklep (gelakt klepdeksel, rechterachterscherm);deel;nietgevonden;;;;;;
 Brandstofsysteem/Vulsysteem/Vulhals;Vulhals (capless) met klepje;zelf;nietgevonden;;;;;;
 Brandstofsysteem/Vulsysteem/Vulpijp;Vulpijp brandstoftank;zelf;nietgevonden;;;;;;
 Carrosserie/Achterbumper;Achterbumper (bumperschaal achter, gespoten);zelf;nietgevonden;;;;;;
@@ -3906,6 +3908,8 @@ Carrosserie/Carrosseriekooi/Zijwanden en dak/Panoramadak/Glaspaneel voor/Glaskad
 Carrosserie/Carrosseriekooi/Zijwanden en dak/Panoramadak/Glaspaneel voor/Keramische rand voor;Glaspaneel voor (beweegbaar);deel;nietgevonden;;;;;;
 Carrosserie/Carrosseriekooi/Zijwanden en dak/Panoramadak/Kabelboom dakmotor;Kabelboom dakmotor;zelf;nietgevonden;;;;;;
 Carrosserie/Carrosseriekooi/Zijwanden en dak/Panoramadak/Luchtgeleider;Luchtgeleider (windscherm) panoramadak;zelf;nietgevonden;;;;;;
+Carrosserie/Carrosseriekooi/Zijwanden en dak/Panoramadak/Luchtgeleider/Armen luchtgeleider;Luchtgeleider (windscherm) panoramadak;deel;nietgevonden;;;;;;
+Carrosserie/Carrosseriekooi/Zijwanden en dak/Panoramadak/Luchtgeleider/Luchtgeleiderblad;Luchtgeleider (windscherm) panoramadak;deel;nietgevonden;;;;;;
 Carrosserie/Carrosseriekooi/Zijwanden en dak/Panoramadak/Omlijsting opening achter;Omlijsting (sierlijst) dakopening;deel;nietgevonden;;;;;;
 Carrosserie/Carrosseriekooi/Zijwanden en dak/Panoramadak/Omlijsting opening voor;Omlijsting (sierlijst) dakopening;deel;nietgevonden;;;;;;
 Carrosserie/Carrosseriekooi/Zijwanden en dak/Panoramadak/Schermcassette achter;Zonnescherm achter met cassette;deel;nietgevonden;;;;;;
@@ -4059,6 +4063,13 @@ Carrosserie/Motorkap/Ruitensproeier links/Sproeierkop;Ruitensproeier voorruit (s
 Carrosserie/Motorkap/Ruitensproeier links/Sproeierkop;Ruitensproeier voorruit (sproeierkop op de motorkap);zelf;past;fabrikant;METZGER;2220812;A;"Lijst 23370, pos. Left Front, Right Front, vanaf productiedatum 15.09.2008; ook Spareto-kruisverwijzing van 8200082347.";https://www.autodoc.parts/nty/15068726
 Carrosserie/Motorkap/Ruitensproeier links/Sproeierkop;Ruitensproeier voorruit (sproeierkop op de motorkap);zelf;past;fabrikant;TOPRAN;702 226;A;"Lijst 23370, pos. Left Front, Right Front; ook Spareto-kruisverwijzing van 8200082347.";https://www.autodoc.parts/nty/15068726
 Carrosserie/Motorkap/Ruitensproeier links/Sproeierkop;Ruitensproeier voorruit (sproeierkop op de motorkap);zelf;past;fabrikant;AIC;57935;A;"Lijst 23370, pos. Front; ook Spareto-kruisverwijzing van 8200082347.";https://www.autodoc.parts/nty/15068726
+Carrosserie/Motorkap/Ruitensproeier links/Sproeieropening;Ruitensproeier voorruit (sproeierkop op de motorkap);deel;past;Renault;Renault;8200082347;B;"OE-lijst NTY EDS-RE-002 (A-artikel); Spareto: Washer fluid jet.";https://www.autodoc.parts/nty/15068726
+Carrosserie/Motorkap/Ruitensproeier links/Sproeieropening;Ruitensproeier voorruit (sproeierkop op de motorkap);deel;past;fabrikant;NTY;EDS-RE-002;A;"Lijst 23370; positie niet vermeld.";https://www.autodoc.parts/nty/15068726
+Carrosserie/Motorkap/Ruitensproeier links/Sproeieropening;Ruitensproeier voorruit (sproeierkop op de motorkap);deel;past;fabrikant;3RG;86605;A;Lijst 23370, both sides, for windscreen cleaning.;https://www.autodoc.parts/nty/15068726
+Carrosserie/Motorkap/Ruitensproeier links/Sproeieropening;Ruitensproeier voorruit (sproeierkop op de motorkap);deel;past;fabrikant;MEHA AUTOMOTIVE;MH72367;A;Lijst 23370, Left Front, Right Front.;https://www.autodoc.parts/nty/15068726
+Carrosserie/Motorkap/Ruitensproeier links/Sproeieropening;Ruitensproeier voorruit (sproeierkop op de motorkap);deel;past;fabrikant;METZGER;2220812;A;"Lijst 23370, pos. Left Front, Right Front, vanaf productiedatum 15.09.2008; ook Spareto-kruisverwijzing van 8200082347.";https://www.autodoc.parts/nty/15068726
+Carrosserie/Motorkap/Ruitensproeier links/Sproeieropening;Ruitensproeier voorruit (sproeierkop op de motorkap);deel;past;fabrikant;TOPRAN;702 226;A;"Lijst 23370, pos. Left Front, Right Front; ook Spareto-kruisverwijzing van 8200082347.";https://www.autodoc.parts/nty/15068726
+Carrosserie/Motorkap/Ruitensproeier links/Sproeieropening;Ruitensproeier voorruit (sproeierkop op de motorkap);deel;past;fabrikant;AIC;57935;A;"Lijst 23370, pos. Front; ook Spareto-kruisverwijzing van 8200082347.";https://www.autodoc.parts/nty/15068726
 Carrosserie/Motorkap/Ruitensproeier links/Sproeierslang;Sproeierslang (toevoer sproeiers onder de motorkap);zelf;nietgevonden;;;;;;
 Carrosserie/Motorkap/Ruitensproeier rechts;Ruitensproeier voorruit (sproeierkop op de motorkap);zelf;past;Renault;Renault;8200082347;B;"OE-lijst NTY EDS-RE-002 (A-artikel); Spareto: Washer fluid jet.";https://www.autodoc.parts/nty/15068726
 Carrosserie/Motorkap/Ruitensproeier rechts;Ruitensproeier voorruit (sproeierkop op de motorkap);zelf;past;fabrikant;NTY;EDS-RE-002;A;"Lijst 23370; positie niet vermeld.";https://www.autodoc.parts/nty/15068726
@@ -4074,6 +4085,13 @@ Carrosserie/Motorkap/Ruitensproeier rechts/Sproeierkop;Ruitensproeier voorruit (
 Carrosserie/Motorkap/Ruitensproeier rechts/Sproeierkop;Ruitensproeier voorruit (sproeierkop op de motorkap);zelf;past;fabrikant;METZGER;2220812;A;"Lijst 23370, pos. Left Front, Right Front, vanaf productiedatum 15.09.2008; ook Spareto-kruisverwijzing van 8200082347.";https://www.autodoc.parts/nty/15068726
 Carrosserie/Motorkap/Ruitensproeier rechts/Sproeierkop;Ruitensproeier voorruit (sproeierkop op de motorkap);zelf;past;fabrikant;TOPRAN;702 226;A;"Lijst 23370, pos. Left Front, Right Front; ook Spareto-kruisverwijzing van 8200082347.";https://www.autodoc.parts/nty/15068726
 Carrosserie/Motorkap/Ruitensproeier rechts/Sproeierkop;Ruitensproeier voorruit (sproeierkop op de motorkap);zelf;past;fabrikant;AIC;57935;A;"Lijst 23370, pos. Front; ook Spareto-kruisverwijzing van 8200082347.";https://www.autodoc.parts/nty/15068726
+Carrosserie/Motorkap/Ruitensproeier rechts/Sproeieropening;Ruitensproeier voorruit (sproeierkop op de motorkap);deel;past;Renault;Renault;8200082347;B;"OE-lijst NTY EDS-RE-002 (A-artikel); Spareto: Washer fluid jet.";https://www.autodoc.parts/nty/15068726
+Carrosserie/Motorkap/Ruitensproeier rechts/Sproeieropening;Ruitensproeier voorruit (sproeierkop op de motorkap);deel;past;fabrikant;NTY;EDS-RE-002;A;"Lijst 23370; positie niet vermeld.";https://www.autodoc.parts/nty/15068726
+Carrosserie/Motorkap/Ruitensproeier rechts/Sproeieropening;Ruitensproeier voorruit (sproeierkop op de motorkap);deel;past;fabrikant;3RG;86605;A;Lijst 23370, both sides, for windscreen cleaning.;https://www.autodoc.parts/nty/15068726
+Carrosserie/Motorkap/Ruitensproeier rechts/Sproeieropening;Ruitensproeier voorruit (sproeierkop op de motorkap);deel;past;fabrikant;MEHA AUTOMOTIVE;MH72367;A;Lijst 23370, Left Front, Right Front.;https://www.autodoc.parts/nty/15068726
+Carrosserie/Motorkap/Ruitensproeier rechts/Sproeieropening;Ruitensproeier voorruit (sproeierkop op de motorkap);deel;past;fabrikant;METZGER;2220812;A;"Lijst 23370, pos. Left Front, Right Front, vanaf productiedatum 15.09.2008; ook Spareto-kruisverwijzing van 8200082347.";https://www.autodoc.parts/nty/15068726
+Carrosserie/Motorkap/Ruitensproeier rechts/Sproeieropening;Ruitensproeier voorruit (sproeierkop op de motorkap);deel;past;fabrikant;TOPRAN;702 226;A;"Lijst 23370, pos. Left Front, Right Front; ook Spareto-kruisverwijzing van 8200082347.";https://www.autodoc.parts/nty/15068726
+Carrosserie/Motorkap/Ruitensproeier rechts/Sproeieropening;Ruitensproeier voorruit (sproeierkop op de motorkap);deel;past;fabrikant;AIC;57935;A;"Lijst 23370, pos. Front; ook Spareto-kruisverwijzing van 8200082347.";https://www.autodoc.parts/nty/15068726
 Carrosserie/Motorkap/Ruitensproeier rechts/Sproeierslang;Sproeierslang (toevoer sproeiers onder de motorkap);zelf;nietgevonden;;;;;;
 Carrosserie/Motorkap/Slotbeugel motorkap;Slotbeugel motorkap;zelf;nietgevonden;;;;;;
 Carrosserie/Motorkap/Veiligheidshaak;Veiligheidshaak motorkap;zelf;nietgevonden;;;;;;

@@ -102,6 +102,19 @@ for f in files:
             report['missing_paths'].append(p + ' (eenheid ' + m['unit'] + ' ontbreekt)'); continue
         pmap[p] = [uid, HOW.get(m['how'], 'zelf'), m.get('rule', '')]
 
+# delen die na het nummeronderzoek uit een bestaand onderdeel zijn gesplitst (herstelronde 2): zelfde verkoopeenheid als de ouder
+INHERIT = {
+    'Brandstofsysteem/Vulsysteem/Tankklep/Tankklep buitenkant': ('Brandstofsysteem/Vulsysteem/Tankklep', 'Buitenkant van de tankklep, met de klep geleverd'),
+    'Brandstofsysteem/Vulsysteem/Tankklep/Tankklep binnenzijde': ('Brandstofsysteem/Vulsysteem/Tankklep', 'Binnenzijde van de tankklep, met de klep geleverd'),
+    'Carrosserie/Carrosseriekooi/Zijwanden en dak/Panoramadak/Luchtgeleider/Luchtgeleiderblad': ('Carrosserie/Carrosseriekooi/Zijwanden en dak/Panoramadak/Luchtgeleider', 'Blad van de luchtgeleider'),
+    'Carrosserie/Carrosseriekooi/Zijwanden en dak/Panoramadak/Luchtgeleider/Armen luchtgeleider': ('Carrosserie/Carrosseriekooi/Zijwanden en dak/Panoramadak/Luchtgeleider', 'Armen van de luchtgeleider'),
+    'Carrosserie/Motorkap/Ruitensproeier links/Sproeieropening': ('Carrosserie/Motorkap/Ruitensproeier links', 'Opening in de sproeierkop'),
+    'Carrosserie/Motorkap/Ruitensproeier rechts/Sproeieropening': ('Carrosserie/Motorkap/Ruitensproeier rechts', 'Opening in de sproeierkop'),
+}
+for p, (par, rule) in INHERIT.items():
+    if p in paths and p not in pmap and par in pmap:
+        pmap[p] = [pmap[par][0], 'deel', rule]
+
 # onderhoudsinformatie: kennisbasis (gebruikersrapport, verwerkt) en MR 415
 info = {}
 kfile = os.path.join(HERE, '..', 'kennis', 'info.json')
