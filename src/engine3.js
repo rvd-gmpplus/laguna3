@@ -1,4 +1,4 @@
-/* ===================== motor F4Rt 811: dynamo, aircocompressor, sensoren, kabelboom, flexplaat, afdekkap ===================== */
+/* ===================== motor F4Rt 813 (waarschijnlijk, zie beslissingen): dynamo, aircocompressor, sensoren, kabelboom, flexplaat, afdekkap ===================== */
 // Dynamo en aircocompressor: lokaal frame met x langs de as; de poelie ligt in het multiriemvlak (lokaal x = XA - p[0]).
 std('engStatorLam', 0x5b6168, 0.6, 0.46);
 // statorplaat: ringGear (core) met 36 sleuven, maar met een fijnere buitenrand (48 segmenten) zodat de buitenkant rond leest
@@ -159,7 +159,7 @@ function engBuildPump() {
     return xf(merge([side(arm, 0.02), side(boss, 0.02)]), [0.065, 0, 0]);
   });
   const plug = cache('engPsPlug', () => merge([engNut(0.0145, 0.009, 'z'), xf(G.cyl('z', 0.0075, 0.0075, 0.012, 12), [0, 0, 0.0105])]));
-  return A('Stuurpomp', { d: 'Riemaangedreven schottenpomp (aannemelijk voor deze motor; de stuurbekrachtiging van de F4Rt 811 is hydraulisch met variabele assistentie): perst olie uit het reservoir naar het stuurhuis. Opbouw, afmetingen en plaats zijn geschat.', p: ENG_PS, ex: [-0.06, 0, 0.12], spec: [['Aandrijving', 'multiriem 7PK1795, zeven groeven'], ['Status', 'aannemelijk, niet bevestigd']] }, [
+  return A('Stuurpomp', { d: 'Riemaangedreven schottenpomp (aannemelijk voor deze motor; de stuurbekrachtiging van de F4Rt is hydraulisch met variabele assistentie): perst olie uit het reservoir naar het stuurhuis. Opbouw, afmetingen en plaats zijn geschat.', p: ENG_PS, ex: [-0.06, 0, 0.12], spec: [['Aandrijving', 'multiriem 7PK1795, zeven groeven'], ['Status', 'aannemelijk, niet bevestigd']] }, [
     A('Poelie met moer', { d: 'Multiriempoelie met zeven groeven en de moer waarmee hij op de pompas zit.', ex: [-0.14, 0, 0] }, [
       P('Poelie stuurpomp', pulleyGeo, MAT.steel, { d: 'Stalen poelie met zeven groeven voor de multiriem (Ø116 mm, geschat).', ex: [0, 0, 0] }),
       P('Moer poelie', engNut(0.016, 0.006, 'x'), MAT.darkSteel, { d: 'Moer op het asuiteinde die de poelie vastzet.', p: [PXL - 0.0135, 0, 0], ex: [-0.05, 0, 0] }),

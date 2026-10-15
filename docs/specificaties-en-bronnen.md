@@ -16,7 +16,7 @@ Onderzoek in twee rondes: 12 oktober 2026 voor het eerste model, 13 oktober 2026
 | Onderwerp | Besluit | Status |
 |---|---|---|
 | Automaat | Jatco JF613E, Renault-code AJ0, Lepelletier-opbouw. Niet Aisin: de enige bron voor "Aisin" is een automatisch gegenereerde reviewpagina over de 204 pk GT. Ook een Poolse ATF-dienstverlener noemt TF-80SC, zonder typeplaatje of nummer. De Renault-overbrengingen sluiten de TF-80SC uit. | Bevestigd (type); verhoudingen uit het handboek van de zusterbak Mitsubishi F6AJA, die met de Renault-persmap 2007 binnen 0,2 % kloppen |
-| Stuurbekrachtiging | Hydraulisch met variabele assistentie, pomp aangedreven door de multiriem. Geen elektropomp (GEP): die staat bij de 2.0 140 (M4R) en de dCi 130. Het motoronderzoek noemde "électro-hydraulique" op grond van algemene bronnen; de Renault-persmap voor de F4Rt 811 zegt "hydraulique variable". | Aannemelijk (riemaandrijving), Bevestigd (hydraulisch met variabele assistentie) |
+| Stuurbekrachtiging | Hydraulisch met variabele assistentie, pomp aangedreven door de multiriem. Geen elektropomp (GEP): die staat bij de 2.0 140 (M4R) en de dCi 130. Het motoronderzoek noemde "électro-hydraulique" op grond van algemene bronnen; de Renault-persmap voor de F4Rt 811 zegt "hydraulique variable" (voor de 813 niet apart bevestigd). | Aannemelijk (riemaandrijving), Bevestigd (hydraulisch met variabele assistentie) |
 | Remmen | Voor geventileerd 296 × 26 mm, zwevende klauw met zuiger Ø57. Achter massief 300 × 11 mm (niet 260), gecombineerde klauw met zuiger Ø38 en kabel naar de elektrische parkeerrem. | Bevestigd |
 | ABS-encoder | Magnetische codeerring in de wiellagereenheid, geen getande ring. | Bevestigd |
 | Velgen | 18 inch met band 225/45 R18 en tien tapse spaken blijft in het model. 18 inch is leverbaar en standaard op de Britse Initiale Lux; voor een Nederlandse Initiale Paris uit 2011 is 17 inch even goed mogelijk. | Aannemelijk |
@@ -42,15 +42,18 @@ Onderzoek in twee rondes: 12 oktober 2026 voor het eerste model, 13 oktober 2026
 | Tankinhoud | 66 l (oudere opgaven 68 l) | AutoScout24, fastcarcheck, Renault-handboek | Bevestigd |
 | Topsnelheid | 220 km/h | AutoScout24, fastcarcheck | Bevestigd |
 | 0 tot 100 km/h | 9,2 s | AutoScout24, fastcarcheck | Bevestigd |
-| Verbruik gecombineerd | 8,9 l/100 km | AutoScout24, fastcarcheck | Bevestigd |
-| CO₂ | 210 g/km | AutoScout24, cars-data | Bevestigd |
+| Verbruik gecombineerd | 8,7 l/100 km (fase 1 gaf 8,9) | RDW voor deze auto; AutoScout24 en fastcarcheck noemen 8,9 | Bevestigd |
+| CO₂ | 201 g/km (fase 1 gaf 210) | RDW voor deze auto; AutoScout24 en cars-data noemen 210 | Bevestigd |
+| Emissienorm | Euro 5 (EURO 5 A, 715/2007*692/2008A) | RDW | Bevestigd |
 | Kleur | Gris Platine D69 (Mercury), zilvergrijs metallic. Kleurwaarde uit persfoto's ongeveer #B3B6BA; het model gebruikt #AEB2B7 | UK-brochure kleurtabel, carross.eu, 50 nuances de teintes Renault | Bevestigd (naam en code); Geschat (kleurwaarde) |
 
-## Motor F4Rt 811
+## Motor F4Rt 813 (waarschijnlijk, zie beslissingen)
+
+Motorcode van de auto van de gebruiker (bijgewerkt op 15 oktober 2026): waarschijnlijk F4Rt 813, zekerheid middel; het motorplaatje beslist. Volgens de RDW is de auto een Renault Laguna hatchback met eerste toelating op 18 februari 2011, 125 kW, EURO 5 A (715/2007*692/2008A), 201 g/km CO2 en 8,7 l/100 km. De RDW-typegoedkeuringsgegevens noemen voor deze uitvoering de motorcode "F4R J8", dezelfde code als bij de Euro 4-uitvoeringen; het driecijferige suffix staat er dus niet in. Het Renault-werkplaatshandboek MR 415 geeft voor de hatchback bij F4R 811 alleen Euro 4 en bij F4R 813 Euro 3, 4 en 5 (beide met automaat AJ0). Omdat de auto Euro 5 is, is de 813 de waarschijnlijkste code. Onderdelencatalogi noemen voor de hele reeks alleen "F4R 811"; ze voegen de suffixen samen en zeggen niets over de Euronorm. Beweringen die een bron alleen voor de 811 noemt (zoals het ontbreken van een faseversteller in de persmap van 2007) blijven staan; voor de 813 zijn ze niet apart bevestigd. De onderbouwing staat in `docs/onderzoek/beslissingen.md`.
 
 | Gegeven | Waarde | Bron | Status |
 |---|---|---|---|
-| Motorcode | F4Rt 811 (in catalogi ook "F4R 811"; variantcode 813 komt voor) | Autodoc, Alfi-Turbo, Europe Turbo, IDF Moteurs | Bevestigd (811) |
+| Motorcode | F4Rt 813 (waarschijnlijk, zie beslissingen). Onderdelencatalogi noemen de reeks "F4R 811"; de RDW noemt "F4R J8" | RDW (Euro 5 A, eerste toelating 18 februari 2011), Renault MR 415 (PDF-pagina 5, 01A-2), Verordening (EG) 715/2007 artikel 10; catalogi: Autodoc, Alfi-Turbo, Europe Turbo, IDF Moteurs | Aannemelijk (zekerheid middel); 811 als catalogusnaam Bevestigd |
 | Familie | Renault F-motor; F staat voor *fonte* (gietijzer) | mymotorlist, Wikipedia, Planète Renault | Bevestigd |
 | Opbouw | 4 cilinders in lijn, 16 kleppen, twee bovenliggende nokkenassen, kleppen in V-opstelling | fastcarcheck, L'argus, mymotorlist | Bevestigd |
 | Cilinderinhoud | 1998 cm³ | AutoScout24, fastcarcheck | Bevestigd |
@@ -60,16 +63,16 @@ Onderzoek in twee rondes: 12 oktober 2026 voor het eerste model, 13 oktober 2026
 | Koppel | 270 Nm bij 3250 tpm | fastcarcheck, AutoScout24 | Bevestigd |
 | Blok en kop | Gietijzeren blok, aluminium kop | Planète Renault, Wikipedia | Bevestigd |
 | Cilindernummering | Cilinder 1, hoofdlager 1 en kruktap 1 liggen aan de vliegwielzijde | Revue technique F4R | Aannemelijk (conventie bevestigd voor lagers en kruktappen) |
-| Kleptrein | Rolzwenkarmen met hydraulische speling-opvangers, geen speling instellen | Revue technique F4R (Mégane II) | Aannemelijk voor de 811 |
+| Kleptrein | Rolzwenkarmen met hydraulische speling-opvangers, geen speling instellen | Revue technique F4R (Mégane II) | Aannemelijk voor de F4R-familie; voor de 811 en de 813 niet apart bevestigd |
 | Distributie | Getande riem, 126 tanden, 27 mm breed, spoed 9,525 mm; drijft ook de waterpomp aan | Autodoc, Revue technique | Bevestigd |
-| Nokkenasverstelling | Geen: vaste kleptiming. Renault-persmap 2007 noemt bij de F4Rt 811 "diagramme variable ... non"; Planète Renault: de F4RT "se passe de déphaseur d'arbre à cames". TecDoc-catalogi tonen wel F4R-faseverstellers voor deze motorcode; dat is uitbreiding per motorfamilie. | Renault-persmap 2007, Planète Renault F4RT | Bevestigd |
+| Nokkenasverstelling | Geen: vaste kleptiming. Renault-persmap 2007 noemt bij de F4Rt 811 "diagramme variable ... non" (de bron noemt de 811; voor de 813 niet apart bevestigd); Planète Renault: de F4RT "se passe de déphaseur d'arbre à cames". TecDoc-catalogi tonen wel F4R-faseverstellers voor deze motorcode; dat is uitbreiding per motorfamilie. | Renault-persmap 2007, Planète Renault F4RT | Bevestigd (811); voor de 813 niet apart bevestigd |
 | Toerenbegrenzer | 6250 tpm | Renault-persmap 2007 | Bevestigd |
 | Inspuiting | Meerpunts sequentieel in het inlaatkanaal, geen directe inspuiting | fastcarcheck, L'argus | Bevestigd; fabrikant van de injectoren Aannemelijk |
 | Ontsteking | Vier losse penbobines direct op de bougies; bougies M14 × 1,25 | Piecesauto, Autodoc, Oscaro | Bevestigd |
 | Gasklep | Elektrisch bediend (drive-by-wire) | Autodoc, forum Laguna II | Aannemelijk |
 | Turbo | Mitsubishi TD04, referentie 49377-07303 | Mitsubishi Turbocharger (noemt F4R M4, 125 kW, 270 Nm, klant Renault), Europe Turbo, Alfi-Turbo | Bevestigd (merk, reeks, motor); exacte referentie Aannemelijk |
 | Turbo-uitvoering | Twin-scroll spruitstuk (cilinders 1+4 en 2+3), watergekoeld lagerhuis, interne wastegate met drukdoos | Planète Renault (F4Rt Vel Satis), Rensatis | Aannemelijk |
-| Laaddruk | Voor de 811 niet gevonden; schatting 0,8 tot 1,0 bar overdruk | | Niet gevonden / Geschat |
+| Laaddruk | Voor de F4Rt niet gevonden; schatting 0,8 tot 1,0 bar overdruk | | Niet gevonden / Geschat |
 | Intercooler | Lucht-lucht, voor de radiateur | Autodoc, piecesauto.fr | Aannemelijk |
 | Multiriem | 7PK1795 (7 ribben, 1795 mm), automatische spanner en een geleiderol | Autodoc (ContiTech-kit) | Bevestigd (maat) |
 | Aangedreven door de multiriem | Dynamo, aircocompressor en stuurpomp (drie verbruikers) | Besluit; Autodoc, Caradisiac-forum | Aannemelijk (stuurpomp) |
@@ -87,7 +90,7 @@ Onderzoek in twee rondes: 12 oktober 2026 voor het eerste model, 13 oktober 2026
 | Gegeven | Waarde | Bron | Status |
 |---|---|---|---|
 | Type | 6-traps automaat met koppelomvormer | fastcarcheck, AutoScout24 | Bevestigd |
-| Leverancier en code | Jatco JF613E, Renault-code AJ0 (Nissan RE6F01A, Mitsubishi F6AJA en W6AJA), gebouwd in Yagi, Japan | Planète Renault, Jatco-persbericht 23-10-2006, Wikipedia, Auto-Doc, Masuma; Renault-persmap 2007 noemt voor de F4Rt 811 uitsluitend AJ0 | Bevestigd |
+| Leverancier en code | Jatco JF613E, Renault-code AJ0 (Nissan RE6F01A, Mitsubishi F6AJA en W6AJA), gebouwd in Yagi, Japan | Planète Renault, Jatco-persbericht 23-10-2006, Wikipedia, Auto-Doc, Masuma; Renault-persmap 2007 noemt voor de F4Rt 811 uitsluitend AJ0; MR 415 (01A-2) koppelt AJ0 aan zowel de 811 als de 813 | Bevestigd |
 | Ontwerp | Lepelletier-opbouw, ongeveer 10 % korter en lichter dan een 5-traps | Jatco-persbericht, ATRA | Bevestigd |
 | Planetaire sets | Drie: reductieset, voorste set met vier planeetwielen, achterste set (twee zonnewielen op één drager) | Planète Renault ("trois trains épicycloïdaux"), Mitsubishi-handboek, onderdelenhandel | Bevestigd (drie), Aannemelijk (details) |
 | Schakelelementen | Vijf pakketten plus een vrijloop: lage koppeling, 3-5-achteruitkoppeling, hoge koppeling, 2-6-rem, lage/achteruitrem | Planète Renault, ATRA, Mitsubishi-handboek | Bevestigd (aantal), Aannemelijk (functie); het schakelschema is Geschat |
@@ -96,7 +99,7 @@ Onderzoek in twee rondes: 12 oktober 2026 voor het eerste model, 13 oktober 2026
 | Koeling | Watergekoelde ATF-koeler in het carter, twee leidingen op het zijdeksel | Planète Renault, Mitsubishi-handboek | Bevestigd |
 | Overbrengingen (F6AJA) | 1e 4,199; 2e 2,405; 3e 1,583; 4e 1,161; 5e 0,855; 6e 0,685; achteruit 3,457; eindoverbrenging 3,804 (Renault-persmap 2007); 3,571 is de Mitsubishi-waarde | Mitsubishi Group 23D-handboek, gearboxlist.com, Renault-persmap 2007 | Bevestigd: de snelheden per 1000 tpm in de Renault-persmap 2007 passen binnen 0,2 % bij deze verhoudingen |
 | Tandentallen | Uitgaand 42, tussenas 45 en 21, kroonwiel 70 | Maktrans | Aannemelijk |
-| ATF | Elf Elfmatic J6 (Renault AJ0/AJ8), 8 liter | Elf-catalogus, Planète Renault | Bevestigd |
+| ATF | Elf Elfmatic J6 (Renault AJ0/AJ8; het handboek van 2009 noemt in zijn tabel ELF MATIC S6), totaal 7,6 liter, na aftappen 3,5 liter, vullen met 3,2 liter, niveau bij 40 graden | Elf-catalogus, Renault MR 415 (23A-7, 23A-28 tot 23A-31); Planète Renault noemt 8 liter | Aannemelijk (naam), Bevestigd (hoeveelheid) |
 | Gewicht en lengte | 93 kg droog, 385 mm inclusief omvormerhuis | Planète Renault | Aannemelijk |
 | Koppelomvormer | Drie elementen (pompwiel, turbinewiel, leidwiel) met overbruggingskoppeling en torsiedemper; overbrugging in de 2e tot en met de 6e | Mitsubishi-handboek, Planète Renault | Bevestigd |
 | Bediening | Keuzehendel P-R-N-D op de middenconsole, kabelbediening; handmatig schakelen door de hendel naar links te duwen; geen schakelflippers | Renault-handboek fase 2, Planète Renault | Bevestigd |

@@ -2,31 +2,33 @@
 
 Onderzoek gedaan op 13 oktober 2026. Doel: een geloofwaardige hiërarchische stuklijst en de fysieke opbouw, zodat de motor "tot het kleinste onderdeel" uit elkaar kan klappen.
 
+Motorcode van de auto van de gebruiker (bijgewerkt op 15 oktober 2026): waarschijnlijk F4Rt 813, zekerheid middel; het motorplaatje beslist. Volgens de RDW is de auto een Renault Laguna hatchback met eerste toelating op 18 februari 2011, 125 kW, EURO 5 A (715/2007*692/2008A), 201 g/km CO2 en 8,7 l/100 km. De RDW-typegoedkeuringsgegevens noemen voor deze uitvoering de motorcode "F4R J8", dezelfde code als bij de Euro 4-uitvoeringen; het driecijferige suffix staat er dus niet in. Het Renault-werkplaatshandboek MR 415 geeft voor de hatchback bij F4R 811 alleen Euro 4 en bij F4R 813 Euro 3, 4 en 5 (beide met automaat AJ0). Omdat de auto Euro 5 is, is de 813 de waarschijnlijkste code. Onderdelencatalogi noemen voor de hele reeks alleen "F4R 811"; ze voegen de suffixen samen en zeggen niets over de Euronorm. Beweringen die een bron alleen voor de 811 noemt (zoals het ontbreken van een faseversteller in de persmap van 2007) blijven staan; voor de 813 zijn ze niet apart bevestigd. De onderbouwing staat in `docs/onderzoek/beslissingen.md`. De bronnen R2 tot en met R46 hieronder noemen steeds de 811 of de reeks F4R 811; de statussen hieronder gelden voor de F4Rt als familie.
+
 ## Legenda
 
 Status per gegeven:
 
 - **Bevestigd**: officiële bron, of twee onafhankelijke bronnen die overeenkomen.
-- **Aannemelijk**: één redelijke bron, of bevestigd voor de motorfamilie/een zustermotor maar niet letterlijk voor de F4Rt 811.
+- **Aannemelijk**: één redelijke bron, of bevestigd voor de motorfamilie/een zustermotor, nog niet letterlijk voor deze auto.
 - **Geschat**: door mij gemeten, afgeleid of ingeschat (de afleiding staat erbij).
 - **Niet gevonden**: na gericht zoeken geen bron.
 - **[S] schematisch**: de inwendige opbouw van dit onderdeel is generiek voor dit type onderdeel, niet bevestigd voor de F4Rt. Kinderen van een [S]-onderdeel erven die markering.
 
 Bronnen staan als R-nummers; de volledige URL's staan in de bronnenlijst onderaan.
 
-Let op de aard van de bronnen: de Revue Technique-uittreksels (R11 t/m R16) gaan over de F4R 714/715 (atmosferisch, Mégane II) en over de F4R-turbo in de Vel Satis (2002 tot 2009, code F4Rt 763 e.d.), niet over de F4Rt 811 van de Laguna III. Het is dezelfde motorfamilie en dezelfde basis; ik gebruik ze als "Aannemelijk voor de F4Rt 811" en zeg het erbij. De onderdelencatalogi van Autodoc (R2 e.v.) zijn wel specifiek voor Laguna III met motorcode F4R 811.
+Let op de aard van de bronnen: de Revue Technique-uittreksels (R11 t/m R16) gaan over de F4R 714/715 (atmosferisch, Mégane II) en over de F4R-turbo in de Vel Satis (2002 tot 2009, code F4Rt 763 e.d.), niet over de F4Rt 811 van de Laguna III. Het is dezelfde motorfamilie en dezelfde basis; ik gebruik ze als "Aannemelijk voor de F4Rt" en zeg het erbij. De onderdelencatalogi van Autodoc (R2 e.v.) zijn wel specifiek voor Laguna III met motorcode F4R 811.
 
 ---
 
 ## 0. Belangrijkste bevindingen en tegenstrijdigheden met bestaande documenten
 
-1. **Motorcode.** Voor deze auto is de code **F4Rt 811** (in catalogi ook "F4R 811"; sommige pagina's noemen daarnaast "F4R 813" als variant). Status: Bevestigd (Autodoc R2, R3, R28, R38; Alfi-Turbo R6; Europe Turbo R5; IDF Moteurs R46). De codes **870/872/874/876** horen niet bij de Laguna III 170: 874 is de Mégane III RS 250/265/275, 872 de Mégane III TCe 180, 800 de Laguna III GT 205 (Autodoc "2.0 GT 204 hp F4R 800", R2-familie). 870 komt alleen voor in compatibiliteitslijsten van turbo's (R5), geen toewijzing aan de Laguna III 170 gevonden.
+1. **Motorcode.** Voor deze auto is de code waarschijnlijk **F4Rt 813** (zekerheid middel, zie de alinea bovenaan en `beslissingen.md`). Onderdelencatalogi noemen de reeks "F4R 811" en sommige pagina's daarnaast "F4R 813". Status: Aannemelijk; de catalogusnaam "F4R 811" is Bevestigd (Autodoc R2, R3, R28, R38; Alfi-Turbo R6; Europe Turbo R5; IDF Moteurs R46). De codes **870/872/874/876** horen niet bij de Laguna III 170: 874 is de Mégane III RS 250/265/275, 872 de Mégane III TCe 180, 800 de Laguna III GT 205 (Autodoc "2.0 GT 204 hp F4R 800", R2-familie). 870 komt alleen voor in compatibiliteitslijsten van turbo's (R5), geen toewijzing aan de Laguna III 170 gevonden.
 2. **Compressieverhouding: bronnen verschillen.** `docs/specificaties-en-bronnen.md` zegt 9,5 : 1 (fastcarcheck). Dat wordt bevestigd door Encycarpedia, Automoli, Autodata en Vehiclespecs (R36), dus vier bronnen. L'argus (R1) noemt 9,0 : 1 voor dezelfde Laguna III 2.0T 170 automaat (Euro 4). Aanbeveling: 9,5 : 1 houden als hoofdwaarde, 9,0 : 1 in een voetnoot. Status: Bevestigd (9,5), afwijkende bron genoteerd.
 3. **Nokkenasverstelling: de huidige bronvermelding is zwak.** Het bestaande document zegt "Faseversteller op de inlaatnokkenas: Bevestigd door meerdere eigenaren" met als bron een Planète Renault-forumpost. Die post (R42) is één vraag van één lid over de Vel Satis (2008) zonder antwoord, en Planète Renault zelf schrijft in het F4Rt-artikel over de Vel Satis dat die motor "zich passeert van een déphaseur d'arbre à cames" (R8). Beter bewijs voor de 811: Autodoc voert voor de Laguna III Coupé **F4Rt 811** een "VVT-magneetventiel voor inlaatkleppen" (R28), en het F4R-handboek (R11) beschrijft de faseversteller op de inlaatnokkenas met een elektroklep op het kleppendeksel. Conclusie: faseversteller op de inlaatnokkenas is **Aannemelijk** voor de 811; "meerdere eigenaren" moet uit het document. Of hij tweestanden (aan/uit) of traploos werkt: **Niet gevonden** voor de 811 (de atmosferische F4R 714 is aan/uit tussen circa 1500 en 4250 tpm, R11; Wikipedia R10 noemt voor de Mégane III RS "2-stage" én "continuously variable", dus tegenstrijdig).
-4. **Het bestaande model gebruikt kopstoters (bucket tappets). De F4R heeft rolzwenkarmen met hydraulische speling-opvangers.** R11: "commandées par deux arbres à cames en tête, des butées hydrauliques et des linguets à rouleaux", "pas de réglage, butées hydrauliques". Status: Bevestigd voor de F4R-familie, Aannemelijk voor de 811. Dit raakt 16 klepgroepen in `engine1.js`.
+4. **Het bestaande model gebruikt kopstoters (bucket tappets). De F4R heeft rolzwenkarmen met hydraulische speling-opvangers.** R11: "commandées par deux arbres à cames en tête, des butées hydrauliques et des linguets à rouleaux", "pas de réglage, butées hydrauliques". Status: Bevestigd voor de F4R-familie, Aannemelijk voor de F4Rt. Dit raakt 16 klepgroepen in `engine1.js`.
 5. **Stuurbekrachtiging is niet riemaangedreven.** De Laguna III heeft een **elektrohydraulische** stuurpomp (aparte elektropomp): L'argus "Assistée électro-hydraulique" (R1), Renault-brochure 2008 "Électro pompe" (R32), forum over lekkend "groupe électropompe" (R33). Dus de multiriem drijft alleen dynamo en aircocompressor aan (kit 7PK1795 met spanner en één geleiderol, R18). Het F4R-handboek (R11) noemt wel een riemaangedreven stuurpomp, maar dat is Mégane II.
 6. **Cilindernummering.** Renault telt cilinder, hoofdlager en kruktap 1 vanaf de **vliegwielzijde** (R11: "tourillon n°1 côté volant moteur", "maneton n°1 côté volant"). In `engine1.js` staat cilinder 1 op x = -0,132 (distributiezijde, rechts). Volgens de Renault-conventie moet cilinder 1 bij de versnellingsbak (x = +0,132) zitten. Status: Aannemelijk (conventie bevestigd voor lagers en kruktappen in R11; voor "cilinder 1" zelf afgeleid).
-7. **Axiaallager (aanloopringen).** In het model zitten ze bij het middelste hoofdlager. Echt: bij **hoofdlager 2** (tweede vanaf de vliegwielzijde), met "deux cales de chaque côté du palier n°2", dikte 2,30 tot 2,45 mm in stappen van 0,05 (R11). Status: Bevestigd voor F4R, Aannemelijk voor 811.
+7. **Axiaallager (aanloopringen).** In het model zitten ze bij het middelste hoofdlager. Echt: bij **hoofdlager 2** (tweede vanaf de vliegwielzijde), met "deux cales de chaque côté du palier n°2", dikte 2,30 tot 2,45 mm in stappen van 0,05 (R11). Status: Bevestigd voor F4R, Aannemelijk voor de F4Rt.
 8. **Distributiewielen.** Model: 24 en 48 tanden. Riem heeft 126 tanden, spoed 9,525 mm (R17). Met de overbrenging 2 : 1 komen er 19 tanden (krukas) en 38 tanden (nokkenassen) uit (Geschat, zie sectie 5).
 
 ---
@@ -35,7 +37,7 @@ Let op de aard van de bronnen: de Revue Technique-uittreksels (R11 t/m R16) gaan
 
 | Gegeven | Waarde | Bron | Status |
 |---|---|---|---|
-| Motorcode Laguna III 2.0T 170 (fase 1 en 2, 2007 tot 2015) | F4Rt 811 (ook geschreven F4R 811; variantcode F4R 813 komt in catalogi voor) | R2, R3, R5, R6, R46 | Bevestigd (811); 813 Aannemelijk |
+| Motorcode Laguna III 2.0T 170 (fase 1 en 2, 2007 tot 2015) | Fase 2 met Euro 5 (deze auto): waarschijnlijk F4Rt 813. Catalogi noemen de reeks "F4R 811"; fase 1 met Euro 4 is de 811 | R2, R3, R5, R6, R46; RDW; MR 415 | Aannemelijk (zekerheid middel); 811 als catalogusnaam Bevestigd |
 | Constructeur/type | Renault F-motor ("fonte"), F4R met turbo = F4Rt | R8, R9, R10 | Bevestigd |
 | Cilinderinhoud | 1998 cm³ | R1, R8 | Bevestigd |
 | Boring × slag | 82,7 × 93,0 mm | R1, R8, R11 | Bevestigd |
@@ -43,24 +45,24 @@ Let op de aard van de bronnen: de Revue Technique-uittreksels (R11 t/m R16) gaan
 | Vermogen / koppel | 125 kW (170 pk) bij 5000 tpm; 270 Nm (3250 tpm volgens het bestaande document) | R1, `docs/specificaties-en-bronnen.md`; Mitsubishi noemt "F4R M4 125 kW 270 Nm" (R4) | Bevestigd |
 | Ontsteekvolgorde | 1-3-4-2 | Standaard voor 4 in lijn, ook in `engine1.js`; niet apart bronnen gevonden voor F4Rt | Aannemelijk |
 | Kleppen | 16 (4 per cilinder), 2 bovenliggende nokkenassen (DOHC), kleppen in V-opstelling | R1, R11 | Bevestigd |
-| Kleptrein | Rolzwenkarmen ("linguets à rouleaux") met hydraulische speling-opvangers ("butées hydrauliques"), geen speling instellen | R11 (F4R 714/715) | Aannemelijk voor 811 |
+| Kleptrein | Rolzwenkarmen ("linguets à rouleaux") met hydraulische speling-opvangers ("butées hydrauliques"), geen speling instellen | R11 (F4R 714/715) | Aannemelijk voor de F4Rt |
 | Nokkenasaandrijving | Getande distributieriem, 126 tanden, 27 mm breed, 1200 mm lang, spoed 9,525 mm; drijft ook de waterpomp aan | R17, R31, R11 ("pompe à eau ... entraînée par la courroie de distribution") | Bevestigd |
 | Faseversteller | Geen faseversteller (vaste kleptiming). De eerdere vermelding steunde op een catalogusvermelding (R28) en op het handboek van de atmosferische F4R 714 (R11). | Renault-persmap 2007, Planete Renault F4RT | Bevestigd |
 | Inspuiting | Meerpunts sequentieel in het inlaatkanaal (indirect), geen directe inspuiting. Injectoren Siemens of Magneti Marelli volgens catalogus | R1, R30; "indirect injection" ook genoemd door gebruikers van de F4Rt (reddit-zoekresultaat) | Bevestigd (multipoint); fabrikant Aannemelijk |
 | Ontsteking | Vier losse penbobines ("bobine crayon"), direct op de bougies; bougies M14 × 1,25, 19 mm draad, sleutel 16 mm | R26, R25 | Bevestigd (bobines), Bevestigd (bougiemaat, twee catalogi) |
-| Gasklephuis | Elektrisch bediend (drive-by-wire). OE-nummer 8200619046; op de Laguna II fase 2 F4Rt 774/776/784/786 is het een VDO-Siemens huis | R29, R37 | Aannemelijk voor 811 |
+| Gasklephuis | Elektrisch bediend (drive-by-wire). OE-nummer 8200619046; op de Laguna II fase 2 F4Rt 774/776/784/786 is het een VDO-Siemens huis | R29, R37 | Aannemelijk voor de F4Rt |
 | Turbo | **Mitsubishi TD04**, referentie 49377-07303 (ook 49377-0730x/0734x-reeks). Mitsubishi zelf: "49377-07303, TD04, Engine Type F4R M4 125 kW 270 Nm, Customer Renault" | R4 (fabrikant), R5, R6, R7 | Bevestigd (merk, reeks en motor); exacte referentie voor 811 Aannemelijk |
-| Turbo-uitvoering | Twin-scroll (dubbele inlaat): spruitstuk met twee gescheiden kanalen (cilinders 1+4 en 2+3), roestvast gietstalen turbinehuis, Nimonic-kleppen | R8 (voor F4Rt Vel Satis), R10 | Aannemelijk voor 811 |
-| Waterkoeling van de turbo | Ja, lagerhuis heeft koelwaterslangen ("Durit de refroidissement du turbocompresseur") | R12 (Vel Satis F4Rt) | Aannemelijk voor 811 |
-| Maximale laaddruk | Planète Renault noemt "1,8 bar" voor de F4Rt van de Vel Satis (waarschijnlijk absolute druk). Voor de 811 geen waarde gevonden. Catalogus-algemeen "0,65 tot 1,1 bar" | R8, R3 | Niet gevonden voor 811. Geschat: circa 0,8 tot 1,0 bar overdruk |
+| Turbo-uitvoering | Twin-scroll (dubbele inlaat): spruitstuk met twee gescheiden kanalen (cilinders 1+4 en 2+3), roestvast gietstalen turbinehuis, Nimonic-kleppen | R8 (voor F4Rt Vel Satis), R10 | Aannemelijk voor de F4Rt |
+| Waterkoeling van de turbo | Ja, lagerhuis heeft koelwaterslangen ("Durit de refroidissement du turbocompresseur") | R12 (Vel Satis F4Rt) | Aannemelijk voor de F4Rt |
+| Maximale laaddruk | Planète Renault noemt "1,8 bar" voor de F4Rt van de Vel Satis (waarschijnlijk absolute druk). Voor de F4Rt geen waarde gevonden. Catalogus-algemeen "0,65 tot 1,1 bar" | R8, R3 | Niet gevonden voor de F4Rt. Geschat: circa 0,8 tot 1,0 bar overdruk |
 | Wastegate | Interne wastegate, gestuurd met een drukdoos (pneumatische actuator) via een magneetventiel ("électrovanne de commande de wastegate") | R12 | Aannemelijk |
 | Omloop-/blow-offklep | Pneumatische omloopklep via een tweede magneetventiel ("électrovanne - turbocompresseur") met leiding naar de remservo-vacuümzijde | R12 | Aannemelijk; plaats op het compressorhuis niet bevestigd |
 | Intercooler | Lucht-lucht, aan de voorzijde van de auto achter de bumper, vóór de radiateur. Inlaat via een slang van de turbo, "côté refroidisseur, entrée" | R24, R44, R34 ("oil filter ... sits behind the intercooler" bij F4Rt 872), R43 | Aannemelijk |
-| Motor-ECU-systeem | Niet gevonden voor 811 (Laguna II F4Rt 764: Sagem S2000, 774: Sagem S3000) | R37 | Niet gevonden |
+| Motor-ECU-systeem | Niet gevonden voor de F4Rt (Laguna II F4Rt 764: Sagem S2000, 774: Sagem S3000) | R37 | Niet gevonden |
 | Blok en kop | Gietijzeren blok (boringen direct in het blok), aluminium kop | R8, R9, R10 | Bevestigd. Let op: het F4R-handboek (R11) zegt op één plek "bloc-cylindres en aluminium" maar twee regels eerder "bloc-cylindres en fonte"; typefout in de bron, andere bronnen zijn eensgezind |
 | Olie-inhoud | circa 5,4 liter | Motul-tabel (R39), Automoli (R36) | Aannemelijk (Autodoc geeft 4 l als "capaciteit" in de olietoepassing, waarschijnlijk zonder filter/koeler) |
 | Koelvloeistof | circa 7,7 liter | Automoli (R36) | Aannemelijk |
-| Thermostaat | begint te openen bij 89 ± 2 graden Celsius, volledig open bij 99 ± 2 graden Celsius | R11 (F4R 714) | Aannemelijk voor 811 |
+| Thermostaat | begint te openen bij 89 ± 2 graden Celsius, volledig open bij 99 ± 2 graden Celsius | R11 (F4R 714) | Aannemelijk voor de F4Rt |
 
 ---
 
@@ -107,7 +109,7 @@ Modelassen zoals in het project: x = links(+)/rechts(-) van de auto, y = omhoog,
 
 Conventie: `niveau-nummer. Naam - aantal - opmerking [markering]`. Het niveau volgt uit de inspringing. "n.b." = aantal niet bekend, schatting staat erbij. Schroefdraadmaten zijn alleen genoemd als bron ze geeft.
 
-### 1. Motor F4Rt 811 (1x)
+### 1. Motor F4Rt 813 (waarschijnlijk, zie beslissingen) (1x)
 
 #### 1.1 Motorblok (onderblok)
 
@@ -601,13 +603,13 @@ Het model heeft 318 onderdelen. Wat ontbreekt of afwijkt volgens dit onderzoek:
 
 ## 7. Open vragen
 
-1. Vervallen: de F4Rt 811 heeft geen faseversteller (Renault-persmap 2007).
-2. Exacte laaddruk, wastegate-opening en turbo-referentie voor de 811 (alleen familie bekend).
+1. Vervallen: de F4Rt heeft geen faseversteller (Renault-persmap 2007; de bron noemt de 811 en voor de 813 is het niet apart bevestigd).
+2. Exacte laaddruk, wastegate-opening en turbo-referentie voor de F4Rt (alleen familie bekend).
 3. Welke kant van het blok de turbo precies op zit (links/midden/rechts) en de hoek van de motor in de auto.
 4. Plaats van de peilstok, de oliekoeler en het filter aan het blok van de Laguna III.
 5. Is het onderste carter een aluminium bedplate of een gewone pan? Het RTA spreekt van "carter inférieur" met pakking en minimaal 18 bouten.
 6. Welke krukaspoelie (demper ja/nee) en welk type krukas (gesmeed of gegoten).
-7. Verschil tussen F4Rt 811 en 813 (Euro 4 en Euro 5?).
+7. Verschil tussen F4Rt 811 en 813: opgelost voor zover bronnen reiken. Volgens MR 415 (hatchback, PDF-pagina 5) is de 811 Euro 4 en de 813 Euro 3, 4 en 5. De RDW toont binnen dezelfde typegoedkeuring Euro 4-uitvoeringen tot november 2010 en Euro 5-uitvoeringen vanaf februari 2010, beide met de typegoedkeuringsmotorcode F4R J8. De 813 heeft volgens MR 415 een eigen procedure voor de vrijloopriemschijf van de dynamo (PDF-pagina 1403 tot en met 1405). Vermogen en koppel zijn gelijk. Verschillen in lambdasondes, faseversteller en turbo zijn niet gevonden.
 8. Het handboek van de Laguna III zelf (RTA MR 407?) is niet gevonden; wel Vel Satis en Mégane/Clio F4R.
 
 ---

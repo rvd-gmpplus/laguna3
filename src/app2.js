@@ -193,7 +193,7 @@ function renderPn(n) {
       for (const [merk, num, note, lvl] of u.am) { const tr = tb.insertRow(); if (isKz(null, [merk, num])) tr.className = 'pn-kz'; tr.appendChild(mk('td', null, merk)); tr.appendChild(mk('td', 'num', num)); const td = mk('td'); if (lvl) td.appendChild(uiPnLvl(mk, lvl)); tr.appendChild(td); const tn = mk('td', null, note || ''); if (tr.className === 'pn-kz') tn.appendChild(mk('em', null, (note ? ' ' : '') + 'gekozen')); tr.appendChild(tn); }
       box.appendChild(t);
     }
-    box.appendChild(mk('p', 'pn-txt', 'Bewijs: A staat in de catalogus voor dit type (2.0 16V Turbo 170 pk, F4R 811) op de juiste plaats; B is het Renault-nummer van zo\'n artikel; C is een kruisverwijzing van een A- of B-nummer; D komt alleen uit een advertentie voor een gebruikt onderdeel en is niet in een catalogus gecontroleerd.'));
+    box.appendChild(mk('p', 'pn-txt', 'Bewijs: A staat in de catalogus voor dit type (2.0 16V Turbo 170 pk; onderdelencatalogi noemen de reeks F4R 811, de motor van deze auto is waarschijnlijk een F4Rt 813) op de juiste plaats; B is het Renault-nummer van zo\'n artikel; C is een kruisverwijzing van een A- of B-nummer; D komt alleen uit een advertentie voor een gebruikt onderdeel en is niet in een catalogus gecontroleerd.'));
   }
   if (u && u.var) { box.appendChild(mk('h4', null, kz ? 'Varianten in de catalogus' : 'Variant')); box.appendChild(mk('p', 'pn-txt', u.var)); }
   if (u && u.per) { box.appendChild(mk('h4', null, 'Verpakking')); box.appendChild(mk('p', 'pn-txt', u.per)); }

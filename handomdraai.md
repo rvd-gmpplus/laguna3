@@ -19,7 +19,7 @@ Stand 15 okt 2026, 17:20 UTC. Golf 4 (modus Openen, panoramadak, onderdeelnummer
 - Modus Openen (segmentknop of toets O): 26 openers, klikregel van buiten naar binnen, sluiten met rechtsklik, Shift+klik of lang drukken, dock met Alles open, Alles dicht en Openers n/26, paneelknop op de geselecteerde opener, zes presets in de categorie Openen. De camera kijkt bij openen in de opening.
 - Panoramadak: twee getinte glaspanelen met dwarsbalk, voorste glas kantelt en schuift 0,60 m, zonneschermen met cassette in hemelkleur, luchtgeleider met armpjes, waterafvoer, hemelbekleding met twee openingen, draaiknop in de hemelconsole.
 - Onderdeelnummers in het paneel: 546 verkoopeenheden (110 past volgens catalogus, 71 variant, 365 niet gevonden), 1.334 nummers (446 Renault, 888 van 197 andere merken), bewijs A 807, B 436, C 89, D 2, vaste VIN-waarschuwing, bij 14 eenheden het blok Gekozen voor deze auto (volgens de RDW en het chassisnummer van de gebruiker), zoeken op nummer, CSV in `docs/onderdeelnummers.csv`. Onderhoudsinformatie bij 43 paden.
-- Kennis uit het rapport van de gebruiker en MR 415 (X91): geen faseversteller op de F4R 811, eindoverbrenging 3,804, aluminium motorkap, capless vulhals, aanhaalmomenten en inhouden. Zie `docs/onderzoek/kennisbasis.md` en `docs/onderzoek/beslissingen.md`.
+- Kennis uit het rapport van de gebruiker en MR 415 (X91): geen faseversteller op de F4R 811 (bron: persmap 2007; voor de 813 niet apart bevestigd), eindoverbrenging 3,804, aluminium motorkap, capless vulhals, aanhaalmomenten en inhouden. Zie `docs/onderzoek/kennisbasis.md` en `docs/onderzoek/beslissingen.md`.
 - 43 presets in 7 categorieën plus rondleiding. Gebundeld: 439 tekenopdrachten gemonteerd, 1.867 zonder, 774 met alles open. Titel linksboven met een doorschijnend vlak, leesbaar bij close-ups.
 
 ## Tests
@@ -56,7 +56,7 @@ Op volgorde van wat de gebruiker het eerst ziet. Bij elk punt staat wat er mis i
 
 ### Feiten en model
 
-15. ATF van de automaat: MR 415 noemt ELF MATIC S6, 7,6 l totaal en 3,5 l na aftappen, in een tabel die de AJX noemt; `docs/onderzoek/beslissingen.md` noemt Elfmatic J6. Open punt; uitzoeken welke tabel voor de AJ0 geldt.
+15. ATF van de automaat: opgelost voor zover het kan. MR 415 geeft voor de AJ0 7,6 l totaal, 3,5 l na aftappen en 3,2 l vullen, met het niveau bij 40 graden; de olienaam staat in de Spaanse editie van 2007 (23A-7) als Elfmatic J6 en in de Engelse en Franse editie van 2009 (23A-28) als ELF MATIC S6 voor de familie AJX, waar de AJ0-procedure zelf naar verwijst. Elf noemt alleen Elfmatic J6 (goedgekeurd voor Renault AJ0 en AJ8). Open: of S6 en J6 dezelfde olie zijn; vraag bij een Renault-dealer naar de olie per chassisnummer.
 16. Hoeken en slagen van de openers zijn geschat uit foto's, het instructieboekje en het werkplaatshandboek; aan de echte auto is niets gemeten. Met de auto van de gebruiker zijn kap, portieren en klep na te meten.
 17. Oud en bekend: voorste langsliggers snijden de aandrijfassen; multiriem 1.569 mm tegen 1.795 mm echt; torsiebalk boven de vlakke vloer; de veer achter steekt door de voorrand van de bagagevloer; 84 van de 345 labelankers liggen achter een ander deel; donkere spikkels op de motorkap in het bovenaanzicht (vermoedelijk software-rasterisatie, niet bewezen).
 18. Geen 4Control in het model. Dat was een optie; of de auto van de gebruiker het heeft, is niet vastgesteld.
@@ -68,7 +68,8 @@ Op volgorde van wat de gebruiker het eerst ziet. Bij elk punt staat wat er mis i
 21. De hulpmiddelen voor de poort en het narekenen (`gateshots.py`, `pick.py`, `shots.py`, `probe.py`, de poortscripts) staan alleen in het scratchpad en verdwijnen met de container. Aanpak: naar `tools/orkestratie/` halen voor een volgende ronde. De kenmerken van de poort staan hieronder.
 22. Niet gebouwd: UX-punt U19 (rest dimmen bij duiken naar een onderdeel) en een zijkolom voor telefoons in liggende stand.
 23. S7 uit de carrosserieronde (7 van 9 op `9c731c8`, deels kenmerk 4 en 8) is na golf 4 niet opnieuw gedraaid.
-24. Databankenrecht: de CSV bevat alleen nummers en URL's; een juridische toets is niet gedaan.
+24. Databankenrecht: de CSV bevat alleen nummers en URL's; een juridische toets is niet gedaan. De bureau-analyse staat in `docs/onderzoek/databankenrecht.md` (risico laag tot middel bij AUTODOC, maatregelen in sectie 8, vragen voor een jurist in sectie 9).
+25. Motorcode: de RDW toont Euro 5 A en MR 415 geeft Euro 5 bij de hatchback alleen bij de F4R 813. Het model en de docs noemen de motor daarom "F4Rt 813 (waarschijnlijk, zie beslissingen)"; zekerheid middel, het motorplaatje beslist. De onderdeelkeuzes in het nummerpaneel (dynamo met vaste poelie, injector, inlaatluchttemperatuursensor) volgen nog de catalogus van de 811 en zijn niet herzien.
 
 ### Kenmerken van de visuele poort golf 4
 
@@ -86,7 +87,7 @@ Per plak drie beoordelaars, elk beeld een keer bekeken, oordeel ja, deels of nee
 1. Punten 1 tot 7 van de lijst hierboven in een gerichte ronde (camera's, hoedenplank, B-stijl, steunstang, rugleuningnaad, voorruit van binnen), daarna de poort opnieuw met dezelfde kenmerken. Eerst de hulpmiddelen naar de repo halen (punt 21).
 2. Na een ja van de gebruiker `main` bijwerken en Pages nakijken.
 3. Vervolgronde nummers (punten 10 tot 13), met het VIN als dat er is.
-4. ATF uitzoeken (punt 15).
+4. ATF: de olienaam bij een Renault-dealer navragen (punt 15).
 5. Testen op een echte telefoon en GPU (punt 19 en 20).
 6. Oude modelpunten (punt 17), U19 en de zijkolom liggend.
 

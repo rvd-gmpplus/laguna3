@@ -1,8 +1,8 @@
-# Kennisbasis Renault Laguna III 2.0T 170 automaat (F4Rt 811, AJ0)
+# Kennisbasis Renault Laguna III 2.0T 170 automaat (F4Rt 813 waarschijnlijk, AJ0)
 
-Deze kennisbasis gaat over de auto achter het model: een Renault Laguna III hatchback uit 2011 (fase 2), 2.0 16V Turbo met 125 kW (170 pk), motor F4Rt 811, zestraps automaat AJ0, uitvoering Initiale Paris.
+Deze kennisbasis gaat over de auto achter het model: een Renault Laguna III hatchback uit 2011 (fase 2), 2.0 16V Turbo met 125 kW (170 pk), motor F4Rt 813 (waarschijnlijk, zie beslissingen), zestraps automaat AJ0, uitvoering Initiale Paris.
 
-De basis is het onderzoeksrapport dat de gebruiker op 14 oktober 2026 aanleverde ("Renault Laguna III 2.0 16V Turbo (F4R 811) automaat, hatchback 2011: geverifieerde kennisbasis en verrijkingsplan"). Op dezelfde dag is het rapport naast de repo gelegd, met gericht onderzoek aangevuld en waar nodig gecorrigeerd. De belangrijkste nieuwe bron is de Renault-persmap van augustus 2007 met de technische tabellen per motor. Die tabellen gelden voor fase 1 (Euro 4); fase 2 heeft dezelfde motorcode en bakcode, dus gelijke waarden zijn voor fase 2 Aannemelijk.
+De basis is het onderzoeksrapport dat de gebruiker op 14 oktober 2026 aanleverde ("Renault Laguna III 2.0 16V Turbo (F4R 811) automaat, hatchback 2011: geverifieerde kennisbasis en verrijkingsplan"). Op dezelfde dag is het rapport naast de repo gelegd, met gericht onderzoek aangevuld en waar nodig gecorrigeerd. De belangrijkste nieuwe bron is de Renault-persmap van augustus 2007 met de technische tabellen per motor. Die tabellen gelden voor fase 1 (Euro 4, bij de F4Rt 811). De auto van de gebruiker is fase 2 met Euro 5 en waarschijnlijk een F4Rt 813; gelijke waarden zijn voor de 813 Aannemelijk en niet apart bevestigd.
 
 ## Statussen
 
@@ -20,10 +20,10 @@ Waar een feit uit het rapport is overgenomen zonder dat de bron opnieuw is gelez
 
 | Onderwerp | Rapport | Besluit | Zekerheid | Grond |
 |---|---|---|---|---|
-| Leverancier automaat AJ0 | Aisin AW TF-80SC waarschijnlijker dan Jatco | Jatco JF613E (Renault AJ0) | Bevestigd | De persmap noemt AJ0 voor de F4Rt 811 en geeft snelheden per 1000 tpm die binnen 0,2 % passen bij de JF613E-verhoudingen en tot 2,2 % afwijken van de TF-80SC. Planete Renault: gebouwd in de Jatco-fabriek in Yagi. Transmission Digest: JF613E "also known as AJO", toepassing Renault Laguna 2.0. De TF-80SC zit bij Renault in de Vel Satis en Espace IV met de V6 dCi. |
-| Faseversteller | Volgens docteurmoteurs geen, een bron | Geen faseversteller, vaste kleptiming | Bevestigd | Persmap: "diagramme variable (décaleur continu à l'admission VVT)" is "non" bij de F4Rt 811 en "oui" bij de K4M en M4R. Planete Renault: de F4RT "se passe de déphaseur d'arbre à cames". TecDoc-catalogi tonen wel F4R-faseverstellers voor deze motorcode; dat is uitbreiding per motorfamilie (Mégane II RS F4Rt 774 en de atmosferische F4R hebben er wel een). |
-| ATF-norm | JWS 3309 (Toyota T-IV) of Elfmatic J6 | Elf Elfmatic J6, Matic J-klasse | Bevestigd | JWS 3309 hoort bij Aisin-bakken. Elf noemt Elfmatic J6 voor Renault AJ0 en AJ8. |
-| ATF-hoeveelheden | 3,2 tot 3,5 l verversen, 7,0 tot 7,6 l totaal | Bij aftappen circa 2,2 l; vullen 3 tot 3,2 l en afstellen op overloop; totaal circa 8 l | Een bron (verversen), Aannemelijk (totaal) | De rapportwaarden komen deels van TF-80SC-pagina's. Forumvelsatis: twee AJ0-verversingen gaven elk 2,2 l; het Renault-handboek noemt 3,2 l vullen. Planete Renault: 8 l totaal. |
+| Leverancier automaat AJ0 | Aisin AW TF-80SC waarschijnlijker dan Jatco | Jatco JF613E (Renault AJ0) | Bevestigd | De persmap noemt AJ0 voor de F4Rt 811 (MR 415 noemt AJ0 ook bij de 813) en geeft snelheden per 1000 tpm die binnen 0,2 % passen bij de JF613E-verhoudingen en tot 2,2 % afwijken van de TF-80SC. Planete Renault: gebouwd in de Jatco-fabriek in Yagi. Transmission Digest: JF613E "also known as AJO", toepassing Renault Laguna 2.0. De TF-80SC zit bij Renault in de Vel Satis en Espace IV met de V6 dCi. |
+| Faseversteller | Volgens docteurmoteurs geen, een bron | Geen faseversteller, vaste kleptiming | Bevestigd (811) | Persmap: "diagramme variable (décaleur continu à l'admission VVT)" is "non" bij de F4Rt 811 en "oui" bij de K4M en M4R. De bron noemt de 811; voor de 813 is het niet apart bevestigd. Planete Renault: de F4RT "se passe de déphaseur d'arbre à cames". TecDoc-catalogi tonen wel F4R-faseverstellers voor deze motorcode; dat is uitbreiding per motorfamilie (Mégane II RS F4Rt 774 en de atmosferische F4R hebben er wel een). |
+| ATF-norm | JWS 3309 (Toyota T-IV) of Elfmatic J6 | Elf Elfmatic J6, Matic J-klasse (het handboek van 2009 noemt in zijn tabel ELF MATIC S6; of dat dezelfde olie is, is niet vastgesteld) | Aannemelijk | JWS 3309 hoort bij Aisin-bakken. Elf noemt Elfmatic J6 voor Renault AJ0 en AJ8. |
+| ATF-hoeveelheden | 3,2 tot 3,5 l verversen, 7,0 tot 7,6 l totaal | Bij aftappen circa 2,2 l; vullen 3 tot 3,2 l en afstellen op overloop; totaal circa 8 l | Een bron (verversen), Aannemelijk (totaal) | 3,2 l vullen, 3,5 l na aftappen en 7,6 l totaal volgens MR 415 (23A-28 tot 23A-31); de 8 l en 2,2 l komen van forums en Planete Renault. De rapportwaarden komen deels van TF-80SC-pagina's. Forumvelsatis: twee AJ0-verversingen gaven elk 2,2 l; het Renault-handboek noemt 3,2 l vullen. Planete Renault: 8 l totaal. |
 | Eindoverbrenging | Open | 3,804 | Bevestigd (fase 1) | Persmap: "rapport de pont 1/3,804" bij de F4Rt 811. De repo gebruikte 3,571 van de Mitsubishi F6AJA. |
 | 0 tot 100 km/h | 9,4 s aanhouden | 9,2 s (berline), 9,4 s (estate) | Bevestigd | Persmap. De 9,4 s in het rapport is de estatewaarde. |
 | Verbruik en CO2 | 8,9 l/100 km en 207 g/km | 8,9 l/100 km en 210 g/km | Bevestigd | Persmap (stad 13,0; buiten 6,6 berline en 6,7 estate). |
@@ -75,7 +75,9 @@ Waar een feit uit het rapport is overgenomen zonder dat de bron opnieuw is gelez
 | CO2 | 210 g/km | Bevestigd | Persmap |
 | Toerental bij 220 km/h | Circa 4.840 tpm in de 6e (45,44 km/h per 1000 tpm) | Geschat (berekend uit de persmap) | Persmap |
 
-## 5. Motor F4Rt 811
+## 5. Motor F4Rt 813 (waarschijnlijk, zie beslissingen)
+
+Motorcode van de auto van de gebruiker (bijgewerkt op 15 oktober 2026): waarschijnlijk F4Rt 813, zekerheid middel; het motorplaatje beslist. Volgens de RDW is de auto een Renault Laguna hatchback met eerste toelating op 18 februari 2011, 125 kW, EURO 5 A (715/2007*692/2008A), 201 g/km CO2 en 8,7 l/100 km. De RDW-typegoedkeuringsgegevens noemen voor deze uitvoering de motorcode "F4R J8", dezelfde code als bij de Euro 4-uitvoeringen; het driecijferige suffix staat er dus niet in. Het Renault-werkplaatshandboek MR 415 geeft voor de hatchback bij F4R 811 alleen Euro 4 en bij F4R 813 Euro 3, 4 en 5 (beide met automaat AJ0). Omdat de auto Euro 5 is, is de 813 de waarschijnlijkste code. Onderdelencatalogi noemen voor de hele reeks alleen "F4R 811"; ze voegen de suffixen samen en zeggen niets over de Euronorm. Beweringen die een bron alleen voor de 811 noemt (zoals het ontbreken van een faseversteller in de persmap van 2007) blijven staan; voor de 813 zijn ze niet apart bevestigd. De onderbouwing staat in `docs/onderzoek/beslissingen.md`.
 
 | Onderwerp | Feit | Zekerheid | Bron |
 |---|---|---|---|
@@ -91,7 +93,7 @@ Waar een feit uit het rapport is overgenomen zonder dat de bron opnieuw is gelez
 | Laaddruk | De persmap geeft een absolute laaddruk, maar de kolom is in de tabel niet eenduidig toe te wijzen; Planete Renault noemt 1,8 bar voor de F4RT van de Vel Satis (165 pk) | Open | Persmap; Planete Renault F4RT |
 | Olie-inhoud | 5,4 l inclusief filter | Bevestigd | Persmap; [lagunanotice](https://www.lagunanotice.com/appoint_remplissage-982.html) |
 | Olie | 5W-40, Renault RN0700 of RN0710 | Aannemelijk | [Autodoc](https://www.autodoc.co.uk/car-parts/engine-oil-12094/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo); het handboek verwijst naar het onderhoudsboekje |
-| Andere motorcodes | TecDoc noemt ook F4R 813; een F4R 810 in Britse lijsten is niet bevestigd | Een bron | uit het rapport |
+| Andere motorcodes | Catalogi noemen de reeks F4R 811 en soms ook F4R 813; een F4R 810 in Britse lijsten is niet bevestigd | Een bron | uit het rapport |
 | 170 pk tegenover 205 pk | De 205 pk (GT) heeft een grotere turbo (TD04L-14T) en was alleen handgeschakeld (PK4) | Aannemelijk | uit het rapport (turborenault.co.uk, forumlaguna3) |
 
 ## 6. Automaat AJ0
@@ -103,10 +105,10 @@ Waar een feit uit het rapport is overgenomen zonder dat de bron opnieuw is gelez
 | Eindoverbrenging | 3,804 | Bevestigd (fase 1) | Persmap |
 | Tandentallen eindoverbrenging | Voor 3,804 niet gevonden; 45/42 x 71/20 geeft 3,804 | Geschat | eigen berekening |
 | Andere Laguna III-automaten | De dCi 150 met AJ0 heeft eindoverbrenging 3,36; de 2.0 16V 140 en de 1.6 hadden een handbak TL4; voor de 3.0 V6 dCi en de 3.5 V6 is de bak hier niet onderzocht | Bevestigd (dCi 150), Open (V6) | Persmap |
-| ATF | Elf Elfmatic J6 | Bevestigd | [Elf](https://lubricants.catalog.elf.com/corporate/fr_FR/n5s_elfmatic-j6) |
+| ATF | Elf Elfmatic J6 (handboek 2009: ELF MATIC S6 in de tabel van de AJX) | Aannemelijk | [Elf](https://lubricants.catalog.elf.com/corporate/fr_FR/n5s_elfmatic-j6) |
 | Totale inhoud | Circa 8 l | Aannemelijk | Planete Renault AJ0 |
 | Renault-beleid | Levensduurvulling, geen verversing voorgeschreven | Aannemelijk | Planete Renault AJ0 |
-| Verversen | Aftappen geeft circa 2,2 l; vullen 3 tot 3,2 l via het vulkanaal vanuit de motorruimte; afstellen op overloop met de motor draaiend in P bij 38 tot 40 graden ATF; peilbout en overloopbuisje 8 Nm, afdekplaat vulkanaal 6 Nm | Een bron | [forumvelsatis](https://forumvelsatis.fr/phpBB3/viewtopic.php?f=8&t=10349) |
+| Verversen | Volgens MR 415: totaal 7,6 l, na aftappen 3,5 l, vullen 3,2 l en afstellen bij 40 graden. Forumvelsatis: aftappen geeft circa 2,2 l; vullen 3 tot 3,2 l via het vulkanaal vanuit de motorruimte; afstellen op overloop met de motor draaiend in P bij 38 tot 40 graden ATF; peilbout en overloopbuisje 8 Nm, afdekplaat vulkanaal 6 Nm | Een bron | [forumvelsatis](https://forumvelsatis.fr/phpBB3/viewtopic.php?f=8&t=10349) |
 | Melding bak controleren | Kan komen van een losse massakabel van de bak naar de accu | Een bron | forumvelsatis |
 | Eigenaarservaring | Schakelt soepel; handmatige modus traag | Een bron | uit het rapport (Caradisiac-forum) |
 
@@ -189,9 +191,9 @@ Prioriteiten voor een exemplaar van circa 15 jaar, uit het rapport overgenomen: 
 
 - Renault-tandentallen van de eindoverbrenging 3,804.
 - Of fase 2 (Euro 5) andere waarden heeft voor eindoverbrenging. Verbruik en CO2 van de auto van de gebruiker staan sinds de RDW-gegevens vast (sectie 14).
-- Het motorsuffix van de auto van de gebruiker: 811 of 813. De RDW noemt het niet; MR 415 geeft Euro 5 alleen bij de 813 (sectie 14).
+- Het motorsuffix van de auto van de gebruiker: waarschijnlijk 813 (zekerheid middel). De RDW noemt het niet; MR 415 geeft Euro 5 alleen bij de 813 (sectie 14). Het motorplaatje beslist.
 - Bak van de 3.0 V6 dCi en de 3.5 V6 in de Laguna III (AJ0 of een Aisin-bak).
-- Laaddruk van de F4Rt 811.
+- Laaddruk van de F4Rt.
 - Minimumdiktes van de remschijven, aanhaalmomenten uit het werkplaatsboek (cilinderkop, wielbouten, subframe, remklauwen), uitlijnwaarden.
 - Aircovulling, koelvloeistof- en remvloeistofinhoud.
 - Exacte uitvoering van deze auto (wielmaat) via RDW of MyRenault. 4Control: niet aanwezig (opgave gebruiker).
@@ -205,7 +207,7 @@ De gebruiker gaf het kenteken op; de gegevens komen uit de open data van de RDW 
 | Voertuig | Renault Laguna, hatchback, vier deuren, vijf zitplaatsen, grijs | Bevestigd | Past bij het model en bij de kleur Gris Platine. |
 | Motor | Benzine, 4 cilinders, 1998 cc, 125 kW | Bevestigd | Past bij de F4Rt 2.0 turbo 170 pk. Het motorsuffix noemt de RDW niet. |
 | Eerste toelating | 18 februari 2011, ook de eerste tenaamstelling in Nederland | Bevestigd | Fase 2. De auto is daarmee voor 07/2011 gebouwd; dat beslist de bouwdatumgrens van onder meer de spanrol en de geleiderol. |
-| Emissie | EURO 5 A, milieuklasse 715/2007*692/2008A | Bevestigd | MR 415 geeft Euro 5 alleen bij de F4R 813 en bij de 811 alleen Euro 4. Het motorsuffix is dus niet bevestigd; het motorplaatje beslist. De voorkatalysator volgt het emissieniveau (Euro 5). |
+| Emissie | EURO 5 A, milieuklasse 715/2007*692/2008A | Bevestigd | MR 415 geeft Euro 5 alleen bij de F4R 813 en bij de 811 alleen Euro 4. Het motorsuffix is dus waarschijnlijk 813 (zekerheid middel) en niet bevestigd; het motorplaatje beslist. De voorkatalysator volgt het emissieniveau (Euro 5). |
 | Verbruik en CO2 | 8,7 l/100 km gecombineerd, 201 g/km | Bevestigd | Fase 1 gaf 8,9 l/100 km en 210 g/km (persmap). |
 | Maten | Lengte 470 cm, wielbasis 276 cm, spoor voor 156 cm en achter 151 cm | Bevestigd | Gelijk aan 4.695 mm, 2.756 mm, 1.557 mm en 1.512 mm in cm afgerond; het model klopt hiermee. |
 | Massa | Ledig 1.381 kg, rijklaar 1.481 kg, toegestaan 2.017 kg | Bevestigd | Niet vergeleken met de 1.467 kg uit de persmap (fase 1, andere definitie, andere uitvoering). Geen onderdeelkeuze gebaseerd op het gewicht. |

@@ -1,4 +1,4 @@
-/* ===================== motor F4Rt 811: maten, aansluitpunten, blok, krukmechanisme, cilinderkop ===================== */
+/* ===================== motor F4Rt 813 (waarschijnlijk, zie beslissingen): maten, aansluitpunten, blok, krukmechanisme, cilinderkop ===================== */
 // Motorframe: oorsprong op de krukas-as, x langs de krukas (+x = vliegwiel- en versnellingsbakzijde = links in de auto),
 // y langs de cilinderas omhoog, z naar de inlaatzijde (die naar de voorkant van de auto wijst).
 // Renault telt cilinder, hoofdlager en kruktap 1 vanaf de vliegwielzijde; XC[0] is dus cilinder 1.
@@ -408,7 +408,7 @@ function buildHead() {
   XM.forEach((x, i) => [0.093, -0.093].forEach((z, j) => bridgeBolts.push(P(`Lagerbrugbout ${i * 2 + j + 1}`, hexBolt(0.045, 0.007), MAT.darkSteel, { d: 'Bout van de nokkenaslagerbrug.', p: [x, CAMY + ENG_BRIDGE_T, z], r: [PI, 0, 0], ex: [0, 0.04, 0] }))));
   [-0.2, -0.1, 0.1, 0.2].forEach((x, i) => [0.088, -0.088].forEach((z, j) => coverBolts.push(P(`Kleppendekselbout ${i * 2 + j + 1}`, hexBolt(0.03, 0.006), MAT.steel, { d: 'Bout van het kleppendeksel.', p: [x, ENG_COVER_TOP, z], r: [PI, 0, 0], ex: [0, 0.07, 0] }))));
   const camSealG = annulus(0.014, 0.0205, 0.007, 'x', 24), plugG = G.lathe('x', [[0, -0.003], [0.017, -0.003], [0.017, 0.003], [0, 0.003]], 20, 'engCamPlug');
-  return A('Cilinderkop', { d: 'Aluminium cilinderkop met twee bovenliggende nokkenassen in één lagerbrug, 16 kleppen met rolzwenkarmen (zoals bij de F4R-familie, aannemelijk voor de 811) en hydraulische klepstoters, vaste kleptiming (geen faseversteller), kleppendeksel en ontsteking.', ex: [0, 0.3, 0] }, [
+  return A('Cilinderkop', { d: 'Aluminium cilinderkop met twee bovenliggende nokkenassen in één lagerbrug, 16 kleppen met rolzwenkarmen (zoals bij de F4R-familie; voor de 813 niet apart bevestigd) en hydraulische klepstoters, vaste kleptiming (geen faseversteller; de bron, de persmap van 2007, noemt de 811 en voor de 813 is dat niet apart bevestigd), kleppendeksel en ontsteking.', ex: [0, 0.3, 0] }, [
     P('Cilinderkop (gietstuk)', merge([head, ...ports]), MAT.aluCast, { d: 'Aluminium cilinderkop met ingeperste klepzittingen en klepgeleiders, inlaatpoorten aan de voorzijde en uitlaatpoorten aan de achterzijde.', spec: [['Materiaal', 'aluminium'], ['Hoogte', '138,15 mm'], ['Kleppen', '16 (4 per cilinder)']], ex: [0, 0.09, 0] }),
     P('Koppakking', gasket, MAT.darkSteel, { d: 'Koppakking tussen blok en kop, geklemde dikte circa 0,65 mm (meerlaags staal aangenomen).', spec: [['Dikte geklemd', '0,65 mm']], ex: [0, 0.025, 0] }),
     A('Cilinderkopbouten', { d: 'Tien cilinderkopbouten (Torx); herbruikbaar tot 117,5 mm lengte onder de kop.', ex: [0, 0.27, 0] }, XM.flatMap((x, i) => [0.074, -0.074].map((z, j) => P(`Cilinderkopbout ${i * 2 + j + 1}`, headBolt, MAT.darkSteel, { d: 'Rekbout die kop en koppakking op het blok klemt.', p: [x, DECK + 0.084, z], r: [PI, 0, 0], ex: [0, 0.05 + (i % 2) * 0.012, 0] })))),

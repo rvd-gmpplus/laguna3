@@ -10,10 +10,10 @@ Bestanden die ik zelf heb gedownload stonden in de map `dl_manual/` van de scrat
 1. **De auto bestaat niet op elke markt.** In Frankrijk zijn bij de facelift (Parijs, oktober 2010) alle benzinemotoren geschrapt behalve de 3.5 V6 coupe, vervangen door een 2.0 16V 140 (M4R, ook E85). De Franse prijslijst van 4 januari 2011 toont voor de hatchback Initiale alleen dCi 150 en dCi 175 BVA6. De Britse brochure van oktober 2011 noemt als benzine alleen de 2.0 140. Autoweek noemt voor Nederland wel "2.0 16V T 170 Initiale, geleverd van oktober 2010 tot juli 2013" (alleen zoekresultaat gezien, de pagina zelf werd door een firewall geblokkeerd). Conclusie: de 2.0T 170 automaat Initiale in fase 2 is een Nederlandse (mogelijk meer exportmarkten) uitvoering. Status: Aannemelijk. Planete Renault noemt daarnaast voor 2013 een 2.0 TCe 180 (F4Rt) met 4Control; dat is een andere versie dan jouw 170 pk.
    - Bronnen: https://fr.wikipedia.org/wiki/Renault_Laguna_III ; https://www.planeterenault.com/UserFiles/files/doc/tarifs2011.pdf ; https://xr793.com/wp-content/uploads/2022/12/2011-Renault-Laguna-UK.pdf ; https://www.autoweek.nl/auto/59118/renault-laguna-2-0-16v-t-170-initiale (zoekresultaat)
 2. **4Control is op de Initiale (fase 2) een optie, geen standaard.** Planete Renault: "de serie sur GT 4Control et dorenavant en option sur Initiale". Franse prijslijst 2011: "Chassis 4Control (a 4 roues directrices) (sur Initiale)" 2000 euro, alleen gepubliceerd bij dCi 150 en dCi 175. Of deze exacte benzine-auto 4Control heeft: Niet gevonden. Standaardauto in het model = zonder 4Control; 4Control als schakelbare optie.
-3. **Besturing van de F4Rt 811 is hydraulisch met variabele assistentie (riemgedreven pomp), niet de elektro-hydraulische "GEP"** die op 2.0 140 (M4R) en de dCi 130 staat. Renault-persmap 2007. Status: Bevestigd voor "hydraulique variable"; riemaandrijving Aannemelijk.
+3. **Besturing van de F4Rt is hydraulisch met variabele assistentie (riemgedreven pomp), niet de elektro-hydraulische "GEP"** die op 2.0 140 (M4R) en de dCi 130 staat. Renault-persmap 2007 (die noemt de 811; voor de 813 niet apart bevestigd). Status: Bevestigd voor "hydraulique variable"; riemaandrijving Aannemelijk.
 4. **ABS-ring is geen getande ring.** Wielsnelheidssensoren zijn passief magnetoresistief met magnetisch doel (multipool-codeerring in de lagerafdichting). Het huidige model heeft een getande ring (`ABS-sensorring`). Status: Aannemelijk (Renault-opleidingsdocument voor achter, lagercatalogi "met magnetische ring" voor voor).
 5. **Achterschijf is 300 mm, niet 260 mm.** Code gebruikt buitenstraal 0.13 m; officieel 300/11 mm massief, dus straal 0.150 m. Voorschijf 296/26 geventileerd klopt met code (0.148).
-6. **AJ0 voor de F4Rt is nu officieel bevestigd**: Renault-persmap augustus 2007 noemt voor "2.0 turbo, F4Rt 811" uitsluitend automaat AJ0, 6 versnellingen, geen handbak (verhoogt de status in `specificaties-en-bronnen.md` van Aannemelijk naar Bevestigd).
+6. **AJ0 voor de F4Rt is nu officieel bevestigd**: Renault-persmap augustus 2007 noemt voor "2.0 turbo, F4Rt 811" uitsluitend automaat AJ0, 6 versnellingen, geen handbak (MR 415 geeft AJ0 ook bij de 813) (verhoogt de status in `specificaties-en-bronnen.md` van Aannemelijk naar Bevestigd).
 7. **Geen massage, geen stoelventilatie** in het Renault-handboek fase 2 (alleen verwarming, 3 standen). Status: Niet gevonden = niet aanwezig voor Laguna III.
 
 ## 1. Voorwielophanging
@@ -60,7 +60,7 @@ Bron voor typeopgaven: Renault dossier de presse augustus 2007 (https://www.plan
 | Schakelpaddles | Geen. Handmatig schakelen via de keuzehendel (naar links, voor = op, achter = af) | Bevestigd | Renault-handboek fase 2 "Automatic gearbox 2/3" |
 | Onder-stuurmodule | Stuurhoeksensor, wisser-/lichtschakelaar en wikkelcontact vormen een niet te scheiden geheel (1519) | Bevestigd | Dialogys-doc |
 
-## 3. Remmen (2.0 turbo 170, F4Rt 811)
+## 3. Remmen (2.0 turbo 170, F4Rt 813 waarschijnlijk, zie beslissingen)
 
 Alle waarden uit de Renault-persmap augustus 2007, bevestigd door de Franse brochure 2008 en onderdelenlijsten.
 
