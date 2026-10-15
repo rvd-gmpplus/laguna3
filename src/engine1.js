@@ -358,6 +358,8 @@ function engCoverGeo() {
     // vulhals: een opstaande hals in het deksel die door de afdekkap (bovenkant op 0,473 in het motorframe, zie engine3.js) heen steekt;
     // de donkere opening zit als apart onderdeel (Vulopening) boven op de hals en de dop zit er in de dichte stand overheen
     L.push(xf(G.cyl('y', 0.031, 0.031, ENG_NECK_TOP - ENG_COVER_TOP, 24), [-0.17, (ENG_COVER_TOP + ENG_NECK_TOP) / 2, -0.05]));
+    // scharnierlip op de rand van de hals: de as waar de gele dop omheen klapt (Olievuldop, open.pivot)
+    L.push(xf(G.box(0.0065, 0.011, 0.016), [-0.17 + 0.0335 - 0.00075, ENG_NECK_TOP - 0.0055, -0.05]));
     return merge(L);
   });
 }
@@ -429,7 +431,7 @@ function buildHead() {
       P('Kleppendekselpakking', coverGasket, MAT.rubber, { d: 'Rubber pakking onder het kleppendeksel.', ex: [0, -0.025, 0] }),
       A('Kleppendekselbouten', { d: 'Acht bouten van het kleppendeksel (aantal geschat).', ex: [0, 0.05, 0] }, coverBolts),
       P('Vulopening', xf(G.cyl('y', 0.021, 0.021, 0.002, 24), [-0.17, ENG_NECK_TOP + 0.001, -0.05]), MAT.blackGloss, { d: 'Open vulhals voor de motorolie in het kleppendeksel: een donkere opening in een opstaande ring; hier zit de dop in als hij dicht is.', ex: [0, 0.03, 0] }),
-      P('Olievuldop', merge([G.cyl('y', 0.0335, 0.0335, 0.016, 24), xf(G.box(0.04, 0.006, 0.01), [0, 0.011, 0])]), MAT.plateYellow, { d: 'Gele dop van de olievulopening; wordt gekanteld en opzij van de vulhals getild (opener, geschat 10 cm).', p: [-0.17, ENG_NECK_TOP + 0.008, -0.05], ex: [0, 0.09, 0], open: { type: 'slide', tilt: { pivot: [-0.17 + 0.0335, ENG_NECK_TOP, -0.05], axis: [0, 0, 1], angle: -0.3 }, move: [-0.1, 0.03, 0.0], needs: 'Motorkap', label: 'Olievuldop', look: { dir: [-0.2, 0.5, 0.9], nodes: ['Olievuldop', 'Deksel'] } } }),
+      P('Olievuldop', merge([G.cyl('y', 0.0335, 0.0335, 0.016, 24), xf(G.box(0.04, 0.006, 0.01), [0, 0.011, 0])]), MAT.plateYellow, { d: 'Gele dop van de olievulopening; klapt om een scharnierlip aan de rand van de vulhals omhoog en blijft aan de hals vastzitten (opener, schematisch: in werkelijkheid draai je de dop los).', p: [-0.17, ENG_NECK_TOP + 0.008, -0.05], ex: [0, 0.09, 0], open: { type: 'hinge', pivot: [-0.17 + 0.0335, ENG_NECK_TOP, -0.05], axis: [0, 0, 1], angle: -1.8, min: 1.2, needs: 'Motorkap', label: 'Olievuldop', look: { dir: [-0.2, 0.5, 0.9], nodes: ['Olievuldop', 'Deksel'] } } }),
     ]),
     buildIgnition(),
   ]);
