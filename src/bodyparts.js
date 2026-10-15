@@ -171,8 +171,8 @@ function buildDoor(s, isFront) {
   const z0 = isFront ? -0.143 : -1.266, z1 = isFront ? 0.903 : -0.153;
   const lo = isFront ? bodFDlo : bodRDloZ;
   const vr = z => [bodSY(z, lo(z) + 0.002), S4 - 0.0008];
-  const br = isFront ? bodDense(0.82, 0.903, 8) : bodDense(-1.266, -1.0, 26).concat(bodDense(-1.0, -0.62, 10), [-0.665]); // achterportier: fijn langs de wielbooguitsparing
-  const nO = isFront ? 40 : 84, nI = isFront ? 22 : 48;
+  const br = isFront ? bodDense(0.82, 0.903, 8) : bodDense(-1.266, -0.62, 14).concat([-0.665]);
+  const nO = 40, nI = 22; // het fijnere gaas langs de wielboog van herstelronde 2 kostte 12.000 driehoeken voor een kleine winst (budget Carrosserie 190.000)
   // achterste punt van de botsbalk: bij het achterportier vóór de naad om de wielboog; de balk ligt daar op 0,43 m en begint bij z -0,78, zodat hij niet onder de onderrand van het portier uitsteekt
   const zm = (z0 + z1) / 2, za = isFront ? z0 + 0.06 : -0.90, zb = z1 - 0.06;
   const outer = lowSide(s, z0, z1, nO, vr, 26, br);
