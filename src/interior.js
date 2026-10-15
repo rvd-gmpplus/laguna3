@@ -422,6 +422,12 @@ function intTrim() {
   const mat = (s, n) => intPart(`Vloermat ${n}`, G.rbox(0.4, 0.012, 0.5, 0.005), MAT.rubber, 'Losse vloermat voor de voetruimte.', { p: [s * 0.37, 0.256, 0.55], ex: [0, 0.1, 0.1] });
   const sill = (s, z, len, n) => intPart(`Instaplijst ${n} ${sideName(s)}`, G.rbox(0.05, 0.01, len, 0.004), MAT.plasticGrey, 'Kunststof dorpellijst bij het instappen.', { p: [s * (surfX(z, 0.26) - 0.05), 0.248, z], ex: [s * 0.1, 0.05, 0] });
   const curtain = s => { const pts = []; for (let i = 0; i <= 12; i++) { const z = 0.2 - 1.9 * i / 12, p = ghPt(z, 0.235); pts.push([s * Math.abs(p[0]) * 0.965, p[1] - 0.036, z]); } return intPart(`Gordijnairbag ${sideName(s)}`, tube(pts, 0.007, 36, 6), MAT.fabric, 'Opgerolde gordijnairbag langs de dakrand, naast de rand van de hemel, beschermt hoofd en schouders bij een zijdelingse botsing; in het model zonder dakrailbekleding, dus zichtbaar aan de dakrand.', { ex: [s * 0.1, 0.1, 0] }); };
+  // A-stijlbekleding: een smalle bekleding in de kleur van de hemel langs de A-stijl, over de afvoerslang van het dak heen (de slang volgt hetzelfde verloop)
+  const pillarCover = s => {
+    const pil = (z, q, dy) => { const h = bodGhHalf(z, q); return [s * (h[0] - 0.036), h[1] - 0.028 + dy, z]; };
+    const first = panP(0.205, s * 0.535, -0.032), second = panP(0.27, s * 0.585, -0.03); first[0] -= s * 0.006; second[0] -= s * 0.01;
+    return intPart(`A-stijlbekleding ${sideName(s)}`, tube([first, second, pil(0.4, 0.68, 0), pil(0.62, 0.66, -0.04), pil(0.85, 0.65, -0.12)], 0.014, 40, 6), MAT.fabric, 'Smalle bekleding van de A-stijl in de kleur van de hemel; verbergt de afvoerslang van het dak langs de stijl (verloop geschat).', { ex: [s * 0.12, -0.05, 0] });
+  };
   // hemel van het panoramadak: twee openingen (voorste glas z 0,22 tot -0,50, achterste glas z -0,58 tot -1,11, glas tot |x| 0,47);
   // de hemel laat 2 cm rondom het glas vrij, de afwerkring is een beige wulst op de rand van elke opening
   const linP = (z, w) => { const p = ghPt(z, w); return [p[0] * 0.965, p[1] - 0.028, p[2]]; };
@@ -476,6 +482,7 @@ function intTrim() {
     ]),
     intPart('Plafonnier achter', G.rbox(0.12, 0.016, 0.045, 0.006), MAT.plasticGrey, 'Middenlamp achter met lens, tussen het achterste glas en de achterrand van de hemel.', { p: [0, intRoofY(-1.133, 0) - 0.01, -1.133], r: [roofTilt(-1.133), 0, 0], ex: [0, 0.2, 0] }),
     curtain(1), curtain(-1),
+    pillarCover(1), pillarCover(-1),
     ]),
     A('Vloerbekleding', { d: 'Vloerbedekking met losse matten en de dorpellijsten.', ex: [0, -0.1, 0] }, [
     intPart('Vloerbedekking', carpet, MAT.carpet, 'Getufte vloerbedekking als dunne laag op de vloer en over de tunnel; de uitlaat in de tunnel blijft eronder vrij.', { ex: [0, -0.22, 0] }),
@@ -488,7 +495,7 @@ function intTrim() {
     ...intPlankCords(),
     ...[1, -1].map(s => intPart(`Achterplankluidspreker ${sideName(s)}`, merge([xf(G.cyl('y', 0.065, 0.065, 0.008, 24), [0, 0, 0]), xf(G.cyl('y', 0.04, 0.025, 0.02, 20), [0, -0.012, 0])]), MAT.darkSteel, 'Luidspreker in de achterplank (Bose, positie geschat).', Object.assign({ p: [s * 0.45, 1.01, -1.7], ex: [s * 0.1, 0.2, 0] }, intPlankOpen()))),
     intPart('Bagageruimtevloer', bodBootPlate(0.6, -1.8275, 0.3425, 0.015, 0.005, 0.025), MAT.carpet, 'Vloerplaat van de bagageruimte (450 tot 1377 liter), tussen de achterwielkasten en naast de veerkokers smaller. Het tapijtdeel klapt om de voorrand omhoog (geschat 62 graden, de achterklep opent eerst) en laat het opbergvak eronder zien.', { p: [0, 0.46, -1.8275], ex: [0, -0.12, -0.3],
-      open: intHinge([0, 0.46, -1.485], [1, 0, 0], 1.08, Object.assign({ min: 0.87, label: 'Bagageruimtevloer', look: { dir: [0.5, 0.8, -0.85], nodes: ['Bagageruimtevloer', 'Opbergbak bagageruimte', 'Renault Laguna III/Carrosserie/Achterklep/Klepafdichting'] } }, intTailgateNeed())) }),
+      open: intHinge([0, 0.46, -1.485], [1, 0, 0], 1.08, Object.assign({ min: 0.87, label: 'Bagageruimtevloer', look: { dir: [0.8, 0.55, -0.6], nodes: ['Bagageruimtevloer', 'Opbergbak bagageruimte', 'Renault Laguna III/Carrosserie/Achterklep/Klepafdichting'] } }, intTailgateNeed())) }),
     intPart('Opbergbak bagageruimte', (() => { const x = 0.4, z0 = -2.18, z1 = -1.62, y0 = 0.409, y1 = 0.45, t = 0.01, hh = y1 - y0, yc = (y0 + y1) / 2, zc = (z0 + z1) / 2, bx = intBox;
       return merge([bx(2 * x, 0.006, z1 - z0, [0, y0 + 0.003, zc]), bx(t, hh, z1 - z0, [x - t / 2, yc, zc]), bx(t, hh, z1 - z0, [-x + t / 2, yc, zc]),
         bx(2 * x, hh, t, [0, yc, z0 + t / 2]), bx(2 * x, hh, t, [0, yc, z1 - t / 2]), bx(0.008, hh - 0.004, z1 - z0 - 2 * t, [0.14, yc + 0.002, zc]), bx(0.008, hh - 0.004, z1 - z0 - 2 * t, [-0.14, yc + 0.002, zc]),
