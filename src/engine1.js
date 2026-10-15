@@ -13,6 +13,7 @@ const ENG_MJ_R = 0.0274, ENG_PIN_R = 0.024;           // hoofdlagertap Ø54,8, k
 const ENG_CAM_RB = 0.0165, ENG_ROLL_R = 0.0085;
 const ENG_BRIDGE_T = 0.024, ENG_COVER_Y = CAMY + ENG_BRIDGE_T + 0.001, ENG_COVER_H = 0.04;
 const ENG_COVER_TOP = ENG_COVER_Y + ENG_COVER_H;
+const ENG_NECK_TOP = 0.473 + 0.022;                    // bovenkant van de vulhals: 2,2 cm boven de afdekkap (die op 0,473 ligt)
 const XT = -0.245, XA = -0.345;                       // vlak van distributieriem en multiriem
 const ENG_PS = [-0.27, -0.005, 0.255], ENG_PS_R = 0.058;   // stuurpomp: oorsprong (pompas, x-niveau van de pomp), tipstraal van de poelie
 const ENG_TURBO = [0.07, 0.14, -0.255];               // hartlijn turbo-as (lagerhuis)
@@ -354,7 +355,9 @@ function engCoverGeo() {
     const cover = plan(cs, ENG_COVER_H); cover.translate(0, ENG_COVER_Y + ENG_COVER_H / 2, 0);
     const L = [cover];
     [-0.17, -0.088, 0, 0.088, 0.17].forEach(x => L.push(xf(G.box(0.008, 0.006, 0.16), [x, ENG_COVER_TOP + 0.002, 0])));
-    L.push(xf(G.cyl('y', 0.024, 0.024, 0.006, 20), [-0.17, ENG_COVER_TOP + 0.002, -0.05]));     // vulhals
+    // vulhals: een opstaande hals in het deksel die door de afdekkap (bovenkant op 0,473 in het motorframe, zie engine3.js) heen steekt;
+    // de donkere opening zit als apart onderdeel (Vulopening) boven op de hals en de dop zit er in de dichte stand overheen
+    L.push(xf(G.cyl('y', 0.031, 0.031, ENG_NECK_TOP - ENG_COVER_TOP, 24), [-0.17, (ENG_COVER_TOP + ENG_NECK_TOP) / 2, -0.05]));
     return merge(L);
   });
 }
@@ -425,7 +428,8 @@ function buildHead() {
       P('Deksel', engCoverGeo(), MAT.aluCast, { d: 'Deksel over de lagerbrug met doorvoeren voor de vier bobines.', ex: [0, 0, 0] }),
       P('Kleppendekselpakking', coverGasket, MAT.rubber, { d: 'Rubber pakking onder het kleppendeksel.', ex: [0, -0.025, 0] }),
       A('Kleppendekselbouten', { d: 'Acht bouten van het kleppendeksel (aantal geschat).', ex: [0, 0.05, 0] }, coverBolts),
-      P('Olievuldop', merge([G.cyl('y', 0.021, 0.021, 0.016, 20), xf(G.box(0.03, 0.006, 0.006), [0, 0.01, 0])]), MAT.plastic, { d: 'Dop van de olievulopening; wordt gekanteld omhoog en opzij getild uit de vulhals (opener, geschat 10 cm).', p: [-0.17, ENG_COVER_TOP + 0.011, -0.05], ex: [0, 0.09, 0], open: { type: 'slide', tilt: { pivot: [-0.17, ENG_COVER_TOP + 0.011, -0.05], axis: [0, 0, 1], angle: -0.3 }, move: [-0.14, 0.09, 0], needs: 'Motorkap', label: 'Olievuldop', look: { dir: [-0.7, 0.8, 0.5], nodes: ['Olievuldop'] } } }),
+      P('Vulopening', xf(G.cyl('y', 0.021, 0.021, 0.002, 24), [-0.17, ENG_NECK_TOP + 0.001, -0.05]), MAT.blackGloss, { d: 'Open vulhals voor de motorolie in het kleppendeksel: een donkere opening in een opstaande ring; hier zit de dop in als hij dicht is.', ex: [0, 0.03, 0] }),
+      P('Olievuldop', merge([G.cyl('y', 0.0335, 0.0335, 0.016, 24), xf(G.box(0.04, 0.006, 0.01), [0, 0.011, 0])]), MAT.plateYellow, { d: 'Gele dop van de olievulopening; wordt gekanteld en opzij van de vulhals getild (opener, geschat 10 cm).', p: [-0.17, ENG_NECK_TOP + 0.008, -0.05], ex: [0, 0.09, 0], open: { type: 'slide', tilt: { pivot: [-0.17 + 0.0335, ENG_NECK_TOP, -0.05], axis: [0, 0, 1], angle: -0.3 }, move: [-0.1, 0.03, 0.0], needs: 'Motorkap', label: 'Olievuldop', look: { dir: [-0.2, 0.5, 0.9], nodes: ['Olievuldop', 'Deksel'] } } }),
     ]),
     buildIgnition(),
   ]);
