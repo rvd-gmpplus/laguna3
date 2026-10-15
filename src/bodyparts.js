@@ -551,29 +551,38 @@ const bodStRot = (() => {
 const bodTgPv = [0, 1.362, -1.174], bodTgAng = 66 * PI / 180, bodGsA = [0.665, 1.22, -1.31], bodGsB = [0.60, 1.1838, -1.5903];
 // Tankklep rechtsachter: opening in het rechter achterscherm (z -1,780 tot -1,664, y 0,808 tot 0,912), scharnier aan de voorrand (z -1,664).
 const bodTkZ = [-1.78, -1.664], bodTkY = [0.808, 0.912];
+// Opkant in de bodemplaat onder de torsiebalk van de achteras (balk bovenkant y 0,326, z -1,258 tot -1,085): plateau y 0,345 tussen
+// z -1,28 en -1,08, hellende randen van 0,1 m; bij de opkant is de plaat smaller (tot |x| 0,44), zodat de vulpijp en de wand van de wielkast ernaast vrij blijven.
+const bodHumpZ = [-1.38, -1.28, -1.08, -0.98], bodHumpY = 0.345;
+const bodHumpT = z => z <= bodHumpZ[0] || z >= bodHumpZ[3] ? 0 : z < bodHumpZ[1] ? sstep((z - bodHumpZ[0]) / (bodHumpZ[1] - bodHumpZ[0])) : z <= bodHumpZ[2] ? 1 : sstep((bodHumpZ[3] - z) / (bodHumpZ[3] - bodHumpZ[2]));
+const bodHumpW = z => z <= bodHumpZ[0] - 0.1 || z >= bodHumpZ[3] + 0.1 ? 0 : z < bodHumpZ[0] ? sstep((z - bodHumpZ[0] + 0.1) / 0.1) : z <= bodHumpZ[3] ? 1 : sstep((bodHumpZ[3] + 0.1 - z) / 0.1);
+const bodHumpBreaks = (() => { const b = []; for (let i = 0; i <= 8; i++) b.push(bodHumpZ[0] + (bodHumpZ[1] - bodHumpZ[0]) * i / 8, bodHumpZ[2] + (bodHumpZ[3] - bodHumpZ[2]) * i / 8); for (let i = 0; i < 4; i++) b.push(bodHumpZ[0] - 0.1 + 0.025 * i, bodHumpZ[3] + 0.025 * (i + 1)); return b; })();
+// Voorste langsligger (44 mm breed, in z/y gevormd): achter het voorwiel op y 0,385 tot 0,485 (boven de aandrijfassen, onder het veerschotel van de
+// veerpoot), voor het wiel op y 0,30 tot 0,40 (de accu staat erop, de crashbox sluit erop aan); tussen z 1,72 en 1,80 loopt hij schuin
+const bodFrontRail = (() => { const g = extrude(shapeOf([[1.03, 0.385], [1.72, 0.385], [1.80, 0.30], [2.03, 0.30], [2.03, 0.40], [1.80, 0.40], [1.72, 0.485], [1.03, 0.485]]), 0.044); g.rotateY(-HALF); return g; })();
 function buildBody() {
   const L = 1, R = -1, both = f => [L, R].map(f);
   /* ================= carrosseriekooi ================= */
   // vloer en dorpels
   // bij de achterwielen loopt de vloer door tot net onder de binnenwand van de wielkast (x ca. 0,52), zodat er geen spleet
   // tussen vloerrand en wielkast is; vooraan loopt hij op volle breedte door tot onder het schutbord
-  const floorVR = z => { const c = bodSec(z), lim = inArch(z) && z < 0 ? S1 * 0.645 : S1; return [-lim, lim]; };
+  const floorVR = z => { const c = bodSec(z), lim = (inArch(z) && z < 0 ? S1 * 0.645 : S1) * (1 - 0.165 * bodHumpW(z)); return [-lim, lim]; };
   // tunnel van z -0,70 tot aan het schutbord (z 1,03), zodat de opening in de teenplaat in de tunnel uitkomt
   const tunnel = (() => { const sh = shapeOf([[-0.17, 0], [-0.12, 0.2], [0.12, 0.2], [0.17, 0], [0.16, -0.004], [0.115, 0.192], [-0.115, 0.192], [-0.16, -0.004]]); const g = extrude(sh, 1.73); g.rotateY(0); return g; })();
   const floorGrp = A('Vloer en dorpels', { d: 'Vloerplaat met middentunnel, dwarsbalken, langsliggers achter en de dorpels onder de portieren.', ex: [0, -0.32, 0] }, [
-    P('Bodemplaat', patch((z, p) => bodLow(z, p, 0.002), -1.75, 1.03, 51, floorVR, 12, ARCH_BREAKS), MAT.underbody, { d: 'Gelaste vloerplaat van de ruwbouw met bevestigingspunten voor stoelen en onderstel.', ex: [0, -0.1, 0] }),
+    P('Bodemplaat', patch((z, p) => { const q = bodLow(z, p, 0.002); q[1] += bodHumpT(z) * (bodHumpY - q[1]); return q; }, -1.75, 1.03, 51, floorVR, 12, ARCH_BREAKS.concat(bodHumpBreaks)), MAT.underbody, { d: 'Gelaste vloerplaat van de ruwbouw met bevestigingspunten voor stoelen en onderstel. Onder de achterbank zit een opkant (y 0,345 tussen z -1,28 en -1,08, hellende randen van 0,1 m) waar de torsiebalk van de achteras onderdoor loopt.', ex: [0, -0.1, 0] }),
     P('Middentunnel', tunnel, MAT.underbody, { d: 'Tunnel in de vloer voor uitlaat en leidingen.', p: [0, 0.2, 0.165], ex: [0, 0.08, 0] }),
     P('Kofferbakvloer', merge([bodBootPlate(0.65, -1.88, 0.36, 0.012, 0.004, 0.01), xf(G.cyl('y', 0.3, 0.27, 0.16, 28, true), [0, -0.08, 0]), xf(G.cyl('y', 0.27, 0.27, 0.006, 28), [0, -0.157, 0])]), MAT.underbody, { d: 'Vloer van de bagageruimte met de reservewielkuip (met bodem; de einddemper hangt eronder), tussen de achterwielkasten smaller.', p: [0, 0.4, -1.88], ex: [0, -0.06, -0.12] }),
     P('Dwarsbalk voorstoelen', G.box(1.34, 0.05, 0.08), MAT.paintIn, { d: 'Dwarsbalk onder de voorstoelen die vloer en dorpels verbindt.', p: [0, 0.225, 0.18], ex: [0, 0.06, 0.04] }),
-    P('Dwarsbalk achterbank', G.box(1.34, 0.06, 0.09), MAT.paintIn, { d: 'Dwarsbalk onder de achterbank.', p: [0, 0.24, -0.82], ex: [0, 0.06, -0.04] }),
-    ...both(s => P(`Langsligger achter ${sn(s)}`, G.box(0.08, 0.1, 0.9), MAT.paintIn, { d: 'Langsligger onder de bagageruimte die de achteras en de achterbumperbalk draagt.', p: [s * 0.52, 0.32, -1.72], ex: [s * 0.06, -0.06, 0] })),
+    ...both(s => P(`Dwarsbalk achterbank ${sn(s)}`, G.box(0.48, 0.05, 0.09), MAT.paintIn, { d: 'Dwarsbalk onder de achterbank, vóór de brandstoftank; per kant een helft, tegen de wand van de middentunnel.', p: [s * 0.43, 0.215, -0.535], ex: [s * 0.04, 0.06, -0.04] })),
+    ...both(s => P(`Langsligger achter ${sn(s)}`, G.box(0.08, 0.1, 0.685), MAT.paintIn, { d: 'Langsligger onder de bagageruimte die de achterbumperbalk draagt, tussen de reservewielkuip en de veerkokers (plaats schematisch).', p: [s * 0.385, 0.32, -1.7425], ex: [s * 0.06, -0.06, 0] })),
     ...both(s => P(`Dorpel ${sn(s)}`, lowSide(s, AXR + ARCH + 0.002, AXF - ARCH - 0.002, 36, z => [S1 * 0.55, bodSY(z, 0.302)], 6), MAT.paint, { d: 'Dorpel: dragend kokerprofiel onder de portieren.', ex: [s * 0.12, -0.04, 0] })),
     ...both(s => P(`Dorpelsierlijst ${sn(s)}`, bodMould(s, 0.208, 0.242, -0.95, 0.85, 0.010, 40), MAT.bodBright, { d: 'Zilveren sierlijst langs de onderdorpel (aluminiumlook).', ex: [s * 0.2, -0.02, 0] })),
     ...both(s => P(`Rubberlijn dorpelsierlijst ${sn(s)}`, bodMould(s, 0.194, 0.205, -0.94, 0.84, 0.0035, 28, 3), MAT.rubber, { d: 'Dunne zwarte rubberlijn onder de dorpelsierlijst.', ex: [s * 0.16, -0.03, 0] })),
   ]);
   // voorkop
   const frontGrp = A('Voorkop', { d: 'Dragende voorbouw: langsliggers met kreukelzones, veerpoottorens, schutbord, torpedobak, frontmodule en bumperbalk.', ex: [0, 0.05, 0.42] }, [
-    ...both(s => P(`Langsligger voor ${sn(s)}`, G.box(0.075, 0.12, 1.1), MAT.paintIn, { d: 'Kokerprofiel in de motorruimte dat botsenergie opvangt.', p: [s * 0.545, 0.34, 1.58], ex: [s * 0.08, 0, 0] })),
+    ...both(s => P(`Langsligger voor ${sn(s)}`, bodFrontRail, MAT.paintIn, { d: 'Kokerprofiel in de motorruimte dat botsenergie opvangt. Plaats en maten schematisch: het profiel is 44 mm breed en 100 mm hoog. Achter het voorwiel ligt het boven de aandrijfassen (y 0,385 tot 0,485), naast de zijdeksels van de versnellingsbak en binnen de veerpoot en de koppelstang van de stabilisator; voor het wiel zakt het naar y 0,30 tot 0,40, waar het de accu draagt en aansluit op de crashbox.', p: [s * 0.55, 0, 0], ex: [s * 0.08, 0, 0] })),
     ...both(s => P(`Crashbox ${sn(s)}`, G.rbox(0.09, 0.1, 0.13, 0.01), MAT.steel, { d: 'Kreukelelement tussen langsligger en bumperbalk; wordt na een lichte aanrijding vervangen.', p: [s * 0.545, 0.37, 2.11], ex: [s * 0.04, 0, 0.08] })),
     ...both(s => P(`Veerpoottoren ${sn(s)}`, merge([G.cyl('y', 0.095, 0.13, 0.26, 24, true), xf(G.cyl('y', 0.095, 0.095, 0.006, 24), [0, 0.13, 0])]), MAT.paintIn, { d: 'Bevestigingspunt van de veerpoot in de carrosserie.', p: [s * 0.6, 0.71, 1.33], ex: [s * 0.1, 0.06, 0] })),
     // achter de band sluit een wand onder de kuip de wielkast af naar het voorste eind van de dorpel en de A-stijlvoet

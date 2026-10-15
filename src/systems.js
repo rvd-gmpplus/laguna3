@@ -212,14 +212,14 @@ function buildExhaust() {
 
 /* ============================ brandstofsysteem ============================ */
 function buildFuel() {
-  const TX = 0.0, TY = 0.268, TZ = -0.9;             // hart van de tank
+  const TX = 0.0, TY = 0.268, TZ = -0.84;            // hart van de tank: z -0,975 tot -0,705, tussen de opkant in de bodemplaat (torsiebalk) en de middentunnel
   const fx = surfX(-1.72, 0.86);
-  const tankGeo = cache('sysTank', () => merge([G.rbox(0.86, 0.17, 0.36, 0.05), xf(G.box(0.66, 0.012, 0.24), [0, 0.088, 0])]));
-  const tank = A('Brandstoftank', { d: 'Kunststof tank van 66 liter onder de achterbank, vóór de achteras, met twee stalen spanbanden, rubber strips en een hitteschild.', spec: [['Inhoud', '66 l']], ex: [0, -0.2, 0] }, [
+  const tankGeo = cache('sysTank2', () => merge([G.rbox(0.86, 0.17, 0.27, 0.05), xf(G.box(0.66, 0.012, 0.18), [0, 0.088, 0])]));
+  const tank = A('Brandstoftank', { d: 'Kunststof tank van 66 liter onder de achterbank, vóór de achteras, met twee stalen spanbanden, rubber strips en een hitteschild. De vorm en de maten van het model zijn schematisch en kleiner dan de echte tank.', spec: [['Inhoud', '66 l']], ex: [0, -0.2, 0] }, [
     P('Tank', tankGeo, MAT.plastic, { d: 'Zadelvormige kunststof tank van 66 liter (vorm schematisch).', p: [TX, TY, TZ] }),
-    ...[0.2, -0.2].map((dz, i) => P(`Spanband ${i ? 'achter' : 'voor'}`, merge([G.box(0.88, 0.006, 0.04), xf(G.box(0.006, 0.18, 0.04), [0.438, 0.09, 0]), xf(G.box(0.006, 0.18, 0.04), [-0.438, 0.09, 0])]), MAT.darkSteel, { d: 'Stalen spanband onder de tank, aan beide kanten aan de vloer geschroefd.', p: [TX, TY - 0.088, TZ + dz], ex: [0, -0.14, dz * 0.8] })),
-    ...[[0.438, 0.2], [-0.438, 0.2], [0.438, -0.2], [-0.438, -0.2]].map(([dx, dz], i) => P(`Spanbandbout ${i + 1}`, hexBolt(0.02, 0.008, 'y'), MAT.steel, { d: 'Bout die de spanband aan de vloer bevestigt.', p: [TX + dx, TY + 0.1, TZ + dz], ex: [dx * 0.2, 0.14, dz * 0.4] })),
-    P('Tankstrips', merge([xf(G.box(0.76, 0.006, 0.03), [0, 0, 0.1]), xf(G.box(0.76, 0.006, 0.03), [0, 0, -0.1])]), MAT.rubber, { d: 'Rubber strips tussen tank en vloer tegen trillingen en piepen.', p: [TX, TY + 0.092, TZ], ex: [0, 0.1, 0] }),
+    ...[0.1, -0.1].map((dz, i) => P(`Spanband ${i ? 'achter' : 'voor'}`, merge([xf(G.box(0.18, 0.006, 0.04), [0.35, 0, 0]), xf(G.box(0.36, 0.006, 0.04), [-0.26, 0, 0]), xf(G.box(0.006, 0.16, 0.04), [0.438, 0.08, 0]), xf(G.box(0.006, 0.16, 0.04), [-0.438, 0.08, 0])]), MAT.darkSteel, { d: 'Stalen spanband onder de tank, aan beide kanten aan de vloer geschroefd. In twee stukken: in het midden is hij onderbroken voor de uitlaatpijp en het hitteschild.', p: [TX, TY - 0.088, TZ + dz], ex: [0, -0.14, dz * 0.8] })),
+    ...[[0.438, 0.1], [-0.438, 0.1], [0.438, -0.1], [-0.438, -0.1]].map(([dx, dz], i) => P(`Spanbandbout ${i + 1}`, hexBolt(0.02, 0.008, 'y'), MAT.steel, { d: 'Bout die de spanband aan de vloer bevestigt.', p: [TX + dx, TY + 0.077, TZ + dz], ex: [dx * 0.2, 0.14, dz * 0.4] })),
+    P('Tankstrips', merge([xf(G.box(0.76, 0.006, 0.03), [0, 0, 0.115]), xf(G.box(0.76, 0.006, 0.03), [0, 0, -0.115])]), MAT.rubber, { d: 'Rubber strips tussen tank en vloer tegen trillingen en piepen.', p: [TX, TY + 0.092, TZ], ex: [0, 0.1, 0] }),
   ]);
   // pompmodule in de tank
   const MP = [-0.25, TY + 0.088, TZ];
@@ -258,7 +258,7 @@ function buildFuel() {
     patch((z, t) => [-tkFloor, lerp(bodTkY[0], bodTkY[1], t), z], bodTkZ[0], bodTkZ[1], 6, () => [0, 1], 6),
   ]));
   const vul = A('Vulsysteem', { d: 'Vulpijp met capless vulhals en tankklep in het rechter achterscherm. De vulpijp loopt boven het achterwiel langs naar de tank. Een dop is er niet: in de vulhals zit een klep die het pistool opent.', ex: [-0.2, 0.1, -0.1] }, [
-    P('Vulpijp', tube([[-0.426, 0.30, -1.0], [-0.458, 0.304, -1.01], [-0.467, 0.34, -1.07], [-0.467, 0.3475, -1.14], [-0.467, 0.3475, -1.2], [-0.455, 0.37, -1.26], [-0.447, 0.40, -1.32], [-0.40, 0.45, -1.43], [-0.40, 0.60, -1.52], [-0.44, 0.74, -1.58], [-0.62, 0.80, -1.62], [-0.76, 0.84, -1.66], [-tkNeck, flapY, flapZ]], 0.0185, 64, 10), MAT.plastic, { d: 'Kunststof vulpijp van de vulhals naar de tank.', ex: [-0.04, 0, 0] }),
+    P('Vulpijp', tube([[-0.426, 0.30, -0.84], [-0.458, 0.304, -0.86], [-0.467, 0.32, -0.93], [-0.467, 0.34, -1.0], [-0.467, 0.3475, -1.07], [-0.467, 0.3475, -1.14], [-0.467, 0.3475, -1.2], [-0.455, 0.37, -1.26], [-0.447, 0.40, -1.32], [-0.40, 0.45, -1.43], [-0.40, 0.60, -1.52], [-0.44, 0.74, -1.58], [-0.62, 0.80, -1.62], [-0.76, 0.84, -1.66], [-tkNeck, flapY, flapZ]], 0.0185, 64, 10), MAT.plastic, { d: 'Kunststof vulpijp van de vulhals naar de tank.', ex: [-0.04, 0, 0] }),
     P('Vulhals', merge([annulus(0.0245, 0.029, tkMouth - tkNeck, 'x', 24), xf(G.torus('x', 0.0268, 0.0036, 24, 6), [-(tkMouth - tkNeck) / 2, 0, 0])]), MAT.plastic, { d: 'Capless vulhals achter de tankklep: een korte holle hals met een rand waarin het pistool past; de zwarte vulklep zit er een centimeter in.', p: [-(tkNeck + tkMouth) / 2, flapY, flapZ], ex: [-0.1, 0, 0] }),
     P('Vulklep', merge([G.cyl('x', 0.0235, 0.0235, 0.003, 20), xf(G.cyl('z', 0.0025, 0.0025, 0.03, 8), [0.002, 0.022, 0])]), MAT.blackGloss, { d: 'Capless vulklep (klep B in de vulpijp, HB2 1.73): geen dop en geen bandje. Een veer houdt de klep dicht; het pistool duwt hem open. Niet met de vingers indrukken. Op de benzineversie laat een restrictor alleen een loodvrij pistool toe (vorm schematisch).', p: [-(tkMouth - 0.012), flapY, flapZ], ex: [-0.2, 0.05, 0] }),
     P('Vulklepring', G.torus('x', 0.0238, 0.0032, 24, 6), MAT.steel, { d: 'Metalen ring om de zwarte vulklep: zo is de capless vulhals van buiten af te lezen (vorm schematisch).', p: [-(tkMouth - 0.0105), flapY, flapZ], ex: [-0.22, 0.05, 0] }),
@@ -268,7 +268,7 @@ function buildFuel() {
       P('Tankklep buitenkant', flapOut, MAT.paint, { d: 'Buitenkant van de tankklep in carrosseriekleur, licht bol zoals het scherm, met de randen.', ex: [-0.04, 0.01, 0] }),
       P('Tankklep binnenzijde', flapIn, MAT.plasticGrey, { d: 'Grijze kunststof binnenzijde van de tankklep, zichtbaar als de klep openstaat.', ex: [0.04, 0, 0] }),
     ]),
-    sysClamp('Klem vulpijp', [-0.44, 0.304, -1.004], V3(1, 0, 0), 0.0185, V3(0.5, 0, 0)),
+    sysClamp('Klem vulpijp', [-0.44, 0.302, -0.845], V3(1, 0, 0), 0.0185, V3(0.5, 0, 0)),
   ]);
   // leidingen
   const rail = ENG_PORTS.fuelRailIn;
@@ -277,11 +277,11 @@ function buildFuel() {
     ...[[-0.42, 0.13, -0.3], [-0.42, 0.13, 0.2], [-0.4, 0.135, 0.65]].map((p, i) => P(`Leidingclip ${i + 1}`, G.box(0.016, 0.012, 0.02), MAT.plastic, { d: 'Kunststof clip die de brandstofleiding aan de vloer klikt.', p, ex: [0, 0.06, 0] })),
   ]);
   const evap = A('Dampsysteem', { d: 'Opvang van benzinedampen (EVAP): het koolstoffilter vangt dampen uit de tank op en laat ze via het spoelventiel door de motor verbranden. De leiding naar het inlaatspruitstuk is niet weergegeven.', ex: [-0.1, -0.1, -0.1] }, [
-    P('Koolstoffilter', merge([G.rbox(0.09, 0.2, 0.09, 0.02), xf(G.cyl('z', 0.008, 0.008, 0.05, 8), [0, 0.07, 0.065])]), MAT.plastic, { d: 'Houder met actieve kool die benzinedampen uit de tank vasthoudt.', p: [-0.4, 0.2, -1.22], ex: [-0.08, -0.1, 0] }),
-    P('Spoelventiel', merge([G.cyl('y', 0.014, 0.014, 0.05, 12), xf(G.rbox(0.02, 0.014, 0.02, 0.004), [0, 0.03, 0.016])]), MAT.darkSteel, { d: 'Magneetventiel dat de dampen gestuurd naar het inlaatspruitstuk laat stromen.', p: [-0.32, 0.22, -1.22], ex: [0.06, 0.1, 0] }),
-    P('Rolloverventiel', G.cyl('y', 0.014, 0.014, 0.03, 10), MAT.plastic, { d: 'Ventiel op de tank dat bij kantelen de dampleiding afsluit.', p: [0.2, TY + 0.1, TZ + 0.1], ex: [0, 0.14, 0] }),
-    P('Dampleiding', tube([[0.2, TY + 0.115, TZ + 0.1], [0.3, 0.36, -1.0], [-0.1, 0.37, -1.12], [-0.38, 0.27, -1.2], [-0.4, 0.22, -1.22]], 0.007, 28, 6), MAT.sysHose, { d: 'Dunne kunststof slang van de tank naar het koolstoffilter.', ex: [0, 0.1, 0] }),
-    P('Spoelleiding', tube([[-0.4, 0.22, -1.22], [-0.36, 0.22, -1.22], [-0.32, 0.22, -1.22]], 0.006, 6, 6), MAT.sysHose, { d: 'Korte slang van het koolstoffilter naar het spoelventiel.', ex: [0, 0.08, 0] }),
+    P('Koolstoffilter', merge([G.rbox(0.06, 0.17, 0.10, 0.015), xf(G.cyl('z', 0.008, 0.008, 0.05, 8), [0, 0.06, 0.06])]), MAT.plastic, { d: 'Houder met actieve kool die benzinedampen uit de tank vasthoudt. Staat links naast de tank tegen de wand van de wielkast, boven de vloerplaat (plaats en maten schematisch).', p: [0.468, 0.271, -0.84], ex: [-0.08, -0.1, 0] }),
+    P('Spoelventiel', merge([G.cyl('y', 0.014, 0.014, 0.05, 12), xf(G.rbox(0.02, 0.014, 0.02, 0.004), [0, 0.03, 0.016])]), MAT.darkSteel, { d: 'Magneetventiel dat de dampen gestuurd naar het inlaatspruitstuk laat stromen.', p: [0.468, 0.30, -0.735], ex: [0.06, 0.1, 0] }),
+    P('Rolloverventiel', G.cyl('y', 0.014, 0.014, 0.03, 10), MAT.plastic, { d: 'Ventiel op de tank dat bij kantelen de dampleiding afsluit.', p: [0.41, 0.352, TZ - 0.05], ex: [0, 0.14, 0] }),
+    P('Dampleiding', tube([[0.41, 0.358, -0.89], [0.425, 0.345, -0.865], [0.436, 0.328, -0.85]], 0.007, 20, 6), MAT.sysHose, { d: 'Dunne kunststof slang van het rolloverventiel op de tank naar het koolstoffilter.', ex: [0, 0.1, 0] }),
+    P('Spoelleiding', tube([[0.468, 0.23, -0.79], [0.468, 0.23, -0.765], [0.468, 0.26, -0.745]], 0.006, 12, 6), MAT.sysHose, { d: 'Korte slang van het koolstoffilter naar het spoelventiel.', ex: [0, 0.08, 0] }),
   ]);
   return A('Brandstofsysteem', { d: 'Brandstoftank van 66 liter onder de achterbank met pompmodule, vulsysteem aan de rechterzijde, toevoerleiding naar de motor en het dampsysteem.', spec: [['Tankinhoud', '66 l'], ['Brandstof', 'loodvrije benzine (Euro 95)'], ['Tankklep', 'rechterachterscherm']], ex: [-0.5, -0.5, -1.0] }, [tank, pompmodule, vul, toevoer, evap]);
 }

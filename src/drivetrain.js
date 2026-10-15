@@ -389,11 +389,11 @@ function drvHousing() {
     A('Zijdeksel', { d: 'Deksel aan het eind van de bak met de water-ATF-koeler en de beide koelleidingen; draagt ook de zuiger van de 2-6-rem en het vaste zonnewiel van de reductieset.', ex: [0.34, 0.5, 0.2] }, [
       P('Zijdeksel (deksel)', cover, MAT.aluCast, { d: 'Gegoten deksel met flens.', ex: [0, 0.0, 0.0001] }),
       P('Zijdekselbouten', rimBolts('drvBZij', 12, 0.129, 0.4045, 0.0), MAT.darkSteel, { d: 'Torx-bouten van het zijdeksel.', ex: [0.12, 0, 0] }),
-      P('Water-ATF-koeler', cooler, MAT.alu, { d: 'In het carter geïntegreerde koeler: de automaatolie wordt door het koelwater gekoeld en snel op temperatuur gebracht.', p: [0.436, 0.05, 0.0], ex: [0.1, 0.1, 0.0] }),
-      P('Koelleiding IN', tube([[0.436, 0.05, 0.045], [0.436, 0.05, 0.085], [0.43, 0.075, 0.13], [0.42, 0.095, 0.17]], 0.006, 24, 8), MAT.steel, { d: 'Koelleiding van de bak naar de koeler (IN).', ex: [0.1, 0.1, 0.12] }),
-      P('Koelleiding UIT', tube([[0.436, 0.05, -0.045], [0.436, 0.05, -0.085], [0.43, 0.075, -0.13], [0.42, 0.095, -0.17]], 0.006, 24, 8), MAT.steel, { d: 'Koelleiding van de koeler terug naar de bak (UIT).', ex: [0.1, 0.1, -0.12] }),
-      P('Holle bout IN', drvBolt(0.012, 0.012, 'x'), MAT.drvBrass, { d: 'Holle bout met O-ringen waarmee de leiding aan de koeler zit.', p: [0.4565, 0.05, 0.045], ex: [0.2, 0.1, 0.1] }),
-      P('Holle bout UIT', drvBolt(0.012, 0.012, 'x'), MAT.drvBrass, { d: 'Holle bout met O-ringen waarmee de leiding aan de koeler zit.', p: [0.4565, 0.05, -0.045], ex: [0.2, 0.1, -0.1] }),
+      P('Water-ATF-koeler', cooler, MAT.alu, { d: 'In het carter geïntegreerde koeler: de automaatolie wordt door het koelwater gekoeld en snel op temperatuur gebracht. De plaats op het zijdeksel is schematisch (onder de voorste langsligger).', p: [0.436, -0.07, 0.0], ex: [0.1, 0.1, 0.0] }),
+      P('Koelleiding IN', tube([[0.436, -0.07, 0.045], [0.436, -0.07, 0.075], [0.43, -0.075, 0.10], [0.425, -0.085, 0.12]], 0.006, 24, 8), MAT.steel, { d: 'Koelleiding van de bak naar de koeler (IN).', ex: [0.1, 0.1, 0.12] }),
+      P('Koelleiding UIT', tube([[0.436, -0.07, -0.045], [0.436, -0.07, -0.075], [0.43, -0.075, -0.10], [0.425, -0.085, -0.12]], 0.006, 24, 8), MAT.steel, { d: 'Koelleiding van de koeler terug naar de bak (UIT).', ex: [0.1, 0.1, -0.12] }),
+      P('Holle bout IN', drvBolt(0.012, 0.012, 'x'), MAT.drvBrass, { d: 'Holle bout met O-ringen waarmee de leiding aan de koeler zit.', p: [0.4565, -0.07, 0.045], ex: [0.2, 0.1, 0.1] }),
+      P('Holle bout UIT', drvBolt(0.012, 0.012, 'x'), MAT.drvBrass, { d: 'Holle bout met O-ringen waarmee de leiding aan de koeler zit.', p: [0.4565, -0.07, -0.045], ex: [0.2, 0.1, -0.1] }),
     ]),
     A('Klepblokdeksel', { d: 'Dun deksel onder het huis dat het klepblok afsluit; geen klassieke onderpan met filter, want de zeef zit op de oliepomp.', ex: [0.0, -0.55, 0.0] }, [
       P('Deksel klepblok', G.rbox(0.23, 0.008, 0.18, 0.003), MAT.aluCast, { d: 'Stalen of aluminium afdekplaat.', p: [0.27, -0.2145, 0.03], ex: [0, 0.0, 0.0001] }),
