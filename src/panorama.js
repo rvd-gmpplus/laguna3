@@ -76,6 +76,11 @@ function panFollow(zc, ze, lev) {
 }
 // scherm in lamellen: elke lamel schuift (draait om de dakkrommingsas) naar de cassette; zo verdwijnt het scherm in een stapel, zoals een
 // rolgordijn in zijn cassette. De laatste lamel (bij de cassette) staat vast; de lamellen verder weg liggen hoger zodat ze er overheen schuiven.
+// rechte afstand die het midden van een lamel aflegt (zoals opentest de slag meet); de ondergrens van het scherm is 0,82 maal die slag
+function panTravel(l) {
+  const w = l.za - l.zb, zc = (l.za + l.zb) / 2, ze = zc - l.steps * w;
+  return Math.hypot(zc - ze, panP(zc, 0, l.lev)[1] - panP(ze, 0, l.lev)[1]);
+}
 function panScreen(z0, z1, n, level) {
   const w = (z0 - z1) / n, out = [];
   for (let i = 0; i < n; i++) {
@@ -95,7 +100,7 @@ function buildPanorama() {
   const aStart = Math.atan((panP(PAN_GF[0], 0)[1] - panP(PAN_GF[1], 0)[1]) / Ls) - tiltAng, aEnd = Math.atan((panP(-0.40, 0)[1] - panP(-1.10, 0)[1]) / 0.70);
   const glassArc = panArc([PAN_GF[0], panP(PAN_GF[0], 0, gl)[1]], [-0.40, panP(-0.40, 0, gl + 0.04)[1]], aStart - aEnd);
   const glassF = A('Glaspaneel voor', { d: 'Beweegbaar voorste glaspaneel van het panoramadak. Kantelt eerst met de achterrand 4,5 cm omhoog (stand A) en schuift dan 0,60 m naar achteren boven het vaste achterste paneel (stand B tot D, afstanden geschat). Het zonnescherm moet eerst open.', ex: [0, 0.22, 0.1],
-    open: { type: 'slide', label: 'Schuifdak', min: 0.45, needs: 'Zonnescherm voor', tilt: { pivot: [0, panP(PAN_GF[0], 0)[1], PAN_GF[0]], axis: [1, 0, 0], angle: tiltAng, part: 0.2 }, arc: { pivot: glassArc.pivot, axis: glassArc.axis, angle: glassArc.angle },
+    open: { type: 'slide', label: 'Schuifdak', min: 0.48, needs: 'Zonnescherm voor', tilt: { pivot: [0, panP(PAN_GF[0], 0)[1], PAN_GF[0]], axis: [1, 0, 0], angle: tiltAng, part: 0.2 }, arc: { pivot: glassArc.pivot, axis: glassArc.axis, angle: glassArc.angle },
       look: panLook } }, panGlass(PAN_GF[0], PAN_GF[1], 'voor', 'voorste'));
   const glassR = A('Glaspaneel achter', { d: 'Vast achterste glaspaneel van het panoramadak, op de dakplaat gelijmd. Ligt boven de achterbank; het schuifglas schuift er in open stand overheen.', ex: [0, 0.2, -0.1] }, panGlass(PAN_GR[0], PAN_GR[1], 'achter', 'achterste'));
   /* ---- dwarsbalk, omlijsting, afdichtingen, frame en rails ---- */
@@ -127,7 +132,7 @@ function buildPanorama() {
     const strip = l => panSlab(l.zb, l.za, -0.435, 0.435, l.lev - 0.001, l.lev, 1, 8);
         const lead = lam[0];
     const leader = A(`Zonnescherm ${nm}`, { d: `Handbediend rolgordijn onder het ${nm}e glaspaneel, in dit model een stapel lamellen die in de cassette schuift (schematisch). Met de zwarte greep open of dicht; het dak werkt alleen met geopend scherm.`, ex: [0, -0.12, nm === 'voor' ? 0.1 : -0.1],
-      open: { ...lead.open, label: `Zonnescherm ${nm}`, look: panLook } }, [
+      open: { ...lead.open, min: 0.82 * panTravel(lead), label: `Zonnescherm ${nm}`, look: panLook } }, [
       P(`Schermdoek ${nm} 1`, strip(lead), MAT.fabric, { d: 'Eerste lamel van het zonnescherm, met de greep.', ex: [0, -0.04, 0] }),
       P(`Schermgreep ${nm}`, G.rbox(0.05, 0.005, 0.012, 0.002), MAT.bodPillar, { d: 'Kleine zwarte greep onder de voorrand van het zonnescherm om het te openen en te sluiten; blijft bij een geopend scherm net voor de dwarsrand van het dakframe.', p: panP(lead.za - 0.0045, 0, lead.lev - 0.0035), ex: [0, -0.06, 0] }),
     ]);
