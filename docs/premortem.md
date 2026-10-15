@@ -133,7 +133,7 @@ Voor golf 4 (openmodus, panoramadak, onderdeelnummers en kennisverwerking) liepe
 | B3, een bron valt weg | Het Firecrawl-tegoed raakte op. De bouwsessie stapte over op Jina en curl. De Renault-catalogi (partsouq, 7zap) zaten achter Cloudflare, dus Renault-nummers komen vooral uit OE-lijsten van artikelen van andere fabrikanten. |
 | A7, spookbatch | De proef vond een spookbatch bij een telescoop. Hersteld in `a116db9`. |
 | A4, frametijd en tekenopdrachten met alles open | De frametijd p95 was 13,8 ms bij `openAll(0)`. Door per object bij te werken is dat 1,4 ms. |
-| B5, paden verschuiven | 11 paden waren fout door een schuine streep in de naam "ABS/ESP-unit". Opgelost met een kaart op het volle pad en een RENAME-lijst in `tools/orkestratie/build_pn.py`. |
+| B5, paden verschuiven | 11 paden waren fout door een schuine streep in de naam "ABS/ESP-unit". Opgelost met een kaart op het volle pad in `src/app2.js` (de app splitst paden niet meer op de schuine streep); de RENAME-lijst in `tools/orkestratie/build_pn.py` dient voor hernoemde knopen. |
 | Presets met oude openernamen | Hersteld in `8845351`. |
 
 Controle van de verificatiepoort: de verifieerder kreeg in elk van de vijf hoofdplakken drie lokvogels, verzonnen of verkeerde nummers. Alle 15 zijn afgewezen. De proefronde en de panoramadakplak hadden geen lokvogels.

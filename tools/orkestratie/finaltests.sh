@@ -27,7 +27,7 @@ run lint python3 build.py --lint
   run inner python3 tools/ui_inner.py --open --strict
   run opentest python3 tools/opentest.py --strikt-min --out "$OUT/opentest" ) &
 ( run itest env ITEST_GATES=1 python3 tools/itest.py
-  run tri python3 tools/tri.py --gate
+  run tri python3 tools/tri.py --gate --json "$OUT/tri.json"
   run pub python3 tools/pubsmoke.py
   run stats python3 tools/orkestratie/stats.py "$R" "$OUT/stats.json" ) &
 wait
