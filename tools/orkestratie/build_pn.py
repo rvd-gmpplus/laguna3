@@ -130,6 +130,15 @@ for p, rows in MR_INFO.items():
         report['missing_paths'].append('mr-info: ' + p); continue
     info.setdefault(p, []).extend(rows)
 
+# correcties van de orkestrator op namen uit het onderzoek (tegen het werkplaatshandboek)
+UNIT_FIX = {
+    'S4-carrosserie-elektra-interieur:U_BONNET': ('Motorkap (kaal)', 'De originele kap is volgens het werkplaatshandboek MR 415 (48A) van aluminium; het materiaal van de kappen van andere merken is niet vastgesteld.'),
+}
+for uid, (name, add) in UNIT_FIX.items():
+    if uid in units:
+        units[uid]['n'] = name
+        units[uid]['note'] = (units[uid].get('note', '') + ' ' + add).strip()
+
 used = set(v[0] for v in pmap.values())
 units = {k: v for k, v in units.items() if k in used}
 meta = {'vehicle': 'Renault Laguna III hatchback (BT0/1) 2.0 16V Turbo 170 pk, F4R 811, automaat AJ0', 'tecdoc': 23370,
