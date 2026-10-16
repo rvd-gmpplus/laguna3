@@ -109,6 +109,7 @@ function renderPanel() {
 // 'zelf': het onderdeel is zelf de verkoopeenheid; 'deel' of 'set': het zit in de eenheid en wordt daarmee besteld.
 // Een knoop zonder regel is niet onderzocht. De pagina toont alleen wat er staat en voegt zelf geen nummers toe.
 let uiPnIdx = new Map(), uiPnUnitNode = new Map(), uiPnBad = [], uiPnCov = new Map();
+const UI_LINK_REL = 'noopener noreferrer'; // R5: cataloguslinks zonder opener en zonder verwijzende pagina (Referer)
 const uiPnCompact = t => String(t).toLowerCase().replace(/[\s.\-\/]/g, '');
 const uiPnHasNum = r => !!r && ((r.u.oe && r.u.oe.length > 0) || (r.u.am && r.u.am.length > 0));
 function uiPnBuild() {
@@ -170,7 +171,7 @@ function renderPn(n) {
     const bronnen = (kz.s || []).filter(x => /^https:\/\//i.test(x));
     if (bronnen.length) {
       const d = mk('div', 'pn-src');
-      for (const url of bronnen) { const a = mk('a', null, url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]); a.href = url; a.target = '_blank'; a.rel = 'noopener'; d.appendChild(a); }
+      for (const url of bronnen) { const a = mk('a', null, url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]); a.href = url; a.target = '_blank'; a.rel = UI_LINK_REL; d.appendChild(a); }
       k.appendChild(d);
     }
     if (PN_DATA.meta && PN_DATA.meta.auto) k.appendChild(mk('small', null, PN_DATA.meta.auto));
@@ -201,7 +202,7 @@ function renderPn(n) {
   if (links && links.length) {
     box.appendChild(mk('h4', null, 'Bronnen'));
     const d = mk('div', 'pn-src');
-    for (const [url, label] of links) { const a = mk('a', null, label || url); a.href = url; a.target = '_blank'; a.rel = 'noopener'; d.appendChild(a); }
+    for (const [url, label] of links) { const a = mk('a', null, label || url); a.href = url; a.target = '_blank'; a.rel = UI_LINK_REL; d.appendChild(a); }
     box.appendChild(d);
   }
   if (u && u.info && u.info.length) {
@@ -217,7 +218,7 @@ function renderPn(n) {
     for (const [label, waarde, bron, zeker] of inf) {
       dl.appendChild(mk('dt', null, label));
       const dd = mk('dd', null, waarde);
-      if (bron || zeker) { const sm = mk('small', null, (zeker ? zeker + (bron ? ', ' : '') : '')); if (bron && /^https?:\/\//i.test(bron)) { const a = mk('a', null, 'bron'); a.href = bron; a.target = '_blank'; a.rel = 'noopener'; sm.appendChild(a); } else if (bron) sm.appendChild(document.createTextNode(bron)); dd.appendChild(sm); }
+      if (bron || zeker) { const sm = mk('small', null, (zeker ? zeker + (bron ? ', ' : '') : '')); if (bron && /^https?:\/\//i.test(bron)) { const a = mk('a', null, 'bron'); a.href = bron; a.target = '_blank'; a.rel = UI_LINK_REL; sm.appendChild(a); } else if (bron) sm.appendChild(document.createTextNode(bron)); dd.appendChild(sm); }
       dl.appendChild(dd);
     }
     box.appendChild(dl);
