@@ -11,7 +11,8 @@ Controles (zie de app-brief):
   4  Gemonteerd zet elke knoop terug op zijn basispositie (< 1e-6 m)
   5  Stap terug na uitklappen, inklappen, preset en schuif herstelt de vorige state()
   6  schuif 0 / 1 / 0,5 op de werkgroep
-  7  elke preset: checkPresets() leeg, onderwerp binnen het vrije beeld en minstens 12 % ervan
+  7  elke preset: checkPresets() leeg, onderwerp binnen het vrije beeld en minstens 12 % ervan, en nog steeds binnen het
+     vrije beeld 1,5 s na de preset (golf 5b-3, 0.3f)
   8  labels overlappen niet, niet over de bediening en niet buiten het canvas, in zes standen
   9  elke preset bereikbaar met categorie + item; sneltoetsen 0-9
   10 geen console-fouten of -waarschuwingen, geen horizontale scroll op de telefoon, donkere modus
@@ -429,14 +430,21 @@ def run_view(s, tag, w, h, touch):
     errs = pg.evaluate('__model.checkPresets()')
     check(f'7 [{tag}] checkPresets() leeg', not errs, '; '.join(errs[:4]))
     plist = pg.evaluate('__model.presetList()')
-    bad = []
+    bad, late = [], []
     for p in plist:
         if p['tour']: continue
         preset(pg, p['id'])
         f = pg.evaluate(f"__model.frameOf({json.dumps(p['subject'])})")
         if not f['inside'] or f['cover'] < 0.12:
             bad.append(f"{p['label']}: binnen {f['inside']}, dekking {f['cover']:.2f}")
+        # golf 5b-3 (0.3f): het onderwerp blijft ook 1,5 s na de preset binnen het vrije beeld (een camera die later nog
+        # verschuift, of een kader dat pas na de eerste meting buiten het beeld valt, werd hierboven niet gezien)
+        pg.wait_for_timeout(1500)
+        g = pg.evaluate(f"__model.frameOf({json.dumps(p['subject'])})")
+        if not g['inside']:
+            late.append(f"{p['label']} ({p['id']}): box {json.dumps(g['box'])}, beeld {json.dumps(g['view'])}")
     check(f'7 [{tag}] {len([p for p in plist if not p["tour"]])} presets in beeld en >= 12 % van het vrije beeld', not bad, '; '.join(bad[:6]))
+    check(f'7 [{tag}] na elke preset en 1,5 s staat het onderwerp binnen het vrije beeld ({len([p for p in plist if not p["tour"]])} presets)', not late, ' | '.join(late[:6]))
 
     # 8. labels in zes standen
     lab_bad, counts = [], []
