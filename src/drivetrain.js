@@ -430,7 +430,6 @@ function buildGearbox() {
 }
 
 /* ---------- aandrijfassen ---------- */
-function bellows(r1, r2, len, n) { const pts = []; for (let k = 0; k <= n * 2; k++) { const t = k / (n * 2); pts.push([lerp(r1, r2, t) - (k % 2 ? 0.005 : 0), t * len]); } return pts; }
 // as van punt a (differentieel) naar b (naaf), beide in het motorframe; lokaal x loopt van a naar b.
 function driveshaft(name, a, b, o) {
   const A3 = V3(...a), B3 = V3(...b), dir = B3.clone().sub(A3), L = dir.length();
