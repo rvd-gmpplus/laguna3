@@ -1,5 +1,6 @@
 """Welk onderdeel staat op schermpunten in een galerijweergave?  python3 pickview.py REPO VIEWNAAM x,y [x,y ...]"""
 import sys, os, json
+if len(sys.argv) < 4: print(__doc__); sys.exit(2)
 REPO, VIEW = sys.argv[1], sys.argv[2]
 PTS = [tuple(map(int, a.split(','))) for a in sys.argv[3:]]
 sys.path.insert(0, os.path.join(REPO, 'tools'))

@@ -49,6 +49,15 @@ Op 15 oktober om 19:49 UTC werkt een andere sessie (Opus 5.5 met vijf subagents)
 - Elke analyse en elke golf begint met `git ls-remote --heads origin` en een compare per tak; dit plan miste eerst twee commits doordat de meting van vóór 19:18 UTC was.
 - Per golf worden start, samenvoeging en publicatie met tijd in `CHANGELOG.md` genoteerd, zodat de volgende premortem met echte duren werkt.
 
+## Voortgang (16 oktober 2026, 00:30 UTC)
+
+| Golf | Stand |
+|---|---|
+| 5a-1 | Gedaan: A2 (testomgeving, rooktest in 41 s in een verse container), A3, A4, A5, A6 (deelbare URL, overlay, versie, laadmeldingen, meta, favicon), A7 (protocol in `docs/telefoontest.md`; de sessie van de gebruiker volgt na versie 7). Open: A1 (de zustertak kreeg om 00:12 UTC acht nieuwe commits, samenvoegen zodra zij stilvalt). |
+| 5a-2 | Gedaan: A8 (budgetten en `tri --gate`), A9 (openers als pad en preset-id's in `anchors.json`, `labelOnly` als kind van de labelgroep), A10 (`data/pn/` canoniek, `build_pn.py` als serialisatie met controles, `pncheck.py`; byte voor byte gelijk), A11 (`ci.yml` en `nightly.yml`; de eerste run bewees de omgeving en de poort op een oude `index.html`), A12 deels (versiestempel, `CHANGELOG.md`; de tags `v1` tot `v6` staan lokaal, de proxy weigert ze te pushen, zie `handomdraai.md`), A13 deels (LICENSE, `CLAUDE.md`, `.gitattributes`, `.gitignore`, `mergecheck.py`; screenshots verkleinen wacht op de nieuwe screenshots van versie 7), A14 (`cijfers.py` en `docs/cijfers.md`, drift opgeruimd). |
+| 5b-1 | Gedaan door de parallelle sessie (zie hieronder); haar herstelronde loopt nog. |
+| Poort | Strikte set op de samengevoegde stand: alles groen na vier `inner`-vlaggen minder; itest 157 van 157 op een rustige machine (controle 14 was een belastingsflake). |
+
 ## Golf 5a-1: vangnet-kern (eerst; 1 dag, met een stopregel)
 
 Doel: de zustertak zit in `main`, een verse container kan bouwen en testen, en een rode uitkomst kan niet meer "groen" heten. Pas als A2 werkt, zijn de andere aanvaardingen te toetsen; tot die tijd heet niets groen op grond van lezen.

@@ -1,5 +1,9 @@
-# Screenshots voor docs/screenshots via de presets van de app.
+"""Screenshots voor docs/screenshots via de presets van de app (elf op 1280 x 800 en mobiel.png op 390 x 844).
+
+    python3 tools/orkestratie/docshots.py REPO UITVOERMAP    exitcode 1 bij consolefouten
+"""
 import sys, os
+if len(sys.argv) < 3: print(__doc__); sys.exit(2)
 repo, out = sys.argv[1], sys.argv[2]
 sys.path.insert(0, os.path.join(repo, 'tools'))
 from harness import session
@@ -17,3 +21,4 @@ with session() as s:
     pg2.wait_for_timeout(1200)
     pg2.screenshot(path=os.path.join(out, 'mobiel.png'), timeout=180000); print('beeld mobiel')
     s.report()
+    sys.exit(1 if s.errors() else 0)
