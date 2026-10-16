@@ -138,31 +138,31 @@
    [
     "NGK",
     "4377",
-    "Motor: F4R 811, Thread Size: M14 x 1,25",
+    "motor F4R 811, draad M14 x 1,25",
     "A"
    ],
    [
     "BOSCH",
     "0 242 235 749",
-    "Thread Size: M 14 x 1,25",
+    "draad M14 x 1,25",
     "A"
    ],
    [
     "DENSO",
     "IK20TT",
-    "Thread Size: M14x1.25",
+    "draad M14 x 1,25",
     "A"
    ],
    [
     "RIDEX",
     "686S0034",
-    "Diameter: 14",
+    "Ø 14 mm",
     "A"
    ],
    [
     "BERU",
     "UPT12P",
-    "Thread Size: M14x1,25",
+    "draad M14 x 1,25",
     "A"
    ],
    [
@@ -223,37 +223,37 @@
    [
     "GATES",
     "5550XS",
-    "Length: 1200, Number of Teeth: 126",
+    "lengte 1200 mm, 126 tanden",
     "A"
    ],
    [
     "DAYCO",
     "94940",
-    "Number of Teeth: 126, Width: 27",
+    "126 tanden, breedte 27 mm",
     "A"
    ],
    [
     "CONTITECH",
     "CT1130",
-    "Number of Teeth: 126, Width: 27",
+    "126 tanden, breedte 27 mm",
     "A"
    ],
    [
     "BOSCH",
     "1 987 949 637",
-    "Length: 1200, Number of Teeth: 126",
+    "lengte 1200 mm, 126 tanden",
     "A"
    ],
    [
     "FEBI BILSTEIN",
     "19943",
-    "Number of Teeth: 126, Width: 27",
+    "126 tanden, breedte 27 mm",
     "A"
    ],
    [
     "RIDEX",
     "306T0091",
-    "Length: 1200, Number of Teeth: 126",
+    "lengte 1200 mm, 126 tanden",
     "A"
    ]
   ],
@@ -295,7 +295,7 @@
    ],
    [
     "130C19656R",
-    "Renault; OE-lijst DAYCO; \"for OE number\" bij DAYCO",
+    "Renault; OE-lijst DAYCO; OE-verwijzing bij DAYCO",
     "B"
    ]
   ],
@@ -303,13 +303,13 @@
    [
     "RIDEX",
     "307T0137",
-    "Length: 1200, Number of Teeth: 126",
+    "lengte 1200 mm, 126 tanden",
     "A"
    ],
    [
     "DAYCO",
     "KTB899",
-    "Length: 1200, Number of Teeth: 126",
+    "lengte 1200 mm, 126 tanden",
     "A"
    ],
    [
@@ -321,13 +321,13 @@
    [
     "CONTITECH",
     "CT1130K3",
-    "Number of Teeth: 126, Width: 27",
+    "126 tanden, breedte 27 mm",
     "A"
    ],
    [
     "SKF",
     "VKMA 06104",
-    "Bouwjaar vanaf: 07 / 2011, Number of Teeth: 126",
+    "bouwjaar vanaf 07/2011, 126 tanden",
     "A"
    ],
    [
@@ -365,12 +365,12 @@
   "oe": [
    [
     "130706246R",
-    "Renault; OE-lijst RIDEX, DAYCO; \"for OE number\" bij DAYCO",
+    "Renault; OE-lijst RIDEX, DAYCO; OE-verwijzing bij DAYCO",
     "B"
    ],
    [
     "7700108920",
-    "Renault; OE-lijst RIDEX, DAYCO; \"for OE number\" bij FAI AUTOPARTS",
+    "Renault; OE-lijst RIDEX, DAYCO; OE-verwijzing bij FAI AUTOPARTS",
     "B"
    ],
    [
@@ -408,13 +408,13 @@
    [
     "RIDEX",
     "308T0113",
-    "Bouwjaar tot: 07 / 2011, Diameter: 66",
+    "bouwjaar tot 07/2011, Ø 66 mm",
     "A"
    ],
    [
     "SKF",
     "VKM 16550",
-    "Bouwjaar tot: 07 / 2011, Diameter: 66",
+    "bouwjaar tot 07/2011, Ø 66 mm",
     "A"
    ],
    [
@@ -426,19 +426,19 @@
    [
     "FAI AUTOPARTS",
     "T9513",
-    "Engine Code: F4R 811, Diameter: 65",
+    "motorcode F4R 811, Ø 65 mm",
     "A"
    ],
    [
     "FEBI BILSTEIN",
     "19846",
-    "Diameter: 66, Width: 32",
+    "Ø 66 mm, breedte 32 mm",
     "A"
    ],
    [
     "MAXGEAR",
     "54-1111",
-    "Engine Code: F4R811, Diameter: 66",
+    "motorcode F4R 811, Ø 66 mm",
     "A"
    ]
   ],
@@ -509,43 +509,43 @@
    [
     "RIDEX",
     "313D0082",
-    "Diameter: 54, Width: 32",
+    "Ø 54 mm, breedte 32 mm",
     "A"
    ],
    [
     "SKF",
     "VKM 26105",
-    "Bouwjaar tot: 07 / 2011, Diameter: 54",
+    "bouwjaar tot 07/2011, Ø 54 mm",
     "A"
    ],
    [
     "SKF",
     "VKM 26020",
-    "Bouwjaar vanaf: 07 / 2011, Diameter: 54",
+    "bouwjaar vanaf 07/2011, Ø 54 mm",
     "A"
    ],
    [
     "VAICO",
     "V46-0416",
-    "Diameter: 54, Width: 32",
+    "Ø 54 mm, breedte 32 mm",
     "A"
    ],
    [
     "GATES",
     "T41237",
-    "Diameter: 54,5, Width: 32",
+    "Ø 54,5 mm, breedte 32 mm",
     "A"
    ],
    [
     "SNR",
     "GE355.43",
-    "Diameter: 54",
+    "Ø 54 mm",
     "A"
    ],
    [
     "KAMOKA",
     "R0168",
-    "Diameter: 54, Width: 32",
+    "Ø 54 mm, breedte 32 mm",
     "A"
    ]
   ],
@@ -685,31 +685,31 @@
    [
     "CONTITECH",
     "7PK1795",
-    "Length: 1795, Number of ribs: 7",
+    "lengte 1795 mm, 7 ribben",
     "A"
    ],
    [
     "GATES",
     "7PK1793",
-    "Length: 1793, Width: 24",
+    "lengte 1793 mm, breedte 24 mm",
     "A"
    ],
    [
     "SKF",
     "VKMV 7PK1792",
-    "Length: 1792, Width: 24,92",
+    "lengte 1792 mm, breedte 24,92 mm",
     "A"
    ],
    [
     "FEBI BILSTEIN",
     "184864",
-    "Length: 1792, Number of ribs: 7",
+    "lengte 1792 mm, 7 ribben",
     "A"
    ],
    [
     "DAYCO",
     "7PK1790",
-    "Length: 1790, Number of ribs: 7",
+    "lengte 1790 mm, 7 ribben",
     "A"
    ]
   ],
@@ -757,7 +757,7 @@
   "oe": [
    [
     "8200619927",
-    "Renault; OE-lijst RIDEX, FEBI BILSTEIN; \"for OE number\" bij FEBI BILSTEIN",
+    "Renault; OE-lijst RIDEX, FEBI BILSTEIN; OE-verwijzing bij FEBI BILSTEIN",
     "B"
    ],
    [
@@ -800,37 +800,37 @@
    [
     "RIDEX",
     "3213B0181",
-    "Thickness: 41,45, Diameter: 154,65",
+    "dikte 41,45 mm, Ø 154,65 mm",
     "A"
    ],
    [
     "FEBI BILSTEIN",
     "103789",
-    "Thickness: 41, Diameter: 155; bron noemt 7PK en ook \"Number of ribs: 6\"",
+    "dikte 41 mm, Ø 155 mm; bron noemt 7PK en ook 6 ribben",
     "A"
    ],
    [
     "SWAG",
     "60 10 3789",
-    "Thickness: 41, Diameter: 155; bron noemt 7PK en ook \"Number of ribs: 6\"",
+    "dikte 41 mm, Ø 155 mm; bron noemt 7PK en ook 6 ribben",
     "A"
    ],
    [
     "TOPRAN",
     "700 995",
-    "Pulleys: V-ribbed Belt Pulley, Number of grooves: 7",
+    "met poly-V-riemschijf, 7 groeven",
     "A"
    ],
    [
     "DOLZ",
     "CVD108",
-    "Diameter: 151, Width: 30",
+    "Ø 151 mm, breedte 30 mm",
     "A"
    ],
    [
     "METALCAUCHO",
     "45092",
-    "Diameter: 151, Inner Diameter: 24,5",
+    "Ø 151 mm, binnendiameter 24,5 mm",
     "A"
    ]
   ],
@@ -867,25 +867,25 @@
    [
     "TOPRAN",
     "701 616",
-    "Thread Size: M 12",
+    "draad M12",
     "A"
    ],
    [
     "FARE SA",
     "TC114",
-    "Diameter: 50,0",
+    "Ø 50,0 mm",
     "A"
    ],
    [
     "CAUTEX",
     "757050",
-    "Diameter: 50,0",
+    "Ø 50,0 mm",
     "A"
    ],
    [
     "METALCAUCHO",
     "02269",
-    "Diameter: 50,0",
+    "Ø 50,0 mm",
     "A"
    ]
   ],
@@ -908,7 +908,7 @@
   "oe": [
    [
     "117507271R",
-    "Renault; OE-lijst RIDEX, DAYCO; \"for OE number\" bij DAYCO",
+    "Renault; OE-lijst RIDEX, DAYCO; OE-verwijzing bij DAYCO",
     "B"
    ],
    [
@@ -951,7 +951,7 @@
    [
     "RIDEX",
     "310T0049",
-    "Diameter: 65, Width: 30",
+    "Ø 65 mm, breedte 30 mm",
     "A"
    ],
    [
@@ -963,25 +963,25 @@
    [
     "SKF",
     "VKM 36030",
-    "Positie: Centre, Diameter: 65",
+    "midden, Ø 65 mm",
     "A"
    ],
    [
     "GATES",
     "T38482",
-    "Diameter: 65, Width: 30",
+    "Ø 65 mm, breedte 30 mm",
     "A"
    ],
    [
     "SNR",
     "GA355.00",
-    "Diameter: 65, Width: 30",
+    "Ø 65 mm, breedte 30 mm",
     "A"
    ],
    [
     "LITENS",
     "950627",
-    "Length: 110, Diameter: 65",
+    "lengte 110 mm, Ø 65 mm",
     "A"
    ]
   ],
@@ -1006,41 +1006,41 @@
    [
     "RIDEX",
     "310T0486",
-    "Diameter: 65,5, Width: 30",
+    "Ø 65,5 mm, breedte 30 mm",
     "A"
    ],
    [
     "MAGNETI MARELLI",
     "331316170184",
-    "Motor: F4R 811, Diameter: 17",
+    "motor F4R 811, Ø 17 mm",
     "A"
    ],
    [
     "MAXGEAR",
     "54-0409",
-    "Diameter: 65, Width: 30",
+    "Ø 65 mm, breedte 30 mm",
     "A"
    ],
    [
     "NTY",
     "RNK-RE-004",
-    "Diameter: 66, Width: 30",
+    "Ø 66 mm, breedte 30 mm",
     "A"
    ],
    [
     "OPTIMAL",
     "0-N1611S",
-    "Vehicle Equipment: for vehicles with air cond",
+    "voor auto's met airco",
     "A"
    ],
    [
     "DENCKERMANN",
     "P222005",
-    "Diameter: 65,5, Width: 30",
+    "Ø 65,5 mm, breedte 30 mm",
     "A"
    ]
   ],
-  "var": "Rollen Ø60 tot Ø66 afhankelijk van uitvoering; FEBEST-artikelen met \"Engine Number to\" vallen buiten dit type en zijn weggelaten.",
+  "var": "Rollen Ø60 tot Ø66 afhankelijk van uitvoering; FEBEST-artikelen met een motornummergrens vallen buiten dit type en zijn weggelaten.",
   "per": "1 stuk",
   "note": "Losse rol van de spanner (Autodoc categorie \"Tensioner pulley, v-ribbed belt\"). Een deel van de artikelen noemt \"for vehicles with air conditioning\".",
   "src": [
@@ -1094,37 +1094,37 @@
    [
     "RIDEX",
     "312D0012",
-    "Diameter: 60,1, Width: 31,2",
+    "Ø 60,1 mm, breedte 31,2 mm",
     "A"
    ],
    [
     "SKF",
     "VKM 36038",
-    "Positie: Centre right, Diameter: 60",
+    "midden rechts, Ø 60 mm",
     "A"
    ],
    [
     "VAICO",
     "V40-0201",
-    "Vehicle Equipment: for vehicles with air cond",
+    "voor auto's met airco",
     "A"
    ],
    [
     "SNR",
     "GA355.06",
-    "Vehicle Equipment: for vehicles with air cond",
+    "voor auto's met airco",
     "A"
    ],
    [
     "INA",
     "532 0364 20",
-    "Diameter: 60, Width: 29",
+    "Ø 60 mm, breedte 29 mm",
     "A"
    ],
    [
     "KAMOKA",
     "R0184",
-    "Diameter: 60, Width: 31",
+    "Ø 60 mm, breedte 31 mm",
     "A"
    ]
   ],
@@ -1175,31 +1175,31 @@
    [
     "AS-PL",
     "A3169",
-    "Transmission Code: AJ0, Pulleys: with belt pulley",
+    "bakcode AJ0, met riemschijf",
     "A"
    ],
    [
     "AS-PL",
     "A3800S",
-    "Pulleys: with freewheel belt pulley",
+    "met vrijloopriemschijf",
     "A"
    ],
    [
     "BV PSH",
     "575.912.150.500",
-    "Number of grooves: 7",
+    "7 groeven",
     "A"
    ],
    [
     "AD KÜHNER",
     "553793RIV",
-    "Number of ribs: 7",
+    "7 ribben",
     "A"
    ],
    [
     "FAST",
     "FT10363",
-    "Pulleys: with belt pulley, Number of ribs: 7",
+    "met riemschijf, 7 ribben",
     "A"
    ],
    [
@@ -1284,25 +1284,25 @@
    [
     "INA",
     "535 0080 10",
-    "Diameter: 48,6 / 17,0, Width: 40,8",
+    "Ø 48,6 / 17,0 mm, breedte 40,8 mm",
     "A"
    ],
    [
     "GATES",
     "OAP7231",
-    "Diameter: 54, Width: 37,5",
+    "Ø 54 mm, breedte 37,5 mm",
     "A"
    ],
    [
     "MAXGEAR",
     "30-0176",
-    "Width: 40,8, Number of grooves: 7",
+    "breedte 40,8 mm, 7 groeven",
     "A"
    ],
    [
     "CONTITECH",
     "AP9109",
-    "Diameter: 48,6 / 17,0, Width: 40,8",
+    "Ø 48,6 / 17,0 mm, breedte 40,8 mm",
     "A"
    ]
   ],
@@ -1344,7 +1344,7 @@
    [
     "RIDEX",
     "12H0601",
-    "Operating Mode: hydraulic, Pulleys: without belt pulley",
+    "hydraulisch, zonder riemschijf",
     "A"
    ],
    [
@@ -1356,13 +1356,13 @@
    [
     "HENKEL PARTS",
     "9113860",
-    "Operating Mode: Electric-hydraulic",
+    "elektrohydraulisch",
     "A"
    ],
    [
     "APC",
     "EP5097167RE-R",
-    "Operating Mode: Electric-hydraulic",
+    "elektrohydraulisch",
     "A"
    ]
   ],
@@ -1411,13 +1411,13 @@
    [
     "SWAG",
     "60 93 2152",
-    "Thickness: 28, Diameter: 125",
+    "dikte 28 mm, Ø 125 mm",
     "A"
    ],
    [
     "FEBI BILSTEIN",
     "32152",
-    "Thickness: 28, Diameter: 125",
+    "dikte 28 mm, Ø 125 mm",
     "A"
    ]
   ],
@@ -1453,19 +1453,19 @@
    [
     "VALEO",
     "813180",
-    "Compressor ID: DCS17E, Number of grooves: 7",
+    "compressortype DCS17E, 7 groeven",
     "A"
    ],
    [
     "MAHLE",
     "ACP 504 000P",
-    "Compressor ID: DCS17EC",
+    "compressortype DCS17EC",
     "A"
    ],
    [
     "ELSTOCK",
     "51-1505",
-    "Pulleys: with V-ribbed belt pulley",
+    "met poly-V-riemschijf",
     "A"
    ],
    [
@@ -1551,19 +1551,19 @@
    [
     "RIDEX",
     "1260W0042",
-    "Pulleys: with belt pulley",
+    "met riemschijf",
     "A"
    ],
    [
     "VALEO",
     "506698",
-    "Pulleys: with belt pulley",
+    "met riemschijf",
     "A"
    ],
    [
     "HEPU",
     "P955",
-    "Operating Mode: mechanical",
+    "mechanisch",
     "A"
    ],
    [
@@ -1665,22 +1665,22 @@
   "oe": [
    [
     "8200772985",
-    "Renault; OE-lijst RIDEX, DENSO; \"for OE number\" bij DENSO",
+    "Renault; OE-lijst RIDEX, DENSO; OE-verwijzing bij DENSO",
     "B"
    ],
    [
     "7700872554",
-    "Renault; OE-lijst RIDEX, DENSO; \"for OE number\" bij DENSO",
+    "Renault; OE-lijst RIDEX, DENSO; OE-verwijzing bij DENSO",
     "B"
    ],
    [
     "6001543366",
-    "Renault; OE-lijst RIDEX; \"for OE number\" bij MOTORAD",
+    "Renault; OE-lijst RIDEX; OE-verwijzing bij MOTORAD",
     "B"
    ],
    [
     "8200479402",
-    "Renault; OE-lijst DENSO; \"for OE number\" bij DENSO",
+    "Renault; OE-lijst DENSO; OE-verwijzing bij DENSO",
     "B"
    ],
    [
@@ -1708,37 +1708,37 @@
    [
     "RIDEX",
     "316T0031",
-    "Opening Temperature [°C]: 89",
+    "opent bij 89 °C",
     "A"
    ],
    [
     "FEBI BILSTEIN",
     "24028",
-    "Opening Temperature [°C]: 89, Diameter: 50",
+    "opent bij 89 °C, Ø 50 mm",
     "A"
    ],
    [
     "GATES",
     "TH23389G1",
-    "Opening Temperature [°C]: 89",
+    "opent bij 89 °C",
     "A"
    ],
    [
     "DENSO",
     "DTM88305",
-    "Opening Temperature [°C]: 88",
+    "opent bij 88 °C",
     "A"
    ],
    [
     "TOPRAN",
     "700 171",
-    "Opening Temperature [°C]: 89",
+    "opent bij 89 °C",
     "A"
    ],
    [
     "MOTORAD",
     "305-88K",
-    "Opening Temperature [°C]: 88",
+    "opent bij 88 °C",
     "A"
    ]
   ],
@@ -1785,7 +1785,7 @@
    ],
    [
     "7700104114",
-    "Renault; \"for OE number\" bij ELRING, WILMINK GROUP",
+    "Renault; OE-verwijzing bij ELRING, WILMINK GROUP",
     "B"
    ]
   ],
@@ -1793,19 +1793,19 @@
    [
     "ELRING",
     "852.220",
-    "Positie: Cylinder Head",
+    "cilinderkop",
     "A"
    ],
    [
     "WILMINK GROUP",
     "WG2101886",
-    "Positie: Cylinder Head",
+    "cilinderkop",
     "A"
    ],
    [
     "FACET",
     "7.9568",
-    "Motor: F4R 811",
+    "motor F4R 811",
     "A"
    ],
    [
@@ -1817,13 +1817,13 @@
    [
     "TOPRAN",
     "208 014",
-    "Thickness: 4, Diameter: 52",
+    "dikte 4 mm, Ø 52 mm",
     "A"
    ],
    [
     "AJUSA",
     "00837400",
-    "Thickness: 0,35, Length: 180",
+    "dikte 0,35 mm, lengte 180 mm",
     "A"
    ]
   ],
@@ -1847,7 +1847,7 @@
   "oe": [
    [
     "226300007R",
-    "Renault; OE-lijst RIDEX; \"for OE number\" bij NRF, FEBI BILSTEIN",
+    "Renault; OE-lijst RIDEX; OE-verwijzing bij NRF, FEBI BILSTEIN",
     "B"
    ],
    [
@@ -1892,13 +1892,13 @@
    [
     "NRF",
     "727112",
-    "Motor: F4R 811, Sensor Type: NTC Sensor",
+    "motor F4R 811, NTC-sensor",
     "A"
    ],
    [
     "HELLA",
     "6PT 009 309-471",
-    "Engine Code: F4R813, Motor: F4R 811",
+    "motorcode F4R 813, motor F4R 811",
     "A"
    ],
    [
@@ -1914,7 +1914,7 @@
     "A"
    ]
   ],
-  "var": "NRF noemt twee uitvoeringen: 727161 met \"Construction Year to: 03 / 2008\" en 727112 met \"Construction Year from: 04 / 2008\" (Renault 226300007R). Voor bouwjaar 2011 blijft alleen de tweede over; ook HELLA 6PT 009 309-471 staat vanaf 04/2008.",
+  "var": "NRF noemt twee uitvoeringen: 727161 met bouwjaar tot 03/2008 en 727112 met bouwjaar vanaf 04/2008 (Renault 226300007R). Voor bouwjaar 2011 blijft alleen de tweede over; ook HELLA 6PT 009 309-471 staat vanaf 04/2008.",
   "per": "1 stuk",
   "note": "M12x1,5, 2 polen, NTC. Renault-nummers uit de OE-lijst van RIDEX 830C0125 en \"for OE number\" bij NRF 727112 en febi 107685. De nummers van NRF 727161 (tot 03/2008) zijn geschrapt.",
   "src": [
@@ -1973,25 +1973,25 @@
    [
     "HELLA",
     "6PG 009 108-881",
-    "Sensor Type: Piezoelectric Sensor",
+    "piëzo-elektrische sensor",
     "A"
    ],
    [
     "FACET",
     "9.3224",
-    "Motor: F4R 811, Thread Size: M12x1,25",
+    "motor F4R 811, draad M12 x 1,25",
     "A"
    ],
    [
     "MAGNETI MARELLI",
     "064836035010",
-    "Motor: F4R 811",
+    "motor F4R 811",
     "A"
    ],
    [
     "VEMO",
     "V46-72-0001",
-    "Motor: F4R 811, Length: 50",
+    "motor F4R 811, lengte 50 mm",
     "A"
    ],
    [
@@ -2033,19 +2033,19 @@
    [
     "RIDEX",
     "833C0120",
-    "Sensor Type: Hall Sensor",
+    "hallsensor",
     "A"
    ],
    [
     "VALEO",
     "366654",
-    "Sensor Type: Inductive Sensor",
+    "inductieve sensor",
     "A"
    ],
    [
     "MAGNETI MARELLI",
     "064848203010",
-    "Motor: F4R 811",
+    "motor F4R 811",
     "A"
    ],
    [
@@ -2057,7 +2057,7 @@
    [
     "TOPRAN",
     "207 844",
-    "Engine Code: F4R 811; \"for crankshaft\"; staat in de lijst onder Camshaft sensor",
+    "motorcode F4R 811; voor de krukas; staat in de lijst onder de nokkenassensoren",
     "A"
    ]
   ],
@@ -2116,7 +2116,7 @@
   "oe": [
    [
     "8200358666",
-    "Renault; OE-lijst FEBI BILSTEIN, NTY; \"for OE number\" bij FEBI BILSTEIN, SWAG",
+    "Renault; OE-lijst FEBI BILSTEIN, NTY; OE-verwijzing bij FEBI BILSTEIN, SWAG",
     "B"
    ],
    [
@@ -2129,37 +2129,37 @@
    [
     "FEBI BILSTEIN",
     "24270",
-    "Positie: Upper Right",
+    "rechtsboven",
     "A"
    ],
    [
     "SWAG",
     "60 92 4270",
-    "Positie: Upper Right",
+    "rechtsboven",
     "A"
    ],
    [
     "ESEN SKV",
     "75SKV050",
-    "Positie: Upper Right, Length: 198",
+    "rechtsboven, lengte 198 mm",
     "A"
    ],
    [
     "METZGER",
     "8054039",
-    "Positie: Upper Right",
+    "rechtsboven",
     "A"
    ],
    [
     "MAPCO",
     "36181",
-    "Positie: Right, Upper",
+    "rechtsboven",
     "A"
    ],
    [
     "MAXGEAR",
     "40-0222",
-    "Positie: Upper Right, Length: 197",
+    "rechtsboven, lengte 197 mm",
     "A"
    ]
   ],
@@ -2190,19 +2190,19 @@
    [
     "METALCAUCHO",
     "05647",
-    "Positie: Left",
+    "links",
     "A"
    ],
    [
     "STC",
     "T405647",
-    "Positie: Left",
+    "links",
     "A"
    ],
    [
     "GOOM",
     "EM-0245",
-    "Positie: Left",
+    "links",
     "A"
    ],
    [
@@ -2218,7 +2218,7 @@
     "C"
    ]
   ],
-  "var": "Autodoc noemt bij de steunen links geen bakuitvoering. Spareto koppelt Renault 8200292828 ook aan CORTECO 49138747 \"Mounting, manual transmission\". Of 8200292828 en de bevestigde steunen ook voor de automaat (AJ0) gelden, is niet aangetoond; VIN controleren.",
+  "var": "Autodoc noemt bij de steunen links geen bakuitvoering. Spareto koppelt Renault 8200292828 ook aan CORTECO 49138747 (steun voor de handgeschakelde bak). Of 8200292828 en de bevestigde steunen ook voor de automaat (AJ0) gelden, is niet aangetoond; VIN controleren.",
   "per": "1 stuk",
   "note": "Positie \"Left\" in de categorie motorsteunen (Metalcaucho 05647, STC T405647, GOOM EM-0245). CORTECO 49138747 (handbak) is geschrapt.",
   "src": [
@@ -2260,25 +2260,25 @@
    [
     "FEBI BILSTEIN",
     "33724",
-    "Positie: Lower, Rear",
+    "onder, achter",
     "A"
    ],
    [
     "SWAG",
     "60 93 3724",
-    "Positie: Lower, Rear",
+    "onder, achter",
     "A"
    ],
    [
     "RIDEX",
     "247E0590",
-    "Positie: Lower, Rear",
+    "onder, achter",
     "A"
    ],
    [
     "METZGER",
     "8053957",
-    "Positie: Lower",
+    "onder",
     "A"
    ]
   ],
@@ -2313,31 +2313,31 @@
    [
     "REINZ",
     "61-31655-00",
-    "Motor: F4R 811, Thickness: 0,65",
+    "motor F4R 811, dikte 0,65 mm",
     "A"
    ],
    [
     "CORTECO",
     "415078P",
-    "Thickness: 0,7, Diameter: 84",
+    "dikte 0,7 mm, Ø 84 mm",
     "A"
    ],
    [
     "PAYEN",
     "AD5990",
-    "Motor: F4R 811",
+    "motor F4R 811",
     "A"
    ],
    [
     "ELRING",
     "073.942",
-    "Thickness: 0,7, Diameter: 83,8",
+    "dikte 0,7 mm, Ø 83,8 mm",
     "A"
    ],
    [
     "GLASER",
     "H50982-00",
-    "Motor: F4R 811, Thickness: 0,65",
+    "motor F4R 811, dikte 0,65 mm",
     "A"
    ]
   ],
@@ -2374,37 +2374,37 @@
    [
     "BGA",
     "OS0315",
-    "Positie: frontal sided, Diameter: 54",
+    "distributiezijde, Ø 54 mm",
     "A"
    ],
    [
     "TOPRAN",
     "207 049",
-    "Positie: frontal sided, Diameter: 54",
+    "distributiezijde, Ø 54 mm",
     "A"
    ],
    [
     "PAYEN",
     "NA5036",
-    "Positie: frontal sided, Motor: F4R 811",
+    "distributiezijde, motor F4R 811",
     "A"
    ],
    [
     "CORTECO",
     "12018755B",
-    "Positie: frontal sided, Diameter: 54",
+    "distributiezijde, Ø 54 mm",
     "A"
    ],
    [
     "REINZ",
     "81-34413-00",
-    "Positie: frontal sided, Motor: F4R 811",
+    "distributiezijde, motor F4R 811",
     "A"
    ],
    [
     "FEBI BILSTEIN",
     "180346",
-    "Positie: frontal sided, Diameter: 54",
+    "distributiezijde, Ø 54 mm",
     "A"
    ]
   ],
@@ -2445,37 +2445,37 @@
    [
     "RIDEX",
     "3771S0083",
-    "Positie: transmission sided, Diameter: 105",
+    "versnellingsbakzijde, Ø 105 mm",
     "A"
    ],
    [
     "TOPRAN",
     "207 140",
-    "Positie: transmission sided, Diameter: 105",
+    "versnellingsbakzijde, Ø 105 mm",
     "A"
    ],
    [
     "REINZ",
     "81-34417-10",
-    "Positie: transmission sided, Motor: F4R 811",
+    "versnellingsbakzijde, motor F4R 811",
     "A"
    ],
    [
     "PAYEN",
     "NA5037",
-    "Positie: transmission sided, Motor: F4R 811",
+    "versnellingsbakzijde, motor F4R 811",
     "A"
    ],
    [
     "CORTECO",
     "20018246B",
-    "Positie: transmission sided, Diameter: 105",
+    "versnellingsbakzijde, Ø 105 mm",
     "A"
    ],
    [
     "ELRING",
     "711.720",
-    "Positie: transmission sided, Diameter: 105",
+    "versnellingsbakzijde, Ø 105 mm",
     "A"
    ]
   ],
@@ -2516,37 +2516,37 @@
    [
     "RIDEX",
     "3771S0307",
-    "Positie: frontal sided, Diameter: 47",
+    "distributiezijde, Ø 47 mm",
     "A"
    ],
    [
     "REINZ",
     "81-34472-00",
-    "Positie: frontal sided, Motor: F4R 811",
+    "distributiezijde, motor F4R 811",
     "A"
    ],
    [
     "CORTECO",
     "46085505B",
-    "Positie: Engine, Diameter: 47",
+    "motorzijde, Ø 47 mm",
     "A"
    ],
    [
     "ELRING",
     "169.370",
-    "Positie: frontal sided, Diameter: 47",
+    "distributiezijde, Ø 47 mm",
     "A"
    ],
    [
     "PAYEN",
     "NA5448",
-    "Positie: frontal sided, Thickness: 5,5",
+    "distributiezijde, dikte 5,5 mm",
     "A"
    ],
    [
     "AJUSA",
     "15062400",
-    "Positie: frontal sided, Motor: F4R 811",
+    "distributiezijde, motor F4R 811",
     "A"
    ]
   ],
@@ -2582,25 +2582,25 @@
    [
     "REINZ",
     "70-31414-10",
-    "Motor: F4R 811",
+    "motor F4R 811",
     "A"
    ],
    [
     "PAYEN",
     "HR397",
-    "Motor: F4R 811",
+    "motor F4R 811",
     "A"
    ],
    [
     "AJUSA",
     "75000200",
-    "Motor: F4R 811",
+    "motor F4R 811",
     "A"
    ],
    [
     "FAI AUTOPARTS",
     "SIL-2",
-    "Engine Code: F4R 811",
+    "motorcode F4R 811",
     "A"
    ],
    [
@@ -2612,7 +2612,7 @@
    [
     "GLASER",
     "70-31414-10",
-    "Motor: F4R 811",
+    "motor F4R 811",
     "A"
    ]
   ],

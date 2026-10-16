@@ -9,11 +9,18 @@ Invoer (data/pn/): meta.json; units/<plak>.json (verkoopeenheden per onderzoeksp
 wortel -> [eenheid, 'zelf' | 'deel' | 'set', regel]); info.json (pad -> [[label, waarde, bron, zekerheid]]); en data/tree.json
 (alle paden van de boom, uit de pagina; de orkestrator ververst hem als de boom verandert).
 
+De CSV is een platte projectie van dezelfde gegevens: één rij per pad en nummer, met per rij de eenheid (unit_id), alle bronnen
+van de eenheid, variant, verpakking, regel, de gekozen uitvoering en de onderhoudsregels van het pad; paden zonder record staan
+erin als "niet onderzocht". De kolommen staan beschreven in docs/onderdeelnummers-schema.md. Knoopnamen kunnen een schuine
+streep bevatten (ABS/ESP-unit); de naam en de diepte van elke knoop worden daarom uit de boom afgeleid (de langste ouder die
+zelf in de boom staat) en als eigen kolommen meegegeven, zodat een pad nooit gesplitst hoeft te worden.
+
 De bouw stopt bij: een pad in map of info dat niet in de boom bestaat, een eenheid in map die niet bestaat, een eenheid die
 nergens gebruikt wordt, een status buiten past, vin of nietgevonden, een gekozen uitvoering (kz) met een nummer dat niet in
-de lijst van de eenheid staat, of een bron die niet met https begint. De eenmalige migraties van golf 4 en 5 (RENAME, DROP,
-INHERIT, UNIT_FIX, VAR_FIX, VIN_KEUZE) zijn in de gegevens verwerkt en beschreven in data/pn/README.md; dit script voert ze
-niet opnieuw uit. Het chassisnummer en het kenteken van de gebruiker staan nooit in deze gegevens.
+de lijst van de eenheid staat, een bron die niet met https begint, of een bron met het scheidingsteken van de bronkolom.
+De eenmalige migraties van golf 4 en 5 (RENAME, DROP, INHERIT, UNIT_FIX, VAR_FIX, VIN_KEUZE, ATTR_NL) zijn in de gegevens
+verwerkt en beschreven in data/pn/README.md; dit script voert ze niet opnieuw uit. Het chassisnummer en het kenteken van de
+gebruiker staan nooit in deze gegevens.
 """
 import json, os, sys, csv, io, re, glob
 
@@ -21,18 +28,43 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
 DATA = os.path.join(REPO, 'data', 'pn')
 ROOT = 'Renault Laguna III/'
+SEP = '|'  # scheidingsteken binnen de kolommen bronnen en bronnen_keuze
 HEADER = ("/* ===================== onderdeelnummers ===================== */\n"
           "// Gegevens, geen code. Gemaakt door de orkestrator uit de geverifieerde onderzoeksbestanden (build_pn.py); niet met de hand bewerken.\n"
           "// units: id -> { n, st: 'past' | 'vin' | 'nietgevonden', oe: [[nummer, opmerking, bewijs]], am: [[merk, nummer, opmerking, bewijs]],\n"
           "//                var, per, note, src: [[url, label]], kz }; bewijs A, B, C of D (zie het paneel).\n"
           "// kz (alleen bij een gekozen uitvoering voor de auto van de gebruiker): { o: [gekozen Renault-nummers], a: [[merk, nummer]], v: uitvoering, b: bewijs, z: zekerheid, g: grond, s: [bronnen] }.\n"
-          "// map: pad zonder wortel -> [unit-id, 'zelf' | 'deel' | 'set', regel]. Een pad zonder regel is 'niet onderzocht'.\n"
+          "// map: pad zonder wortel -> [unit-id, 'zelf' | 'deel' | 'set', regel]. Een pad dat niet in map staat, is 'niet onderzocht'.\n"
           "// info: pad zonder wortel -> [[label, waarde, bron, zekerheid]] (onderhoud en bekende problemen).\n")
+# kolommen van docs/onderdeelnummers.csv; betekenis in docs/onderdeelnummers-schema.md
+COLS = ['pad', 'naam', 'diepte', 'knoop', 'unit_id', 'verkoopeenheid', 'relatie', 'regel', 'status', 'soort', 'merk', 'nummer',
+        'bewijs', 'opmerking', 'var', 'per', 'bronnen', 'gekozen', 'uitvoering_keuze', 'zekerheid_keuze', 'grond_keuze',
+        'bronnen_keuze', 'info']
+# statuslabel zoals het paneel het toont (kleine letters); None staat voor een pad zonder record
+LABEL = {'past': 'past volgens catalogus', 'vin': 'variant: kies op VIN', 'nietgevonden': 'niet gevonden', None: 'niet onderzocht'}
 
 
 def load(name):
     with open(os.path.join(DATA, name), encoding='utf-8') as f:
         return json.load(f)
+
+
+def tree_names(paths):
+    """Per pad de ouder (het langste kortere pad in de boom dat ervoor staat), de naam en de diepte. Een naam mag een
+    schuine streep bevatten; daarom wordt niet op de streep gesplitst maar in de boom gezocht."""
+    pset, out = set(paths), {}
+    for p in paths:
+        i, parent = p.rfind('/'), ''
+        while i > 0:
+            if p[:i] in pset: parent = p[:i]; break
+            i = p.rfind('/', 0, i)
+        out[p] = (parent, p[len(parent) + 1:] if parent else p)
+    depth = {}
+    for p in sorted(paths, key=len):
+        parent = out[p][0]
+        depth[p] = depth[parent] + 1 if parent else 1
+    groups = set(out[p][0] for p in paths if out[p][0])
+    return {p: {'parent': out[p][0], 'name': out[p][1], 'depth': depth[p], 'group': p in groups} for p in paths}
 
 
 def build():
@@ -61,40 +93,62 @@ def build():
         if u.get('st') not in ('past', 'vin', 'nietgevonden'): errs.append(f'status {u.get("st")} bij {uid}')
         for url, _ in u.get('src', []):
             if not re.match(r'^https://', url): errs.append(f'bron zonder https bij {uid}: {url}')
+            if SEP in url or ' ' in url: errs.append(f'bron met {SEP!r} of spatie bij {uid}: {url}')
         kz = u.get('kz')
         if kz:
             for nr in kz.get('o', []):
                 if nr not in [x[0] for x in u['oe']]: errs.append(f'kz: Renault-nummer {nr} staat niet in {uid}')
             for brand, nr in kz.get('a', []):
                 if [brand, nr] not in [[x[0], x[1]] for x in u['am']]: errs.append(f'kz: {brand} {nr} staat niet in {uid}')
-            if any(not re.match(r'^https://', x) for x in kz.get('s', [])): errs.append(f'kz: bron zonder https in {uid}')
+            if any(not re.match(r'^https://', x) or SEP in x or ' ' in x for x in kz.get('s', [])): errs.append(f'kz: bron zonder https of met {SEP!r} in {uid}')
     if errs:
         for e in errs[:40]: print('FOUT ' + e, file=sys.stderr)
         sys.exit(f'{len(errs)} fouten in data/pn')
     data = {'meta': meta, 'units': units, 'map': pmap, 'info': info}
     js = HEADER + 'const PN_DATA = ' + json.dumps(data, ensure_ascii=False, separators=(',', ':')) + ';\n'
+    # CSV: alle paden van de boom, gesorteerd; per pad één rij per nummer, of één rij zonder nummer
+    nodes = tree_names(paths)
     buf = io.StringIO()
     w = csv.writer(buf, delimiter=';', lineterminator='\r\n')
-    w.writerow(['pad', 'verkoopeenheid', 'relatie', 'status', 'soort', 'merk', 'nummer', 'bewijs', 'opmerking', 'bron', 'gekozen voor deze auto', 'uitvoering voor deze auto'])
-    for p in sorted(pmap):
+    w.writerow(COLS)
+    nrows, urls = 0, set()
+    for p in sorted(paths):
+        nd = nodes[p]
+        inf = ' | '.join(f'{l}: {v} ({z}; {b})' if b else f'{l}: {v} ({z})' for l, v, b, z in info.get(p, []))
+        base = {'pad': p, 'naam': nd['name'], 'diepte': nd['depth'], 'knoop': 'groep' if nd['group'] else 'onderdeel', 'info': inf}
+        if p not in pmap:
+            w.writerow([base.get(c, '') if c != 'status' else LABEL[None] for c in COLS]); nrows += 1
+            continue
         uid, how, rule = pmap[p]
-        u = units[uid]
+        u, kz = units[uid], units[uid].get('kz')
+        base.update({'unit_id': uid, 'verkoopeenheid': u['n'], 'relatie': how, 'regel': rule or '',
+                     'status': 'gekozen voor deze auto' if (u['st'] == 'vin' and kz) else LABEL[u['st']],
+                     'var': u.get('var', ''), 'per': u.get('per', ''), 'bronnen': SEP.join(x[0] for x in u['src'])})
+        urls.update(x[0] for x in u['src'])
+        if kz:
+            base.update({'uitvoering_keuze': kz.get('v', ''), 'zekerheid_keuze': kz.get('z', ''), 'grond_keuze': kz.get('g', ''),
+                         'bronnen_keuze': SEP.join(kz.get('s', []))})
+            urls.update(kz.get('s', []))
         rows = [['Renault', 'Renault', x[0], x[2], x[1]] for x in u['oe']] + [['fabrikant', x[0], x[1], x[3], x[2]] for x in u['am']]
-        src = u['src'][0][0] if u['src'] else ''
-        kz = u.get('kz')
         if not rows:
-            w.writerow([p, u['n'], how, u['st'], '', '', '', '', '', '', '', ''])
+            w.writerow([base.get(c, '') for c in COLS]); nrows += 1
         for soort, merk, nr, lvl, note in rows:
             gek = bool(kz) and ((soort == 'Renault' and nr in kz['o']) or (soort == 'fabrikant' and [merk, nr] in kz['a']))
-            w.writerow([p, u['n'], how, u['st'], soort, merk, nr, lvl, note, src, 'ja' if gek else '', kz['v'] if gek else ''])
+            r = dict(base, soort=soort, merk=merk, nummer=nr, bewijs=lvl, opmerking=note, gekozen='ja' if gek else '')
+            w.writerow([r.get(c, '') for c in COLS]); nrows += 1
+    csvtxt = buf.getvalue()
+    nummers = sum(len(u['oe']) + len(u['am']) for u in units.values())
     stats = {
         'paden_in_boom': len(paths), 'paden_met_regel': len(pmap),
         'paden_met_nummer': sum(1 for p, (uid, h, r) in pmap.items() if units[uid]['oe'] or units[uid]['am']),
         'eenheden': len(units), 'eenheden_met_keuze': sum(1 for u in units.values() if u.get('kz')),
-        'nummers': sum(len(u['oe']) + len(u['am']) for u in units.values()),
-        'bronnen_per_nummer': round(sum(len(u['src']) for u in units.values()) / max(1, sum(len(u['oe']) + len(u['am']) for u in units.values())), 3),
-        'info_paden': len(info), 'bytes_js': len(js.encode('utf-8'))}
-    return js, buf.getvalue(), stats
+        'nummers': nummers,
+        'bronnen_per_nummer': round(sum(len(u['src']) for u in units.values()) / max(1, nummers), 3),
+        'bronnen_uniek': len(set(x[0] for u in units.values() for x in u['src'])), 'bronnen_uniek_in_csv': len(urls),
+        'bronnen_met_page': len(set(x[0] for u in units.values() for x in u['src'] if '?page=' in x[0])),
+        'info_paden': len(info), 'csv_rijen': nrows, 'namen_met_schuine_streep': sum(1 for n in nodes.values() if '/' in n['name']),
+        'bytes_js': len(js.encode('utf-8')), 'bytes_csv': len(csvtxt.encode('utf-8'))}
+    return js, csvtxt, stats
 
 
 def main(argv):

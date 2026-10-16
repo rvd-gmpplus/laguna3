@@ -116,7 +116,7 @@
    [
     "SKF",
     "VKDS 476021",
-    "Autodoc noemt het artikel \"Axle Beam\" (prijsklasse bus); productpagina: OE 55 04 500 01R, gepaard met VKDS 476018",
+    "Autodoc zet het artikel bij de asbalken (prijsklasse bus); productpagina: OE 55 04 500 01R, gepaard met VKDS 476018",
     "A"
    ]
   ],
@@ -152,7 +152,7 @@
    ],
    [
     "550446624R",
-    "for OE number bij SASIC 2604007 (Rear Axle) en OE-lijst van SKF VKDS 476018 (Rear Axle Right); geen Renault-artikel in de lijst, daarom B in plaats van A",
+    "OE-verwijzing bij SASIC 2604007 (achteras) en OE-lijst van SKF VKDS 476018 (achteras rechts); geen Renault-artikel in de lijst, daarom B in plaats van A",
     "B"
    ]
   ],
@@ -190,7 +190,7 @@
    [
     "SKF",
     "VKDS 476018",
-    "Autodoc noemt het artikel \"Axle Beam\" (prijsklasse bus); productpagina: OE 55 04 466 24R en 55 04 400 01R",
+    "Autodoc zet het artikel bij de asbalken (prijsklasse bus); productpagina: OE 55 04 466 24R en 55 04 400 01R",
     "A"
    ]
   ],
@@ -346,25 +346,25 @@
    [
     "SACHS",
     "317 421",
-    "gas, twin-tube",
+    "gas, tweebuis",
     "A"
    ],
    [
     "BILSTEIN",
     "19-171395",
-    "B4, gas, twin-tube",
+    "B4, gas, tweebuis",
     "A"
    ],
    [
     "MONROE",
     "43134",
-    "gas, monotube",
+    "gas, eenbuis",
     "A"
    ],
    [
     "TRW",
     "JGT1256T",
-    "gas, twin-tube",
+    "gas, tweebuis",
     "A"
    ],
    [
@@ -376,11 +376,11 @@
    [
     "KYB",
     "344813",
-    "Excel-G, gas, twin-tube",
+    "Excel-G, gas, tweebuis",
     "A"
    ]
   ],
-  "var": "Autodoc toont voor type 23370 achterdempers gas twin-tube en monotube (MONROE 43134), voor voertuigen zonder sportonderstel of verhoogde bodemvrijheid. De OE-lijsten noemen drie Renault-nummers (562100001R, 562100007R, 562100033R); welke bij de VIN hoort is niet vastgesteld.",
+  "var": "Autodoc toont voor type 23370 achterdempers gas tweebuis en eenbuis (MONROE 43134), voor voertuigen zonder sportonderstel of verhoogde bodemvrijheid. De OE-lijsten noemen drie Renault-nummers (562100001R, 562100007R, 562100033R); welke bij de VIN hoort is niet vastgesteld.",
   "per": "per stuk, links gelijk aan rechts (per as 2)",
   "note": "Modelmaten: huis 45 mm, zuigerstang 12,5 mm; RIDEX noemt 50 x 12,5 mm.",
   "src": [
@@ -477,7 +477,7 @@
    ],
    [
     "432102103R",
-    "\"for OE number\" bij GSP GK7032 en OE-lijst van QUINTON HAZELL QWB1675",
+    "OE-verwijzing bij GSP GK7032 en OE-lijst van QUINTON HAZELL QWB1675",
     "B"
    ]
   ],
@@ -548,7 +548,7 @@
   "oe": [
    [
     "432000015R",
-    "OE-lijst van RIDEX 82B1128 (300x11, with wheel hub, in de lijst 23370)",
+    "OE-lijst van RIDEX 82B1128 (300x11, met naaf, in de lijst 23370)",
     "B"
    ],
    [
@@ -571,13 +571,13 @@
    [
     "RIDEX",
     "82B0542",
-    "met naaf (with wheel hub), zonder lager, 300x11, hoogte 81,7",
+    "met naaf, zonder lager, 300x11, hoogte 81,7",
     "A"
    ],
    [
     "ATE",
     "24.0111-0173.2",
-    "met wiellager en ABS-ring (with wheel bearing, with ABS sensor ring)",
+    "met wiellager en ABS-ring",
     "A"
    ],
    [
@@ -820,7 +820,7 @@
    [
     "ABE",
     "CJH096ABE",
-    "achteras; Autodoc noemt ook \"Rear Axle Right\"",
+    "achteras; Autodoc noemt ook achteras rechts",
     "A"
    ],
    [
@@ -877,7 +877,7 @@
    [
     "BOSCH",
     "0 986 494 528",
-    "low-metallic",
+    "laagmetallisch",
     "A"
    ],
    [
@@ -901,7 +901,7 @@
    [
     "ATE",
     "13.0460-7251.2",
-    "Spareto-kruisverwijzing van 8671016711; staat ook als Rear Axle-blokset voor 23370 op andere Autodoc-categoriepagina's",
+    "Spareto-kruisverwijzing van 8671016711; staat ook als blokset voor de achteras voor 23370 op andere Autodoc-categoriepagina's",
     "C"
    ]
   ],
@@ -1022,7 +1022,7 @@
    [
     "RIDEX",
     "405R0031",
-    "Rear Axle, Right; Required quantity 2; Ø38, ATE, floating caliper",
+    "achteras rechts; 2 stuks nodig; Ø 38 mm, ATE, zwevende remklauw",
     "A"
    ]
   ],
@@ -1060,7 +1060,7 @@
    [
     "A.B.S.",
     "55006",
-    "voor- en achteras; \"with additional guide bolt\", \"without bolts / screws\"",
+    "voor- en achteras; met extra geleidepen, zonder bouten",
     "A"
    ],
    [
@@ -1078,7 +1078,7 @@
    [
     "ATE",
     "11.8171-0008.1",
-    "Spareto-kruisverwijzing van 7701049101 (Guide Bolt, brake caliper); geen positie op Spareto",
+    "Spareto-kruisverwijzing van 7701049101 (geleidepen remklauw); geen positie op Spareto",
     "C"
    ]
   ],
@@ -1184,7 +1184,7 @@
    [
     "CORTECO",
     "19030300",
-    "binnenslang (inner), 185 mm",
+    "binnenslang, 185 mm",
     "A"
    ]
   ],
@@ -1233,7 +1233,7 @@
    [
     "CORTECO",
     "19030300",
-    "binnenslang (inner), 185 mm",
+    "binnenslang, 185 mm",
     "A"
    ]
   ],

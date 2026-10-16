@@ -43,25 +43,25 @@
    [
     "CORTECO",
     "450345P",
-    "Intake Manifold",
+    "inlaatspruitstuk",
     "A"
    ],
    [
     "ELRING",
     "331.620",
-    "Cylinder Head",
+    "cilinderkop",
     "A"
    ],
    [
     "FAI AutoParts",
     "IM1179",
-    "Gasket Set, engine code F4R 811",
+    "pakkingset, motorcode F4R 811",
     "A"
    ],
    [
     "PAYEN",
     "JD5911",
-    "TecDoc: F4R 811, positie Intake Manifold; ook Spareto, OE 8200067710",
+    "TecDoc: F4R 811, positie inlaatspruitstuk; ook Spareto, OE 8200067710",
     "A"
    ]
   ],
@@ -93,7 +93,7 @@
   "oe": [
    [
     "223658570R",
-    "for OE bij TOPRAN 700 898.",
+    "OE-verwijzing bij TOPRAN 700 898.",
     "B"
    ],
    [
@@ -112,7 +112,7 @@
    [
     "VEMO",
     "V46-72-0123-1",
-    "TecDoc: F4R 811; Autodoc-naam \"Air Pressure Sensor, height adaptation\", Spareto-kruisverwijzing van 8200233831",
+    "TecDoc: F4R 811; Autodoc zet het bij de luchtdruksensoren (hoogteaanpassing); Spareto-kruisverwijzing van 8200233831",
     "A"
    ],
    [
@@ -130,7 +130,7 @@
    [
     "TOPRAN",
     "700 898",
-    "for OE number 2236 585 70R",
+    "voor OE-nummer 2236 585 70R",
     "A"
    ],
    [
@@ -301,12 +301,12 @@
    ],
    [
     "161192787R",
-    "for OE bij MAXGEAR 70-0174.",
+    "OE-verwijzing bij MAXGEAR 70-0174.",
     "B"
    ],
    [
     "8200060868",
-    "for OE bij MAXGEAR 70-0174.",
+    "OE-verwijzing bij MAXGEAR 70-0174.",
     "B"
    ]
   ],
@@ -314,7 +314,7 @@
    [
     "MAXGEAR",
     "70-0174",
-    "positie Outlet, ring 63,2 mm, VIN BT06/BT0H/BT0Y",
+    "positie uitgang, ring 63,2 mm, VIN BT06/BT0H/BT0Y",
     "A"
    ],
    [
@@ -332,7 +332,7 @@
    [
     "FEBEST",
     "RINGAH-010",
-    "positie Outlet, 63 mm, modelcode BT06 BT0G BT0H BT0Y BT15 BT18",
+    "positie uitgang, 63 mm, modelcode BT06 BT0G BT0H BT0Y BT15 BT18",
     "A"
    ],
    [
@@ -348,7 +348,7 @@
     "C"
    ]
   ],
-  "var": "Meer afdichtringen voor het gasklephuis in de lijst: aan de uitgang (Outlet) MAXGEAR 70-0174 (63,2 mm) en FEBEST RINGAH-010 (63 mm), maar ook MAXGEAR 70-0160 en 70-0159 (Outlet, zonder maat); aan de inlaat FEBEST RINGAH-004/005/009 en STARK SKGI-0710151. RIDEX 42G0144 en STARK SKGI-0710144 (63,2 mm) noemen geen positie. Maat bij de auto controleren.",
+  "var": "Meer afdichtringen voor het gasklephuis in de lijst: aan de uitgang MAXGEAR 70-0174 (63,2 mm) en FEBEST RINGAH-010 (63 mm), maar ook MAXGEAR 70-0160 en 70-0159 (uitgang, zonder maat); aan de inlaat FEBEST RINGAH-004/005/009 en STARK SKGI-0710151. RIDEX 42G0144 en STARK SKGI-0710144 (63,2 mm) noemen geen positie. Maat bij de auto controleren.",
   "per": "stuk",
   "note": "Categorie Throttle body bevat ook afdichtringen, herkend aan de naam \"Seal, throttle body\". STARK SKGI-0710144 heet op de productpagina \"Inlet manifold gasket\" (OE 7701045723).",
   "src": [
@@ -417,7 +417,7 @@
   "oe": [
    [
     "8200058379",
-    "for OE bij MEAT & DORIA 75112098.",
+    "OE-verwijzing bij MEAT & DORIA 75112098.",
     "B"
    ]
   ],
@@ -591,7 +591,7 @@
    ],
    [
     "7700114234",
-    "for OE bij FAI AutoParts EM881A.",
+    "OE-verwijzing bij FAI AutoParts EM881A.",
     "B"
    ]
   ],
@@ -629,7 +629,7 @@
    [
     "FAI AutoParts",
     "EM881A",
-    "Gasket Set; for OE number 77 00 114 234",
+    "pakkingset; voor OE-nummer 77 00 114 234",
     "A"
    ]
   ],
@@ -1069,7 +1069,7 @@
    [
     "FEBEST",
     "RNSB-DUSTUP",
-    "positie Upper Left, Upper Right, vanaf modeljaar 2008",
+    "positie linksboven, rechtsboven, vanaf modeljaar 2008",
     "A"
    ]
   ],
@@ -1101,7 +1101,7 @@
   "oe": [
    [
     "921000002R",
-    "for OE bij MEAT & DORIA 991140.",
+    "OE-verwijzing bij MEAT & DORIA 991140.",
     "B"
    ]
   ],
@@ -1133,7 +1133,7 @@
    [
     "MEAT & DORIA",
     "991140",
-    "for OE number 921000002R",
+    "voor OE-nummer 921000002R",
     "A"
    ]
   ],
@@ -1190,7 +1190,7 @@
    [
     "MEAT & DORIA",
     "K132385",
-    "for OE number 1618220 (geen Renault-nummer)",
+    "voor OE-nummer 1618220 (geen Renault-nummer)",
     "A"
    ],
    [
@@ -1242,7 +1242,7 @@
   "oe": [
    [
     "144960001R",
-    "for OE bij AKS DASIS 187022N.",
+    "OE-verwijzing bij AKS DASIS 187022N.",
     "B"
    ]
   ],
@@ -1256,7 +1256,7 @@
    [
     "AKS DASIS",
     "187022N",
-    "automaat; for OE number 144960001R",
+    "automaat; voor OE-nummer 144960001R",
     "A"
    ],
    [
@@ -1370,7 +1370,7 @@
   "oe": [
    [
     "217100014R",
-    "for OE bij MEAT & DORIA 2035072.",
+    "OE-verwijzing bij MEAT & DORIA 2035072.",
     "B"
    ],
    [
@@ -1388,7 +1388,7 @@
    [
     "MEAT & DORIA",
     "2035072",
-    "Autodoc-naam \"Water Tank, radiator\", met sluitplug; for OE number 217100014R (zelfde OE als NTY CZW-RE-008)",
+    "Autodoc zet het bij de expansievaten; met sluitplug; voor OE-nummer 217100014R (zelfde OE als NTY CZW-RE-008)",
     "A"
    ],
    [
@@ -1446,7 +1446,7 @@
   "oe": [
    [
     "7700805131",
-    "for OE bij KAMOKA 7729005.",
+    "OE-verwijzing bij KAMOKA 7729005.",
     "B"
    ],
    [
@@ -1464,7 +1464,7 @@
    [
     "KAMOKA",
     "7729005",
-    "for OE number 7700805131",
+    "voor OE-nummer 7700805131",
     "A"
    ],
    [
@@ -1644,12 +1644,12 @@
   "oe": [
    [
     "165469229R",
-    "for OE bij KAMOKA F229301.",
+    "OE-verwijzing bij KAMOKA F229301.",
     "B"
    ],
    [
     "165464616R",
-    "for OE bij KAMOKA F248101.",
+    "OE-verwijzing bij KAMOKA F248101.",
     "B"
    ],
    [
@@ -1683,7 +1683,7 @@
    [
     "KAMOKA",
     "F229301",
-    "247 x 197 x 55 mm; for OE number 165469229R",
+    "247 x 197 x 55 mm; voor OE-nummer 165469229R",
     "A"
    ],
    [
@@ -1701,7 +1701,7 @@
    [
     "KAMOKA",
     "F248101",
-    "247 x 197 x 50 mm; for OE number 165464616R",
+    "247 x 197 x 50 mm; voor OE-nummer 165464616R",
     "A"
    ],
    [
@@ -1986,25 +1986,25 @@
    [
     "FISPA",
     "90536",
-    "positie after catalytic converter, OE 82 00 761 588",
+    "positie na de katalysator, OE 82 00 761 588",
     "A"
    ],
    [
     "MOBILETRON",
     "OS-15P",
-    "after catalytic converter, zonder stekker (universeel, stekker van de oude sonde nodig)",
+    "na de katalysator, zonder stekker (universeel, stekker van de oude sonde nodig)",
     "A"
    ],
    [
     "NTY",
     "ESL-AU-007",
-    "after catalytic converter",
+    "na de katalysator",
     "A"
    ],
    [
     "NTY",
     "ESL-CH-009",
-    "after catalytic converter",
+    "na de katalysator",
     "A"
    ],
    [
@@ -2020,7 +2020,7 @@
     "C"
    ]
   ],
-  "var": "Alleen artikelen met positie \"after catalytic converter\" gekozen; de lijst bevat ook sondes voor de katalysator. VEGAZ ULS-460 noemt 8200632571, dat ook bij DENSO DOX-2076 (voor de katalysator) staat.",
+  "var": "Alleen artikelen met positie na de katalysator gekozen; de lijst bevat ook sondes voor de katalysator. VEGAZ ULS-460 noemt 8200632571, dat ook bij DENSO DOX-2076 (voor de katalysator) staat.",
   "per": "stuk",
   "note": "FISPA 90536 noemt OE 8200761588 en 8200495791; MEAT & DORIA 81936 staat in de lijst met \"for OE number 8200761588\" (zonder positie). MOBILETRON OS-15P is een sonde zonder stekker. NGK/NTK 1952 zijn universeel en niet gebruikt.",
   "src": [
@@ -2069,7 +2069,7 @@
    [
     "WALKER",
     "80404",
-    "positie Rear, Centre, Front",
+    "positie achter, midden, voor",
     "A"
    ],
    [
