@@ -196,9 +196,11 @@ function hexBolt(len, d, ax = 'y') { // kop bij oorsprong, steel richting +as; s
     return yTo(merge([head, shank, washer]), ax);
   });
 }
-function spring(R, wire, h, turns, ax = 'y') {
-  return cache(`sp${R}|${wire}|${h}|${turns}|${ax}`, () => {
-    const pts = []; const N = Math.max(24, Math.ceil(turns * 14));
+// schroefveer langs de as ax, gecentreerd op de oorsprong; per = punten per winding (standaard 14, minstens 24 punten in totaal).
+// De cachesleutel krijgt per alleen als die afwijkt, zodat bestaande sleutels en aanroepen gelijk blijven.
+function spring(R, wire, h, turns, ax = 'y', per = 14) {
+  return cache(`sp${R}|${wire}|${h}|${turns}|${ax}` + (per !== 14 ? `|${per}` : ''), () => {
+    const pts = []; const N = Math.max(24, Math.ceil(turns * per));
     for (let i = 0; i <= N; i++) { const t = i / N, a = t * turns * PI * 2; pts.push(V3(R * Math.cos(a), t * h - h / 2, R * Math.sin(a))); }
     return yTo(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), N, wire, 5, false), ax);
   });
@@ -206,6 +208,43 @@ function spring(R, wire, h, turns, ax = 'y') {
 function tube(points, r, seg = 64, rad = 10, closed = false) {
   const curve = new THREE.CatmullRomCurve3(points.map(p => Array.isArray(p) ? V3(...p) : p), closed, 'centripetal');
   return new THREE.TubeGeometry(curve, seg, r, rad, closed);
+}
+
+/* ---------- generieke onderdelen en bewerkingen (golf 5b-3, G8e) ---------- */
+// profiel [r, y] van een balg voor G.lathe: n plooien over lengte len, straal loopt van r1 naar r2; elk tweede punt 5 mm naar binnen
+function bellows(r1, r2, len, n) { const pts = []; for (let k = 0; k <= n * 2; k++) { const t = k / (n * 2); pts.push([lerp(r1, r2, t) - (k % 2 ? 0.005 : 0), t * len]); } return pts; }
+// zeskantmoer: zeshoekig prisma met omgeschreven straal r en hoogte h langs as ax, gecentreerd op de oorsprong
+function hexNut(ax, r, h) { return G.cyl(ax, r, r, h, 6); }
+// slangklem: band (torus) met straal R rond as ax.
+// Zonder schroef (standaard): dunne band met een slotblokje van 8 mm op +x in het lokale frame.
+// Met schroef ({ screw: true }): bredere band met slothuis en stelschroef op +y; gebouwd rond as z en daarna naar ax gedraaid.
+function hoseClamp(ax, R, o = {}) {
+  if (!o.screw) return cache(`hcl${ax}${R}`, () => merge([G.torus(ax, R, 0.0018, 20, 4), xf(G.box(0.008, 0.008, 0.008), [R + 0.003, 0, 0])]));
+  return cache(`hcls${ax}${R}`, () => zTo(merge([G.torus('z', R, 0.0022, 14, 5), xf(G.box(0.014, 0.006, 0.01), [0, R + 0.004, 0]), xf(G.cyl('x', 0.0025, 0.0025, 0.016, 6), [0, R + 0.007, 0])]), ax));
+}
+// openmodus: scharnier om een as; pivot in het frame van de ouder van de knoop (zelfde frame als p); extra voegt velden toe (min, label, look)
+function hinge(pivot, axis, angle, extra) { return Object.assign({ type: 'hinge', pivot, axis, angle }, extra); }
+// volger van een opener: beweegt met de stand van de leider om hetzelfde scharnier
+function follow(lead, pivot, axis, angle, extra) { return Object.assign({ type: 'hinge', pivot, axis, angle, follow: lead }, extra); }
+// veelhoek afsnijden op a*u + b*v <= c (Sutherland-Hodgman) met u en v de eerste twee coördinaten van elk punt;
+// verdere coördinaten (bijvoorbeeld z) worden lineair meegenomen. Punten op de lijn blijven staan.
+function clipPoly(poly, a, b, c) {
+  const out = [];
+  poly.forEach((P0, i) => {
+    const Q = poly[(i + 1) % poly.length], dp = a * P0[0] + b * P0[1] - c, dq = a * Q[0] + b * Q[1] - c;
+    if (dp <= 0) out.push(P0);
+    if ((dp < 0 && dq > 0) || (dp > 0 && dq < 0)) { const t = dp / (dp - dq); out.push(P0.map((v, k) => v + (Q[k] - v) * t)); }
+  });
+  return out;
+}
+// naden gladtrekken, ook tussen losse vlakken: eerst de normalen weg (anders vallen punten op de naad niet samen),
+// dan punten binnen tol samenvoegen en gladde normalen berekenen. Let op: haalt de normalen van g zelf weg.
+function weldAll(g, tol = 1e-4) { g.deleteAttribute('normal'); const m = THREE.BufferGeometryUtils.mergeVertices(g, tol); m.computeVertexNormals(); return m; }
+// punten op positie samenvoegen (1e-5) en gladde normalen met een knik boven drempel (radialen; 0,52 is 30 graden)
+function creasedWeld(g, drempel) { return cleanG(THREE.BufferGeometryUtils.toCreasedNormals(THREE.BufferGeometryUtils.mergeVertices(g, 1e-5), drempel)); }
+// n kopieën van fn() op een cirkel met straal r in het (y,z)-vlak rond middelpunt c, op langsplaats x; gecachet onder key
+function ringPattern(key, n, r, fn, phase = 0, c = [0, 0], x = 0) {
+  return cache(key, () => merge(Array.from({ length: n }, (_, k) => { const a = phase + k * PI * 2 / n; return xf(fn(), [x, c[0] + r * Math.cos(a), c[1] + r * Math.sin(a)]); })));
 }
 function shapeOf(pts) { const s = new THREE.Shape(); pts.forEach((p, i) => i ? s.lineTo(p[0], p[1]) : s.moveTo(p[0], p[1])); s.closePath(); return s; }
 function circlePath(cx, cy, r) { const h = new THREE.Path(); h.absarc(cx, cy, r, 0, PI * 2, true); return h; }
@@ -249,7 +288,7 @@ function roundPlate(poly, t, b, ri = 0.025, seg = 4) {
   g.translate(0, 0, -(t - 2 * b) / 2);
   // hoekpunten op positie samenvoegen (geïndexeerd), daarna gladde normalen met een knik boven 30 graden
   g.deleteAttribute('normal'); g.deleteAttribute('uv');
-  return cleanG(THREE.BufferGeometryUtils.toCreasedNormals(THREE.BufferGeometryUtils.mergeVertices(g, 1e-5), 0.52));
+  return creasedWeld(g, 0.52);
 }
 // vorm in (x,z)-vlak, dikte langs y (bovenaanzicht)
 function plan(shape, depth) { const g = extrude(shape, depth); g.rotateX(HALF); return g; }
