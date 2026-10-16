@@ -146,6 +146,11 @@ for (const n of ALL) {
 }
 // needs: deze opener kan pas open als een andere open is (panoramadak: eerst het zonnescherm)
 for (const n of OPENERS) n.opn.vis = uiOpenVis(n);
+// hideWhen: de knoop is uitgenomen zolang een van de genoemde openers open is; die openers markeren de zichtbaarheid als vuil
+for (const n of ALL) {
+  if (!n.hideWhen) continue;
+  n.hideN = n.hideWhen.map(r => uiRef(r, n.name)).filter(m => { if (m && m.opn && !m.opn.lead) { m.opn.vis = true; return true; } console.error('openmodus: hideWhen van ' + n.name + ' lost niet op'); return false; });
+}
 for (const n of OPENERS) { const o = n.opn; if (!o.needSpec) continue; const m = uiRef(o.needSpec, n.name); if (m && m.opn && !m.opn.lead) { o.needN = m; m.opn.needBy.push(n); } else console.error('openmodus: needs van ' + n.name + ' lost niet op'); }
 for (const n of ALL) {
   if (!n.strut) continue;
@@ -373,7 +378,7 @@ function applyVisibility() {
   uiPickable.length = 0;
   (function walk(n, inside, pv) {
     const ins = inside || !ISO.length || ISO.includes(n);
-    const own = (ins || onPath.has(n)) && !uiInnerHidden(n);
+    const own = (ins || onPath.has(n)) && !uiInnerHidden(n) && !(OPENMODE && n.hideN && n.hideN.some(m => m.ot > 0));
     n.obj.visible = own; n.vis = own; n.ev = pv && own;
     if (!n.asm) { if (n.ev && ins) uiPickable.push(n.obj); return; }
     for (const k of n.kids) walk(k, ins, n.ev);
