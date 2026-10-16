@@ -165,6 +165,23 @@ De kolom "Na golf 1" is de tussenstand van 13 oktober 2026 rond 11:30 UTC, ongew
 | `ui_inner.py` | bestond nog niet | 0 eerste treffers op 256 ingesloten knopen (na golf 2 waren het er 52) | 0 eerste treffers op 256 ingesloten knopen | 0 eerste treffers op 253 ingesloten knopen (39.200 stralen op de hele auto, 20.000 per hoofdgroep). Op `ff42dbd` hetzelfde |
 | URL na publicatie gelijk aan `index.html` | niet van toepassing | Gelijk. Versie 2 van de URL, teruggelezen op 13 oktober om 17:00 UTC, bevat `index.html` van `8095a3e` (618.341 bytes, md5 `dc2bc3b0…`) precies één keer en aaneengesloten. Daaromheen staan alleen het vaste paginaskelet van de host (531 bytes: doctype, charset, viewport en basisstijl tot en met `<body>`) en de afsluiting `</body></html>` (15 bytes). | Gelijk. Versie 3 van de URL, teruggelezen op 13 oktober om 17:37 UTC, bevat `index.html` van `60909fe` (620.025 bytes, md5 `d92a8bb2…`) precies één keer en aaneengesloten, met hetzelfde paginaskelet ervoor (531 bytes) en dezelfde afsluiting erna (15 bytes). | Gelijk. Versie 4 van de URL bevat `index.html` uit `ec92a53` (commit `9c03015`, 663.654 bytes, md5 `70b2e62a426312ec788fc851086ab4c6`) precies één keer, met alleen het paginaskelet van de host eromheen (531 bytes ervoor, 15 erna). Versie 5, gepubliceerd op 14 oktober en teruggelezen om 00:02 UTC, bevat `index.html` uit `ff42dbd` (commit `5b6cefa`, 678.887 bytes, md5 `649cbf95397d877f6a361600c42a4afd`) precies één keer en byte voor byte gelijk, met hetzelfde skelet (531 bytes ervoor, 15 erna) |
 
+## Resultaten versie 7 (golf 5 en 5a)
+
+Strikte set (`tools/orkestratie/finaltests.sh`) op de samengevoegde stand `2c179a5`, 16 oktober 2026, 01:21 tot 01:52 UTC; CI op GitHub groen op dezelfde commit. De statistieken staan in [cijfers.md](cijfers.md).
+
+| Test | Uitslag | Duur |
+|---|---|---|
+| `build.py --lint` | ok | 0 s |
+| `smoke.py` | geen consolefouten of -waarschuwingen, geen horizontale scroll op de telefoon | 68 s |
+| `integrity.py` | 0 fouten, 0 ankerfouten, 0 presetfouten | 28 s |
+| `silhouette.py` | ok | 17 s |
+| `ui_inner.py --open --strict` | geen ingesloten knoop van buitenaf zichtbaar | 99 s |
+| `opentest.py --strikt-min` | 26 openers, 0 fouten; twee meldingen voor volgers zonder `open.min` (toegestaan) | 515 s |
+| `itest.py` met poorten | 161 van 161 (controle 16 telefoon staand, 17 deelbare stand) | 899 s |
+| `tri.py --gate` | budgetpoort ok | 9 s |
+| `pubsmoke.py` | OK, klaar na 9,5 s op 390 x 844 | 26 s |
+| `stats.py` | ok | 15 s |
+
 ## Resultaten golf 4
 
 Eindstand `g4final4` op `3ab6a8d` (de uitvoer staat in het scratchpad). Daarna veranderden alleen de screenshots en de documentatie.

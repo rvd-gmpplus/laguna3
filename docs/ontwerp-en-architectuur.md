@@ -235,7 +235,7 @@ Hoeken in graden, slag in meter. De eindstand en de ondergrens komen uit `tools/
 | Achterklep | scharnier dakrand | 66 | 60 | twee gasveren als telescoop; de hoedenplank volgt (33 graden) en hangt aan twee koordjes (telescopen) aan de klep, met de luidsprekers erop; de plank met pennen, koordjes en luidsprekers is uitgenomen (`hideWhen`) zolang een rugleuning of de bagagevloer open is |
 | Tankklep | scharnier voorrand | 140 | 112 | tankkom in het rechter achterscherm, capless vulhals |
 | Glaspaneel voor (label Schuifdak) | kantelen en schuiven | 0,60 | 0,48 | needs Zonnescherm voor; luchtgeleider volgt |
-| Zonnescherm voor, achter | schuif naar de cassette | 0,65 en 0,47 | 0,54 en 0,39 (0,82 maal de rechte slag van de eerste lamel) | lamellen als volgers |
+| Zonnescherm voor, achter | schuif naar de cassette | 0,60 en 0,44 | 0,50 en 0,36 (0,82 maal de rechte slag van de eerste lamel, met de stop voor de cassette meegerekend) | lamellen als volgers; de stapel stopt net voor de cassette zodat de greep van binnen zichtbaar blijft |
 | Handschoenenkastklep | scharnier onderrand | 72 | 60 | needs Portier rechtsvoor |
 | Armsteunkussen | scharnier | 66 | 53 | needs Portier linksvoor |
 | Rugleuning groot deel (rechts), klein deel (links) | scharnier | 104 | 83 | needs Achterklep; hoofdsteunen en gordels gaan mee |

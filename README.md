@@ -239,4 +239,4 @@ Alles uit elkaar: [docs/screenshots/alles-uit-elkaar.png](docs/screenshots/alles
 
 Telefoonweergave: [docs/screenshots/mobiel.png](docs/screenshots/mobiel.png)
 
-De screenshots in `docs/screenshots/` tonen de stand van golf 4: ze zijn gemaakt uit de bron van `3ab6a8d` met `tools/orkestratie/docshots.py`, via de presets van de pagina, op 1280 x 800 (`mobiel.png` op 390 x 844 met pixelverhouding 2) en met software-rendering in de container.
+De screenshots in `docs/screenshots/` tonen de stand van versie 7 (golf 5 met de herstelronde en golf 5a): ze zijn gemaakt met `tools/orkestratie/docshots.py`, via de presets van de pagina, op 1280 x 800 (`mobiel.png` op 390 x 844 met pixelverhouding 2), met software-rendering in de container en daarna teruggebracht tot 256 kleuren.
