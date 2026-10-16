@@ -53,11 +53,12 @@ with session() as s:
     settle(pg)
     pg.screenshot(path=f'{out}/91-dak-open-boven.png')
     pg.evaluate('''() => { const L = window.__laguna; L.finishAll(); const c = L.camera || window.camera; }''')
-    # camera van binnen op de middenlijn tussen de hoofdsteunen, omhoog naar de dakopening (een hoofdsteun dekt het beeld niet af)
-    inside = pg.evaluate('''() => { try { camera.position.set(0, 1.06, -1.06); controls.target.set(0, 1.43, -0.08); controls.update(); window.__laguna.finishAll(); return true; } catch (e) { return String(e); } }''')
+    # camera van binnen, laag achter in de cabine tussen de achterhoofdsteunen, schuin omhoog naar voren met een ruime hoek (70 graden): beide openingen met
+    # de dwarsbalk en de rand rondom, de voorste opening met lucht, de achterste met het getinte glas. In 92 staat ook het achterste scherm open, zodat het glas zichtbaar is.
+    inside = pg.evaluate('''() => { try { window.__laguna.select(window.__laguna.ROOT); window.__laguna.setOpen("Zonnescherm achter", 1, true); camera.fov = 70; camera.updateProjectionMatrix(); camera.position.set(0, 0.9, -1.05); controls.target.set(0, 1.45, -0.3); controls.update(); window.__laguna.finishAll(); return true; } catch (e) { return String(e); } }''')
     pg.wait_for_timeout(1200)
     pg.screenshot(path=f'{out}/92-dak-open-binnen.png')
-    pg.evaluate('() => { window.__laguna.setOpen("Glaspaneel voor", 0, true); window.__laguna.setOpen("Zonnescherm voor", 0, true); }')
+    pg.evaluate('() => { window.__laguna.setOpen("Glaspaneel voor", 0, true); window.__laguna.setOpen("Zonnescherm voor", 0, true); window.__laguna.setOpen("Zonnescherm achter", 0, true); }')
     pg.wait_for_timeout(900)
     pg.screenshot(path=f'{out}/93-dak-dicht-binnen.png')
     # telefoon
