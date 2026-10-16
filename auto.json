@@ -16,5 +16,7 @@
   "openUitleg": "Renault Laguna III hatchback (fase 2, 2011) in Initiale Paris-uitvoering, zilvergrijs metallic (Gris Platine), met de 2.0 Turbo F4Rt-motor, zestraps automaat en elektrisch panoramadak. Openen: klik op de motorkap, een portier, een ruit, een spiegel, de achterklep, de tankklep of het panoramadak om het te openen; nog een klik sluit het weer. Rechtsklik, Shift+klik of vasthouden sluit de binnenste open opener.",
   "pnType": "2.0 16V Turbo 170 pk; onderdelencatalogi noemen de reeks F4R 811, de motor van deze auto is waarschijnlijk een F4Rt 813",
   "hintVersie": "v2",
+  "pnToelichting": false,
+  "docshots": [["gemonteerd", "assembled"], ["hoofdgroepen", "main"], ["alles-uit-elkaar", "everything"], ["motor-f4rt", "engine"], ["automaat", "gearbox"], ["rontgen", "xray"], ["openen-motorruimte", "openHood"], ["openen-instappen", "openDoors"], ["openen-bagageruimte", "openTrunk"], ["openen-panoramadak", "openRoof"], ["openen-alles", "openAll"]],
   "verboden": ["Laguna", "laguna", "LAGUNA", "F4R", "AJ0", "Initiale", "zilvergrijs"]
 }

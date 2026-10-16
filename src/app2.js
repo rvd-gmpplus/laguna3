@@ -210,6 +210,8 @@ function renderPn(n) {
     box.appendChild(mk('p', 'pn-txt', 'Bewijs: A staat in de catalogus voor dit type (' + AUTO.pnType + ') op de juiste plaats; B is het ' + AUTO.merk + '-nummer van zo\'n artikel; C is een kruisverwijzing van een A- of B-nummer; D komt alleen uit een advertentie voor een gebruikt onderdeel en is niet in een catalogus gecontroleerd.'));
   }
   if (u && u.var) { box.appendChild(mk('h4', null, kz ? 'Varianten in de catalogus' : 'Variant')); box.appendChild(mk('p', 'pn-txt', u.var)); }
+  // de notitie bij een eenheid is per auto een onderzoeksaantekening of een toelichting voor de lezer (auto.json: pnToelichting)
+  if (AUTO.pnToelichting && u && u.note) { box.appendChild(mk('h4', null, 'Toelichting')); box.appendChild(mk('p', 'pn-txt', u.note)); }
   if (u && u.per) { box.appendChild(mk('h4', null, 'Verpakking')); box.appendChild(mk('p', 'pn-txt', u.per)); }
   const links = u && (u.src || []).filter(x => x && /^https?:\/\//i.test(x[0]));
   if (links && links.length) {

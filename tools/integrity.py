@@ -40,7 +40,8 @@ CHECK = r"""(ANCHORS) => {
       if (n.obj && L.__inBody(n)) {
         const mirror = L.__inMirror(n), wmax = mirror ? MIRW : WMAX;
         if (box.min.x < -wmax || box.max.x > wmax) err.push(`carrosserie breder dan ${wmax.toFixed(3)}${mirror ? ' (spiegel)' : ''}: ${path(n)} [x ${box.min.x.toFixed(3)} .. ${box.max.x.toFixed(3)}]`);
-        if (box.max.z > ZF + 0.006 || box.min.z < ZR - 0.006) err.push(`carrosserie langer dan ZR..ZF: ${path(n)} [z ${box.min.z.toFixed(3)} .. ${box.max.z.toFixed(3)}]`);
+        let ut = 0; for (let p = n; p; p = p.parent) ut = Math.max(ut, p.uitsteek || 0);   // bewust uitstekend (optie uitsteek, zoals een trekhaak)
+        if (box.max.z > ZF + 0.006 + ut || box.min.z < ZR - 0.006 - ut) err.push(`carrosserie langer dan ZR..ZF: ${path(n)} [z ${box.min.z.toFixed(3)} .. ${box.max.z.toFixed(3)}]`);
       } else if (box.min.x < -MIRW || box.max.x > MIRW) err.push(`breder dan de spiegels (${MIRW.toFixed(3)}): ${path(n)} [x ${box.min.x.toFixed(3)} .. ${box.max.x.toFixed(3)}]`);
       const key = box.getCenter(v).toArray().map(x => x.toFixed(4)).join(',') + '|' + (g.index ? g.index.count : a.count) + '|' + (n.obj.material && n.obj.material.name);
       if (pos.has(key)) warn.push('dubbel onderdeel op dezelfde plek: ' + path(n) + '  ==  ' + pos.get(key)); else pos.set(key, path(n));

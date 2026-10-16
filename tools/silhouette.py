@@ -15,6 +15,8 @@ with open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
     REF = json.load(_f)
 TOP, PLAN, BELT = [tuple(t) for t in REF['top']], [tuple(t) for t in REF['plan']], [tuple(t) for t in REF['belt']]
 AXF, AXR = REF['axf'], REF['axr']
+# hoogtebereik van de zijstralen voor het bovenaanzicht en van het zoeken naar de raamlijn (per auto; standaard die van de eerste auto)
+PLAN_Y, BELT_Y = REF.get('planY', [0.22, 1.05]), REF.get('beltY', [0.80, 1.15])
 
 MEASURE = r"""(cfg) => {
   const L = window.__model; L.collapseAll(); L.finishAll(); L.ROOT.obj.updateMatrixWorld(true);
@@ -26,8 +28,8 @@ MEASURE = r"""(cfg) => {
   const hitDown = (x, z) => { rc.set(new THREE.Vector3(x, 3, z), new THREE.Vector3(0, -1, 0)); rc.far = 4; const h = rc.intersectObjects(meshes, false)[0]; return h ? h.point.y : null; };
   const hitSide = (y, z) => { rc.set(new THREE.Vector3(2.5, y, z), new THREE.Vector3(-1, 0, 0)); rc.far = 2.6; const h = rc.intersectObjects(meshes, false)[0]; return h ? h : null; };
   const top = cfg.top.map(([z]) => hitDown(0, z));
-  const plan = cfg.plan.map(([z]) => { let best = null; for (let y = 0.22; y <= 1.05; y += 0.02) { const h = hitSide(y, z); if (h && (best === null || h.point.x > best)) best = h.point.x; } return best; });
-  const belt = cfg.belt.map(([z]) => { for (let y = 0.80; y <= 1.15; y += 0.004) { const h = hitSide(y, z); if (h && glassy(h.object)) return y; } return null; });
+  const plan = cfg.plan.map(([z]) => { let best = null; for (let y = cfg.planY[0]; y <= cfg.planY[1]; y += 0.02) { const h = hitSide(y, z); if (h && (best === null || h.point.x > best)) best = h.point.x; } return best; });
+  const belt = cfg.belt.map(([z]) => { for (let y = cfg.beltY[0]; y <= cfg.beltY[1]; y += 0.004) { const h = hitSide(y, z); if (h && glassy(h.object)) return y; } return null; });
   return { top, plan, belt, meshes: meshes.length };
 }"""
 
@@ -45,7 +47,7 @@ def judge(name, ref, got, tol_fn):
 tol = lambda z: REF['tolAs'] if AXR <= z <= AXF else REF['tolOverhang']
 with session() as s:
     pg = s.page(800, 600)
-    r = pg.evaluate(MEASURE, {'top': TOP, 'plan': PLAN, 'belt': BELT})
+    r = pg.evaluate(MEASURE, {'top': TOP, 'plan': PLAN, 'belt': BELT, 'planY': PLAN_Y, 'beltY': BELT_Y})
     out, fails = [], []
     for name, ref, got in (('top', TOP, r['top']), ('plan', PLAN, r['plan']), ('raam', BELT, r['belt'])):
         rows, bad = judge(name, ref, got, tol)
