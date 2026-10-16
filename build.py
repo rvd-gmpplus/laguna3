@@ -10,6 +10,7 @@ Gebruik:
 Controles (de bouw stopt bij een fout):
   - dubbele functienamen op het hoogste niveau over alle bestanden (die zouden elkaar stil overschrijven)
   - dubbele materiaalnamen in std()/phys()
+  - teksten in `d:` en `spec:` (R1, R2 fouten; R4, R5 meldingen) en cachesleutels zonder voorvoegsel van het bestand (R7, melding): zie lint_texts()
   - syntaxis van het samengevoegde script via `node --check` (vangt ook dubbele const/let), en van elk inline script in head.html
 
 De scripttags van three.js krijgen integrity (sha384) en crossorigin="anonymous"; de hash komt uit het lokale npm-pakket
@@ -49,8 +50,275 @@ def read(name):
         return f.read()
 
 
-def lint(sources):
-    errors = []
+# ---------------------------------------------------------------------------------------------------------------------
+# Tekstcontrole en sleutelvoorvoegsels (golf 5b-3, besluit G9e: Nederlandse notatie).
+# lint_texts() leest alleen de stringwaarden van `d:` en `spec:` in de bronbestanden; commentaar en ${...} in sjablonen worden
+# overgeslagen. Regels:
+#   R1 (fout)     in `spec` geen schatwoorden: spec is alleen voor geverifieerde feiten
+#   R2 (fout)     geen decimale punt bij een eenheid (komma decimaal: 114,3 mm)
+#   R4 (melding)  een getal vanaf 1.000 vóór een eenheid heeft een punt als duizendtal (3.250 tpm); jaartallen zonder
+#                 eenheid en productcodes (7PK1795) vallen er niet onder
+#   R5 (melding)  Ø staat zonder spatie vóór de maat (Ø57)
+#   R7 (melding)  een cachesleutel begint met het voorvoegsel van het bestand (tabel `_voorvoegsels` in auto.json: dat is per
+#                 auto, dus niet in dit generieke bestand; een bestand zonder regel in de tabel, zoals core.js, wordt niet getoetst)
+# R4, R5 en R7 zijn meldingen tot de laatste fase van de golf; dan gaan ze naar fouten.
+# ---------------------------------------------------------------------------------------------------------------------
+TEXT_SKIP = {'partnumbers.js'}   # bronnamen en citaten van derden: letterlijk laten staan
+
+_UNIT = (r'(?:mm²|cm²|dm²|m²|mm³|cm³|dm³|m³|km/h|km/u|l/min|g/km|N·m|Nm|kPa|MPa|mbar|bar|psi|µm|mm|cm|dm|km|kg|mg|ml|cl|kN|mA|Ah|kWh|kW|Wh|'
+         r'kHz|Hz|rpm|tpm|°C|°|%|pk|PK|ms|min|uur|dB|[mglNtVAWs])(?![A-Za-zÀ-ÿ²³µ])')
+_CHAIN = r'(?:\s*[×x]\s*\d[\d.,]*)*\s*'   # maten als 4.695 × 1.811 × 1.445 mm: de eenheid staat achter de laatste
+_R1 = re.compile(r'(?<![A-Za-zÀ-ÿ])(?:geschat\w*|aannemelijk\w*|circa|ca\.|ongeveer|afgeleid\w*|schatting\w*)', re.I)
+_R2 = re.compile(r'(?<![0-9A-Za-z_.,])\d+\.\d{1,2}(?!\d|[.,]\d)' + _CHAIN + _UNIT)
+_R4 = re.compile(r'(?<![0-9A-Za-z_.,])\d{4,}(?!\d|[.,]\d)' + _CHAIN + _UNIT)
+_R5 = re.compile(r'Ø[  \t]')
+
+_S1 = re.compile(r"'(?:\\.|[^'\\\n])*'")
+_S2 = re.compile(r'"(?:\\.|[^"\\\n])*"')
+_RELIT = re.compile(r'/(?:\\.|\[(?:\\.|[^\]\\\n])*\]|[^/\\\n\[])+/[a-z]*')
+_SCAN = re.compile(r"""
+    (?P<lc>//[^\n]*) | (?P<bc>/\*.*?\*/) | (?P<s1>'(?:\\.|[^'\\\n])*') | (?P<s2>"(?:\\.|[^"\\\n])*") | (?P<tpl>`)
+  | (?P<key>(?<![\w$.])(?P<kn>d|spec)[ \t]*:(?!:)) | (?P<call>(?<![\w$])(?P<cn>cache|lathe)\s*\()
+  | (?P<div>/) | (?P<word>[\w$]+) | (?P<other>[^\w$'"`/]+)""", re.X | re.S)
+_ARGS = re.compile(r"""(?P<s>'(?:\\.|[^'\\\n])*'|"(?:\\.|[^"\\\n])*")|(?P<t>`)|(?P<c>//[^\n]*|/\*.*?\*/)|(?P<p>[()\[\]{},])""", re.S)
+_ESC = re.compile(r'\\(u[0-9a-fA-F]{4}|x[0-9a-fA-F]{2}|.)', re.S)
+_FUNC = re.compile(r'\bfunction\s+([A-Za-z_$][\w$]*)\s*\(([^)]*)\)')
+_BLANK = ' \t\r\n'
+
+
+def _unesc(s):
+    def sub(m):
+        c = m.group(1)
+        if c[0] in 'ux' and len(c) > 1:
+            return chr(int(c[1:], 16))
+        return {'n': ' ', 't': ' '}.get(c, c)
+    return _ESC.sub(sub, s)
+
+
+def _tpl(text, i):
+    """Sjabloon vanaf i (net na de backtick). Geeft (tekst met \\0 voor elke ${...}, tekst vóór de eerste ${, eindpositie)."""
+    out, lead = [], None
+    n = len(text)
+    while i < n:
+        c = text[i]
+        if c == '`':
+            return ''.join(out), (''.join(out) if lead is None else lead), i + 1
+        if c == '\\':
+            out.append(_unesc(text[i:i + 2])); i += 2
+        elif c == '$' and text[i + 1:i + 2] == '{':
+            if lead is None:
+                lead = ''.join(out)
+            out.append('\0')
+            i = _skip_expr(text, i + 2)
+        else:
+            out.append(c); i += 1
+    return ''.join(out), (''.join(out) if lead is None else lead), n
+
+
+def _skip_expr(text, i):
+    """Positie na de } die de ${ afsluit (i staat na de {)."""
+    depth = 1
+    while depth:
+        m = _ARGS.search(text, i)
+        if not m:
+            return len(text)
+        i = m.end()
+        if m.group('t'):
+            i = _tpl(text, i)[2]
+        elif m.group('p') == '{':
+            depth += 1
+        elif m.group('p') == '}':
+            depth -= 1
+    return i
+
+
+def _lit(text, i):
+    """Letterlijke string of sjabloon op positie i (na witruimte). Geeft (tekst, tekst vóór de eerste ${, eind) of None."""
+    while i < len(text) and text[i] in _BLANK:
+        i += 1
+    c = text[i:i + 1]
+    if c in ("'", '"'):
+        m = (_S1 if c == "'" else _S2).match(text, i)
+        if m:
+            t = _unesc(m.group(0)[1:-1])
+            return t, t, m.end()
+    elif c == '`':
+        return _tpl(text, i + 1)
+    return None
+
+
+def _args(text, i):
+    """Top-level argumenten van een aanroep (i staat na de haakje-open) als lijst (begin, eind)."""
+    out, start, depth = [], i, 1
+    while True:
+        m = _ARGS.search(text, i)
+        if not m:
+            return out
+        i = m.end()
+        if m.group('t'):
+            i = _tpl(text, i)[2]
+        elif m.group('p'):
+            p = m.group('p')
+            if p in '([{':
+                depth += 1
+            elif p in ')]}':
+                depth -= 1
+                if depth == 0:
+                    out.append((start, m.start()))
+                    return out
+            elif p == ',' and depth == 1:
+                out.append((start, m.start())); start = i
+
+
+def _expr_strings(text, i):
+    """Alle letterlijke strings van de uitdrukking die op positie i begint (tot de komma of sluit-haak op het eerste niveau), als
+    lijst (positie, tekst). Delen die met `+` aan elkaar hangen zijn één tekst; een voorwaarde (a ? 'x' : 'y') geeft er twee."""
+    out, depth, last = [], 0, None
+    while True:
+        m = _ARGS.search(text, i)
+        if not m:
+            return out
+        i = m.end()
+        if m.group('t'):
+            s, _, i = _tpl(text, i)
+        elif m.group('s'):
+            s = _unesc(m.group('s')[1:-1])
+        else:
+            p = m.group('p')
+            if p and p in '([{':
+                depth += 1
+            elif p and p in ')]}':
+                if depth == 0:
+                    return out
+                depth -= 1
+            elif p == ',' and depth == 0:
+                return out
+            continue
+        if out and last is not None and text[last:m.start()].strip() == '+':
+            out[-1] = (out[-1][0], out[-1][1] + s)
+        else:
+            out.append((m.start(), s))
+        last = i
+
+
+def _scan_file(text):
+    """Geeft (teksten, sleutels): teksten = [(positie, soort 'd'|'spec', tekst)]; sleutels = [(positie, letterlijk begin van de
+    sleutel, ident dat erop volgt of None)] van cache(...) en G.lathe(..., sleutel)."""
+    texts, keys = [], []
+    pos, n = 0, len(text)
+    while pos < n:
+        m = _SCAN.match(text, pos)
+        if not m:
+            pos += 1
+            continue
+        pos = m.end()
+        if m.group('tpl'):
+            pos = _tpl(text, pos)[2]
+        elif m.group('div'):
+            j = m.start() - 1
+            while j >= 0 and text[j] in _BLANK:
+                j -= 1
+            if j < 0 or text[j] in '(,=:[!&|?{};+-*%<>~^' or text[max(0, j - 5):j + 1] == 'return':
+                r = _RELIT.match(text, m.start())
+                if r:
+                    pos = r.end()
+        elif m.group('key'):
+            j = m.start() - 1
+            while j >= 0 and text[j] in _BLANK:
+                j -= 1
+            if j >= 0 and text[j] not in '{,(':
+                continue
+            for p, t in _expr_strings(text, pos):
+                texts.append((p, m.group('kn'), t))
+        elif m.group('call'):
+            if m.group('cn') == 'cache':
+                got = _lit(text, pos)
+                if got:
+                    ident = re.match(r'\s*\+\s*([A-Za-z_$][\w$]*)\s*(?![\w$.(\[])', text[got[2]:got[2] + 80])
+                    keys.append((m.start(), got[1], ident.group(1) if ident else None))
+            else:
+                a = _args(text, pos)
+                if len(a) >= 4:
+                    got = _lit(text[:a[3][1]], a[3][0])
+                    if got and not text[got[2]:a[3][1]].strip():
+                        keys.append((m.start(), got[1], None))
+    return texts, keys
+
+
+def _resolve(sources, name, pos, lead, ident):
+    """Vult de parameter `ident` van de functie waarin de cache-aanroep staat in met de letterlijke argumenten van alle aanroepen
+    van die functie (discGeo(..., 'F') geeft 'discF'). Leeg als dat niet kan."""
+    text = dict(sources)[name]
+    fn = None
+    for f in _FUNC.finditer(text, 0, pos):
+        fn = f
+    if not fn:
+        return []
+    params = [re.split(r'[=\s]', p.strip())[0] for p in fn.group(2).split(',')]
+    if ident not in params:
+        return []
+    idx, found = params.index(ident), []
+    call = re.compile(r'(?<![\w$.])(?<!function )' + re.escape(fn.group(1)) + r'\s*\(')
+    for sname, stext in sources:
+        if sname in TEXT_SKIP:
+            continue
+        for c in call.finditer(stext):
+            a = _args(stext, c.end())
+            if len(a) > idx:
+                got = _lit(stext[:a[idx][1]], a[idx][0])
+                if got and not stext[got[2]:a[idx][1]].strip() and '\0' not in got[0]:
+                    found.append(lead + got[0])
+    return sorted(set(found))
+
+
+def lint_texts(sources, prefixes=None):
+    """Geeft (fouten, meldingen): lijsten regels 'bestand:regel: ... (Rn)'. sources = [(naam, tekst)];
+    prefixes = {bestand: [voorvoegsels]} (leeg of None: geen R7)."""
+    errors, notes = [], []
+    prefixes = prefixes or {}
+    texts_of = dict(sources)
+
+    def line(name, pos):
+        return texts_of[name].count('\n', 0, pos) + 1
+
+    def short(t):
+        t = t.replace('\0', '…')
+        return t if len(t) <= 70 else t[:67] + '...'
+
+    for name, text in sources:
+        if name in TEXT_SKIP:
+            continue
+        texts, keys = _scan_file(text)
+        for pos, kind, t in texts:
+            where = f'{name}:{line(name, pos)}'
+            if kind == 'spec':
+                for m in _R1.finditer(t):
+                    errors.append(f'{where}: schatwoord "{m.group(0)}" in spec "{short(t)}" (R1)')
+            for m in _R2.finditer(t):
+                errors.append(f'{where}: decimale punt bij eenheid "{m.group(0).strip()}", schrijf een komma (R2)')
+            for m in _R4.finditer(t):
+                for num in re.findall(r'(?<![\d.,])\d{4,}(?!\d|[.,]\d)', m.group(0)):   # elk getal van een maat apart
+                    notes.append(f'{where}: duizendtal zonder punt "{num}" in "{m.group(0).strip()}", schrijf een punt (R4)')
+            for m in _R5.finditer(t):
+                notes.append(f'{where}: Ø met spatie in "{short(t[max(0, m.start() - 12):m.end() + 12])}" (R5)')
+        pre = prefixes.get(name)
+        if not pre:
+            continue
+        seen = set()
+        for pos, lead, ident in keys:
+            names = (_resolve(sources, name, pos, lead, ident) if ident else []) or [lead]
+            for key in names:
+                if key and not key.startswith(tuple(pre)) and (key, pos) not in seen:
+                    seen.add((key, pos))
+                    notes.append(f'{name}:{line(name, pos)}: cachesleutel "{key}" begint niet met {"/".join(pre)} (R7)')
+    return errors, notes
+
+
+def lint(sources, notes=None, prefixes=None):
+    """Geeft de fouten. Meldingen (R4, R5, R7) komen in de lijst `notes` als die is meegegeven."""
+    errors, found = lint_texts(sources, prefixes)
+    if notes is not None:
+        notes.extend(found)
     seen_fn, seen_mat = {}, {}
     for name, text in sources:
         for i, line in enumerate(text.split('\n'), 1):
@@ -168,7 +436,12 @@ def main(argv):
         argv = argv[:i] + argv[i + 2:]
     args = [a for a in argv if not a.startswith('--')]
     sources = [(f, read(f)) for f in ORDER]
-    errors = lint(sources) + lint_head(read('head.html'))
+    notes = []
+    errors = lint(sources, notes, auto().get('_voorvoegsels')) + lint_head(read('head.html'))
+    if notes:
+        print(f'{len(notes)} meldingen (tot de laatste fase van de golf geen fout):', file=sys.stderr)
+        for n_ in notes:
+            print('  ' + n_, file=sys.stderr)
     if errors:
         print('BOUW GESTOPT:', file=sys.stderr)
         for e in errors:

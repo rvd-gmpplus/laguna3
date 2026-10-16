@@ -1,5 +1,21 @@
 {
   "_uitleg": "Alles wat per auto verschilt in de generieke laag (build.py, core.js, app1.js, presets.js, app2.js, head.html). build.py zet head.html-velden in op {{naam}} en geeft de JavaScript een bevroren object AUTO. Zie docs/framework.md.",
+  "_voorvoegsels": {
+    "body.js": ["bod"],
+    "bodyparts.js": ["bod"],
+    "panorama.js": ["pan", "bod"],
+    "engine1.js": ["eng"],
+    "engine2.js": ["eng"],
+    "engine3.js": ["eng"],
+    "drivetrain.js": ["drv"],
+    "chassis.js": ["chs"],
+    "interior.js": ["int"],
+    "systems.js": ["sys"],
+    "app1.js": ["ui", "app"],
+    "presetdata.js": ["ui", "app"],
+    "presets.js": ["ui", "app"],
+    "app2.js": ["ui", "app"]
+  },
   "id": "laguna3",
   "hook": "__laguna",
   "merk": "Renault",
