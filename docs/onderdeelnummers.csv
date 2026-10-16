@@ -5587,6 +5587,7 @@ Interieur/Bekleding/Bagageruimte;Bagageruimte;3;groep;;;;;niet onderzocht;;;;;;;
 Interieur/Bekleding/Bagageruimte/Achterplankluidspreker links;Achterplankluidspreker links;4;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
 Interieur/Bekleding/Bagageruimte/Achterplankluidspreker rechts;Achterplankluidspreker rechts;4;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
 Interieur/Bekleding/Bagageruimte/Bagageruimtevloer;Bagageruimtevloer;4;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
+Interieur/Bekleding/Bagageruimte/Bagagevloer onderzijde;Bagagevloer onderzijde;4;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
 Interieur/Bekleding/Bagageruimte/Hoedenplank;Hoedenplank;4;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
 Interieur/Bekleding/Bagageruimte/Hoedenplankkoord links;Hoedenplankkoord links;4;groep;;;;;niet onderzocht;;;;;;;;;;;;;;
 Interieur/Bekleding/Bagageruimte/Hoedenplankkoord links/Koordhuls;Koordhuls;5;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
@@ -5599,6 +5600,8 @@ Interieur/Bekleding/Bagageruimte/Opbergbak bagageruimte;Opbergbak bagageruimte;4
 Interieur/Bekleding/Bagageruimte/Plankscharnierpen links;Plankscharnierpen links;4;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
 Interieur/Bekleding/Bagageruimte/Plankscharnierpen rechts;Plankscharnierpen rechts;4;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
 Interieur/Bekleding/Bagageruimte/Versterker Bose;Versterker Bose;4;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
+Interieur/Bekleding/Bagageruimte/Zijbekleding bagageruimte links;Zijbekleding bagageruimte links;4;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
+Interieur/Bekleding/Bagageruimte/Zijbekleding bagageruimte rechts;Zijbekleding bagageruimte rechts;4;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
 Interieur/Bekleding/Dakbekleding;Dakbekleding;3;groep;;;;;niet onderzocht;;;;;;;;;;;;;;
 Interieur/Bekleding/Dakbekleding/A-stijlbekleding links;A-stijlbekleding links;4;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
 Interieur/Bekleding/Dakbekleding/A-stijlbekleding rechts;A-stijlbekleding rechts;4;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
