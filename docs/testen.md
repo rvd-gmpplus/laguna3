@@ -23,6 +23,8 @@ Chromium start met `--use-angle=swiftshader --enable-unsafe-swiftshader --ignore
 
 `harness.page()` neemt een `query` (bijvoorbeeld `'?preset=engine'`) voor de deelbare stand en de debug-overlay. De pagina zet `window.__model` met hulpfuncties voor tests, waaronder `version` (het versiestempel), `finishAll()` om animaties direct af te ronden, `state()`, `preset(id)`, `checkPresets()`, `pickNodeAt(x, y)`, `hoverTarget(x, y)`, `setExplode(v)`, `labelRects()`, `freeView()`, `profileFrames(naam, aantal)`, `timing()` (de opstarttijdlijn in milliseconden sinds het begin van de navigatie), `batchFlush()` (alle wachtende batches direct bouwen) en `batchStats()`. Een eigen `THREE.Raycaster` in een testscript moet `ray.layers.enableAll()` aanzetten: gebundeld renderen zet de losse meshes van gesloten groepen op laag 1, en een raycaster die alleen laag 0 ziet, mist ze (`integrity.py`, `silhouette.py` en `ui_inner.py` doen dit). De oude functies blijven werken; nieuwe haken komen erbij.
 
+De Google Fonts-verzoeken beantwoordt de harness zelf (`Session.page`): uit `~/.cache/explosietekening/fonts`, eenmaal met Python opgehaald; lukt ophalen niet, dan een leeg antwoord zonder consolefout. Aanleiding (16 oktober 2026): in Chromium op macOS faalde het verzoek met `net::ERR_SOCKET_NOT_CONNECTED` zodra een tweede pagina laadde terwijl de eerste nog renderde (steeds de tweede pagina van `smoke.py`; los en met `curl` was het wel 200). Een leeg antwoord alleen liet de tekst op een systeemletter terugvallen, waardoor `visdiff` op elk beeld circa 10 procent afweek; de cache houdt de letters gelijk aan de echte pagina. `pubsmoke.py` houdt de bereikbaarheid van de stylesheet met `curl` bij.
+
 Het gebruikte bestand is de testversie (`python3 build.py --test-only MAP`): die laadt three.js lokaal. De gepubliceerde `index.html` laadt het van jsDelivr en wordt door `pubsmoke.py` apart getoetst.
 
 ## CI op GitHub
@@ -134,7 +136,7 @@ Telt driehoeken per hoofdgroep (met het aantal onderdelen per groep, zodat een z
 
 Visuele regressie. Verkleint elke PNG in BEELDMAP (de uitvoer van `tools/orkestratie/presetshots.py`) met een vaste factor (standaard 2, Lanczos: 1280 × 800 wordt 640 × 400), vergelijkt hem met de gelijknamige PNG in BASISMAP (die al op die maat staat) en telt per beeld het aandeel pixels waarvan een kanaal meer dan de tolerantie (standaard 16 van 255) afwijkt. Boven de drempel (standaard 1,5 procent) is het beeld rood; dan komt er een verschilbeeld (basis, nieuw, afwijking in rood, op de verkleinde maat) in RAPPORT, naast `visdiff.json`. Een beeld dat in een van beide mappen ontbreekt of na het verkleinen een ander formaat heeft is ook rood. Een regel per beeld, onderaan een samenvatting; exitcode 1 bij een rood beeld.
 
-De basislijn staat in `docs/baseline/`: de 42 presets zonder rondleiding, verkleind naar 640 × 400 en teruggebracht tot 256 kleuren (Pillow `quantize` met `MAXCOVERAGE`, dat de grootste kleurfout klein houdt, hier hoogstens 12 stappen per kanaal, en ongeveer de helft kleinere bestanden geeft dan de mediaansnede van `docshots.py`), samen 2.313.903 bytes (ongeveer 2,3 MB; op volle maat met de mediaansnede was het 9,4 MB). Ze is gemaakt met `python3 tools/visdiff.py --basislijn UITVOER_VAN_PRESETSHOTS docs/baseline`. Gemeten op `69cd0fd`: de basislijn tegen zichzelf 0,000 procent op alle 42 beelden; twee verse `presetshots`-reeksen op dezelfde stand tegen de basislijn 0,000 procent op alle 42 beelden bij de standaardtolerantie van 16 (bij tolerantie 12 hoogstens 0,038 procent, bij "Alles uit elkaar"), dus de ruisvloer van verkleinen en kwantiseren ligt ver onder de helft van de drempel. Alleen de orkestrator vernieuwt de basislijn, in een eigen commit met een voor/na-galerij (struikeldraad T8); een domeinagent die rood ziet, herstelt de weergave of legt in zijn rapport uit waarom het beeld moet veranderen.
+De basislijn staat in `docs/baseline/`: de 42 presets zonder rondleiding, verkleind naar 640 × 400 en teruggebracht tot 256 kleuren (Pillow `quantize` met `MAXCOVERAGE`, dat de grootste kleurfout klein houdt, hier hoogstens 12 stappen per kanaal, en ongeveer de helft kleinere bestanden geeft dan de mediaansnede van `docshots.py`), samen 2.313.903 bytes (ongeveer 2,3 MB; op volle maat met de mediaansnede was het 9,4 MB). Ze is gemaakt met `python3 tools/visdiff.py --basislijn UITVOER_VAN_PRESETSHOTS docs/baseline`. Gemeten op `69cd0fd`: de basislijn tegen zichzelf 0,000 procent op alle 42 beelden; twee verse `presetshots`-reeksen op dezelfde stand tegen de basislijn 0,000 procent op alle 42 beelden bij de standaardtolerantie van 16 (bij tolerantie 12 hoogstens 0,038 procent, bij "Alles uit elkaar"), dus de ruisvloer van verkleinen en kwantiseren ligt ver onder de helft van de drempel. De basislijn is die van een Linux-container; op een ander platform zie `VISDIFF_BASIS` bij `finaltests.sh`. Alleen de orkestrator vernieuwt de basislijn, in een eigen commit met een voor/na-galerij (struikeldraad T8); een domeinagent die rood ziet, herstelt de weergave of legt in zijn rapport uit waarom het beeld moet veranderen.
 
 ### `python3 tools/anchorcheck.py [--json UIT.json] [--basis BASIS.json] [--only id,id]`
 
@@ -161,6 +163,8 @@ Dezelfde controle met alles open: welke ingesloten knopen worden zichtbaar als d
 ### `tools/orkestratie/finaltests.sh UITVOERMAP`
 
 Draait de volledige testset in twee parallelle reeksen: lint, smoke, integrity, silhouette, `ui_inner.py --open --strict` en `opentest.py --strikt-min` in de ene reeks; `itest.py` met poorten, `tri.py --gate`, pubsmoke en stats in de andere. De uitvoer per test staat in de map, met per test de duur en de exitcode op de laatste regel, en `start.txt` en `einde.txt`. Het script geeft exitcode 1 zodra één test faalt en weigert zonder uitvoermap. De lijst van tests staat in `tests.txt`, zodat CI kan zien of er een test uit de set is gevallen.
+
+`VISDIFF_BASIS` kiest een andere basislijn voor `visdiff` dan `docs/baseline`. Software-rendering is niet vergelijkbaar tussen platforms: op macOS wijkt een beeld circa 2 procent af van de basislijn (Linux-container), in de Linux-VM `lag3-vm` (Apple container, image `explosie-test:1`, Ubuntu 24.04 arm64) 33 procent door bredere tekstrendering, en ook tegen de Mac 6 tot 31 procent. Een run op een ander platform dan de basislijn meet dus eerst een eigen basis op dezelfde machine en bouwt (bijvoorbeeld de presets van de startstand met `presetshots.py`) en zet `VISDIFF_BASIS` daarop. Zo liep golf 5b-2 tegen een basis B0 van de Mac. Zwakte: een afwijking die al in de eigen basis zit, is onzichtbaar; de basis moet dus van een groene startstand komen. De functietests (itest, opentest, integrity) zijn wel platformonafhankelijk; de ankerpoort niet (op de Linux-VM 351/318/263 tegen 352/319/265 op de Mac).
 
 ## Bevroren testcontract
 
@@ -195,6 +199,10 @@ Golf 5 bracht de hulpmiddelen van de visuele poort en van het nameten in de repo
 | `rays_bagage.py` | Stralen vanuit het midden van de bagageruimte naar links en rechts: vrije ruimte en het eerste onderdeel. |
 | `phone.py` | Twee telefoonbeelden (390 x 844) en de scrollbreedte. |
 | `dumptree.py` | De hele boom als JSON. |
+| `clash.py KNOOP... [--straal MM]` | Doordringing en kleinste afstand van knopen tegen het hele model, ook binnen dezelfde hoofdgroep (waar `integrity.py` niet kijkt); toegestane paren in `data/clash-toegestaan.json`. Gekalibreerd op het Leidingblok (-10,5 mm met de Koude laadluchtslang). Bemonstert op ongeveer 5 mm: een holte binnen een deel mist het. |
+| `huid.py --bewaar` en `--vergelijk` | Legt de huid van een knoop vast en meet later de afwijking (maximum en 95-percentiel, met de plek); poort van G1 was hoogstens 2 mm op zichtbare zones. |
+
+Bij `shots.py` en `gateshots.py`: onder software-rendering rondt een tekenopdracht pas na 5 tot 15 s af (onder belasting langer), en `Page.screenshot` wacht daarop. `shots.py` wacht daarom eerst twee animatieframes en neemt op met `MODEL_TIMEOUT_MS` (standaard 120 s) in plaats van de 30 s van Playwright.
 
 ## Resultaten
 
@@ -218,6 +226,29 @@ De kolom "Na golf 1" is de tussenstand van 13 oktober 2026 rond 11:30 UTC, ongew
 | `pubsmoke.py` | OK | OK: `ready` na 14,8 s (1280 x 800) en 7,2 s (390 x 844), grens 20 s; three r147; geen horizontale scroll | OK: `ready` na 7,5 s (1280 x 800) en 7,7 s (390 x 844), grens 20 s; three r147; geen horizontale scroll | OK: `ready` na 5,2 s (1280 x 800) en 8,0 s (390 x 844), grens 20 s; three r147; geen horizontale scroll. Op `ff42dbd` opnieuw OK: `ready` na 12,2 s en 9,9 s onder belasting |
 | `ui_inner.py` | bestond nog niet | 0 eerste treffers op 256 ingesloten knopen (na golf 2 waren het er 52) | 0 eerste treffers op 256 ingesloten knopen | 0 eerste treffers op 253 ingesloten knopen (39.200 stralen op de hele auto, 20.000 per hoofdgroep). Op `ff42dbd` hetzelfde |
 | URL na publicatie gelijk aan `index.html` | niet van toepassing | Gelijk. Versie 2 van de URL, teruggelezen op 13 oktober om 17:00 UTC, bevat `index.html` van `8095a3e` (618.341 bytes, md5 `dc2bc3b0…`) precies één keer en aaneengesloten. Daaromheen staan alleen het vaste paginaskelet van de host (531 bytes: doctype, charset, viewport en basisstijl tot en met `<body>`) en de afsluiting `</body></html>` (15 bytes). | Gelijk. Versie 3 van de URL, teruggelezen op 13 oktober om 17:37 UTC, bevat `index.html` van `60909fe` (620.025 bytes, md5 `d92a8bb2…`) precies één keer en aaneengesloten, met hetzelfde paginaskelet ervoor (531 bytes) en dezelfde afsluiting erna (15 bytes). | Gelijk. Versie 4 van de URL bevat `index.html` uit `ec92a53` (commit `9c03015`, 663.654 bytes, md5 `70b2e62a426312ec788fc851086ab4c6`) precies één keer, met alleen het paginaskelet van de host eromheen (531 bytes ervoor, 15 erna). Versie 5, gepubliceerd op 14 oktober en teruggelezen om 00:02 UTC, bevat `index.html` uit `ff42dbd` (commit `5b6cefa`, 678.887 bytes, md5 `649cbf95397d877f6a361600c42a4afd`) precies één keer en byte voor byte gelijk, met hetzelfde skelet (531 bytes ervoor, 15 erna) |
+
+## Resultaten golf 5b-2 (16 oktober 2026), tak `golf-5b2` (versie 9, gebouwd en niet gepubliceerd)
+
+Strikte set op de samengevoegde stand `0bdbef1` (golf A en golf B), op macOS; `index.html` en de kerncijfers in `225000f` ([cijfers.md](cijfers.md)). De functietests liepen daarnaast in de Linux-VM `lag3-vm` op `8ce45ba`.
+
+| Test | Uitslag |
+|---|---|
+| `finaltests.sh` | groen, behalve `visdiff` |
+| `visdiff.py` | tegen een eigen basis B0 van de Mac (presets van `426d6aa` met de nieuwe harness, via `VISDIFF_BASIS`): 11 rode beelden, alle in de vooraf opgegeven lijsten (bodyOff, engine, engineAll, psPump, battery, gearbox, gearboxAll, converter, diff, doorLF, interior). Tegen `docs/baseline` zou het platformverschil (circa 2 procent per beeld) alles overschaduwen, en die basis is bovendien verouderd |
+| `itest.py` met poorten | 222 van 222 |
+| `opentest.py --strikt-min` | 26 openers, 0 fouten, 31 meldingen (volgers zonder `open.min`). In de Linux-VM vond de opentest de Membraan-fout van de rembekrachtiger (`inner`), daarna opgelost |
+| `integrity.py` | 0 fouten |
+| `silhouette.py` | ok |
+| `anchorcheck.py` | poort ok, 352 labels, eigen 319, vrij 265 (in de Linux-VM platformgebonden 351/318/263) |
+| `tri.py --gate` | budgetpoort ok |
+| `pubsmoke.py` | ok |
+| `clash.py` | Leidingblok met de Koude laadluchtslang: -10,5 mm gemeten en opgelost; scharnieren van de vier portieren 0 doordringingen (was 22 dicht en 28 open); G8c (naafpunt op `TRACK_F`) gaf acht nieuwe doordringingen tot 2,44 mm en is teruggedraaid |
+| `huid.py` | bumperschalen en achterschermen na G1 hoogstens 1,22 mm van de oude huid (grens 2 mm) |
+| `ui_inner.py --open --strict` met `UI_INNER_DIRS=400` | de voorportier-botsbalk, de Raambediening linksachter en het Membraan waren bij 400 richtingen of met de kap open van buiten te zien en zijn niet meer `inner`; bestaande treffers die naar 5b-3 gaan: Veerrubber onder links en rechts, Lagerbus aan de collectorzijde |
+| Visuele poort K1 tot K13 | twee onafhankelijke panels na, beide 10 ja, 3 deels, 0 nee, niets blokkerend, geen kenmerk lager dan B0 (de B0-panels verschilden op K2 en K9; regel vooraf: een kenmerk telt pas als lager als beide na-panels onder het laagste B0-oordeel uitkomen) |
+| S7 (exterieur) | 7 van 9 vóór en na (kenmerk 4 en 8 deels); doel 8 niet gehaald, niet herhaald. De S7-prompt zei in B0 en na abusievelijk "fase 1"; het model is fase 2, de vergelijking blijft gelijk |
+
+`clash.py` en `huid.py` staan bewust buiten de testlijst van `finaltests.sh`: het zijn meetscripts van de orkestrator voor een golf met nieuwe geometrie (vooraf meten, na elke stap en na elke samenvoeging), geen poort die de set rood maakt.
 
 ## Resultaten framework (16 oktober 2026)
 
@@ -360,7 +391,8 @@ Aanleiding was de melding van de gebruiker dat het interieur (beige leder, de ba
 
 - De metingen komen uit een container met software-rendering (SwiftShader). Laadtijden daar (5 tot 28 seconden, afhankelijk van de belasting van de machine) zeggen niets over een echt apparaat.
 - De frametijd is alleen JavaScript-tijd. Zonder gebundeld renderen heeft de gemonteerde auto 1.878 tekenopdrachten (op `33b2b50`); gebundeld renderen staat standaard aan en brengt dat op 444. De grens van 1.500 geldt dus alleen met bundelen.
-- De Aandrijflijn heeft 235.546 driehoeken tegen een budget van 240.000 en zit dus binnen budget. De hele auto (668.020) blijft binnen 700.000. Carrosserie zit op 189.446 van 190.000 driehoeken: een dunne marge, dus een volgende wijziging moet eerst elders besparen.
+- De driehoeken per hoofdgroep en de budgetten staan in [cijfers.md](cijfers.md). Sinds golf 5b-2 heeft de Carrosserie weer marge (G1 haalde ruim 10.000 driehoeken weg); de poort `tri.py --gate` blijft de bewaker.
+- Software-rendering verschilt per platform (macOS, Linux-container, Linux-VM); `visdiff` en de ankerpoort zijn platformgebonden, zie `VISDIFF_BASIS` hierboven.
 - Het aandeel labelankers dat achter een ander deel ligt (84 van 345) en de spikkels op de motorkap in het bovenaanzicht zijn open; zie de twee secties hierboven en de README.
 - Golf 4: de metingen aan de openmodus komen uit software-rendering. Tekenopdrachten en JavaScript-tijd zijn het meetbare deel; er is geen echte telefoon of GPU. De eindhoeken zijn geschat uit foto's, het instructieboekje en het werkplaatshandboek; aan de echte auto is niets gemeten.
 - De testset van de carrosserieronde liep op `9c731c8`. Op `ff42dbd` (alleen de eindstukken van de uitlaat veranderd) zijn alleen `integrity.py`, `ui_inner.py`, `smoke.py` en de publicatierooktest opnieuw gedraaid. De visuele poort (poort 5) is op `9c731c8` gedraaid en niet opnieuw na de uitlaatreparatie.

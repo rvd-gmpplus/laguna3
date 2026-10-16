@@ -1,13 +1,13 @@
 # Handomdraai laguna3
 
-Stand 16 oktober 2026, 11:35 UTC. Live is `8 (bron a1499bb)`: PR #5 is als `c88d443` in `main` samengevoegd (framework, openstand die blijft staan, Pages als volledig document), bovenop versie 8 (PR #3) en versie 7 (PR #4). GitHub Pages serveert `index.html` en het artefact de kale pagina uit `build.py --bare`; beide zijn byte voor byte teruggelezen. Het framework voor een volgende auto staat in [docs/framework.md](docs/framework.md); het verbeterplan in [docs/masterplan.md](docs/masterplan.md).
+Stand 16 oktober 2026, na de eindstand van golf 5b-2 (20:21 UTC). Versie 9 (golf 5b-2) is gebouwd op de tak `golf-5b2` (`225000f`, stempel `9 (bron a13fdc0)`) maar niet gepubliceerd en niet gepusht; publicatie, push en PR wachten op de gebruiker. Live is nog `8 (bron a1499bb)`: PR #5 is als `c88d443` in `main` samengevoegd (framework, openstand die blijft staan, Pages als volledig document), bovenop versie 8 (PR #3) en versie 7 (PR #4). GitHub Pages serveert `index.html` en het artefact de kale pagina uit `build.py --bare`; beide zijn byte voor byte teruggelezen. Het framework voor een volgende auto staat in [docs/framework.md](docs/framework.md); het verbeterplan in [docs/masterplan.md](docs/masterplan.md) (golf 5b-3 is de volgende).
 
 ## Waar
 
-- Repo `rvd-gmpplus/laguna3`. `main` staat op `c88d443`. PR #3, #4 en #5 zijn samengevoegd. Werktak voor vervolgwerk: `ccr-63d946bb-ng8q5l`, opnieuw gestart vanaf `main`. espace5 (de Espace V van de vader van de gebruiker) is een tweede auto op dezelfde basis; de overstap naar het framework doet de sessie die daar werkt (stappen in `docs/framework.md`).
+- Repo `rvd-gmpplus/laguna3`. `main` staat op `c88d443`. PR #3, #4 en #5 zijn samengevoegd. Werktak voor vervolgwerk: `ccr-63d946bb-ng8q5l`, opnieuw gestart vanaf `main`. Golf 5b-2 staat lokaal op `golf-5b2` (24 commits boven `c2ee58d`; de acht takken `5b2-*` zijn samengevoegd en kunnen weg). Let op: `origin/main` staat sinds `57b4d18` (16 oktober 17:19 UTC, `app2.js` en `index.html`, `uiPlaceMore`) voor op de basis van `golf-5b2`; vóór de PR met `main` samenvoegen en `index.html` opnieuw bouwen. espace5 (de Espace V van de vader van de gebruiker) is een tweede auto op dezelfde basis; de overstap naar het framework doet de sessie die daar werkt (stappen in `docs/framework.md`).
 - Live: https://rvd-gmpplus.github.io/laguna3/ (`index.html`, een volledig document met doctype en viewport-regel) en https://claude.ai/artifact/4qJq7YUk5nGSFmexY7WkZR (de kale pagina uit `build.py --bare`; de host zet er 531 bytes geraamte voor en 15 erna), beide `8 (bron a1499bb)`, op 16 oktober om 11:33 UTC teruggelezen. In het artefact werkt Beeld opslaan niet: de viewer staat downloads vanuit de pagina niet toe; op Pages werkt het wel.
 - De tak `gh-pages` (versie 5) is overbodig. De proxy weigert hem te verwijderen (403 op `git push --delete` en op de API); de gebruiker verwijdert hem in GitHub.
-- Bouwen: `python3 build.py`. Versie: `VERSION` (nu 8) plus een inhoudshash van `src/`, zichtbaar in het hulpvenster (`?`), in `<meta name="model-version">` en in `__model.version`. Versie 7 had nog geen stempel.
+- Bouwen: `python3 build.py`. Versie: `VERSION` (nu 9, nog niet gepubliceerd) plus een inhoudshash van `src/`, zichtbaar in het hulpvenster (`?`), in `<meta name="model-version">` en in `__model.version`. Versie 7 had nog geen stempel.
 - Verse omgeving: `tools/setup.sh` (Playwright en Pillow uit `requirements.txt`, three.js 0.147.0 met npm-hashcontrole). In een Claude Code-sessie in de cloud doet de SessionStart-hook dat.
 - Kerncijfers: [docs/cijfers.md](docs/cijfers.md), gegenereerd uit `stats.json` en `tri.json`; andere documenten verwijzen ernaar in plaats van getallen te herhalen.
 
@@ -20,8 +20,9 @@ Stand 16 oktober 2026, 11:35 UTC. Live is `8 (bron a1499bb)`: PR #5 is als `c88d
 
 ## Wat werkt
 
-- Boom, driehoeken per hoofdgroep, tekenopdrachten en ingesloten knopen: zie [docs/cijfers.md](docs/cijfers.md). De Carrosserie heeft de dunste marge; G1 in het masterplan maakt ruimte vóór nieuwe carrosseriedelen.
+- Boom, driehoeken per hoofdgroep, tekenopdrachten en ingesloten knopen: zie [docs/cijfers.md](docs/cijfers.md). Sinds golf 5b-2 heeft de Carrosserie weer marge (G1).
 - Uitklappen, de modus Openen (26 openers), het panoramadak, 43 presets in 7 categorieën, onderdeelnummers in het paneel (546 eenheden, 1.334 nummers, bij 14 eenheden het blok "Gekozen voor deze auto" op grond van de RDW en het chassisnummer van de gebruiker; het nummer zelf staat nergens in de repo).
+- Golf 5b-2 (16 oktober 2026, 16:18 tot 20:21 UTC; versie 9, niet gepubliceerd; details in [docs/masterplan.md](docs/masterplan.md), tijden en inhoud in [CHANGELOG.md](CHANGELOG.md)): bumperschalen en achterschermen met stations naar doorbuiging (G1, huid hoogstens 1,22 mm van de oude, geen nieuwe doordringing); ruitensproeiertank met pomp en slangen links voor (schematisch geplaatst, de echte plek is niet bekend); vacuümslang van de rembekrachtiger; zijbekleding van de bagageruimte als doorlopend profiel en bekleding van B- en C-stijl; klepveer 8 per winding en lichtere bouten (`hexBolt`); `inner` op de zijdelingse botsbalk van de achterportieren en het Krukastandwiel; teksten: eindoverbrenging op een plek, ECU-tekst, spec-paren met "geschat" opgeruimd, korte beschrijvingen aangevuld; portierscharnieren als platte bladen in lakkleur met stalen pen (melding van de gebruiker: de zwarte blokjes; clash 0); kapslang met T-stuk naar de koppeling; chroomlijst langs de B-stijl. Blijvende meetmiddelen: `tools/orkestratie/clash.py`, `huid.py` en `meetlib.js`, `data/clash-toegestaan.json`. Harness: Fonts uit een lokale cache, `VISDIFF_BASIS`, `shots.py` met ruime tijdslimiet.
 - Golf 5 (parallelle sessie): camera's van achterklep, motorkap en voorportieren; hoedenplank 40 graden; de naad tussen de rugleuningdelen donker; B-stijl in lak met sluitplaat en slotbeugel; voorruit van binnen op 0,45 maal de dekking (shader, `MAT.glassWs`); olievuldop aan een scharnierlip; steunstang Ø16 mm in donker staal; U19 (de rest dimmen bij duiken, schakelaar in Weergave); zijkolom voor telefoons in liggende stand; voorste langsliggers boven de aandrijfassen; opkant in de bodemplaat boven de torsiebalk, tank en koolstoffilter verplaatst; remleidingen achter om langsarm en veer; multiriem 1.672 mm; dakglas dekking 0,92 (opgave van de gebruiker); geen 4Control (opgave van de gebruiker); motorcode F4Rt 813 (waarschijnlijk, zie `docs/onderzoek/beslissingen.md`); ATF volgens MR 415; `docs/onderzoek/databankenrecht.md`.
 - Herstelronde golf 5 (22:50 tot 00:12 UTC): achterklep met open glas en lijmrand, gasveren langs de zijwand, B-stijlafdekking boven de chroomband, spiegelcamera dichterbij; hemel onder het dakframe, dunne koordjes, laadvloer met voorstuk, lichte opbergbak, deksel van de armsteun met donkere onderkant (Dekselvoering), nieuwe interieurcamera's; zonneschermen van binnen in beeld (de stapel stopt net voor de cassette), donkere binnenlijst en lichte weerspiegeling op het dakglas; expansiedop scharniert aan de hals met een zichtbare vulopening; telefoon staand met de presetcategorieën in één schuivende rij (itest 16); de hoedenplank met pennen, koordjes en luidsprekers is uitgenomen zolang een rugleuning of de bagagevloer open is (`hideWhen` in de engine, zie `docs/ontwerp-en-architectuur.md`).
 - Golf 5a-1 (vangnet-kern): strikte testset met één exitcode en tijd per test (`finaltests.sh`), waarschuwingen tellen als fout, `ui_inner --open --strict`, `opentest --strikt-min` met de regel dat `open.min` minstens 0,8 maal de volle hoek of slag is. Zichtbaar: deelbare URL (`?preset=`, `?open=`, de adresbalk volgt), `?debug=1`-overlay (fps, tekenopdrachten, versie), laadmeldingen in stappen, een melding zonder WebGL, description en og-meta, favicon, versie in het hulpvenster (itest 17).
@@ -31,6 +32,8 @@ Stand 16 oktober 2026, 11:35 UTC. Live is `8 (bron a1499bb)`: PR #5 is als `c88d
 - Na het samenvoegpunt van PR #3 (`b529ac1`) voegde de parallelle sessie nog toe en publiceerde als versie 7: zijbekleding van de bagageruimte in donker vilt over de wielkasten en de vulpijp, een lichte onderzijde aan de klapbare bagagevloer (volger), een grotere schermgreep en een taupe schermcassette, nieuwe camera's voor handschoenenkastje, zonnekleppen, middenarmsteun achter en bagagevloer, en een poortcamera van 70 graden voor het dak. Die commits zitten via de samenvoeging van 16 oktober in deze tak.
 
 ## Tests
+
+Golf 5b-2, strikte set op de samengevoegde stand `0bdbef1` (macOS, 16 oktober 2026): alles groen behalve `visdiff` tegen de eigen basis B0 van deze machine (11 rode beelden, alle in de vooraf opgegeven lijsten: bodyOff, engine, engineAll, psPump, battery, gearbox, gearboxAll, converter, diff, doorLF, interior); itest 222 van 222, opentest 0 fouten met 31 meldingen, integrity 0 fouten, silhouet ok, ankers 352/319/265, budgetpoort ok, pubsmoke ok. De Linux-VM `lag3-vm` (Apple container, image `explosie-test:1`, Ubuntu 24.04 arm64) draaide de functietests op `8ce45ba` (itest 222 van 222; de opentest vond daar de Membraan-fout, opgelost; ankers daar platformgebonden 351/318/263). Software-rendering op macOS wijkt circa 2 procent per beeld af van `docs/baseline` (Linux-container), in de Linux-VM 33 procent door bredere tekstrendering; daarom liep `visdiff` tegen een eigen basis. `docs/baseline` is bovendien verouderd (een ander aantal onderdelen). Visuele poort: twee K-panels na, beide 10 ja, 3 deels, 0 nee, geen kenmerk lager dan B0; S7 7 van 9 (kenmerk 4 en 8 deels), doel 8 niet gehaald. Zie [docs/testen.md](docs/testen.md).
 
 Strikte set op de samenvoeging met `main` van versie 7 (`fddf2ca`, uitvoer `g8merge` in het scratchpad, 16 oktober rond 10:00 UTC), alle dertien tests groen: itest 218 van 218, opentest strikt 0 fouten, `ui_inner --open --strict` 0 treffers, budgetpoort ok, pubsmoke klaar na 10,5 s, `visdiff` 42 van 42 zonder nieuwe basislijn, ankerpoort ok. Daarna `data/tree.json` ververst (3.023 paden; drie nieuwe paden van haar zijbekleding en bagagevloer als niet onderzocht), `docs/cijfers.md` opnieuw gegenereerd en de screenshots vernieuwd.
 
@@ -54,7 +57,7 @@ Op volgorde van wat de gebruiker het eerst ziet; de lijst van de parallelle sess
 
 1. Hoedenplank bij de achterklep (K6, alle drie; 05, 95-telefoon-achterklep): de plank gaat 40 graden mee, maar van achteren en van boven leest hij nog als vlak liggend. Aanpak: de camera van de achterklep meer van opzij, of de plank aan de koordjes verder omhoog als de zijwanden dat toelaten (meten met `rays_bagage.py`).
 2. Linker gasveer van de achterklep (05, 95): valt samen met de zijrand en leest dun. Aanpak: iets dikker of een lichtere kleur, of de camera iets naar rechts.
-3. Zijbekleding van de bagageruimte (18, 20, 23): leest trapvormig, als losse blokken. Oorzaak: de bekleding moet boven het zwaaibereik van de klapbare vloer blijven en de vulpijp omsluiten. Aanpak: de vulpijp in `src/systems.js` korter onder de bekleding laten lopen (de interieuragent stelde dat voor), dan kan de bekleding een gladde wand worden.
+3. Zijbekleding van de bagageruimte (18, 20, 23): leest trapvormig, als losse blokken. In golf 5b-2 (G4a) een doorlopend profiel geworden; nog niet door een panel op deze beelden beoordeeld. Open blijft G4c: de vulpijp in `src/systems.js` korter onder de bekleding laten lopen (naar golf 5b-3; de overlap is nu toegestaan in `data/clash-toegestaan.json`).
 4. Camera handschoenenkastje (16): dicht op het dashboard, het portier is niet in beeld. Aanpak: een optie `look.pad` of `look.dist` in `uiOpenTo` (`src/app2.js`), zodat de afstand niet afhangt van de gekozen knopen.
 5. Luchtroosters (16): wit, rafelig streeppatroon, vermoedelijk z-fighting in de lamellen. Nakijken met `pick.py`.
 6. Vaste zijruit achter (19, 80): leest als groot los ruitvlak in de opening van het achterportier. Nakijken of de maat klopt met de echte vaste ruit.
@@ -75,15 +78,25 @@ Op volgorde van wat de gebruiker het eerst ziet; de lijst van de parallelle sess
 15. ATF: hoeveelheid bevestigd; of Elfmatic J6 en ELF MATIC S6 dezelfde olie zijn, is open. Navragen bij een dealer.
 16. Hoeken en slagen van de openers zijn geschat. De gebruiker kan ze aan de eigen auto meten (zie Meetlijst).
 17. Oud en bekend: de kabelboom in de cabine raakt de nieuwe opkant in de bodemplaat; achterarm en veerrubber liggen aan de binnenkant van de wielkast boven de vloerplaat; de tank is schematisch kleiner dan 66 liter; 84 van de 345 labelankers liggen achter een ander deel; donkere spikkels op motorkap en dak in het bovenaanzicht (vermoedelijk software-rasterisatie); de spoilerlip leest van opzij als losse zwarte wig (S7).
-18. In `src/systems.js` noemt de ECU nog "nokkenasverstelling", wat botst met "geen faseversteller".
+18. De ECU-tekst in `src/systems.js` is in golf 5b-2 (G9c) opgeruimd; niet opnieuw nagelopen op de motorcode 811 of 813.
 
 ### Techniek en tests
 
 19. Niet getest op een echte telefoon en GPU. De gebruiker test zelf (zie Testlijst).
 20. Paginagrootte 1,38 MB, waarvan ongeveer 575 kB nummergegevens. Als de telefoon traag laadt: de nummergegevens pas laden als het paneel ze nodig heeft.
-21. Carrosserie zit op 189.446 van 190.000 driehoeken. Elke volgende carrosseriewijziging moet eerst ergens anders besparen.
+21. De marge van de Carrosserie is sinds golf 5b-2 groter (stand: [docs/cijfers.md](docs/cijfers.md)); de budgetpoort `tri.py --gate` blijft bewaken.
 22. De engine kent geen uitnemen met beweging; `hideWhen` laat de plank wegvallen. Goed genoeg; een animatie is een mogelijke verbetering.
 23. Databankenrecht: 6.498 van de 6.508 nummerregels komen van autodoc.parts. Maatregelen en toetsvragen voor een advocaat staan in `docs/onderzoek/databankenrecht.md`.
+
+### Naar golf 5b-3 (nog open na 5b-2)
+
+Volledige lijst met eigenaars en poort in [docs/masterplan.md](docs/masterplan.md), sectie Golf 5b-3:
+
+24. G5c aircoleidingen en expansieventiel (de plek van de droger is onbekend); G8c naafpunt met een boring in de fusee; G8d, G8e (`core.js`, met export naar espace5) en G8f; G9e notatie (beslissing van de gebruiker) en de rest van G9h; de `spring()`-parameter; G4c vulpijp; punt 1 en 2 hierboven (hoedenplank en gasveer).
+25. Inner-treffers bij 400 richtingen (`UI_INNER_DIRS=400`): Veerrubber onder links en rechts, Lagerbus aan de collectorzijde, en de bestaande.
+26. Het scharnierblad van de portieren zweeft in open stand 3 tot 9 cm van de pen (schematische draaias); achter het voorscherm zit geen A-stijlmesh.
+27. S7: kenmerk 4 (B-stijl als dunne lijn, chromen raamlijst) kreeg een chroomlijst maar bleef deels; kenmerk 8 (bovenaanzicht zonder heupen) had geen item. Meldingen van beoordelaars: een los zwart blokje bij de C-stijl (`ext-zij`, `ext-34achter`), een onrustig achterpaneel, spikkels.
+28. De echte plek van de ruitensproeiertank is niet bekend; het model zegt "schematisch geplaatst". Kijk in de motorruimte van de eigen auto (zie de Meetlijst).
 
 ## Meetlijst voor de eigen auto
 
@@ -98,6 +111,7 @@ Wat de gebruiker met een rolmaat, een hoekmeter (telefoon) en een blik kan vasts
 7. Hoek van de hoedenplank als de klep open is.
 8. Hoe ver het voorste dakglas naar achteren schuift.
 9. Hoe ver de achterste zijruit zakt (hoeveel glas blijft staan).
+10. Waar de ruitensproeiertank onder de kap zit (voor, achter, links of rechts) en waar de pomp en de slangen lopen.
 
 ## Testlijst voor een echte telefoon
 
@@ -119,7 +133,10 @@ Wat de gebruiker met een rolmaat, een hoekmeter (telefoon) en een blik kan vasts
 5. Tegoed voor Jina of Firecrawl (of een dealerlijst op het chassisnummer) voor de nummerronden N2 en N5 en de 24 `?page=N`-URL's: de accounts gaven 402 en "insufficient credits"; autodoc zit achter Cloudflare.
 6. Besluit over golf 6 (ES-modules en een actuele three.js; advies: nee tot er een aanleiding is) en over een tweede bestand naast de pagina voor de nummergegevens (alleen als het artefact als kanaal mag vervallen).
 7. Desgewenst het artefact delen via het menu Delen, en het delen van de handleiding op Google Drive weer uitzetten.
-8. Eén spoor tegelijk: twee sessies op `main` gaven twee keer "versie 7". Nieuwe golven starten vanaf `main` na het samenvoegen van PR #3.
+8. Eén spoor tegelijk: twee sessies op `main` gaven twee keer "versie 7". Nieuwe golven starten vanaf `main`. In golf 5b-2 gebeurde het opnieuw zonder ruzie maar met werk: `57b4d18` kwam op `origin/main` terwijl `golf-5b2` op `c2ee58d` stond.
+9. Versie 9 (golf 5b-2): `golf-5b2` samenvoegen met `main`, `index.html` opnieuw bouwen, de strikte set draaien, publiceren (Pages en artefact, byte voor byte teruggelezen), pushen en de PR openen. Daarna `CHANGELOG.md` aanvullen met het publicatietijdstip.
+10. Beslissen over G9e (notatie van getallen en eenheden), over een nieuwe `docs/baseline` van een Linux-omgeving, en over struikeldraad T4 (paginagrootte; `index.html` van versie 9 is 1.445.874 bytes).
+11. Desgewenst de plek van de sproeiertank en de tweede reeks metingen uit de Meetlijst aanleveren.
 
 ## Werkwijze die werkte
 
@@ -127,7 +144,9 @@ Wat de gebruiker met een rolmaat, een hoekmeter (telefoon) en een blik kan vasts
 - Twee sessies op dezelfde bestanden: eerst de ander laten uitlopen (geen commit in 60 minuten), dan in één keer samenvoegen en bij elk conflict de geometrie van de ander en de contracten (ondergrenzen, `inner`) van het vangnet houden.
 - Golven per domein in eigen worktrees, `mergecheck.py` vóór samenvoegen, na samenvoegen de volledige strikte set, dan pas `index.html` herbouwen en publiceren, dan de URL teruglezen.
 - Een rode test onder belasting eerst herhalen op een rustige machine (de dubbelklik van controle 14 en de frametijd van opentest).
-- Een melding van een poort eerst narekenen met `pick.py`, `probe.py`, `rays_bagage.py` of stralen; dan pas wijzigen.
+- Een melding van een poort eerst narekenen met `pick.py`, `probe.py`, `rays_bagage.py` of stralen; dan pas wijzigen. Voor doordringing en afstanden: `clash.py`; voor een huid die niet mag verschuiven: `huid.py` (eerst `--bewaar`, later `--vergelijk`). Zo is de scharniermelding in golf 5b-2 nagerekend (22 dicht, 28 open) en opgelost (0).
+- Wat de premortem van 5b-2 opleverde (`docs/premortem.md`): meet eerst wat de golf kapot kan maken, op een bekend geval (Leidingblok met de Koude laadluchtslang); geef elke tak een presetlijst vooraf en voeg per tak samen; contractwijzigingen (`core.js`, `body.js`) vóór de takken; bij een nieuw platform eerst een eigen `visdiff`-basis van een groene startstand (`VISDIFF_BASIS`); een K-panel-kenmerk telt pas als lager als beide na-panels onder het laagste B0-oordeel uitkomen; S7 hoogstens twee runs, de lagere telt.
+- Tekst die een feit beweert moet een bron hebben in `docs/onderzoek/`; anders "schematisch geplaatst" of weg.
 - Een ondergrens per opener van minstens 0,8 maal de volle hoek of slag, zodat een botsingstoets niet beloond wordt met kleinere hoeken.
 - Nummers: plakken met een harde stop, lokvogels in de verificatiepoort, `niet onderzocht` voor wat niet geverifieerd is, en het chassisnummer nooit in de repo.
 - Visuele poort met vaste beelden (`gateshots.py`) en vaste kenmerken (`poort.js`), drie plakken met drie beoordelaars op Opus high; herstel per eigenaar op Sonnet high; stoppen als er geen nee meer is en de winst kleiner wordt dan de spreiding.
@@ -139,11 +158,13 @@ Wat de gebruiker met een rolmaat, een hoekmeter (telefoon) en een blik kan vasts
 
 - Plan en proces: `docs/masterplan.md`, `docs/premortem.md`, `CHANGELOG.md`, `CLAUDE.md`.
 - Onderzoek: `docs/onderzoek/` (kennisbasis, beslissingen, databankenrecht, exterieur, motor, automaat, onderstel en interieur, UX-audit).
-- Onderdeelnummers: `data/pn/` (canoniek), `data/tree.json` (de boom van de pagina, 3.020 paden), `docs/onderdeelnummers.csv`, `src/partnumbers.js`, `tools/orkestratie/build_pn.py`, `tools/pncheck.py`.
-- Hulpscripts: `tools/orkestratie/` (`finaltests.sh`, `cijfers.py`, `gallery.py`, `presetshots.py`, `docshots.py`, `stats.py`, `pickview.py`, `pick.py`, `shots.py`, `probe.py`, `rays_bagage.py`, `phone.py`, `gateshots.py`, `dumptree.py`, `poort.js`, `zone.py`, `mergecheck.py`). Uitleg: `tools/orkestratie/README.md`.
+- Onderdeelnummers: `data/pn/` (canoniek), `data/tree.json` (de boom van de pagina; aantallen in [docs/cijfers.md](docs/cijfers.md)), `docs/onderdeelnummers.csv`, `src/partnumbers.js`, `tools/orkestratie/build_pn.py`, `tools/pncheck.py`.
+- Hulpscripts: `tools/orkestratie/` (`finaltests.sh`, `cijfers.py`, `gallery.py`, `presetshots.py`, `docshots.py`, `stats.py`, `pickview.py`, `pick.py`, `shots.py`, `probe.py`, `rays_bagage.py`, `phone.py`, `gateshots.py`, `dumptree.py`, `poort.js`, `zone.py`, `mergecheck.py`, `clash.py`, `huid.py`, `meetlib.js`). Toegestane doordringingen: `data/clash-toegestaan.json`. Uitleg: `tools/orkestratie/README.md`.
 - Het werkplaatshandboek MR 415 en de referentiefoto's staan niet in de repo (rechten van Renault en derden).
 
-## Vluchtig: scratchpad, weg als de container stopt
+## Vluchtig: scratchpad, weg als de container of de sessie stopt
+
+- Golf 5b-2 (Mac, sessie `d676c703`): `/private/tmp/claude-501/-Users-rickvandijk-Library-CloudStorage-OneDrive-Persoonlijk-2--Documenten-GitHub-laguna3/d676c703-a374-44d8-9f5c-0edad6c64754/scratchpad`, met het volledige premortemverslag `premortem-5b2.md` (de kern staat in `docs/premortem.md`). De Linux-VM `lag3-vm` (Apple container, image `explosie-test:1`) is een lokale omgeving en niet in de repo; haar uitvoer is vluchtig. De eigen basis B0 voor `visdiff` staat ook in een scratchpad; wie `docs/baseline` niet vernieuwt, moet B0 opnieuw meten.
 
 - Deze sessie: `/tmp/claude-0/-home-user-laguna3/24f7dfc1-d667-544a-9754-10be18291035/scratchpad`: de drie audits (`audits/audit-app.md`, `audit-geometrie.md`, `audit-tooling.md`, de grondslag van het masterplan), de testuitvoer `g5base` (basislijn golf 5), `g5a1` (strikte set van 00:01 UTC) en `g5merge` (strikte set van versie 7, met `stats.json` en `tri.json`), en de worktree `wt-sister` van de zustertak.
 - Parallelle sessie:

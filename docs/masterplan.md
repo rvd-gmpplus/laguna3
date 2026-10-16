@@ -49,7 +49,7 @@ Op 15 oktober om 19:49 UTC werkt een andere sessie (Opus 5.5 met vijf subagents)
 - Elke analyse en elke golf begint met `git ls-remote --heads origin` en een compare per tak; dit plan miste eerst twee commits doordat de meting van vóór 19:18 UTC was.
 - Per golf worden start, samenvoeging en publicatie met tijd in `CHANGELOG.md` genoteerd, zodat de volgende premortem met echte duren werkt.
 
-## Voortgang (16 oktober 2026, 10:00 UTC)
+## Voortgang (16 oktober 2026; bijgewerkt na golf 5b-2, eindstand 20:21 UTC)
 
 | Golf | Stand |
 |---|---|
@@ -60,7 +60,8 @@ Op 15 oktober om 19:49 UTC werkt een andere sessie (Opus 5.5 met vijf subagents)
 | 5d | Structureel deel gedaan (N3, attributen, N4 beoordeeld; N6 open zonder ophaalroute); N2 en N5 open: de ophaalroutes (Jina 402, Firecrawl zonder tegoed, autodoc achter Cloudflare) zijn dicht, dus die plakken wachten op tegoed of op een lijst van de dealer. |
 | Versie 7 live | De parallelle sessie zette na het samenvoegpunt van PR #3 (`b529ac1`) nog drie commits op haar tak (zijbekleding bagageruimte in vilt, onderzijde van de bagagevloer, dakcamera's en schermcassette, nieuwe interieurcamera's) en publiceerde die stand als versie 7: artefact om 02:02 UTC, `main` via PR #4 (`edab342`), Pages vanaf 09:31 UTC. Daarmee is G4 deels gedaan (zijbekleding over wielkast en vulpijp; leest nog trapvormig, punt 3 in `handomdraai.md`). `main` is op 16 oktober in deze tak samengevoegd (conflicten: ondergrens 1,456 rad van de middenarmsteun met haar nieuwe camera, docs); het werk van deze tak heet nu versie 8. |
 | Versie 8 live | PR #3 samengevoegd als `4e837c5` op 16 oktober om 10:15 UTC; Pages en artefact byte voor byte teruggelezen. |
-| Volgende | Vanaf `main`: golf 5b-2 (G1 eerst, dan de rest van G4 en G5, met de visuele poort) en golf 5c-2 (P1 lui parsen, K-punten); niet op deze tak, zodat de PR beoordeelbaar blijft. |
+| Golf 5b-2 | Gedaan op 16 oktober 2026 (16:18 tot 20:21 UTC), tak `golf-5b2`, versie 9 gebouwd (`225000f`) en niet gepubliceerd: publicatie, push en PR wachten op de gebruiker. Per punt zie "Stand na de golf" bij Golf 5b-2. Poort: `finaltests.sh` groen behalve `visdiff` (eigen basis B0 van de machine, 11 rode beelden, alle in de vooraf opgegeven lijsten); itest 222 van 222, opentest 0 fouten, integrity 0 fouten, silhouet ok, ankers 352/319/265, budgetpoort ok, pubsmoke ok; K1 tot K13 in twee panels beide 10 ja, 3 deels, 0 nee, geen kenmerk lager; S7 7 van 9, doel 8 niet gehaald. Premortem: `docs/premortem.md`. |
+| Volgende | Golf 5b-3 (restpunten van 5b-2, zie die sectie) en golf 5c-2 (P1 lui parsen, K-punten). Eerst de tak `golf-5b2` samenvoegen met `main`: `origin/main` staat sinds `57b4d18` (17:19 UTC, `app2.js` en `index.html`) voor op de basis `c2ee58d` van de tak. |
 | Poort | Strikte set op de samengevoegde stand van 01:20 UTC (uitvoer `g5merge`, 01:21 tot 01:52 UTC): alle tien tests groen, itest 161 van 161, opentest strikt zonder fouten, `ui_inner --open --strict` zonder treffers, budgetpoort ok (Carrosserie 189.446 van 190.000: nog 554 over, zie G1). Eerder op de stand van 00:01 UTC: alles groen na vier `inner`-vlaggen minder, itest 157 van 157 op een rustige machine. |
 
 ## Golf 5a-1: vangnet-kern (eerst; 1 dag, met een stopregel)
@@ -114,7 +115,7 @@ Haar herstelronde (22:50 tot 00:12 UTC, `bc2e0c9` tot `b529ac1`) sloot ook B9 (a
 
 Niet gedaan door die sessie: de volledige testset op haar stand, `index.html` herbouwen, `handomdraai.md` en de docs sluitend maken, screenshots, publicatie van versie 7, en de visuele poort met vóór/na-paren. Dat doet deze sessie na de samenvoeging van 01:20 UTC.
 
-## Golf 5b-2: geometrie en budget (1,5 tot 2 dagen; versie 9 of later; G2 en G3 zijn al gedaan, zie 5b-1)
+## Golf 5b-2: geometrie en budget (GEDAAN op 16 oktober 2026, versie 9 gebouwd en niet gepubliceerd; G2 en G3 waren al gedaan, zie 5b-1)
 
 Doel: de vier zichtbare modelfouten dicht, ontbrekende delen erbij, binnen budget. Hoger risico (nieuwe vormen, vier eigenaren bij de vloer), daarom na 5c-1 en 5d.
 
@@ -131,6 +132,56 @@ Doel: de vier zichtbare modelfouten dicht, ontbrekende delen erbij, binnen budge
 | G9 | Tekstcontract, alle eigenaren: 22 spec-paren met "geschat", "aannemelijk" of "circa" naar `d` of weg; eindoverbrenging 3,571 (`drivetrain.js:216`) tegen 3,804 (`:188, :420`) één waarde; ECU-tekst "nokkenasverstelling" (`systems.js:319`) tegen "geen faseversteller"; `Carterbouten` 18 stuks met "minimaal 18" (`engine2.js:215-227`) verifiëren in MR 415; notatie uniform (duizendtalpunt, komma als decimaal, "Ø" zonder spatie, "2,0 Turbo"); 54 beschrijvingen korter dan 25 tekens aanvullen met wat het deel doet; `ZF = 2.345` (`body.js:5`) in de doc. Lint-regels in `build.py`: punt-decimaal met eenheid, "geschat" in `spec`, cache-sleutel zonder prefix per bestand. | zie waar | tegenstrijdig voor de gebruiker |
 
 Poort van golf 5b-2: `finaltests.sh` strikt groen, `tri.py --gate` binnen budget, `visdiff` tegen de basislijn van versie 7 met alleen bedoelde verschillen, `integrity.py` 0 fouten, poort K1-K13 niet lager op een kenmerk in twee onafhankelijke panels, S7-poort opnieuw op `gallery.py exterieur` (doel 8 van 9).
+
+### Stand na de golf (16 oktober 2026)
+
+De golf liep volgens de herbouw van de premortem (`docs/premortem.md`): fase 0 (contracten, meetscripts, B0), golf A (zes domeinagents in worktrees, per tak gecontroleerd en samengevoegd met een presetlijst vooraf, daarna nazorg), golf B (carrosserie), eindpoort. Tijden: `CHANGELOG.md`.
+
+| Nr | Stand | Toelichting |
+|---|---|---|
+| G1 | Gedaan | Bumperschalen en achterschermen met stations naar doorbuiging; Carrosserie 188.102 naar 177.291 driehoeken na golf A (huidige stand: [cijfers.md](cijfers.md)); `huid.py` hoogstens 1,22 mm van de oude huid, geen nieuwe doordringing. Dat is 10.811 driehoeken vrij, boven de doelstelling van 10.000. |
+| G2, G3 | Gedaan in 5b-1 | |
+| G4 | Deels | G4a zijbekleding bagageruimte als doorlopend profiel en G4b B- en C-stijlbekleding gedaan. G4c (vulpijp korter onder de bekleding) naar 5b-3. |
+| G5 | Deels | G5a ruitensproeiertank met pomp en slangen (schematisch geplaatst, geen bron voor de plek) en het kapdeel (T-stuk naar de koppeling van systemen, golf B); G5b vacuümslang van de rembekrachtiger; het Leidingblok vrij van de laadluchtslang. G5c aircoleidingen en expansieventiel naar 5b-3. |
+| G6 | Gedaan | `hexBolt` steel 6 en ring 8 segmenten (fase 0), klepveer 8 per winding. De `spring()`-parameter naar 5b-3. |
+| G7 | Gedaan, smaller dan gepland | `inner` op de zijdelingse botsbalk van de achterportieren, het Krukastandwiel en enkele onderstelknopen; de voorportier-botsbalk, de Raambediening linksachter en het Membraan zijn weer niet-`inner` omdat ze bij 400 richtingen (`UI_INNER_DIRS=400`) of met de kap open van buiten te zien zijn. |
+| G8 | Deels | G8a (geen terugvalpoorten) en G8b (`MAT.bearing`, `MAT.drvBrass`) gedaan; eindoverbrenging op een plek (G9b). G8c naafpunt op `TRACK_F` is teruggedraaid wegens acht nieuwe doordringingen tot 2,44 mm. G8d, G8e en G8f naar 5b-3. |
+| G9 | Deels | G9a, G9b, G9c, G9d en G9f gedaan; teksten zonder bron afgezwakt in de nazorg. G9e (notatie, beslissing van de gebruiker) en het grootste deel van G9h naar 5b-3. |
+
+Naast het plan: de melding van de gebruiker over zwarte blokjes bij de portierscharnieren is nagerekend en opgelost (platte bladen in lakkleur met stalen pen, clash 0); chroomlijst langs de B-stijl voor S7 kenmerk 4; `clash.py`, `huid.py` en `data/clash-toegestaan.json` als blijvende meetmiddelen.
+
+Poort, uitkomst:
+
+- `finaltests.sh` op `0bdbef1` (macOS) groen behalve `visdiff`. De basislijn `docs/baseline` was voor deze golf niet bruikbaar: software-rendering op macOS wijkt circa 2 procent per beeld af van de Linux-container, en de basislijn is bovendien verouderd (een ander aantal onderdelen). `visdiff` liep daarom tegen een eigen basis B0 van de machine (de presets van `426d6aa` met de nieuwe harness, `VISDIFF_BASIS`). Elf rode beelden, alle in de vooraf opgegeven lijsten: bodyOff, engine, engineAll, psPump, battery, gearbox, gearboxAll, converter, diff, doorLF, interior.
+- itest 222 van 222, opentest 0 fouten (31 meldingen), integrity 0 fouten, silhouet ok, ankers 352/319/265, budgetpoort ok, pubsmoke ok.
+- K-panels (twee, voor en na): beide 10 ja, 3 deels, 0 nee, niets blokkerend, geen kenmerk lager (regel vooraf: een kenmerk telt pas als lager als beide na-panels onder het laagste B0-oordeel uitkomen; de panels verschillen onderling op K2 en K9).
+- S7: 7 van 9 vóór en na (kenmerk 4 en 8 deels). Doel 8 niet gehaald; niet herhaald (vooraf vastgelegd: hoogstens twee runs, de lagere telt).
+- `docs/baseline` is in deze golf niet vernieuwd; een Linux-basis die B0 vervangt volgt alleen als de gebruiker dat wil (zie 5b-3).
+
+## Golf 5b-3: restpunten van 5b-2 (versie 10; nog niet gestart)
+
+Vorm zoals 5b-2: eerst een premortem, dan meten met `clash.py` en `huid.py` vóór de nieuwe delen, een presetlijst per item vooraf en samenvoegen per tak. Contractwijzigingen in `core.js` en `body.js` doet de orkestrator vóór de takken. Beginnen met het samenvoegen van `golf-5b2` en `main` (zie Voortgang).
+
+| Nr | Wat | Eigenaar of grond |
+|---|---|---|
+| G5c | Aircoleidingen en expansieventiel; hoogste risico van G5, plaats van de droger onbekend | systemen; premortem 5b-2 |
+| G8c | Naafpunt op `TRACK_F` met een boring in de fusee, zodat de doordringing weg is (was acht doordringingen tot 2,44 mm) | aandrijving en onderstel |
+| G8d | Gedeelde maten voor achterveer, torsiebalk en koppelstang op een plek (drie eigenaren, raakt `body.js`) | orkestrator |
+| G8e | Gedeelde constructies generiek in `core.js` (bellows, slangklem, moer, scharnier, Sutherland-Hodgman, lasnaad), met `framework.py export` naar espace5 | orkestrator |
+| G8f | Geometrie van portierpanelen en spiegels delen (negatieve schaal; labels, pick en `ex` zijn niet gemeten) | carrosserie met de orkestrator |
+| G9e | Notatie uniform (duizendtalpunt, komma als decimaal, Ø zonder spatie); beslissing van de gebruiker | gebruiker, dan alle eigenaren |
+| G9h | Het restant: lint-regels in `build.py` voor "geschat" in `spec`, puntdecimaal met eenheid en cache-sleutel zonder prefix | orkestrator |
+| `spring()` | Punten per winding als parameter | motor en onderstel |
+| G4c | Vulpijp korter onder de zijbekleding | systemen |
+| `handomdraai.md` punt 1 en 2 | Hoedenplank bij de achterklep, linker gasveer | interieur en carrosserie |
+| Inner-treffers bij 400 richtingen | Veerrubber onder links en rechts, Lagerbus aan de collectorzijde, en de bestaande | alle eigenaren; `ui_inner.py --open --strict` met `UI_INNER_DIRS=400` |
+| Scharnierblad in open stand | Het blad zweeft 3 tot 9 cm van de pen (schematische draaias); geen A-stijlmesh achter het voorscherm | carrosserie |
+| S7 kenmerk 4 en 8 | Kenmerk 4 kreeg een chroomlijst maar bleef deels; kenmerk 8 (bovenaanzicht zonder heupen) had in 5b-2 geen item | carrosserie |
+| Meldingen van beoordelaars | Los zwart blokje bij de C-stijl (`ext-zij`, `ext-34achter`), onrustig achterpaneel, spikkels | carrosserie |
+| Nieuwe `docs/baseline` | Een Linux-basis (de container of een VM) zodat `visdiff` weer tegen de repo kan en niet tegen de eigen basis van een machine; alleen als de gebruiker dat wil | orkestrator |
+| T4 | `index.html` van versie 9 is 1.445.874 bytes (versie 8 herpubliceerd: 1.413.341). Of dat boven struikeldraad T4 valt (1,4 MB raw en 330 kB gzip) hangt van de definitie van MB en van de gzip-maat af, die in deze golf niet is gemeten: vaststellen, en zo nodig de grens verhogen met een reden in `beslissingen.md` of de nummergegevens apart laden | orkestrator, dan gebruiker |
+
+Poort 5b-3: `finaltests.sh` strikt groen, `visdiff` tegen een basis van hetzelfde platform met alleen bedoelde verschillen, `clash.py` 0 op de nieuwe delen, K1 tot K13 niet lager, S7 hoogstens twee runs.
 
 ## Golf 5c-1: robuustheid, bediening, toegankelijkheid en tests (1 dag; versie 8)
 
@@ -236,7 +287,8 @@ Poort: `pncheck` groen (reproduceerbaar, bronnen per nummer niet gedaald); dekki
 | 2 | 5b-1 camera's en materialen, naast 5a-2 | 4 domeinagents (carrosserie, interieur, motor, orkestrator voor `core.js:70`); 1 tooling-agent voor 5a-2 | 1 dag | volledige set strikt; vóór/na-poort per punt; 3 paren tegen v6 | ja, versie 7 (met A6) |
 | 3 | 5c-1 robuustheid, bediening, tests | 1 app-agent plus 1 test-agent | 1 dag | itest circa 190; eerste-beeld-poort; 3 paren tegen v7 | ja, versie 8 |
 | 4 | 5d nummers | 1 gegevensagent plus 1 verifieerder | 1 dag in plakken | `pncheck`, dekking, lokvogels | ja, versie 9 |
-| 5 | 5b-2 geometrie en budget | 5 domeinagents, G3 als minigolf | 1,5 tot 2 dagen | set strikt, budgetten, `visdiff`, poort niet lager, S7 8 van 9 | ja, versie 10 |
+| 5 | 5b-2 geometrie en budget | 6 domeinagents (gedaan op 16 oktober, 16:18 tot 20:21 UTC) | 1,5 tot 2 dagen | set strikt, budgetten, `visdiff` (eigen basis), poort niet lager, S7 8 van 9 (niet gehaald) | versie 9 gebouwd, nog niet gepubliceerd |
+| 5b | 5b-3 restpunten van 5b-2 | orkestrator plus domeinagents | 1 tot 1,5 dag | zoals 5b-2, met `clash.py` 0 | ja, versie 10 |
 | 6 | 5c-2 prestaties en codegezondheid | 1 app-agent | 1 tot 1,5 dag, K5 apart | volledige set; `timing()` 25 procent korter | ja, versie 11 |
 | 7 | 5e feiten | orkestrator plus gebruiker | doorlopend | besluit in `beslissingen.md` | mee met de volgende versie |
 | 8 | 6 strategisch | spike van 1 dag | op aanvraag | volledige itest op de spike | nee tot besluit |
