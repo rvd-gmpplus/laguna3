@@ -1,4 +1,4 @@
-/* ===================== presets: gegevens en één toepassingsmotor ===================== */
+/* ===================== presets: de toepassingsmotor (de gegevens per auto staan in presetdata.js) ===================== */
 // Elke preset is alleen gegevens. Velden:
 //   id, cat (categorie), label, key (sneltoets), note (wat je ziet, één regel),
 //   iso: [ankers] alleen deze tonen, open: [groepen] precies deze uitklappen, deep: [groepen] met hun hele deelboom,
@@ -8,65 +8,10 @@
 //   frame: [namen] wat in beeld moet (standaard iso, anders de hele auto),
 //   opens: [openers] of 'all': de modus Openen met precies deze openers open (pad of unieke naam; een volger telt als zijn
 //   leider). Zonder frame is het kader de open.look.nodes van de eerste opener, met zijn look.dir als richting. Alle andere
-//   presets zetten de modus terug op Uitklappen en sluiten de openers.
+//   presets zetten de modus terug op Uitklappen en sluiten de openers (de modusknop niet: die laat ze staan).
 //   soon: true wacht op een opener van een andere eigenaar: oplossen de namen nog niet, dan verschijnt de preset niet in de
 //   menu's en geeft checkPresets() geen fout; checkPresets(true) toetst ook deze presets.
 // Alleen ankernamen uit contract §8 / tools/anchors.json. Een preset waarvan een naam niet oplost, verschijnt niet in de menu's.
-const appCar = 'Renault Laguna III';
-const appCats = ['Overzicht', 'Motor', 'Aandrijving', 'Onderstel', 'Carrosserie', 'Interieur', 'Openen'];
-const PRESETS = [
-  // Overzicht
-  { id: 'assembled', cat: 'Overzicht', label: 'Gemonteerd', key: '0', note: 'De complete auto in elkaar: Laguna III hatchback fase 2, Initiale Paris.', cam: { dir: [1, 0.42, 1.08], pad: 1.04 } },
-  { id: 'main', cat: 'Overzicht', label: 'Hoofdgroepen', key: '1', note: 'De acht hoofdgroepen uit elkaar: carrosserie, interieur, aandrijflijn, onderstel en vier systemen.', open: [appCar], labels: appCar, cam: { dir: [1, 0.5, 1.08], pad: 1.04 } },
-  { id: 'bodyOff', cat: 'Overzicht', label: 'Carrosserie eraf', note: 'Carrosserie en interieur opgetild, zodat motor, automaat en onderstel op hun plek te zien zijn.', pull: { 'Carrosserie': [0, 1.4, 0], 'Interieur': [0, 0.5, 0] }, labels: appCar, cam: { dir: [1, 0.3, 0.8], pad: 1.04 } },
-  { id: 'xray', cat: 'Overzicht', label: 'Röntgen', key: '8', note: 'Carrosserie doorzichtig: de techniek in de gemonteerde auto, van opzij.', xray: true, cam: { dir: [1, 0.12, 0.02], pad: 1.03 } },
-  { id: 'everything', cat: 'Overzicht', label: 'Alles uit elkaar', key: '9', note: 'Elke groep uitgeklapt tot op het kleinste onderdeel, gekleurd per hoofdgroep.', deep: [appCar], sys: true, labels: appCar, cam: { dir: [1, 0.6, 1.0], pad: 1.0 } },
-  { id: 'tour', cat: 'Overzicht', label: 'Rondleiding', note: 'Speelt de belangrijkste presets na elkaar af, met uitleg bij elke stap.', tour: true },
-  // Motor
-  { id: 'engine', cat: 'Motor', label: 'Motor F4Rt', key: '2', note: '2.0 16V turbobenzinemotor: 1998 cm³, 125 kW (170 pk), 270 Nm. Eerste laag uit elkaar.', iso: ['Motor F4Rt'], open: ['Motor F4Rt'], cam: { dir: [0.3, 0.42, 1], pad: 1.08 } },
-  { id: 'engineAll', cat: 'Motor', label: 'Motor tot op de bout', key: '3', note: 'Alle groepen van de motor uitgeklapt, tot op de kleinste onderdelen.', iso: ['Motor F4Rt'], deep: ['Motor F4Rt'], cam: { dir: [0.3, 0.45, 1], pad: 1.02 } },
-  { id: 'head', cat: 'Motor', label: 'Cilinderkop en kleppen', note: 'Aluminium cilinderkop met twee nokkenassen en zestien kleppen, helemaal uit elkaar.', iso: ['Cilinderkop'], deep: ['Cilinderkop'], cam: { dir: [0.7, 0.5, 1], pad: 1.04 } },
-  { id: 'crank', cat: 'Motor', label: 'Krukmechanisme', note: 'Krukas met de vier zuigers en drijfstangen; boring × slag 82,7 × 93,0 mm.', iso: ['Krukmechanisme'], deep: ['Krukmechanisme'], cam: { dir: [0.35, 0.4, 1], pad: 1.04 } },
-  { id: 'timing', cat: 'Motor', label: 'Distributie', note: 'Getande distributieriem die de nokkenassen en de waterpomp aandrijft, op de motor uitgeklapt.', iso: ['Motor F4Rt'], deep: ['Distributie'], select: 'Distributie', labels: 'Distributie', frame: ['Motor F4Rt'], cam: { dir: [-1, 0.35, 0.45], pad: 1.06 } },
-  { id: 'turbo', cat: 'Motor', label: 'Turbo', note: 'Mitsubishi TD04-turbocompressor met het uitlaatspruitstuk, uit elkaar.', iso: ['Turbo en uitlaatspruitstuk'], deep: ['Turbo en uitlaatspruitstuk'], labels: 'Turbocompressor', cam: { dir: [0.5, 0.45, -1], pad: 1.05 } },
-  { id: 'dynStart', cat: 'Motor', label: 'Dynamo en startmotor', note: 'Dynamo (150 A) aan de multiriem en de startmotor op de automaat, beide uit elkaar.', iso: ['Dynamo', 'Startmotor'], deep: ['Dynamo', 'Startmotor'], labels: 'Dynamo', select: 'Dynamo', spread: 0.7, cam: { dir: [0.3, 0.3, 1], pad: 1.45 } },
-  { id: 'psPump', cat: 'Motor', label: 'Stuurpomp', note: 'Hydraulische stuurbekrachtigingspomp aan de multiriem, met poelie, pomphuis, stroomregelklep en aansluitingen, uit elkaar.', iso: ['Stuurpomp'], deep: ['Stuurpomp'], labels: 'Stuurpomp', cam: { dir: [-0.55, 0.45, -1], pad: 1.06 } },
-  { id: 'cooling', cat: 'Motor', label: 'Koeling en luchtinlaat', note: 'Koelpakket met radiateur, condensor, intercooler en ventilator, plus expansievat, koelslangen en het luchtinlaattraject naar de turbo.', iso: ['Koeling en luchtinlaat'], open: ['Koeling en luchtinlaat'], labels: 'Koeling en luchtinlaat', cam: { dir: [0.75, 0.5, 1], pad: 1.05 } },
-  { id: 'exhaust', cat: 'Motor', label: 'Uitlaatsysteem', note: 'De uitlaat van turbo tot bumper: voorkatalysator, downpipe, flexstuk, middendemper en einddemper, met ophangingen en hitteschilden.', iso: ['Uitlaatsysteem'], open: ['Uitlaatsysteem'], labels: 'Uitlaatsysteem', cam: { dir: [0.9, 0.4, 0.55], pad: 1.03 } },
-  { id: 'battery', cat: 'Motor', label: 'Accu', note: '12-voltaccu in de motorruimte, uit elkaar: accubak met cellen, deksel, polen, poolklemmen en houder.', iso: ['Accu'], deep: ['Accu'], labels: 'Accu', cam: { dir: [-0.8, 0.6, 0.9], pad: 1.06 } },
-  // Aandrijving
-  { id: 'gearbox', cat: 'Aandrijving', label: 'Automaat', key: '4', note: 'Zestraps automaat Jatco JF613E (Renault AJ0), eerste laag uit elkaar.', iso: ['Automaatversnellingsbak'], open: ['Automaatversnellingsbak'], cam: { dir: [0.45, 0.5, 1], pad: 1.06 } },
-  { id: 'gearboxAll', cat: 'Aandrijving', label: 'Automaat tot op de bout', note: 'Elke groep van de automaat uitgeklapt, van koppelomvormer tot klepblok.', iso: ['Automaatversnellingsbak'], deep: ['Automaatversnellingsbak'], cam: { dir: [0.45, 0.5, 1], pad: 1.03 } },
-  { id: 'converter', cat: 'Aandrijving', label: 'Koppelomvormer', note: 'Hydraulische koppeling tussen motor en bak: pompwiel, turbinewiel, leidwiel en overbruggingskoppeling.', iso: ['Koppelomvormer'], deep: ['Koppelomvormer'], cam: { dir: [0.9, 0.4, 0.7], pad: 1.05 } },
-  { id: 'gearsets', cat: 'Aandrijving', label: 'Tandwielsets en koppelingen', note: 'Planetaire tandwielsets en de lamellenkoppelingen en -remmen die de zes versnellingen schakelen.', iso: ['Tandwielsets', 'Koppelingen en remmen'], deep: ['Tandwielsets', 'Koppelingen en remmen'], labels: 'Koppelingen en remmen', select: 'Koppelingen en remmen', cam: { dir: [0.9, 0.45, 0.8], pad: 1.05 } },
-  { id: 'diff', cat: 'Aandrijving', label: 'Differentieel', note: 'Differentieel met kroonwiel dat het koppel over de twee aandrijfassen verdeelt.', iso: ['Differentieel'], deep: ['Differentieel'], cam: { dir: [0.8, 0.5, 1], pad: 1.05 } },
-  { id: 'shafts', cat: 'Aandrijving', label: 'Aandrijfassen', note: 'Linker en rechter aandrijfas met homokinetische koppelingen naar de voorwielen.', iso: ['Aandrijfassen'], deep: ['Aandrijfassen'], cam: { dir: [0.35, 1, 0.9], pad: 1.04 } },
-  // Onderstel
-  { id: 'chassis', cat: 'Onderstel', label: 'Onderstel', key: '5', note: 'Vooras met McPherson-veerpoten, achteras, de vier wielen en het remsysteem.', iso: ['Onderstel'], open: ['Onderstel', 'Vooras en stuurinrichting', 'Achteras'], cam: { dir: [1, 0.55, 1.08], pad: 1.04 } },
-  { id: 'frontAxle', cat: 'Onderstel', label: 'Vooras en stuurinrichting', note: 'McPherson-voorwielophanging met tandheugelbesturing en stuurwiel.', iso: ['Vooras en stuurinrichting'], open: ['Vooras en stuurinrichting', 'Stuurinrichting', 'Wielophanging linksvoor'], cam: { dir: [0.7, 0.55, 1], pad: 1.04 } },
-  { id: 'rearAxle', cat: 'Onderstel', label: 'Achteras', note: 'Torsieas in H-vorm met langsarmen, aparte schroefveren en schokdempers.', iso: ['Achteras'], open: ['Achteras', 'Wielophanging linksachter'], cam: { dir: [0.75, 0.6, -1], pad: 1.04 } },
-  { id: 'brakeLF', cat: 'Onderstel', label: 'Rem linksvoor', note: 'Wielophanging linksvoor uitgeklapt, de remklauw tot op de remblokken uit elkaar; geventileerde schijf 296 × 26 mm.', iso: ['Wielophanging linksvoor'], open: ['Wielophanging linksvoor'], deep: ['Remklauw linksvoor'], labels: 'Remklauw linksvoor', labelOnly: ['Remklauwhuis', 'Remklauwdrager', 'Remblok binnen', 'Remblok buiten', 'Zuiger'], select: 'Remklauw linksvoor', cam: { dir: [0.7, 0.45, 0.75], pad: 1.05 } },
-  { id: 'wheelLF', cat: 'Onderstel', label: 'Wiel linksvoor', note: 'Lichtmetalen wiel met band 225/45 R18 (18 inch in het model; 17 inch is voor deze uitvoering even goed mogelijk), uit elkaar.', iso: ['Wiel linksvoor'], deep: ['Wiel linksvoor'], cam: { dir: [1, 0.35, 0.65], pad: 1.05 } },
-  { id: 'steering', cat: 'Onderstel', label: 'Stuurinrichting', note: 'Tandheugelstuurhuis met spoorstangen, stuurkolom en stuurwiel, en de stuurbekrachtiging met reservoir en slangen.', iso: ['Stuurinrichting'], open: ['Stuurinrichting', 'Stuurbekrachtiging'], labels: 'Stuurinrichting', cam: { dir: [0.75, 0.6, 1], pad: 1.04 } },
-  { id: 'parkBrake', cat: 'Onderstel', label: 'Parkeerrem', note: 'Elektrische parkeerremunit bij de achteras, uit elkaar: elektromotor met wormoverbrenging en kabelverdeler, en de twee kabels naar de achterklauwen.', iso: ['Parkeerrem'], open: ['Parkeerrem'], labels: 'Parkeerrem', cam: { dir: [0.6, 0.75, -1], pad: 1.05 } },
-  // Carrosserie
-  { id: 'body', cat: 'Carrosserie', label: 'Carrosserie', key: '6', note: 'Kooi met portieren, kleppen, bumpers, verlichting en ruiten: eerste laag uit elkaar.', iso: ['Carrosserie'], open: ['Carrosserie'], cam: { dir: [1, 0.5, 1.08], pad: 1.03 } },
-  { id: 'doorLF', cat: 'Carrosserie', label: 'Portier linksvoor', note: 'Linker voorportier tot op de onderdelen, met de buitenspiegel.', iso: ['Portier linksvoor'], deep: ['Portier linksvoor'], cam: { dir: [0.85, 0.5, 0.75], pad: 1.05 } },
-  { id: 'headlampL', cat: 'Carrosserie', label: 'Koplamp links', note: 'Bi-xenon koplamp links uit elkaar.', iso: ['Koplamp links'], deep: ['Koplamp links'], cam: { dir: [0.8, 0.35, 1], pad: 1.06 } },
-  { id: 'tailgate', cat: 'Carrosserie', label: 'Achterklep', note: 'Achterklep van de hatchback met achterruit, derde remlicht, wisser, slot en gasveren, uit elkaar.', iso: ['Achterklep'], deep: ['Achterklep'], cam: { dir: [0.55, 0.45, -1], pad: 1.05 } },
-  // Interieur
-  { id: 'interior', cat: 'Interieur', label: 'Interieur', key: '7', note: 'Dashboard, middenconsole, stoelen, bekleding en pedalen uit elkaar.', iso: ['Interieur'], open: ['Interieur', 'Stoelen'], cam: { dir: [0.9, 0.85, 0.7], pad: 1.04 } },
-  { id: 'driverSeat', cat: 'Interieur', label: 'Bestuurdersstoel', note: 'Bestuurdersstoel tot op de onderdelen: zitting, rugleuning en hoofdsteun.', iso: ['Bestuurdersstoel'], deep: ['Bestuurdersstoel'], cam: { dir: [1, 0.45, 0.8], pad: 1.05 } },
-  { id: 'dash', cat: 'Interieur', label: 'Dashboard', note: 'Dashboard met instrumentenpaneel en bedieningsdelen uit elkaar.', iso: ['Dashboard'], deep: ['Dashboard'], cam: { dir: [0.3, 0.45, -1], pad: 1.05 } },
-  // Openen
-  { id: 'openHood', cat: 'Openen', label: 'Motorruimte', note: 'Motorkap open: de motorruimte van boven en voren, met de kap in de eindstand.', opens: ['Motorkap'] },
-  { id: 'openDoors', cat: 'Openen', label: 'Instappen', note: 'De vier portieren open, schuin van boven.', opens: ['Portier linksvoor', 'Portier rechtsvoor', 'Portier linksachter', 'Portier rechtsachter'], frame: [appCar], cam: { dir: [1, 0.85, 0.55], pad: 1.04 } },
-  { id: 'openTrunk', cat: 'Openen', label: 'Bagageruimte', note: 'Achterklep open, hoedenplank mee omhoog en het grote deel van de achterbank neergeklapt.', opens: ['Achterklep', 'Rugleuning groot deel'], frame: [appCar], cam: { dir: [-0.8, 0.6, -1], pad: 1.05 } },
-  { id: 'openFuel', cat: 'Openen', label: 'Tanken', note: 'Tankklep open met de vulhals in het rechter achterscherm.', opens: ['Tankklep'], frame: [appCar], cam: { dir: [-1, 0.35, -0.75], pad: 1.04 } },
-  { id: 'openRoof', cat: 'Openen', label: 'Panoramadak', note: 'Zonnescherm open en het voorste glaspaneel gekanteld en naar achteren geschoven.', opens: ['Zonnescherm voor', 'Glaspaneel voor'], frame: [appCar], cam: { dir: [0.6, 1.1, 0.55], pad: 1.04 } },
-  { id: 'openAll', cat: 'Openen', label: 'Alles open', note: 'Elke opener open: portieren, kap, klep, ruiten, spiegels en wat er verder opengaat.', opens: 'all', frame: [appCar], cam: { dir: [1, 0.55, 1.08], pad: 1.04 } },
-];
-const appTourSteps = ['assembled', 'main', 'bodyOff', 'engine', 'head', 'turbo', 'gearbox', 'gearsets', 'chassis', 'brakeLF', 'interior', 'everything', 'assembled'];
 const appPresetById = new Map(PRESETS.map(p => [p.id, p]));
 
 function appPresetNames(p) {
@@ -143,9 +88,10 @@ function appApplyPreset(p, opt = {}) {
   if (!opt.noHistory) uiPush();
   uiSetDim(null); // U19: een preset begint zonder gedimde rest
   // modus en openers: alleen een preset met opens zet Openen aan; elke andere zet Uitklappen terug en sluit de openers
+  // (behalve met keepOpen, de wissel met de modusknop)
   OPENMODE = opt.openMode != null ? opt.openMode : !!p.opens;
   const wantOpen = appWantOpen(p);
-  for (const n of OPENERS) if (!wantOpen.has(n)) uiSetOpen(n, 0);   // eerst sluiten (needs sluit mee), dan openen
+  if (!opt.keepOpen) for (const n of OPENERS) if (!wantOpen.has(n)) uiSetOpen(n, 0);   // eerst sluiten (needs sluit mee), dan openen; keepOpen: de modusknop laat ze staan
   for (const n of wantOpen) uiSetOpen(n, 1);
   const want = new Set();
   for (const name of p.open || []) want.add(byName(name));

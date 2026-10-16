@@ -1,7 +1,7 @@
 'use strict';
 /* ===================== basis: renderer, scène, materialen, geometrie-hulpen ===================== */
 const LOADING = document.getElementById('loading');
-// tijdlijn van het opstarten (ms sinds het begin van de navigatie), uit te lezen via __laguna.timing
+// tijdlijn van het opstarten (ms sinds het begin van de navigatie), uit te lezen via __model.timing
 const uiTiming = { script: Math.round(performance.now()) };
 if (!window.THREE || !THREE.OrbitControls || !THREE.BufferGeometryUtils || !THREE.RoomEnvironment || !THREE.RoundedBoxGeometry) {
   LOADING.textContent = 'De 3D-bibliotheek kon niet worden geladen. Controleer de verbinding en laad de pagina opnieuw.';
@@ -140,7 +140,7 @@ const GHOST_HL = new THREE.MeshStandardMaterial({ color: 0xf2c230, emissive: 0xf
 
 /* ---------- geometrie-hulpen ---------- */
 const GC = new Map();
-// Testmodus (window.__LAGUNA_CACHECHECK): bouwt bij hergebruik van een sleutel opnieuw en meldt een botsing
+// Testmodus (window.__MODEL_CACHECHECK): bouwt bij hergebruik van een sleutel opnieuw en meldt een botsing
 // als dezelfde sleutel voor andere geometrie wordt gebruikt (bijvoorbeeld twee bestanden met sleutel 'cap').
 function cacheSame(a, b) {
   const pa = a.attributes.position, pb = b.attributes.position;
@@ -151,7 +151,7 @@ function cacheSame(a, b) {
 function cache(key, fn) {
   let g = GC.get(key);
   if (!g) { g = fn(); GC.set(key, g); }
-  else if (window.__LAGUNA_CACHECHECK) { const t = fn(); if (!cacheSame(g, t)) console.error(`cache-sleutel "${key}" wordt voor verschillende geometrie gebruikt`); t.dispose(); }
+  else if (window.__MODEL_CACHECHECK) { const t = fn(); if (!cacheSame(g, t)) console.error(`cache-sleutel "${key}" wordt voor verschillende geometrie gebruikt`); t.dispose(); }
   return g;
 }
 function xf(g, p, r, s) {

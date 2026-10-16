@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 240
     env:
-      LAGUNA_TIMEOUT_MS: '600000'
+      MODEL_TIMEOUT_MS: '600000'
       PUBSMOKE_READY_MS: '60000'
       ITEST_GATES: '1'
     steps:

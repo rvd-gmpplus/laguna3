@@ -27,7 +27,7 @@ import json, os, sys, csv, io, re, glob
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
 DATA = os.path.join(REPO, 'data', 'pn')
-ROOT = 'Renault Laguna III/'
+ROOT = json.load(open(os.path.join(REPO, 'auto.json'), encoding='utf-8'))['wortel'] + '/'  # de wortel van de boom (auto.json)
 SEP = '|'  # scheidingsteken binnen de kolommen bronnen en bronnen_keuze
 HEADER = ("/* ===================== onderdeelnummers ===================== */\n"
           "// Gegevens, geen code. Gemaakt door de orkestrator uit de geverifieerde onderzoeksbestanden (build_pn.py); niet met de hand bewerken.\n"

@@ -7,11 +7,13 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from harness import session
 
 CHECK = r"""(ANCHORS) => {
-  const L = window.__laguna, err = [], warn = [];
+  const L = window.__model, err = [], warn = [];
   const path = n => { const a = []; for (let p = n; p; p = p.parent) a.unshift(p.name); return a.join(' › '); };
   L.ROOT.obj.updateMatrixWorld(true);
   const box = new THREE.Box3(), v = new THREE.Vector3();
-  const LIM = { x: 1.15, y0: -0.08, y1: 1.62, z: 2.48 };
+  // grenzen uit body.js van de auto (framework): halve breedte zonder en met spiegels (BOD_WMAX, BOD_MIRW), hoogte (BOD_H), lengte (ZF, ZR)
+  const WMAX = BOD_WMAX, MIRW = BOD_MIRW, HMAX = BOD_H;
+  const LIM = { x: MIRW + 0.115, y0: -0.08, y1: HMAX + 0.175, z: Math.max(ZF, -ZR) + 0.135 };
   const pos = new Map();
   const bodyRoot = L.ALL.find(n => n.name === 'Carrosserie');
   L.__inBody = n => { for (let p = n; p; p = p.parent) if (p === bodyRoot) return true; return false; };
@@ -34,12 +36,12 @@ CHECK = r"""(ANCHORS) => {
       if (box.isEmpty() || ![box.min.x, box.min.y, box.min.z, box.max.x, box.max.y, box.max.z].every(Number.isFinite)) { err.push('ongeldige box: ' + path(n)); continue; }
       if (box.min.x < -LIM.x || box.max.x > LIM.x || box.min.y < LIM.y0 || box.max.y > LIM.y1 || box.min.z < -LIM.z || box.max.z > LIM.z)
         err.push(`buiten de auto (gemonteerd): ${path(n)} [${box.min.toArray().map(x => x.toFixed(2))} .. ${box.max.toArray().map(x => x.toFixed(2))}]`);
-      // audit C08: carrosserie binnen ZR..ZF (6 mm marge voor kentekenplaten) en zonder spiegels niet breder dan 0,915; spiegels tot 1,035
+      // audit C08: carrosserie binnen ZR..ZF (6 mm marge voor kentekenplaten) en zonder spiegels niet breder dan BOD_WMAX; spiegels tot BOD_MIRW
       if (n.obj && L.__inBody(n)) {
-        const mirror = L.__inMirror(n), wmax = mirror ? 1.035 : 0.915;
+        const mirror = L.__inMirror(n), wmax = mirror ? MIRW : WMAX;
         if (box.min.x < -wmax || box.max.x > wmax) err.push(`carrosserie breder dan ${wmax.toFixed(3)}${mirror ? ' (spiegel)' : ''}: ${path(n)} [x ${box.min.x.toFixed(3)} .. ${box.max.x.toFixed(3)}]`);
         if (box.max.z > ZF + 0.006 || box.min.z < ZR - 0.006) err.push(`carrosserie langer dan ZR..ZF: ${path(n)} [z ${box.min.z.toFixed(3)} .. ${box.max.z.toFixed(3)}]`);
-      } else if (box.min.x < -1.035 || box.max.x > 1.035) err.push(`breder dan de spiegels (1,035): ${path(n)} [x ${box.min.x.toFixed(3)} .. ${box.max.x.toFixed(3)}]`);
+      } else if (box.min.x < -MIRW || box.max.x > MIRW) err.push(`breder dan de spiegels (${MIRW.toFixed(3)}): ${path(n)} [x ${box.min.x.toFixed(3)} .. ${box.max.x.toFixed(3)}]`);
       const key = box.getCenter(v).toArray().map(x => x.toFixed(4)).join(',') + '|' + (g.index ? g.index.count : a.count) + '|' + (n.obj.material && n.obj.material.name);
       if (pos.has(key)) warn.push('dubbel onderdeel op dezelfde plek: ' + path(n) + '  ==  ' + pos.get(key)); else pos.set(key, path(n));
     }

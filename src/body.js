@@ -3,6 +3,7 @@
 // Alle steunpunten komen uit het exterieuronderzoek (zijaanzicht en bovenaanzicht van de Laguna III hatchback fase 2,
 // lijntekening en persfoto afgebeeld op de projectassen; fout ca. 2 cm tussen de assen, 5 cm in de overhang).
 const ZF = 2.345, ZR = -2.35;                       // lengte 4695 mm (uiterste punten van de bumpers)
+const BOD_WMAX = 0.915, BOD_MIRW = 1.035, BOD_H = 1.445; // framework: halve breedte zonder en met spiegels, hoogte; integrity.py leest ze
 const AXF = 1.365, AXR = -1.391, AY = 0.33;         // wielbasis 2756 mm, bandstraal 225/45 R18
 const ARCH = 0.385, TRACK = 0.775;                  // wielbooguitsparing (straal om de wielas), oude gemiddelde halve spoorbreedte
 const TRACK_F = 0.7785, TRACK_R = 0.756;            // halve spoorbreedte voor en achter (1557 en 1512 mm, brochure april 2011)

@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      LAGUNA_TIMEOUT_MS: '300000'
+      MODEL_TIMEOUT_MS: '300000'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -37,6 +37,8 @@ jobs:
           git diff --stat --exit-code index.html || { echo "::error::index.html is niet herbouwd uit src/ (python3 build.py)"; exit 1; }
       - name: pncheck (nummergegevens reproduceerbaar)
         run: python3 tools/pncheck.py
+      - name: framework (generieke laag autoneutraal, auto.json volledig)
+        run: python3 tools/framework.py check
       - name: smoke
         run: python3 tools/smoke.py
       - name: integrity

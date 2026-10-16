@@ -3,15 +3,15 @@
 Elk testscript doet:
     from harness import session
     with session() as s:            # bouwt src/ naar een tijdelijke testmap
-        pg = s.page(1280, 800)      # laadt index.html, wacht tot window.__laguna er is
+        pg = s.page(1280, 800)      # laadt index.html, wacht tot window.__model er is
         ...
         s.report()                  # console- en paginafouten
 
 Omgevingsvariabelen:
-    THREE_DIR   map met het uitgepakte npm-pakket three@0.147.0 (standaard ~/.cache/laguna/three-0.147.0/package)
+    THREE_DIR   map met het uitgepakte npm-pakket three@0.147.0 (standaard ~/.cache/explosietekening/three-0.147.0/package)
     CHROMIUM    pad naar een Chromium-binary (standaard /opt/pw-browsers/chromium als die bestaat)
-    LAGUNA_TEST bestaande testmap gebruiken in plaats van opnieuw te bouwen
-    LAGUNA_TIMEOUT_MS wachttijd op laden en `ready` in milliseconden (standaard 120000)
+    MODEL_TEST bestaande testmap gebruiken in plaats van opnieuw te bouwen
+    MODEL_TIMEOUT_MS wachttijd op laden en `ready` in milliseconden (standaard 120000)
 
 Los aan te roepen: `python3 tools/harness.py --ensure-three` haalt three.js op (met hashcontrole) en drukt de map af.
 """
@@ -44,7 +44,7 @@ def ensure_three():
     d = os.environ.get('THREE_DIR')
     if d and os.path.isfile(os.path.join(d, 'build', 'three.min.js')):
         return d
-    cache = os.path.expanduser(f'~/.cache/laguna/three-{THREE_VERSION}')
+    cache = os.path.expanduser(f'~/.cache/explosietekening/three-{THREE_VERSION}')
     pkg = os.path.join(cache, 'package')
     tgz = os.path.join(cache, f'three-{THREE_VERSION}.tgz')
     os.makedirs(cache, exist_ok=True)
@@ -61,7 +61,7 @@ def ensure_three():
 
 def build_test(test_dir=None):
     """Bouwt src/ naar test_dir/index.html met three/ als symlink. Geeft de map terug."""
-    test_dir = test_dir or tempfile.mkdtemp(prefix='laguna-test-')
+    test_dir = test_dir or tempfile.mkdtemp(prefix='model-test-')
     r = subprocess.run([sys.executable, os.path.join(ROOT, 'build.py'), '--test-only', test_dir], capture_output=True, text=True)
     if r.returncode != 0:
         raise SystemExit('bouw mislukt:\n' + r.stderr + r.stdout)
@@ -99,10 +99,10 @@ class Session:
 
     def page(self, w=1280, h=800, scale=1, wait=True, touch=False, timeout=None, query=''):
         """query: optionele querystring zoals '?preset=engine' (deelbare stand) of '?debug=1'."""
-        # LAGUNA_TIMEOUT_MS: wachttijd op laden en `ready` (standaard 120 s; op een belaste machine of CI hoger zetten)
-        timeout = int(os.environ.get('LAGUNA_TIMEOUT_MS', timeout or 120000))
+        # MODEL_TIMEOUT_MS: wachttijd op laden en `ready` (standaard 120 s; op een belaste machine of CI hoger zetten)
+        timeout = int(os.environ.get('MODEL_TIMEOUT_MS', timeout or 120000))
         ctx = self.browser.new_context(viewport={'width': w, 'height': h}, device_scale_factor=scale, has_touch=touch, is_mobile=touch)
-        ctx.add_init_script('window.__LAGUNA_CACHECHECK = true;')
+        ctx.add_init_script('window.__MODEL_CACHECHECK = true;')
         pg = ctx.new_page()
         tag = f'{w}x{h}'
 
@@ -117,7 +117,7 @@ class Session:
         t0 = time.time()
         pg.goto(f'http://127.0.0.1:{self.port}/index.html{query}', wait_until='load', timeout=timeout)
         if wait:
-            pg.wait_for_function('window.__laguna && window.__laguna.ready !== false', timeout=timeout)
+            pg.wait_for_function('window.__model && window.__model.ready !== false', timeout=timeout)
             pg.wait_for_timeout(300)
         self.load_times.append((tag, round(time.time() - t0, 2)))
         return pg
@@ -151,7 +151,7 @@ class Session:
 
 @contextlib.contextmanager
 def session(test_dir=None):
-    given = test_dir or os.environ.get('LAGUNA_TEST')
+    given = test_dir or os.environ.get('MODEL_TEST')
     d = given or build_test()
     if not os.path.exists(os.path.join(d, 'three')):
         os.symlink(ensure_three(), os.path.join(d, 'three'))

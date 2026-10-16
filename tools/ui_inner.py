@@ -26,7 +26,7 @@ OPEN = '--open' in sys.argv
 
 JS = r"""((nDirs, state) => {
   // state: null (gemonteerd, alles dicht), 'all' (alle openers open) of een getal (alleen die opener open)
-  const L = __laguna; L.preset('assembled'); L.finishAll();
+  const L = __model; L.preset('assembled'); L.finishAll();
   const leaders = L.ALL.filter(n => n.opn && !n.opn.lead);
   const pathOf0 = n => { const a = []; for (let k = n; k && k.parent; k = k.parent) a.unshift(k.name); return a.join('/'); };
   let label = 'dicht';
@@ -44,7 +44,7 @@ JS = r"""((nDirs, state) => {
     if (main === 'Carrosserie') return 'body.js / bodyparts.js';
     if (main === 'Interieur') return 'interior.js';
     if (main === 'Onderstel') return 'chassis.js';
-    if (main === 'Aandrijflijn') return p.includes('Motor F4Rt') ? 'engine1.js / engine2.js / engine3.js' : 'drivetrain.js';
+    if (main === 'Aandrijflijn') return p.some(x => x.startsWith('Motor ')) ? 'engine1.js / engine2.js / engine3.js' : 'drivetrain.js';
     return 'systems.js'; };
   const pathOf = n => { const p = []; for (let a = n.parent; a && a.parent; a = a.parent) p.unshift(a.name); return p.join(' > '); };
   const found = new Map();

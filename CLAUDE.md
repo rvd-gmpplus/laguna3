@@ -16,7 +16,7 @@ taal van code-commentaar, beschrijvingen, docs en commits. Geen em-dashes in tek
 
 - Eén bestand per domein: carrosserie (`body.js`, `bodyparts.js`, `panorama.js`), motor (`engine1-3.js`), aandrijving
   (`drivetrain.js`), onderstel (`chassis.js`), interieur (`interior.js`), systemen (`systems.js`), app (`core.js`,
-  `app1.js`, `presets.js`, `app2.js`, `head.html`). Voorvoegsels per eigenaar voor functies, materialen en cachesleutels.
+  `app1.js`, `presetdata.js`, `presets.js`, `app2.js`, `head.html`). Voorvoegsels per eigenaar voor functies, materialen en cachesleutels.
 - Alleen-lezen voor domeineigenaars: `core.js`, `body.js`, `tools/anchors.json`, `tools/open_allow.json`, de testscripts,
   `IGNORE` in `tools/harness.py`. Wijzigen gaat via de orkestrator, met een melding aan de eigenaren.
 - Knopen: `A(naam, opties, kinderen)` en `P(naam, geometrie, materiaal, opties)` met verplicht `d` (Nederlandse
@@ -30,7 +30,8 @@ taal van code-commentaar, beschrijvingen, docs en commits. Geen em-dashes in tek
 ## Werkwijze
 
 - Golven per domein in eigen worktrees; `tools/orkestratie/mergecheck.py` vóór samenvoegen; na samenvoegen de volledige
-  set, dan pas `index.html` herbouwen en publiceren; na publiceren de URL teruglezen en byte voor byte vergelijken.
+  set, dan pas `index.html` herbouwen en publiceren; na publiceren de URL teruglezen en byte voor byte vergelijken (Pages: `index.html`, een volledig document; artefact: de kale pagina uit `build.py --bare`).
 - `VERSION` is het versienummer van de volgende publicatie; `build.py` zet nummer plus inhoudshash in de pagina.
 - Begin elke sessie met `git ls-remote --heads origin` en een vergelijking van elke tak met `main`.
-- Volledige uitleg: `docs/ontwerp-en-architectuur.md`, `docs/testen.md`, `handomdraai.md`.
+- Framework: generieke bestanden (`framework.json`) bevatten geen autonaam; wat per auto verschilt, staat in `auto.json` en de autobestanden. `python3 tools/framework.py check` voor elke commit aan de generieke laag. Een generieke verbetering ontstaat hier en gaat met `framework.py export` naar andere auto's (espace5). Uitleg: `docs/framework.md`.
+- Volledige uitleg: `docs/framework.md`, `docs/ontwerp-en-architectuur.md`, `docs/testen.md`, `handomdraai.md`.

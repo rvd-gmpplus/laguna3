@@ -11,8 +11,8 @@ ZONES = json.loads(sys.argv[2])
 FRAME = sys.argv[3] if len(sys.argv) > 3 else 'motor'
 with session() as s:
     pg = s.page(400, 300)
-    r = pg.evaluate("""([Z, FRAME]) => { const L = window.__laguna; L.ROOT.obj.updateMatrixWorld(true);
-      const eng = L.ALL.find(n => n.name === 'Motor F4Rt'); const EW = FRAME === 'auto' ? new THREE.Matrix4() : eng.obj.matrixWorld.clone(); const Minv = EW.clone().invert();
+    r = pg.evaluate("""([Z, FRAME]) => { const L = window.__model; L.ROOT.obj.updateMatrixWorld(true);
+      const eng = L.ALL.find(n => n.parent && n.parent.name === 'Aandrijflijn' && n.name.startsWith('Motor ')); const EW = FRAME === 'auto' ? new THREE.Matrix4() : eng.obj.matrixWorld.clone(); const Minv = EW.clone().invert();
       const v = new THREE.Vector3(), M = new THREE.Matrix4(), out = {};
       const boxes = L.MESHES.map(m => { M.multiplyMatrices(Minv, m.matrixWorld); const a = m.geometry.attributes.position;
         const lo = [1e9,1e9,1e9], hi = [-1e9,-1e9,-1e9];

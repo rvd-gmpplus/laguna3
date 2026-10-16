@@ -15,7 +15,7 @@ if '--tree' in sys.argv:
     from harness import session
     with session() as s:
         pg = s.page(800, 600)
-        live = pg.evaluate("() => window.__laguna.ALL.map(n => uiPathOf(n))")
+        live = pg.evaluate("() => window.__model.ALL.map(n => uiPathOf(n))")
         s.report()
     tf = os.path.join(REPO, 'data', 'tree.json')
     old = json.load(open(tf, encoding='utf-8'))

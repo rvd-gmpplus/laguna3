@@ -3,7 +3,7 @@
     python3 tools/shot.py UITVOERMAP 'JSON'
 
 JSON: [["naam", breedte, hoogte, ["eval:JS", "wait:ms", "click:selector", "shot:bestandsnaam"]], ...]
-Voorbeeld: [["desk",1280,800,["shot:gemonteerd","eval:__laguna.preset('main'); __laguna.finishAll(); 1","wait:800","shot:hoofdgroepen"]]]
+Voorbeeld: [["desk",1280,800,["shot:gemonteerd","eval:__model.preset('main'); __model.finishAll(); 1","wait:800","shot:hoofdgroepen"]]]
 """
 import sys, os, json
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))

@@ -65,7 +65,7 @@ Naast Uitklappen heeft de pagina een tweede modus. In Openen blijft de auto gemo
 
 | Onderdeel | Wat er gebeurt |
 |---|---|
-| Segmentknop `Uitklappen \| Openen` | Staat in de bovenbalk, op de telefoon over de volle breedte. Sneltoets O wisselt. Bij het ingaan van Openen staat alles gemonteerd en is de isolatie weg; bij het verlaten gaan alle openers dicht. |
+| Segmentknop `Uitklappen \| Openen` | Staat in de bovenbalk, op de telefoon over de volle breedte. Sneltoets O wisselt. Bij het ingaan van Openen staat alles gemonteerd en is de isolatie weg; de openers blijven bij elke wissel zoals ze stonden, dus met een geopende motorkap kun je in Uitklappen de motor uit elkaar halen. Een preset of Alles dicht zet ze weer dicht. |
 | Klik of tik | De klikregel kijkt naar de openers op het pad van het geraakte onderdeel, van buiten naar binnen. De eerste dichte opener gaat open. Zijn ze allemaal open, dan sluit de binnenste. Een klik op de ruit of spiegel van een dicht portier opent dus eerst het portier. |
 | Dubbelklik | Gelijk aan een enkele klik. |
 | Rechtsklik, Shift+klik, lang drukken | Sluit de binnenste open opener op het pad. |
@@ -91,7 +91,7 @@ Onderin staan de presets in zeven categorieën (op een staande telefoon in een r
 - Aantal presets: 43, de rondleiding meegeteld (in de eerste golf waren het er 31): Overzicht 6, Motor 11, Aandrijving 6, Onderstel 7, Carrosserie 4, Interieur 3, Openen 6. In de herstelronde van golf 2 kwamen er zes bij: Stuurpomp, Koeling en luchtinlaat, Uitlaatsysteem, Accu, Stuurinrichting en Parkeerrem. Golf 4 voegde de categorie Openen toe (zie hieronder).
 - Een preset in een andere categorie dan Openen zet de modus terug op Uitklappen.
 - `Rondleiding` in Overzicht speelt de belangrijkste presets na elkaar af met een bijschrift per stap, ongeveer vijf seconden per stap. De balk heeft knoppen voor vorige, pauze of hervat, volgende en stop; Esc breekt af. Een verborgen tabblad pauzeert de rondleiding vanzelf.
-- De lijst van presets staat in `src/presets.js`.
+- De lijst van presets staat in `src/presetdata.js`; de toepassingsmotor in `src/presets.js`.
 
 ### Het paneel
 
@@ -155,6 +155,7 @@ Haperen de eerste frames (gemiddeld meer dan 40 ms over 20 frames tijdens een an
 | Pad | Inhoud |
 |---|---|
 | `index.html` | De gebouwde pagina (identiek aan het gepubliceerde artefact). |
+| `auto.json`, `framework.json` | Wat per auto verschilt in de generieke laag (naam, teksten, merk, opslagsleutels, testhaak), en welk bestand generiek of autospecifiek is. Zie [docs/framework.md](docs/framework.md): hoe de modellering is opgezet en hoe je haar voor een andere auto herhaalt. |
 | `src/` | Broncode in delen: opmaak, geometrie, carrosserie, motor, aandrijflijn, onderstel, interieur, systemen, app-logica en presets. |
 | `src/panorama.js` | Het panoramadak: dakplaat met twee openingen, glaspanelen, dwarsbalk, zonneschermen met cassette, luchtgeleider en waterafvoer, met hun openers. De hemelbekleding met de afwerkring en de draaiknop in de hemelconsole staan in `src/interior.js`. |
 | `src/partnumbers.js` | De onderdeelnummers als gegevens. Gemaakt door `tools/orkestratie/build_pn.py` uit `data/pn/` (de canonieke gegevens, zie `data/pn/README.md`); niet met de hand bewerken. |
@@ -228,7 +229,7 @@ Voorbereiding, alle scripts en de resultaten staan in [docs/testen.md](docs/test
 - Op de motorkap zijn in het bovenaanzicht donkere spikkels te zien op een vaste plek. Samenvallende vlakken en de omgevingsreflectie zijn uitgesloten. De vermoedelijke oorzaak is de software-rasterisatie in de container. Dat is niet bewezen; op een echte GPU nakijken.
 - Labelankers: `tools/anchorcheck.py` meet per preset of een anker op het eigen deel ligt en of het een vrije zichtlijn heeft. Op de stand van golf 5c-1 (42 presets): 352 labels, 319 op het eigen deel, 265 met vrije zichtlijn (de basis in `docs/baseline/anchorcheck.json`; geen van beide mag dalen). Vóór golf 4 waren het 261 van 345 op het eigen deel.
 - Driehoeken per hoofdgroep, tekenopdrachten met en zonder bundelen, opstarttijden en de andere kerncijfers staan in [docs/cijfers.md](docs/cijfers.md); de budgetten in `tools/anchors.json`.
-- Interactietest: op de stand van golf 5c-1 slagen alle 218 controles van `tools/itest.py` (desktop en telefoon, openmodus, onderdeelnummers, toetsenbord, formaatwissel, foutpaden); zie [docs/testen.md](docs/testen.md).
+- Interactietest: op de stand van golf 5c-1 slagen alle 222 controles van `tools/itest.py` (desktop en telefoon, openmodus, onderdeelnummers, toetsenbord, formaatwissel, foutpaden); zie [docs/testen.md](docs/testen.md).
 - Niet getest op een echte telefoon en een echte GPU.
 - Alle laadtijden zijn in een container met software-rendering gemeten (de pagina is daar na 5 tot 28 seconden klaar, afhankelijk van de belasting van de machine). Ze zeggen niets over een echt apparaat.
 - De gedragingen van de webview van een telefoon-app (lang drukken, sneltoetsen in een iframe) zijn niet te testen in de container. De stijlregels ervoor zijn wel getoetst.

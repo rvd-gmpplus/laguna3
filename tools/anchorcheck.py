@@ -3,7 +3,7 @@
     python3 tools/anchorcheck.py [--json UIT.json] [--basis BASIS.json] [--only id,id]
 
 Voor elke preset (zonder de rondleiding) zet het script de preset, rondt alle animaties af en leest de geplaatste labels
-(`uiSpots`, dezelfde lijst als `__laguna.labelRects()`, met het ankerpunt op het scherm). Door elk ankerpunt gaat een
+(`uiSpots`, dezelfde lijst als `__model.labelRects()`, met het ankerpunt op het scherm). Door elk ankerpunt gaat een
 straal vanuit de camera over de aanklikbare meshes (`uiPickList()`, dezelfde lijst als een klik):
 
 - eigen: op de straal ligt een treffer op het gelabelde onderdeel of een afstammeling binnen 1 cm van het ankerpunt
@@ -24,7 +24,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from harness import session
 
 JS = r"""(() => {
-  const L = window.__laguna;
+  const L = window.__model;
   const rc = new THREE.Raycaster(); rc.layers.enableAll();
   const ndc = new THREE.Vector2(), a = new THREE.Vector3();
   const r = canvas.getBoundingClientRect();
@@ -62,11 +62,11 @@ def main():
     per, tot = {}, {'labels': 0, 'eigen': 0, 'vrij': 0}
     with session() as s:
         pg = s.page(1280, 800)
-        plist = [p for p in pg.evaluate('__laguna.presetList()') if not p['tour'] and (not only or p['id'] in only)]
+        plist = [p for p in pg.evaluate('__model.presetList()') if not p['tour'] and (not only or p['id'] in only)]
         for p in plist:
-            pg.evaluate(f"__laguna.preset({json.dumps(p['id'])}); __laguna.finishAll()")
+            pg.evaluate(f"__model.preset({json.dumps(p['id'])}); __model.finishAll()")
             pg.wait_for_timeout(250)
-            pg.evaluate('__laguna.finishAll()')
+            pg.evaluate('__model.finishAll()')
             rows = pg.evaluate(JS)
             n, e, v = len(rows), sum(1 for x in rows if x['eigen']), sum(1 for x in rows if x['vrij'])
             achter = [f"{x['naam']} achter {x['voor']}" for x in rows if x['eigen'] and not x['vrij']]

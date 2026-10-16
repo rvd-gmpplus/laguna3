@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.join(repo, 'tools'))
 from harness import session
 with session() as s:
     pg = s.page(1280, 800)
-    r = pg.evaluate("""(() => { const L = __laguna; const per = {}; let tris = 0, inner = 0, depth = 0;
+    r = pg.evaluate("""(() => { const L = __model; const per = {}; let tris = 0, inner = 0, depth = 0;
       for (const n of L.ALL) { depth = Math.max(depth, n.depth || 0); if (n.inner) inner++;
         if (!n.asm) { const g = n.obj.geometry; const t = (g.index ? g.index.count : g.attributes.position.count) / 3; tris += t;
           let top = n; while (top.parent && top.parent.parent) top = top.parent; const k = top === L.ROOT ? 'root' : top.name; per[k] = per[k] || { parts: 0, tris: 0 }; per[k].parts++; per[k].tris += t; } }

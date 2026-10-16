@@ -61,7 +61,7 @@ SETS['golf2'] = [view('motorruimte-boven', iso=['Aandrijflijn', 'Koeling en luch
 SETS['alles'] = SETS['exterieur'] + SETS['overzicht'] + SETS['motor'] + SETS['aandrijving'] + SETS['onderstel'] + SETS['interieur']
 MOBIEL = [view('mobiel-gemonteerd'), view('mobiel-hoofdgroepen', open_=['Renault Laguna III']), view('mobiel-motor-1', iso=['Motor F4Rt'], open_=['Motor F4Rt'], d='motor')]
 
-APPLY = r"""(v) => { const L = window.__laguna; const N = n => { const x = L.byName(n); if (!x) throw new Error('niet gevonden: ' + n); return x; };
+APPLY = r"""(v) => { const L = window.__model; const N = n => { const x = L.byName(n); if (!x) throw new Error('niet gevonden: ' + n); return x; };
   L.collapseAll(); L.isolate(v.iso ? v.iso.map(N) : []); L.finishAll();
   for (const n of v.open) L.setTarget(N(n), 1);
   for (const n of v.deep) L.explodeAllUnder(N(n));
