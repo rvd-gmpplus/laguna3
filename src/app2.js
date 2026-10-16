@@ -326,7 +326,6 @@ function reveal(n) {
     if (uiSheetBottom() && els.sheet.dataset.state === 'open') setSheet('peek');
     select(n);
     focusNodes([n], null, n.asm ? 1.12 : 1.6, { min: 0.3 });
-    uiLastFit = { nodes: [n], dir: null, pad: n.asm ? 1.12 : 1.6, opt: { min: 0.3 } };
     uiAfterAction();
     return;
   }
@@ -340,7 +339,6 @@ function reveal(n) {
   if (uiSheetBottom() && els.sheet.dataset.state === 'open') setSheet('peek');
   select(n);
   focusNodes([n], null, n.asm ? 1.12 : 1.6, { min: 0.3, dur: Math.max(0.95, i * 0.18 + 0.55) });
-  uiLastFit = { nodes: [n], dir: null, pad: n.asm ? 1.12 : 1.6, opt: { min: 0.3 } };
   uiAfterAction();
 }
 function uiUp() {
@@ -393,11 +391,10 @@ els.iso.onclick = () => {
   uiPush();
   const on = ISO.length && (ISO.includes(SEL) || SEL === ROOT);
   isolate(on ? [] : [SEL]); clearPreset();
-  const nodes = on ? [ROOT] : [SEL];
-  focusNodes(nodes); uiLastFit = { nodes, dir: null, pad: 1.08 };
+  focusNodes(on ? [ROOT] : [SEL]);
   uiAfterAction();
 };
-els.focus.onclick = () => { const nodes = [SEL]; focusNodes(nodes, null, SEL.asm ? 1.08 : 1.6, { min: 0.25 }); uiLastFit = { nodes, dir: null, pad: SEL.asm ? 1.08 : 1.6, opt: { min: 0.25 } }; };
+els.focus.onclick = () => { focusNodes([SEL], null, SEL.asm ? 1.08 : 1.6, { min: 0.25 }); };
 
 /* ---------- openmodus: bediening ---------- */
 // Openers (OPENERS in app1.js) draaien of schuiven open. In de modus Openen doet een klik dat in plaats van uitklappen.
@@ -426,11 +423,7 @@ function uiPanelPlan(p) {
   return uiOpenPlan(p);
 }
 // camera bij openen: richting en kader uit open.look, het kader in de eindstand (focusNodes rekent de doelstand mee)
-function uiOpenFrame(nodes, dir, pad) {
-  const opt = { min: 0.3 };
-  focusNodes(nodes, dir, pad, opt);
-  uiLastFit = { nodes, dir, pad, opt };
-}
+function uiOpenFrame(nodes, dir, pad) { focusNodes(nodes, dir, pad, { min: 0.3 }); }
 function uiOpenTo(n, open) {
   uiStopPlay(); uiStopTour(); hideHint();
   uiPush();
@@ -469,7 +462,6 @@ function uiSetOpenMode(on) {
   uiPush();
   if (on) {
     appApplyPreset(appPresetById.get('assembled'), { noHistory: true, openMode: true });
-    uiLastFit = { preset: appPresetById.get('assembled') };
   } else {
     OPENMODE = false;
     for (const n of OPENERS) uiSetOpen(n, 0);
@@ -585,7 +577,7 @@ function syncSheetHeight() {
 
 /* ---------- weergave-bediening ---------- */
 $('spread').addEventListener('input', e => { uiSetSpread(e.target.value / 100, false); $('spreadOut').textContent = e.target.value + '%'; requestRender(); });
-$('spread').addEventListener('change', () => { updateGround(); focusNodes(contextNodes()); uiLastFit = { nodes: contextNodes(), dir: null, pad: 1.08 }; });
+$('spread').addEventListener('change', () => { updateGround(); focusNodes(contextNodes()); });
 $('tLabels').addEventListener('change', e => { LABELS = e.target.checked; requestRender(); });
 $('tXray').addEventListener('change', e => { uiPush(); XRAY = e.target.checked; clearPreset(); applyMats(); uiAfterAction(); });
 $('tSys').addEventListener('change', e => { uiPush(); SYSCOL = e.target.checked; clearPreset(); applyMats(); uiAfterAction(); });
@@ -834,16 +826,14 @@ document.addEventListener('pointerdown', e => {
   const t = e.target;
   if (uiMenuCat && !els.menu.contains(t) && !(uiMenuBtn && uiMenuBtn.contains(t))) uiCloseMenu(false);
   if (!(t.closest && t.closest('#play'))) uiStopPlay();
-  if (!(t.closest && t.closest('#tourStop, #menu, [data-cat="Overzicht"], #help, #helpDlg'))) uiStopTour();
+  if (!(t.closest && t.closest('#tourBar, #menu, [data-cat="Overzicht"], #help, #helpDlg'))) uiStopTour();
   hideHint();
 }, true);
 function uiRunPreset(id) {
   const p = appPresetById.get(id); if (!p) return false;
   hideHint(); uiCloseMenu(false);
   if (p.tour) { appTour ? uiStopTour() : uiStartTour(); return true; }
-  const ok = appApplyPreset(p);
-  uiLastFit = { preset: p };
-  return ok;
+  return appApplyPreset(p);
 }
 function uiTourCaption(p, i, n) {
   if (!p) { els.tourBar.hidden = true; if (window.innerWidth < 920) layoutView(); uiUiChanged(); return; }
@@ -852,8 +842,26 @@ function uiTourCaption(p, i, n) {
   if (window.innerWidth < 920) layoutView();
   uiUiChanged();
 }
-function uiSyncTour() { uiSyncCats(); }
+// R4: de knoppen in de rondleidingsbalk volgen de stand (pauze of hervat, vorige uit bij de eerste stap)
+function uiSyncTour() {
+  uiSyncCats();
+  const t = appTour, paused = !!(t && t.paused), pb = $('tourPause');
+  pb.setAttribute('aria-pressed', String(paused));
+  pb.setAttribute('aria-label', paused ? 'Hervatten' : 'Pauze'); pb.title = paused ? 'Rondleiding hervatten' : 'Rondleiding pauzeren';
+  pb.firstElementChild.innerHTML = paused ? '<path d="M8 5l11 7-11 7z"/>' : '<path d="M7 5h4v14H7zM13 5h4v14h-4z"/>';
+  $('tourPrev').disabled = !t || t.i <= 0;
+  $('tourNext').disabled = !t;
+}
 els.tourStop.onclick = () => uiStopTour();
+$('tourPause').onclick = () => uiTourPause(!(appTour && appTour.paused));
+$('tourPrev').onclick = () => uiTourStep(-1);
+$('tourNext').onclick = () => uiTourStep(1);
+// een verborgen tabblad zet de rondleiding stil; komt het terug, dan loopt hij verder (een eigen pauze blijft staan)
+document.addEventListener('visibilitychange', () => {
+  if (!appTour) return;
+  if (document.hidden) { if (!appTour.paused) { uiTourPause(true); appTour.auto = true; } }
+  else if (appTour.auto) { appTour.auto = false; uiTourPause(false); }
+});
 
 /* ---------- aanwijzen en tikken ---------- */
 const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
@@ -1386,7 +1394,7 @@ function uiFits(x, y, w, h) {
 function uiLabelRects() { return uiSpots.slice(0, uiNPlaced).map(p => ({ name: p.k.name, x: p.x, y: p.y, w: p.w, h: p.h })); }
 
 /* ---------- formaat en vrij beeld ---------- */
-let uiLastFit = null, uiRefitTimer = 0;
+let uiRefitTimer = 0;
 const uiViewPrev = { l: -99, r: -99, t: -99, b: -99 };
 let uiViewW = 0, uiViewH = 0;
 function layoutView() {
@@ -1430,8 +1438,8 @@ function uiRefitNow() {
   clearTimeout(uiRefitTimer); uiRefitTimer = 0;
   if (uiUserCam || !uiLastFit) return;
   const f = uiLastFit;
-  if (f.preset) { const c = f.preset.cam || {}; focusNodes(appSubject(f.preset), appPresetDir(f.preset), c.pad || 1.06, { dur: 0.4 }); }
-  else focusNodes(f.nodes, f.dir, f.pad, Object.assign({}, f.opt || {}, { dur: 0.4 }));
+  if (f.preset) { const c = f.preset.cam || {}; focusNodes(appSubject(f.preset), appPresetDir(f.preset), c.pad || 1.06, { dur: 0.4 }); uiLastFit = f; }
+  else focusNodes(f.nodes, f.dir, f.pad, Object.assign({}, f.opt || {}, { dur: 0.4, delay: 0 }));
 }
 function uiRefitSoon() {
   clearTimeout(uiRefitTimer);
@@ -1623,7 +1631,7 @@ function uiUrlApply() {
   const pid = q.get('preset'), open = q.get('open');
   if (pid) {
     const p = appPresetById.get(pid);
-    if (p && !p.tour && appPresetOk(p)) { appApplyPreset(p, { noHistory: true }); finishAll(); uiLastFit = { preset: p }; return; }
+    if (p && !p.tour && appPresetOk(p)) { appApplyPreset(p, { noHistory: true }); finishAll(); return; }
   }
   if (open) {
     const refs = open.split(',').map(x => x.trim()).filter(Boolean);

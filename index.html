@@ -1,5 +1,5 @@
 <title>Laguna III explosietekening</title>
-<meta name="laguna-version" content="7 (bron 26651b7)">
+<meta name="laguna-version" content="7 (bron 99523b5)">
 <meta name="description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback (2011, 2.0 Turbo, automaat): 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
 <meta property="og:title" content="Laguna III explosietekening">
 <meta property="og:description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback: 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
@@ -199,6 +199,12 @@ input[type=range]{width:100%;accent-color:var(--ink)}
 #tourText{font-size:13px;line-height:1.35}
 #tourText b{display:block;font-family:var(--f-mono);font-size:10.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
 #tourStop{flex:0 0 auto}
+/* R4: vorige, pauze of hervat, volgende en stop in de rondleidingsbalk */
+.tourbtns{display:flex;align-items:center;gap:4px;flex:0 0 auto}
+.tbtn{width:32px;height:32px;padding:0;border-radius:50%;border:1px solid var(--line);background:var(--chip);display:inline-grid;place-items:center}
+.tbtn svg{width:16px;height:16px;fill:currentColor}
+.tbtn[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.tbtn:disabled{opacity:.4;cursor:default}
 #loading{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-mono);font-size:13px;color:var(--ink-2);background:var(--bg);text-align:center;padding:0 24px;z-index:50}
 #loading.gone{display:none}
 /* hulp */
@@ -299,6 +305,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
   #tourBar{left:12px;right:12px;transform:none;max-width:none;gap:8px;padding:6px 6px 6px 12px}
   #tourText{flex:1 1 auto;min-width:0;font-size:12.5px;line-height:1.3;max-height:calc(3.9em + 14px);overflow:hidden}
   #tourStop{flex:0 0 auto;padding:6px 9px;font-size:12px}
+  .tbtn{width:28px;height:28px}
   .dock-main{flex-direction:column;align-items:stretch;gap:6px}
   .xctl{flex-direction:row;align-items:center;gap:8px;padding:4px 5px 4px 12px}
   .xlbl{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;line-height:1.15}
@@ -576,14 +583,22 @@ input[type=range]{width:100%;accent-color:var(--ink)}
     </div>
     <div class="cats" id="presets" role="toolbar" aria-label="Presets per categorie"></div>
   </nav>
-  <div id="menu" role="menu" hidden></div>
+  <div id="menu" hidden></div>
   <div id="hint" role="status"></div>
-  <div id="tourBar" role="status" hidden><span id="tourText"></span><button class="btn" id="tourStop">Stop rondleiding</button></div>
+  <div id="tourBar" role="status" hidden><span id="tourText"></span>
+    <div class="tourbtns" role="group" aria-label="Rondleiding bedienen">
+      <button class="tbtn" id="tourPrev" aria-label="Vorige stap" title="Vorige stap"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 5l-9 7 9 7z"/></svg></button>
+      <button class="tbtn" id="tourPause" aria-label="Pauze" aria-pressed="false" title="Pauze"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></button>
+      <button class="tbtn" id="tourNext" aria-label="Volgende stap" title="Volgende stap"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l9 7-9 7z"/></svg></button>
+      <button class="btn" id="tourStop">Stop</button>
+    </div></div>
+  <div id="notice" role="alert" hidden></div>
+  <div id="toast" role="status" hidden></div>
   <div id="tip" hidden></div>
   <div id="press" hidden><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="28"/></svg></div>
   <div id="helpDlg" hidden><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
     <h2 id="helpTitle">Bediening</h2>
-    <p class="ver">Laguna III explosietekening, versie 7 (bron 26651b7)</p>
+    <p class="ver">Laguna III explosietekening, versie 7 (bron 99523b5)</p>
     <div id="helpMouse"><h3>Met de muis</h3><dl>
       <dt>Klik</dt><dd>De groep van het onderdeel klapt uit; de rest blijft staan. Staat die groep al open, dan wordt het onderdeel uitgelicht.</dd>
       <dt>Dubbelklik</dt><dd>Direct naar dit onderdeel: alle groepen erboven gaan laag voor laag open.</dd>
@@ -5930,11 +5945,16 @@ function stepCam(dt) {
   if (camAnim.t >= 1) { camera.position.copy(camAnim.p1); controls.target.copy(camAnim.t1); camAnim = null; }
   return true;
 }
+// R3: het laatste echte kaderdoel, voor het herkadreren na een formaatwissel (uiRefitNow in app2.js). focusNodes zet het
+// zelf, zodat duiken, Alles uitklappen, afspelen, kruimelklik en rondleiding nooit op een ouder doel terugvallen; een preset
+// zet daarna { preset } (appApplyPreset), zodat het kader met het onderwerp van de preset meegaat.
+let uiLastFit = null;
 function focusNodes(nodes, dir, pad, opt = {}) {
   const pts = uiCollect(nodes, true);
   if (!pts.length) uiCollect(nodes.map(() => ROOT), true, pts);
   const f = uiFitPoints(pts, dir, pad || 1.08, opt);
   if (f) animCam(f.pos, f.target, opt.dur, opt.delay);
+  uiLastFit = { nodes: nodes.slice(), dir: dir ? dir.clone() : null, pad: pad || 1.08, opt: opt.min ? { min: opt.min } : {} };
   updateGround();
 }
 function contextNodes() { return ISO.length ? ISO : [ROOT]; }
@@ -6427,6 +6447,7 @@ function appApplyPreset(p, opt = {}) {
   const camDur = clamp(Math.max(0.9, openSpan + closeT - camDelay), 0.9, 2.5 - camDelay);
   const cam = p.cam || {};
   focusNodes(appSubject(p), appPresetDir(p), cam.pad || 1.06, { dur: camDur, delay: camDelay });
+  uiLastFit = { preset: p }; // R3: een formaatwissel kadreert opnieuw op het onderwerp van deze preset
   if (REDUCED) finishAll();
   uiAfterAction();
   requestRender();
@@ -6434,25 +6455,45 @@ function appApplyPreset(p, opt = {}) {
 }
 
 /* ---------- rondleiding ---------- */
+// R4: de rondleiding kent pauze en hervat (knop, of vanzelf als het tabblad verborgen is), vorige en volgende.
+// appTour: { i: huidige stap, timer, due: tijdstip van de volgende stap, left: resttijd bij pauze, paused, auto }
+const APP_TOUR_STEP_MS = 5000, APP_TOUR_STEP_REDUCED_MS = 4500;
 let appTour = null;
 function uiStartTour() {
   uiStopPlay();
   uiPush();
-  appTour = { i: -1, timer: 0 };
-  uiTourStep();
+  appTour = { i: -1, timer: 0, due: 0, left: 0, paused: false, auto: false };
+  uiTourStep(1);
   uiSyncTour();
 }
-function uiTourStep() {
+// dir = 1 volgende stap, -1 vorige; een stap waarvan de namen niet (meer) oplossen, wordt in die richting overgeslagen
+// (de waarschuwing staat al bij het starten in de console). Voorbij het einde stopt de rondleiding; vóór het begin blijft hij staan.
+function uiTourStep(dir) {
   if (!appTour) return;
-  appTour.i++;
-  if (appTour.i >= appTourSteps.length) { uiStopTour(); return; }
-  const p = appPresetById.get(appTourSteps[appTour.i]);
-  // een stap waarvan de namen niet (meer) oplossen, wordt overgeslagen (de waarschuwing staat al bij het starten in de console)
-  if (!p || !appPresetOk(p)) { uiTourStep(); return; }
+  dir = dir === -1 ? -1 : 1;
+  clearTimeout(appTour.timer);
+  let i = appTour.i + dir, p = null;
+  for (; i >= 0 && i < appTourSteps.length; i += dir) { const q = appPresetById.get(appTourSteps[i]); if (q && appPresetOk(q)) { p = q; break; } }
+  if (!p) { if (dir > 0) uiStopTour(); else uiTourArm(); return; }
+  appTour.i = i;
   // eerst het bijschrift: op een telefoon houdt het vrije beeld er rekening mee, zodat de camera de auto eronder inpast
-  uiTourCaption(p, appTour.i, appTourSteps.length);
+  uiTourCaption(p, i, appTourSteps.length);
   appApplyPreset(p, { tour: true, noHistory: true });
-  appTour.timer = setTimeout(uiTourStep, REDUCED ? 4500 : 5000);
+  uiTourArm();
+  uiSyncTour();
+}
+function uiTourArm() {
+  if (!appTour || appTour.paused) return;
+  const ms = REDUCED ? APP_TOUR_STEP_REDUCED_MS : APP_TOUR_STEP_MS;
+  appTour.due = performance.now() + ms;
+  appTour.timer = setTimeout(uiTourStep, ms);
+}
+function uiTourPause(on) {
+  if (!appTour || appTour.paused === !!on) return;
+  appTour.paused = !!on;
+  if (on) { clearTimeout(appTour.timer); appTour.left = Math.max(800, appTour.due - performance.now()); }
+  else { appTour.due = performance.now() + appTour.left; appTour.timer = setTimeout(uiTourStep, appTour.left); }
+  uiSyncTour();
 }
 function uiStopTour() {
   if (!appTour) return;
@@ -6790,7 +6831,6 @@ function reveal(n) {
     if (uiSheetBottom() && els.sheet.dataset.state === 'open') setSheet('peek');
     select(n);
     focusNodes([n], null, n.asm ? 1.12 : 1.6, { min: 0.3 });
-    uiLastFit = { nodes: [n], dir: null, pad: n.asm ? 1.12 : 1.6, opt: { min: 0.3 } };
     uiAfterAction();
     return;
   }
@@ -6804,7 +6844,6 @@ function reveal(n) {
   if (uiSheetBottom() && els.sheet.dataset.state === 'open') setSheet('peek');
   select(n);
   focusNodes([n], null, n.asm ? 1.12 : 1.6, { min: 0.3, dur: Math.max(0.95, i * 0.18 + 0.55) });
-  uiLastFit = { nodes: [n], dir: null, pad: n.asm ? 1.12 : 1.6, opt: { min: 0.3 } };
   uiAfterAction();
 }
 function uiUp() {
@@ -6857,11 +6896,10 @@ els.iso.onclick = () => {
   uiPush();
   const on = ISO.length && (ISO.includes(SEL) || SEL === ROOT);
   isolate(on ? [] : [SEL]); clearPreset();
-  const nodes = on ? [ROOT] : [SEL];
-  focusNodes(nodes); uiLastFit = { nodes, dir: null, pad: 1.08 };
+  focusNodes(on ? [ROOT] : [SEL]);
   uiAfterAction();
 };
-els.focus.onclick = () => { const nodes = [SEL]; focusNodes(nodes, null, SEL.asm ? 1.08 : 1.6, { min: 0.25 }); uiLastFit = { nodes, dir: null, pad: SEL.asm ? 1.08 : 1.6, opt: { min: 0.25 } }; };
+els.focus.onclick = () => { focusNodes([SEL], null, SEL.asm ? 1.08 : 1.6, { min: 0.25 }); };
 
 /* ---------- openmodus: bediening ---------- */
 // Openers (OPENERS in app1.js) draaien of schuiven open. In de modus Openen doet een klik dat in plaats van uitklappen.
@@ -6890,11 +6928,7 @@ function uiPanelPlan(p) {
   return uiOpenPlan(p);
 }
 // camera bij openen: richting en kader uit open.look, het kader in de eindstand (focusNodes rekent de doelstand mee)
-function uiOpenFrame(nodes, dir, pad) {
-  const opt = { min: 0.3 };
-  focusNodes(nodes, dir, pad, opt);
-  uiLastFit = { nodes, dir, pad, opt };
-}
+function uiOpenFrame(nodes, dir, pad) { focusNodes(nodes, dir, pad, { min: 0.3 }); }
 function uiOpenTo(n, open) {
   uiStopPlay(); uiStopTour(); hideHint();
   uiPush();
@@ -6933,7 +6967,6 @@ function uiSetOpenMode(on) {
   uiPush();
   if (on) {
     appApplyPreset(appPresetById.get('assembled'), { noHistory: true, openMode: true });
-    uiLastFit = { preset: appPresetById.get('assembled') };
   } else {
     OPENMODE = false;
     for (const n of OPENERS) uiSetOpen(n, 0);
@@ -7049,7 +7082,7 @@ function syncSheetHeight() {
 
 /* ---------- weergave-bediening ---------- */
 $('spread').addEventListener('input', e => { uiSetSpread(e.target.value / 100, false); $('spreadOut').textContent = e.target.value + '%'; requestRender(); });
-$('spread').addEventListener('change', () => { updateGround(); focusNodes(contextNodes()); uiLastFit = { nodes: contextNodes(), dir: null, pad: 1.08 }; });
+$('spread').addEventListener('change', () => { updateGround(); focusNodes(contextNodes()); });
 $('tLabels').addEventListener('change', e => { LABELS = e.target.checked; requestRender(); });
 $('tXray').addEventListener('change', e => { uiPush(); XRAY = e.target.checked; clearPreset(); applyMats(); uiAfterAction(); });
 $('tSys').addEventListener('change', e => { uiPush(); SYSCOL = e.target.checked; clearPreset(); applyMats(); uiAfterAction(); });
@@ -7298,16 +7331,14 @@ document.addEventListener('pointerdown', e => {
   const t = e.target;
   if (uiMenuCat && !els.menu.contains(t) && !(uiMenuBtn && uiMenuBtn.contains(t))) uiCloseMenu(false);
   if (!(t.closest && t.closest('#play'))) uiStopPlay();
-  if (!(t.closest && t.closest('#tourStop, #menu, [data-cat="Overzicht"], #help, #helpDlg'))) uiStopTour();
+  if (!(t.closest && t.closest('#tourBar, #menu, [data-cat="Overzicht"], #help, #helpDlg'))) uiStopTour();
   hideHint();
 }, true);
 function uiRunPreset(id) {
   const p = appPresetById.get(id); if (!p) return false;
   hideHint(); uiCloseMenu(false);
   if (p.tour) { appTour ? uiStopTour() : uiStartTour(); return true; }
-  const ok = appApplyPreset(p);
-  uiLastFit = { preset: p };
-  return ok;
+  return appApplyPreset(p);
 }
 function uiTourCaption(p, i, n) {
   if (!p) { els.tourBar.hidden = true; if (window.innerWidth < 920) layoutView(); uiUiChanged(); return; }
@@ -7316,8 +7347,26 @@ function uiTourCaption(p, i, n) {
   if (window.innerWidth < 920) layoutView();
   uiUiChanged();
 }
-function uiSyncTour() { uiSyncCats(); }
+// R4: de knoppen in de rondleidingsbalk volgen de stand (pauze of hervat, vorige uit bij de eerste stap)
+function uiSyncTour() {
+  uiSyncCats();
+  const t = appTour, paused = !!(t && t.paused), pb = $('tourPause');
+  pb.setAttribute('aria-pressed', String(paused));
+  pb.setAttribute('aria-label', paused ? 'Hervatten' : 'Pauze'); pb.title = paused ? 'Rondleiding hervatten' : 'Rondleiding pauzeren';
+  pb.firstElementChild.innerHTML = paused ? '<path d="M8 5l11 7-11 7z"/>' : '<path d="M7 5h4v14H7zM13 5h4v14h-4z"/>';
+  $('tourPrev').disabled = !t || t.i <= 0;
+  $('tourNext').disabled = !t;
+}
 els.tourStop.onclick = () => uiStopTour();
+$('tourPause').onclick = () => uiTourPause(!(appTour && appTour.paused));
+$('tourPrev').onclick = () => uiTourStep(-1);
+$('tourNext').onclick = () => uiTourStep(1);
+// een verborgen tabblad zet de rondleiding stil; komt het terug, dan loopt hij verder (een eigen pauze blijft staan)
+document.addEventListener('visibilitychange', () => {
+  if (!appTour) return;
+  if (document.hidden) { if (!appTour.paused) { uiTourPause(true); appTour.auto = true; } }
+  else if (appTour.auto) { appTour.auto = false; uiTourPause(false); }
+});
 
 /* ---------- aanwijzen en tikken ---------- */
 const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
@@ -7850,7 +7899,7 @@ function uiFits(x, y, w, h) {
 function uiLabelRects() { return uiSpots.slice(0, uiNPlaced).map(p => ({ name: p.k.name, x: p.x, y: p.y, w: p.w, h: p.h })); }
 
 /* ---------- formaat en vrij beeld ---------- */
-let uiLastFit = null, uiRefitTimer = 0;
+let uiRefitTimer = 0;
 const uiViewPrev = { l: -99, r: -99, t: -99, b: -99 };
 let uiViewW = 0, uiViewH = 0;
 function layoutView() {
@@ -7894,8 +7943,8 @@ function uiRefitNow() {
   clearTimeout(uiRefitTimer); uiRefitTimer = 0;
   if (uiUserCam || !uiLastFit) return;
   const f = uiLastFit;
-  if (f.preset) { const c = f.preset.cam || {}; focusNodes(appSubject(f.preset), appPresetDir(f.preset), c.pad || 1.06, { dur: 0.4 }); }
-  else focusNodes(f.nodes, f.dir, f.pad, Object.assign({}, f.opt || {}, { dur: 0.4 }));
+  if (f.preset) { const c = f.preset.cam || {}; focusNodes(appSubject(f.preset), appPresetDir(f.preset), c.pad || 1.06, { dur: 0.4 }); uiLastFit = f; }
+  else focusNodes(f.nodes, f.dir, f.pad, Object.assign({}, f.opt || {}, { dur: 0.4, delay: 0 }));
 }
 function uiRefitSoon() {
   clearTimeout(uiRefitTimer);
@@ -8087,7 +8136,7 @@ function uiUrlApply() {
   const pid = q.get('preset'), open = q.get('open');
   if (pid) {
     const p = appPresetById.get(pid);
-    if (p && !p.tour && appPresetOk(p)) { appApplyPreset(p, { noHistory: true }); finishAll(); uiLastFit = { preset: p }; return; }
+    if (p && !p.tour && appPresetOk(p)) { appApplyPreset(p, { noHistory: true }); finishAll(); return; }
   }
   if (open) {
     const refs = open.split(',').map(x => x.trim()).filter(Boolean);

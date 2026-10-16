@@ -611,11 +611,16 @@ function stepCam(dt) {
   if (camAnim.t >= 1) { camera.position.copy(camAnim.p1); controls.target.copy(camAnim.t1); camAnim = null; }
   return true;
 }
+// R3: het laatste echte kaderdoel, voor het herkadreren na een formaatwissel (uiRefitNow in app2.js). focusNodes zet het
+// zelf, zodat duiken, Alles uitklappen, afspelen, kruimelklik en rondleiding nooit op een ouder doel terugvallen; een preset
+// zet daarna { preset } (appApplyPreset), zodat het kader met het onderwerp van de preset meegaat.
+let uiLastFit = null;
 function focusNodes(nodes, dir, pad, opt = {}) {
   const pts = uiCollect(nodes, true);
   if (!pts.length) uiCollect(nodes.map(() => ROOT), true, pts);
   const f = uiFitPoints(pts, dir, pad || 1.08, opt);
   if (f) animCam(f.pos, f.target, opt.dur, opt.delay);
+  uiLastFit = { nodes: nodes.slice(), dir: dir ? dir.clone() : null, pad: pad || 1.08, opt: opt.min ? { min: opt.min } : {} };
   updateGround();
 }
 function contextNodes() { return ISO.length ? ISO : [ROOT]; }

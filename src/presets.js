@@ -192,6 +192,7 @@ function appApplyPreset(p, opt = {}) {
   const camDur = clamp(Math.max(0.9, openSpan + closeT - camDelay), 0.9, 2.5 - camDelay);
   const cam = p.cam || {};
   focusNodes(appSubject(p), appPresetDir(p), cam.pad || 1.06, { dur: camDur, delay: camDelay });
+  uiLastFit = { preset: p }; // R3: een formaatwissel kadreert opnieuw op het onderwerp van deze preset
   if (REDUCED) finishAll();
   uiAfterAction();
   requestRender();
@@ -199,25 +200,45 @@ function appApplyPreset(p, opt = {}) {
 }
 
 /* ---------- rondleiding ---------- */
+// R4: de rondleiding kent pauze en hervat (knop, of vanzelf als het tabblad verborgen is), vorige en volgende.
+// appTour: { i: huidige stap, timer, due: tijdstip van de volgende stap, left: resttijd bij pauze, paused, auto }
+const APP_TOUR_STEP_MS = 5000, APP_TOUR_STEP_REDUCED_MS = 4500;
 let appTour = null;
 function uiStartTour() {
   uiStopPlay();
   uiPush();
-  appTour = { i: -1, timer: 0 };
-  uiTourStep();
+  appTour = { i: -1, timer: 0, due: 0, left: 0, paused: false, auto: false };
+  uiTourStep(1);
   uiSyncTour();
 }
-function uiTourStep() {
+// dir = 1 volgende stap, -1 vorige; een stap waarvan de namen niet (meer) oplossen, wordt in die richting overgeslagen
+// (de waarschuwing staat al bij het starten in de console). Voorbij het einde stopt de rondleiding; vóór het begin blijft hij staan.
+function uiTourStep(dir) {
   if (!appTour) return;
-  appTour.i++;
-  if (appTour.i >= appTourSteps.length) { uiStopTour(); return; }
-  const p = appPresetById.get(appTourSteps[appTour.i]);
-  // een stap waarvan de namen niet (meer) oplossen, wordt overgeslagen (de waarschuwing staat al bij het starten in de console)
-  if (!p || !appPresetOk(p)) { uiTourStep(); return; }
+  dir = dir === -1 ? -1 : 1;
+  clearTimeout(appTour.timer);
+  let i = appTour.i + dir, p = null;
+  for (; i >= 0 && i < appTourSteps.length; i += dir) { const q = appPresetById.get(appTourSteps[i]); if (q && appPresetOk(q)) { p = q; break; } }
+  if (!p) { if (dir > 0) uiStopTour(); else uiTourArm(); return; }
+  appTour.i = i;
   // eerst het bijschrift: op een telefoon houdt het vrije beeld er rekening mee, zodat de camera de auto eronder inpast
-  uiTourCaption(p, appTour.i, appTourSteps.length);
+  uiTourCaption(p, i, appTourSteps.length);
   appApplyPreset(p, { tour: true, noHistory: true });
-  appTour.timer = setTimeout(uiTourStep, REDUCED ? 4500 : 5000);
+  uiTourArm();
+  uiSyncTour();
+}
+function uiTourArm() {
+  if (!appTour || appTour.paused) return;
+  const ms = REDUCED ? APP_TOUR_STEP_REDUCED_MS : APP_TOUR_STEP_MS;
+  appTour.due = performance.now() + ms;
+  appTour.timer = setTimeout(uiTourStep, ms);
+}
+function uiTourPause(on) {
+  if (!appTour || appTour.paused === !!on) return;
+  appTour.paused = !!on;
+  if (on) { clearTimeout(appTour.timer); appTour.left = Math.max(800, appTour.due - performance.now()); }
+  else { appTour.due = performance.now() + appTour.left; appTour.timer = setTimeout(uiTourStep, appTour.left); }
+  uiSyncTour();
 }
 function uiStopTour() {
   if (!appTour) return;
