@@ -147,7 +147,7 @@ Motorcode van de auto van de gebruiker (bijgewerkt op 15 oktober 2026): waarschi
 | Airbags | Zes: bestuurder, passagier, twee zijairbags voor, twee gordijnairbags | Renault-handboek fase 2 | Bevestigd |
 | Instrumentenpaneel | Analoge wijzers met LCD-display | UK-brochure | Aannemelijk |
 | Klimaat | Automatisch tweezone | UK-brochure | Bevestigd |
-| Dak | Panoramisch schuifdak: optie, niet in het model | UK-brochure, Franse prijslijst | Bevestigd (optie) |
+| Dak | Panoramisch schuifdak: optie; de auto van de gebruiker heeft het en het zit sinds golf 4 in het model (zie Panoramadak hierboven) | UK-brochure, Franse prijslijst, de gebruiker | Bevestigd (optie) |
 
 ## Elektrisch, brandstof, uitlaat en koeling
 

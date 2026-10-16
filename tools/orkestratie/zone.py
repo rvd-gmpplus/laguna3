@@ -3,6 +3,7 @@
 # Standaard in het motorframe (oorsprong krukas-as, +x vliegwielzijde = links in de auto, +y cilinderas, +z inlaatzijde = voor);
 # met 'auto' in het autoframe. Geeft per kader de snijdende meshes met hun kader en de hoogte van de carrosserie erboven.
 import sys, os, json
+if len(sys.argv) < 3: print(open(__file__, encoding='utf-8').read().split('import sys')[0]); sys.exit(2)
 repo = sys.argv[1]
 sys.path.insert(0, os.path.join(repo, 'tools'))
 from harness import session
@@ -35,3 +36,4 @@ with session() as s:
     for k, v in r['hood'].items(): print('kap', k, v)
     print('engine matrixWorld', r['eng'])
     s.report()
+    sys.exit(1 if s.errors() else 0)

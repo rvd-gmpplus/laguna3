@@ -15,7 +15,13 @@ const V3 = (x, y, z) => new THREE.Vector3(x, y, z);
 const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const canvas = document.getElementById('stage');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+// zonder WebGL (of met een geblokkeerde GPU) blijft de laadmelding anders eeuwig op "Model opbouwen" staan
+const renderer = (() => {
+  try { return new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' }); } catch (e) {
+    LOADING.textContent = 'Deze browser kan geen 3D tekenen (WebGL is niet beschikbaar of uitgeschakeld). Probeer een andere browser of zet hardwareversnelling aan.';
+    throw e;
+  }
+})();
 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -36,8 +42,20 @@ controls.rotateSpeed = 0.8;
 controls.zoomSpeed = 0.9;
 controls.autoRotateSpeed = 0.7;
 
-const pmrem = new THREE.PMREMGenerator(renderer);
-scene.environment = pmrem.fromScene(new THREE.RoomEnvironment(), 0.04).texture;
+// Omgevingskaart (PMREM) voor de glans. Na een hersteld WebGL-contextverlies (R2) maakt uiRemakeEnvironment hem opnieuw:
+// het resultaat is een rendertarget zonder kopie in het geheugen en komt anders zwart terug.
+let pmrem = new THREE.PMREMGenerator(renderer);
+function uiMakeEnvironment() {
+  const old = scene.environment;
+  scene.environment = pmrem.fromScene(new THREE.RoomEnvironment(), 0.04).texture;
+  if (old) old.dispose();
+}
+function uiRemakeEnvironment() {
+  pmrem.dispose();
+  pmrem = new THREE.PMREMGenerator(renderer);
+  uiMakeEnvironment();
+}
+uiMakeEnvironment();
 const uiHemi = new THREE.HemisphereLight(0xffffff, 0x3c434b, 0.35);
 scene.add(uiHemi);
 const sun = new THREE.DirectionalLight(0xffffff, 1.2);

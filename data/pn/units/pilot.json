@@ -1,0 +1,1707 @@
+{
+ "pilot:C_SMERING": {
+  "n": "Groep Smering (systeemgroep)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Alleen een groepering in de modelboom, geen verkoopeenheid.",
+  "src": []
+ },
+ "pilot:C_CARTER": {
+  "n": "Groep Carterpan (pan, pakking, bouten, plug)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Alleen een groepering in de modelboom, geen verkoopeenheid.",
+  "src": []
+ },
+ "pilot:C_PEIL": {
+  "n": "Groep Peilstok (peilstok, buis, ring, beugel)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Alleen een groepering in de modelboom, geen verkoopeenheid.",
+  "src": []
+ },
+ "pilot:C_VENT": {
+  "n": "Groep Carterventilatie",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Alleen een groepering in de modelboom, geen verkoopeenheid.",
+  "src": []
+ },
+ "pilot:C_WIEL": {
+  "n": "Groep Wielophanging linksvoor (systeemgroep)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Alleen een groepering in de modelboom, geen verkoopeenheid.",
+  "src": []
+ },
+ "pilot:C_CAL": {
+  "n": "Groep Remklauw linksvoor (klauw, drager, blokken, kleinmateriaal)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Alleen een groepering in de modelboom, geen verkoopeenheid.",
+  "src": []
+ },
+ "pilot:U_FILT": {
+  "n": "Oliefilter (spin-on, M20x1,5)",
+  "st": "past",
+  "oe": [
+   [
+    "8200768913",
+    "Renault; ook Dacia/Nissan/Peugeot/Citroen/Ford-nummer, M20x1,5",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "MANN-FILTER",
+    "W 75/3",
+    "met terugslagklep, Ø76",
+    "C"
+   ],
+   [
+    "MAHLE",
+    "OC 467",
+    "",
+    "C"
+   ],
+   [
+    "BOSCH",
+    "0 451 103 336",
+    "",
+    "C"
+   ],
+   [
+    "VALEO",
+    "586001",
+    "",
+    "C"
+   ],
+   [
+    "FEBI BILSTEIN",
+    "27155",
+    "",
+    "C"
+   ],
+   [
+    "HENGST FILTER",
+    "H11W02",
+    "",
+    "C"
+   ]
+  ],
+  "note": "Filterhuis, element en afdichtring worden niet los verkocht; het filter wordt als geheel vervangen. Autodoc toont het Renault-filter als artikel van fabrikant RENAULT.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/oil-filter-10359/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://spareto.com/oe/8200768913",
+    "spareto.com"
+   ]
+  ]
+ },
+ "pilot:U_PAN": {
+  "n": "Carterpan (aluminium, met aftapplug)",
+  "st": "past",
+  "oe": [
+   [
+    "8200221013",
+    "Renault/Dacia/Nissan; LTD-8200221013 in Autodoc-lijst voor dit voertuig",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "TOPRAN",
+    "701 643",
+    "",
+    "A"
+   ],
+   [
+    "METZGER",
+    "7990149",
+    "",
+    "A"
+   ],
+   [
+    "FEBI BILSTEIN",
+    "182400",
+    "alleen via spareto-kruisverwijzing",
+    "C"
+   ],
+   [
+    "NTY",
+    "BMO-RE-002",
+    "",
+    "A"
+   ],
+   [
+    "RIDEX",
+    "592O0141",
+    "",
+    "A"
+   ],
+   [
+    "SWAG",
+    "33 10 8592",
+    "alleen via spareto-kruisverwijzing",
+    "C"
+   ]
+  ],
+  "note": "Pan en schotplaat worden samen geleverd. 8200221013 is bevestigd (LTD-8200221013 in de Autodoc-lijst voor de 2.0 16V Turbo). De vijf andere Renault-nummers van de RIDEX-pagina zijn geschrapt omdat de OE-sectie niet te lezen was. Zonder pakking, met afdichtring.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/oil-pan-10589/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://spareto.com/oe/8200221013",
+    "spareto.com"
+   ]
+  ]
+ },
+ "pilot:U_CPAK": {
+  "n": "Carterpakking (pan/blok)",
+  "st": "past",
+  "oe": [
+   [
+    "8200282199",
+    "Renault/Dacia/Nissan",
+    "B"
+   ],
+   [
+    "7700114424",
+    "genoemd op ELRING-pagina, andere uitvoering mogelijk",
+    "B"
+   ],
+   [
+    "7700108057",
+    "idem",
+    "B"
+   ],
+   [
+    "6001545303",
+    "idem",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "ELRING",
+    "138.430",
+    "",
+    "A"
+   ],
+   [
+    "VICTOR REINZ",
+    "71-34414-00",
+    "",
+    "C"
+   ],
+   [
+    "CORTECO",
+    "023717P",
+    "",
+    "C"
+   ],
+   [
+    "PAYEN",
+    "JH5041",
+    "",
+    "C"
+   ],
+   [
+    "AJUSA",
+    "14075300",
+    "",
+    "C"
+   ],
+   [
+    "TOPRAN",
+    "207 015",
+    "",
+    "C"
+   ]
+  ],
+  "note": "Elring-pagina noemt ook 7700114424, 7700108057, 6001545303 als Renault-nummers (oudere/andere uitvoeringen).",
+  "src": [
+   [
+    "https://www.autodoc.parts/elring/986368",
+    "autodoc.parts"
+   ],
+   [
+    "https://spareto.com/oe/8200282199",
+    "spareto.com"
+   ]
+  ]
+ },
+ "pilot:U_CBOUT": {
+  "n": "Carterbout (18 stuks, M-bout carterpan)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Renault-nummer van de carterbout niet gevonden: de Autodoc-pagina's bieden alleen complete pannen/pakkingen; catalogussites tonen geen motorspecifiek nummer (7zap toont nummers gemaskeerd). Bouten 1 tot 18 zijn identiek en worden per stuk verkocht.",
+  "src": []
+ },
+ "pilot:U_PLUG": {
+  "n": "Aftapplug (M16x1,5, vierkant 8)",
+  "st": "past",
+  "oe": [],
+  "am": [
+   [
+    "CORTECO",
+    "016321H",
+    "M16x1,5, sleutel 8x8",
+    "A"
+   ],
+   [
+    "FEBI BILSTEIN",
+    "45890",
+    "staal, sleutel 8, zonder ring",
+    "A"
+   ],
+   [
+    "RIDEX",
+    "593D0016",
+    "M16x1,5 met afdichtring",
+    "A"
+   ],
+   [
+    "AIC",
+    "52677",
+    "M16 x 1,5, binnenzeskant",
+    "A"
+   ],
+   [
+    "3RG",
+    "83018",
+    "M16x1,50",
+    "A"
+   ],
+   [
+    "METALCAUCHO",
+    "00667",
+    "16x150",
+    "A"
+   ]
+  ],
+  "note": "Renault-nummer niet gevonden. Alle zes staan als aftapplug M16 x 1,5 op de Autodoc-lijst voor dit voertuig. Let op: AIC 52677 heeft een binnenzeskant, niet de vierkante kop 8 uit de modelomschrijving; CORTECO 016321H, FEBI 45890 en RIDEX 593D0016 hebben sleutelmaat 8.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/drain-plug-15038/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "pilot:U_PLUGR": {
+  "n": "Afdichtring aftapplug",
+  "st": "past",
+  "oe": [
+   [
+    "8200641648",
+    "Renault; spareto",
+    "B"
+   ],
+   [
+    "110265505R",
+    "Renault; febi 44793 in de voertuiglijst: OE-verwijzing 11 02 655 05R",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "ELRING",
+    "834.823",
+    "",
+    "A"
+   ],
+   [
+    "TOPRAN",
+    "721 133",
+    "metaal-elastomeer, 16 x 24 x 2 (niet koper)",
+    "A"
+   ],
+   [
+    "FEBI BILSTEIN",
+    "44793",
+    "elastomeer",
+    "A"
+   ],
+   [
+    "VICTOR REINZ",
+    "70-33769-00",
+    "",
+    "C"
+   ],
+   [
+    "CORTECO",
+    "006339S",
+    "elastomeer",
+    "A"
+   ],
+   [
+    "PAYEN",
+    "PB852",
+    "",
+    "C"
+   ]
+  ],
+  "note": "Afdichtring aftapplug, 16 x 24. De modelomschrijving zegt koper, maar de Autodoc-lijst voor dit voertuig toont elastomeer en metaal-elastomeer ringen (geen koper). 8200641648 is bevestigd via vier ringen die op de voertuiglijst staan; 9619862780 (PSA) is geschrapt.",
+  "src": [
+   [
+    "https://spareto.com/oe/8200641648",
+    "spareto.com"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oil-drain-plug-gasket-10591/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/corteco/2091151",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "pilot:U_PUMP": {
+  "n": "Oliepomp met aanzuigbuis en zeef",
+  "st": "past",
+  "oe": [
+   [
+    "8200222704",
+    "Renault/Dacia/Nissan",
+    "B"
+   ],
+   [
+    "8200194608",
+    "op RIDEX-pagina",
+    "B"
+   ],
+   [
+    "8200783524",
+    "idem",
+    "B"
+   ],
+   [
+    "8200741631",
+    "idem",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "PIERBURG",
+    "7.07919.00.0",
+    "",
+    "A"
+   ],
+   [
+    "FEBI BILSTEIN",
+    "1006746",
+    "via spareto",
+    "C"
+   ],
+   [
+    "TOPRAN",
+    "700 850",
+    "via spareto",
+    "C"
+   ],
+   [
+    "HEPU",
+    "OP5603",
+    "",
+    "A"
+   ],
+   [
+    "MAGNETI MARELLI",
+    "351516000044",
+    "",
+    "A"
+   ],
+   [
+    "SWAG",
+    "33 11 5259",
+    "via spareto",
+    "C"
+   ]
+  ],
+  "note": "Aftermarket levert de pomp met aanzuigbuis (\"with air intake pipe\") en tandwiel; binnenwerk, deksel, plunjer en veer zijn niet los verkrijgbaar. PIERBURG 7.07919.00.0 noemt motor F4R 811. 8200194608, 8200783524 en 8200741631 komen uit de OE-lijst van RIDEX 596O0018, die ook nummers van andere F-motoren bevat; per VIN controleren.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/oil-pump-10592/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/ridex/13631750",
+    "autodoc.parts"
+   ],
+   [
+    "https://spareto.com/oe/8200222704",
+    "spareto.com"
+   ]
+  ]
+ },
+ "pilot:U_PBOUT": {
+  "n": "Pompbouten (2 stuks)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet gevonden.",
+  "src": []
+ },
+ "pilot:U_PCHAIN": {
+  "n": "Oliepompketting",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet gevonden; zit in distributieketting-sets, niet opgezocht door tegoed-einde.",
+  "src": []
+ },
+ "pilot:U_COOL": {
+  "n": "Oliekoeler (water-olie, 8 platen)",
+  "st": "past",
+  "oe": [
+   [
+    "8200806731",
+    "Renault/Dacia/Nissan/Opel/Volvo",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "NRF",
+    "31834",
+    "met pakkingen",
+    "A"
+   ],
+   [
+    "HELLA",
+    "8MO 366 360-251",
+    "met pakkingen",
+    "A"
+   ],
+   [
+    "FEBI BILSTEIN",
+    "174878",
+    "",
+    "A"
+   ],
+   [
+    "MAHLE",
+    "CLC 272 000S",
+    "via spareto",
+    "C"
+   ],
+   [
+    "NISSENS",
+    "90697",
+    "via spareto",
+    "C"
+   ],
+   [
+    "TOPRAN",
+    "701 157",
+    "via spareto",
+    "C"
+   ]
+  ],
+  "note": "Veel aftermarket-koelers worden met pakkingen geleverd (NRF 31834, Hella 8MO 366 360-251). Of de centrale nippel en de waterslangaansluitingen worden meegeleverd, staat niet op de bevestigde pagina's.",
+  "src": [
+   [
+    "https://www.autodoc.parts/nrf/16633383",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oil-cooler-10208/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://spareto.com/oe/8200806731",
+    "spareto.com"
+   ]
+  ]
+ },
+ "pilot:U_DIP": {
+  "n": "Peilstok (gele greep)",
+  "st": "past",
+  "oe": [
+   [
+    "8200962990",
+    "Renault/Dacia/Nissan; gele kleurcode",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "METZGER",
+    "8001073",
+    "",
+    "C"
+   ],
+   [
+    "MAXGEAR",
+    "27-0960",
+    "",
+    "C"
+   ],
+   [
+    "TOPRAN",
+    "702 676",
+    "",
+    "C"
+   ],
+   [
+    "KAMOKA",
+    "7271078",
+    "",
+    "C"
+   ],
+   [
+    "FAST",
+    "FT01738",
+    "",
+    "C"
+   ],
+   [
+    "NTY",
+    "BOL-RE-017",
+    "lengte 630 mm",
+    "C"
+   ]
+  ],
+  "note": "Renault levert hem als artikel van fabrikant RENAULT met gele greep.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/oil-dipstick-10579/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://spareto.com/oe/8200962990",
+    "spareto.com"
+   ]
+  ]
+ },
+ "pilot:U_GUIDE": {
+  "n": "Geleidebuis peilstok met O-ring en beugel",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet gevonden; Autodoc toont voor deze categorie alleen peilstokken.",
+  "src": []
+ },
+ "pilot:U_OPS": {
+  "n": "Oliedrukschakelaar (M14x1,5, 0,6 bar)",
+  "st": "past",
+  "oe": [],
+  "am": [
+   [
+    "RIDEX",
+    "805O0041",
+    "",
+    "A"
+   ],
+   [
+    "FEBI BILSTEIN",
+    "108711",
+    "",
+    "A"
+   ],
+   [
+    "DELPHI",
+    "SW90038",
+    "0,15 bar",
+    "A"
+   ],
+   [
+    "ERA",
+    "330698",
+    "",
+    "A"
+   ],
+   [
+    "FACET",
+    "7.0178",
+    "",
+    "A"
+   ],
+   [
+    "MAXGEAR",
+    "50-0265",
+    "",
+    "A"
+   ]
+  ],
+  "note": "Renault-nummer niet vastgesteld: de RIDEX-pagina noemt meer dan negentig Renault-nummers voor veel modellen, geen daarvan is aan deze motor toe te wijzen.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/oil-pressure-switch-sender-unit-valve-10578/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "pilot:U_TFEED": {
+  "n": "Olietoevoerleiding turbo (leiding met banjo-aansluitingen)",
+  "st": "past",
+  "oe": [
+   [
+    "8200575768",
+    "Renault, toevoerleiding F4R 811",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "AJUSA",
+    "OP10238",
+    "toevoerleiding F4R 811",
+    "A"
+   ],
+   [
+    "FEBI BILSTEIN",
+    "190318",
+    "toevoerleiding",
+    "A"
+   ]
+  ],
+  "note": "Renault-artikel gemeld voor motor F4R 811 als toevoerleiding.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/oil-pipe-charger-10581/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "pilot:U_TBOLT": {
+  "n": "Holle bouten met koperringen (turbo-olietoevoer)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet gevonden.",
+  "src": []
+ },
+ "pilot:U_TRET": {
+  "n": "Olieretourleiding turbo",
+  "st": "past",
+  "oe": [
+   [
+    "8200647073",
+    "volgens AJUSA OPR00085",
+    "B"
+   ],
+   [
+    "8200647074",
+    "volgens AJUSA OPR00086",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "AJUSA",
+    "OPR00085",
+    "voor OE 8200647073",
+    "A"
+   ],
+   [
+    "AJUSA",
+    "OPR00086",
+    "voor OE 8200647074",
+    "A"
+   ]
+  ],
+  "note": "Twee uitvoeringen bij F4R 811 (OPR00085 voor OE 8200647073, OPR00086 voor OE 8200647074); welke bij dit voertuig hoort hangt van VIN/turbo af.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/oil-pipe-charger-10581/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "pilot:U_TRGASK": {
+  "n": "Pakking retourflens turbo",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet gevonden.",
+  "src": []
+ },
+ "pilot:U_TRBOLT": {
+  "n": "Retourbouten (3 stuks)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet gevonden.",
+  "src": []
+ },
+ "pilot:U_SEP": {
+  "n": "Oliedampafscheider",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet gevonden. Autodoc toont voor dit voertuig bij \"carterventilatie\" een Renault-afdichting 118377804R (Seal, crankcase breather), maar geen afscheider; dat nummer is niet als afscheider bevestigd.",
+  "src": []
+ },
+ "pilot:U_PCV": {
+  "n": "PCV-klep / carterventilatieklep",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Geschrapt: de drie aftermarket-nummers staan in de Autodoc-categorie Crankcase breather voor dit voertuig, maar het soort onderdeel (klep, afscheider of slang) was niet vast te stellen. Geen Renault-nummer gevonden.",
+  "src": []
+ },
+ "pilot:U_VHOSE": {
+  "n": "Ontluchtingsslangen carterventilatie (inlaat en turbo)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet gevonden.",
+  "src": []
+ },
+ "pilot:U_KNUCKLE": {
+  "n": "Fusee (wieldrager) links",
+  "st": "past",
+  "oe": [],
+  "am": [
+   [
+    "RIDEX",
+    "1159S0045",
+    "links",
+    "A"
+   ],
+   [
+    "NTY",
+    "ZZP-RE-022",
+    "links",
+    "A"
+   ],
+   [
+    "NTY",
+    "ZZP-RE-010",
+    "links",
+    "A"
+   ],
+   [
+    "NTY",
+    "ZZP-NS-004",
+    "links",
+    "A"
+   ]
+  ],
+  "note": "Renault-nummer niet op opgehaalde pagina gezien. Links en rechts hebben verschillende nummers. Fusees verschillen per wiellagerdiameter (RIDEX 1159S0045: lager Ø84) en per uitvoering; per VIN controleren.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/stub-axle-10687/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "pilot:U_BEARING": {
+  "n": "Wiellagereenheid voor (naaflager met naaf, ABS-ring en lagerbouten)",
+  "st": "past",
+  "oe": [
+   [
+    "402104630R",
+    "Renault",
+    "B"
+   ],
+   [
+    "402104687R",
+    "",
+    "B"
+   ],
+   [
+    "402100006R",
+    "",
+    "B"
+   ],
+   [
+    "402105662R",
+    "",
+    "B"
+   ],
+   [
+    "402105019R",
+    "",
+    "B"
+   ],
+   [
+    "402020002R",
+    "alleen op RIDEX-pagina",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "FAG",
+    "713 6311 20",
+    "met ABS-ring, Ø142,9/92,9",
+    "A"
+   ],
+   [
+    "RIDEX",
+    "654W0316",
+    "met ABS-sensorring en bouten",
+    "A"
+   ],
+   [
+    "FEBI BILSTEIN",
+    "175094",
+    "Ø93/68, breedte 40",
+    "A"
+   ],
+   [
+    "GSP",
+    "9327071K",
+    "met naaf, aandrijfasbout",
+    "A"
+   ],
+   [
+    "METZGER",
+    "WM 6616",
+    "5 gaten, flens 143",
+    "A"
+   ],
+   [
+    "QUINTON HAZELL",
+    "QWB1465",
+    "",
+    "A"
+   ]
+  ],
+  "note": "Aftermarket \"wheel bearing kit/wheel hub 143 mm\" bevat naaf, lager, magnetische ABS-ring (en bij Ridex/GSP de bouten); ringen en kogelkransen worden niet los geleverd. Zelfde nummer links en rechts. Let op: Autodoc vermeldt bij QUINTON HAZELL QWB1465 \"4 gaten\" en breedte 95; maat voor bestelling controleren.",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/8226762",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/wheel-hub-10678/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "pilot:U_AXLENUT": {
+  "n": "Aandrijfasmoer met borgkraag",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet gevonden; GSP 9327071K wordt \"met aandrijfasbout\" geleverd (zit dan in de set).",
+  "src": []
+ },
+ "pilot:U_DISC": {
+  "n": "Remschijf voor (296 x 26, per as 2 stuks)",
+  "st": "past",
+  "oe": [
+   [
+    "402066949R",
+    "Renault, 296 mm voor Laguna III/Megane III",
+    "B"
+   ],
+   [
+    "402060002R",
+    "",
+    "B"
+   ],
+   [
+    "402066813R",
+    "",
+    "B"
+   ],
+   [
+    "402064408R",
+    "ook Samsung",
+    "B"
+   ],
+   [
+    "402067023R",
+    "ook Samsung",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "ATE",
+    "24.0126-0158.1",
+    "296 x 26, gecoat",
+    "A"
+   ],
+   [
+    "ZIMMERMANN",
+    "470.2432.20",
+    "296 x 26, OE 4020 669 49R op productpagina",
+    "C"
+   ],
+   [
+    "ZIMMERMANN",
+    "470.2432.52",
+    "Sport Coat Z, geperforeerd",
+    "A"
+   ],
+   [
+    "RIDEX",
+    "82B0504",
+    "296x26",
+    "A"
+   ],
+   [
+    "HI-Q",
+    "SD3057",
+    "",
+    "A"
+   ]
+  ],
+  "note": "Alleen 296x26 is dit voertuig; Autodoc toont voor het type ook 280 en 320 (vierwielbesturing) schijven. Meestal per paar verkocht. Links en rechts hetzelfde nummer.",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/7999398",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/brake-disc-10132/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://spareto.com/products/zimmermann-brake-disc/470-2432-20",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/oe/402066949R",
+    "spareto.com"
+   ]
+  ]
+ },
+ "pilot:U_SHIELD": {
+  "n": "Stofschild voor",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet gevonden: categorie niet opgehaald (Firecrawl-tegoed op).",
+  "src": []
+ },
+ "pilot:U_SHBOLT": {
+  "n": "Schildbouten (3 stuks)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet gevonden.",
+  "src": []
+ },
+ "pilot:U_ABS": {
+  "n": "Wielsnelheidssensor linksvoor",
+  "st": "past",
+  "oe": [],
+  "am": [
+   [
+    "WAGNER",
+    "ABS00598",
+    "links, F4R 811, 655 mm",
+    "A"
+   ],
+   [
+    "NTY",
+    "HCA-RE-029",
+    "links, 655 mm",
+    "A"
+   ],
+   [
+    "KAMOKA",
+    "1060600",
+    "links, 700 mm",
+    "A"
+   ],
+   [
+    "GH",
+    "GH-703968V",
+    "links",
+    "A"
+   ]
+  ],
+  "note": "Autodoc toont actieve sensoren (2-pins) voor dit voertuig; de modelomschrijving noemt passief. Renault-nummer niet gevonden. Links en rechts hebben verschillende nummers.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/abs-sensor-10138/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "pilot:U_ABSCLIP": {
+  "n": "Sensorklem (kabelklem)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet gevonden.",
+  "src": []
+ },
+ "pilot:U_ARM": {
+  "n": "Onderste draagarm links (met kogelgewricht en rubbers)",
+  "st": "past",
+  "oe": [
+   [
+    "545010012R",
+    "links",
+    "B"
+   ],
+   [
+    "545010008R",
+    "links",
+    "B"
+   ],
+   [
+    "545010009R",
+    "links",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "SKF",
+    "VKDS 326061 B",
+    "links",
+    "A"
+   ],
+   [
+    "DELPHI",
+    "TC2550",
+    "links",
+    "A"
+   ],
+   [
+    "MONROE",
+    "L25560",
+    "links",
+    "A"
+   ],
+   [
+    "MEYLE",
+    "16-16 050 0043/HD",
+    "links",
+    "A"
+   ],
+   [
+    "MAGNETI MARELLI",
+    "301181397900",
+    "links, gelijkwaardig artikel (ARM979)",
+    "C"
+   ],
+   [
+    "RIDEX",
+    "273C0864",
+    "links, met moer",
+    "A"
+   ]
+  ],
+  "note": "Draagarm wordt compleet met kogelgewricht en lagers verkocht (Delphi TC2550 \"with ball joint\"); rubberlagers ook los verkrijgbaar maar niet opgezocht. Links en rechts verschillende nummers.",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/13635680",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/steering-links-control-arm-trailing-link-diagonal-arm-10671/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "pilot:U_ARMBOLT": {
+  "n": "Draagarmbouten (voor/achter scharnierbout)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet gevonden.",
+  "src": []
+ },
+ "pilot:U_LINK": {
+  "n": "Koppelstang voor (stabilisatorstang, 298 mm)",
+  "st": "past",
+  "oe": [],
+  "am": [
+   [
+    "RIDEX",
+    "3229S0031",
+    "298 mm, M10x1,5",
+    "A"
+   ],
+   [
+    "MONROE",
+    "L25611",
+    "",
+    "A"
+   ],
+   [
+    "STARK",
+    "SKST-0230030",
+    "",
+    "A"
+   ],
+   [
+    "NTY",
+    "ZLP-RE-004",
+    "",
+    "A"
+   ],
+   [
+    "FEBEST",
+    "2423-DASTF",
+    "",
+    "A"
+   ],
+   [
+    "AUTOMEGA",
+    "110121310",
+    "",
+    "A"
+   ]
+  ],
+  "note": "Zelfde nummer links en rechts; vervangen per paar aanbevolen. De drie Renault-nummers zijn geschrapt omdat de OE-sectie van de RIDEX-pagina niet te lezen was.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/twist-rod-10677/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/ridex/8000025",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "pilot:U_STRUT": {
+  "n": "Veerpoot compleet links (demper, veer, topsteun)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Geschrapt: GH-353968C02 kon niet opnieuw op de bronpagina worden aangetroffen. Een complete veerpoot is samen te stellen uit schokdemper, veer, topsteun en stofhoes-set.",
+  "src": []
+ },
+ "pilot:U_DAMPER": {
+  "n": "Schokdemper voor (McPherson, Ø51 x 22 mm, 525 mm)",
+  "st": "past",
+  "oe": [
+   [
+    "543020030R",
+    "",
+    "B"
+   ],
+   [
+    "543021437R",
+    "",
+    "B"
+   ],
+   [
+    "543020001R",
+    "",
+    "B"
+   ],
+   [
+    "543020014R",
+    "",
+    "B"
+   ],
+   [
+    "543025668R",
+    "",
+    "B"
+   ],
+   [
+    "543027068R",
+    "",
+    "B"
+   ],
+   [
+    "543020003R",
+    "",
+    "B"
+   ],
+   [
+    "543020015R",
+    "",
+    "B"
+   ],
+   [
+    "543020002R",
+    "",
+    "B"
+   ],
+   [
+    "843020002R",
+    "",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "MONROE",
+    "G8186",
+    "",
+    "A"
+   ],
+   [
+    "TRW",
+    "JGM1134T",
+    "",
+    "A"
+   ],
+   [
+    "SACHS",
+    "317 419",
+    "",
+    "A"
+   ],
+   [
+    "KYB",
+    "339704",
+    "",
+    "A"
+   ],
+   [
+    "MEYLE",
+    "MSA0683",
+    "gelijkwaardig artikel, vooras",
+    "C"
+   ],
+   [
+    "RIDEX",
+    "854S2325",
+    "",
+    "A"
+   ]
+  ],
+  "note": "Demperbuis, zuigerstang en onderste veerschotel zijn niet los verkrijgbaar. Uitvoeringen verschillen per onderstel: 543020030R en 543020015R horen bij SACHS 317 420 (standaard onderstel), 543027068R bij SACHS 317 419. De overige Renault-nummers komen alleen uit de OE-lijst van RIDEX 854S2325; 843020002R heeft een afwijkend voorvoegsel. Per VIN controleren.",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/15185493",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/shock-absorber-10221/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/sachs/9543942",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "pilot:U_SPRING": {
+  "n": "Schroefveer voor",
+  "st": "past",
+  "oe": [
+   [
+    "540100006R",
+    "Renault",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "LESJOFORS",
+    "4072978",
+    "handelsnummer 22742839",
+    "A"
+   ],
+   [
+    "RIDEX",
+    "188C0553",
+    "lengte 359",
+    "A"
+   ],
+   [
+    "ABAKUS",
+    "234-01-099",
+    "",
+    "A"
+   ]
+  ],
+  "note": "Veerkeuze hangt af van uitvoering/onderstel (standaard, sport); links en rechts zelfde nummer.",
+  "src": [
+   [
+    "https://www.autodoc.parts/lesjofors/2259476",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/coil-springs-10213/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "pilot:U_SPRINGSEAT": {
+  "n": "Veerschotel boven en veerrubbers",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet gevonden.",
+  "src": []
+ },
+ "pilot:U_BUMP": {
+  "n": "Stofhoes en aanslagrubber (set)",
+  "st": "past",
+  "oe": [],
+  "am": [
+   [
+    "RIDEX",
+    "919D0211",
+    "",
+    "A"
+   ],
+   [
+    "KAMOKA",
+    "2020171",
+    "",
+    "A"
+   ],
+   [
+    "FEBI BILSTEIN",
+    "103190",
+    "",
+    "A"
+   ],
+   [
+    "MAGNETI MARELLI",
+    "310116110216",
+    "",
+    "A"
+   ],
+   [
+    "MONROE",
+    "PK352",
+    "standaard onderstel",
+    "A"
+   ],
+   [
+    "GSP",
+    "5406080PK",
+    "",
+    "A"
+   ]
+  ],
+  "note": "Wordt als set voor de vooras verkocht. Renault-nummer niet gevonden. FEBI 103190 niet voor 18 inch velgen; MONROE PK352 en GSP 5406080PK voor standaard onderstel.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/shock-absorber-dust-cover-and-bump-stops-10472/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "pilot:U_TOPMOUNT": {
+  "n": "Topsteun met lager en moeren (set)",
+  "st": "past",
+  "oe": [],
+  "am": [
+   [
+    "SKF",
+    "VKDA 35606",
+    "steun + 3 schroeven + lager",
+    "A"
+   ],
+   [
+    "RIDEX",
+    "1180S0667",
+    "",
+    "A"
+   ],
+   [
+    "SNR",
+    "KB655.33",
+    "Ø98, met lager en schroeven",
+    "C"
+   ],
+   [
+    "KYB",
+    "SM1533",
+    "",
+    "C"
+   ]
+  ],
+  "note": "SKF-set bevat steunlager, drie schroeven en lager VKD 35048. RIDEX, SNR en KYB staan als volledig gelijkwaardig artikel op de SKF-pagina; RIDEX 1180S0667 ook op de Autodoc-pagina Damping voor dit voertuig. Renault-nummer niet gevonden.",
+  "src": [
+   [
+    "https://www.autodoc.parts/skf/7058223",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "pilot:U_ROTNUT": {
+  "n": "Veerpootmoer (zuigerstang)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet gevonden.",
+  "src": []
+ },
+ "pilot:U_CLAMP": {
+  "n": "Fuseebouten en moeren (klembouten, 2 sets)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet gevonden.",
+  "src": []
+ },
+ "pilot:U_CAL": {
+  "n": "Remklauw linksvoor (1 zuiger Ø57, zonder drager)",
+  "st": "past",
+  "oe": [
+   [
+    "410110001R",
+    "links",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "TRW",
+    "BHX595E",
+    "links",
+    "A"
+   ],
+   [
+    "NTY",
+    "HZP-RE-019",
+    "links",
+    "A"
+   ],
+   [
+    "ESEN SKV",
+    "46SKV931",
+    "links",
+    "A"
+   ],
+   [
+    "RIDEX",
+    "78B1438",
+    "links, Ø57",
+    "A"
+   ]
+  ],
+  "note": "Links en rechts hebben verschillende nummers (hier links). Zuiger zit in de klauw.",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/16350287",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/brake-calipers-10907/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "pilot:U_CALBRK": {
+  "n": "Remklauwdrager",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet opgezocht door tegoed-einde.",
+  "src": []
+ },
+ "pilot:U_PADS": {
+  "n": "Remblokset voor (per as 4 blokken met toebehoren)",
+  "st": "past",
+  "oe": [],
+  "am": [
+   [
+    "ATE",
+    "13.0460-7249.2",
+    "handelsnummer 607249",
+    "A"
+   ],
+   [
+    "FERODO",
+    "FDB4181",
+    "PREMIER, 155 x 68",
+    "A"
+   ],
+   [
+    "BREMBO",
+    "P 68 047",
+    "met toebehoren",
+    "A"
+   ],
+   [
+    "RIDEX",
+    "402B0969",
+    "laagmetallisch, zonder slijtagecontact",
+    "A"
+   ]
+  ],
+  "note": "Voorste blokken worden per as als set geleverd: binnen en buiten, inclusief rugplaat, voering en anti-piepplaat; veer/klem vaak in de set. Zelfde nummer links en rechts (per as). De vier Renault-nummers zijn geschrapt omdat de OE-sectie van de RIDEX-pagina niet te lezen was.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/brake-pad-set-10130/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/ridex/8051844",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "pilot:U_CALKIT": {
+  "n": "Remklauw-reparatieset (zuigerafdichting en stofhoes, Ø57)",
+  "st": "past",
+  "oe": [],
+  "am": [
+   [
+    "RIDEX",
+    "405R0153",
+    "Ø57 voor",
+    "A"
+   ],
+   [
+    "AUTOFREN SEINSA",
+    "D43945",
+    "Ø57",
+    "A"
+   ]
+  ],
+  "note": "Wordt als set verkocht. Renault-nummer niet gevonden.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/brake-caliper-repair-kit-10733/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "pilot:U_GUIDEPIN": {
+  "n": "Geleidepennen met hoezen (set)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Categorie niet opgehaald (Firecrawl-tegoed op).",
+  "src": []
+ },
+ "pilot:U_BLEED": {
+  "n": "Ontluchtingsnippel met dop",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet gevonden.",
+  "src": []
+ },
+ "pilot:U_BRKBOLT": {
+  "n": "Remklauwdragerbouten (2)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet gevonden.",
+  "src": []
+ },
+ "pilot:U_HOSE": {
+  "n": "Remslang voor (468 mm)",
+  "st": "past",
+  "oe": [
+   [
+    "462100014R",
+    "",
+    "B"
+   ],
+   [
+    "462100001R",
+    "",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "83B1289",
+    "468 mm, M10x1",
+    "A"
+   ]
+  ],
+  "note": "Zelfde artikel links en rechts bij RIDEX (468 mm). Let op: RAP RH1442 met hetzelfde OE 462100001R is 410 mm; lengte per VIN controleren.",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/18207508",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/brake-hoses-10135/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "pilot:U_BANJO": {
+  "n": "Hollebout met twee koperringen",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet gevonden.",
+  "src": []
+ },
+ "pilot:U_HBRK": {
+  "n": "Slangbeugel op veerpoot",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet gevonden.",
+  "src": []
+ },
+ "pilot:U_LAM": {
+  "n": "Lambdasonde voor (voor de katalysator, 4-polig)",
+  "st": "past",
+  "oe": [
+   [
+    "8200771294",
+    "Renault/Dacia",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "VEMO",
+    "V46-76-0017",
+    "370 mm, voor katalysator, fit expliciet",
+    "A"
+   ],
+   [
+    "BOSCH",
+    "0 258 010 062",
+    "via spareto OE-kruisverwijzing",
+    "C"
+   ],
+   [
+    "NGK",
+    "1952",
+    "idem",
+    "C"
+   ],
+   [
+    "DENSO",
+    "DOX-0150",
+    "idem",
+    "C"
+   ],
+   [
+    "VALEO",
+    "368114",
+    "idem",
+    "C"
+   ],
+   [
+    "PIERBURG",
+    "7.05271.94.0",
+    "idem",
+    "C"
+   ]
+  ],
+  "note": "Vemo-pagina noemt dit voertuig (2.0 16V Turbo 170 pk) expliciet. Let op: de Autodoc-lijst zegt bij V46-76-0017 zowel \"after catalytic converter\" (titel) als \"before catalytic converter\" (inbouwpositie); per VIN of op de sonde zelf controleren. De sonde na de katalysator is een ander artikel. Stekker en kabel zitten vast aan de sonde.",
+  "src": [
+   [
+    "https://www.autodoc.parts/vemo/8006074",
+    "autodoc.parts"
+   ],
+   [
+    "https://spareto.com/oe/8200771294",
+    "spareto.com"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/lambda-sensor-10148/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ }
+}

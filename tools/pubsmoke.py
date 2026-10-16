@@ -87,10 +87,12 @@ def main():
             pg.route('**/*', route)
             t0 = time.time()
             pg.goto('https://artifact.local/index.html', wait_until='load', timeout=120000)
+            # grens voor `ready`: 20 s (docs/testen.md); op een belaste machine of CI via PUBSMOKE_READY_MS hoger zetten
+            ready_ms = int(os.environ.get('PUBSMOKE_READY_MS', '20000'))
             try:
-                pg.wait_for_function('window.__laguna && window.__laguna.ready !== false', timeout=20000)
+                pg.wait_for_function('window.__laguna && window.__laguna.ready !== false', timeout=ready_ms)
             except Exception:
-                fails.append(f'[{tag}] __laguna niet klaar binnen 20 s')
+                fails.append(f'[{tag}] __laguna niet klaar binnen {ready_ms / 1000:g} s')
                 continue
             dt = time.time() - t0
             r = pg.evaluate("""(() => { const c = document.querySelector('canvas'); const cs = getComputedStyle(c);

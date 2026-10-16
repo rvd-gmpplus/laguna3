@@ -4,13 +4,15 @@ Scripts die de bouwsessie naast de vaste testset gebruikte: screenshots maken, e
 
 | Script | Gebruik | Wat het doet |
 |---|---|---|
-| `finaltests.sh` | `tools/orkestratie/finaltests.sh UITVOERMAP` | Draait de hele testset (lint, smoke, integrity, silhouette, ui_inner (met --open), opentest, itest met poorten, tri, pubsmoke, stats) in twee parallelle reeksen en zet de uitvoer per test in de map. |
+| `finaltests.sh` | `tools/orkestratie/finaltests.sh UITVOERMAP` | Draait de hele testset (lint, smoke, integrity, silhouette, ui_inner met --open --strict, opentest met --strikt-min, itest met poorten, tri met --gate, pubsmoke, stats) in twee parallelle reeksen, zet de uitvoer per test in de map met de duur, en geeft exitcode 1 zodra een test faalt. |
 | `gallery.py` | `python3 tools/orkestratie/gallery.py REPO UITVOERMAP [set]` | Vaste screenshotset. De sets zijn alles (standaard), exterieur, overzicht, motor, aandrijving, onderstel, interieur, golf2 en mobiel. |
 | `presetshots.py` | `python3 tools/orkestratie/presetshots.py REPO UITVOERMAP` | Een screenshot van elke preset, zonder de rondleiding. |
-| `docshots.py` | `python3 tools/orkestratie/docshots.py REPO UITVOERMAP` | De zeven screenshots voor `docs/screenshots`. |
+| `docshots.py` | `python3 tools/orkestratie/docshots.py REPO UITVOERMAP` | De twaalf screenshots voor `docs/screenshots` (elf op 1280 x 800 en `mobiel.png` op 390 x 844). |
+| `cijfers.py` | `python3 tools/orkestratie/cijfers.py UIT/stats.json [UIT/tri.json] > docs/cijfers.md` | Kerncijfers als één bron voor de documentatie (boom, driehoeken per hoofdgroep met budget, tekenopdrachten, opstarttijdlijn). |
 | `stats.py` | `python3 tools/orkestratie/stats.py REPO UITVOER.json` | Eindcijfers: boom, driehoeken per hoofdgroep, presets, tekenopdrachten met en zonder bundelen, opstarttijdlijn. |
 | `pickview.py` | `python3 tools/orkestratie/pickview.py REPO VIEWNAAM x,y [x,y ...]` | Laat zien welk onderdeel op een schermpunt van een galerijweergave staat. |
 | `zone.py` | `python3 tools/orkestratie/zone.py REPO '{"naam":{"lo":[x,y,z],"hi":[x,y,z]}}' [motor\|auto]` | Toont welke meshes een kader snijden, in het motorframe of het autoframe, met de hoogte van de carrosserie erboven. |
+| `build_pn.py` | `python3 tools/orkestratie/build_pn.py [--check] [--out MAP]` | Bouwt `src/partnumbers.js` en `docs/onderdeelnummers.csv` uit `data/pn/` (canoniek, zie `data/pn/README.md`) met controles op paden, eenheden, keuzes en bronnen; `--check` vergelijkt byte voor byte. |
 | `mergecheck.py` | `python3 tools/orkestratie/mergecheck.py DOMEIN COMMIT [BASIS]` | Eigendomscontrole van een tak: raakt die alleen bestanden van het eigen domein? Exitcode 1 bij een overtreding. |
 | `pick.py` | `PICK_PNG=uit.png python3 tools/orkestratie/pick.py 'JS-voorbereiding' x,y [x,y ...]` | Zet de modus Openen aan, draait de voorbereiding (bijvoorbeeld een opener openen), maakt een opname en noemt per schermpunt het pad van het onderdeel dat er ligt. |
 | `shots.py` | `python3 tools/orkestratie/shots.py UITMAP naam 'JS' [naam2 'JS2' ...]` | Gerichte opnames in de modus Openen; elke JS draait na een verse Alles dicht. |

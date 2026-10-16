@@ -1,0 +1,2568 @@
+{
+ "S2-lucht-uitlaat-brandstof:C_INLINJ": {
+  "n": "Groep Inlaat en injectie",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "groep",
+  "note": "Groepsknoop, geen verkoopeenheid.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_IMAN": {
+  "n": "Inlaatspruitstuk (kunststof, vier kanalen)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: Autodoc meldt Intake manifold \"not available\" voor type 23370; de getoonde Top-10 is niet typegebonden.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_IMGASK": {
+  "n": "Inlaatspruitstukpakking (vier ringen, spruitstuk-poort)",
+  "st": "past",
+  "oe": [
+   [
+    "8200067710",
+    "OE-lijst REINZ 71-33563-00 (RENAULT).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "REINZ",
+    "71-33563-00",
+    "TecDoc: F4R 811",
+    "A"
+   ],
+   [
+    "ELRING",
+    "966.940",
+    "",
+    "A"
+   ],
+   [
+    "CORTECO",
+    "450345P",
+    "inlaatspruitstuk",
+    "A"
+   ],
+   [
+    "ELRING",
+    "331.620",
+    "cilinderkop",
+    "A"
+   ],
+   [
+    "FAI AutoParts",
+    "IM1179",
+    "pakkingset, motorcode F4R 811",
+    "A"
+   ],
+   [
+    "PAYEN",
+    "JD5911",
+    "TecDoc: F4R 811, positie inlaatspruitstuk; ook Spareto, OE 8200067710",
+    "A"
+   ]
+  ],
+  "per": "set",
+  "note": "Autodoc: Inlet manifold gasket voor type 23370. REINZ, CORTECO, ELRING 331.620 en PAYEN staan op Spareto onder OE 8200067710; posities \"Intake Manifold\" en \"Cylinder Head\" zijn dezelfde pakking. AJUSA 13196100 (positie Air Intake Pipe) geschrapt.",
+  "src": [
+   [
+    "https://www.autodoc.parts/reinz/7442887",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/gasket-intake-manifold-10329/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S2-lucht-uitlaat-brandstof:U_IMSTUD": {
+  "n": "Tapeinden en moeren inlaatspruitstuk (8 stuks)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_MAP": {
+  "n": "Inlaatdruksensor (MAP)",
+  "st": "past",
+  "oe": [
+   [
+    "223658570R",
+    "OE-verwijzing bij TOPRAN 700 898.",
+    "B"
+   ],
+   [
+    "8200233831",
+    "OE-lijst RIDEX 161B0045 (RENAULT / RENAULT TRUCKS).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "161B0045",
+    "3 pins, 20-250 kPa",
+    "A"
+   ],
+   [
+    "VEMO",
+    "V46-72-0123-1",
+    "TecDoc: F4R 811; Autodoc zet het bij de luchtdruksensoren (hoogteaanpassing); Spareto-kruisverwijzing van 8200233831",
+    "A"
+   ],
+   [
+    "MAGNETI MARELLI",
+    "215810013500",
+    "TecDoc: F4R 811",
+    "A"
+   ],
+   [
+    "NTK",
+    "95201",
+    "TecDoc: F4R 811",
+    "A"
+   ],
+   [
+    "TOPRAN",
+    "700 898",
+    "voor OE-nummer 2236 585 70R",
+    "A"
+   ],
+   [
+    "NRF",
+    "70830591",
+    "",
+    "A"
+   ]
+  ],
+  "per": "stuk",
+  "note": "8200233831 en 223658570R staan in de OE-lijst van RIDEX 161B0045; TOPRAN 700 898 heeft \"for OE number 2236 585 70R\". RIDEX 161B0045 heet op de productpagina \"Sensor, boost pressure\".",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/sensor-intake-manifold-pressure-15024/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/ridex/13631830",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S2-lucht-uitlaat-brandstof:U_IAT": {
+  "n": "Inlaatluchttemperatuursensor (NTC, 2 pins)",
+  "st": "vin",
+  "oe": [
+   [
+    "8200833248",
+    "OE-lijst MAGNETI MARELLI 230016073067 (RENAULT / NISSAN).",
+    "B"
+   ],
+   [
+    "8200454482",
+    "OE-lijst MAGNETI MARELLI 230016073067 (RENAULT / DACIA / RENAULT TRUCKS).",
+    "B"
+   ],
+   [
+    "8200164249",
+    "OE-lijst MAGNETI MARELLI 230016073067 (RENAULT / DACIA / RENAULT TRUCKS).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "VEMO",
+    "V42-72-0025",
+    "TecDoc: F4R 811",
+    "A"
+   ],
+   [
+    "MAGNETI MARELLI",
+    "230016073067",
+    "TecDoc: F4R 811",
+    "A"
+   ],
+   [
+    "FACET",
+    "10.4005",
+    "TecDoc: F4R 811, OE-equivalent",
+    "A"
+   ]
+  ],
+  "var": "VALEO 255600, QUINTON HAZELL XEMS202 en INTERMOTOR 55714 gelden tot 11/2010; de auto is 2011. De OE-nummers op de MAGNETI MARELLI-pagina horen ook bij andere motoren.",
+  "per": "stuk",
+  "note": "Zelfde sensortype staat twee keer in de modelboom; hier een eenheid.",
+  "src": [
+   [
+    "https://www.autodoc.parts/magneti-marelli/1834576",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/sender-unit-intake-air-temperature-15026/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ],
+  "kz": {
+   "o": [],
+   "a": [
+    [
+     "MAGNETI MARELLI",
+     "230016073067"
+    ]
+   ],
+   "v": "Sensor NTC met 2 pinnen, uitvoering vanaf 11/2010",
+   "b": "A",
+   "z": "middel",
+   "g": "Volgens de RDW is de auto op 18 februari 2011 voor het eerst toegelaten. Het chassisnummer van de gebruiker, vergeleken met openbare chassisnummerbladen van andere Laguna III, wijst op bouw rond begin 2011 (afleiding, niveau C); de RDW-datum valt daarin. De uitvoeringen tot 11/2010 (VALEO 255600, QUINTON HAZELL XEMS202, INTERMOTOR 55714) vallen af. De overige drie artikelen (MAGNETI MARELLI, VEMO, FACET) noemen alle de F4R 811; VEMO V42-72-0025 en FACET 10.4005 zijn dus niet uitgesloten. Het Renault-nummer is niet uniek (drie nummers in de OE-lijst).",
+   "s": [
+    "https://www.autodoc.parts/spares/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo"
+   ]
+  }
+ },
+ "S2-lucht-uitlaat-brandstof:U_VACNIP": {
+  "n": "Vacuumaansluiting rembekrachtiger (nippel op spruitstuk)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_THR": {
+  "n": "Gasklephuis (elektronisch, drive-by-wire)",
+  "st": "past",
+  "oe": [
+   [
+    "8200619046",
+    "OE-lijst MEAT & DORIA 89142 (RENAULT).",
+    "B"
+   ],
+   [
+    "161208152R",
+    "OE-lijst PIERBURG 7.03703.21.0 (RENAULT).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "MEAT & DORIA",
+    "89142",
+    "TecDoc: F4R 811",
+    "A"
+   ],
+   [
+    "HOFFER",
+    "7519142",
+    "TecDoc: F4R 811",
+    "A"
+   ],
+   [
+    "PIERBURG",
+    "7.03703.21.0",
+    "TecDoc: F4R 811; stuurunit/software moet worden aangeleerd",
+    "A"
+   ],
+   [
+    "FISPA",
+    "88.132",
+    "",
+    "A"
+   ]
+  ],
+  "per": "stuk",
+  "note": "Compleet elektronisch huis; onderdelen niet los in de Autodoc-lijst. RENAULT 8200068583 in dezelfde lijst is een afdichting (Seal, throttle body).",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/throttle-body-12439/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/meat-doria/7757386",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/pierburg/7518285",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S2-lucht-uitlaat-brandstof:U_THRGASK": {
+  "n": "Pakking gasklephuis (tussen huis en spruitstuk)",
+  "st": "vin",
+  "oe": [
+   [
+    "7701045723",
+    "OE-lijst STARK SKGI-0710144 (RENAULT).",
+    "B"
+   ],
+   [
+    "161192787R",
+    "OE-verwijzing bij MAXGEAR 70-0174.",
+    "B"
+   ],
+   [
+    "8200060868",
+    "OE-verwijzing bij MAXGEAR 70-0174.",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "MAXGEAR",
+    "70-0174",
+    "positie uitgang, ring 63,2 mm, VIN BT06/BT0H/BT0Y",
+    "A"
+   ],
+   [
+    "RIDEX",
+    "42G0144",
+    "binnendiameter 63,2 mm",
+    "A"
+   ],
+   [
+    "STARK",
+    "SKGI-0710144",
+    "binnendiameter 63,2 mm",
+    "A"
+   ],
+   [
+    "FEBEST",
+    "RINGAH-010",
+    "positie uitgang, 63 mm, modelcode BT06 BT0G BT0H BT0Y BT15 BT18",
+    "A"
+   ],
+   [
+    "AJUSA",
+    "16035201",
+    "Spareto, OE 7701045723.",
+    "C"
+   ],
+   [
+    "FAST",
+    "FT49460",
+    "Spareto, OE 7701045723.",
+    "C"
+   ]
+  ],
+  "var": "Meer afdichtringen voor het gasklephuis in de lijst: aan de uitgang MAXGEAR 70-0174 (63,2 mm) en FEBEST RINGAH-010 (63 mm), maar ook MAXGEAR 70-0160 en 70-0159 (uitgang, zonder maat); aan de inlaat FEBEST RINGAH-004/005/009 en STARK SKGI-0710151. RIDEX 42G0144 en STARK SKGI-0710144 (63,2 mm) noemen geen positie. Maat bij de auto controleren.",
+  "per": "stuk",
+  "note": "Categorie Throttle body bevat ook afdichtringen, herkend aan de naam \"Seal, throttle body\". STARK SKGI-0710144 heet op de productpagina \"Inlet manifold gasket\" (OE 7701045723).",
+  "src": [
+   [
+    "https://www.autodoc.parts/stark/15788179",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/throttle-body-12439/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://spareto.com/oe/7701045723",
+    "spareto.com"
+   ]
+  ]
+ },
+ "S2-lucht-uitlaat-brandstof:U_THRBOLT": {
+  "n": "Bouten gasklephuis (4 stuks)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_RAIL": {
+  "n": "Brandstofrail (rail met aansluitingen)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen categorie Fuel rail bij type 23370 in de Autodoc-boom.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_SCHRADER": {
+  "n": "Schraderventiel brandstofrail",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_QUICKC": {
+  "n": "Snelkoppeling brandstofleiding op de rail",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_RAILBOLT": {
+  "n": "Railbouten (2 stuks)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_INJ": {
+  "n": "Brandstofinjector (meerpunts, inlaatkanaal, 2 pins)",
+  "st": "vin",
+  "oe": [
+   [
+    "8200058379",
+    "OE-verwijzing bij MEAT & DORIA 75112098.",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "MAGNETI MARELLI",
+    "805001399403",
+    "TecDoc: F4R 811",
+    "A"
+   ],
+   [
+    "MEAT & DORIA",
+    "75112098",
+    "",
+    "A"
+   ],
+   [
+    "ENGITECH",
+    "ENT900023",
+    "TecDoc: F4R 811",
+    "A"
+   ],
+   [
+    "HOFFER",
+    "H75112098",
+    "",
+    "A"
+   ],
+   [
+    "RIDEX",
+    "3905I0045",
+    "",
+    "A"
+   ],
+   [
+    "VEMO",
+    "V46-11-0005",
+    "Spareto, OE 8200058379.",
+    "C"
+   ]
+  ],
+  "var": "VALEO 348279 geldt tot 11/2010. RENAULT 7701065103 in dezelfde lijst is een dCi-injector en niet overgenomen.",
+  "per": "stuk (4 gelijke per motor)",
+  "note": "Vier gelijke injectoren per motor. OE 8200058379 bij MEAT & DORIA 75112098, HOFFER H75112098 en WILMINK GROUP WG1013706 (\"for OE number\") en in de OE-lijst van RIDEX 3905I0045; op Spareto ook MAGNETI MARELLI 805001399403.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/injector-nozzle-nozzle-holder-pde-12899/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/injector-nozzle-nozzle-holder-pde-12899/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=2",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/ridex/8099299",
+    "autodoc.parts"
+   ],
+   [
+    "https://spareto.com/oe/8200058379",
+    "spareto.com"
+   ]
+  ],
+  "kz": {
+   "o": [
+    "8200058379"
+   ],
+   "a": [
+    [
+     "MAGNETI MARELLI",
+     "805001399403"
+    ],
+    [
+     "MEAT & DORIA",
+     "75112098"
+    ],
+    [
+     "ENGITECH",
+     "ENT900023"
+    ]
+   ],
+   "v": "Meerpuntsinjector, 2 pinnen, uitvoering vanaf 11/2010",
+   "b": "B",
+   "z": "middel",
+   "g": "Volgens de RDW is de auto op 18 februari 2011 voor het eerst toegelaten. Het chassisnummer van de gebruiker, vergeleken met openbare chassisnummerbladen van andere Laguna III, wijst op bouw rond begin 2011 (afleiding, niveau C); de RDW-datum valt daarin. VALEO 348279 geldt tot 11/2010 en valt af. De overige artikelen verwijzen naar OE 8200058379; de dCi-injector 7701065103 is al geschrapt.",
+   "s": [
+    "https://www.autodoc.parts/spares/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo"
+   ]
+  }
+ },
+ "S2-lucht-uitlaat-brandstof:U_INJSEAL": {
+  "n": "Injectorafdichtingen (O-ringen boven/onder, per injector)",
+  "st": "vin",
+  "oe": [],
+  "am": [
+   [
+    "MAXGEAR",
+    "70-0173",
+    "van rail naar injector, 14,4 mm",
+    "A"
+   ],
+   [
+    "FEBEST",
+    "MCP-003",
+    "van rail naar injector, 14,5 mm",
+    "A"
+   ],
+   [
+    "PAYEN",
+    "LA5252",
+    "O-ring 14,6 x 7,5 x 3,5 mm, FPM; geen positie",
+    "A"
+   ],
+   [
+    "FEBI BILSTEIN",
+    "184125",
+    "8 x 4 mm (binnendiameter 8, dikte 4), FPM; geen positie",
+    "A"
+   ],
+   [
+    "3RG",
+    "99714",
+    "set, 14 x 7 x 3,5 mm; geen positie",
+    "A"
+   ]
+  ],
+  "var": "Bovenring (van rail naar injector): MAXGEAR 70-0173 (14,4 mm) en FEBEST MCP-003 (14,5 mm). De andere ringen hebben geen positie en andere maten: PAYEN LA5252 14,6 x 7,5 x 3,5, 3RG 99714 14 x 7 x 3,5, febi 184125 8 x 4 mm. Welke ring onder zit, volgt niet uit de bron.",
+  "per": "set per injector",
+  "note": "De OE-lijsten op de pagina's noemen VAG-, BMW- en Mercedes-nummers: generiek, geen Renault-nummer.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/injector-seals-12895/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S2-lucht-uitlaat-brandstof:U_INJCLIP": {
+  "n": "Borgclip injector",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:C_TURBOGRP": {
+  "n": "Groep Turbo en uitlaatspruitstuk",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "groep",
+  "note": "Groepsknoop, geen verkoopeenheid.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_EXMAN": {
+  "n": "Uitlaatspruitstuk (gietstuk met turboflens)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: Autodoc meldt Exhaust manifold \"not available\" voor type 23370; de getoonde Top-10 is niet typegebonden.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_EXMGASK": {
+  "n": "Uitlaatspruitstukpakking (kop-spruitstuk)",
+  "st": "past",
+  "oe": [
+   [
+    "7700105843",
+    "OE-lijst REINZ 71-31912-00 (RENAULT / PEUGEOT).",
+    "B"
+   ],
+   [
+    "7700114234",
+    "OE-verwijzing bij FAI AutoParts EM881A.",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "REINZ",
+    "71-31912-00",
+    "TecDoc: F4R 811",
+    "A"
+   ],
+   [
+    "AJUSA",
+    "13141200",
+    "TecDoc: F4R 811, 375 x 90 mm",
+    "A"
+   ],
+   [
+    "PAYEN",
+    "JD5910",
+    "TecDoc: F4R 811",
+    "A"
+   ],
+   [
+    "GLASER",
+    "X52573-01",
+    "TecDoc: F4R 811",
+    "A"
+   ],
+   [
+    "ELRING",
+    "170.110",
+    "",
+    "A"
+   ],
+   [
+    "FAI AutoParts",
+    "EM881A",
+    "pakkingset; voor OE-nummer 77 00 114 234",
+    "A"
+   ]
+  ],
+  "per": "stuk",
+  "note": "OE 7700105843 is ook van Dacia, Nissan en Peugeot (Spareto); 7700114234 is \"for OE number\" van de set FAI EM881A.",
+  "src": [
+   [
+    "https://www.autodoc.parts/reinz/7442825",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/exhaust-manifold-gasket-seal-10331/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S2-lucht-uitlaat-brandstof:U_EXMSTUD": {
+  "n": "Tapeinden en moeren uitlaatspruitstuk (8 stuks)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_EXMSHIELD": {
+  "n": "Hitteschild uitlaatspruitstuk",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: Autodoc-categorie Heat shield bevat alleen universele platen (HJS, OXFORD).",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_TURBO": {
+  "n": "Turbocompressor (Mitsubishi 49377-serie, F4Rt)",
+  "st": "vin",
+  "oe": [
+   [
+    "7701478861",
+    "OE-lijst BTS TURBO T981374 (RENAULT).",
+    "B"
+   ],
+   [
+    "49377-07303",
+    "OE-lijst BTS TURBO T981374 (MITSUBISHI).",
+    "B"
+   ],
+   [
+    "49377-07300",
+    "OE-lijst BTS TURBO T981374 (MITSUBISHI).",
+    "B"
+   ],
+   [
+    "49377-07301",
+    "OE-lijst BTS TURBO T981374 (MITSUBISHI).",
+    "B"
+   ],
+   [
+    "8200054417",
+    "OE-lijst BTS TURBO T981374 (RENAULT).",
+    "B"
+   ],
+   [
+    "7701475363",
+    "OE-lijst BTS TURBO T981374 (RENAULT).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "BR Turbo",
+    "4937707303RS",
+    "motor F4R811/F4R813, type BT06/BT0H/BT0Y/BT15/BT18, Mitsubishi",
+    "A"
+   ],
+   [
+    "ELSTOCK",
+    "91-0954",
+    "TecDoc: F4R 811, met pakkingen, Mitsubishi",
+    "A"
+   ],
+   [
+    "LUCAS",
+    "LTRPA4937707300",
+    "TecDoc: F4R 811, met pakkingen, Mitsubishi",
+    "A"
+   ],
+   [
+    "BTS TURBO",
+    "T981374",
+    "TecDoc: F4R 811, met olieleidingen en montagemateriaal",
+    "A"
+   ],
+   [
+    "MAHLE",
+    "021 TC 17138 000",
+    "alleen samen met montageset 021 TA 17138 000",
+    "A"
+   ],
+   [
+    "RIDEX REMAN",
+    "2234C0370R",
+    "gereviseerd, met pakkingenset",
+    "A"
+   ]
+  ],
+  "var": "Meerdere uitvoeringen: Mitsubishi 49377-07300 (RTC, LUCAS, TURBO MOTOR), 49377-07303 (BR Turbo 4937707303RS), BR Turbo 4937707343RS en -07301/-07310/-07311/-07313/-07320/-07325 in OE-lijsten. Afhankelijk van motorvariant (BT06/BT0H/BT0Y/BT15/BT18) en bouwdatum; VIN bepalend.",
+  "per": "stuk",
+  "note": "De Renault-nummers 7701478861, 7701475363 en 8200054417 staan ook bij andere motoren (o.a. 1.9 dCi): aanwijzing. Turbos komen met actuator.",
+  "src": [
+   [
+    "https://www.autodoc.parts/br-turbo/16875308",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/bts-turbo/7280916",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/ajusa/7194906",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/turbocharger-10972/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S2-lucht-uitlaat-brandstof:U_TURBOKIT": {
+  "n": "Montageset turbo (pakkingen, tapeinden, moeren)",
+  "st": "past",
+  "oe": [
+   [
+    "144106938R",
+    "OE-lijst AJUSA JTC11524 (RENAULT).",
+    "B"
+   ],
+   [
+    "8200940802",
+    "OE-lijst AJUSA JTC11524 (RENAULT).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "AJUSA",
+    "JTC11524",
+    "TecDoc: F4R 811, met pakkingen, met tapeinden, zelfborgend",
+    "A"
+   ],
+   [
+    "EVORON",
+    "EVMK0072",
+    "TecDoc: F4R 811, met pakkingen en bouten",
+    "A"
+   ],
+   [
+    "FA1",
+    "KT220020E",
+    "",
+    "A"
+   ],
+   [
+    "FEBI BILSTEIN",
+    "192299",
+    "",
+    "A"
+   ],
+   [
+    "Henkel Parts",
+    "5210325",
+    "",
+    "A"
+   ],
+   [
+    "MOTAIR",
+    "440114",
+    "",
+    "A"
+   ],
+   [
+    "FEBI BILSTEIN",
+    "195169",
+    "Spareto, OE 8200940802.",
+    "C"
+   ]
+  ],
+  "per": "set",
+  "note": "Set met pakkingen, tapeinden en moeren (AJUSA JTC11524 \"with studs\", ALANKO 10920648 \"with studs, with nut\").",
+  "src": [
+   [
+    "https://www.autodoc.parts/ajusa/7194906",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/gasket-turbocharger-10344/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/mounting-kit-charger-15070/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://spareto.com/oe/8200940802",
+    "spareto.com"
+   ]
+  ]
+ },
+ "S2-lucht-uitlaat-brandstof:U_TGASK": {
+  "n": "Pakking turbo-uitlaatspruitstuk (turbineinlaat)",
+  "st": "past",
+  "oe": [],
+  "am": [
+   [
+    "FA1",
+    "220-934",
+    "positie turbineinlaat, 4 gaten",
+    "A"
+   ],
+   [
+    "AJUSA",
+    "01173700",
+    "0,4 mm, 111 x 113 mm",
+    "A"
+   ]
+  ],
+  "per": "stuk",
+  "note": "Losse pakkingen turbine-inlaat FA1 220-934 (4 gaten) en AJUSA 01173700 (111 x 113 mm). DR.MOTOR DRM0758 geschrapt: dat is een afdichting van de olietoevoer. Geen Renault-nummer.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/gasket-turbocharger-10344/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S2-lucht-uitlaat-brandstof:U_TURBOSTEUN": {
+  "n": "Turbosteun",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_WGACT": {
+  "n": "Wastegate-actuator (drukdoos met stang)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen aparte actuatorcategorie voor type 23370; turbos worden met actuator geleverd.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_N75": {
+  "n": "Magneetventiel laaddrukregeling",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: Autodoc-categorie Pressure converter toont voor type 23370 geen artikelen.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_DIVSOL": {
+  "n": "Magneetventiel omloopklep",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: Autodoc-categorie Diverter valve toont voor type 23370 geen artikelen.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_TCOOLIN": {
+  "n": "Koelwaterleiding toevoer turbo",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_TCOOLOUT": {
+  "n": "Koelwaterleiding retour turbo",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_TSHIELD": {
+  "n": "Hitteschild turbo",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: Autodoc-categorie Heat shield bevat alleen universele platen (HJS, OXFORD).",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:C_KOELLUCHT": {
+  "n": "Groep Koeling en luchtinlaat",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "groep",
+  "note": "Groepsknoop, geen verkoopeenheid.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_RAD": {
+  "n": "Radiateur (aluminium, kunststof waterkasten)",
+  "st": "vin",
+  "oe": [
+   [
+    "214100005R",
+    "OE-lijst NISSENS 637603 (RENAULT).",
+    "B"
+   ],
+   [
+    "214100052R",
+    "OE-lijst NISSENS 637603 (RENAULT).",
+    "B"
+   ],
+   [
+    "214109263R",
+    "OE-lijst SRLine 603908-6 (RENAULT).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "PRASCO",
+    "RN086R002",
+    "automaat, 690 x 367 x 34 mm",
+    "A"
+   ],
+   [
+    "SRLine",
+    "603908-2",
+    "automaat, 686 x 363 x 32 mm",
+    "A"
+   ],
+   [
+    "NRF",
+    "53026",
+    "690 x 363 x 32 mm, versnellingsbak niet vermeld",
+    "A"
+   ],
+   [
+    "NISSENS",
+    "637603",
+    "688 x 349 x 32 mm, zonder dop en zonder expansievat, met pakkingen",
+    "A"
+   ],
+   [
+    "DENSO",
+    "DRM23039",
+    "versnellingsbak niet vermeld",
+    "A"
+   ],
+   [
+    "AVA COOLING SYSTEMS",
+    "RT2418",
+    "690 x 367 x 34 mm",
+    "A"
+   ]
+  ],
+  "var": "Meer uitvoeringen voor dit type: automaat PRASCO RN086R002 en AVA RT2418 (690 x 367 x 34 mm) en SRLine 603908-2 (686 x 363 x 32 mm); zonder vermelding van de bak NRF 53026 (690 x 363 x 32), NISSENS 637603 (688 x 349 x 32) en DENSO DRM23039. Handgeschakeld (KOYORAD PL493029, AKS DASIS 180069N, MAHLE CR 895 000P: 690 x 366/368 x 32) weggelaten. OE 214109263R hoort bij SRLine 603908-6 (690 x 350 x 32, bak niet vermeld). Maat en VIN controleren.",
+  "per": "stuk",
+  "note": "OE 214100005R en 214100052R staan bij PRASCO RN086R002 (automaat) en NISSENS 637603.",
+  "src": [
+   [
+    "https://www.autodoc.parts/nissens/1990546",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/prasco/15514629",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/srline/24705603",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/radiator-parts-10203/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ],
+  "kz": {
+   "o": [
+    "214100005R",
+    "214100052R"
+   ],
+   "a": [
+    [
+     "PRASCO",
+     "RN086R002"
+    ]
+   ],
+   "v": "Radiateur voor automaat met bakoliekoeler, 690 x 367 x 34 mm",
+   "b": "A",
+   "z": "middel",
+   "g": "Zestraps automaat AJ0 volgens het chassisnummer van de gebruiker (negende teken E, afgeleid uit vier andere auto's met AJ0); de RDW noemt de bak niet. AVA RT2418 heeft dezelfde maat en SRLine 603908-2 (686 x 363 x 32 mm) noemt ook de automaat; die zijn niet uitgesloten. De OE-nummers staan bij PRASCO RN086R002 (automaat) en ook bij NISSENS 637603 zonder bakopgave.",
+   "s": [
+    "https://www.autodoc.parts/spares/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo"
+   ]
+  }
+ },
+ "S2-lucht-uitlaat-brandstof:U_RADDRAIN": {
+  "n": "Aftapkraan radiateur",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_RADVENT": {
+  "n": "Ontluchtingsschroef radiateur",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_RADMNT": {
+  "n": "Ophangrubbers radiateur boven (links en rechts)",
+  "st": "past",
+  "oe": [
+   [
+    "215060007R",
+    "OE-lijst FEBEST RNSB-DUSTUP (RENAULT / LADA).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "FEBEST",
+    "RNSB-DUSTUP",
+    "positie linksboven, rechtsboven, vanaf modeljaar 2008",
+    "A"
+   ]
+  ],
+  "per": "set (2)",
+  "note": "FEBEST RNSB-DUSTUP: Upper Left en Upper Right, OE 215060007R. RENAULT 215060007R staat zelf ook in de lijst (Radiator mount Upper, vanaf modeljaar 2008).",
+  "src": [
+   [
+    "https://www.autodoc.parts/febest/21532867",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/radiator-mounting-parts-10205/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S2-lucht-uitlaat-brandstof:U_RADLOW": {
+  "n": "Steunblokken radiateur onder (links en rechts)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: categorie Radiator mounting parts bevat alleen bovenste rubbers.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_COND": {
+  "n": "Condensor airco (met droger)",
+  "st": "vin",
+  "oe": [
+   [
+    "921000002R",
+    "OE-verwijzing bij MEAT & DORIA 991140.",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "NRF",
+    "35890",
+    "met droger en afdichtring",
+    "A"
+   ],
+   [
+    "VALEO",
+    "814378",
+    "met droger",
+    "A"
+   ],
+   [
+    "MAHLE",
+    "AC 486 000S",
+    "met droger",
+    "A"
+   ],
+   [
+    "BOSCH",
+    "1 986 AD2 139",
+    "met droger, zonder afdichtring",
+    "A"
+   ],
+   [
+    "MEAT & DORIA",
+    "991140",
+    "voor OE-nummer 921000002R",
+    "A"
+   ]
+  ],
+  "var": "Condensors met verschillende aansluitingen en maten voor dit type: 15/10 mm (VALEO 814378, MAHLE AC 486 000S, 684 mm) en 11/9 mm (NRF 35890, MAXGEAR AC889651); lengtes 680 tot 725 mm. NISSENS 940034 geschrapt (beperking Semi-automatic). VIN controleren.",
+  "per": "stuk",
+  "note": "Autodoc: bijna alle condensors met droger. OE 921000002R via MEAT & DORIA 991140 (\"for OE number\").",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/condenser-10455/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S2-lucht-uitlaat-brandstof:U_DRYER": {
+  "n": "Airco-droger (filterdroger)",
+  "st": "vin",
+  "oe": [
+   [
+    "921920001R",
+    "OE-lijst NISSENS 95488 (RENAULT).",
+    "B"
+   ],
+   [
+    "92185JY00A",
+    "OE-lijst NRF 33349 (RENAULT).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "NRF",
+    "33349",
+    "kunststof, 30 x 232 mm, met bevestiging",
+    "A"
+   ],
+   [
+    "NISSENS",
+    "95488",
+    "24 x 226 mm",
+    "A"
+   ],
+   [
+    "KAMOKA",
+    "7810077",
+    "24 x 226 mm",
+    "A"
+   ],
+   [
+    "MAHLE",
+    "AD 289 000P",
+    "met accessoires",
+    "A"
+   ],
+   [
+    "MEAT & DORIA",
+    "K132385",
+    "voor OE-nummer 1618220 (geen Renault-nummer)",
+    "A"
+   ],
+   [
+    "THERMOTEC",
+    "KTT120140",
+    "met afdichtring, deksel en borgring",
+    "A"
+   ]
+  ],
+  "var": "Diameter 24 mm (NISSENS, KAMOKA) en 30 mm (NRF, MAHLE, THERMOTEC) bij dit type genoemd. Of er naast een condensor met droger een losse droger zit, volgt niet uit de bron.",
+  "per": "stuk",
+  "note": "THERMOTEC KTT120140 levert dop, afdichtring en borgring mee. OE 1618220/1618371 op sommige pagina's is Opel/PSA.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/dryer-10457/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/nissens/7283932",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/nrf/7910370",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S2-lucht-uitlaat-brandstof:U_CONDBLOCK": {
+  "n": "Leidingblok condensor",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_CONDCLIP": {
+  "n": "Condensorclips (links en rechts)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_IC": {
+  "n": "Intercooler (laadluchtkoeler)",
+  "st": "vin",
+  "oe": [
+   [
+    "144960001R",
+    "OE-verwijzing bij AKS DASIS 187022N.",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "NTY",
+    "CNG-RE-004",
+    "automaat/handgeschakeld, 652 x 112 x 108 mm",
+    "A"
+   ],
+   [
+    "AKS DASIS",
+    "187022N",
+    "automaat; voor OE-nummer 144960001R",
+    "A"
+   ],
+   [
+    "NISSENS",
+    "96625",
+    "automaat, 650 x 113 x 105 mm, snelkoppelingen",
+    "A"
+   ],
+   [
+    "RIDEX",
+    "468I0086",
+    "automaat, 650 x 112 x 108 mm",
+    "A"
+   ],
+   [
+    "THERMOTEC",
+    "DAR015TT",
+    "automaat, vanaf 07/2008",
+    "A"
+   ],
+   [
+    "MAGNETI MARELLI",
+    "351319202620",
+    "TecDoc: F4R 811, 651 x 113 x 107 mm",
+    "A"
+   ]
+  ],
+  "var": "Automaat-uitvoeringen (650 x 112 x 108 mm) en artikelen zonder vermelding van de bak (NRF 30312, MAXGEAR AC630128, MAHLE CI 151 000P). De auto is een automaat; hier de automaatartikelen.",
+  "per": "stuk",
+  "note": "OE 144960001R bij NTY CNG-RE-004 en AKS DASIS 187022N (\"for OE number\") en in de OE-lijst van NISSENS 96625.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/intercooler-10493/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/nissens/1993830",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/intercooler-10493/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=2",
+    "autodoc.parts"
+   ]
+  ],
+  "kz": {
+   "o": [
+    "144960001R"
+   ],
+   "a": [
+    [
+     "AKS DASIS",
+     "187022N"
+    ],
+    [
+     "RIDEX",
+     "468I0086"
+    ],
+    [
+     "NISSENS",
+     "96625"
+    ]
+   ],
+   "v": "Laadluchtkoeler voor automaat, 650 x 112 x 108 mm",
+   "b": "B",
+   "z": "middel",
+   "g": "Zestraps automaat AJ0 volgens het chassisnummer van de gebruiker (negende teken E, afgeleid uit vier andere auto's met AJ0); de RDW noemt de bak niet. De eenheid bevat alleen automaatartikelen, met een enkel Renault-nummer. Artikelen zonder bakopgave staan niet in de lijst en zijn niet uitgesloten.",
+   "s": [
+    "https://www.autodoc.parts/spares/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo"
+   ]
+  }
+ },
+ "S2-lucht-uitlaat-brandstof:U_ICBRK": {
+  "n": "Steunbeugels intercooler (links en rechts)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_FAN": {
+  "n": "Koelventilatormodule (ventilator met kap en motor)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: Autodoc meldt Radiator fan \"not available\" voor type 23370; de Top-10 is niet typegebonden (Espace 5, Koleos, Talisman).",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_FANRES": {
+  "n": "Regelweerstand koelventilator",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_FANPLUG": {
+  "n": "Ventilatorstekker",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_EXPT": {
+  "n": "Expansievat koelvloeistof",
+  "st": "vin",
+  "oe": [
+   [
+    "217100014R",
+    "OE-verwijzing bij MEAT & DORIA 2035072.",
+    "B"
+   ],
+   [
+    "217100001R",
+    "OE-lijst NTY CZW-RE-008 (RENAULT).",
+    "B"
+   ],
+   [
+    "217104354R",
+    "OE-lijst VEMA 163104 (RENAULT / DACIA).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "MEAT & DORIA",
+    "2035072",
+    "Autodoc zet het bij de expansievaten; met sluitplug; voor OE-nummer 217100014R (zelfde OE als NTY CZW-RE-008)",
+    "A"
+   ],
+   [
+    "TOPRAN",
+    "701 941",
+    "zonder deksel",
+    "A"
+   ],
+   [
+    "NTY",
+    "CZW-RE-008",
+    "",
+    "A"
+   ],
+   [
+    "METZGER",
+    "2140355",
+    "zonder niveausensor",
+    "A"
+   ],
+   [
+    "VEMA",
+    "163104",
+    "",
+    "A"
+   ],
+   [
+    "THERMOTEC",
+    "DBR019TT",
+    "zonder dop",
+    "A"
+   ]
+  ],
+  "var": "Uitvoeringen met en zonder deksel/dop en niveausensor (METZGER 2140355, TOPRAN 701 941, THERMOTEC DBR019TT). Renault-nummers 217100014R, 217100001R, 217104354R: per VIN controleren.",
+  "per": "stuk",
+  "note": "Autodoc: expansievaten voor het type, uitvoeringen met en zonder dop en niveausensor. MEAT & DORIA 2035072 heet in Autodoc \"Water Tank, radiator\" maar staat in de categorie expansievat met hetzelfde OE 217100014R als NTY CZW-RE-008.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/expansion-tank-engine-coolant-10212/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/nty/17105781",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/vema/14782042",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S2-lucht-uitlaat-brandstof:U_EXPCAP": {
+  "n": "Expansiedop (koelsysteemdop)",
+  "st": "vin",
+  "oe": [
+   [
+    "7700805131",
+    "OE-verwijzing bij KAMOKA 7729005.",
+    "B"
+   ],
+   [
+    "7700805031",
+    "OE-lijst TOPRAN 700 431 (RENAULT / NISSAN / DACIA).",
+    "B"
+   ],
+   [
+    "7700808836",
+    "OE-lijst TOPRAN 700 431 (RENAULT / NISSAN / DACIA).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "KAMOKA",
+    "7729005",
+    "voor OE-nummer 7700805131",
+    "A"
+   ],
+   [
+    "TOPRAN",
+    "700 431",
+    "OE 7700805031",
+    "A"
+   ],
+   [
+    "NRF",
+    "455625",
+    "",
+    "A"
+   ],
+   [
+    "ABAKUS",
+    "042-027-001",
+    "1,4 bar",
+    "A"
+   ],
+   [
+    "Metalcaucho",
+    "03563",
+    "1,4 bar",
+    "A"
+   ],
+   [
+    "RIDEX",
+    "56V0027",
+    "1,15 bar",
+    "A"
+   ]
+  ],
+  "var": "Doppen van 1,0, 1,15 en 1,4 bar in de lijst; de druk van de originele dop staat niet in de bron.",
+  "per": "stuk",
+  "note": "Nummers uit de OE-lijsten van KAMOKA en TOPRAN. In de lijst 12 doppen van 1,4 bar, een van 1,15 en een van 1 bar.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/expansion-tank-cap-15068/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/topran/2731513",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S2-lucht-uitlaat-brandstof:U_COOLLVL": {
+  "n": "Niveauschakelaar expansievat",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: categorie Coolant level sensor staat niet bij type 23370; alleen algemene Top-10.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_EXPHOLD": {
+  "n": "Vathouder expansievat",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:C_KOELSLANGEN": {
+  "n": "Groep Koelslangen",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "groep",
+  "note": "Groepsknoop, geen verkoopeenheid.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:C_VERWSLANGEN": {
+  "n": "Groep Verwarmingsslangen",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "groep",
+  "note": "Groepsknoop, geen verkoopeenheid.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_HOSELO": {
+  "n": "Onderste radiateurslang",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: categorie Radiator hose (116 artikelen) noemt geen positie onder.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_HEATIN": {
+  "n": "Verwarmingsslang aanvoer",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: categorie Heater hose toont alleen universele slang per meter.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_HEATOUT": {
+  "n": "Verwarmingsslang retour",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: categorie Heater hose toont alleen universele slang per meter.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_HEATSTUB": {
+  "n": "Aansluitstompen verwarming (aanvoer en retour)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_HCLAMP": {
+  "n": "Slangklemmen koelsysteem",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: alleen universele klemmen in Autodoc.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_HOSEUP": {
+  "n": "Bovenste radiateurslang (rubber)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: OE 215150007R en de slangen FARE SA 15672 (Upper Right), SASIC 3404128 (from expansion tank to engine cooler), ORIGINAL IMPERIUM 224507 en GOOM RH-1246 (geen positie) zijn niet aantoonbaar de bovenste radiateurslang. 215150007R is mogelijk de ontluchtingsslang; VIN of Renault-catalogus nodig.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_DEGAS": {
+  "n": "Ontluchtingsslang (expansievat naar radiateur)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: mogelijk is dit OE 215150007R (zie bovenste radiateurslang); de bronnen scheiden de twee slangen niet.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:C_LUCHTINL": {
+  "n": "Groep Luchtinlaat",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "groep",
+  "note": "Groepsknoop, geen verkoopeenheid.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_AIRDUCT": {
+  "n": "Luchtgeleider (luchtinlaatkanaal bij de grille)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_AFH": {
+  "n": "Luchtfilterhuis (onderbak en bevestiging)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: categorie Holder, air filter housing bevat alleen een universele houder (PILOT 06150).",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_AF": {
+  "n": "Luchtfilterelement (paneelfilter)",
+  "st": "vin",
+  "oe": [
+   [
+    "165469229R",
+    "OE-verwijzing bij KAMOKA F229301.",
+    "B"
+   ],
+   [
+    "165464616R",
+    "OE-verwijzing bij KAMOKA F248101.",
+    "B"
+   ],
+   [
+    "8200602361",
+    "OE-lijst KAMOKA F229301 (RENAULT).",
+    "B"
+   ],
+   [
+    "8200792659",
+    "OE-lijst KAMOKA F229301 (RENAULT).",
+    "B"
+   ],
+   [
+    "8660003099",
+    "OE-lijst KAMOKA F229301 (RENAULT).",
+    "B"
+   ],
+   [
+    "8200576596",
+    "OE-lijst HELLA 8ZA 366 133-041 (RENAULT).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "8A0280",
+    "246 x 196 x 55 mm, met voorfilter",
+    "A"
+   ],
+   [
+    "KAMOKA",
+    "F229301",
+    "247 x 197 x 55 mm; voor OE-nummer 165469229R",
+    "A"
+   ],
+   [
+    "HELLA",
+    "8ZA 366 133-041",
+    "245 x 196 x 50 mm",
+    "A"
+   ],
+   [
+    "VALEO",
+    "585158",
+    "TecDoc: F4R 811, motorcode F4R813, met voorfilter",
+    "A"
+   ],
+   [
+    "KAMOKA",
+    "F248101",
+    "247 x 197 x 50 mm; voor OE-nummer 165464616R",
+    "A"
+   ],
+   [
+    "MANN-FILTER",
+    "C 25 109/1",
+    "Spareto, OE 8200602361.",
+    "C"
+   ],
+   [
+    "BOSCH",
+    "F 026 400 052",
+    "Spareto, OE 8200602361.",
+    "C"
+   ]
+  ],
+  "var": "Hoogte 55 mm (RIDEX 8A0280, KAMOKA F229301; OE 165469229R) of 50 mm (KAMOKA F248101, HELLA 8ZA 366 133-041; OE 165464616R). Groter filter 282 x 180 x 57 mm (KAMOKA F212401, F203401) bij het type weggelaten.",
+  "per": "stuk",
+  "note": "8660003099 in de OE-lijsten van KAMOKA F229301 en HELLA 8ZA 366 133-041; 8200576596 alleen bij HELLA.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/air-filter-10360/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/kamoka/7832168",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/hella/26770830",
+    "autodoc.parts"
+   ],
+   [
+    "https://spareto.com/oe/8200602361",
+    "spareto.com"
+   ]
+  ]
+ },
+ "S2-lucht-uitlaat-brandstof:U_AFCLIP": {
+  "n": "Sluitclips luchtfilterhuis (4 stuks)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_AFPIN": {
+  "n": "Rubber ophangpen luchtfilterhuis",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_INTHOSE": {
+  "n": "Aanzuigslang turbo (luchtfilterhuis naar turbo)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: categorie Charger intake hose bevat alleen generieke slangen.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_HCLAMP2": {
+  "n": "Slangklemmen luchtinlaat en laadlucht",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: alleen universele klemmen in Autodoc.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_RESON": {
+  "n": "Resonator luchtinlaat",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:C_LAADLUCHT": {
+  "n": "Groep Laadluchtleidingen",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "groep",
+  "note": "Groepsknoop, geen verkoopeenheid.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_HOTHOSE": {
+  "n": "Hete laadluchtslang (turbo naar intercooler)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: categorie Charger intake hose bevat alleen generieke slangen.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_COLDHOSE": {
+  "n": "Koude laadluchtslang (intercooler naar gasklep)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: categorie Charger intake hose bevat alleen generieke slangen.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:C_UITLAAT": {
+  "n": "Groep Uitlaatsysteem",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "groep",
+  "note": "Groepsknoop, geen verkoopeenheid.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_CAT": {
+  "n": "Voorkatalysator (katalysator voor, met flens)",
+  "st": "vin",
+  "oe": [
+   [
+    "8200888365",
+    "OE-lijst WALKER 20778 (RENAULT).",
+    "B"
+   ],
+   [
+    "8200885613",
+    "OE-lijst WALKER 20778 (RENAULT).",
+    "B"
+   ],
+   [
+    "8200100048",
+    "OE-lijst WALKER 20778 (RENAULT).",
+    "B"
+   ],
+   [
+    "8200118188",
+    "OE-lijst WALKER 20778 (RENAULT).",
+    "B"
+   ],
+   [
+    "8200042189",
+    "OE-lijst WALKER 20778 (RENAULT).",
+    "B"
+   ],
+   [
+    "208A00750R",
+    "OE-lijst HELLA 8LE 366 053-321 (RENAULT / DACIA).",
+    "B"
+   ],
+   [
+    "8201057861",
+    "OE-lijst HELLA 8LE 366 053-321 (RENAULT / DACIA).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "429C0773",
+    "Euro 4, markering 8200885613, F4R811/F4R813, BT06/BT0H/BT0Y/BT15/BT18, met bevestigingsmateriaal",
+    "A"
+   ],
+   [
+    "WALKER",
+    "20778",
+    "markering 8200885613, F4R811/F4R813, met bevestigingsmateriaal",
+    "A"
+   ],
+   [
+    "HELLA",
+    "8LE 366 053-321",
+    "Euro 5, alternatief OE 8200888365, BT0H/BT0Y/BT15/BT18",
+    "A"
+   ],
+   [
+    "VEGAZ",
+    "RK-832",
+    "TecDoc: F4R 811, Euro 3, met montagemateriaal",
+    "A"
+   ],
+   [
+    "BOSAL",
+    "090-654",
+    "Euro 3, met bevestigingsmateriaal",
+    "A"
+   ],
+   [
+    "BM CATALYSTS",
+    "BM92048H",
+    "Spareto, OE 8201057861.",
+    "C"
+   ]
+  ],
+  "var": "Euro 4, markering 8200885613 (RIDEX 429C0773, WALKER 20778); Euro 5 (HELLA 8LE 366 053-321, alt. OE 8200888365; BT0H/BT0Y/BT15/BT18); Euro 3 (VEGAZ RK-832, BOSAL 090-654); tot 04/2010 (BM CATALYSTS BM91630H) of 11/2010 (VEGAZ RK-802, AS 30189). Volgens de RDW heeft de auto Euro 5 A.",
+  "per": "stuk",
+  "note": "Flens en moeren worden bij de katalysator geleverd (\"with attachment parts\").",
+  "src": [
+   [
+    "https://www.autodoc.parts/walker/8349110",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/hella/18747734",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/catalyst-converter-10147/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://spareto.com/oe/8201057861",
+    "spareto.com"
+   ]
+  ],
+  "kz": {
+   "o": [
+    "208A00750R",
+    "8201057861"
+   ],
+   "a": [
+    [
+     "HELLA",
+     "8LE 366 053-321"
+    ]
+   ],
+   "v": "Voorkatalysator Euro 5",
+   "b": "A",
+   "z": "middel",
+   "g": "De RDW noemt voor deze auto het emissieniveau EURO 5 A (715/2007*692/2008A). In de bron is HELLA 8LE 366 053-321 het enige artikel dat Euro 5 noemt; RIDEX 429C0773 en WALKER 20778 zijn Euro 4 en VEGAZ RK-832 en BOSAL 090-654 Euro 3, en vallen af. Het Renault-nummer is niet uniek: de OE-lijst van HELLA noemt 208A00750R en 8201057861 en de bron noemt 8200888365 als alternatief. BM CATALYSTS BM92048H (niveau C) noemt de Euro-klasse niet. Het werkplaatshandboek MR 415 geeft Euro 5 alleen bij de F4R 813 en bij de 811 alleen Euro 4; het motorsuffix van de auto is daarmee niet bevestigd. Controleer het motorplaatje.",
+   "s": [
+    "https://www.autodoc.parts/hella/18747734",
+    "https://www.autodoc.parts/car-parts/catalyst-converter-10147/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo"
+   ]
+  }
+ },
+ "S2-lucht-uitlaat-brandstof:U_CATGASK": {
+  "n": "Pakking voorkatalysator (flens naar downpipe)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: AJUSA 77002600 (Gasket Set, exhaust system, OE 7701473155) is niet aantoonbaar de katalysatorpakking; hetzelfde OE-nummer staat op Spareto bij DR.MOTOR DRM0758, een afdichting van de olietoevoer van de turbo.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_CATSHIELD": {
+  "n": "Hitteschild voorkatalysator",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: Autodoc-categorie Heat shield bevat alleen universele platen (HJS, OXFORD).",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_DOWNPIPE": {
+  "n": "Downpijp (turbo naar katalysator)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: categorie Exhaust pipes toont voor type 23370 geen artikelen.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_LAMNA": {
+  "n": "Lambdasonde na katalysator (achter, 4 draden)",
+  "st": "vin",
+  "oe": [
+   [
+    "8200761588",
+    "OE-lijst FISPA 90536 (RENAULT / DACIA / RENAULT TRUCKS).",
+    "B"
+   ],
+   [
+    "8200495791",
+    "OE-lijst FISPA 90536 (RENAULT / RENAULT TRUCKS).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "FISPA",
+    "90536",
+    "positie na de katalysator, OE 82 00 761 588",
+    "A"
+   ],
+   [
+    "MOBILETRON",
+    "OS-15P",
+    "na de katalysator, zonder stekker (universeel, stekker van de oude sonde nodig)",
+    "A"
+   ],
+   [
+    "NTY",
+    "ESL-AU-007",
+    "na de katalysator",
+    "A"
+   ],
+   [
+    "NTY",
+    "ESL-CH-009",
+    "na de katalysator",
+    "A"
+   ],
+   [
+    "MEAT & DORIA",
+    "81936",
+    "Spareto, OE 8200761588.",
+    "C"
+   ],
+   [
+    "VALEO",
+    "368490",
+    "Spareto, OE 8200761588.",
+    "C"
+   ]
+  ],
+  "var": "Alleen artikelen met positie na de katalysator gekozen; de lijst bevat ook sondes voor de katalysator. VEGAZ ULS-460 noemt 8200632571, dat ook bij DENSO DOX-2076 (voor de katalysator) staat.",
+  "per": "stuk",
+  "note": "FISPA 90536 noemt OE 8200761588 en 8200495791; MEAT & DORIA 81936 staat in de lijst met \"for OE number 8200761588\" (zonder positie). MOBILETRON OS-15P is een sonde zonder stekker. NGK/NTK 1952 zijn universeel en niet gebruikt.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/lambda-sensor-10148/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=3",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/fispa/12977926",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/lambda-sensor-10148/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=2",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/lambda-sensor-10148/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://spareto.com/oe/8200761588",
+    "spareto.com"
+   ]
+  ]
+ },
+ "S2-lucht-uitlaat-brandstof:C_FLENSVB": {
+  "n": "Groep Flensverbinding (alleen indeling)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "groep",
+  "note": "Groepsknoop, geen verkoopeenheid.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_FLGASK": {
+  "n": "Flenspakking uitlaat (tussen pijpen)",
+  "st": "past",
+  "oe": [
+   [
+    "8200030251",
+    "OE-lijst WALKER 80404 (RENAULT).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "WALKER",
+    "80404",
+    "positie achter, midden, voor",
+    "A"
+   ],
+   [
+    "FA1",
+    "220-918",
+    "Spareto, OE 8200030251.",
+    "C"
+   ],
+   [
+    "AJUSA",
+    "01173600",
+    "Spareto, OE 8200030251.",
+    "C"
+   ],
+   [
+    "BOSAL",
+    "256-851",
+    "Spareto, OE 8200030251.",
+    "C"
+   ]
+  ],
+  "per": "stuk",
+  "note": "WALKER 80404: Rear, Centre, Front; 124 mm breed. Maat bij de auto niet in de bron. DT Spare Parts 2.10221 (16 x 24 x 2 mm) uit dezelfde lijst niet gebruikt.",
+  "src": [
+   [
+    "https://www.autodoc.parts/walker/1011274",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/exhaust-pipe-gasket-10421/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://spareto.com/oe/8200030251",
+    "spareto.com"
+   ]
+  ]
+ },
+ "S2-lucht-uitlaat-brandstof:U_FLANGE": {
+  "n": "Flenzen uitlaat (voor en achter)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_FLBOLT": {
+  "n": "Flensbouten uitlaat (3 stuks)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_FLEX": {
+  "n": "Flexstuk uitlaat",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: categorie Flex pipe bevat alleen universele flexstukken.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_EXCLAMP": {
+  "n": "Uitlaatklem (pijpklem)",
+  "st": "vin",
+  "oe": [
+   [
+    "8200157364",
+    "OE-lijst WALKER 80477 (RENAULT / ALFA ROMEO / RENAULT TRUCKS).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "WALKER",
+    "80477",
+    "16 x 116 mm",
+    "A"
+   ],
+   [
+    "JP GROUP",
+    "1121401000",
+    "dubbele klem, 54,5 mm",
+    "A"
+   ],
+   [
+    "FAST",
+    "FT84601",
+    "pijpklem 77 mm",
+    "A"
+   ],
+   [
+    "FA1",
+    "934-977",
+    "Spareto, OE 8200157364.",
+    "C"
+   ],
+   [
+    "DINEX",
+    "73809",
+    "Spareto, OE 8200157364.",
+    "C"
+   ]
+  ],
+  "var": "Klemmen van 54,5 mm, 77 mm en band 16 x 116 mm; welke maat waar zit is niet vast te stellen.",
+  "per": "stuk",
+  "note": "Universele klemmen; OE 8200157364 staat bij Renault, Dacia, Alfa Romeo, Fiat.",
+  "src": [
+   [
+    "https://www.autodoc.parts/walker/7061489",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/clamp-exhaust-system-10429/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://spareto.com/oe/8200157364",
+    "spareto.com"
+   ]
+  ]
+ },
+ "S2-lucht-uitlaat-brandstof:U_MIDPIPE": {
+  "n": "Tussenpijp",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: categorie Exhaust pipes toont voor type 23370 geen artikelen.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_MIDSIL": {
+  "n": "Middendemper",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: categorie Middle silencer bevat alleen universele WALKER-dempers.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_MIDSHIELD": {
+  "n": "Hitteschild middendemper",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: Autodoc-categorie Heat shield bevat alleen universele platen (HJS, OXFORD).",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_REARPIPE": {
+  "n": "Achterpijp",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: categorie Exhaust pipes toont voor type 23370 geen artikelen.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_RSIL": {
+  "n": "Einddemper (achterdemper)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: categorie Muffler toont een niet-typegebonden Top-10 (POLMO 21.40 wordt voor 1.5 dCi gekocht).",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:C_HANGERS": {
+  "n": "Groep Ophangingen",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "groep",
+  "note": "Groepsknoop, geen verkoopeenheid.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_EXHANGER": {
+  "n": "Ophangrubber uitlaat",
+  "st": "vin",
+  "oe": [
+   [
+    "206511084R",
+    "OE-lijst FA1 223-745 (RENAULT / DACIA).",
+    "B"
+   ],
+   [
+    "206510006R",
+    "OE-lijst FA1 223-745 (RENAULT / DACIA).",
+    "B"
+   ],
+   [
+    "8200505925",
+    "OE-lijst FA1 223-745 (RENAULT / DACIA).",
+    "B"
+   ],
+   [
+    "206518152R",
+    "OE-lijst FA1 223-745 (RENAULT / DACIA).",
+    "B"
+   ],
+   [
+    "206510020R",
+    "OE-lijst FA1 223-745 (RENAULT / DACIA).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "FA1",
+    "223-745",
+    "voor einddemper; paarartikel 223-945",
+    "A"
+   ],
+   [
+    "HJS",
+    "83 23 6567",
+    "voor einddemper, EPDM",
+    "A"
+   ],
+   [
+    "4MAX",
+    "0219-14-3028P",
+    "voor einddemper, rubber",
+    "A"
+   ],
+   [
+    "WALKER",
+    "82786",
+    "87 x 51 x 40 mm",
+    "A"
+   ],
+   [
+    "HART",
+    "442 354",
+    "",
+    "A"
+   ],
+   [
+    "GOOM",
+    "CS-0146",
+    "",
+    "A"
+   ]
+  ],
+  "var": "Alleen 4MAX, FA1 en HJS noemen \"for rear muffler\"; WALKER 82786, HART 442 354 en GOOM CS-0146 noemen geen positie. De vier ophangingen zijn niet te scheiden. Renault-nummers uit de OE-lijst van FA1 223-745 (Renault/Dacia).",
+  "per": "stuk",
+  "note": "Autodoc: 14 artikelen. PLANET TECH PL4053 t/m PL4056 noemen oudere Renault-nummers zonder model.",
+  "src": [
+   [
+    "https://www.autodoc.parts/fa1/26795958",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/holder-exhaust-system-10427/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S2-lucht-uitlaat-brandstof:U_HANGBRK": {
+  "n": "Pijpbeugel uitlaatophanging",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_HANGPLATE": {
+  "n": "Vloerplaatje uitlaatophanging",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_HSTUNNEL": {
+  "n": "Hitteschild tunnel",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: Autodoc-categorie Heat shield bevat alleen universele platen (HJS, OXFORD).",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_HSTANK": {
+  "n": "Hitteschild tank",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: Autodoc-categorie Heat shield bevat alleen universele platen (HJS, OXFORD).",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:C_HSHIELDS": {
+  "n": "Groep Hitteschilden",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "groep",
+  "note": "Groepsknoop, geen verkoopeenheid.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:C_BRSTSYS": {
+  "n": "Groep Brandstofsysteem",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "groep",
+  "note": "Groepsknoop, geen verkoopeenheid.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_TANK": {
+  "n": "Brandstoftank (66 liter, kunststof)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: categorie Fuel tank parts bevat alleen doppen en universele tankjes.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_TANKSTRAP": {
+  "n": "Spanbanden brandstoftank (voor en achter)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_TANKBOLT": {
+  "n": "Spanbandbouten brandstoftank (4 stuks)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_TANKSTRIP": {
+  "n": "Tankstrips (bevestigingsstrips)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_FPMOD": {
+  "n": "Brandstofpompmodule (pomp, beker, niveausensor, vlotter)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: categorie Fuel pump en In-tank fuel pump bevatten alleen universele pompen (CARMOTION, TECHMOT, D2P).",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_FPSEAL": {
+  "n": "Vergrendelring en afdichting pompmodule",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: categorie Seal, fuel line bevat alleen koperringen.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:C_VULSYS": {
+  "n": "Groep Vulsysteem",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "groep",
+  "note": "Groepsknoop, geen verkoopeenheid.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_FILLPIPE": {
+  "n": "Vulpijp brandstoftank",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_FILLNECK": {
+  "n": "Vulhals (capless) met klepje",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_FILLCLAMP": {
+  "n": "Klem vulpijp",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_FLAP": {
+  "n": "Tankklep (gelakt klepdeksel, rechterachterscherm)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: de categorie Tank filler cap and parts voor type 23370 bevat alleen klepslot-actuatoren en kleine RESTAGRAF-delen; geen klepdeksel. Nieuwe eenheid bij herstel van de map (pad Tankklep wees naar het klepslot).",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:C_FLEIDING": {
+  "n": "Groep Brandstofleiding",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "groep",
+  "note": "Groepsknoop, geen verkoopeenheid.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_FLINE": {
+  "n": "Brandstoftoevoerleiding (tank naar rail)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: categorie Fuel lines (425) bevat vooral universele slang per meter.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_FLCLIP": {
+  "n": "Leidingclips brandstofleiding (3 stuks)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:C_DAMPSYS": {
+  "n": "Groep Dampsysteem",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "groep",
+  "note": "Groepsknoop, geen verkoopeenheid.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_CANISTER": {
+  "n": "Koolstoffilter (actieve koolfilter, EVAP)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_PURGE": {
+  "n": "Spoelventiel koolstoffilter (tankontluchtingsventiel)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: Autodoc meldt Fuel tank breather valve \"not available\" voor type 23370; Top-10 niet typegebonden.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_ROLLOVER": {
+  "n": "Rolloverventiel",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_VAPLINE": {
+  "n": "Dampleiding",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ },
+ "S2-lucht-uitlaat-brandstof:U_PURGELINE": {
+  "n": "Spoelleiding",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet gevonden: geen artikel in de Autodoc-lijsten van type 23370.",
+  "src": []
+ }
+}

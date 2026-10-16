@@ -2,13 +2,15 @@
 
 Interactieve 3D-explosietekening van een Renault Laguna III hatchback (fase 2, 2011) in de uitvoering Initiale Paris: zilvergrijs (Gris Platine D69), met de 2.0 Turbo F4Rt-motor (170 pk) en de zestraps automaat Jatco JF613E (Renault AJ0). Het model bestaat uit 2.524 losse onderdelen in 499 groepen, tot 8 lagen diep (3.023 knopen, 668.020 driehoeken). Elke groep klapt apart uit en in, tot op klepspie, zuigerveer en remzuiger. Een tweede modus, Openen, laat de motorkap, de portieren, de ruiten, de achterklep, het panoramadak en een reeks interieurdelen open gaan zoals bij de echte auto. Het paneel toont per onderdeel de bekende onderdeelnummers. Alle geometrie wordt in code opgebouwd; er zijn geen 3D-bestanden.
 
-Stand: versie 7 (golf 5), gepubliceerd op 16 oktober 2026 op https://claude.ai/artifact/4qJq7YUk5nGSFmexY7WkZR (het artefact is privé). De code van de eindstand is `33b2b50` en `index.html` is er in `25c3ddf` uit gebouwd. `main` staat nog op versie 6 (`f3a7854`), dus GitHub Pages toont versie 6 tot versie 7 daar naartoe gaat.
+Stand: versie 7 (golf 5) staat live op https://rvd-gmpplus.github.io/laguna3/ (vanaf `main`, `edab342`) en op het artefact https://claude.ai/artifact/4qJq7YUk5nGSFmexY7WkZR (privé). De code daarvan is `33b2b50` en `index.html` is er in `25c3ddf` uit gebouwd. Concept-PR #3 brengt het vangnet, golf 5c-1 en het structurele deel van golf 5d erbij als versie 8; de pagina toont dan zelf welke versie je ziet (`?`).
 
 ![Gemonteerd](docs/screenshots/gemonteerd.png)
 
 ## Openen
 
 Open `index.html` in een moderne browser. Het bestand laadt three.js r147 van jsDelivr en lettertypes van Google Fonts. Verder is alles ingebouwd. Het werkt op desktop en telefoon, in licht en donker thema (het thema volgt het systeem).
+
+De adresbalk is een deelbare link: `?preset=engine` opent de preset Motor F4Rt, `?open=Motorkap,Achterklep` opent die delen in de modus Openen, en de pagina houdt de link bij terwijl je klikt. `?debug=1` toont een overlay met tekensnelheid, tekenopdrachten en versie, voor een melding vanaf een echte telefoon (zie [docs/telefoontest.md](docs/telefoontest.md)). De versie staat ook in het hulpvenster (`?`).
 
 De eerste keer toont de pagina een korte hint. Die verdwijnt na de eerste handeling of na negen seconden en komt daarna niet terug (de browser onthoudt dat). De knop `?` rechtsboven opent de uitleg van de bediening.
 
@@ -88,7 +90,7 @@ Onderin staan de presets in zeven categorieën (op een staande telefoon in een r
 
 - Aantal presets: 43, de rondleiding meegeteld (in de eerste golf waren het er 31): Overzicht 6, Motor 11, Aandrijving 6, Onderstel 7, Carrosserie 4, Interieur 3, Openen 6. In de herstelronde van golf 2 kwamen er zes bij: Stuurpomp, Koeling en luchtinlaat, Uitlaatsysteem, Accu, Stuurinrichting en Parkeerrem. Golf 4 voegde de categorie Openen toe (zie hieronder).
 - Een preset in een andere categorie dan Openen zet de modus terug op Uitklappen.
-- `Rondleiding` in Overzicht speelt de belangrijkste presets na elkaar af met een bijschrift per stap, ongeveer vijf seconden per stap. `Stop rondleiding` of Esc breekt af.
+- `Rondleiding` in Overzicht speelt de belangrijkste presets na elkaar af met een bijschrift per stap, ongeveer vijf seconden per stap. De balk heeft knoppen voor vorige, pauze of hervat, volgende en stop; Esc breekt af. Een verborgen tabblad pauzeert de rondleiding vanzelf.
 - De lijst van presets staat in `src/presets.js`.
 
 ### Het paneel
@@ -97,9 +99,9 @@ Het paneel rechts (op de staande telefoon onderaan, op de liggende telefoon als 
 
 | Tab | Inhoud |
 |---|---|
-| Onderdeel | Kruimelpad, naam, beschrijving, specificaties en de onderdelen waaruit de selectie bestaat. Knoppen: Uitklappen of Inklappen, Duik hierheen (bij een onderdeel), Groter geheel, Alles hieronder uit, Isoleren, In beeld. |
-| Onderdelen | De volledige boom met zoekfunctie, bijvoorbeeld "klepveer". Een treffer openen klapt het pad ernaartoe uit en selecteert het onderdeel. |
-| Weergave | Spreiding (40 tot 220 %), Labels, Röntgen (carrosserie doorzichtig), Kleuren per systeem, Langzaam draaien, zes camerastanden (Voor, Zij, Achter, Boven, ¾ voor, ¾ achter), de schakelaars `Rest dimmen bij duiken` (standaard aan) en `Gesloten groepen samenvoegen` (gebundeld renderen, standaard aan) en de knoppen Alles uitklappen, Alles inklappen en Alles tonen. |
+| Onderdeel | Kruimelpad, naam, beschrijving, specificaties en de onderdelen waaruit de selectie bestaat. Knoppen: Uitklappen of Inklappen, Duik hierheen (bij een onderdeel), Groter geheel, Alles hieronder uit, Isoleren, In beeld. Bij isoleren vervaagt de rest in 0,3 s en staat er een badge "Geïsoleerd: naam" met de knop Alles tonen. |
+| Onderdelen | De volledige boom met zoekfunctie, bijvoorbeeld "klepveer". Zoeken negeert hoofdletters en accenten en kent synoniemen (remvoering en remblok, dynamo en alternator, accu en batterij, versnellingsbak, transmissie en automaat, en meer). Een treffer openen klapt het pad ernaartoe uit en selecteert het onderdeel. |
+| Weergave | Spreiding (40 tot 220 %), Labels, Röntgen (carrosserie doorzichtig), Kleuren per systeem, Langzaam draaien, zes camerastanden (Voor, Zij, Achter, Boven, ¾ voor, ¾ achter), de schakelaars `Rest dimmen bij duiken` (standaard aan) en `Gesloten groepen samenvoegen` (gebundeld renderen, standaard aan) en de knoppen Alles uitklappen, Alles inklappen en Alles tonen. Verder de themaknop (licht, donker, systeem; de keuze wordt onthouden), Beeld opslaan (een PNG met de naam, het onderdeelnummer en de versie onderin) en Kaart afdrukken (alleen de onderdeelkaart). |
 
 ### Onderdeelnummers in het paneel
 
@@ -123,9 +125,9 @@ Boven de sectie staat een vaste waarschuwing: controleer het nummer altijd op he
 | C | Een kruisverwijzing van een A- of B-nummer (Spareto). |
 | D | Alleen uit een advertentie voor een gebruikt onderdeel, niet in een catalogus gecontroleerd. Dit geldt alleen voor de twee panoramadaknummers. |
 
-Alle nummers staan ook in [docs/onderdeelnummers.csv](docs/onderdeelnummers.csv) (pad, verkoopeenheid, relatie, status, merk, nummer, bewijs, opmerking, bron en, waar een uitvoering voor de auto van de gebruiker is gekozen, "gekozen voor deze auto" met de uitvoering; geen productteksten of prijzen). De zoekfunctie in de tab Onderdelen vindt ook een nummer.
+Alle nummers staan ook in [docs/onderdeelnummers.csv](docs/onderdeelnummers.csv): 23 kolommen met per rij het pad, de verkoopeenheid (`unit_id`), de relatie, het statuslabel zoals in het paneel, merk, nummer, bewijs, een korte Nederlandse aanduiding van maat of uitvoering, variant, verpakking, alle bron-URL's van de eenheid, en waar een uitvoering voor de auto van de gebruiker is gekozen de keuze met grond; paden zonder record staan erin als "niet onderzocht". Het schema staat in [docs/onderdeelnummers-schema.md](docs/onderdeelnummers-schema.md). De zoekfunctie in de tab Onderdelen vindt ook een nummer.
 
-Labels zijn genummerde bijschriften met een lijntje naar het onderdeel. Ze verschijnen bij de kinderen van de laatst uitgeklapte groep en vermijden elkaar en de bediening.
+Labels zijn genummerde bijschriften met een lijntje naar het onderdeel. Ze verschijnen bij de kinderen van de laatst uitgeklapte groep en vermijden elkaar en de bediening. Passen ze niet allemaal (hoogstens 24, op een smal scherm 10), dan staat er een label "+n meer" dat de lijst van de groep opent. Op een aanraakscherm toont een tik op een afgekort label de volledige naam.
 
 ### Toetsenbord
 
@@ -142,7 +144,9 @@ De toetsen werken zodra de pagina de focus heeft; het canvas krijgt die bij de e
 | Pijl omhoog, omlaag, links, rechts (niet op een knop) | Door de boom lopen: omhoog is de bovenliggende groep, omlaag het eerste deel, links en rechts de vorige of volgende op hetzelfde niveau. Er klapt niets uit. |
 | Pijl omhoog of omlaag, Home, End | Door een geopend presetmenu lopen |
 
-### Beeldkwaliteit
+### Beeldkwaliteit en meldingen
+
+Gaat er bij het laden iets mis (three.js niet geladen, geen WebGL, een fout in het script), dan vervangt de pagina de laadmelding door een korte melding met de versie erbij. Verliest de browser de WebGL-context (bijvoorbeeld een tablet die geheugen vrijmaakt), dan staat er een melding tot de context terug is; de omgevingskaart wordt dan opnieuw gemaakt. De drie scripts van de CDN worden met `integrity` geladen: een gewijzigd bestand wordt geweigerd.
 
 Haperen de eerste frames (gemiddeld meer dan 40 ms over 20 frames tijdens een animatie), dan schakelt de pagina één keer over op een lichte weergave: pixelratio 1 en geen lakglans. Een melding in Weergave vertelt dat, en de schakelaar `Volle kwaliteit` zet het terug. Tijdens grote animaties (meer dan 800 bewegende onderdelen) zakt de pixelratio tijdelijk naar driekwart.
 
@@ -153,12 +157,13 @@ Haperen de eerste frames (gemiddeld meer dan 40 ms over 20 frames tijdens een an
 | `index.html` | De gebouwde pagina (identiek aan het gepubliceerde artefact). |
 | `src/` | Broncode in delen: opmaak, geometrie, carrosserie, motor, aandrijflijn, onderstel, interieur, systemen, app-logica en presets. |
 | `src/panorama.js` | Het panoramadak: dakplaat met twee openingen, glaspanelen, dwarsbalk, zonneschermen met cassette, luchtgeleider en waterafvoer, met hun openers. De hemelbekleding met de afwerkring en de draaiknop in de hemelconsole staan in `src/interior.js`. |
-| `src/partnumbers.js` | De onderdeelnummers als gegevens. Gemaakt door `tools/orkestratie/build_pn.py`; niet met de hand bewerken. |
+| `src/partnumbers.js` | De onderdeelnummers als gegevens. Gemaakt door `tools/orkestratie/build_pn.py` uit `data/pn/` (de canonieke gegevens, zie `data/pn/README.md`); niet met de hand bewerken. |
 | `docs/onderdeelnummers.csv` | Dezelfde nummers als tabel: pad, verkoopeenheid, status, merk, nummer, bewijsniveau, opmerking, bron en de gekozen uitvoering voor de auto van de gebruiker. |
 | `build.py` | Voegt `src/` samen tot `index.html`, controleert de broncode en maakt een testversie. |
 | `tools/` | Testscripts (Playwright, headless Chromium) en `anchors.json` met de ankernamen. |
 | `tools/opentest.py` | Toetst elke opener op eindstand, ondergrens, botsing, blootleggen, prestaties en spookbatch. |
 | `tools/open_allow.json` | De uitzonderingen op de botsingscontrole van opentest: 9 regels, elk met reden. |
+| `data/` | De canonieke nummergegevens (`data/pn/`, zie de README daar) en `tree.json`, alle paden van de boom. |
 | `tools/orkestratie/` | Hulpscripts van de bouwsessie: screenshotsets, eindcijfers, volledige testset in één keer, ruimtebezetting, eigendomscontrole en de hulpmiddelen van de visuele poort. Zie de README in die map. |
 | `docs/` | Specificaties met bronnen, ontwerp en architectuur, testverslag, premortem, screenshots. |
 | `docs/v1/index.html` | De eerste versie van de pagina, bewaard als terugvaloptie. |
@@ -174,7 +179,7 @@ python3 build.py --lint          # controleert alleen (dubbele namen, syntaxis)
 python3 build.py --test-only MAP # alleen de testversie, laat index.html ongemoeid
 ```
 
-De tests gebruiken three.js 0.147.0 uit een lokaal npm-pakket en een Chromium met software-rendering. De korte route:
+De tests gebruiken three.js 0.147.0 uit een lokaal npm-pakket en een Chromium met software-rendering. Een verse omgeving maak je klaar met `tools/setup.sh` (Playwright uit `requirements.txt`, three.js met hashcontrole). De korte route:
 
 ```bash
 python3 tools/smoke.py        # laden, aantallen, console
@@ -187,7 +192,7 @@ python3 tools/ui_inner.py --open  # ingesloten knopen die zichtbaar worden met a
 python3 tools/opentest.py     # de 26 openers: zes controles per opener
 ```
 
-De hele set in een keer: `tools/orkestratie/finaltests.sh UITVOERMAP`.
+De hele set in een keer, strikt en met één exitcode: `tools/orkestratie/finaltests.sh UITVOERMAP`. De budgetten voor driehoeken staan in `tools/anchors.json` en worden bewaakt door `python3 tools/tri.py --gate`.
 
 Voorbereiding, alle scripts en de resultaten staan in [docs/testen.md](docs/testen.md).
 
@@ -208,22 +213,22 @@ Voorbereiding, alle scripts en de resultaten staan in [docs/testen.md](docs/test
 - Openmodus: de eindhoek of slag van elke opener is geschat uit foto's, het instructieboekje en het werkplaatshandboek; aan de echte auto is niets gemeten. De ondergrens per opener staat in de code (`open.min`), de 9 uitzonderingen van opentest staan in `tools/open_allow.json`; beide worden uitgelegd in [docs/testen.md](docs/testen.md). De visuele poort van golf 5 (negen beoordelaars op dezelfde kenmerken K1 tot K13, drie poorten, meerderheid per kenmerk) eindigt op 13 ja, 4 deels en 0 nee (versie 6: 10, 7, 0). Deels blijven K6 (de hoedenplank leest van achteren nog vlak, de linker gasveer is dun), K11 (de zijbekleding van de bagageruimte is trapvormig, de camera van het handschoenenkastje staat dicht op het dashboard) en K9 in de interieurplak (de vaste zijruit achter is groot, de luchtroosters hebben ruis). Zie [docs/testen.md](docs/testen.md) en `handomdraai.md`.
 - Onderdeelnummers, dekking: van de 2.524 onderdelen hebben er 1.400 een regel in de gegevens (onderzocht) en 649 minstens een nummer. 751 zijn onderzocht zonder nummer te vinden en 1.124 zijn niet onderzocht (vooral interieur, carrosseriedelen en kleine bevestigingsmiddelen). Er zijn 546 verkoopeenheden: 110 passen volgens de catalogus, 71 zijn een variant en 365 zijn niet gevonden, waaronder veel groepsknopen zonder eigen verkoopeenheid. Bij 13 van de 71 varianten is de uitvoering voor de auto van de gebruiker gekozen (blok Gekozen voor deze auto); 58 blijven open (kies op VIN). In totaal 1.334 nummers: 446 van Renault en 888 van 197 andere merken. Bewijsniveau A heeft 807 nummers, B 436, C 89 en D 2.
 - Onderdeelnummers, bronnen: de Renault-catalogi (partsouq, 7zap) zaten achter Cloudflare. Renault-nummers komen daarom vooral uit de OE-lijsten van artikelen van andere fabrikanten. De twee nummers voor het panoramadak komen uit een advertentie (niveau D) en zijn niet in een catalogus gecontroleerd. Catalogi verschillen per bouwdatum en uitvoering; zonder chassisnummer van de gebruiker zijn varianten getoond en niet vastgelegd.
-- De CSV bevat alleen nummers en bron-URL's, geen productteksten of prijzen (databankenrecht).
+- De CSV bevat geen productbeschrijvingen, prijzen of foto's (databankenrecht, zie `docs/onderzoek/databankenrecht.md`); maten, posities en uitrusting uit de catalogus staan als korte Nederlandse aanduiding bij het nummer, en de regelteksten en onderzoeksnotities noemen soms de categorie van de bron.
 - Het werkplaatshandboek MR 415 en de referentiefoto's staan niet in de repo (rechten van Renault en derden). In de tekst staan alleen korte verwijzingen met paginanummer.
 - De stuurbekrachtiging is hydraulisch met een pomp op de multiriem. Dat is aannemelijk voor deze motor, niet met een eigen bron bevestigd.
 - De prestaties zijn alleen in een container met software-rendering gemeten. Op een echte telefoon is de framesnelheid niet getest; de pagina schakelt zelf over op een lichte weergave als hij haperen gaat.
-- Gebundeld renderen van gesloten groepen staat standaard aan (schakelaar in Weergave). Zonder bundelen heeft de gemonteerde auto 1.878 tekenopdrachten, met bundelen 444; met alles open zijn het er ongeveer 784 (grens 3.000). De grens van 1.500 voor de gemonteerde stand geldt dus alleen met bundelen.
-- De Aandrijflijn heeft 235.546 driehoeken tegen een budget van 240.000 en zit daarmee binnen budget. De hele auto (668.020) blijft binnen het budget van 700.000. Carrosserie telt 189.446 tegen een budget van 190.000: een dunne marge van 554 driehoeken, dus elke volgende carrosseriewijziging moet eerst elders besparen. Onderstel telt 113.228 en Interieur 81.084.
+- Gebundeld renderen van gesloten groepen staat standaard aan (schakelaar in Weergave). De grens van 1.500 tekenopdrachten voor de gemonteerde stand geldt alleen met bundelen; de aantallen staan in [docs/cijfers.md](docs/cijfers.md).
 - De multiriem is in het model 1.672 mm lang tegen 1.795 mm (7PK1795), door een compacte poelieplaatsing (in golf 4 was het 1.569 mm); de beschrijving in de pagina zegt dat. De positie van de stuurpomp en de routes van de slangen zijn schematisch.
 - De voorste langsliggers lopen sinds golf 5 boven de aandrijfassen; het aantal ribdoorboringen ging van 1.855 naar 34. De achterste langsliggers liggen naar binnen (doorboringen van 548 naar 0).
 - De torsiebalk ligt in het model boven de vlakke vloer (y 0,25 tot 0,33, vloer y 0,18). Bij de echte auto loopt de balk onder een verhoogd vloerdeel. Sinds golf 5 heeft de bodemplaat een opkant boven de balk (19 mm speling), liggen tank en koolstoffilter voor de balk (de tank is schematisch kleiner dan 66 liter) en hangt de ATF-koeler 12 cm lager.
 - De veer achter steekt door de voorrand van de bagagevloer in de veerkoker. De koker staat in de bagageruimte als kastje naast de rugleuning. Sinds golf 5 heeft de bagageruimte zijbekleding in donker vilt over de wielkasten en de vulpijp; of de koker daar nu achter verdwijnt, is niet apart nagemeten.
 - Golf 5 bouwde UX-punt U19 (de rest dimmen bij het duiken naar een onderdeel) en een zijkolom voor telefoons in liggende stand. Geen van beide is op een echte telefoon getest.
-- Interactietest: op de eindstand van golf 5 (`33b2b50`) slagen alle 155 controles van `tools/itest.py` met `ITEST_GATES=1`, inclusief de openmodus, de onderdeelnummers en vier nieuwe controles voor de telefoon; zie [docs/testen.md](docs/testen.md). Op de eindstand van golf 4 (`3ab6a8d`) waren het 150 van 150 en op `9c731c8` (voor golf 4) 79 van 79. Het randgeval van die oudere stand (een telefoontik die een ander deel koos) was een echte app-fout: na de tik stuurde de browser nog een muisklik die op een label viel dat net onder de vinger was geschoven. Dat is opgelost in `src/app2.js` en de test is niet veranderd.
 - Herkenbaarheid: de laatste visuele poort (poort 5, op `9c731c8`, drie onafhankelijke beoordelaars, meerderheid per kenmerk) vond 7 van de 9 herkenningskenmerken volledig aanwezig. De eis is 7, dus S7 is gehaald. Twee kenmerken zijn deels aanwezig: drie zijruiten met zwarte B-stijl en chromen raamlijst (op galerijformaat leest de B-stijl als dunne lijn en is de raamlijst nauwelijks te zien) en het bovenaanzicht (het leest evenwijdig, zonder heupen; de bouwtekening is per kolom gemeten en de breedte is van net voor de achteras tot de vooras constant binnen 1 %, dus dit is niet aangepast). De einduitlaten, die alle drie de beoordelaars als groot gebrek noemden, zijn daarna opgelost in `ff42dbd` en in de galerij nagelopen. De poort is daarna niet opnieuw gedraaid. Zie [docs/premortem.md](docs/premortem.md), struikeldraad 3.
 - Onderkant: bij het nalopen van de meldingen van de gebruiker over de onderkant bleek het interieur door de wielbogen en van onderen te zien. Dat is opgelost met gesloten wielkasten en een vloer tot de wielkast. Stralen loodrecht door de vier wielbogen geven 0 interieurtreffers. Stralen van onderen in zeven richtingen geven 2 randgevallen op ruim 60.000. Die controle is met scripts in het scratchpad gedaan en zit niet in de repo.
 - Op de motorkap zijn in het bovenaanzicht donkere spikkels te zien op een vaste plek. Samenvallende vlakken en de omgevingsreflectie zijn uitgesloten. De vermoedelijke oorzaak is de software-rasterisatie in de container. Dat is niet bewezen; op een echte GPU nakijken.
-- Van de 345 labelankers over alle 36 presets liggen er 261 op het eigen deel en 0 in de lucht (was 175 en 52). De overige 84 liggen ook op het eigen deel, maar liggen afhankelijk van de camera achter een ander deel.
+- Labelankers: `tools/anchorcheck.py` meet per preset of een anker op het eigen deel ligt en of het een vrije zichtlijn heeft. Op de stand van golf 5c-1 (42 presets): 352 labels, 319 op het eigen deel, 265 met vrije zichtlijn (de basis in `docs/baseline/anchorcheck.json`; geen van beide mag dalen). Vóór golf 4 waren het 261 van 345 op het eigen deel.
+- Driehoeken per hoofdgroep, tekenopdrachten met en zonder bundelen, opstarttijden en de andere kerncijfers staan in [docs/cijfers.md](docs/cijfers.md); de budgetten in `tools/anchors.json`.
+- Interactietest: op de stand van golf 5c-1 slagen alle 218 controles van `tools/itest.py` (desktop en telefoon, openmodus, onderdeelnummers, toetsenbord, formaatwissel, foutpaden); zie [docs/testen.md](docs/testen.md).
 - Niet getest op een echte telefoon en een echte GPU.
 - Alle laadtijden zijn in een container met software-rendering gemeten (de pagina is daar na 5 tot 28 seconden klaar, afhankelijk van de belasting van de machine). Ze zeggen niets over een echt apparaat.
 - De gedragingen van de webview van een telefoon-app (lang drukken, sneltoetsen in een iframe) zijn niet te testen in de container. De stijlregels ervoor zijn wel getoetst.
@@ -248,4 +253,4 @@ Alles uit elkaar: [docs/screenshots/alles-uit-elkaar.png](docs/screenshots/alles
 
 Telefoonweergave: [docs/screenshots/mobiel.png](docs/screenshots/mobiel.png)
 
-De screenshots in `docs/screenshots/` tonen de stand van golf 5 (versie 7): ze zijn gemaakt uit de bron van `33b2b50` met `tools/orkestratie/docshots.py`, via de presets van de pagina, op 1280 x 800 (`mobiel.png` op 390 x 844 met pixelverhouding 2) en met software-rendering in de container.
+De screenshots in `docs/screenshots/` tonen de stand van versie 8 (golf 5, 5a, 5c-1 en 5d): ze zijn gemaakt met `tools/orkestratie/docshots.py`, via de presets van de pagina, op 1280 x 800 (`mobiel.png` op 390 x 844 met pixelverhouding 2), met software-rendering in de container en daarna teruggebracht tot 256 kleuren.

@@ -1,0 +1,2643 @@
+{
+ "S4-carrosserie-elektra-interieur:C_ACHTERRUITWISSER": {
+  "n": "Groep Achterruitenwisser",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "groep",
+  "note": "Groepsknoop in de modelboom zonder eigen verkoopeenheid; alleen indeling. Geen artikelnummer van toepassing.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:C_MISTVOOR": {
+  "n": "Groep Mistlampen voor",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "groep",
+  "note": "Groepsknoop in de modelboom zonder eigen verkoopeenheid; alleen indeling. Geen artikelnummer van toepassing.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:C_KOPLAMPSPROEIERS": {
+  "n": "Groep Koplampsproeiers",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "groep",
+  "note": "Groepsknoop in de modelboom zonder eigen verkoopeenheid; alleen indeling. Geen artikelnummer van toepassing.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:C_PARKVOOR": {
+  "n": "Groep Parkeersensoren voor",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "groep",
+  "note": "Groepsknoop in de modelboom zonder eigen verkoopeenheid; alleen indeling. Geen artikelnummer van toepassing.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:C_PARKACHTER": {
+  "n": "Groep Parkeersensoren achter",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "groep",
+  "note": "Groepsknoop in de modelboom zonder eigen verkoopeenheid; alleen indeling. Geen artikelnummer van toepassing.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:C_WISSERS": {
+  "n": "Groep Ruitenwissers",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "groep",
+  "note": "Groepsknoop in de modelboom zonder eigen verkoopeenheid; alleen indeling. Geen artikelnummer van toepassing.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:C_ELEKTRISCH": {
+  "n": "Groep Elektrisch systeem",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "groep",
+  "note": "Groepsknoop in de modelboom zonder eigen verkoopeenheid; alleen indeling. Geen artikelnummer van toepassing.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:C_MASSA": {
+  "n": "Groep Massakabels",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "groep",
+  "note": "Groepsknoop in de modelboom zonder eigen verkoopeenheid; alleen indeling. Geen artikelnummer van toepassing.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:C_KABELBOMEN": {
+  "n": "Groep Kabelbomen",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "groep",
+  "note": "Groepsknoop in de modelboom zonder eigen verkoopeenheid; alleen indeling. Geen artikelnummer van toepassing.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:C_TAIL": {
+  "n": "Groep Achterlicht",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "groep",
+  "note": "Groepsknoop in de modelboom zonder eigen verkoopeenheid; alleen indeling. Geen artikelnummer van toepassing.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_WBLADE_SET": {
+  "n": "Wisserbladen voor (set 650 mm + 400 mm)",
+  "st": "vin",
+  "oe": [
+   [
+    "7711424718",
+    "OE-lijst RIDEX 298W0112 (A-artikel): OE 7711424718 RENAULT; ook OE-lijst HELLA 9XW 358 164-111.",
+    "B"
+   ],
+   [
+    "288900003R",
+    "OE-lijst BOSCH 3 397 007 422 en HELLA 9XW 358 164-111. Waarschijnlijk het nummer van een los blad, niet van de set.",
+    "B"
+   ],
+   [
+    "288900001R",
+    "OE-lijst BOSCH 3 397 007 422 en HELLA 9XW 358 164-111. Waarschijnlijk het nummer van een los blad, niet van de set.",
+    "B"
+   ],
+   [
+    "288902727R",
+    "OE-lijst HELLA 9XW 358 164-111; HELLA staat in de lijst 23370 (voor).",
+    "B"
+   ],
+   [
+    "288907458R",
+    "OE-lijst HELLA 9XW 358 164-111; HELLA staat in de lijst 23370 (voor).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "298W0112",
+    "Lijst 23370, positie voor, 650 en 400 mm, set van 2; geen bouwjaargrens.",
+    "A"
+   ],
+   [
+    "VALEO",
+    "574653",
+    "Lijst 23370, positie voor, 650 en 400 mm, set van 2; geen bouwjaargrens.",
+    "A"
+   ],
+   [
+    "BOSCH",
+    "3 397 007 422",
+    "Lijst 23370, positie voor, 650 en 400 mm, set van 2; geen bouwjaargrens.",
+    "A"
+   ],
+   [
+    "HELLA",
+    "9XW 358 164-111",
+    "Lijst 23370, positie voor, 650 en 400 mm, set van 2; geen bouwjaargrens.",
+    "A"
+   ],
+   [
+    "CONTINENTAL",
+    "2800011234280",
+    "Lijst 23370, positie voor, 650 en 400 mm, set van 2; geen bouwjaargrens.",
+    "A"
+   ],
+   [
+    "DENSO",
+    "DF-063",
+    "Spareto-kruisverwijzing van 7711424718; set 650 en 400 mm, linksgestuurd (Spareto-productpagina).",
+    "C"
+   ]
+  ],
+  "var": "Bevestiging verschilt per artikel: bayonet (RIDEX 298W0112, VALEO 574653, BOSCH 3 397 007 422) of Top Lock (RIDEX 298W0349, HELLA 9XW 358 164-111). Lengte 650 mm (bestuurderszijde, linksgestuurd) en 400 mm (passagierszijde). Welke bevestiging past volgt uit de wisserarm.",
+  "per": "set",
+  "note": "Autodoc verkoopt de bladen voor dit type als set van twee (650 en 400 mm). De Renault-nummers komen van de OE-lijsten van de artikelen; 288900003R en 288900001R zijn vermoedelijk losse bladen. Welk Renault-nummer bij deze auto hoort is niet vastgesteld.",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/8358075",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/hella/18365013",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/bosch/1193804",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/wiper-blades-10233/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://spareto.com/oe/7711424718",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/denso-wiper-blade/df-063",
+    "spareto.com"
+   ]
+  ]
+ },
+ "S4-carrosserie-elektra-interieur:U_WBLADE_R": {
+  "n": "Wisserblad achter",
+  "st": "vin",
+  "oe": [
+   [
+    "287900001R",
+    "OE-lijst BOSCH 3 397 004 759 (475 mm).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "BOSCH",
+    "3 397 004 759",
+    "Lijst 23370, achter, 475 mm, type R; geen bouwjaargrens.",
+    "A"
+   ],
+   [
+    "BOSCH",
+    "3 397 004 760",
+    "Lijst 23370, achter, 500 mm; geen bouwjaargrens.",
+    "A"
+   ],
+   [
+    "KAMOKA",
+    "29054",
+    "Lijst 23370, pos. achter; lengte niet vermeld.",
+    "A"
+   ]
+  ],
+  "var": "Na verificatie twee lengtes zonder bouwjaargrens: 475 mm (BOSCH 3 397 004 759, type R) en 500 mm (BOSCH 3 397 004 760); KAMOKA 29054 zonder lengte. De 500 mm-bladen van RIDEX, VALEO en SWF zijn volgens Autodoc tot 11/2010 (fase 1) en zijn geschrapt. Welke lengte deze fase-2-auto heeft is niet vastgesteld.",
+  "per": "stuk",
+  "note": "Een blad. Renault-nummer 287900001R staat op de OE-lijst van BOSCH 3 397 004 759 (475 mm) en van een 500 mm-blad tot 11/2010.",
+  "src": [
+   [
+    "https://www.autodoc.parts/valeo/1088087",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/bosch/1193616",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/wiper-blades-10233/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/rear-wiper-blade-10232/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ],
+  "kz": {
+   "o": [
+    "287900001R"
+   ],
+   "a": [],
+   "v": "Wisserblad achter, 475 mm waarschijnlijk (niveau C)",
+   "b": "B",
+   "z": "middel",
+   "g": "Volgens de RDW is de auto op 18 februari 2011 voor het eerst toegelaten. Het chassisnummer van de gebruiker, vergeleken met openbare chassisnummerbladen van andere Laguna III, wijst op bouw rond begin 2011 (afleiding, niveau C); de RDW-datum valt daarin. De 500 mm-bladen van RIDEX, VALEO en SWF gelden volgens Autodoc tot 11/2010 en vallen af. Het nummer 287900001R staat bij het 475 mm-blad en bij het oude 500 mm-blad, dus het nummer is bepaald. De lengte 475 mm is een afleiding.",
+   "s": [
+    "https://www.autodoc.parts/spares/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo"
+   ]
+  }
+ },
+ "S4-carrosserie-elektra-interieur:U_WARM_R": {
+  "n": "Wisserarm achter",
+  "st": "past",
+  "oe": [],
+  "am": [
+   [
+    "M MODECAR",
+    "DA-29399",
+    "Lijst 23370: M Modecar DA-29399, wisserarmset achter.",
+    "A"
+   ]
+  ],
+  "per": "stuk",
+  "note": "Alleen een artikel gevonden in de Autodoc-lijst voor type 23370: M Modecar DA-29399, \"Wiper arm set Rear\". Geen Renault-nummer bevestigd.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/wiper-arm-bearing-10236/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S4-carrosserie-elektra-interieur:U_WARM_F": {
+  "n": "Wisserarm voor (bestuurderszijde en passagierszijde)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "De twee armnummers van de zoeker kwamen uit een PartSouq-catalogus van een andere Laguna III (1.5 dCi K9K780, handgeschakeld, 04/2008) en zijn geschrapt. Autodoc toont voor type 23370 geen voorste wisserarm.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_WCAP": {
+  "n": "Wisserarm asmoerkap (kap over de asmoer)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Het nummer van de zoeker kwam uit een PartSouq-catalogus van een andere Laguna III (1.5 dCi K9K780, 04/2008) en is geschrapt.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_WMOTOR_F": {
+  "n": "Wissermotor voor",
+  "st": "vin",
+  "oe": [
+   [
+    "288003799R",
+    "OE-lijst VEMO V46-07-0033 (A-artikel).",
+    "B"
+   ],
+   [
+    "288100001N",
+    "OE-lijst VEMO V46-07-0033 (A-artikel).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "MAGNETI MARELLI",
+    "064377400010",
+    "Lijst 23370, positie voor, 12 V; geen bouwjaargrens.",
+    "A"
+   ],
+   [
+    "VEMO",
+    "V46-07-0033",
+    "Lijst 23370, positie voor, 12 V; geen bouwjaargrens.",
+    "A"
+   ],
+   [
+    "BOGAP",
+    "R5511120",
+    "Lijst 23370, positie voor, 12 V; geen bouwjaargrens.",
+    "A"
+   ],
+   [
+    "FRANKBERG",
+    "5481FB0085643",
+    "Lijst 23370, positie voor, 12 V; geen bouwjaargrens.",
+    "A"
+   ],
+   [
+    "ALANKO",
+    "10800866",
+    "Lijst 23370, positie voor, 12 V; geen bouwjaargrens.",
+    "A"
+   ]
+  ],
+  "var": "Twee Renault-nummers op de OE-lijst van VEMO V46-07-0033 (288003799R, 288100001N). In een Renault-catalogus van een andere Laguna III heet 288003799R \"MECHANISM-WS WIPER\" (motor met stangenmechaniek) met 288100001N als alternatief; of de aftermarket-motoren met of zonder mechaniek komen is niet vastgesteld.",
+  "per": "stuk",
+  "note": "Positie Front; de lijst noemt voor sommige merken linksgestuurd.",
+  "src": [
+   [
+    "https://www.autodoc.parts/vemo/23483128",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/motor-windscreen-wipers-10234/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S4-carrosserie-elektra-interieur:U_WLINK": {
+  "n": "Wisserstangenmechaniek voor",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370: de categorie Wiper linkage drive is voor type 23370 niet beschikbaar. Mogelijk deel van de wissermotor-eenheid; niet bevestigd.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_WMOTOR_R": {
+  "n": "Wissermotor achter",
+  "st": "vin",
+  "oe": [
+   [
+    "287100004R",
+    "OE-lijst MAGNETI MARELLI 064073400010 (A-artikel).",
+    "B"
+   ],
+   [
+    "287100006R",
+    "OE-lijst SANDO SWM10314.1 (A-artikel).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "MAGNETI MARELLI",
+    "064073400010",
+    "Lijst 23370, achter, linksgestuurd.",
+    "A"
+   ],
+   [
+    "SANDO",
+    "SWM10314.1",
+    "Lijst 23370, achter (titel SANDO; het veld fabrikant RENAULT is de OE-aanduiding).",
+    "A"
+   ],
+   [
+    "CASCO",
+    "CWM10314GS",
+    "Lijst 23370, achter (titel CASCO).",
+    "A"
+   ],
+   [
+    "FRANKBERG",
+    "5481FB0052067",
+    "Autodoc OE-pagina 287100004R: Frankberg, achter, linksgestuurd.",
+    "C"
+   ],
+   [
+    "NTY",
+    "ESW-RE-026",
+    "Autodoc OE-pagina 287100004R, pos. achter, voor auto met vaste achterruit (in de klep).",
+    "C"
+   ]
+  ],
+  "var": "Twee Renault-nummers: 287100004R (MAGNETI MARELLI 064073400010, linksgestuurd) en 287100006R (SANDO SWM10314.1). Voor deze auto is 287100004R gekozen (zie Gekozen voor deze auto).",
+  "per": "stuk",
+  "src": [
+   [
+    "https://www.autodoc.parts/magneti-marelli/21901977",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/sando/12135182",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/motor-windscreen-wipers-10234/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/287100004r",
+    "autodoc.parts"
+   ]
+  ],
+  "kz": {
+   "o": [
+    "287100004R"
+   ],
+   "a": [
+    [
+     "MAGNETI MARELLI",
+     "064073400010"
+    ]
+   ],
+   "v": "Achterwissermotor voor een linksgestuurde auto",
+   "b": "B",
+   "z": "middel",
+   "g": "MAGNETI MARELLI 064073400010 noemt linksgestuurd en OE 287100004R. Volgens de RDW is de auto op 18 februari 2011 voor het eerst in Nederland toegelaten; een nieuw in Nederland geleverde Laguna is linksgestuurd (aanname, de RDW noemt de stuurzijde niet). 287100006R (SANDO SWM10314.1) noemt geen stuurzijde en blijft een mogelijk alternatief.",
+   "s": [
+    "https://www.autodoc.parts/spares/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo"
+   ]
+  }
+ },
+ "S4-carrosserie-elektra-interieur:U_WJET_F": {
+  "n": "Ruitensproeier voorruit (sproeierkop op de motorkap)",
+  "st": "past",
+  "oe": [
+   [
+    "8200082347",
+    "OE-lijst NTY EDS-RE-002 (A-artikel); Spareto: sproeier.",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "NTY",
+    "EDS-RE-002",
+    "Lijst 23370; positie niet vermeld.",
+    "A"
+   ],
+   [
+    "3RG",
+    "86605",
+    "Lijst 23370, beide zijden, voor de voorruit.",
+    "A"
+   ],
+   [
+    "MEHA AUTOMOTIVE",
+    "MH72367",
+    "Lijst 23370, linksvoor, rechtsvoor.",
+    "A"
+   ],
+   [
+    "METZGER",
+    "2220812",
+    "Lijst 23370, pos. linksvoor, rechtsvoor, vanaf productiedatum 15.09.2008; ook Spareto-kruisverwijzing van 8200082347.",
+    "A"
+   ],
+   [
+    "TOPRAN",
+    "702 226",
+    "Lijst 23370, pos. linksvoor, rechtsvoor; ook Spareto-kruisverwijzing van 8200082347.",
+    "A"
+   ],
+   [
+    "AIC",
+    "57935",
+    "Lijst 23370, pos. voor; ook Spareto-kruisverwijzing van 8200082347.",
+    "A"
+   ]
+  ],
+  "per": "stuk",
+  "note": "Links en rechts hetzelfde nummer: de artikelen staan als Left Front, Right Front of both sides.",
+  "src": [
+   [
+    "https://www.autodoc.parts/nty/15068726",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/washer-fluid-jet-10711/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://spareto.com/oe/8200082347",
+    "spareto.com"
+   ]
+  ]
+ },
+ "S4-carrosserie-elektra-interieur:U_WHOSE": {
+  "n": "Sproeierslang (toevoer sproeiers onder de motorkap)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370: de categorie Windscreen washer reservoir/hoses bevat alleen universele slangen en T-stukken van Autodoc-merken zonder voertuigkoppeling. Geen nummer overgenomen.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_HWASH_L": {
+  "n": "Koplampsproeier links (uitschuifbaar)",
+  "st": "vin",
+  "oe": [
+   [
+    "286420001R",
+    "OE-lijst SEIM 109110 (A-artikel).",
+    "B"
+   ],
+   [
+    "286420002R",
+    "OE-lijst SEIM 119035 (A-artikel).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "SEIM",
+    "109110",
+    "Lijst 23370, koplampsproeier, kant klopt.",
+    "A"
+   ],
+   [
+    "SEIM",
+    "119035",
+    "Lijst 23370, koplampsproeier, kant klopt.",
+    "A"
+   ],
+   [
+    "METZGER",
+    "2221178",
+    "Lijst 23370, koplampsproeier, kant klopt.",
+    "A"
+   ]
+  ],
+  "var": "Twee Renault-nummers voor dezelfde zijde: 286420001R en 286420002R (SEIM 109110 en SEIM 119035); het verschil (bijvoorbeeld kapje of bumperuitvoering) is niet vastgesteld.",
+  "per": "stuk",
+  "src": [
+   [
+    "https://www.autodoc.parts/seim/13482465",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/seim/13482527",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/washer-fluid-jet-headlight-cleaning-15169/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S4-carrosserie-elektra-interieur:U_HWASH_R": {
+  "n": "Koplampsproeier rechts (uitschuifbaar)",
+  "st": "vin",
+  "oe": [
+   [
+    "286410001R",
+    "OE-lijst SEIM 109111 (A-artikel).",
+    "B"
+   ],
+   [
+    "286410002R",
+    "OE-lijst SEIM 119036 (A-artikel).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "SEIM",
+    "109111",
+    "Lijst 23370, koplampsproeier, kant klopt.",
+    "A"
+   ],
+   [
+    "SEIM",
+    "119036",
+    "Lijst 23370, koplampsproeier, kant klopt.",
+    "A"
+   ],
+   [
+    "METZGER",
+    "2221179",
+    "Lijst 23370, koplampsproeier, kant klopt.",
+    "A"
+   ]
+  ],
+  "var": "Twee Renault-nummers voor dezelfde zijde: 286410001R en 286410002R (SEIM 109111 en SEIM 119036); het verschil (bijvoorbeeld kapje of bumperuitvoering) is niet vastgesteld.",
+  "per": "stuk",
+  "src": [
+   [
+    "https://www.autodoc.parts/seim/13482466",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/seim/13482528",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/washer-fluid-jet-headlight-cleaning-15169/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S4-carrosserie-elektra-interieur:U_GAS": {
+  "n": "Gasveer achterklep (2 stuks nodig, links en rechts gelijk)",
+  "st": "vin",
+  "oe": [
+   [
+    "844300001R",
+    "OE-lijst RIDEX 219G0253 (A-artikel).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "MONROE",
+    "ML5657",
+    "Lijst 23370, gasveer achterklep 610 N, 495 mm.",
+    "A"
+   ],
+   [
+    "RIDEX",
+    "219G0253",
+    "Lijst 23370, gasveer achterklep 610 N, 495 mm.",
+    "A"
+   ],
+   [
+    "MAGNETI MARELLI",
+    "430719069600",
+    "Lijst 23370, gasveer achterklep 610 N, 495 mm.",
+    "A"
+   ],
+   [
+    "TOPRAN",
+    "700 839",
+    "Lijst 23370, gasveer achterklep 610 N, 495 mm.",
+    "A"
+   ],
+   [
+    "KAMOKA",
+    "7092473",
+    "Lijst 23370, gasveer achterklep 610 N, 497 mm.",
+    "A"
+   ],
+   [
+    "FEBI BILSTEIN",
+    "47912",
+    "Lijst 23370, gasveer achterklep 610 N, 497 mm.",
+    "A"
+   ]
+  ],
+  "var": "Twee uitvoeringen op Autodoc voor type 23370, beide 610 N: lengte 495 mm met slag 205 mm (MONROE ML5657, RIDEX 219G0253, MAGNETI MARELLI, TOPRAN 700 839) en lengte 497 mm met slag 180 mm (KAMOKA 7092473, FEBI 47912). Verschil met de klepuitvoering niet vastgesteld.",
+  "per": "stuk",
+  "note": "Het model gaat uit van 290 mm ingedrukt en 495 mm uitgeschoven; dat past bij de 495 mm uitvoering.",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/8156251",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/tailgate-struts-10926/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S4-carrosserie-elektra-interieur:U_TAILO_L": {
+  "n": "Achterlicht buitendeel links (LED, deel op het achterscherm), fase 2",
+  "st": "past",
+  "oe": [
+   [
+    "265554712R",
+    "OE-lijst ALKAR 2241230 (A-artikel, vanaf 01/2011).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "ALKAR",
+    "2241230",
+    "Lijst 23370, links, buitendeel, led, bouwjaar vanaf 01/2011.",
+    "A"
+   ],
+   [
+    "JOHNS",
+    "60 26 87-2",
+    "Lijst 23370, links, buitendeel, led, bouwjaar vanaf 01/2011.",
+    "A"
+   ],
+   [
+    "ABAKUS",
+    "551-1975L-UE2",
+    "Lijst 23370, links, buitendeel, led; geen bouwjaargrens.",
+    "A"
+   ],
+   [
+    "VAN WEZEL",
+    "4383931",
+    "Lijst 23370 (pagina 3), links, buitendeel; ook OE-pagina 265554712R.",
+    "A"
+   ],
+   [
+    "VALEO",
+    "044556",
+    "Autodoc OE-pagina 265554712R, pos. links, buitendeel met lamphouder en lampen.",
+    "C"
+   ]
+  ],
+  "var": "Fase 2: de A-artikelen van ALKAR en JOHNS hebben bouwjaar vanaf 01/2011. Voor fase 1 (tot 11 of 12/2010) bestaan andere artikelen.",
+  "per": "stuk",
+  "note": "Autodoc: Rear light, Section Outer section, LED, zonder lamphouder, linksgestuurd.",
+  "src": [
+   [
+    "https://www.autodoc.parts/alkar/7995079",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/led-rear-lights-10558/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/265554712r",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/combination-rearlight-10554/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=3",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S4-carrosserie-elektra-interieur:U_TAILI_L": {
+  "n": "Achterlicht binnendeel links (deel in de achterklep, achteruitrijlicht)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "De VALEO-artikelen voor het binnendeel staan in de Autodoc-lijst met Construction Year to 11 / 2010 (fase 1); het Renault-nummer kwam alleen van dat artikel en uit een catalogus van een fase-1-auto. Voor fase 2 geen artikel gevonden.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_TAILO_R": {
+  "n": "Achterlicht buitendeel rechts (LED, deel op het achterscherm), fase 2",
+  "st": "past",
+  "oe": [
+   [
+    "265507174R",
+    "OE-lijst ALKAR 2242230 (A-artikel, vanaf 01/2011).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "ALKAR",
+    "2242230",
+    "Lijst 23370, rechts, buitendeel, led, bouwjaar vanaf 01/2011.",
+    "A"
+   ],
+   [
+    "JOHNS",
+    "60 26 88-2",
+    "Lijst 23370, rechts, buitendeel, led, bouwjaar vanaf 01/2011.",
+    "A"
+   ],
+   [
+    "JUMASA",
+    "42484063",
+    "Lijst 23370, rechts, buitendeel, led, bouwjaar vanaf 01/2011.",
+    "A"
+   ],
+   [
+    "VAN WEZEL",
+    "4383932",
+    "Lijst 23370 (pagina 3), rechts, buitendeel, bouwjaar vanaf 11/2010.",
+    "A"
+   ],
+   [
+    "IPARLUX",
+    "16804912",
+    "Lijst 23370, rechts, buitendeel, led, bouwjaar vanaf 01/2011.",
+    "A"
+   ],
+   [
+    "ABAKUS",
+    "551-1975R-UE2",
+    "Lijst 23370, rechts, buitendeel, led; geen bouwjaargrens.",
+    "A"
+   ]
+  ],
+  "var": "Fase 2: de A-artikelen van ALKAR, JOHNS, JUMASA en IPARLUX hebben bouwjaar vanaf 01/2011, VAN WEZEL 4383932 vanaf 11/2010. Voor fase 1 bestaan andere artikelen.",
+  "per": "stuk",
+  "note": "Autodoc: Rear light, Section Outer section, LED, zonder lamphouder, linksgestuurd.",
+  "src": [
+   [
+    "https://www.autodoc.parts/alkar/7995080",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/led-rear-lights-10558/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/combination-rearlight-10554/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=3",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S4-carrosserie-elektra-interieur:U_TAILI_R": {
+  "n": "Achterlicht binnendeel rechts (deel in de achterklep, achteruitrijlicht)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "De VALEO-artikelen voor het binnendeel staan in de Autodoc-lijst met Construction Year to 11 / 2010 (fase 1); het Renault-nummer kwam alleen van dat artikel en uit een catalogus van een fase-1-auto. Voor fase 2 geen artikel gevonden.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_RFOG": {
+  "n": "Mistachterlicht (achterbumper, bestuurderszijde links)",
+  "st": "past",
+  "oe": [
+   [
+    "265850001R",
+    "OE-lijst VAN WEZEL 4356929 (A-artikel).",
+    "B"
+   ],
+   [
+    "265859405R",
+    "OE-lijst VAN WEZEL 4356929 (A-artikel).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "VAN WEZEL",
+    "4356929",
+    "Lijst 23370, mistachterlicht, links.",
+    "A"
+   ],
+   [
+    "TYC",
+    "19-0846-01-2",
+    "Lijst 23370, mistachterlicht, links.",
+    "A"
+   ],
+   [
+    "DIEDERICHS",
+    "4474097",
+    "Lijst 23370, mistachterlicht, links.",
+    "A"
+   ],
+   [
+    "PRASCO",
+    "RN0864454",
+    "Lijst 23370, mistachterlicht, links.",
+    "A"
+   ],
+   [
+    "AIC",
+    "72361",
+    "Autodoc OE-pagina 265850001R: AIC 72361, links, met lamphouder, modeljaar vanaf 2008.",
+    "C"
+   ],
+   [
+    "JOHNS",
+    "60 26 87-9",
+    "Autodoc OE-pagina 265850001R: JOHNS, links, zonder lamphouder.",
+    "C"
+   ]
+  ],
+  "per": "stuk",
+  "note": "Autodoc-categorie Rear fog lights, positie Left, zonder lamphouder.",
+  "src": [
+   [
+    "https://www.autodoc.parts/van-wezel/7119078",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/rear-fog-light-10565/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/265850001r",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S4-carrosserie-elektra-interieur:U_RREFL": {
+  "n": "Reflector achterbumper rechts",
+  "st": "past",
+  "oe": [
+   [
+    "265600001R",
+    "OE-lijst VAN WEZEL 4356930 (A-artikel); TYC-blindlamp 19-0845-01-2 staat op dezelfde OE-pagina.",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "VAN WEZEL",
+    "4356930",
+    "Lijst 23370, rechtsachter.",
+    "A"
+   ],
+   [
+    "TYC",
+    "19-0845-01-2",
+    "Lijst 23370, rechts, zonder mistachterlicht, blindlamp.",
+    "A"
+   ],
+   [
+    "DIEDERICHS",
+    "4474096",
+    "Lijst 23370, rechts.",
+    "A"
+   ],
+   [
+    "PRASCO",
+    "RN0864453",
+    "Lijst 23370, rechts.",
+    "A"
+   ],
+   [
+    "JOHNS",
+    "60 26 88-9",
+    "Autodoc OE-pagina 265600001R: JOHNS, rechts.",
+    "C"
+   ]
+  ],
+  "per": "stuk",
+  "note": "Autodoc noemt deze artikelen Rear fog light, positie Right; TYC 19-0845-01-2 is een blindlamp zonder mistlicht. Het Renault-nummer 265600001R staat bij de rechterzijde. Het OLSA-artikel is een rechter mistlicht en is geschrapt.",
+  "src": [
+   [
+    "https://www.autodoc.parts/van-wezel/7150322",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/rear-fog-light-10565/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/265600001r",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S4-carrosserie-elektra-interieur:U_PLATELAMP": {
+  "n": "Kentekenverlichting (links en rechts hetzelfde)",
+  "st": "past",
+  "oe": [
+   [
+    "8200480127",
+    "OE-lijst ALKAR 2403228 (A-artikel).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "ALKAR",
+    "2403228",
+    "Lijst 23370, links, rechts, W5W.",
+    "A"
+   ],
+   [
+    "TYC",
+    "15-0221-00-2",
+    "Lijst 23370, pos. beide zijden; ook Spareto-kruisverwijzing van 8200480127.",
+    "A"
+   ],
+   [
+    "VAN WEZEL",
+    "4387920",
+    "Lijst 23370, pos. links, rechts, beide zijden; ook Spareto-kruisverwijzing van 8200480127.",
+    "A"
+   ],
+   [
+    "FAST",
+    "FT87811",
+    "Lijst 23370, pos. beide zijden; ook Spareto-kruisverwijzing van 8200480127.",
+    "A"
+   ],
+   [
+    "ESEN SKV",
+    "72SKV035",
+    "Lijst 23370, pos. rechts, links; ook Spareto-kruisverwijzing van 8200480127.",
+    "A"
+   ]
+  ],
+  "per": "stuk",
+  "note": "Autodoc: Number plate light, W5W, both sides. Het nummer 8200480127 staat ook bij Dacia en Renault Trucks; positie op de Laguna III niet gespecificeerd.",
+  "src": [
+   [
+    "https://www.autodoc.parts/alkar/12950896",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/licence-plate-light-10564/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://spareto.com/oe/8200480127",
+    "spareto.com"
+   ]
+  ]
+ },
+ "S4-carrosserie-elektra-interieur:U_PARKSENS": {
+  "n": "Parkeersensor (ultrasoon, voor en achter)",
+  "st": "vin",
+  "oe": [
+   [
+    "284376606R",
+    "OE-lijst NTY EPDC-RE-003 (A-artikel).",
+    "B"
+   ],
+   [
+    "284421414R",
+    "OE-verwijzing 284421414R bij NTY EPDC-RE-003 in de lijst 23370.",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "NTY",
+    "EPDC-RE-003",
+    "Lijst 23370, buiten, achter, beide zijden, voor en achter; voor OE-nummer 284421414R.",
+    "A"
+   ],
+   [
+    "RIDEX",
+    "2412P0064",
+    "Autodoc OE-pagina 284376606R, pos. voor en achter.",
+    "C"
+   ],
+   [
+    "QUINTON HAZELL",
+    "XPAR118",
+    "Autodoc OE-pagina 284376606R, positie niet vermeld.",
+    "C"
+   ],
+   [
+    "MAGNETI MARELLI",
+    "021016081010",
+    "Autodoc OE-pagina 284376606R, pos. beide zijden.",
+    "C"
+   ],
+   [
+    "BLIC",
+    "5902-01-0461P",
+    "Autodoc OE-pagina 284376606R, pos. achter.",
+    "C"
+   ],
+   [
+    "ABAKUS",
+    "120-01-065",
+    "Autodoc OE-pagina 284376606R, pos. achter.",
+    "C"
+   ]
+  ],
+  "var": "Positie verschilt per artikel: NTY EPDC-RE-003 en RIDEX 2412P0064 voor en achter; BLIC 5902-01-0461P en ABAKUS 120-01-065 alleen achter; MAGNETI MARELLI en QUINTON HAZELL zonder voor of achter. Kleur en uitvoering per VIN.",
+  "per": "stuk",
+  "note": "Vier sensoren voor en vier achter; het aantal en de plaats volgen uit de bumper.",
+  "src": [
+   [
+    "https://www.autodoc.parts/nty/14673866",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/parking-sensors-10718/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/284376606r",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S4-carrosserie-elektra-interieur:U_FENDER_L": {
+  "n": "Voorscherm links",
+  "st": "past",
+  "oe": [
+   [
+    "631010032R",
+    "OE-lijst VAN WEZEL (A-artikel).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "BLIC",
+    "6504-04-6056311P",
+    "Lijst 23370, spatbord linksvoor.",
+    "A"
+   ],
+   [
+    "VAN WEZEL",
+    "4356657",
+    "Lijst 23370, spatbord linksvoor.",
+    "A"
+   ],
+   [
+    "DIEDERICHS",
+    "4474007",
+    "Lijst 23370, spatbord linksvoor.",
+    "A"
+   ],
+   [
+    "PRASCO",
+    "RN0863014",
+    "Lijst 23370, spatbord linksvoor.",
+    "A"
+   ],
+   [
+    "ABAKUS",
+    "042-23-201",
+    "Lijst 23370, spatbord linksvoor.",
+    "A"
+   ],
+   [
+    "JUMASA",
+    "08314063",
+    "Lijst 23370, spatbord linksvoor.",
+    "A"
+   ]
+  ],
+  "per": "stuk",
+  "note": "Autodoc-categorie Fender, positie Left Front; Renault-nummer 631010032R staat op de OE-lijst van meerdere artikelen.",
+  "src": [
+   [
+    "https://www.autodoc.parts/van-wezel/7123019",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/wing-parts-10285/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S4-carrosserie-elektra-interieur:U_FENDER_R": {
+  "n": "Voorscherm rechts",
+  "st": "past",
+  "oe": [
+   [
+    "631000032R",
+    "OE-lijst VAN WEZEL (A-artikel).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "BLIC",
+    "6504-04-6056312P",
+    "Lijst 23370, spatbord rechtsvoor.",
+    "A"
+   ],
+   [
+    "VAN WEZEL",
+    "4356658",
+    "Lijst 23370, spatbord rechtsvoor.",
+    "A"
+   ],
+   [
+    "DIEDERICHS",
+    "4474006",
+    "Lijst 23370, spatbord rechtsvoor.",
+    "A"
+   ],
+   [
+    "PRASCO",
+    "RN0863013",
+    "Lijst 23370, spatbord rechtsvoor.",
+    "A"
+   ],
+   [
+    "ABAKUS",
+    "042-23-202",
+    "Lijst 23370, spatbord rechtsvoor.",
+    "A"
+   ],
+   [
+    "JUMASA",
+    "08324063",
+    "Lijst 23370, spatbord rechtsvoor.",
+    "A"
+   ]
+  ],
+  "per": "stuk",
+  "note": "Autodoc-categorie Fender, positie Right Front; Renault-nummer 631000032R staat op de OE-lijst van meerdere artikelen.",
+  "src": [
+   [
+    "https://www.autodoc.parts/van-wezel/7157988",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/wing-parts-10285/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S4-carrosserie-elektra-interieur:U_FENDERBOLT": {
+  "n": "Montageset voorscherm (schermbouten)",
+  "st": "past",
+  "oe": [
+   [
+    "600380356R",
+    "OE-lijst VAN WEZEL 4356796 (A-artikel).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "VAN WEZEL",
+    "4356796",
+    "Lijst 23370, montageset spatlap, linksvoor, rechtsvoor.",
+    "A"
+   ]
+  ],
+  "per": "set",
+  "note": "Autodoc: Mounting Kit, mud guard, positie Left Front, Right Front (VAN WEZEL 4356796). Het Renault-nummer 600380356R heet in de Renault-catalogus 'HIT-FR FDR MTG' (montageset voorscherm).",
+  "src": [
+   [
+    "https://www.autodoc.parts/van-wezel/14436539",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/wing-parts-10285/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S4-carrosserie-elektra-interieur:U_FENDERBRK_L": {
+  "n": "Schermsteun links (steun scherm aan frontmodule)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Het nummer van de zoeker kwam uit een PartSouq-catalogus van een andere Laguna III (1.5 dCi K9K780, 04/2008) en is geschrapt.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_FENDERBRK_R": {
+  "n": "Schermsteun rechts (steun scherm aan frontmodule)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Het nummer van de zoeker kwam uit een PartSouq-catalogus van een andere Laguna III (1.5 dCi K9K780, 04/2008) en is geschrapt.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_MCARRIER": {
+  "n": "Glasdrager buitenspiegel (kunststof drager onder het glas)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370: de lijst Wing mirror glass heeft alleen spiegelglas voor dit type, geen drager.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_MIRROR_L": {
+  "n": "Buitenspiegel links compleet (elektrisch, verwarmd, inklapbaar, met geheugen)",
+  "st": "past",
+  "oe": [
+   [
+    "963020141R",
+    "OE-lijst PRASCO RN0867334 (A-artikel, vanaf 01/2011).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "ALKAR",
+    "6143231",
+    "Lijst 23370, links, met geheugen, met temperatuursensor, elektrisch inklapbaar, blauw getint, asferisch, met knipperlicht, linksgestuurd.",
+    "A"
+   ],
+   [
+    "PRASCO",
+    "RN0867334",
+    "Lijst 23370, links, met geheugen, elektrisch inklapbaar, blauw getint, met knipperlicht, bouwjaar vanaf 01/2011.",
+    "A"
+   ],
+   [
+    "ABAKUS",
+    "3121M05",
+    "Autodoc OE-pagina 963020141R: links, modeljaar vanaf 2007, met geheugen, elektrisch inklapbaar.",
+    "C"
+   ],
+   [
+    "DIEDERICHS",
+    "4474425",
+    "Autodoc OE-pagina 963020141R: links, met geheugen, elektrisch inklapbaar.",
+    "C"
+   ],
+   [
+    "BLIC",
+    "5402-09-2002175P",
+    "Autodoc OE-pagina 963020141R: links, verwarmd, met geheugen, elektrisch inklapbaar.",
+    "C"
+   ],
+   [
+    "IPARLUX",
+    "27259901",
+    "Autodoc OE-pagina 963020141R: links, met geheugen, elektrisch inklapbaar.",
+    "C"
+   ]
+  ],
+  "var": "Uitvoering volgens het model (Initiale Paris: elektrisch verstelbaar, verwarmd, elektrisch inklapbaar, met geheugen). De artikelen verschillen in details (blauw getint glas, temperatuursensor); Autodoc kent voor type 23370 ook spiegels zonder geheugen of zonder inklapfunctie met andere Renault-nummers.",
+  "per": "stuk",
+  "note": "Autodoc: Wing mirror, Left, with indicator (knipperlicht in de spiegel), linksgestuurd. Spiegelglas en kap zijn ook los te koop.",
+  "src": [
+   [
+    "https://www.autodoc.parts/prasco/12936498",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/wing-mirror-10666/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=2",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/963020141r",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/wing-mirror-10666/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=5",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S4-carrosserie-elektra-interieur:U_MGLASS_L": {
+  "n": "Spiegelglas links (verwarmd)",
+  "st": "vin",
+  "oe": [
+   [
+    "963660001R",
+    "OE-lijst ABAKUS 3121G05 (A-artikel).",
+    "B"
+   ],
+   [
+    "963650003R",
+    "OE-lijst ABAKUS 3121G07 (A-artikel).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "ABAKUS",
+    "3121G05",
+    "Lijst 23370, spiegelglas links.",
+    "A"
+   ],
+   [
+    "ALKAR",
+    "6451231",
+    "Lijst 23370, spiegelglas links.",
+    "A"
+   ],
+   [
+    "BLIC",
+    "6102-02-1232594P",
+    "Lijst 23370, spiegelglas links.",
+    "A"
+   ],
+   [
+    "KRAFT",
+    "8105020",
+    "Lijst 23370, spiegelglas links.",
+    "A"
+   ],
+   [
+    "ABAKUS",
+    "3121G07",
+    "Lijst 23370, spiegelglas links.",
+    "A"
+   ]
+  ],
+  "var": "Twee reeksen Renault-nummers: gewoon glas (links 963660001R, rechts 963650001R) en blauw getint glas (links 963650003R, rechts 963660003R); de nummers staan zo op de OE-lijsten. Bol (rechts) en asferisch (links) per uitvoering.",
+  "per": "stuk",
+  "note": "Autodoc: Wing mirror glass, positie Left; verwarmd (Heated) bij ABAKUS 3121G05/G07 en BLIC 6102-02-1232594P.",
+  "src": [
+   [
+    "https://www.autodoc.parts/abakus/9528496",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/abakus/9528498",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/wing-mirror-glass-11798/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/wing-mirror-10666/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=2",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/wing-mirror-10666/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=3",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S4-carrosserie-elektra-interieur:U_MCOVER_L": {
+  "n": "Spiegelkap links (gespoten, grondverf)",
+  "st": "past",
+  "oe": [
+   [
+    "963130001R",
+    "OE-lijst MAGNETI MARELLI 182208013620 (A-artikel).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "MAGNETI MARELLI",
+    "182208013620",
+    "Lijst 23370, spiegelkap links, gegrond.",
+    "A"
+   ],
+   [
+    "MAX",
+    "MRN194-L",
+    "Lijst 23370, spiegelkap links, gegrond.",
+    "A"
+   ],
+   [
+    "OLSA",
+    "75415",
+    "Lijst 23370, spiegelkap links, gegrond.",
+    "A"
+   ],
+   [
+    "AIC",
+    "75415",
+    "Lijst 23370, spiegelkap links, gegrond.",
+    "A"
+   ],
+   [
+    "REPIAUTO",
+    "RA36749",
+    "Lijst 23370, spiegelkap links, gegrond.",
+    "A"
+   ],
+   [
+    "SPJ",
+    "V-0339",
+    "Lijst 23370, spiegelkap links, gegrond.",
+    "A"
+   ]
+  ],
+  "per": "stuk",
+  "note": "Autodoc: Cover, outside mirror, primed, positie Left.",
+  "src": [
+   [
+    "https://www.autodoc.parts/magneti-marelli/7516344",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/cover-outside-mirror-15010/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/wing-mirror-10666/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=3",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S4-carrosserie-elektra-interieur:U_MMOTOR_L": {
+  "n": "Verstelmotor spiegel links",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370 (geen spiegelverstelmotor in de lijsten Wing mirror of Cover). Mogelijk deel van de complete spiegel.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_MFOLD_L": {
+  "n": "Inklapmotor spiegel links",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370 (geen losse inklapmotor in de lijsten). Mogelijk deel van de complete spiegel.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_MIRROR_R": {
+  "n": "Buitenspiegel rechts compleet (elektrisch, verwarmd, inklapbaar, met geheugen)",
+  "st": "past",
+  "oe": [
+   [
+    "963010154R",
+    "OE-lijst PRASCO RN0867333 (A-artikel, vanaf 01/2011).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "BLIC",
+    "5402-09-2002174P",
+    "Lijst 23370, rechts, met geheugen, elektrisch inklapbaar, verwarmd, convex, met knipperlicht.",
+    "A"
+   ],
+   [
+    "PRASCO",
+    "RN0867333",
+    "Lijst 23370, rechts, met geheugen, elektrisch inklapbaar, bouwjaar vanaf 01/2011.",
+    "A"
+   ],
+   [
+    "ABAKUS",
+    "3121M06",
+    "Lijst 23370, rechts, blauw getint, convex, elektrisch inklapbaar, met geheugen.",
+    "A"
+   ],
+   [
+    "ALKAR",
+    "6144231",
+    "Autodoc OE-pagina 963010154R: rechts, met geheugen, elektrisch inklapbaar.",
+    "C"
+   ],
+   [
+    "DIEDERICHS",
+    "4474424",
+    "Autodoc OE-pagina 963010154R: rechts, met geheugen, elektrisch inklapbaar.",
+    "C"
+   ],
+   [
+    "IPARLUX",
+    "27259902",
+    "Autodoc OE-pagina 963010154R: rechts, met geheugen, elektrisch inklapbaar.",
+    "C"
+   ]
+  ],
+  "var": "Uitvoering volgens het model (Initiale Paris: elektrisch verstelbaar, verwarmd, elektrisch inklapbaar, met geheugen). De artikelen verschillen in details (blauw getint glas, verwarmd); Autodoc kent voor type 23370 ook spiegels zonder geheugen of zonder inklapfunctie met andere Renault-nummers.",
+  "per": "stuk",
+  "note": "Autodoc: Wing mirror, Right, with indicator (knipperlicht in de spiegel). Spiegelglas en kap zijn ook los te koop.",
+  "src": [
+   [
+    "https://www.autodoc.parts/prasco/12936497",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/wing-mirror-10666/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=2",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/963010154r",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/wing-mirror-10666/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=3",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S4-carrosserie-elektra-interieur:U_MGLASS_R": {
+  "n": "Spiegelglas rechts (verwarmd)",
+  "st": "vin",
+  "oe": [
+   [
+    "963650001R",
+    "OE-lijst ABAKUS 3121G06 (A-artikel).",
+    "B"
+   ],
+   [
+    "963660003R",
+    "OE-lijst ABAKUS 3121G08 (A-artikel).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "ABAKUS",
+    "3121G06",
+    "Lijst 23370, spiegelglas rechts, convex.",
+    "A"
+   ],
+   [
+    "ALKAR",
+    "6402231",
+    "Lijst 23370, spiegelglas rechts, convex.",
+    "A"
+   ],
+   [
+    "BLIC",
+    "6102-02-1232231P",
+    "Lijst 23370, spiegelglas rechts, convex.",
+    "A"
+   ],
+   [
+    "ABAKUS",
+    "3121G08",
+    "Lijst 23370, spiegelglas rechts, convex.",
+    "A"
+   ]
+  ],
+  "var": "Twee reeksen Renault-nummers: gewoon glas (links 963660001R, rechts 963650001R) en blauw getint glas (links 963650003R, rechts 963660003R); de nummers staan zo op de OE-lijsten. Bol (rechts) en asferisch (links) per uitvoering.",
+  "per": "stuk",
+  "note": "Autodoc: Wing mirror glass, positie Right; verwarmd (Heated) bij BLIC 6102-02-1232231P.",
+  "src": [
+   [
+    "https://www.autodoc.parts/abakus/9528497",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/abakus/9528499",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/wing-mirror-glass-11798/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/wing-mirror-10666/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=2",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S4-carrosserie-elektra-interieur:U_MCOVER_R": {
+  "n": "Spiegelkap rechts (gespoten, grondverf)",
+  "st": "past",
+  "oe": [
+   [
+    "963120001R",
+    "OE-lijst MAGNETI MARELLI 182208013720 (A-artikel).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "MAGNETI MARELLI",
+    "182208013720",
+    "Lijst 23370, spiegelkap rechts, gegrond.",
+    "A"
+   ],
+   [
+    "MAX",
+    "MRN194-R",
+    "Lijst 23370, spiegelkap rechts, gegrond.",
+    "A"
+   ],
+   [
+    "OLSA",
+    "75422",
+    "Lijst 23370, spiegelkap rechts, gegrond.",
+    "A"
+   ],
+   [
+    "AIC",
+    "75422",
+    "Lijst 23370, spiegelkap rechts, gegrond.",
+    "A"
+   ],
+   [
+    "REPIAUTO",
+    "RA36750",
+    "Lijst 23370, spiegelkap rechts, gegrond.",
+    "A"
+   ],
+   [
+    "SPJ",
+    "V-0340",
+    "Lijst 23370, spiegelkap rechts, gegrond.",
+    "A"
+   ]
+  ],
+  "per": "stuk",
+  "note": "Autodoc: Cover, outside mirror, primed, positie Right.",
+  "src": [
+   [
+    "https://www.autodoc.parts/magneti-marelli/1833416",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/cover-outside-mirror-15010/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/wing-mirror-10666/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=3",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/wing-mirror-10666/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=5",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S4-carrosserie-elektra-interieur:U_MMOTOR_R": {
+  "n": "Verstelmotor spiegel rechts",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370 (geen spiegelverstelmotor in de lijsten Wing mirror of Cover). Mogelijk deel van de complete spiegel.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_MFOLD_R": {
+  "n": "Inklapmotor spiegel rechts",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370 (geen losse inklapmotor in de lijsten). Mogelijk deel van de complete spiegel.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_WSCREEN": {
+  "n": "Voorruit (gelaagd glas)",
+  "st": "vin",
+  "oe": [
+   [
+    "727120001R",
+    "OE-lijst GLAVISTA WS/PU7273GS.",
+    "B"
+   ],
+   [
+    "727120004R",
+    "OE-lijst JUMASA V3334063 (staat in de lijst 23370).",
+    "B"
+   ],
+   [
+    "727120005R",
+    "OE-lijst SAINT-GOBAIN 6102701102.",
+    "B"
+   ],
+   [
+    "727120007R",
+    "OE-lijst SAINT-GOBAIN 6102701000.",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "SAINT-GOBAIN",
+    "6102701102",
+    "Lijst 23370, voorruit.",
+    "A"
+   ],
+   [
+    "SAINT-GOBAIN",
+    "6102701000",
+    "Lijst 23370, voorruit.",
+    "A"
+   ],
+   [
+    "JUMASA",
+    "V3354063",
+    "Lijst 23370, voorruit.",
+    "A"
+   ],
+   [
+    "JUMASA",
+    "R3334063",
+    "Lijst 23370, voorruit.",
+    "A"
+   ],
+   [
+    "GLAVISTA",
+    "WS/PU7273GS",
+    "Lijst 23370, voorruit.",
+    "A"
+   ],
+   [
+    "DIEDERICHS",
+    "8413862",
+    "Lijst 23370, voorruit.",
+    "A"
+   ],
+   [
+    "REPIAUTO",
+    "RA36755",
+    "Lijst 23370, voorruit.",
+    "A"
+   ]
+  ],
+  "var": "Uitvoeringen volgens Autodoc voor type 23370: 727120001R (zonne-werend, zonder sensorvermelding), 727120004R (zonne-werend, voor regen-/lichtsensor), 727120005R (akoestisch, met regen-/lichtsensor) en 727120007R (klimaatcomfort, akoestisch). Het model noemt een akoestische tussenlaag en een regensensor, dus 727120005R of 727120007R; niet vastgesteld welke.",
+  "per": "stuk",
+  "note": "Voorruit met spiegelhouder en zichtvenster voor het chassisnummer.",
+  "src": [
+   [
+    "https://www.autodoc.parts/glavista/19111843",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/jumasa/12254843",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/saint-gobain/16126095",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/saint-gobain/16126092",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/windscreen-74880/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S4-carrosserie-elektra-interieur:U_WSRUBBER": {
+  "n": "Voorruitrubber (sierrubber langs zijkanten en bovenrand)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370 (categorie Windscreen/Window seal bevat geen rubber voor dit type). Niet gevonden.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_RAINSENS": {
+  "n": "Regen- en lichtsensor (achter de voorruit)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370: de categorie Rain sensor toont alleen een siliconen plakkussen voor de sensor, niet de sensor zelf.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_HLBULB": {
+  "n": "Lamp richtingaanwijzer in de koplamp (P24W of PSY24W)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370: de categorie Indicator bulb bevat alleen W5W-lampen zonder voertuigkoppeling. P24W staat bij de fase-1-koplampen in de lijst; voor de fase-2-koplamp niet bevestigd.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_AFSMOTOR": {
+  "n": "Bochtverlichtingsmotor (stappenmotor in de koplamp)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370. De categorie Headlight motor bevat de niveauregelmotor en niet de bochtlichtmotor.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_HLCAP": {
+  "n": "Afdekkap achterzijde koplamp (rubber)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_D1S": {
+  "n": "Xenonlamp D1S (35 W, Pk32d-2)",
+  "st": "past",
+  "oe": [
+   [
+    "7701062188",
+    "OE-lijst RIDEX 106B0054 (A-artikel).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "OSRAM",
+    "66140",
+    "Lijst 23370, xenonlamp D1S, voet Pk32d-2.",
+    "A"
+   ],
+   [
+    "NEOLUX®",
+    "NX1S",
+    "Lijst 23370, xenonlamp D1S, voet Pk32d-2.",
+    "A"
+   ],
+   [
+    "RIDEX",
+    "106B0054",
+    "Lijst 23370, xenonlamp D1S, voet Pk32d-2.",
+    "A"
+   ],
+   [
+    "QUINTON HAZELL",
+    "QBL402G",
+    "Lijst 23370, xenonlamp D1S, voet Pk32d-2.",
+    "A"
+   ],
+   [
+    "VEMO",
+    "V99-84-0021",
+    "Lijst 23370, xenonlamp D1S, voet Pk32d-2.",
+    "A"
+   ],
+   [
+    "AIC",
+    "59120",
+    "Lijst 23370, xenonlamp D1S, voet Pk32d-2.",
+    "A"
+   ]
+  ],
+  "per": "stuk",
+  "note": "Autodoc-lijst Xenon light voor type 23370: D1S, Pk32d-2, 35 W. Links en rechts dezelfde lamp; vervangen per paar aanbevolen. De bijbehorende koplamp is niet bevestigd (zie U_HL_L).",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/15183044",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/xenon-light-10823/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S4-carrosserie-elektra-interieur:U_BALLAST": {
+  "n": "Xenon-schakelapparaat met ontsteker (lighting control module)",
+  "st": "vin",
+  "oe": [
+   [
+    "7701208945",
+    "OE-lijst ERA 661400 (A-artikel).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "ERA",
+    "661400",
+    "Lijst 23370, lichtregelmodule, beide zijden (ESEN SKV: rechts, links); geen bouwjaargrens.",
+    "A"
+   ],
+   [
+    "ESEN SKV",
+    "59SKV030",
+    "Lijst 23370, lichtregelmodule, beide zijden (ESEN SKV: rechts, links); geen bouwjaargrens.",
+    "A"
+   ],
+   [
+    "AE TOPLIGHT",
+    "608603",
+    "Lijst 23370, lichtregelmodule, beide zijden (ESEN SKV: rechts, links); geen bouwjaargrens.",
+    "A"
+   ],
+   [
+    "BOGAP",
+    "B7526129",
+    "Lijst 23370, lichtregelmodule, beide zijden (ESEN SKV: rechts, links); geen bouwjaargrens.",
+    "A"
+   ],
+   [
+    "VALEO",
+    "043731",
+    "Spareto OE 7701208945 (ballast, ontsteekunit): VALEO 043731; Spareto-productpagina: links en rechts, Laguna 2007-2015.",
+    "C"
+   ]
+  ],
+  "var": "Na verificatie vier artikelen zonder bouwjaargrens (ERA, ESEN SKV, AE TOPLIGHT, BOGAP); het AIC-artikel (tot 11/2010) is geschrapt. Of de fase-2-koplamp hetzelfde schakelapparaat gebruikt is niet vastgesteld, want de fase-2-koplamp zelf is niet gevonden.",
+  "per": "stuk",
+  "src": [
+   [
+    "https://www.autodoc.parts/era/16636543",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/control-unit-lights-10827/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://spareto.com/oe/7701208945",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/valeo-ballast-gas-discharge-lamp/043731",
+    "spareto.com"
+   ]
+  ]
+ },
+ "S4-carrosserie-elektra-interieur:U_HL_L": {
+  "n": "Koplamp links (bi-xenon met dynamisch bochtlicht en dagrijlicht)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Alle xenonkoplampen in de Autodoc-lijst voor type 23370 (VALEO en KLOKKERHOLM) hebben Construction Year to 11 / 2010 (fase 1). De fase-2-koplamp van deze auto is niet gevonden; de nummers van de zoeker zijn geschrapt en worden hier bewust niet genoemd.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_HL_R": {
+  "n": "Koplamp rechts (bi-xenon met dynamisch bochtlicht en dagrijlicht)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Alle xenonkoplampen in de Autodoc-lijst voor type 23370 (VALEO en KLOKKERHOLM) hebben Construction Year to 11 / 2010 (fase 1). De fase-2-koplamp van deze auto is niet gevonden; de nummers van de zoeker zijn geschrapt en worden hier bewust niet genoemd.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_CABIN": {
+  "n": "Pollenfilter / combinatiefilter (stof en koolstof), 2 stuks per set",
+  "st": "vin",
+  "oe": [
+   [
+    "272772951R",
+    "OE-lijst RIDEX 424I0325 (A-artikel).",
+    "B"
+   ],
+   [
+    "272772972R",
+    "OE-lijst RIDEX 424I0325 (A-artikel).",
+    "B"
+   ],
+   [
+    "272778773R",
+    "OE-lijst RIDEX 424I0325 (A-artikel).",
+    "B"
+   ],
+   [
+    "272770001R",
+    "OE-lijst RIDEX 424I0325 (A-artikel).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "MANN-FILTER",
+    "CUK 2723-2",
+    "Lijst 23370, actiefkoolfilter.",
+    "A"
+   ],
+   [
+    "BOSCH",
+    "1 987 432 500",
+    "Lijst 23370, actiefkoolfilter.",
+    "A"
+   ],
+   [
+    "HELLA",
+    "8ZC 366 122-191",
+    "Lijst 23370, actiefkoolfilter.",
+    "A"
+   ],
+   [
+    "RIDEX",
+    "424I0325",
+    "Lijst 23370, actiefkoolfilter.",
+    "A"
+   ],
+   [
+    "MAXGEAR",
+    "26-0625",
+    "Lijst 23370, actiefkoolfilter.",
+    "A"
+   ],
+   [
+    "TOPRAN",
+    "700 726",
+    "Lijst 23370, actiefkoolfilter.",
+    "A"
+   ]
+  ],
+  "var": "Twee uitvoeringen in de lijst 23370: combinatiefilter met koolstof (RIDEX 424I0325, BOSCH 1 987 432 500, MANN-FILTER CUK 2723-2, HELLA 8ZC 366 122-191) of alleen stoffilter (RIDEX 424I0398). Het model noemt een combinatiefilter.",
+  "per": "set",
+  "note": "De filters zitten achter het handschoenenkastje; de meeste Autodoc-artikelen zijn een set van twee.",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/8056305",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/pollen-filter-10363/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S4-carrosserie-elektra-interieur:U_BATTERY": {
+  "n": "Accu 12 V (starter, loodzuur)",
+  "st": "vin",
+  "oe": [
+   [
+    "7711238597",
+    "OE-lijst VARTA 563400061K262 (A-artikel).",
+    "B"
+   ],
+   [
+    "244100003R",
+    "OE-lijst VARTA 563400061K262 (A-artikel).",
+    "B"
+   ],
+   [
+    "7701376964",
+    "OE-lijst VARTA 563400061K262 (A-artikel).",
+    "B"
+   ],
+   [
+    "244109494R",
+    "OE-lijst RIDEX 1S0003 (A-artikel).",
+    "B"
+   ],
+   [
+    "244108188R",
+    "OE-lijst RIDEX 1S0003 (A-artikel).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "VARTA",
+    "563400061K262",
+    "Lijst 23370, accu 12 V, lengte 242 mm.",
+    "A"
+   ],
+   [
+    "BOSCH",
+    "0 092 S50 050",
+    "Lijst 23370, accu 12 V, lengte 242 mm.",
+    "A"
+   ],
+   [
+    "EXIDE",
+    "EA640",
+    "Lijst 23370, accu 12 V, lengte 242 mm.",
+    "A"
+   ],
+   [
+    "RIDEX",
+    "1S0003",
+    "Lijst 23370, accu 12 V, lengte 242 mm.",
+    "A"
+   ],
+   [
+    "CONTINENTAL",
+    "2800012021280",
+    "Lijst 23370, accu 12 V, lengte 242 mm.",
+    "A"
+   ],
+   [
+    "BOSCH",
+    "0 092 S40 050",
+    "Lijst 23370, accu 12 V, lengte 242 mm.",
+    "A"
+   ]
+  ],
+  "var": "Meerdere capaciteiten in de Autodoc-lijst voor type 23370: 60 Ah/540 A (RIDEX 1S0003, BOSCH 0 092 S40 050) en 63 tot 65 Ah/610 tot 640 A (VARTA 563400061K262, BOSCH 0 092 S50 050, EXIDE EA640, CONTINENTAL 2800012021280), alle 242 mm lang. Welke past volgt uit de accubak en de uitvoering.",
+  "per": "stuk",
+  "note": "Renault-nummers uit de OE-lijsten van VARTA 563400061K262 en RIDEX 1S0003; de productpagina noemt het voertuig niet.",
+  "src": [
+   [
+    "https://www.autodoc.parts/varta/24460629",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/ridex/13556051",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/battery-10142/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S4-carrosserie-elektra-interieur:U_BONNET": {
+  "n": "Motorkap (kaal)",
+  "st": "past",
+  "oe": [
+   [
+    "651000021R",
+    "OE-lijst DIEDERICHS 4474000 (A-artikel).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "DIEDERICHS",
+    "4474000",
+    "Productpagina noemt Laguna 3 2.0 16V Turbo 170 pk; de categoriepagina was niet leesbaar.",
+    "A"
+   ],
+   [
+    "BLIC",
+    "6803-00-6056280P",
+    "Autodoc OE-pagina 651000021R: motorkap.",
+    "C"
+   ],
+   [
+    "PRASCO",
+    "RN0863100",
+    "Autodoc OE-pagina 651000021R: motorkap.",
+    "C"
+   ],
+   [
+    "ABAKUS",
+    "042-23-100",
+    "Autodoc OE-pagina 651000021R: motorkap, voor.",
+    "C"
+   ],
+   [
+    "KLOKKERHOLM",
+    "6056280",
+    "Autodoc OE-pagina 651000021R: motorkap.",
+    "C"
+   ],
+   [
+    "VAN WEZEL",
+    "4356660",
+    "Autodoc OE-pagina 651000021R: motorkap.",
+    "C"
+   ]
+  ],
+  "per": "stuk",
+  "note": "Autodoc kent voor type 23370 maar een kap: DIEDERICHS 4474000 (Bonnet). De categoriepagina was bij deze controle niet leesbaar; de productpagina noemt de 2.0 16V Turbo 170 pk. Of deze kap ook voor fase 2 geldt is niet apart bevestigd (geen bouwjaargrens vermeld). Isolatie, scharnieren en slot zijn niet inbegrepen. De originele kap is volgens het werkplaatshandboek MR 415 (48A) van aluminium; het materiaal van de kappen van andere merken is niet vastgesteld.",
+  "src": [
+   [
+    "https://www.autodoc.parts/hd-karosserieteile/7051401",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/651000021r",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S4-carrosserie-elektra-interieur:U_BONNETINS": {
+  "n": "Motorkapisolatie (geluids- en hitte-isolatiemat)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370: de categorie Engine bay insulation en Hood and parts geven geen mat voor dit type.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_BHINGE_L": {
+  "n": "Kapscharnier links",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370. Het scharnier staat niet in de categorie Hood and parts voor dit type (alleen een kap en universeel kleinmateriaal).",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_BHINGE_R": {
+  "n": "Kapscharnier rechts",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370. Het scharnier staat niet in de categorie Hood and parts voor dit type (alleen een kap en universeel kleinmateriaal).",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_BHINGEBOLT": {
+  "n": "Kapscharnierbouten M8 (4 stuks)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Het nummer van de zoeker (montageset motorkap) kwam uit een PartSouq-catalogus van een andere Laguna III (1.5 dCi K9K780, 04/2008) en is geschrapt.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_BSTRIKER": {
+  "n": "Slotbeugel motorkap",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_BSAFETY": {
+  "n": "Veiligheidshaak motorkap",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_BPROP": {
+  "n": "Motorkapsteun (steunstang)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Het nummer van de zoeker kwam uit een PartSouq-catalogus van een andere Laguna III (1.5 dCi K9K780, 04/2008) en is geschrapt.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_BSEAL": {
+  "n": "Kapafdichting (rubber tussen kap en torpedobak)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_FBUMPER": {
+  "n": "Voorbumper (bumperschaal voor, fase 2, gespoten)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370: de categorie Bumper is voor type 23370 niet beschikbaar (Autodoc toont een Top-10 zonder typekoppeling; niet overgenomen).",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_FBUMPERLIP": {
+  "n": "Onderlip voorbumper (spoilerlip)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370: de categorie Front spoiler toont alleen universele spoilerlippen en tuningdelen.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_FGRILLEUP": {
+  "n": "Bovengrille voorbumper (sleuf met chroomlijn)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370: de categorie Bumper grill toont alleen universele grills (Racing Grill) en M Modecar-roosters zonder vermelding van dit voertuig.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_PLATEHOLD": {
+  "n": "Kentekenplaathouder voor",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_PLATE": {
+  "n": "Kentekenplaat (Nederlands, geel/wit)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Geen onderdeel met artikelnummer: het kenteken wordt door de RDW bij de voertuigregistratie uitgegeven.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_FGRILLELOW": {
+  "n": "Onderste luchtinlaat voorbumper (rooster en kanaal)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_FCHROME": {
+  "n": "Chroomlijst onderste inlaat (met rubberlijnen)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_FOG": {
+  "n": "Mistlamp voor (links en rechts hetzelfde nummer, H11)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Het nummer van de zoeker kwam uit een PartSouq-catalogus van een fase-1-auto (1.5 dCi K9K780, 04/2008) en is geschrapt; de fase 2 heeft een andere voorbumper.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_FBROW_L": {
+  "n": "Chroomwenkbrauw mistlamp links (met rubberlijnen)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370. De categorie Cover, fog light bevat alleen universele clips.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_FSTRIP_L": {
+  "n": "Sierstrip onderlip voorbumper links",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_FBROW_R": {
+  "n": "Chroomwenkbrauw mistlamp rechts (met rubberlijnen)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370. De categorie Cover, fog light bevat alleen universele clips.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_FSTRIP_R": {
+  "n": "Sierstrip onderlip voorbumper rechts",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_FBRK": {
+  "n": "Bumpersteun voor (links en rechts hetzelfde nummer)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Het enige Autodoc-artikel (BLIC) heeft productiedatum 04.2003 tot 01.2008 en past niet bij deze auto; het Renault-nummer kwam van dat artikel en uit een catalogus van een fase-1-auto. Geschrapt.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_H11": {
+  "n": "Mistlamp H11 (12 V 55 W)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Het nummer van de zoeker kwam uit een PartSouq-catalogus van een fase-1-auto (1.5 dCi K9K780, 04/2008) en is geschrapt; ook het lamptype van de fase-2-mistlamp is niet bevestigd.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_RBUMPER": {
+  "n": "Achterbumper (bumperschaal achter, gespoten)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370: de categorie Bumper is voor type 23370 niet beschikbaar.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_RSKIRT": {
+  "n": "Onderschort achterbumper (diffuser)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_RBRK_L": {
+  "n": "Bumpersteun achter links",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_RBRK_R": {
+  "n": "Bumpersteun achter rechts",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_POLECL": {
+  "n": "Poolklemmen accu (plus en min)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370: de categorie Battery bevat alleen universele poolklemmen zonder koppeling aan dit voertuig.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_POLECAP": {
+  "n": "Afdekkap pluspool",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370: alleen een universele afdekkap zonder voertuigkoppeling.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_PYROFUSE": {
+  "n": "Accuafkoppelunit (pyrotechnische afkoppeling)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_BATHOLD": {
+  "n": "Accuhouder (beugel met trekstangen)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_BATTRAY": {
+  "n": "Accubak onderplaat (draagplaat accu op de langsligger)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_BATVENT": {
+  "n": "Ontgassingsslang accu",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_FUSEBOX": {
+  "n": "Zekeringkast motorruimte (UPC met relais en maxizekeringen)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Het nummer van de zoeker kwam uit een PartSouq-catalogus van een andere Laguna III (1.5 dCi K9K780, handgeschakeld, 04/2008) en is geschrapt; de zekeringkast verschilt per motor en uitrusting.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_ECU": {
+  "n": "Motorcomputer (ECU F4Rt, gecodeerd op het voertuig)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370. Een motorcomputer is VIN-gebonden en programmeerbaar; niet in de lijsten.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_UCH": {
+  "n": "Centrale cabine-unit (UCH) met zekeringkast interieur",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Het nummer van de zoeker kwam uit een PartSouq-catalogus van een andere Laguna III (1.5 dCi K9K780, 04/2008) en is geschrapt; de cabine-unit is voertuiggecodeerd en verschilt per uitrusting.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_HORN": {
+  "n": "Claxon (links en rechts)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Het nummer van de zoeker kwam uit een PartSouq-catalogus van een andere Laguna III (1.5 dCi K9K780, 04/2008) en is geschrapt. Geen Autodoc-artikel voor type 23370.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_HORNBRK_L": {
+  "n": "Claxonbeugel links",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_HORNBRK_R": {
+  "n": "Claxonbeugel rechts",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_BATCABLE": {
+  "n": "Accukabel plus (accu naar startmotor)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_CABLECLIP": {
+  "n": "Kabelclips accukabel (3 stuks)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370; kleinmateriaal.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_GNDCABLE": {
+  "n": "Massakabel accu (minpool naar carrosserie)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_GNDEYE": {
+  "n": "Massaoog carrosserie (met bout)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_HARN_F": {
+  "n": "Kabelboom voorzijde (koplampen en claxons)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370: de categorie Wiring harness bevat alleen reparatiesets voor kabelbomen (HERTH+BUSS, VEMO, NEW AGE) zonder koppeling aan dit voertuig; de complete kabelboom is VIN-gebonden.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_HARN_E": {
+  "n": "Kabelboom motorruimte",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370: de categorie Wiring harness bevat alleen reparatiesets voor kabelbomen (HERTH+BUSS, VEMO, NEW AGE) zonder koppeling aan dit voertuig; de complete kabelboom is VIN-gebonden.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_HARN_C": {
+  "n": "Kabelboom cabine (richting achterlichten)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370: de categorie Wiring harness bevat alleen reparatiesets voor kabelbomen (HERTH+BUSS, VEMO, NEW AGE) zonder koppeling aan dit voertuig; de complete kabelboom is VIN-gebonden.",
+  "src": []
+ },
+ "S4-carrosserie-elektra-interieur:U_GROMMET": {
+  "n": "Doorvoer schutbord (rubber doorvoer kabelboom)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Niet in de Autodoc-lijst voor 23370.",
+  "src": []
+ }
+}

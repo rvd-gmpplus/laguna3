@@ -8,7 +8,15 @@ const els = {
   menu: $('menu'), tip: $('tip'), press: $('press'), explode: $('explode'), explodeName: $('explodeName'), explodeOut: $('explodeOut'), play: $('play'), undo: $('undo'),
   help: $('help'), helpDlg: $('helpDlg'), tourBar: $('tourBar'), tourText: $('tourText'), tourStop: $('tourStop'), dock: $('dock'), topbar: $('topbar'),
   quality: $('tQuality'), qualityRow: $('qualityRow'), qualityNote: $('qualityNote'),
+  notice: $('notice'), toast: $('toast'), isoBadge: $('isoBadge'), isoName: $('isoName'),
 };
+// Tijden en afstanden van golf 5c-1 bij elkaar (er is nog geen CFG; oudere constanten staan bij hun gebruik).
+const UI_ISO_FADE_MS = 300;                  // U4: uitfaden van wat bij isoleren uit beeld gaat
+const UI_TOAST_MS = 1800;                    // U8, U9: korte melding onderin (volledige labelnaam, beeld opgeslagen)
+const UI_HINT_MS = 9000;                     // hint bij de start, daarna (U8) de suggestie tot de eerste klik
+const UI_LABEL_MAX = 24, UI_LABEL_MAX_NARROW = 10; // U2: hoogstens zoveel labels; smal scherm (onder 600 px) minder
+const UI_THEME_KEY = 'laguna3-theme';        // U5: onthouden themakeuze (light, dark; systeem = niets bewaard)
+const UI_PRESS_VIBRATE_MS = 10;              // U8: trilling als de ring bij lang drukken vol is
 let MODE = 'part', LABELS = true, CTX = null, ACTIVE_PRESET = 'assembled', needs = true;
 let uiLabelForce = false;
 const requestRender = () => { needs = true; };
@@ -36,6 +44,8 @@ function uiClosedAbove(n) { for (let a = n.parent; a; a = a.parent) { if (!uiOpe
 function uiDeepestOpen(p) { let a = null; pathFrom(p).forEach(x => { if (x.asm && uiOpen(x)) a = x; }); return a; }
 
 /* ---------- selectie en paneel ---------- */
+// U7: de uitleg bij de hele auto in de modus Openen (de beschrijving in systems.js noemt het uitklappen)
+const uiOpenRootDesc = 'Renault Laguna III hatchback (fase 2, 2011) in Initiale Paris-uitvoering, zilvergrijs metallic (Gris Platine), met de 2.0 Turbo F4Rt-motor, zestraps automaat en elektrisch panoramadak. Openen: klik op de motorkap, een portier, een ruit, een spiegel, de achterklep, de tankklep of het panoramadak om het te openen; nog een klik sluit het weer. Rechtsklik, Shift+klik of vasthouden sluit de binnenste open opener.';
 function select(n, opts = {}) {
   n = n || uiScopeRoot();
   if (uiLifted && uiLifted !== n) uiDrop();
@@ -55,16 +65,19 @@ function renderPanel() {
     if (i) { const sp = document.createElement('span'); sp.textContent = '›'; els.crumbs.appendChild(sp); }
     const b = document.createElement('button'); b.textContent = a.name; b.onclick = () => { uiPush(); select(a, { focus: true }); uiAfterAction(); }; els.crumbs.appendChild(b);
   });
-  els.name.textContent = n.name;
+  // U6: de live regions (#selName, #selMeta) alleen beschrijven als er iets verandert; een schermlezer leest anders elke
+  // herhaalde opbouw van het paneel voor (bij elke handeling twee tot drie keer)
+  if (els.name.textContent !== n.name) els.name.textContent = n.name;
   let state;
   if (OPENMODE && n.opn && !n.opn.lead) state = n.ot > 0 ? '<span class="state open">Open</span>' : '<span class="state">Dicht</span>';
   else if (OPENMODE && n.asm) state = '<span class="state">Gemonteerd</span>';
   else if (n.asm) state = uiOpen(n) ? '<span class="state open">Uitgeklapt</span>' : (n.target > 0 ? '<span class="state">Deels uitgeklapt</span>' : '<span class="state">Ingeklapt</span>');
   else state = n === uiLifted ? '<span class="state open">Uitgelicht</span>' : '<span class="state">Onderdeel</span>';
   const isoTxt = ISO.includes(n) ? ' · geïsoleerd' : '';
-  els.meta.innerHTML = `${state}${n.asm ? fmtCount(n) : (n.parent ? 'in ' + esc(n.parent.name) : '')}${isoTxt}`;
-  // in Openen past de uitleg bij de wortel bij de modus (de beschrijving zelf noemt het uitklappen)
-  els.desc.textContent = (OPENMODE && n === ROOT) ? (n.d || '').replace(/ Klik op een onderdeel om het uit te klappen.*$/, '') + ' Openen: klik op de motorkap, een portier, een ruit, een spiegel, de achterklep, de tankklep of het panoramadak om het te openen; nog een klik sluit het weer.' : (n.d || '');
+  const meta = `${state}${n.asm ? fmtCount(n) : (n.parent ? 'in ' + esc(n.parent.name) : '')}${isoTxt}`;
+  if (els.meta._h !== meta) { els.meta._h = meta; els.meta.innerHTML = meta; }
+  // in Openen krijgt de wortel een eigen uitleg bij de modus (U7: een eigen tekst, geen knip uit de beschrijving in systems.js)
+  els.desc.textContent = (OPENMODE && n === ROOT) ? uiOpenRootDesc : (n.d || '');
   els.spec.innerHTML = (n.spec || []).map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('');
   els.spec.hidden = !n.spec;
   els.kids.innerHTML = '';
@@ -109,6 +122,7 @@ function renderPanel() {
 // 'zelf': het onderdeel is zelf de verkoopeenheid; 'deel' of 'set': het zit in de eenheid en wordt daarmee besteld.
 // Een knoop zonder regel is niet onderzocht. De pagina toont alleen wat er staat en voegt zelf geen nummers toe.
 let uiPnIdx = new Map(), uiPnUnitNode = new Map(), uiPnBad = [], uiPnCov = new Map();
+const UI_LINK_REL = 'noopener noreferrer'; // R5: cataloguslinks zonder opener en zonder verwijzende pagina (Referer)
 const uiPnCompact = t => String(t).toLowerCase().replace(/[\s.\-\/]/g, '');
 const uiPnHasNum = r => !!r && ((r.u.oe && r.u.oe.length > 0) || (r.u.am && r.u.am.length > 0));
 function uiPnBuild() {
@@ -170,7 +184,7 @@ function renderPn(n) {
     const bronnen = (kz.s || []).filter(x => /^https:\/\//i.test(x));
     if (bronnen.length) {
       const d = mk('div', 'pn-src');
-      for (const url of bronnen) { const a = mk('a', null, url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]); a.href = url; a.target = '_blank'; a.rel = 'noopener'; d.appendChild(a); }
+      for (const url of bronnen) { const a = mk('a', null, url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]); a.href = url; a.target = '_blank'; a.rel = UI_LINK_REL; d.appendChild(a); }
       k.appendChild(d);
     }
     if (PN_DATA.meta && PN_DATA.meta.auto) k.appendChild(mk('small', null, PN_DATA.meta.auto));
@@ -201,7 +215,7 @@ function renderPn(n) {
   if (links && links.length) {
     box.appendChild(mk('h4', null, 'Bronnen'));
     const d = mk('div', 'pn-src');
-    for (const [url, label] of links) { const a = mk('a', null, label || url); a.href = url; a.target = '_blank'; a.rel = 'noopener'; d.appendChild(a); }
+    for (const [url, label] of links) { const a = mk('a', null, label || url); a.href = url; a.target = '_blank'; a.rel = UI_LINK_REL; d.appendChild(a); }
     box.appendChild(d);
   }
   if (u && u.info && u.info.length) {
@@ -217,7 +231,7 @@ function renderPn(n) {
     for (const [label, waarde, bron, zeker] of inf) {
       dl.appendChild(mk('dt', null, label));
       const dd = mk('dd', null, waarde);
-      if (bron || zeker) { const sm = mk('small', null, (zeker ? zeker + (bron ? ', ' : '') : '')); if (bron && /^https?:\/\//i.test(bron)) { const a = mk('a', null, 'bron'); a.href = bron; a.target = '_blank'; a.rel = 'noopener'; sm.appendChild(a); } else if (bron) sm.appendChild(document.createTextNode(bron)); dd.appendChild(sm); }
+      if (bron || zeker) { const sm = mk('small', null, (zeker ? zeker + (bron ? ', ' : '') : '')); if (bron && /^https?:\/\//i.test(bron)) { const a = mk('a', null, 'bron'); a.href = bron; a.target = '_blank'; a.rel = UI_LINK_REL; sm.appendChild(a); } else if (bron) sm.appendChild(document.createTextNode(bron)); dd.appendChild(sm); }
       dl.appendChild(dd);
     }
     box.appendChild(dl);
@@ -239,10 +253,11 @@ function uiSyncToggles() {
 function uiAfterAction() {
   renderPanel();
   if (treeVisible()) renderTree();
-  uiSyncExplode(); uiSyncCats(); uiSyncUndo(); uiSyncToggles(); uiSyncOpenUi();
+  uiSyncExplode(); uiSyncCats(); uiSyncUndo(); uiSyncToggles(); uiSyncOpenUi(); uiSyncIso();
   applyMats(); // I3: geen gele selectietint meer op een groep die open is gegaan
   uiHideTip();
   uiSyncLabels();
+  uiUrlSync();
   requestRender();
 }
 // Labels direct bijwerken (niet pas bij het volgende frame), zodat er nooit een label van een vorige stand blijft staan.
@@ -316,7 +331,6 @@ function reveal(n) {
     if (uiSheetBottom() && els.sheet.dataset.state === 'open') setSheet('peek');
     select(n);
     focusNodes([n], null, n.asm ? 1.12 : 1.6, { min: 0.3 });
-    uiLastFit = { nodes: [n], dir: null, pad: n.asm ? 1.12 : 1.6, opt: { min: 0.3 } };
     uiAfterAction();
     return;
   }
@@ -330,7 +344,6 @@ function reveal(n) {
   if (uiSheetBottom() && els.sheet.dataset.state === 'open') setSheet('peek');
   select(n);
   focusNodes([n], null, n.asm ? 1.12 : 1.6, { min: 0.3, dur: Math.max(0.95, i * 0.18 + 0.55) });
-  uiLastFit = { nodes: [n], dir: null, pad: n.asm ? 1.12 : 1.6, opt: { min: 0.3 } };
   uiAfterAction();
 }
 function uiUp() {
@@ -361,10 +374,21 @@ function uiProject(pts) {
   return Number.isFinite(x0) ? { x0, y0, x1, y1 } : null;
 }
 function uiFreeView() { return { x0: VIEW.l, y0: VIEW.t, x1: W - VIEW.r, y1: H - VIEW.b }; }
-function isolate(list) { uiSetDim(null); ISO = list.slice(); applyVisibility(); applyMats(); updateGround(); requestRender(); }
+// U4: isoleren met een korte fade van wat uit beeld gaat (uiFadeFrom in app1.js) en de badge in het dock (uiSyncIso)
+function isolate(list) {
+  uiSetDim(null);
+  const before = uiVisibleMeshes();
+  ISO = list.slice(); applyVisibility(); uiFadeFrom(before); applyMats(); updateGround(); uiSyncIso(); requestRender();
+}
+function uiSyncIso() {
+  const on = ISO.length > 0, txt = ISO.map(n => n.name).join(' en ');
+  if (els.isoBadge.hidden !== !on) { els.isoBadge.hidden = !on; uiUiChanged(); layoutView(); }
+  if (on && els.isoName.textContent !== txt) { els.isoName.textContent = txt; uiUiDirty = true; }
+}
+$('isoShowAll').onclick = () => $('btnShowAll').click();
 
 els.toggle.onclick = () => { const n = SEL; if (!n.asm) return; uiOpen(n) ? doCollapse(n) : doExplode(n); };
-els.all.onclick = () => { const n = SEL; if (!n.asm) return; uiPush(); explodeAllUnder(n); CTX = n; uiLabelForce = false; clearPreset(); focusNodes([n], null, 1.04); uiLastFit = { nodes: [n], dir: null, pad: 1.04 }; uiAfterAction(); };
+els.all.onclick = () => { const n = SEL; if (!n.asm) return; uiPush(); explodeAllUnder(n); CTX = n; uiLabelForce = false; clearPreset(); focusNodes([n], null, 1.04); uiAfterAction(); };
 els.up.onclick = uiUp;
 els.dim.onclick = () => { uiPush(); uiSetDim(null); uiAfterAction(); };
 els.dive.onclick = () => uiDive(SEL);
@@ -372,11 +396,10 @@ els.iso.onclick = () => {
   uiPush();
   const on = ISO.length && (ISO.includes(SEL) || SEL === ROOT);
   isolate(on ? [] : [SEL]); clearPreset();
-  const nodes = on ? [ROOT] : [SEL];
-  focusNodes(nodes); uiLastFit = { nodes, dir: null, pad: 1.08 };
+  focusNodes(on ? [ROOT] : [SEL]);
   uiAfterAction();
 };
-els.focus.onclick = () => { const nodes = [SEL]; focusNodes(nodes, null, SEL.asm ? 1.08 : 1.6, { min: 0.25 }); uiLastFit = { nodes, dir: null, pad: SEL.asm ? 1.08 : 1.6, opt: { min: 0.25 } }; };
+els.focus.onclick = () => { focusNodes([SEL], null, SEL.asm ? 1.08 : 1.6, { min: 0.25 }); };
 
 /* ---------- openmodus: bediening ---------- */
 // Openers (OPENERS in app1.js) draaien of schuiven open. In de modus Openen doet een klik dat in plaats van uitklappen.
@@ -405,11 +428,7 @@ function uiPanelPlan(p) {
   return uiOpenPlan(p);
 }
 // camera bij openen: richting en kader uit open.look, het kader in de eindstand (focusNodes rekent de doelstand mee)
-function uiOpenFrame(nodes, dir, pad) {
-  const opt = { min: 0.3 };
-  focusNodes(nodes, dir, pad, opt);
-  uiLastFit = { nodes, dir, pad, opt };
-}
+function uiOpenFrame(nodes, dir, pad) { focusNodes(nodes, dir, pad, { min: 0.3 }); }
 function uiOpenTo(n, open) {
   uiStopPlay(); uiStopTour(); hideHint();
   uiPush();
@@ -448,7 +467,6 @@ function uiSetOpenMode(on) {
   uiPush();
   if (on) {
     appApplyPreset(appPresetById.get('assembled'), { noHistory: true, openMode: true });
-    uiLastFit = { preset: appPresetById.get('assembled') };
   } else {
     OPENMODE = false;
     for (const n of OPENERS) uiSetOpen(n, 0);
@@ -486,6 +504,7 @@ function uiCloseOpenList() {
   uiOpenListOn = false; $('btnOpenList').setAttribute('aria-expanded', 'false'); uiSyncOpenUi(); uiUiChanged(); layoutView();
 }
 function uiSyncOpenUi() {
+  uiUrlSync(); // de adresbalk volgt de openstand (ook via de testhaken setOpen en openAll)
   $('app').classList.toggle('omode', OPENMODE);
   uiOpenBtns.forEach(b => { const on = (b.dataset.omode === 'open') === OPENMODE; b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1; });
   let open = 0;
@@ -514,15 +533,31 @@ function treeRow(n, level) {
   if (n.asm && openRows.has(n.id)) { const ul = document.createElement('ul'); ul.setAttribute('role', 'group'); n.kids.forEach(k => ul.appendChild(treeRow(k, level + 1))); li.appendChild(ul); }
   return li;
 }
-const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+// U10: synoniemen. Een zoekterm die een woord uit een groep bevat, zoekt ook met de andere woorden van die groep
+// ("alternator" vindt de Dynamo, "remblok binnen" ook een remvoering). Vergelijken gebeurt op uiNorm (app1.js):
+// kleine letters zonder diakrieten, zodat "Röntgen", "rontgen" en "RONTGEN" hetzelfde zijn.
+const uiSynonyms = [
+  ['remvoering', 'remblok'], ['dynamo', 'alternator'], ['accu', 'batterij'], ['versnellingsbak', 'transmissie', 'automaat'],
+  ['uitlaat', 'demper'], ['koppeling', 'koppelomvormer'], ['bougie', 'ontstekingskaars'], ['schokdemper', 'demper'],
+  ['ruitenwisser', 'wisser'], ['stuurbekrachtiging', 'stuurpomp'],
+];
+// alle zoektermen voor q: q zelf en elke variant waarin een synoniem is ingevuld; terms[0] is q
+function uiSearchTerms(q) {
+  q = uiNorm(q).trim();
+  const terms = [q];
+  if (!q) return terms;
+  for (const group of uiSynonyms) for (const w of group) if (q.includes(w)) for (const o of group) { if (o === w) continue; const v = q.replace(w, o); if (!terms.includes(v)) terms.push(v); }
+  return terms;
+}
 function renderTree() {
-  const q = norm(els.search.value.trim());
+  const terms = uiSearchTerms(els.search.value), q = terms[0];
   els.tree.innerHTML = '';
   const ul = document.createElement('ul');
   if (q.length >= 2) {
     const qn = uiPnCompact(q), byNum = qn.length >= 3 && /\d/.test(qn);   // een zoekterm met cijfers zoekt ook in de nummers
-    const all = ALL.filter(n => n.norm.includes(q) || (byNum && (uiPnIdx.get(n) || { q: '' }).q.includes(qn))), hits = all.slice(0, 80);
-    els.treeInfo.textContent = all.length ? (all.length === 1 ? '1 treffer' : `${all.length} treffers`) + (all.length > hits.length ? `, de eerste ${hits.length} staan hieronder` : '') : 'Geen onderdeel gevonden met die naam.';
+    const all = ALL.filter(n => terms.some(t => n.norm.includes(t)) || (byNum && (uiPnIdx.get(n) || { q: '' }).q.includes(qn))), hits = all.slice(0, 80);
+    const syn = terms.length > 1 ? ` (ook gezocht op ${terms.slice(1).join(', ')})` : '';
+    els.treeInfo.textContent = all.length ? (all.length === 1 ? '1 treffer' : `${all.length} treffers`) + syn + (all.length > hits.length ? `, de eerste ${hits.length} staan hieronder` : '') : 'Geen onderdeel gevonden met die naam' + syn + '.';
     hits.forEach(n => { const li = treeRow(n, 1); const small = document.createElement('div'); small.className = 'tpath'; small.textContent = ancestors(n).slice(1).map(a => a.name).join(' › ') || 'hele auto'; li.appendChild(small); ul.appendChild(li); });
   } else {
     els.treeInfo.textContent = q.length === 1 ? 'Typ minstens twee letters.' : '';
@@ -563,7 +598,7 @@ function syncSheetHeight() {
 
 /* ---------- weergave-bediening ---------- */
 $('spread').addEventListener('input', e => { uiSetSpread(e.target.value / 100, false); $('spreadOut').textContent = e.target.value + '%'; requestRender(); });
-$('spread').addEventListener('change', () => { updateGround(); focusNodes(contextNodes()); uiLastFit = { nodes: contextNodes(), dir: null, pad: 1.08 }; });
+$('spread').addEventListener('change', () => { updateGround(); focusNodes(contextNodes()); });
 $('tLabels').addEventListener('change', e => { LABELS = e.target.checked; requestRender(); });
 $('tXray').addEventListener('change', e => { uiPush(); XRAY = e.target.checked; clearPreset(); applyMats(); uiAfterAction(); });
 $('tSys').addEventListener('change', e => { uiPush(); SYSCOL = e.target.checked; clearPreset(); applyMats(); uiAfterAction(); });
@@ -572,7 +607,62 @@ els.quality.addEventListener('change', e => uiSetLite(!e.target.checked));
 $('tDim').addEventListener('change', e => { uiDimOn = e.target.checked; if (!uiDimOn) uiSetDim(null); applyMats(); uiAfterAction(); });
 $('tBatch').addEventListener('change', e => { uiSetBatching(e.target.checked); requestRender(); });
 els.legend.innerHTML = Object.entries(SYS_COLORS).map(([k, c]) => `<span><i style="background:#${c.toString(16).padStart(6, '0')}"></i>${esc(k)}</span>`).join('');
-document.querySelectorAll('[data-cam]').forEach(b => b.addEventListener('click', () => { const nodes = contextNodes(), dir = DIRS[b.dataset.cam]; focusNodes(nodes, dir); uiLastFit = { nodes, dir, pad: 1.08 }; }));
+document.querySelectorAll('[data-cam]').forEach(b => b.addEventListener('click', () => focusNodes(contextNodes(), DIRS[b.dataset.cam])));
+// U5: thema. 'system' volgt prefers-color-scheme (geen data-theme); 'light' en 'dark' staan op <html> en in localStorage.
+// De MutationObserver op data-theme (hieronder bij thema) past lichten en vloer aan.
+const uiThemeBtns = [...document.querySelectorAll('#themeSeg [data-theme]')];
+function uiThemeChoice() { const t = document.documentElement.getAttribute('data-theme'); return t === 'light' || t === 'dark' ? t : 'system'; }
+function uiSetTheme(t) {
+  t = t === 'light' || t === 'dark' ? t : 'system';
+  if (t === 'system') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', t);
+  try { if (t === 'system') window.localStorage.removeItem(UI_THEME_KEY); else window.localStorage.setItem(UI_THEME_KEY, t); } catch (_) { }
+  uiSyncTheme();
+}
+function uiSyncTheme() {
+  const cur = uiThemeChoice();
+  uiThemeBtns.forEach(b => { const on = b.dataset.theme === cur; b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1; });
+}
+uiThemeBtns.forEach((b, i) => {
+  b.addEventListener('click', () => uiSetTheme(b.dataset.theme));
+  b.addEventListener('keydown', e => { if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return; const j = (i + (e.key === 'ArrowRight' ? 1 : uiThemeBtns.length - 1)) % uiThemeBtns.length; uiSetTheme(uiThemeBtns[j].dataset.theme); uiThemeBtns[j].focus(); e.preventDefault(); });
+});
+uiSyncTheme();
+// U9: beeld opslaan en de kaart afdrukken
+function uiSlug(s) { return uiNorm(s).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'beeld'; }
+function uiSaveImage() {
+  const n = SEL || ROOT, r = uiPnRec(n), nums = r && r.kind === 'zelf' && r.u ? [...(r.u.oe || []).map(x => x[0]), ...(r.u.am || []).map(x => x[0] + ' ' + x[1])] : [];
+  renderer.render(scene, camera); // op verzoek tekenen: de buffer wordt na het tonen niet bewaard
+  const dpr = renderer.getPixelRatio(), w = canvas.width, h = canvas.height, bar = Math.round(44 * dpr);
+  const c2 = document.createElement('canvas'); c2.width = w; c2.height = h + bar;
+  const g = c2.getContext('2d');
+  const cs = getComputedStyle(document.body);
+  g.fillStyle = cs.backgroundColor || '#e5e9ed'; g.fillRect(0, 0, w, h + bar);
+  g.drawImage(canvas, 0, 0);
+  g.fillStyle = cs.color || '#151a21'; g.textBaseline = 'middle';
+  g.font = `700 ${Math.round(15 * dpr)}px ${cs.fontFamily}`; g.fillText(n.name, Math.round(14 * dpr), h + bar / 2, w * 0.55);
+  g.font = `${Math.round(12 * dpr)}px ${cs.fontFamily}`; g.textAlign = 'right';
+  g.fillText((nums.length ? 'Onderdeelnummer ' + nums.slice(0, 2).join(', ') + ' · ' : '') + 'Laguna III explosietekening, versie ' + uiVersion, w - Math.round(14 * dpr), h + bar / 2, w * 0.43);
+  const name = `laguna3-${uiSlug(n.name)}.png`;
+  return new Promise(res => c2.toBlob(blob => {
+    if (!blob) { uiToast('Het beeld kon niet worden opgeslagen.'); res(null); return; }
+    const a = document.createElement('a'), url = URL.createObjectURL(blob);
+    a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    uiToast('Beeld opgeslagen als ' + name);
+    res({ name, w: c2.width, h: c2.height, numbers: nums });
+  }, 'image/png'));
+}
+$('btnShot').onclick = () => { uiSaveImage(); };
+$('btnPrint').onclick = () => { showTab('info'); try { window.print(); } catch (_) { } };
+// korte melding onderin (U8, U9); een nieuwe vervangt de vorige
+let uiToastTimer = 0;
+function uiToast(txt) {
+  els.toast.textContent = txt; els.toast.hidden = false; els.toast.classList.remove('gone');
+  clearTimeout(uiToastTimer);
+  uiToastTimer = setTimeout(() => { els.toast.classList.add('gone'); setTimeout(() => { if (els.toast.classList.contains('gone')) els.toast.hidden = true; }, REDUCED ? 0 : 300); }, UI_TOAST_MS);
+}
+// R2: melding die blijft staan tot ze wordt weggehaald (contextverlies)
+function uiNotice(txt) { els.notice.hidden = !txt; els.notice.textContent = txt || ''; }
 $('btnExplodeAll').onclick = () => { const r = uiScopeRoot(); uiPush(); explodeAllUnder(r); CTX = r; uiLabelForce = false; clearPreset(); focusNodes(contextNodes(), null, 1.02); uiAfterAction(); };
 $('btnCollapseAll').onclick = () => { uiPush(); collapseAll(); uiDrop(); CTX = null; clearPreset(); focusNodes(contextNodes()); uiAfterAction(); };
 $('btnShowAll').onclick = () => { uiPush(); isolate([]); clearPreset(); select(ROOT); focusNodes([ROOT]); uiAfterAction(); };
@@ -667,13 +757,24 @@ function uiBuildCats() {
     if (!list.length) continue;
     const b = document.createElement('button');
     b.className = 'cat'; b.dataset.cat = cat; b.setAttribute('aria-haspopup', 'menu'); b.setAttribute('aria-expanded', 'false');
+    b.tabIndex = els.presets.children.length ? -1 : 0; // U6: één tabstop voor de werkbalk, pijlen lopen erdoorheen
     b.innerHTML = `<b>${esc(cat)}</b><small></small>`;
     b.onclick = () => (uiMenuCat === cat ? uiCloseMenu(true) : uiOpenMenu(cat, b));
     b.addEventListener('keydown', e => { if (e.key === 'ArrowUp' || e.key === 'ArrowDown') { e.preventDefault(); uiOpenMenu(cat, b); } });
+    b.addEventListener('focus', () => uiCatTabStop(b));
     els.presets.appendChild(b);
   }
   uiSyncCats();
 }
+function uiCatTabStop(b) { for (const c of els.presets.children) c.tabIndex = c === b ? 0 : -1; }
+// pijlen links en rechts, Home en End in de werkbalk met presetcategorieën (role="toolbar")
+els.presets.addEventListener('keydown', e => {
+  if (!/^(ArrowLeft|ArrowRight|Home|End)$/.test(e.key)) return;
+  const cats = [...els.presets.children], i = cats.indexOf(document.activeElement);
+  if (i < 0 || !cats.length) return;
+  const j = e.key === 'Home' ? 0 : e.key === 'End' ? cats.length - 1 : (i + (e.key === 'ArrowRight' ? 1 : cats.length - 1)) % cats.length;
+  e.preventDefault(); uiCatTabStop(cats[j]); cats[j].focus();
+});
 function uiSyncCats() {
   const p = ACTIVE_PRESET && appPresetById.get(ACTIVE_PRESET);
   for (const b of els.presets.children) {
@@ -703,11 +804,12 @@ function uiOpenMenu(cat, btn) {
   uiMenuCat = cat; uiMenuBtn = btn;
   const m = els.menu;
   m.innerHTML = '';
-  m.setAttribute('aria-label', 'Presets ' + cat);
+  // U6: de kop met de sluitknop staat buiten het element met role="menu"; dat bevat alleen menuitems
   const head = document.createElement('div'); head.className = 'mhead';
   head.innerHTML = `<span>${esc(cat)}</span>`;
   const close = document.createElement('button'); close.className = 'mclose'; close.setAttribute('aria-label', 'Menu sluiten'); close.textContent = '×'; close.onclick = () => uiCloseMenu(true);
   head.appendChild(close); m.appendChild(head);
+  const list = document.createElement('div'); list.setAttribute('role', 'menu'); list.setAttribute('aria-label', 'Presets ' + cat); m.appendChild(list);
   for (const p of PRESETS.filter(q => q.cat === cat && appPresetOk(q))) {
     const b = document.createElement('button');
     b.className = 'mi'; b.setAttribute('role', 'menuitem'); b.dataset.preset = p.id; b.tabIndex = -1;
@@ -715,7 +817,7 @@ function uiOpenMenu(cat, btn) {
     b.innerHTML = `<span class="mi-t">${esc(label)}${p.key ? `<kbd>${p.key}</kbd>` : ''}</span><span class="mi-n">${esc(p.note)}</span>`;
     if (p.id === ACTIVE_PRESET) b.setAttribute('aria-current', 'true');
     b.onclick = () => { uiCloseMenu(false); uiRunPreset(p.id); };
-    m.appendChild(b);
+    list.appendChild(b);
   }
   m.hidden = false;
   btn.setAttribute('aria-expanded', 'true');
@@ -757,16 +859,14 @@ document.addEventListener('pointerdown', e => {
   const t = e.target;
   if (uiMenuCat && !els.menu.contains(t) && !(uiMenuBtn && uiMenuBtn.contains(t))) uiCloseMenu(false);
   if (!(t.closest && t.closest('#play'))) uiStopPlay();
-  if (!(t.closest && t.closest('#tourStop, #menu, [data-cat="Overzicht"], #help, #helpDlg'))) uiStopTour();
+  if (!(t.closest && t.closest('#tourBar, #menu, [data-cat="Overzicht"], #help, #helpDlg'))) uiStopTour();
   hideHint();
 }, true);
 function uiRunPreset(id) {
   const p = appPresetById.get(id); if (!p) return false;
   hideHint(); uiCloseMenu(false);
   if (p.tour) { appTour ? uiStopTour() : uiStartTour(); return true; }
-  const ok = appApplyPreset(p);
-  uiLastFit = { preset: p };
-  return ok;
+  return appApplyPreset(p);
 }
 function uiTourCaption(p, i, n) {
   if (!p) { els.tourBar.hidden = true; if (window.innerWidth < 920) layoutView(); uiUiChanged(); return; }
@@ -775,8 +875,26 @@ function uiTourCaption(p, i, n) {
   if (window.innerWidth < 920) layoutView();
   uiUiChanged();
 }
-function uiSyncTour() { uiSyncCats(); }
+// R4: de knoppen in de rondleidingsbalk volgen de stand (pauze of hervat, vorige uit bij de eerste stap)
+function uiSyncTour() {
+  uiSyncCats();
+  const t = appTour, paused = !!(t && t.paused), pb = $('tourPause');
+  pb.setAttribute('aria-pressed', String(paused));
+  pb.setAttribute('aria-label', paused ? 'Hervatten' : 'Pauze'); pb.title = paused ? 'Rondleiding hervatten' : 'Rondleiding pauzeren';
+  pb.firstElementChild.innerHTML = paused ? '<path d="M8 5l11 7-11 7z"/>' : '<path d="M7 5h4v14H7zM13 5h4v14h-4z"/>';
+  $('tourPrev').disabled = !t || t.i <= 0;
+  $('tourNext').disabled = !t;
+}
 els.tourStop.onclick = () => uiStopTour();
+$('tourPause').onclick = () => uiTourPause(!(appTour && appTour.paused));
+$('tourPrev').onclick = () => uiTourStep(-1);
+$('tourNext').onclick = () => uiTourStep(1);
+// een verborgen tabblad zet de rondleiding stil; komt het terug, dan loopt hij verder (een eigen pauze blijft staan)
+document.addEventListener('visibilitychange', () => {
+  if (!appTour) return;
+  if (document.hidden) { if (!appTour.paused) { uiTourPause(true); appTour.auto = true; } }
+  else if (appTour.auto) { appTour.auto = false; uiTourPause(false); }
+});
 
 /* ---------- aanwijzen en tikken ---------- */
 const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
@@ -868,7 +986,7 @@ function uiCommitPress(d, fromUp) {
   if (d.consumed || (d.ended && !fromUp)) return;
   d.consumed = true;
   if (uiPressS && uiPressS.d === d) uiCancelPress();
-  try { navigator.vibrate && navigator.vibrate(12); } catch (_) { }
+  try { navigator.vibrate && navigator.vibrate(UI_PRESS_VIBRATE_MS); } catch (_) { } // U8: de ring is vol (alleen waar vibrate bestaat)
   if (d.pick) uiCollapseAt(d.pick);
 }
 function uiStartPress(d) {
@@ -950,25 +1068,50 @@ canvas.addEventListener('wheel', () => { uiStopPlay(); uiStopTour(); hideHint();
 
 /* ---------- hint en hulp ---------- */
 const uiHintKey = 'laguna3-hint-v2';
+let uiHintStage = 0; // 0 geen, 1 de uitleg, 2 de suggestie (U8); elke handeling sluit hem voorgoed
 function uiInitHint() {
   let seen = false;
   try { seen = window.localStorage.getItem(uiHintKey) === '1'; } catch (_) { seen = false; }
   if (seen) { els.hint.hidden = true; return; }
+  uiHintStage = 1;
   els.hint.textContent = uiTouch
     ? 'Tik op een onderdeel om het uit te klappen · dubbeltik om er direct heen te gaan · houd vast om in te klappen'
     : 'Klik op een onderdeel om het uit te klappen · dubbelklik om er direct naartoe te gaan · rechtsklik om in te klappen';
-  setTimeout(hideHint, 9000);
+  setTimeout(uiHintNext, UI_HINT_MS);
+}
+// U8: na de uitleg één concrete suggestie, tot de eerste klik of tik (daarna nooit meer: de hint telt als gezien)
+function uiHintNext() {
+  if (uiHintStage !== 1 || els.hint.hidden || els.hint.classList.contains('gone')) return;
+  uiHintStage = 2;
+  els.hint.textContent = uiTouch ? 'Probeer: tik op de motorkap' : 'Probeer: klik op de motorkap';
+  uiUiChanged();
 }
 function hideHint(instant) {
-  if (instant === true && !els.hint.hidden) { els.hint.hidden = true; els.hint.classList.add('gone'); try { window.localStorage.setItem(uiHintKey, '1'); } catch (_) { } uiUiChanged(); return; }
+  if (instant === true && !els.hint.hidden) { uiHintStage = 0; els.hint.hidden = true; els.hint.classList.add('gone'); try { window.localStorage.setItem(uiHintKey, '1'); } catch (_) { } uiUiChanged(); return; }
   if (els.hint.hidden || els.hint.classList.contains('gone')) return;
+  uiHintStage = 0;
   els.hint.classList.add('gone');
   try { window.localStorage.setItem(uiHintKey, '1'); } catch (_) { }
   setTimeout(() => { els.hint.hidden = true; uiUiChanged(); uiSyncLabels(); }, REDUCED ? 0 : 450);
 }
+// U7: het hulpvenster leest de categorieën en sneltoetsen uit appCats en PRESETS (niet met de hand bijhouden)
+function uiFillHelp() {
+  const keyed = PRESETS.filter(p => p.key && appPresetOk(p)).sort((a, b) => a.key.localeCompare(b.key));
+  $('helpCats').textContent = `${appCats.length} categorieën (${appCats.join(', ')}) met kant-en-klare standen, ook de rondleiding.`;
+  $('helpKeysT').innerHTML = keyed.length ? `<kbd>${esc(keyed[0].key)}</kbd> tot <kbd>${esc(keyed[keyed.length - 1].key)}</kbd>` : '';
+  $('helpKeys').textContent = keyed.map(p => p.label).join(', ') + '.';
+}
+// U6: zolang het hulpvenster open is, is de rest van de pagina inert (waar de browser dat kent) en blijft Tab in het venster
+function uiHelpInert(on) {
+  if (!('inert' in HTMLElement.prototype)) return;
+  for (const el of els.helpDlg.parentElement.children) if (el !== els.helpDlg) el.inert = on;
+}
+function uiHelpFocusables() { return [...els.helpDlg.querySelectorAll('button, a[href], input, [tabindex]:not([tabindex="-1"])')].filter(e => !e.disabled && e.offsetParent !== null); }
 function uiHelp(open) {
   els.helpDlg.hidden = !open;
+  uiHelpInert(open);
   if (open) {
+    uiFillHelp();
     const m = $('helpMouse'), t = $('helpTouch');
     if (uiTouch) m.before(t); else t.before(m);
     $('helpClose').focus({ preventScroll: true });
@@ -996,12 +1139,23 @@ function uiEnter(shift) {
 if (!uiTouch) els.search.placeholder += ' (toets /)';
 window.addEventListener('keydown', e => {
   const t = e.target;
-  if (!els.helpDlg.hidden) { if (e.key === 'Escape') { e.preventDefault(); uiHelp(false); } return; }
+  if (!els.helpDlg.hidden) {
+    if (e.key === 'Escape') { e.preventDefault(); uiHelp(false); return; }
+    if (e.key === 'Tab') { // focusval: Tab en Shift+Tab lopen rond binnen het venster
+      const f = uiHelpFocusables(); if (!f.length) return;
+      const i = f.indexOf(document.activeElement);
+      if (e.shiftKey && (i <= 0)) { e.preventDefault(); f[f.length - 1].focus(); }
+      else if (!e.shiftKey && (i < 0 || i >= f.length - 1)) { e.preventDefault(); f[0].focus(); }
+    }
+    return;
+  }
   if (uiMenuCat && uiMenuKey(e)) return;
   const typing = t && ((t.tagName === 'INPUT' && !/^(range|checkbox|radio|button)$/.test(t.type)) || t.tagName === 'TEXTAREA' || t.isContentEditable);
   if (typing) { if (e.key === 'Escape') t.blur(); return; }
   if (e.ctrlKey || e.metaKey || e.altKey) return;
   const onCtl = !!(t && t.closest && t.closest('button, a, input, select, summary'));
+  // U6: Esc sluit eerst het mobiele paneel (de lade), daarna pas de rest
+  if (e.key === 'Escape' && uiSheetBottom() && els.sheet.dataset.state === 'open') { e.preventDefault(); setSheet('peek'); return; }
   if (e.key === 'Escape') { uiStopPlay(); uiStopTour(); hideHint(); uiBackground(); return; }
   if (e.key === 'Enter') { if (onCtl) return; e.preventDefault(); uiStopPlay(); uiStopTour(); hideHint(); uiEnter(e.shiftKey); return; }
   if (e.key === 'Backspace') { e.preventDefault(); uiStopPlay(); uiStopTour(); uiUndo(); return; }
@@ -1165,7 +1319,12 @@ function uiNewLabel() {
   // alleen een klik die op dit label begon (of een klik zonder aanwijzer: toetsenbord, schermlezer); geen nagekomen
   // click van een tik die op het canvas begon en waarna het label onder de vinger is geschoven
   el.addEventListener('pointerdown', () => { el._pd = true; });
-  el.addEventListener('click', e => { const was = el._pd; el._pd = false; const k = el._k; if (!k || (e.detail > 0 && !was)) return; uiStopPlay(); uiStopTour(); hideHint(); uiAct(k); });
+  el.addEventListener('click', e => {
+    const was = el._pd; el._pd = false; const k = el._k; if (!k || (e.detail > 0 && !was)) return;
+    // U8: op een aanraakscherm is er geen title-tip; een afgekapt label toont zijn volledige naam als toast
+    if (uiTouch && el.lastChild.scrollWidth > el.lastChild.clientWidth + 1) uiToast(k.name);
+    uiStopPlay(); uiStopTour(); hideHint(); uiAct(k);
+  });
   els.labels.appendChild(el);
   const ln = document.createElementNS(uiSvgNs, 'line'); ln.style.display = 'none'; els.leaders.appendChild(ln);
   const dot = document.createElementNS(uiSvgNs, 'circle'); dot.setAttribute('r', '3'); dot.style.display = 'none'; els.leaders.appendChild(dot);
@@ -1183,8 +1342,9 @@ function uiMeasureUi() {
   const add = (id, el) => { if (!el || el.hidden) return; const r = el.getBoundingClientRect(); if (r.width > 0 && r.height > 0) out.push({ id, x: r.left, y: r.top, w: r.width, h: r.height }); };
   add('panel', els.sheet);
   add('modes', $('modes')); add('explode', $('xctl')); add('presets', els.presets);
-  add('openSeg', $('openSeg')); add('openCtl', $('openCtl')); add('openList', $('openList'));
+  add('openSeg', $('openSeg')); add('openCtl', $('openCtl')); add('openList', $('openList')); add('isoBadge', els.isoBadge);
   add('title', els.topbar.querySelector('.title')); add('topActions', els.topbar.querySelector('.top-actions'));
+  add('notice', els.notice); if (!els.toast.classList.contains('gone')) add('toast', els.toast);
   if (!els.hint.hidden && !els.hint.classList.contains('gone')) add('hint', els.hint);
   if (!els.menu.hidden) add('menu', els.menu);
   if (!els.tourBar.hidden) add('tour', els.tourBar);
@@ -1197,12 +1357,13 @@ const uiRadii = [30, 52, 78, 110, 150];
 function updateLabels() {
   if (uiUiDirty) { uiRectCache = uiMeasureUi(); uiUiDirty = false; }
   const g = uiLabelGroup();
-  const max = W < 600 ? 10 : 24;
+  const max = W < 600 ? UI_LABEL_MAX_NARROW : UI_LABEL_MAX;
   uiCands.length = 0;
   if (SEL && !SEL.asm && SEL.ev && LABELS) uiCands.push(SEL);
   const lp = uiLabelForce && ACTIVE_PRESET ? appPresetById.get(ACTIVE_PRESET) : null;
   const only = lp && lp.labelOnly && g && g.name === lp.labels ? lp.labelOnly : null;
-  if (g) for (const k of g.bySize) { if (uiCands.length >= max) break; if (k !== SEL && k.ev && (!only || only.includes(k.name))) uiCands.push(k); }
+  let eligible = 0; // U2: alle kinderen die een label zouden kunnen krijgen, ook voorbij het maximum
+  if (g) for (const k of g.bySize) { if (k !== SEL && k.ev && (!only || only.includes(k.name))) { eligible++; if (uiCands.length < max) uiCands.push(k); } }
   // nieuwe teksten eerst toewijzen, dan in één keer meten
   while (labelPool.length < uiCands.length) uiNewLabel();
   for (let i = 0; i < uiCands.length; i++) {
@@ -1262,7 +1423,33 @@ function updateLabels() {
     shown++;
   }
   for (let i = uiCands.length; i < labelPool.length; i++) uiHideLabel(i);
+  // U2: wat niet getoond is (voorbij het maximum of zonder vrije plek) staat als "+n meer" in een hoek van het vrije beeld
+  const selShown = uiCands.length && uiCands[0] === SEL && !SEL.asm ? 1 : 0;
+  uiLabelsMore = g ? Math.max(0, eligible - (shown - selShown)) : 0;
+  uiPlaceMore(g);
   return shown;
+}
+let uiLabelsMore = 0, uiMoreEl = null;
+function uiPlaceMore(g) {
+  if (!uiMoreEl) {
+    uiMoreEl = document.createElement('button'); uiMoreEl.className = 'lmore'; uiMoreEl.hidden = true; uiMoreEl.tabIndex = -1;
+    uiMoreEl.title = 'Alle onderdelen van deze groep in de lijst';
+    uiMoreEl.onclick = () => { showTab('tree'); if (uiSheetBottom()) setSheet('open'); if (uiMoreEl._g) { openRows.add(uiMoreEl._g.id); renderTree(); } };
+    els.labels.appendChild(uiMoreEl);
+  }
+  const el = uiMoreEl;
+  if (!uiLabelsMore) { if (!el.hidden) { el.hidden = true; el.style.transform = 'translate(-9999px,-9999px)'; } return; }
+  const txt = `+${uiLabelsMore} meer`;
+  if (el.textContent !== txt) { el.textContent = txt; el.setAttribute('aria-label', `${uiLabelsMore} onderdelen meer zonder label; open de lijst`); el._w = 0; }
+  el._g = g;
+  if (el.hidden) el.hidden = false;
+  if (!el._w) { el._w = el.offsetWidth; el._h = el.offsetHeight; }
+  const w = el._w || 70, h = el._h || 22;
+  // hoeken van het vrije beeld, rechtsonder eerst; past geen enkele, dan toch rechtsonder
+  const spots = [[uiVx1 - w, uiVy1 - h], [uiVx0, uiVy1 - h], [uiVx1 - w, uiVy0], [uiVx0, uiVy0]];
+  let p = spots.find(([x, y]) => uiFits(x, y, w, h)) || spots[0];
+  const rx = Math.round(p[0]), ry = Math.round(p[1]);
+  if (el._x !== rx || el._y !== ry) { el._x = rx; el._y = ry; el.style.transform = 'translate(' + rx + 'px,' + ry + 'px)'; }
 }
 // vrije plek voor een label: binnen het vrije beeld, niet over andere labels of hun ankers, niet over de bediening
 function uiFits(x, y, w, h) {
@@ -1281,7 +1468,7 @@ function uiFits(x, y, w, h) {
 function uiLabelRects() { return uiSpots.slice(0, uiNPlaced).map(p => ({ name: p.k.name, x: p.x, y: p.y, w: p.w, h: p.h })); }
 
 /* ---------- formaat en vrij beeld ---------- */
-let uiLastFit = null, uiRefitTimer = 0;
+let uiRefitTimer = 0;
 const uiViewPrev = { l: -99, r: -99, t: -99, b: -99 };
 let uiViewW = 0, uiViewH = 0;
 function layoutView() {
@@ -1290,7 +1477,7 @@ function layoutView() {
   const acts = els.topbar.querySelector('.top-actions').getBoundingClientRect();
   const sheet = els.sheet.getBoundingClientRect();
   let dockTop = H;
-  for (const el of [$('modes'), $('xctl'), els.presets, $('openCtl'), $('openList')]) { const r = el.getBoundingClientRect(); if (r.height > 0 && r.top < dockTop) dockTop = r.top; }
+  for (const el of [$('modes'), $('xctl'), els.presets, $('openCtl'), $('openList'), els.isoBadge]) { const r = el.getBoundingClientRect(); if (r.height > 0 && r.top < dockTop) dockTop = r.top; }
   if (wide) {
     VIEW.l = 0; VIEW.r = Math.max(0, W - sheet.left + 8);
     VIEW.t = Math.min(H * 0.3, title.bottom + 6);
@@ -1325,8 +1512,8 @@ function uiRefitNow() {
   clearTimeout(uiRefitTimer); uiRefitTimer = 0;
   if (uiUserCam || !uiLastFit) return;
   const f = uiLastFit;
-  if (f.preset) { const c = f.preset.cam || {}; focusNodes(appSubject(f.preset), appPresetDir(f.preset), c.pad || 1.06, { dur: 0.4 }); }
-  else focusNodes(f.nodes, f.dir, f.pad, Object.assign({}, f.opt || {}, { dur: 0.4 }));
+  if (f.preset) { const c = f.preset.cam || {}; focusNodes(appSubject(f.preset), appPresetDir(f.preset), c.pad || 1.06, { dur: 0.4 }); uiLastFit = f; }
+  else focusNodes(f.nodes, f.dir, f.pad, Object.assign({}, f.opt || {}, { dur: 0.4, delay: 0 }));
 }
 function uiRefitSoon() {
   clearTimeout(uiRefitTimer);
@@ -1418,8 +1605,19 @@ function uiWarmMaterials() {
   };
   setTimeout(step, 600);
 }
-canvas.addEventListener('webglcontextlost', e => e.preventDefault());
-canvas.addEventListener('webglcontextrestored', () => requestRender());
+// R2: bij contextverlies een melding en preventDefault (anders herstelt de browser de context niet); bij herstel de
+// omgevingskaart opnieuw maken (een rendertarget heeft geen kopie in het geheugen) en de melding weghalen
+let uiContextLost = false;
+canvas.addEventListener('webglcontextlost', e => {
+  e.preventDefault(); uiContextLost = true;
+  uiNotice('De 3D-weergave is onderbroken (de grafische context is verloren). De pagina herstelt dit meestal zelf; zo niet, laad haar dan opnieuw.');
+});
+canvas.addEventListener('webglcontextrestored', () => {
+  uiContextLost = false;
+  uiRemakeEnvironment(); // geometrie en gegevenstexturen zet three.js zelf opnieuw op de kaart
+  uiNotice(null);
+  requestRender();
+});
 
 /* ---------- render-lus ---------- */
 controls.addEventListener('change', requestRender);
@@ -1431,6 +1629,7 @@ function uiTick(dt) {
   if (uiStepPlay(dt)) active = true;
   if (stepCam(dt)) active = true;
   if (stepGround(dt)) active = true;
+  if (uiStepFade(dt)) active = true; // U4
   if (uiVisDirty) { applyVisibility(); active = true; }
   return active;
 }
@@ -1446,14 +1645,16 @@ function loop(now) {
   const dt = Math.min(0.1, Math.max(0, (now - last) / 1000)); last = now;
   const active = uiTick(dt);
   controls.update();
+  let drew = false;
   if (active || needs || controls.autoRotate) {
     uiSetDpr(uiPickDpr(active));
     uiNearFar();
     renderer.render(scene, camera);
     updateLabels();
-    needs = false;
+    needs = false; drew = true;
     uiMeasure(now, active);
   }
+  uiDebugFrame(now, dt, drew);
   // labelankers van de groep die opent in kleine porties vooruit bouwen (zie uiAnchorStep)
   if (uiAnchorFrame(active)) needs = true;
   // batches bouwen in de vrije tijd van het frame; opnieuw tekenen als de rij leeg is of hoogstens elke 300 ms
@@ -1464,6 +1665,53 @@ function loop(now) {
   if (uiTiming.batches === undefined && !uiBatchQ.size && !uiBatchJob) uiTiming.batches = Math.round(now);
   if (uiWasActive && !active) { needs = true; uiAfterAnim(); }
   uiWasActive = active;
+}
+
+/* ---------- debug-overlay (?debug=1): tekensnelheid, tekenopdrachten, pixelratio, lichte weergave en versie, zodat een
+   melding van een echt apparaat meetbaar is (docs/telefoontest.md) ---------- */
+const uiVersion = (document.querySelector('meta[name="laguna-version"]') || {}).content || '';
+const uiDebug = (() => { try { return new URLSearchParams(location.search).get('debug') === '1'; } catch (_) { return false; } })();
+const uiDbg = uiDebug ? { el: document.createElement('div'), t: 0, n: 0, acc: 0 } : null;
+if (uiDbg) { uiDbg.el.id = 'debug'; uiDbg.el.setAttribute('aria-hidden', 'true'); document.getElementById('app').appendChild(uiDbg.el); }
+function uiDebugFrame(now, dt, drew) {
+  if (!uiDbg) return;
+  if (drew) uiDbg.n++;
+  uiDbg.acc += dt;
+  if (now - uiDbg.t < 500) return;
+  const i = renderer.info.render, fps = uiDbg.acc > 0 ? uiDbg.n / uiDbg.acc : 0;
+  uiDbg.el.textContent = (uiDbg.n ? fps.toFixed(0) + ' fps' : 'rust') + ' · ' + i.calls + ' tekenopdrachten · ' + Math.round(i.triangles / 1000) + 'k driehoeken · dpr ' + renderer.getPixelRatio().toFixed(2) + (uiLite ? ' · lichte weergave' : '') + ' · versie ' + uiVersion;
+  uiDbg.t = now; uiDbg.n = 0; uiDbg.acc = 0;
+}
+
+/* ---------- deelbare stand in de URL: ?preset=id, of ?open=naam,naam (modus Openen; een naam die vaker voorkomt als pad zonder
+   wortel). De URL volgt de stand met replaceState, zodat de adresbalk altijd een werkende link is. ---------- */
+let uiUrlLast = null;
+function uiUrlSync() {
+  let u; try { u = new URL(location.href); } catch (_) { return; }
+  if (!/^https?:$/.test(u.protocol)) return;
+  const q = u.searchParams; q.delete('preset'); q.delete('open');
+  if (ACTIVE_PRESET && appPresetById.has(ACTIVE_PRESET) && ACTIVE_PRESET !== 'assembled') q.set('preset', ACTIVE_PRESET);
+  else if (OPENMODE) {
+    const open = OPENERS.filter(n => n.ot > 0).map(n => uiNameCount.get(n.name) === 1 ? n.name : uiPathOf(n).replace(/^[^/]+\//, ''));
+    if (open.length) q.set('open', open.join(','));
+  }
+  const s = q.toString(), next = u.pathname + (s ? '?' + s : '') + u.hash;
+  if (next === uiUrlLast) return;
+  uiUrlLast = next;
+  try { history.replaceState(history.state, '', next); } catch (_) { }
+}
+function uiUrlApply() {
+  let q; try { q = new URLSearchParams(location.search); } catch (_) { return; }
+  const pid = q.get('preset'), open = q.get('open');
+  if (pid) {
+    const p = appPresetById.get(pid);
+    if (p && !p.tour && appPresetOk(p)) { appApplyPreset(p, { noHistory: true }); finishAll(); return; }
+  }
+  if (open) {
+    const refs = open.split(',').map(x => x.trim()).filter(Boolean);
+    const p = { id: 'url', cat: 'Openen', label: 'Gedeelde stand', note: 'De stand uit de gedeelde link.', opens: refs };
+    if (refs.length && appPresetOk(p)) { appApplyPreset(p, { noHistory: true }); finishAll(); }
+  }
 }
 
 /* ---------- start ---------- */
@@ -1480,10 +1728,12 @@ updateGround();
 { const f = uiFitPoints(uiCollect([ROOT], true), DIRS.iso, 1.04); if (f) { camera.position.copy(f.pos); controls.target.copy(f.target); } uiLastFit = { preset: appPresetById.get('assembled') }; }
 controls.update();
 uiTiming.render0 = Math.round(performance.now());
+LOADING.textContent = 'Eerste weergave…';
 renderer.render(scene, camera);
 LOADING.classList.add('gone');
 uiTiming.firstFrame = Math.round(performance.now());
 uiInitHint();
+uiUrlApply();
 requestAnimationFrame(t => { last = t; uiReady = true; uiReadyT = performance.now(); uiTiming.interactive = Math.round(uiReadyT); loop(t); });
 uiWarmMaterials();
 { const errs = appCheckPresets(); if (errs.length) console.warn('presets: ' + errs.join('; ')); }
@@ -1500,6 +1750,7 @@ function finishAll() {
   if (uiOpenAnim.size) { uiOpenAnim.clear(); uiStrutSync(); }
   if (uiPlayS) { const s = uiPlayS; uiPlayS = null; uiApplyX(s.w, s.x1, true); updateGround(); }
   if (camAnim) { camera.position.copy(camAnim.p1); controls.target.copy(camAnim.t1); camAnim = null; }
+  uiFadeEnd(); // U4: ook de fade bij isoleren is dan klaar
   applyVisibility();
   ground.position.y = groundTarget; blob.position.y = groundTarget + 0.002;
   controls.update();
@@ -1556,6 +1807,7 @@ function uiFrameOf(names) {
 // en de presetmarkering vervalt (een preset die je daarna kiest, zet hem weer).
 const uiApi = (f, changes) => (...a) => { hideHint(true); const r = f(...a); if (changes) { clearPreset(); uiAfterAction(); } return r; };
 window.__laguna = {
+  version: uiVersion || null,  // versiestempel uit build.py (VERSION plus inhoudshash)
   finishAll, ROOT, ALL, MESHES, PRESETS, byName,
   select: uiApi(select), tapNode: uiApi(tapNode), focusNodes: uiApi(focusNodes),
   setTarget: uiApi(setTarget, true), explodeAllUnder: uiApi(explodeAllUnder, true), collapseAll: uiApi(collapseAll, true), isolate: uiApi(isolate, true),
@@ -1608,4 +1860,19 @@ window.__laguna = {
   pnRebuild: uiPnBuild, pnCheck: uiPnCheck, pnOf: x => { const n = typeof x === 'string' ? (uiByPath(x) || byName(x)) : x; const r = n && uiPnRec(n); return r ? { kind: r.kind, unit: r.id, rule: r.rule || null } : null; },
   setOpen: (name, v, instant) => { const r = uiSetOpen(name, v, instant); uiSyncOpenUi(); renderPanel(); requestRender(); return r; },
   openAll: (v, instant) => { for (const n of OPENERS) uiSetOpen(n, v, instant); uiSyncOpenUi(); renderPanel(); requestRender(); return OPENERS.length; },
+  // golf 5c-1: toetsbare toestand van de nieuwe functies
+  get lastError() { return window.__lagunaLastError || null; },           // R1b: laatste fout uit de globale handler
+  get contextLost() { return uiContextLost; },                           // R2
+  lastFit: () => !uiLastFit ? null : uiLastFit.preset ? { preset: uiLastFit.preset.id } : { nodes: uiLastFit.nodes.map(n => n.name), dir: uiLastFit.dir ? uiLastFit.dir.toArray() : null, pad: uiLastFit.pad }, // R3
+  tourState: () => appTour ? { step: appTour.i, steps: appTourSteps.length, paused: !!appTour.paused, auto: !!appTour.auto, preset: appTourSteps[appTour.i] } : null, // R4
+  tour: { pause: () => uiTourPause(true), resume: () => uiTourPause(false), prev: () => uiTourStep(-1), next: () => uiTourStep(1) },
+  labelsMore: () => uiLabelsMore,                                       // U2
+  get hintStage() { return uiHintStage; }, hintNext: uiHintNext,        // U8
+  get fading() { return !!uiFade; },                                    // U4
+  isolated: () => ISO.map(n => n.name),                                 // U4
+  theme: () => ({ choice: uiThemeChoice(), dark: getComputedStyle(document.documentElement).getPropertyValue('color-scheme').trim() === 'dark' }), // U5
+  setTheme: uiSetTheme,
+  norm: uiNorm, searchTerms: uiSearchTerms,                             // U10
+  saveImage: uiSaveImage,                                               // U9
+  toast: uiToast,                                                       // U8
 };

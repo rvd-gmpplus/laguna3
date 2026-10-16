@@ -1,5 +1,9 @@
-# Eindcijfers voor de documentatie: boom, presets, tekenopdrachten met en zonder bundelen, timing.
+"""Eindcijfers voor de documentatie: boom, presets, tekenopdrachten met en zonder bundelen, timing.
+
+    python3 tools/orkestratie/stats.py REPO UIT.json    exitcode 1 bij consolefouten
+"""
 import sys, os, json
+if len(sys.argv) < 3: print(__doc__); sys.exit(2)
 repo, out = sys.argv[1], sys.argv[2]
 sys.path.insert(0, os.path.join(repo, 'tools'))
 from harness import session
@@ -17,3 +21,4 @@ with session() as s:
     json.dump(r, open(out, 'w'), ensure_ascii=False, indent=1)
     print(json.dumps({k: v for k, v in r.items() if k not in ('perMainGroup',)}, ensure_ascii=False)[:1500])
     s.report()
+    sys.exit(1 if s.errors() else 0)

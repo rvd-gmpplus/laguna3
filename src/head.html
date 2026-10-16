@@ -1,4 +1,11 @@
 <title>Laguna III explosietekening</title>
+<meta name="laguna-version" content="__LAGUNA_VERSION__">
+<meta name="description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback (2011, 2.0 Turbo, automaat): 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
+<meta property="og:title" content="Laguna III explosietekening">
+<meta property="og:description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback: 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://rvd-gmpplus.github.io/laguna3/docs/screenshots/gemonteerd.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231b2228'/%3E%3Cpath d='M8 7v18h16v-4H13V7z' fill='%23f2c230'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@400;500&family=Saira+Condensed:wght@500;600;700&display=swap">
@@ -15,6 +22,7 @@
   --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
   --r:12px; --shadow:0 12px 32px rgba(18,24,32,.14);
   --panel-w:clamp(312px,29vw,368px);
+  --switch-off:#6b7683; /* schakelaar in de stand uit: minstens 3:1 tegen het paneel (WCAG 1.4.11) */
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){
@@ -23,7 +31,7 @@
     --ink:#e6eaee; --ink-2:#9ba6b2; --line:rgba(230,234,238,.13); --chip:#212a33; --chip-ink:#e6eaee;
     --accent:#f2c230; --on-accent:#1b1500; --focus:#86bcff; --danger:#ff8a80; --hover:#6aa8ff;
     --grid:rgba(230,234,238,.12); --grid-strong:rgba(230,234,238,.24); --shade:rgba(0,0,0,.55); --leader:rgba(230,234,238,.6);
-    --shadow:0 12px 32px rgba(0,0,0,.5); color-scheme:dark;
+    --shadow:0 12px 32px rgba(0,0,0,.5); --switch-off:#8a95a2; color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
@@ -31,7 +39,7 @@
   --ink:#e6eaee; --ink-2:#9ba6b2; --line:rgba(230,234,238,.13); --chip:#212a33; --chip-ink:#e6eaee;
   --accent:#f2c230; --on-accent:#1b1500; --focus:#86bcff; --danger:#ff8a80; --hover:#6aa8ff;
   --grid:rgba(230,234,238,.12); --grid-strong:rgba(230,234,238,.24); --shade:rgba(0,0,0,.55); --leader:rgba(230,234,238,.6);
-  --shadow:0 12px 32px rgba(0,0,0,.5); color-scheme:dark;
+  --shadow:0 12px 32px rgba(0,0,0,.5); --switch-off:#8a95a2; color-scheme:dark;
 }
 [hidden]{display:none!important}
 html,body{height:100%}
@@ -42,7 +50,9 @@ button{cursor:pointer}
 kbd{font-family:var(--f-mono);font-size:10.5px;font-weight:500;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 5px;color:var(--ink-2);background:var(--chip)}
 #app{position:fixed;inset:0;overflow:hidden}
 #stage{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;outline:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
-#stage:focus,#stage:focus-visible{outline:none}
+/* toetsenbordfocus op het canvas is zichtbaar als rand langs het beeld (WCAG 2.4.7); na een klik of tik niet */
+#stage:focus{outline:none}
+#stage:focus-visible{outline:3px solid var(--focus);outline-offset:-3px}
 /* ---------- bovenbalk ---------- */
 #topbar{position:absolute;left:0;right:0;top:0;display:flex;align-items:flex-start;gap:12px;justify-content:space-between;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 10px;pointer-events:none}
 #topbar>*{pointer-events:auto}
@@ -142,7 +152,7 @@ dl.spec dd{margin:0;font-family:var(--f-mono);font-size:12.5px;font-variant-nume
 .ctl{display:grid;gap:14px}
 .ctl label.row{display:flex;align-items:center;justify-content:space-between;gap:12px;font-weight:700;font-size:14px}
 .ctl .row small{display:block;font-weight:400;color:var(--ink-2);font-size:12px}
-.switch{appearance:none;-webkit-appearance:none;width:44px;height:26px;border-radius:999px;background:var(--line);position:relative;flex:0 0 auto;margin:0;cursor:pointer;transition:background .2s}
+.switch{appearance:none;-webkit-appearance:none;width:44px;height:26px;border-radius:999px;background:var(--switch-off);position:relative;flex:0 0 auto;margin:0;cursor:pointer;transition:background .2s}
 .switch::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--surface-solid);box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .2s}
 .switch:checked{background:var(--ink)}
 .switch:checked::after{transform:translateX(18px)}
@@ -153,6 +163,18 @@ input[type=range]{width:100%;accent-color:var(--ink)}
 .legend{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--ink-2)}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
 .qnote{font-size:12px;color:var(--ink-2);margin:-6px 0 0}
+/* thema (U5): segmentknop in het tabblad Weergave */
+#themeSeg{box-shadow:none;align-self:flex-start}
+#themeSeg button{padding:6px 12px}
+/* isolatiebadge (U4): bovenin het dock zolang een groep geïsoleerd is */
+#isoBadge{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px 5px 4px 12px;box-shadow:var(--shadow);font-size:12.5px;max-width:100%;box-sizing:border-box}
+#isoBadge span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+#isoBadge .btn{flex:0 0 auto;padding:5px 10px;font-size:12px;border-radius:999px}
+/* meldingen: #notice blijft staan (contextverlies), #toast verdwijnt vanzelf (U8, U9) */
+#notice,#toast{position:absolute;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);border-radius:14px;padding:8px 14px;font-size:13px;font-weight:700;border:1px solid var(--line);pointer-events:none;max-width:min(560px,calc(100% - 32px));box-sizing:border-box;text-align:center;z-index:45}
+#notice{top:calc(50% - 20px);background:var(--danger);color:#fff}
+#toast{bottom:calc(var(--sheet-h,0px) + 16px + env(safe-area-inset-bottom,0px));transition:opacity .3s}
+#toast.gone{opacity:0}
 /* ---------- labels (callouts met leiderlijn) ---------- */
 #labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 #leaders{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
@@ -164,6 +186,9 @@ input[type=range]{width:100%;accent-color:var(--ink)}
 .lbl b{font-family:var(--f-mono);font-weight:500;font-size:10px;background:var(--ink);color:var(--bg);border-radius:999px;min-width:18px;height:18px;display:inline-grid;place-items:center;padding:0 4px;flex:0 0 auto}
 .lbl.sel{background:var(--accent);color:var(--on-accent);border-color:transparent}
 .touch .lbl{padding:5px 11px 5px 5px;font-size:12px}
+/* U2: "+n meer" als er meer onderdelen zijn dan er labels passen; geen .lbl (geen leiderlijn, telt niet als label) */
+.lmore{position:absolute;left:0;top:0;pointer-events:auto;border:1px dashed var(--ink-2);background:var(--surface);color:var(--ink-2);border-radius:999px;padding:3px 10px;font-size:11.5px;font-weight:700;white-space:nowrap;transform:translate(-9999px,-9999px);will-change:transform}
+.lmore:hover{color:var(--ink);border-style:solid}
 @media (max-width:600px){.lbl,.touch .lbl{padding:1px 7px 1px 2px;font-size:10px;gap:4px;max-width:min(220px,58vw);box-shadow:0 1px 4px rgba(0,0,0,.12)}.lbl b{font-size:9px;min-width:15px;height:15px;padding:0 3px}}
 #tip{position:fixed;left:0;top:0;z-index:40;pointer-events:none;background:var(--ink);color:var(--bg);border-radius:9px;padding:6px 10px;font-size:12.5px;font-weight:700;box-shadow:var(--shadow);white-space:nowrap;max-width:min(420px,80vw);overflow:hidden;text-overflow:ellipsis}
 #tip i{font-style:normal;font-weight:400;opacity:.8}
@@ -177,12 +202,20 @@ input[type=range]{width:100%;accent-color:var(--ink)}
 #tourText{font-size:13px;line-height:1.35}
 #tourText b{display:block;font-family:var(--f-mono);font-size:10.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
 #tourStop{flex:0 0 auto}
+/* R4: vorige, pauze of hervat, volgende en stop in de rondleidingsbalk */
+.tourbtns{display:flex;align-items:center;gap:4px;flex:0 0 auto}
+.tbtn{width:32px;height:32px;padding:0;border-radius:50%;border:1px solid var(--line);background:var(--chip);display:inline-grid;place-items:center}
+.tbtn svg{width:16px;height:16px;fill:currentColor}
+.tbtn[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.tbtn:disabled{opacity:.4;cursor:default}
 #loading{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-mono);font-size:13px;color:var(--ink-2);background:var(--bg);text-align:center;padding:0 24px;z-index:50}
 #loading.gone{display:none}
 /* hulp */
+#debug{position:fixed;top:0;left:50%;transform:translateX(-50%);z-index:70;font-family:var(--f-mono);font-size:11px;background:rgba(10,14,18,.78);color:#fff;padding:3px 9px;border-radius:0 0 8px 8px;pointer-events:none;white-space:nowrap}
 #helpDlg{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:rgba(10,14,18,.42);padding:16px}
 .dlg{background:var(--surface-solid);color:var(--ink);border-radius:16px;box-shadow:0 24px 64px rgba(0,0,0,.35);width:min(560px,100%);max-height:calc(100% - 32px);overflow:auto;padding:18px 20px 16px;box-sizing:border-box}
 .dlg h2{margin:0 0 8px;font-family:var(--f-display);font-size:24px}
+.dlg .ver{margin:-6px 0 10px;color:var(--ink-2);font-family:var(--f-mono);font-size:11px;letter-spacing:.06em}
 .dlg h3{margin:14px 0 6px;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);font-weight:500}
 .dlg dl{display:grid;grid-template-columns:minmax(0,170px) 1fr;gap:5px 14px;margin:0;font-size:13.5px}
 .dlg dt{font-weight:700}
@@ -275,6 +308,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
   #tourBar{left:12px;right:12px;transform:none;max-width:none;gap:8px;padding:6px 6px 6px 12px}
   #tourText{flex:1 1 auto;min-width:0;font-size:12.5px;line-height:1.3;max-height:calc(3.9em + 14px);overflow:hidden}
   #tourStop{flex:0 0 auto;padding:6px 9px;font-size:12px}
+  .tbtn{width:28px;height:28px}
   .dock-main{flex-direction:column;align-items:stretch;gap:6px}
   .xctl{flex-direction:row;align-items:center;gap:8px;padding:4px 5px 4px 12px}
   .xlbl{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;line-height:1.15}
@@ -404,10 +438,42 @@ input[type=range]{width:100%;accent-color:var(--ink)}
   .xlbl{font-size:11px}
 }
 @media (prefers-reduced-motion: reduce){
-  #sheet,#hint,.switch,.switch::after{transition:none}
+  #sheet,#hint,#toast,.switch,.switch::after{transition:none}
   #press.run circle{animation-duration:.01s}
 }
+/* U9: afdrukken geeft alleen de onderdeelkaart (naam, beschrijving, specificaties, onderdeelnummers) */
+@media print{
+  #stage,#labels,#topbar,#dock,#menu,#hint,#tourBar,#tip,#press,#loading,#helpDlg,#notice,#toast,.grab,.tabs,#tab-tree,#tab-view,.sel-actions{display:none!important}
+  html,body,#app{position:static;overflow:visible;height:auto;background:#fff;color:#000}
+  #sheet{position:static;width:auto;height:auto!important;max-height:none;border:0;box-shadow:none;border-radius:0}
+  #tab-info{display:block!important}
+  .tabpanels{overflow:visible}
+}
 </style>
+<script>
+/* R1b: fouten vóór de eerste weergave vervangen de laadmelding door een korte melding met de versie; daarna alleen de console.
+   Staat hier (vóór de scripttags), zodat ook een script dat niet laadt of niet parset een melding geeft.
+   U5: een eerder gekozen thema staat al op <html> voordat de pagina tekent (geen flits). */
+(function () {
+  function fail(msg, src) {
+    var el = document.getElementById('loading'), v = (document.querySelector('meta[name="laguna-version"]') || {}).content || '?';
+    var loading = !!(el && !el.classList.contains('gone'));
+    window.__lagunaLastError = { message: String(msg), source: src, loading: loading, when: Date.now() };
+    if (!loading) { console.error('laguna3 (versie ' + v + '): ' + msg); return; }
+    var t = el.textContent || '', vt = 'Versie ' + v + '.';
+    // een voortgangsmelding ("Model opbouwen…", met daarachter de noscript-tekst) wordt vervangen; een eigen foutmelding van
+    // core.js of app1.js (zonder beletselteken) blijft staan en krijgt alleen de versie erbij
+    if (!t.trim() || t.indexOf('…') >= 0) el.textContent = 'De pagina kon niet worden geladen (' + msg + '). Laad de pagina opnieuw.';
+    if (el.textContent.indexOf(vt) < 0) el.textContent += ' ' + vt;
+  }
+  window.addEventListener('error', function (e) {
+    if (e.target && e.target !== window && e.target.tagName) fail('bestand niet geladen: ' + (e.target.src || e.target.href || e.target.tagName), 'resource');
+    else fail(e.message || (e.error && e.error.message) || 'onbekende fout', 'error');
+  }, true);
+  window.addEventListener('unhandledrejection', function (e) { var r = e.reason; fail(r && r.message ? r.message : String(r), 'rejection'); });
+  try { var th = window.localStorage.getItem('laguna3-theme'); if (th === 'light' || th === 'dark') document.documentElement.setAttribute('data-theme', th); } catch (e) { }
+})();
+</script>
 
 <div id="app">
   <canvas id="stage" tabindex="0" role="application" aria-label="3D-explosietekening van een Renault Laguna III hatchback. Klik op een onderdeel om het uit te klappen."></canvas>
@@ -446,9 +512,9 @@ input[type=range]{width:100%;accent-color:var(--ink)}
       </div>
     </div>
     <div class="tabs" role="tablist">
-      <button role="tab" id="tabbtn-info" aria-selected="true" aria-controls="tab-info">Onderdeel</button>
-      <button role="tab" id="tabbtn-tree" aria-selected="false" aria-controls="tab-tree">Onderdelen</button>
-      <button role="tab" id="tabbtn-view" aria-selected="false" aria-controls="tab-view">Weergave</button>
+      <button role="tab" id="tabbtn-info" aria-selected="true" aria-controls="tab-info" tabindex="0">Onderdeel</button>
+      <button role="tab" id="tabbtn-tree" aria-selected="false" aria-controls="tab-tree" tabindex="-1">Onderdelen</button>
+      <button role="tab" id="tabbtn-view" aria-selected="false" aria-controls="tab-view" tabindex="-1">Weergave</button>
     </div>
     <div class="tabpanels">
       <section id="tab-info" role="tabpanel" aria-labelledby="tabbtn-info">
@@ -480,7 +546,13 @@ input[type=range]{width:100%;accent-color:var(--ink)}
           <label class="row" for="tDim"><span>Rest dimmen bij duiken<small>De rest van de auto vervaagt, het onderdeel springt eruit</small></span><input class="switch" type="checkbox" role="switch" id="tDim" checked></label>
           <label class="row" for="tBatch"><span>Gesloten groepen samenvoegen<small>Minder tekenopdrachten, zelfde beeld</small></span><input class="switch" type="checkbox" role="switch" id="tBatch" checked></label>
           <label class="row" for="tQuality" id="qualityRow" hidden><span>Volle kwaliteit<small>Scherpte en lakglans</small></span><input class="switch" type="checkbox" role="switch" id="tQuality"></label>
-          <p class="qnote" id="qualityNote" hidden>Lichte weergave ingeschakeld voor vloeiende beweging.</p>
+          <p class="qnote" id="qualityNote" hidden>Lichte weergave ingeschakeld voor vloeiende beweging: minder scherpte en geen lakglans. Zet Volle kwaliteit aan om terug te schakelen; blijft het haperen, sluit dan andere tabbladen of zet hardwareversnelling aan in de browser.</p>
+          <div><p class="kids-title">Thema</p>
+            <div class="seg" id="themeSeg" role="radiogroup" aria-label="Thema: licht, donker of volg het systeem">
+              <button role="radio" aria-checked="false" tabindex="-1" data-theme="light">Licht</button>
+              <button role="radio" aria-checked="false" tabindex="-1" data-theme="dark">Donker</button>
+              <button role="radio" aria-checked="true" tabindex="0" data-theme="system">Systeem</button>
+            </div></div>
           <div><p class="kids-title">Camera</p>
             <div class="camgrid">
               <button class="btn" data-cam="front">Voor</button><button class="btn" data-cam="side">Zij</button><button class="btn" data-cam="rear">Achter</button>
@@ -488,11 +560,14 @@ input[type=range]{width:100%;accent-color:var(--ink)}
             </div></div>
           <div><p class="kids-title">Alles tegelijk</p>
             <div class="btnrow"><button class="btn" id="btnExplodeAll">Alles uitklappen</button><button class="btn" id="btnCollapseAll">Alles inklappen</button><button class="btn" id="btnShowAll">Alles tonen</button></div></div>
+          <div><p class="kids-title">Exporteren</p>
+            <div class="btnrow"><button class="btn" id="btnShot" title="Het huidige beeld als PNG opslaan, met de naam en het onderdeelnummer van de selectie onderin">Beeld opslaan</button><button class="btn" id="btnPrint" title="Alleen de onderdeelkaart afdrukken">Kaart afdrukken</button></div></div>
         </div>
       </section>
     </div>
   </aside>
   <nav id="dock" aria-label="Bediening">
+    <div id="isoBadge" role="status" hidden><span>Geïsoleerd: <b id="isoName"></b></span><button class="btn" id="isoShowAll" title="De isolatie opheffen en de hele auto tonen">Alles tonen</button></div>
     <div id="openList" role="group" aria-label="Alle openers" hidden></div>
     <div class="dock-main">
       <div class="seg" id="modes" role="radiogroup" aria-label="Wat doet een klik op een onderdeel">
@@ -519,13 +594,22 @@ input[type=range]{width:100%;accent-color:var(--ink)}
     </div>
     <div class="cats" id="presets" role="toolbar" aria-label="Presets per categorie"></div>
   </nav>
-  <div id="menu" role="menu" hidden></div>
+  <div id="menu" hidden></div>
   <div id="hint" role="status"></div>
-  <div id="tourBar" role="status" hidden><span id="tourText"></span><button class="btn" id="tourStop">Stop rondleiding</button></div>
+  <div id="tourBar" role="status" hidden><span id="tourText"></span>
+    <div class="tourbtns" role="group" aria-label="Rondleiding bedienen">
+      <button class="tbtn" id="tourPrev" aria-label="Vorige stap" title="Vorige stap"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 5l-9 7 9 7z"/></svg></button>
+      <button class="tbtn" id="tourPause" aria-label="Pauze" aria-pressed="false" title="Pauze"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></button>
+      <button class="tbtn" id="tourNext" aria-label="Volgende stap" title="Volgende stap"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l9 7-9 7z"/></svg></button>
+      <button class="btn" id="tourStop">Stop</button>
+    </div></div>
+  <div id="notice" role="alert" hidden></div>
+  <div id="toast" role="status" hidden></div>
   <div id="tip" hidden></div>
   <div id="press" hidden><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="28"/></svg></div>
   <div id="helpDlg" hidden><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
     <h2 id="helpTitle">Bediening</h2>
+    <p class="ver">Laguna III explosietekening, versie __LAGUNA_VERSION__</p>
     <div id="helpMouse"><h3>Met de muis</h3><dl>
       <dt>Klik</dt><dd>De groep van het onderdeel klapt uit; de rest blijft staan. Staat die groep al open, dan wordt het onderdeel uitgelicht.</dd>
       <dt>Dubbelklik</dt><dd>Direct naar dit onderdeel: alle groepen erboven gaan laag voor laag open.</dd>
@@ -541,7 +625,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
       <dt>Uitklappen · Openen</dt><dd>Bovenin: Uitklappen haalt groepen uit elkaar, Openen laat portieren, kap, klep en andere openers draaien of schuiven. Bij Openen opent een klik de buitenste dichte opener op het onderdeel, daarna de volgende naar binnen; zijn ze open, dan sluit de binnenste. Rechtsklik, Shift+klik of vasthouden sluit de binnenste open opener. Het dock heeft dan Alles open, Alles dicht en een lijst van alle openers.</dd>
       <dt>Klik: …</dt><dd>Onderdeel (standaard), Laag voor laag (van buiten naar binnen), Inklappen of alleen Info.</dd>
       <dt>Explosie</dt><dd>Schuif om de gekozen groep laag voor laag uit elkaar te halen; Demonteren en Monteren spelen dat af.</dd>
-      <dt>Presets</dt><dd>Zeven categorieën met kant-en-klare standen, ook de rondleiding.</dd>
+      <dt>Presets</dt><dd id="helpCats"></dd>
       <dt>Groter geheel</dt><dd>In het paneel: klapt de eerstvolgende dichte groep erboven uit.</dd>
       <dt>Stap terug</dt><dd>Maakt de laatste handeling ongedaan.</dd></dl>
     <h3>Toetsen</h3><dl>
@@ -550,10 +634,10 @@ input[type=range]{width:100%;accent-color:var(--ink)}
       <dt><kbd>&uarr;</kbd> <kbd>&darr;</kbd> <kbd>&larr;</kbd> <kbd>&rarr;</kbd></dt><dd>Door de onderdelen lopen: bovenliggende groep, eerste deel, vorige of volgende op hetzelfde niveau.</dd>
       <dt><kbd>O</kbd></dt><dd>Wisselt tussen Uitklappen en Openen. In Openen opent <kbd>Enter</kbd> de opener van de selectie en sluit <kbd>Shift</kbd>+<kbd>Enter</kbd> hem.</dd>
       <dt><kbd>Esc</kbd></dt><dd>Menu sluiten of de hele auto selecteren.</dd>
-      <dt><kbd>0</kbd> tot <kbd>9</kbd></dt><dd>Gemonteerd, Hoofdgroepen, Motor, Motor tot op de bout, Automaat, Onderstel, Carrosserie, Interieur, Röntgen, Alles uit elkaar.</dd>
+      <dt id="helpKeysT"></dt><dd id="helpKeys"></dd>
       <dt><kbd>/</kbd></dt><dd>Zoek een onderdeel in de onderdelenlijst.</dd>
       <dt><kbd>?</kbd></dt><dd>Deze uitleg.</dd></dl>
     <div class="btnrow"><button class="btn primary" id="helpClose">Sluiten</button></div>
   </div></div>
-  <div id="loading">Model opbouwen…</div>
+  <div id="loading">Model opbouwen…<noscript> Deze pagina heeft JavaScript nodig.</noscript></div>
 </div>

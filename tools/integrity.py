@@ -52,9 +52,24 @@ CHECK = r"""(ANCHORS) => {
   const anchorErr = [];
   const A = ANCHORS, count = new Map();
   for (const n of L.ALL) count.set(n.name, (count.get(n.name) || 0) + 1);
+  const SPECIAL = new Set(['root_children_order', 'onderstel_children', 'contains', 'content', 'openers', 'preset_ids', 'triangle_budgets']);
   for (const [k, list] of Object.entries(A)) {
-    if (k === 'root_children_order' || k === 'onderstel_children' || k === 'contains' || k === 'content') continue;
+    if (SPECIAL.has(k)) continue;
     for (const name of list) { const c = count.get(name) || 0; if (c !== 1) anchorErr.push(`anker "${name}" (${k}) komt ${c}x voor, moet 1x`); }
+  }
+  // openers: precies deze leiders in de modus Openen, als pad (namen zoals Zijruit komen vier keer voor), niet meer en niet minder
+  if (A.openers) {
+    const leaders = (typeof OPENERS !== 'undefined' && typeof uiPathOf === 'function') ? OPENERS.map(n => uiPathOf(n)) : [];
+    const have = new Set(leaders);
+    for (const p of A.openers) if (!have.has(p)) anchorErr.push(`opener "${p}" bestaat niet of is geen leider in de modus Openen`);
+    for (const p of have) if (!A.openers.includes(p)) anchorErr.push(`opener "${p}" staat niet in anchors.json (openers)`);
+    if (have.size !== A.openers.length) anchorErr.push(`${have.size} openers in de pagina, ${A.openers.length} in anchors.json`);
+  }
+  // presets: precies deze id's (een verdwenen of hernoemde preset is een fout)
+  if (A.preset_ids && L.PRESETS) {
+    const ids = L.PRESETS.map(p => p.id);
+    for (const id of A.preset_ids) if (!ids.includes(id)) anchorErr.push(`preset "${id}" bestaat niet meer`);
+    for (const id of ids) if (!A.preset_ids.includes(id)) anchorErr.push(`preset "${id}" staat niet in anchors.json (preset_ids)`);
   }
   const rc = L.ROOT.kids.map(k => k.name).join(' | '), want = A.root_children_order.join(' | ');
   if (rc !== want) anchorErr.push(`hoofdgroepen: "${rc}" in plaats van "${want}"`);
