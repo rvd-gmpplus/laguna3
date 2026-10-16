@@ -1,6 +1,6 @@
 <!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"></head><body>
 <title>Laguna III explosietekening</title>
-<meta name="model-version" content="8 (bron f1152a2)">
+<meta name="model-version" content="9 (bron a13fdc0)">
 <meta name="description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback (2011, 2.0 Turbo, automaat): 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
 <meta property="og:title" content="Laguna III explosietekening">
 <meta property="og:description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback: 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
@@ -610,7 +610,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
   <div id="press" hidden><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="28"/></svg></div>
   <div id="helpDlg" hidden><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
     <h2 id="helpTitle">Bediening</h2>
-    <p class="ver">Laguna III explosietekening, versie 8 (bron f1152a2)</p>
+    <p class="ver">Laguna III explosietekening, versie 9 (bron a13fdc0)</p>
     <div id="helpMouse"><h3>Met de muis</h3><dl>
       <dt>Klik</dt><dd>De groep van het onderdeel klapt uit; de rest blijft staan. Staat die groep al open, dan wordt het onderdeel uitgelicht.</dd>
       <dt>Dubbelklik</dt><dd>Direct naar dit onderdeel: alle groepen erboven gaan laag voor laag open.</dd>
@@ -840,11 +840,11 @@ const G = {
     return key ? cache('l' + ax + key + seg, build) : build();
   },
 };
-function hexBolt(len, d, ax = 'y') { // kop bij oorsprong, steel richting +as
+function hexBolt(len, d, ax = 'y') { // kop bij oorsprong, steel richting +as; steel 6 en ring 8 segmenten (golf 5b-2, G6: 80 in plaats van 128 driehoeken)
   return cache(`bolt${len}|${d}|${ax}`, () => {
     const head = new THREE.CylinderGeometry(d * 0.9, d * 0.9, d * 0.65, 6); head.translate(0, -d * 0.325, 0);
-    const shank = new THREE.CylinderGeometry(d / 2, d / 2, len, 10); shank.translate(0, len / 2, 0);
-    const washer = new THREE.CylinderGeometry(d * 1.05, d * 1.05, d * 0.12, 16); washer.translate(0, d * 0.06, 0);
+    const shank = new THREE.CylinderGeometry(d / 2, d / 2, len, 6); shank.translate(0, len / 2, 0);
+    const washer = new THREE.CylinderGeometry(d * 1.05, d * 1.05, d * 0.12, 8); washer.translate(0, d * 0.06, 0);
     return yTo(merge([head, shank, washer]), ax);
   });
 }
@@ -1415,6 +1415,14 @@ function bodQdBand(s, q0, q1, d0, d1, out, crown = 0, nq = 12, nt = 1) {
     const [x, y] = bodGhHalf(z, q); return [s * (x + o), y + (q > bodQS ? o * 0.6 : 0), z];
   }, q0, q1, nq, () => [0, 1], nt);
 }
+// zelfde band langs een willekeurige hellende lijn z = zl(y) (de randen van de B-stijl)
+function bodLineBand(s, zl, q0, q1, d0, d1, out, crown = 0, nq = 12, nt = 1) {
+  return patch((q, t) => {
+    const d = d0 + (d1 - d0) * t, o = out + crown * Math.sin(PI * t); let z = zl(1.1) + d;
+    for (let i = 0; i < 4; i++) z = zl(bodGhHalf(z, q)[1]) + d;
+    const [x, y] = bodGhHalf(z, q); return [s * (x + o), y + (q > bodQS ? o * 0.6 : 0), z];
+  }, q0, q1, nq, () => [0, 1], nt);
+}
 const bodSail = 0.865;                                                    // spiegeldriehoek tussen z 0,865 en de A-stijl
 const bodQy = (z, y) => bodQAtY(z, y);
 
@@ -1488,6 +1496,65 @@ function bodBeltTrim(s, path) {
 // dunne donkere naadlijn op de onderbak langs punten (z, y): het portierrubber dat in de sluitnaad zichtbaar is
 const bodSeamLine = (s, zy, w = 0.0045) => bodRibbon(s, zy, w, 0.0007, 0, 1, (z, y) => { const [x, yy] = halfPt(z, sAtY(z, y)); return [x, yy, z]; });
 const bodLinZ = (a, b, n, q) => { const out = []; for (let i = 0; i <= n; i++) out.push([a + (b - a) * i / n, typeof q === 'function' ? q(a + (b - a) * i / n) : q]); return out; };
+/* ---------- huidpanelen met stations naar doorbuiging ---------- */
+// Kiest uit een fijne reeks punten per lijn (lines[k][i]: punt i van lijn k) de stations waartussen de rechte koorde voor alle lijnen
+// tegelijk hoogstens tol van de tussenliggende fijne punten afligt; indices in 'keep' worden altijd een station. Geeft de gekozen indices.
+function bodSagPick(lines, tol, keep = new Set()) {
+  const n = lines[0].length, t2 = tol * tol;
+  const ok = (a, c) => {
+    for (const L of lines) {
+      const A = L[a], dx = L[c][0] - A[0], dy = L[c][1] - A[1], dz = L[c][2] - A[2], dd = dx * dx + dy * dy + dz * dz || 1e-18;
+      for (let m = a + 1; m < c; m++) {
+        const px = L[m][0] - A[0], py = L[m][1] - A[1], pz = L[m][2] - A[2], t = clamp((px * dx + py * dy + pz * dz) / dd, 0, 1);
+        const ex = px - t * dx, ey = py - t * dy, ez = pz - t * dz; if (ex * ex + ey * ey + ez * ez > t2) return false;
+      }
+    }
+    return true;
+  };
+  const out = [0];
+  for (let a = 0; a < n - 1;) { let b = a + 1; while (b + 1 < n && !keep.has(b) && ok(a, b + 1)) b++; out.push(b); a = b; }
+  return out;
+}
+// lowSide met stations naar doorbuiging. Een fijn raster van nuF stappen in z (plus de kandidaten 'extra' en de vaste stations 'keep')
+// en nvF stappen over het bereik vr(z) wordt uitgedund tot de rijen en kolommen waartussen de koorde hoogstens tol van het oppervlak
+// afligt (eerst de kolommen over alle fijne rijen, dan de rijen over alle fijne kolommen). Gemeten op de linkerhelft; de rechterhelft
+// krijgt dezelfde stations gespiegeld, zodat de naad op de hartlijn blijft sluiten. Met zs en vf worden de stations niet gekozen maar
+// gebruikt (banden die rijen delen). Geeft geo(s) en de stations (zs, vf). Per vak kiest geo de diagonaal die het oppervlak het best volgt.
+function bodSagSide(z0, z1, vr, tol, { keep = [], extra = [], nuF = 160, nvF = 96, off = 0, vf = null, zs = null } = {}) {
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  let zAll = zs;
+  if (!zAll) {
+    const c = [];
+    for (let i = 0; i <= nuF; i++) c.push(z0 + (z1 - z0) * i / nuF);
+    keep.concat(extra).forEach(b => { if (b > z0 + 1e-4 && b < z1 - 1e-4) c.push(b); });
+    c.sort((a, b) => a - b); zAll = c.filter((z, i) => i === 0 || !near(z, c[i - 1]));
+  }
+  const fine = []; for (let j = 0; j <= nvF; j++) fine.push(j / nvF);
+  let zu = zAll;
+  if (!vf || !zs) {
+    const grid = zAll.map(z => { const [a, b] = vr(z); return fine.map(t => bodLow(z, a + (b - a) * t, off)); });
+    if (!vf) vf = bodSagPick(grid, tol).map(j => fine[j]);
+    if (!zs) {
+      const cols = fine.map((_, j) => grid.map(r => r[j])), keepI = new Set(zAll.map((z, i) => keep.some(k => near(k, z)) ? i : -1).filter(i => i >= 0));
+      zu = bodSagPick(cols, tol, keepI).map(i => zAll[i]);
+    }
+  }
+  const geo = s => {
+    const tf = s > 0 ? vf : vf.map(t => 1 - t).reverse(), pos = [], idx = [], rows = tf.length;
+    for (const z of zu) { const [a, b] = sideR(s, ...vr(z)); for (const t of tf) pos.push(...bodLow(z, a + (b - a) * t, off)); }
+    // per vak de diagonaal waarvan het midden het dichtst bij het oppervlak in het midden van het vak ligt
+    const d2 = (k, l, c) => { let q = 0; for (let e = 0; e < 3; e++) { const m = (pos[3 * k + e] + pos[3 * l + e]) / 2 - c[e]; q += m * m; } return q; };
+    for (let i = 0; i < zu.length - 1; i++) {
+      const zm = (zu[i] + zu[i + 1]) / 2, [ma, mb] = sideR(s, ...vr(zm));
+      for (let j = 0; j < rows - 1; j++) {
+        const a = i * rows + j, b = a + rows, c = bodLow(zm, ma + (mb - ma) * (tf[j] + tf[j + 1]) / 2, off);
+        if (d2(b, a + 1, c) <= d2(a, b + 1, c)) idx.push(a, b, a + 1, b, b + 1, a + 1); else idx.push(a, b, b + 1, a, b + 1, a + 1);
+      }
+    }
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals(); return g;
+  };
+  return { geo, zs: zu, vf };
+}
 /* ---------- portieren ---------- */
 // pad van het portierrubber (z, y), 2 cm binnen de portierrand: voorrand (schuin bij het voorportier), bovenkant op de
 // gordelhoogte en achterrand; bij het achterportier volgt de achterrand de naad die om de achterwielboog naar voren loopt
@@ -1552,7 +1619,6 @@ function buildDoor(s, isFront) {
   const mA = isFront ? -0.137 : -0.955, mB = isFront ? 0.82 : -0.158, lijst = bodLijst(s, mA, mB, false, isFront);
   const mBr = bodDense(mA, mA + 0.04, 6).concat(bodDense(mB - (isFront ? 0.11 : 0.04), mB, isFront ? 12 : 6));
   const lijstP = (t0, t1, nv, extra) => patch((z, t) => lijst(z, t, extra), mA, mB, 34, () => [t0, t1], nv, mBr);
-  const hingeZ = isFront ? z1 - 0.03 : z1 - 0.025;
   // openen: de draaias ligt vlak voor de voorrand en buiten de huid (asregel), voor het voorportier met 6 graden voorwaartse helling
   // langs de schuine voorrand; zo draait de voorrand niet in het scherm. Linkerportieren draaien met een negatieve hoek naar buiten.
   const dName = `Portier ${n}${pos}`, dPath = `Renault Laguna III/Carrosserie/${dName}`;
@@ -1565,13 +1631,41 @@ function buildDoor(s, isFront) {
   const yBelt = z => YT(z) - 0.004, ls = (a, b, n) => bodDense(a, b, n).concat([b]);
   const seams = isFront ? [bodSeamLine(s, [0.312].concat(ls(0.312, 0.9, 14)).map(y => [bodFDF(y + 0.001), y]).filter(([z, y]) => y < yBelt(z))), bodSeamLine(s, [0.31].concat(ls(0.31, yBelt(-0.148), 12)).map(y => [-0.148, y]), 0.0105)]
     : [bodSeamLine(s, [-0.666].concat(ls(-0.666, -1.2665, 30)).map(z => [z, bodRDloZ(z) - 0.001]).concat(ls(0.878, yBelt(-1.2665), 4).map(y => [-1.2665, y])))];
-  // scharnierblad aan de carrosseriezijde: voorportier op de A-stijl vlak voor de voorrand, achterportier op de B-stijl vlak achter de naad
-  const leafZ = y => isFront ? bodFDF(y) + 0.085 : -0.172, leafX = y => isFront ? s * (surfX(leafZ(y), y) - 0.045) : s * 0.772;
-  const hinge = (h, y) => A(`Scharnier ${h}`, { d: `${h === 'boven' ? 'Bovenste' : 'Onderste'} portierscharnier: een blad op de stijl (carrosserie) en een blad op het portier met een scharnierpen. In dit model draait het portier om een as vlak voor de voorrand (schematisch).`, ex: [-s * 0.03, 0, 0.12] }, [
-    P('Scharnierblad', G.rbox(0.03, 0.07, 0.05, 0.006), MAT.darkSteel, { d: 'Gesmeed stalen scharnierblad met pen, aan het portier; draait met het portier mee.', p: [s * (surfX(hingeZ, y) - 0.035), y, hingeZ + 0.02], ex: [0, 0, 0.04] }),
-    P('Scharnierblad carrosserie', G.rbox(0.03, 0.07, 0.04, 0.006), MAT.darkSteel, { d: 'Scharnierblad aan de carrosseriezijde, geschroefd op de stijl; blijft staan als het portier opent.', p: [leafX(y), y, leafZ(y)], stay: true, ex: [0, 0, 0.04] }),
-    ...[0.022, -0.022].map((dy, i) => P(`Scharnierbout ${i + 1}`, hexBolt(0.025, 0.008, s > 0 ? '-x' : 'x'), MAT.steel, { d: 'Bout M8 waarmee het scharnierblad aan het portier vastzit.', p: [s * (surfX(hingeZ, y) - 0.05), y + dy, hingeZ + 0.005], ex: [-s * 0.05, 0, 0] })),
-  ]);
+  // portierscharnier als plat gesmeed blad in lakkleur (meegelakt met de carrosserie): het portierblad ligt plat op de voorste sluitrand
+  // van het portier, het carrosserieblad plat op de stijl, en elk blad heeft een oog om de stalen pen (portierblad boven, carrosserieblad onder).
+  // Lokaal assenstelsel per scharnier: oorsprong op het hart van de pen, y langs de pen, x naar buiten, z naar voren.
+  // Voorportier: pen 22 mm binnen de huid en 11 mm voor de schuine voorrand (bodFDF), alles 6 graden voorover zoals voorrand en draaias;
+  // het carrosserieblad staat evenwijdig aan het portierblad voor de pen (op de plaats van de A-stijl achter het voorscherm).
+  // Achterportier: pen 83 mm binnen de huid, vlak voor de voorste sluitrand (z -0,153 aan de huid, 12 mm terug op 95 mm diepte) en ruim achter
+  // de achterste sluitrand van het voorportier; zo zwaait het oog bij het openen niet door de gordel op de B-stijl. Het carrosserieblad ligt plat
+  // op de buitenkant van de B-stijl (x 0,76), 12 graden gekanteld zoals de stijl en voor de deurbekleding (die tot z -0,173 loopt), met een arm naar de pen.
+  const hTilt = isFront ? Math.atan(0.065 / 0.61) : 0, hSlant = -s * Math.atan(0.012 / 0.095);
+  const eye = dy => xf(G.cyl('y', 0.0075, 0.0075, 0.026, 12), [0, dy, 0]);
+  const hinge = (h, y) => {
+    const zf = isFront ? bodFDF(y) : z1, xs = surfX(zf, y);
+    const pin = isFront ? [s * (xs - 0.022), y, zf + 0.011] : [s * 0.80, y, -0.1535];
+    const R = (lx, ly, lz) => [pin[0] + lx, pin[1] + ly * Math.cos(hTilt) - lz * Math.sin(hTilt), pin[2] + ly * Math.sin(hTilt) + lz * Math.cos(hTilt)];
+    let doorGeo, bodyGeo, boltAt, boltR;
+    if (isFront) {
+      doorGeo = merge([xf(G.box(0.053, 0.055, 0.004), [-s * 0.0265, 0, -0.0085]), eye(0.013)]);
+      bodyGeo = merge([xf(G.box(0.053, 0.055, 0.004), [-s * 0.0265, 0, 0.0085]), eye(-0.013)]);
+      boltAt = dy => R(-s * 0.036, dy, -0.0065); boltR = [hTilt, PI, 0];
+    } else {
+      // portierblad op de schuine sluitrand: z = -0,153 - 0,126 maal de diepte, 1 mm ervoor; lengte van de pen tot 30 mm binnen de huid
+      const L = xs - 0.03 - 0.80, zAt = x => -0.153 - 0.126 * (xs - x) + 0.003 + 0.1535;
+      doorGeo = merge([xf(G.box(L, 0.055, 0.004), [s * L / 2, 0, zAt(0.80 + L / 2)], [0, hSlant, 0]), eye(0.013)]);
+      bodyGeo = merge([xf(G.box(0.004, 0.055, 0.018), [-s * 0.0375, 0, -0.0035], [-0.21, 0, 0]), xf(G.box(0.0375, 0.026, 0.004), [-s * 0.01875, -0.013, 0]), eye(-0.013)]);
+      boltAt = dy => R(s * (xs - 0.05 - 0.80), dy, zAt(xs - 0.05) + 0.002); boltR = [0, PI + hSlant, 0];
+    }
+    const pr = { p: pin, r: [hTilt, 0, 0] };
+    return A(`Scharnier ${h}`, { d: `${h === 'boven' ? 'Bovenste' : 'Onderste'} portierscharnier: een plat blad op de stijl (carrosserie) en een plat blad op de sluitrand van het portier, met een stalen scharnierpen; de bladen zijn meegelakt in de carrosseriekleur. In dit model draait het portier om een as vlak voor de voorrand (schematisch).`, ex: [-s * 0.03, 0, 0.12] }, [
+      P('Scharnierblad', doorGeo, MAT.paintIn, { d: 'Plat gesmeed scharnierblad met oog om de pen, op de voorste sluitrand van het portier geschroefd en meegelakt; draait met het portier mee.', ...pr, ex: [0, 0, 0.04] }),
+      P('Scharnierblad carrosserie', bodyGeo, MAT.paint, { d: `Plat gesmeed scharnierblad met oog om de pen, geschroefd op de ${isFront ? 'A-stijl' : 'B-stijl'} en meegelakt in de carrosseriekleur; blijft staan als het portier opent.`, ...pr, stay: true, ex: [0, 0, 0.04] }),
+      P('Scharnierpen', G.cyl('y', 0.004, 0.004, 0.064, 10), MAT.steel, { d: 'Stalen scharnierpen door de ogen van beide bladen; steekt boven en onder een paar millimeter uit.', ...pr, stay: true, ex: [0, 0.05, 0] }),
+      // bouten loodrecht op het portierblad, kop op het blad (voorheen dwars in x); uitklappen langs hun eigen as, van het blad af
+      ...[0.017, -0.017].map((dy, i) => P(`Scharnierbout ${i + 1}`, hexBolt(0.004, 0.008, 'z'), MAT.steel, { d: 'Bout M8 waarmee het scharnierblad aan het portier vastzit.', p: boltAt(dy), r: boltR, ex: [0, 0, 0.05] })),
+    ]);
+  };
   // sluitrand met dikte: gevouwen rand die het buitenpaneel langs de onderrand en de zijranden met het binnenpaneel verbindt (geen enkelwandige snijrand)
   const eIn = 0.095, pp = sv => (s > 0 ? sv : 2 - sv), sTop = S4 - 0.004;
   const edgeBottom = patch((z, t) => bodLow(z, pp(bodSY(z, lo(z) + 0.002 + 0.018 * t)), eIn * t), z0 + 0.012, z1 - 0.012, 30, () => [0, 1], 2, br);
@@ -1581,7 +1675,7 @@ function buildDoor(s, isFront) {
     P('Buitenpaneel', outer, MAT.paint, { d: `Geperste plaatstalen buitenhuid van het ${pos}portier, zilvergrijs metallic gelakt.`, ex: [s * 0.4, 0.14, 0.5] }),
     P('Portierrand', doorEdge, MAT.paintIn, { d: 'Gevouwen rand rondom het portier (onderkant en zijkanten) die buitenpaneel en binnenpaneel verbindt; zo heeft de sluitrand dikte.', ex: [-s * 0.1, -0.06, 0] }),
     P('Binnenpaneel', inner, MAT.paintIn, { d: 'Draagframe van het portier waarop raammechaniek, slot, luidspreker en bekleding vastzitten.', ex: [0, 0, 0] }),
-    P('Zijdelingse botsbalk', tube(isFront ? [[xin(za) * 1.0, 0.37, za], [xin(zm), 0.4, zm], [xin(zb), 0.43, zb]] : [[xin(-0.78), 0.43, -0.78], [xin(zm), 0.435, zm], [xin(zb), 0.44, zb]], 0.018, 16, 10), MAT.steel, { d: 'Hogesterktestalen buis in het portier die bij een zijaanrijding de indringing beperkt.', ex: [s * 0.22, 0, 0.3] }),
+    P('Zijdelingse botsbalk', tube(isFront ? [[xin(za) * 1.0, 0.37, za], [xin(zm), 0.4, zm], [xin(zb), 0.43, zb]] : [[xin(-0.78), 0.43, -0.78], [xin(zm), 0.435, zm], [xin(zb), 0.44, zb]], 0.018, 16, 10), MAT.steel, { d: 'Hogesterktestalen buis in het portier die bij een zijaanrijding de indringing beperkt.', inner: !isFront, ex: [s * 0.22, 0, 0.3] }),
     P('Waterscherm', lowSide(s, z0 + 0.05, z1 - 0.05, 12, z => [bodSY(z, Math.max(lo(z) + 0.05, 0.4)), bodSY(z, 0.86)], 6, br, 0.075), MAT.plastic, { d: 'Kunststof folie tussen binnenpaneel en bekleding die vocht uit de bekleding houdt.', ex: [-s * 0.14, 0.12, -0.26] }),
     P('Zijruit', glass, MAT.glass, { d: 'Zakbare zijruit van gehard veiligheidsglas. Zakt elektrisch in het portier; ' + (isFront ? 'de zijruit gaat bijna volledig omlaag.' : 'de zijruit blijft een stukje boven de gordellijn staan (de wielkast beperkt de diepte).'), ex: [0, 0.32, 0],
       open: winSlide({ min: dDropMin, label: `Zijruit ${n}${pos}`, look: { dir: [s * 1, 0.7, isFront ? 0.4 : 0.15], nodes: [dName] } }) }),
@@ -1590,6 +1684,9 @@ function buildDoor(s, isFront) {
     P('Raamrubber boven', topBand, MAT.bodPillar, { d: 'Zwart rubber en kader tussen de ruit en de dakrail, waarop de chroomlijst ligt.', ex: [s * 0.03, 0.08, 0] }),
     P('Rubberlijn raamomlijsting', ringRub, MAT.bodPillar, { d: 'Smalle zwarte rubberlijn tussen de chromen raamomlijsting en de lak van de dakrail.', ex: [s * 0.04, 0.1, 0] }),
     !isFront && P('Chroomlijst raamstijl', merge([bodQdBand(s, 0.03, bodQV - bodTW + 0.001, -0.0215, -0.0135, 0.0025, 0.0015, 14, 4), bodQdBand(s, 0.03, bodQV - bodTW + 0.001, 0.0135, 0.0215, 0.0025, 0.0015, 14, 4)]), MAT.bodChrome, { d: 'Twee smalle chroomlijsten langs de randen van het schuine stijltje, zodat de chromen omlijsting rond de portierruit en rond de kwartsruit doorloopt.', ex: [s * 0.05, 0.1, -0.04] }),
+    // chroomlijst langs de ruitzijde van de zwarte B-stijl (8 mm, zoals de lijsten langs het stijltje), half op de afdekking en half op de ruit;
+    // zo is de omlijsting om elke zijruit gesloten (brochure: cerclage chromé des vitres latérales) en leest de B-stijl als zwart vlak tussen twee chroomlijnen
+    P('Chroomlijst B-stijl', bodLineBand(s, isFront ? bodBf : bodBr, 0.03, bodQV - bodTW + 0.001, -0.004, 0.004, 0.0025, 0.0015, 14, 4), MAT.bodChrome, { d: `Smalle chroomlijst langs de ${isFront ? 'voorkant van de B-stijl, de achterrand van de voorste zijruit' : 'achterkant van de B-stijl, de voorrand van de achterste zijruit'}, als deel van de chromen raamomlijsting.`, ex: [s * 0.05, 0.1, isFront ? 0.04 : -0.04] }),
     P('Gordelsierlijst', beltGeo, MAT.bodChrome, { d: 'Verchroomde sierlijst op de gordellijn, met het buitenste raamrubber.', ex: [s * 0.08, 0.05, 0] }),
     P('Gordelrubber buiten', beltRub, MAT.bodPillar, { d: 'Buitenste raamschachtrubber: een smalle zwarte lip tussen de gordelsierlijst en de ruit en een schaduwlijn onder de lijst.', ex: [s * 0.07, 0.03, 0] }),
     P('Gordelrubber binnen', tube(beltPts.map(p => [p[0] - s * 0.03, p[1] - 0.004, p[2]]), 0.006, 24, 5), MAT.rubber, { d: 'Binnenste raamschachtrubber dat de ruit afstrijkt.', ex: [-s * 0.06, 0.04, 0] }),
@@ -1669,7 +1766,7 @@ function buildMirror(s) {
     P('Spiegelvoet', G.rbox(0.09, 0.05, 0.07, 0.015), MAT.bodPillar, { d: 'Voet met bevestigingsplaat op de spiegeldriehoek van het portier; blijft staan als de spiegel inklapt.', p: M(0.845, 0.94, 0.862), stay: true, ex: [-s * 0.05, -0.05, 0] }),
     P('Spiegelkap', cache('bodMirCapT' + k, () => bodLoft(s, [[1, 0], [1, 0.03], [0.95, 0.07], [0.8, 0.11], [0.5, 0.135], [0.12, 0.145]], true)), MAT.paint, { d: 'Kap in carrosseriekleur aan de voorzijde van het spiegelhuis.', p: M(cx, cy, 0.668), ex: [0, 0.02, 0.1] }),
     P('Spiegelhuis', cache('bodMirRimT' + k, () => bodLoft(s, [[0.93, -0.004], [1.01, -0.004], [1.01, 0.012]], false)), MAT.paint, { d: 'Kunststof huis in carrosseriekleur met een rand rond het glas, dat glas, motoren en verwarming draagt.', p: M(cx, cy, 0.664), ex: [0, 0, -0.02] }),
-    P('Spiegelglas', cache('bodMirGlT' + k, () => { const g = new THREE.ShapeGeometry(shapeOf(bodMirOutline().map(([u, v]) => [s * u * 0.93, v * 0.93]))); return g; }), MAT.bodMirror, { d: 'Bol spiegelglas.', p: M(cx, cy, 0.661), ex: [0, 0, -0.12] }),
+    P('Spiegelglas', cache('bodMirGlT' + k, () => { const g = new THREE.ShapeGeometry(shapeOf(bodMirOutline().map(([u, v]) => [s * u * 0.93, v * 0.93]))); return g; }), MAT.bodMirror, { d: 'Bol spiegelglas in de spiegelkap, waarin de bestuurder het verkeer naast en schuin achter de auto ziet.', p: M(cx, cy, 0.661), ex: [0, 0, -0.12] }),
     P('Glasdrager', G.rbox(0.17, 0.106, 0.008, 0.01), MAT.plastic, { d: 'Kunststof drager waarop het glas is geklikt.', p: M(cx, cy, 0.668), ex: [0, 0, -0.08] }),
     P('Verwarmingsfolie', G.box(0.16, 0.1, 0.002), MAT.heater, { d: 'Verwarmingsfolie achter het glas tegen condens en ijs.', p: M(cx, cy, 0.6645), inner: true, ex: [0, 0, -0.1] }),
     P('Verstelmotor', G.rbox(0.06, 0.05, 0.04, 0.008), MAT.darkSteel, { d: 'Motor met twee assen voor het verstellen van het glas (met geheugen).', p: M(cx, cy, 0.7), inner: true, ex: [0, 0.06, -0.04] }),
@@ -1955,7 +2052,7 @@ function buildBody() {
   const aPillarLo = z => z < bodSail - 0.004 ? bodQG + 0.03 : z < 0.93 ? Math.min(bodQS - 0.02, bodQy(z, 0.93 + (0.93 - z) * 0.55)) : 0.004;
   // dakplaat met twee openingen: panRoofGeo() in panorama.js (4 mm overlap met de achterruit, geen spleet op de naad)
   const quarter = s => A(`Kwartsruit ${sn(s)}`, { d: 'Vaste driehoekige ruit achter het achterportier, in de C-stijl gelijmd.', ex: [s * 0.22, 0.06, -0.05] }, [
-    P('Ruit', bodGhSide(s, bodQZ, bodQd(0.97) - 0.016, 16, z => [0.006, Math.min(bodQy(z, bodQtop(z)), bodQy(z, 0.97 + (-0.93 - 0.016 - z) * 0.33 / 0.06))], 6, bodDense(bodQZ, -1.15, 6)), MAT.glass, { d: 'Getint veiligheidsglas.', ex: [s * 0.04, 0, 0] }),
+    P('Ruit', bodGhSide(s, bodQZ, bodQd(0.97) - 0.016, 16, z => [0.006, Math.min(bodQy(z, bodQtop(z)), bodQy(z, 0.97 + (-0.93 - 0.016 - z) * 0.33 / 0.06))], 6, bodDense(bodQZ, -1.15, 6)), MAT.glass, { d: 'Vaste kwartsruit van getint veiligheidsglas achter het achterportier; geeft licht en zicht opzij bij de achterbank.', ex: [s * 0.04, 0, 0] }),
     P('Raamkader kwartsruit', bodTrim(s, qEdge, z => -(qFr(z) + 0.0005), 0.002, 0.003, 0, 3), MAT.bodPillar, { d: 'Zwart kader langs de rand van de kwartsruit, onder de chroomband.', ex: [s * 0.05, 0.03, 0] }),
     P('Omlijsting', qTrim(s, 0, 2 * bodTW, 0.0035, 0.003, 6), MAT.bodChrome, { d: 'Chromen band langs de bovenrand en de schuine achterrand van de kwartsruit tot de punt op de gordel, in het verlengde van de omlijsting van het achterportier.', ex: [s * 0.06, 0.02, 0] }),
     P('Rubberlijn kwartsruit', merge([qTrim(s, 2 * bodTW - 0.0005, 2 * bodTW + bodTR, 0.0026, 0, 1), qBelt(s).rubber]), MAT.bodPillar, { d: 'Zwarte rubberlijnen langs de omlijsting en de gordellijst van de kwartsruit.', ex: [s * 0.05, 0.05, 0] }),
@@ -1989,20 +2086,23 @@ function buildBody() {
   // opening (9 en 5 stappen): de naden vallen dan op elkaar, de normalen lopen door en het lak leest zonder rand door rond de kom
   // (waar het paneel lager eindigt dan de opening, bij het portier, vallen de bovenste twee banden weg en dekt de onderste het hele paneel)
   const tkE0 = z => clamp(bodSY(z, bodTkY[0]), rfLo(z), rfHi(z)), tkE1 = z => clamp(bodSY(z, bodTkY[1]), tkE0(z), rfHi(z));
-  const tkBands = (s, z0, z1, nu, br) => [
-    lowSide(s, z0, z1, nu, z => [rfLo(z), tkE0(z)], 9, br),
-    lowSide(s, z0, z1, nu, z => [tkE0(z), tkE1(z)], 6, br),
-    lowSide(s, z0, z1, nu, z => [tkE1(z), rfHi(z)], 5, br)];
+  // stations naar doorbuiging (koorde hoogstens 0,8 mm, golf 5b-2): de knikken van de onder- en bovenrand (wielboog, achterlicht, naad
+  // bij het achterportier) blijven vast. Links over het hele paneel; rechts alleen de rijen (gemeten over het hele bereik van het paneel),
+  // de banden houden 9, 6 en 5 gelijke stappen, zodat ze op de naden met de stukken onder en boven de opening blijven aansluiten.
+  const rfSag = (z0, z1, o = {}) => bodSagSide(z0, z1, z => [rfLo(z), rfHi(z)], 0.0008, Object.assign({ keep: ARCH_BREAKS.concat([-1.271, -1.269, bodTLZ, bodTLZ - 0.001]), extra: bodDense(-1.27, -0.66, 10).concat(bodDense(bodZT, bodTLZ, 5)), nuF: 200, nvF: 96 }, o));
+  const rfUni = n => Array.from({ length: n + 1 }, (_, j) => j / n);
+  const tkBands = (s, z0, z1) => { const zs = rfSag(z0, z1).zs;
+    return [[rfLo, tkE0, 9], [tkE0, tkE1, 6], [tkE1, rfHi, 5]].map(([a, b, n]) => bodSagSide(z0, z1, z => [a(z), b(z)], 0, { zs, vf: rfUni(n) }).geo(s)); };
   const rearFender = s => merge([
     ...(s < 0 ? [
       // rechterscherm: opening voor de tankklep; de rest van het paneel is in stukken om de opening heen gelegd en aan elkaar gelast,
       // zodat de normalen over de naden doorlopen en het lak rond de kom zonder zichtbare naad doorloopt
       bodWeldAll(merge([
-        ...tkBands(s, bodZT, bodTkZ[0], 30, ARCH_BREAKS.concat([bodTLZ, bodTLZ - 0.001], bodDense(bodZT, bodTLZ, 5))),
-        ...tkBands(s, bodTkZ[1], -0.667, 40, ARCH_BREAKS.concat([-1.271, -1.269], bodDense(-1.27, -0.66, 10))),
+        ...tkBands(s, bodZT, bodTkZ[0]),
+        ...tkBands(s, bodTkZ[1], -0.667),
         lowSide(s, bodTkZ[0], bodTkZ[1], 14, z => [rfLo(z), bodSY(z, bodTkY[0])], 9),
         lowSide(s, bodTkZ[0], bodTkZ[1], 14, z => [bodSY(z, bodTkY[1]), rfHi(z)], 5)])),
-    ] : [lowSide(s, bodZT, -0.667, 70, z => [rfLo(z), rfHi(z)], 20, ARCH_BREAKS.concat([-1.271, -1.269, bodTLZ, bodTLZ - 0.001], bodDense(-1.27, -0.66, 10), bodDense(bodZT, bodTLZ, 5)))]),
+    ] : [rfSag(bodZT, -0.667).geo(s)]),
     lowSide(s, bodZT, SP, 16, z => [z <= bodTLZ ? bodTLhi(z) + 0.001 : S4, Math.max(S4 + 1e-4, bodSAtX(z, bodTGdx(z)) - 0.003)], 4, bodDense(bodZT, -2.2, 4)),
     // band boven het achterlicht tussen de onderrand van de achterruit (SP) en de punt van de lamp: sluit de spleet tot de schouder
     lowSide(s, SP - 0.002, bodTLZ + 0.001, 10, z => [Math.min(bodTLhi(z) + 0.001, S4 - 0.004), S4 - 0.0008], 2),
@@ -2030,6 +2130,7 @@ function buildBody() {
   const hoodS = z => bodHoodS(z) + 0.0018;
   const hoodBr = bodDense(2.2, bodHoodZ1 - 0.002, 10).concat([bodHoodZ1 - 0.0005]);
   const hoodIn = (off, a, b, da) => bodDeck(a, b, 28, z => Math.min(0.995, bodHoodS(z) + da), 12, bodDense(2.1, b, 4), off);
+  const bodSprT = [0, bodSec(1.4).yd - 0.05, 1.4, 0.012, 0.016];   // T-stuk sproeierslangen: hart (x, y, z), halve lengte dwars, lengte uitloop naar voren
   const hood = A('Motorkap', { d: 'Motorkap van aluminium (werkplaatshandboek MR 415, hoofdstuk 48A) met binnenframe, isolatie, scharnieren, slotbeugel, veiligheidshaak en sproeiers.', ex: [0, 0.52, 0.3], open: { type: 'hinge', pivot: bodHoodPv, axis: [1, 0, 0], angle: bodHoodAng, min: 55 * PI / 180, label: 'Motorkap', look: { dir: [0.5, 0.55, 1], nodes: ['Motorkap', 'Motor F4Rt', 'Radiateur'] } } }, [
     P('Buitenpaneel motorkap', bodDeck(WS0 + 0.004, bodHoodZ1 - 0.0003, 60, z => Math.min(0.9995, hoodS(z)), 30, hoodBr), MAT.paint, { d: 'Buitenhuid van aluminium plaat van de motorkap met twee vouwlijnen van de koplampen naar de voorruit.', ex: [0, 0.14, 0] }),
     P('Binnenframe motorkap', hoodIn(0.03, 1.15, 2.26, 0.012), MAT.paintIn, { d: 'Verstevigend binnenframe met de bevestigingspunten van scharnieren en slotbeugel.', ex: [0, 0, 0] }),
@@ -2050,8 +2151,13 @@ function buildBody() {
     ...both(s => A(`Ruitensproeier ${sn(s)}`, { d: 'Sproeier van de ruitensproeierinstallatie aan de achterrand van de kap.', ex: [0, 0.05, 0] }, [
       P('Sproeierkop', G.lathe('y', [[0, 0.0045], [0.004, 0.0043], [0.0085, 0.003], [0.0112, 0.0008], [0.0112, -0.005], [0, -0.005]], 20, 'bodSprHead'), MAT.plasticGrey, { d: 'Grijze kunststof sproeierkop, ronde koepel die half in de kap verzonken zit en door de huid steekt.', p: [s * 0.28, halfPt(1.17, bodSAtX(1.17, 0.28))[1] - 0.0015, 1.17], ex: [0, 0.04, 0] }),
       P('Sproeieropening', G.rbox(0.011, 0.0016, 0.0024, 0.0008), MAT.blackGloss, { d: 'Dwarse sleuf in de koepel waaruit de waaiervormige straal komt.', p: [s * 0.28, halfPt(1.17, bodSAtX(1.17, 0.28))[1] + 0.0031, 1.17], ex: [0, 0.06, 0] }),
-      P('Sproeierslang', tube([[s * 0.28, halfPt(1.17, bodSAtX(1.17, 0.28))[1] - 0.02, 1.17], [s * 0.15, bodSec(1.3).yd - 0.05, 1.3], [0, bodSec(1.4).yd - 0.05, 1.4]], 0.003, 12, 5), MAT.rubber, { d: 'Toevoerslang onder de kap.', ex: [0, -0.03, 0] }),
+      P('Sproeierslang', tube([[s * 0.28, halfPt(1.17, bodSAtX(1.17, 0.28))[1] - 0.02, 1.17], [s * 0.15, bodSec(1.3).yd - 0.05, 1.3], [s * 0.06, bodSec(1.4).yd - 0.049, 1.39], [s * 0.03, bodSprT[1], bodSprT[2]], [s * (bodSprT[3] + 0.0003), bodSprT[1], bodSprT[2]]], 0.003, 16, 5), MAT.rubber, { d: 'Toevoerslang onder de kap, van het T-stuk op de hartlijn naar de sproeier.', ex: [0, -0.03, 0] }),
     ])),
+    // T-stuk op de hartlijn waar de twee sproeierslangen samenkomen, met een uitloop naar voren; de doorverbinding loopt onder de isolatie en
+    // boven de motorafdekkap naar de linker scharnierhoek en zakt daar onder y 0,88 naar de slangkoppeling van het systeem (wereld 0,60; 0,815; 1,48),
+    // waar het einde bij gesloten kap 0,5 mm boven de koppeling stopt. Route schematisch.
+    P('T-stuk sproeierslang', merge([G.cyl('x', 0.0045, 0.0045, 2 * bodSprT[3], 10), xf(G.cyl('z', 0.0045, 0.0045, bodSprT[4], 10), [0, 0, bodSprT[4] / 2])]), MAT.plastic, { d: 'Kunststof T-stuk dat de slangen naar de twee sproeiers voedt vanuit de ene toevoerslang.', p: bodSprT.slice(0, 3), ex: [0, -0.05, 0] }),
+    P('Sproeierslang naar koppeling', tube([[0, bodSprT[1], bodSprT[2] + bodSprT[4] + 0.0003], [0, bodSprT[1] - 0.001, 1.428], [0.05, 0.895, 1.44], [0.12, 0.879, 1.45], [0.30, 0.871, 1.462], [0.45, 0.865, 1.472], [0.55, 0.86, 1.478], [0.592, 0.85, 1.48], [0.60, 0.835, 1.48], [0.60, 0.8205, 1.48]], 0.003, 40, 5), MAT.rubber, { d: 'Toevoerslang onder de kap van de slangkoppeling bij de linker veerpoottoren naar het T-stuk; loopt met de kap mee als die opent (route schematisch).', ex: [0.03, -0.05, 0] }),
   ]);
 
   /* ================= voorschermen ================= */
@@ -2071,7 +2177,10 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   const fbBr = bodDense(1.752, 1.82, 4).concat(bodDense(2.15, ZF, 16), bodDense(2.235, bodHoodZ1, 8), bodHoodTip);
   // onderste inlaat als echte opening in de bumperschaal (binnen de chromen U), met wanden naar een verzonken rooster
   const inX = 0.462, inY0 = 0.316, inY1 = 0.436, inD = 0.03;
-  const shellF = bodWeld(merge([lowSide(L, 1.752, ZF, 56, z => [fbLo(z), fbHi(z)], 30, fbBr), lowSide(R, 1.752, ZF, 56, z => [fbLo(z), fbHi(z)], 30, fbBr), bodCap(ZF - 1e-4, 1)].map(g => bodClipOut(g, inX, inY0, inY1, 2.1))));
+  // stations naar doorbuiging (koorde hoogstens 1 mm, golf 5b-2): de stations voor de neus van de kap en de knikken van de bovenrand
+  // (koplamp en kapvoorrand) blijven vast, de overige stations uit fbBr zijn kandidaten; was 56 x 30 gelijke stappen plus fbBr
+  const shF = bodSagSide(1.752, ZF, z => [fbLo(z), fbHi(z)], 0.001, { keep: bodHoodTip.concat([bodHLZ0, bodHLZ1, bodHoodZ1]), extra: fbBr, nuF: 240, nvF: 128 });
+  const shellF = bodWeld(merge([shF.geo(L), shF.geo(R), bodCap(ZF - 1e-4, 1)].map(g => bodClipOut(g, inX, inY0, inY1, 2.1))));
   // voorvlak-onderdelen: rooster over (x, y), z op het voorvlak
   const fNorm = (x, y) => { const z = frontZ(Math.abs(x), y), n = bodN(z, sAtY(z, y)); return [Math.sign(x || 1) * n[0], n[1], n[2]]; };
   const fPt = (x, y, out) => { const z = frontZ(Math.abs(x), y), n = fNorm(x, y); return [x + n[0] * out, y + n[1] * out, z + n[2] * out]; };
@@ -2112,7 +2221,7 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     // flens onder de naad tussen kapvoorrand en bumper (6 mm onder de huid): door de naad is geen motorruimte meer te zien
     P('Kapnaadflens', merge([L, R].map(sd => lowSide(sd, bodHLZ1 - 0.03, bodHoodZ1, 20, z => { const h = bodHoodS(z); return [Math.min(0.999, h - 0.008), Math.min(1, h + 0.008)]; }, 2, bodDense(2.27, bodHoodZ1, 6).concat(bodHoodTip), 0.006))), MAT.plastic, { d: 'Kunststof flens van de bumperschaal onder de naad met de voorrand van de motorkap.', ex: [0, 0.03, 0.04] }),
     A('Bovengrille', { d: 'Smalle zwarte sleuf direct onder de voorrand van de motorkap.', ex: [0, 0.04, 0.12] }, [
-      P('Grillesleuf', fFace(-0.3, 0.3, 0.618, 0.648, 0.003, 20, 2), MAT.blackGloss, { d: 'Hoogglans zwart rooster.', ex: [0, 0, 0] }),
+      P('Grillesleuf', fFace(-0.3, 0.3, 0.618, 0.648, 0.003, 20, 2), MAT.blackGloss, { d: 'Hoogglans zwart rooster dat de smalle sleuf tussen de kapvoorrand en de bumper afsluit.', ex: [0, 0, 0] }),
       P('Chroomlijn grille', tube([-0.3, -0.15, 0, 0.15, 0.3].map(x => [x, 0.611, frontZ(x, 0.611) + 0.001]), 0.005, 16, 8), MAT.bodChrome, { d: 'Dunne chroomlijn onder de grillesleuf.', ex: [0, -0.02, 0.04] }),
     ]),
     P('Kentekenvlak', fFace(-0.34, 0.34, 0.44, 0.572, 0.002, 20, 4), MAT.blackGloss, { d: 'Zwart horizontaal vlak boven de onderste inlaat waarop de kentekenplaat zit.', ex: [0, 0.02, 0.08] }),
@@ -2140,7 +2249,8 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     A('Koplampsproeiers', { d: 'Twee uitschuifbare koplampsproeiers onder de bi-xenon koplampen.', ex: [0, 0.02, 0.08] }, both(s => { const z = 2.0, y = bodHLlo(z) - 0.035, p = bodAt(z, y, 0.004), nn = bodNormalAt(z, y);
       return A(`Koplampsproeier ${sn(s)}`, { d: 'Uitschuifbare koplampsproeier (Initiale Paris: koplampsproeiers bij de bi-xenon).', ex: [s * 0.1, 0, 0.1] }, [
         P('Sproeierkapje', G.rbox(0.012, 0.025, 0.06, 0.008), MAT.paint, { d: 'Kapje in carrosseriekleur.', ...bodPose(s, p, nn) }),
-        P('Sproeierkop koplamp', G.cyl('x', 0.008, 0.008, 0.04, 10), MAT.plastic, { d: 'Telescopische sproeierkop.', inner: true, ...bodPose(s, bodAt(z, y, -0.02), nn), ex: [s * 0.04, 0, 0.03] }),
+        // kop 1,5 mm onder de huid in plaats van er precies tegen: de bumperschaal met stations naar doorbuiging ligt daar tot 0,5 mm lager
+        P('Sproeierkop koplamp', G.cyl('x', 0.008, 0.008, 0.04, 10), MAT.plastic, { d: 'Telescopische sproeierkop.', inner: true, ...bodPose(s, bodAt(z, y, -0.0215), nn), ex: [s * 0.04, 0, 0.03] }),
       ]); })),
     A('Parkeersensoren voor', { d: 'Vier ultrasone sensoren van de parkeerhulp voor (op de Initiale aannemelijk standaard, in andere markten optie).', ex: [0, 0.03, 0.12] }, [-0.42, -0.15, 0.15, 0.42].map((x, i) => P(`Parkeersensor voor ${i + 1}`, G.cyl('z', 0.011, 0.011, 0.02, 12), MAT.paint, { d: 'Ultrasone parkeersensor voor (op de Initiale aannemelijk standaard, in andere markten optie).', p: fPt(x, 0.452, -0.006), ex: [0, 0.02, 0.06] }))),
     ...both(s => P(`Bumpersteun voor ${sn(s)}`, G.rbox(0.05, 0.08, 0.12, 0.01), MAT.plastic, { d: 'Steun die de bumperschaal aan voorscherm en frontmodule vasthoudt.', p: [s * 0.74, 0.5, 1.86], ex: [s * 0.05, 0, 0] })),
@@ -2150,19 +2260,22 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   const rbBr = bodDense(-2.3, bodZT, 4);
   const rFace = (x0, x1, y0, y1, out, nx = 12, ny = 3) => patch((y, t) => { const x = x0 + (x1 - x0) * t; return [x, y, bodRearZ(x, y) - out]; }, y0, y1, ny, () => [0, 1], nx);
   // verdiepte kentekenuitsparing (fase 2-foto): plaat met het midden op y 0,46, opening ca. 2 cm rondom de plaat, wanden schuin naar binnen
-  // naar een bodem 1 cm diep. De bumperschaal krijgt daar een echte opening: driehoeken van de staartpunt die de opening raken vallen
-  // weg, en een 1,2 mm hoger kraagvlak rondom (zelfde lak) dekt de rafelrand af.
+  // naar een bodem 1 cm diep. De bumperschaal krijgt daar een echte opening: de driehoeken van de staartpunt worden exact op de rand van
+  // de opening geknipt (bodClipOut in een over z gespiegeld frame, alleen achter z -2,28), en een 1,2 mm hoger kraagvlak rondom (zelfde lak)
+  // geeft de rand. Eerder vielen hele driehoeken weg die de opening raakten; dat vroeg fijne driehoeken rond de opening. Na het knippen
+  // weer gelast (bodWeldAll), zodat het stuk gladde normalen houdt zoals voorheen en niet in vlakjes leest.
   const rPlateY = 0.46, rcX = 0.285, rcY0 = 0.385, rcY1 = 0.527, rcXi = 0.272, rcYi0 = 0.396, rcYi1 = 0.521, rcD = 0.010, rcOut = 0.0012;
-  const rcIn = (x, y, z) => z < -2.28 && Math.abs(x) < rcX && y > rcY0 && y < rcY1;
-  const bodCut = g => { const p = g.attributes.position, ix = g.index.array, keep = [];
-    for (let i = 0; i < ix.length; i += 3) { if (![ix[i], ix[i + 1], ix[i + 2]].some(k => rcIn(p.getX(k), p.getY(k), p.getZ(k)))) keep.push(ix[i], ix[i + 1], ix[i + 2]); }
-    g.setIndex(keep); return g; };
+  const bodCut = g => { g.scale(1, 1, -1); const r = bodClipOut(g, rcX, rcY0, rcY1, 2.28); r.scale(1, 1, -1); return bodWeldAll(r); };
+  // stations naar doorbuiging (koorde hoogstens 0,3 mm, golf 5b-2; bij 0,6 mm lazen de hoeken naast de uitsparing in vlakjes); de
+  // stations van de kentekenuitsparing (tipBr) en van de richel (rbBr) blijven vast. Was 30 x 22 (zijkant), 24 x 26 plus tipBr en
+  // 12 x 18 plus rbBr (staartpunt) gelijke stappen.
   const tipBr = rbBr.concat(bodDense(ZR, -2.296, 30));
-  const tipL = sd => [lowSide(sd, ZR + 1e-4, bodZT, 24, () => [0, S2], 26, tipBr), lowSide(sd, ZR + 1e-4, bodZT, 12, () => [S2, 1], 18, rbBr)];
+  const shRs = bodSagSide(-1.778, bodZT, z => [S1 * 0.45, bodSY(z, bodYLEDGE)], 0.0003, { nuF: 120, nvF: 120 });
+  const shRa = bodSagSide(ZR + 1e-4, bodZT, () => [0, S2], 0.0003, { keep: tipBr, nuF: 48, nvF: 160 });
+  const shRb = bodSagSide(ZR + 1e-4, bodZT, () => [S2, 1], 0.0003, { keep: rbBr, nuF: 48, nvF: 160 });
   const shellR = bodWeld(merge([
-    lowSide(L, -1.778, bodZT, 30, z => [S1 * 0.45, bodSY(z, bodYLEDGE)], 22),
-    lowSide(R, -1.778, bodZT, 30, z => [S1 * 0.45, bodSY(z, bodYLEDGE)], 22),
-    ...tipL(L).concat(tipL(R)).map(bodCut),
+    shRs.geo(L), shRs.geo(R),
+    ...[shRa.geo(L), shRb.geo(L), shRa.geo(R), shRb.geo(R)].map(bodCut),
     // sluitvlak op de staartpunt licht bol (hoogstens 4 mm, binnen ZR - 6 mm): een vlak eindvlak las als lichte rechthoek boven de kentekenuitsparing
     (() => { const z = ZR + 1e-4, c = bodSec(z); return patch((y, t) => { const X = ringX(z, y), v = 2 * (y - c.yb) / (c.yd - c.yb) - 1; return [X * t, y, z - 0.004 * (1 - t * t) * (1 - v * v)]; }, c.yb + 1e-4, c.yd - 1e-4, 8, () => [-1, 1], 16); })(),
     rFace(-0.315, 0.315, 0.372, rcY0, rcOut, 16, 2), rFace(-0.315, 0.315, rcY1, 0.535, rcOut, 16, 2), rFace(-0.315, -rcX, rcY0, rcY1, rcOut, 2, 8), rFace(rcX, 0.315, rcY0, rcY1, rcOut, 2, 8),
@@ -2240,8 +2353,8 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     // achter het glas, net onder de dakrand: steekt in zijaanzicht niet boven de daklijn uit en schemert door de getinte ruit
     P('Derde remlicht', G.rbox(0.30, 0.008, 0.02, 0.003), MAT.lensRed, { d: 'Derde remlicht achter de bovenrand van de achterruit, direct onder de dakrand (plaats geschat uit fase 2-foto\'s, schematisch).', p: [0, YR(RW0 - 0.045) - 0.011, RW0 - 0.045], r: [-Math.atan2(YR(RW0) - YR(RW0 - 0.09), 0.09), 0, 0], ex: [0, 0.05, -0.08] }),
     A('Achterruitenwisser', { d: 'Achterruitenwisser die langs de zijrand van de ruit parkeert (links op een foto van fase 2, rechts op een tekening van fase 1; aannemelijk).', ex: [0.06, 0.14, 0] }, [
-      P('Wisserarm achter', tube([wPiv, panP((wPiv[2] + wTip[2]) / 2, 0.42, 0.016), wTip], 0.006, 16, 6), MAT.blackGloss, { d: 'Wisserarm.', ex: [0, 0.03, 0] }),
-      P('Wisserblad achter', tube([panP(-1.85, 0.46, 0.010), panP(-1.42, 0.505, 0.010)], 0.006, 8, 5), MAT.rubber, { d: 'Wisserblad.', ex: [0, 0.06, 0] }),
+      P('Wisserarm achter', tube([wPiv, panP((wPiv[2] + wTip[2]) / 2, 0.42, 0.016), wTip], 0.006, 16, 6), MAT.blackGloss, { d: 'Wisserarm die het blad met veerdruk tegen de achterruit houdt en het heen en weer zwaait.', ex: [0, 0.03, 0] }),
+      P('Wisserblad achter', tube([panP(-1.85, 0.46, 0.010), panP(-1.42, 0.505, 0.010)], 0.006, 8, 5), MAT.rubber, { d: 'Rubber wisserblad dat regen en vuil van de achterruit veegt.', ex: [0, 0.06, 0] }),
       P('Asmoerkap', G.cyl('y', 0.014, 0.016, 0.02, 12), MAT.blackGloss, { d: 'Kap over de asmoer van de wisserarm.', p: wPiv, ex: [0, 0.03, 0] }),
       P('Wissermotor achter', merge([G.cyl('z', 0.03, 0.03, 0.08, 16), xf(G.rbox(0.07, 0.05, 0.05, 0.01), [0, 0, -0.06])]), MAT.darkSteel, { d: 'Motor van de achterruitenwisser in de klep.', p: [wPiv[0], wPiv[1] - 0.06, wPiv[2] + 0.02], ex: [0, -0.06, 0.06] }),
     ]),
@@ -2519,6 +2632,7 @@ const ENG_PORTS = {
   psOut: { p: [ENG_PS[0] + 0.008, ENG_PS[1] - 0.065, ENG_PS[2] + 0.02], dir: [0, -1, 0] },       // hogedrukuitgang stuurpomp (einde van de stalen pijpstomp; drukslang naar het stuurhuis)
   psIn: { p: [ENG_PS[0] - 0.03, ENG_PS[1], ENG_PS[2] + 0.065], dir: [0, 0, 1] },                // aanzuigstomp stuurpomp (zuigslang uit het reservoir)
   fuelRailIn: { p: [0.205, ENG_RAIL[1] - 0.044, ENG_RAIL[2]], dir: [0, -1, 0] },                              // snelkoppeling brandstofrail
+  vacOut: { p: [0.17, 0.12, 0.277], dir: [0, 0, 1] },                                           // tip van de nippel Vacuümaansluiting rembekrachtiger op het spruitstuk (engine2.js; vacuümslang naar de bekrachtiger)
 };
 // punt op afstand d buiten een aansluiting, langs dir (motorframe)
 function portAt(port, d = 0) { return [port.p[0] + port.dir[0] * d, port.p[1] + port.dir[1] * d, port.p[2] + port.dir[2] * d]; }
@@ -2733,7 +2847,7 @@ function pistonGroup(i) {
     G.cyl('x', 0.0145, 0.0145, 0.056, 12),
   ]));
   const ring = r => G.torus('y', 0.0408, r, 32, 4);
-  return A(`Zuiger en drijfstang ${n}`, { d: `Zuiger-drijfstanggroep van cilinder ${n} (geteld vanaf de vliegwielzijde); ontsteekvolgorde 1-3-4-2.`, p: [XC[i], 0, 0], ex: [XC[i] * 1.0, 0.13, 0] }, [
+  return A(`Zuiger en drijfstang ${n}`, { d: `Zuiger-drijfstanggroep van cilinder ${n} (geteld vanaf de vliegwielzijde); ontsteekvolgorde 1-3-4-2 (aannemelijk, niet bevestigd).`, p: [XC[i], 0, 0], ex: [XC[i] * 1.0, 0.13, 0] }, [
     P('Zuiger', piston, MAT.alu, { d: 'Aluminium zuiger, Ø82,69 mm, met drie veergroeven; de zuigerpen ligt 0,8 mm uit het midden en het merkteken "V" wijst naar het vliegwiel.', p: [0, pp, 0], ex: [0, 0.05, 0], spec: [['Diameter', '82,69 mm'], ['Zuigerveren', '3']] }),
     A('Zuigerveren', { d: 'De drie zuigerveren: twee compressieveren en de olieschraapveer.', p: [0, pp, 0], ex: [0, 0.11, 0] }, [
       P('Compressieveer 1', ring(0.0011), MAT.darkSteel, { d: 'Bovenste compressieveer (vuurveer): dicht de verbrandingsruimte af.', p: [0, 0.0245, 0], ex: [0, 0.028, 0] }),
@@ -2799,10 +2913,10 @@ function valveGroup(cyl, k, sg) {
     P(intake ? 'Inlaatklep' : 'Uitlaatklep', valve, intake ? MAT.steel : MAT.darkSteel, { d: intake ? 'Inlaatklep: kop Ø33,5 mm, steel Ø5,47 mm, lengte 110,08 mm.' : 'Uitlaatklep van hittebestendige nikkellegering (Nimonic): kop Ø29 mm, steel Ø5,447 mm, lengte 106,87 mm.', ex: [0, -0.3, 0], spec: intake ? [['Kop', 'Ø33,5 mm'], ['Steel', 'Ø5,47 mm'], ['Lengte', '110,08 mm']] : [['Kop', 'Ø29 mm'], ['Steel', 'Ø5,447 mm'], ['Lengte', '106,87 mm']] }),
     P('Klepveerzitting', annulus(0.0035, 0.0145, 0.001, 'y', 12), MAT.steel, { d: 'Onderste veerschotel op de cilinderkop.', p: [0, yB - 0.0005, 0], ex: [0, 0.02, 0] }),
     P('Klepsteelafdichting', G.lathe('y', [[0.0028, 0], [0.0058, 0], [0.0058, 0.007], [0.0042, 0.0095], [0.0028, 0.0095]], 12, 'engStemSeal12'), MAT.rubber, { d: 'Rubber afdichting op de klepgeleider die olieverbruik langs de klepsteel voorkomt.', p: [0, yB, 0], ex: [0, 0.034, 0] }),
-    P('Klepveer', engSpring(0.01145, 0.0019, 0.036, 6.2, 10), MAT.steel, { d: 'Klepveer van ovaal draad: vrije lengte 41,3 mm, buiten Ø27 mm, binnen Ø18,8 mm.', p: [0, (yS + yB) / 2, 0], ex: [0, 0.06, 0], spec: [['Vrije lengte', '41,3 mm'], ['Buitendiameter', '27 mm']] }),
+    P('Klepveer', engSpring(0.01145, 0.0019, 0.036, 6.2, 8), MAT.steel, { d: 'Klepveer van ovaal draad: vrije lengte 41,3 mm, buiten Ø27 mm, binnen Ø18,8 mm.', p: [0, (yS + yB) / 2, 0], ex: [0, 0.06, 0], spec: [['Vrije lengte', '41,3 mm'], ['Buitendiameter', '27 mm']] }),
     P('Veerschotel', G.lathe('y', [[0.0038, 0], [0.0135, 0.0015], [0.0135, 0.003], [0.0065, 0.0065], [0.0038, 0.0065]], 12, 'engRetainer'), MAT.steel, { d: 'Bovenste veerschotel die de klepveer vasthoudt.', p: [0, yS, 0], ex: [0, 0.088, 0] }),
     P('Klepspie 1', keeper(0), MAT.darkSteel, { d: 'Halve kegelspie die de veerschotel op de klepsteel klemt.', p: [0, L - 0.0045, 0], ex: [0.013, 0.104, 0] }),
-    P('Klepspie 2', keeper(PI), MAT.darkSteel, { d: 'Tweede halve kegelspie.', p: [0, L - 0.0045, 0], ex: [-0.013, 0.104, 0] }),
+    P('Klepspie 2', keeper(PI), MAT.darkSteel, { d: 'Tweede halve kegelspie; samen met de eerste klemt hij de veerschotel op de klepsteel.', p: [0, L - 0.0045, 0], ex: [-0.013, 0.104, 0] }),
     A('Hydraulische klepstoter', { d: 'Hydraulische speling-opvanger: het steunpunt van de rolzwenkarm; houdt de klepspeling automatisch op nul. Binnenwerk schematisch weergegeven.', p: [0, hY, sg * hU], ex: [0, 0.12, sg * 0.012] }, [
       P('Huis', G.lathe('y', [[0, -0.026], [0.0062, -0.026], [0.0062, -0.004], [0.0053, -0.004], [0.0053, -0.024], [0, -0.024]], 10, 'engHlaBody'), MAT.steel, { d: 'Stalen huis dat in een boring in de kop staat.', ex: [0, 0, 0] }),
       P('Plunjer', cache('engHlaPlunger', () => merge([xf(G.cyl('y', 0.005, 0.005, 0.0125, 8), [0, -0.0085, 0]), xf(G.sphere(0.0032, 8), [0, -0.0012, 0])])), MAT.steel, { d: 'Plunjer met kogelkop waarop de rolzwenkarm scharniert; olie onder de plunjer neemt de speling op.', ex: [0, 0.04, 0] }),
@@ -2897,8 +3011,8 @@ function buildHead() {
     P('Cilinderkop (gietstuk)', merge([head, ...ports]), MAT.aluCast, { d: 'Aluminium cilinderkop met ingeperste klepzittingen en klepgeleiders, inlaatpoorten aan de voorzijde en uitlaatpoorten aan de achterzijde.', spec: [['Materiaal', 'aluminium'], ['Hoogte', '138,15 mm'], ['Kleppen', '16 (4 per cilinder)']], ex: [0, 0.09, 0] }),
     P('Koppakking', gasket, MAT.darkSteel, { d: 'Koppakking tussen blok en kop, geklemde dikte circa 0,65 mm (meerlaags staal aangenomen).', spec: [['Dikte geklemd', '0,65 mm']], ex: [0, 0.025, 0] }),
     A('Cilinderkopbouten', { d: 'Tien cilinderkopbouten (Torx); herbruikbaar tot 117,5 mm lengte onder de kop.', ex: [0, 0.27, 0] }, XM.flatMap((x, i) => [0.074, -0.074].map((z, j) => P(`Cilinderkopbout ${i * 2 + j + 1}`, headBolt, MAT.darkSteel, { d: 'Rekbout die kop en koppakking op het blok klemt.', p: [x, DECK + 0.084, z], r: [PI, 0, 0], ex: [0, 0.05 + (i % 2) * 0.012, 0] })))),
-    A('Kleppen inlaatzijde', { d: 'Acht inlaatklepgroepen.', ex: [0, 0.2, 0.19], inner: true }, valvesIn),
-    A('Kleppen uitlaatzijde', { d: 'Acht uitlaatklepgroepen.', ex: [0, 0.2, -0.19], inner: true }, valvesOut),
+    A('Kleppen inlaatzijde', { d: 'Acht inlaatklepgroepen die de lucht de cilinders in laten en door de nokkenas worden geopend.', ex: [0, 0.2, 0.19], inner: true }, valvesIn),
+    A('Kleppen uitlaatzijde', { d: 'Acht uitlaatklepgroepen die de verbrande gassen uit de cilinders laten ontsnappen.', ex: [0, 0.2, -0.19], inner: true }, valvesOut),
     P('Nokkenas inlaat', camGeo(-PI / 4, true), MAT.steel, { d: 'Inlaatnokkenas met zes lagertappen (Ø25, aan de distributiezijde Ø28 mm), nokhoogte 41,0 mm, en een doel voor de nokkenassensor.', p: [0, CAMY, CAMZ], ex: [0, 0.24, 0.07], inner: true, spec: [['Lagers', '6'], ['Nokhoogte', '41,0 mm']] }),
     P('Nokkenas uitlaat', camGeo(-3 * PI / 4, false), MAT.steel, { d: 'Uitlaatnokkenas met zes lagertappen, nokhoogte 40,2 mm.', p: [0, CAMY, -CAMZ], ex: [0, 0.24, -0.07], inner: true, spec: [['Lagers', '6'], ['Nokhoogte', '40,2 mm']] }),
     A('Afdichting nokkenassen', { d: 'Keerringen aan de distributiezijde en afdichtdoppen aan de vliegwielzijde.', ex: [0, 0.24, 0] }, [
@@ -2950,11 +3064,11 @@ function buildTiming() {
   const belt = engBelt(TIM, 0.027, 0.004);
   return A('Distributie', { d: 'Getande distributieriem (126 tanden, 27 mm breed) die beide nokkenassen en de waterpomp synchroon met de krukas aandrijft; spanrol met excentriek en een geleiderol.', ex: [-0.38, 0.1, 0], spec: [['Riem', '126 tanden, 27 mm breed, 1200 mm'], ['Spoed', '9,525 mm'], ['Overbrenging', '2 : 1']] }, [
     P('Distributieriem', xf(belt.geo, [XT, 0, 0]), MAT.belt, { d: `HNBR-riem met glasvezelkoord en afgeronde tanden; riemlengte in het model ${Math.round(belt.len * 1000)} mm (opgave 1200 mm).`, ex: [-0.09, 0, 0] }),
-    P('Krukastandwiel', gear(19, 0.0281, 0.0258, 0.03, 0.019, 'x'), MAT.steel, { d: 'Tandwiel met 19 tanden op de krukasneus (afgeleid uit de 2 : 1-overbrenging).', p: [XT, 0, 0], ex: [-0.045, -0.02, 0], spec: [['Tanden', '19 (geschat)']] }),
+    P('Krukastandwiel', gear(19, 0.0281, 0.0258, 0.03, 0.019, 'x'), MAT.steel, { d: 'Tandwiel op de krukasneus dat de distributieriem aandrijft: 19 tanden, afgeleid uit de 2 : 1-overbrenging (tandental geschat).', p: [XT, 0, 0], ex: [-0.045, -0.02, 0], inner: true }),
     P('Spie krukastandwiel', G.box(0.024, 0.004, 0.005), MAT.darkSteel, { d: 'Spie (clavette) die het krukastandwiel op de krukas vastzet.', p: [XT, 0.0205, 0], ex: [-0.03, 0.04, 0] }),
-    P('Nokkenaswiel inlaat', merge([gear(38, 0.0569, 0.0545, 0.027, 0.012, 'x'), xf(G.cyl('x', 0.022, 0.022, 0.012, 20), [0.016, 0, 0])]), MAT.steel, { d: 'Distributiewiel van de inlaatnokkenas, 38 tanden (afgeleid). Volgens de Renault-persmap van 2007 heeft de F4Rt 811 vaste kleptiming en geen faseversteller; voor de 813 is dat niet apart bevestigd.', p: [XT, CAMY, CAMZ], ex: [-0.045, 0.02, 0.03], spec: [['Tanden', '38 (geschat)'], ['Kleptiming', 'vast']] }),
+    P('Nokkenaswiel inlaat', merge([gear(38, 0.0569, 0.0545, 0.027, 0.012, 'x'), xf(G.cyl('x', 0.022, 0.022, 0.012, 20), [0.016, 0, 0])]), MAT.steel, { d: 'Distributiewiel van de inlaatnokkenas, 38 tanden (afgeleid, tandental geschat). Volgens de Renault-persmap van 2007 heeft de F4Rt 811 vaste kleptiming en geen faseversteller; voor de 813 is dat niet apart bevestigd.', p: [XT, CAMY, CAMZ], ex: [-0.045, 0.02, 0.03], spec: [['Kleptiming', 'vast']] }),
     P('Moer nokkenaswiel inlaat', engNut(0.016, 0.009, 'x'), MAT.darkSteel, { d: 'Moer van het inlaatnokkenaswiel; vervangen bij demontage.', p: [XT - 0.019, CAMY, CAMZ], ex: [-0.1, 0.02, 0.03] }),
-    P('Nokkenaswiel uitlaat', merge([gear(38, 0.0569, 0.0545, 0.027, 0.012, 'x'), xf(G.cyl('x', 0.022, 0.022, 0.012, 20), [0.016, 0, 0])]), MAT.steel, { d: 'Distributiewiel van de uitlaatnokkenas, 38 tanden (afgeleid).', p: [XT, CAMY, -CAMZ], ex: [-0.045, 0.02, -0.03], spec: [['Tanden', '38 (geschat)']] }),
+    P('Nokkenaswiel uitlaat', merge([gear(38, 0.0569, 0.0545, 0.027, 0.012, 'x'), xf(G.cyl('x', 0.022, 0.022, 0.012, 20), [0.016, 0, 0])]), MAT.steel, { d: 'Distributiewiel van de uitlaatnokkenas, 38 tanden (afgeleid, tandental geschat).', p: [XT, CAMY, -CAMZ], ex: [-0.045, 0.02, -0.03] }),
     P('Moer nokkenaswiel uitlaat', engNut(0.016, 0.009, 'x'), MAT.darkSteel, { d: 'Moer van het uitlaatnokkenaswiel; vervangen bij demontage.', p: [XT - 0.019, CAMY, -CAMZ], ex: [-0.1, 0.02, -0.03] }),
     A('Spanrol', { d: 'Halfautomatische spanrol met excentrische verstelling: bij het afstellen worden de merkstrepen uitgelijnd.', p: [XT, TIM[5][1], TIM[5][0]], ex: [-0.07, -0.02, -0.05] }, [
       P('Excentrische naaf met wijzer', merge([G.cyl('x', 0.012, 0.012, 0.034, 16), xf(G.box(0.003, 0.004, 0.026), [-0.017, 0.008, 0.012])]), MAT.steel, { d: 'Excentrische naaf; de wijzer geeft de juiste spanning aan.', ex: [0, 0, 0] }),
@@ -2967,7 +3081,7 @@ function buildTiming() {
     ]),
     A('Distributiekappen', { d: 'Drie kunststof kappen: boven-, tussen- en onderkap.', ex: [-0.12, 0, 0] }, [
       P('Distributiekap boven', engTimingCover(0.27, 0.6, false), MAT.plastic, { d: 'Bovenste kap over de nokkenaswielen.', ex: [-0.03, 0.17, 0] }),
-      P('Distributiekap midden', engTimingCover(0.13, 0.27, false), MAT.plastic, { d: 'Tussenkap langs de riem.', ex: [-0.05, 0, 0.2] }),
+      P('Distributiekap midden', engTimingCover(0.13, 0.27, false), MAT.plastic, { d: 'Tussenkap die de distributieriem tussen boven- en onderkap tegen vuil en aanraking afschermt.', ex: [-0.05, 0, 0.2] }),
       P('Distributiekap onder', engTimingCover(-0.2, 0.13, true), MAT.plastic, { d: 'Onderkap rond het krukastandwiel en de waterpomppoelie.', ex: [-0.03, -0.17, 0] }),
     ]),
   ]);
@@ -2979,7 +3093,7 @@ function buildAccessory() {
     xf(G.cyl('z', 0.012, 0.012, 0.035, 12), [-0.205, 0.27, 0.142]), xf(G.cyl('z', 0.012, 0.012, 0.04, 12), [-0.205, -0.115, 0.145]), xf(G.cyl('z', 0.014, 0.014, 0.03, 12), [-0.2, 0.07, 0.14]),
   ]));
   const tp = ACC[5], piv = [0.045, 0.1];
-  return A('Hulpaandrijving', { d: `Multiriem 7PK1795 die de aircocompressor, de stuurpomp en de dynamo aandrijft, met een automatische spanner op de rug en een vaste geleiderol. De riemloop in het model is korter (${Math.round(belt.len * 1000)} mm) dan de opgegeven 1795 mm, omdat de poelies in dit model dichter bij elkaar staan dan op de echte motor (plaats en diameters zijn geschat). Verder uit elkaar kan niet: de dynamo zit onder de motorkap, de aircocompressor tegen de stuurbekrachtigingsslangen en de bumper, de stuurpomp vast aan zijn slangaansluitingen, en de spanrol en de geleiderol tegen de veerpoot en de motorsteun. De riemaangedreven stuurpomp is aannemelijk voor deze motor.`, ex: [-0.42, -0.1, 0.26], spec: [['Riem', '7PK1795 (7 ribben, 1795 mm)'], ['Verbruikers', 'aircocompressor, stuurpomp (aannemelijk), dynamo']] }, [
+  return A('Hulpaandrijving', { d: `Multiriem 7PK1795 die de aircocompressor, de stuurpomp en de dynamo aandrijft, met een automatische spanner op de rug en een vaste geleiderol. De riemloop in het model is korter (${Math.round(belt.len * 1000)} mm) dan de opgegeven 1795 mm, omdat de poelies in dit model dichter bij elkaar staan dan op de echte motor (plaats en diameters zijn geschat). Verder uit elkaar kan niet: de dynamo zit onder de motorkap, de aircocompressor tegen de stuurbekrachtigingsslangen en de bumper, de stuurpomp vast aan zijn slangaansluitingen, en de spanrol en de geleiderol tegen de veerpoot en de motorsteun. Dat de riem ook de stuurpomp aandrijft is aannemelijk voor deze motor, niet bevestigd.`, ex: [-0.42, -0.1, 0.26], spec: [['Riem', '7PK1795 (7 ribben, 1795 mm)'], ['Verbruikers', 'aircocompressor, dynamo']] }, [
     P('Multiriem', xf(belt.geo, [XA, 0, 0]), MAT.belt, { d: `Poly-V-riem met zeven ribben; de spanner drukt op de rug. Riemlengte in het model ${Math.round(belt.len * 1000)} mm, ${Math.round(1795 - belt.len * 1000)} mm korter dan de opgegeven 1795 mm (compacte poeliestand); de exacte riemloop is niet gevonden.`, ex: [-0.1, 0, 0] }),
     P('Krukaspoelie', merge([engPolyV(0.07, 0.026, 'Crank'), xf(G.cyl('x', 0.021, 0.021, 0.055, 20), [0.03, 0, 0]), xf(G.cyl('x', 0.05, 0.05, 0.004, 32), [0.012, 0, 0])]), MAT.darkSteel, { d: 'Krukaspoelie met zeven groeven (Ø140 mm geschat); of hij een trillingsdemper heeft is niet gevonden.', p: [XA, 0, 0], ex: [-0.06, -0.03, 0] }),
     P('Poeliebout krukas', hexBolt(0.06, 0.012, 'x'), MAT.darkSteel, { d: 'Krukaspoeliebout: aanhalen plus 115° ± 15°; herbruikbaar zolang de lengte onder de kop ≤ 49,1 mm is.', p: [XA - 0.015, 0, 0], ex: [-0.12, -0.03, 0] }),
@@ -2989,7 +3103,7 @@ function buildAccessory() {
       P('Bevestigingsbout spanner', hexBolt(0.1, 0.01, 'x'), MAT.darkSteel, { d: 'Bout waarmee de spanner op de accessoiresteun zit.', p: [-0.335, piv[1], piv[0]], ex: [-0.09, 0, 0] }),
     ]),
     A('Geleiderol multiriem', { d: 'Vaste geleiderol in de multiriemloop.', p: [XA, ACC[4][1], ACC[4][0]], ex: [-0.06, 0.04, 0] }, [
-      P('Rol met lager', pulley(0.03, 0.027, 'engAccI'), MAT.alu, { d: 'Gladde rol met lager.', ex: [0, 0, 0] }),
+      P('Rol met lager', pulley(0.03, 0.027, 'engAccI'), MAT.alu, { d: 'Gladde geleiderol met lager die de multiriem langs de poelies leidt.', ex: [0, 0, 0] }),
       P('Bout geleiderol', hexBolt(0.1, 0.01, 'x'), MAT.darkSteel, { d: 'Bout van de geleiderol, aanhaalmoment 5,8 daN·m.', p: [-0.018, 0, 0], ex: [-0.07, 0, 0] }),
     ]),
     P('Accessoiresteun', bracket, MAT.aluCast, { d: 'Multifunctionele steun op het blok waaraan dynamo, aircocompressor en spanner vastzitten; de stuurpomp zit via de pompsteun op dezelfde steun.', ex: [0.0, 0.0, 0.08] }),
@@ -3033,13 +3147,13 @@ function buildIntake() {
     A('Gasklephuis', { d: 'Elektronisch bediend gasklephuis (drive-by-wire); binnenwerk schematisch weergegeven.', p: T, ex: [-0.15, 0, 0.03] }, [
       P('Huis', tbHousing, MAT.alu, { d: 'Aluminium huis met doorlaat, motorkamer en tandwielkamer.', ex: [0, 0, 0] }),
       P('Vlinderklep', G.cyl('x', 0.0295, 0.0295, 0.0015, 24), MAT.steel, { d: 'Gasklep die de luchtstroom doseert.', r: [0, 0, 0.14], ex: [-0.06, 0, 0] }),
-      P('Klepas', G.cyl('z', 0.004, 0.004, 0.084, 8), MAT.steel, { d: 'As van de gasklep.', ex: [0, 0, 0.09] }),
+      P('Klepas', G.cyl('z', 0.004, 0.004, 0.084, 8), MAT.steel, { d: 'As waarop de gasklepplaat draait; de klepstandsensoren lezen de stand van deze as af.', ex: [0, 0, 0.09] }),
       P('Terugstelveer', engSpring(0.008, 0.0011, 0.012, 3, 10, 'z'), MAT.steel, { d: 'Veer die de klep zonder stroom in de noodloopstand terugzet.', p: [0, 0, -0.044], ex: [0, 0, -0.05] }),
       P('Gelijkstroommotor', merge([G.cyl('z', 0.015, 0.015, 0.045, 16), xf(G.cyl('z', 0.002, 0.002, 0.01, 6), [0, 0, 0.027])]), MAT.darkSteel, { d: 'Elektromotor die de gasklep via de tandwielen verdraait.', p: [0, -0.05, 0.002], ex: [0, -0.05, 0] , inner: true }),
       P('Tussentandwiel', gear(22, 0.012, 0.0105, 0.004, 0.002, 'z'), MAT.plasticGrey, { d: 'Tussenwiel van de tandwielreductie.', p: [0, -0.028, 0.047], ex: [0, -0.02, 0.06] }),
       P('Sectortandwiel', gear(44, 0.022, 0.0205, 0.004, 0.004, 'z'), MAT.plasticGrey, { d: 'Tandwiel op de klepas (in werkelijkheid een sector).', p: [0, 0, 0.049], ex: [0, 0, 0.075] }),
       P('Positiesensor 1', G.rbox(0.008, 0.01, 0.004, 0.001), MAT.ecu, { d: 'Eerste klepstandsensor; twee sensoren voor redundantie.', p: [0, 0.008, 0.056], ex: [0, 0.03, 0.1] }),
-      P('Positiesensor 2', G.rbox(0.008, 0.01, 0.004, 0.001), MAT.ecu, { d: 'Tweede klepstandsensor.', p: [0, -0.008, 0.056], ex: [0, -0.03, 0.1] }),
+      P('Positiesensor 2', G.rbox(0.008, 0.01, 0.004, 0.001), MAT.ecu, { d: 'Tweede klepstandsensor die de stand van de gasklep meet, als controle op de eerste.', p: [0, -0.008, 0.056], ex: [0, -0.03, 0.1] }),
       P('Deksel met stekker', merge([G.rbox(0.034, 0.092, 0.008, 0.004), xf(G.rbox(0.02, 0.016, 0.02, 0.003), [0, -0.05, 0.006])]), MAT.plastic, { d: 'Kunststof deksel van de tandwielkamer met de sensoren en de stekker.', p: [0, -0.022, 0.06], ex: [0, 0, 0.13] }),
       P('Pakking gasklephuis', (() => { const s = shapeOf(rrectPts(0.07, 0.07, 0.008)); s.holes.push(circlePath(0, 0, 0.031)); return cache('engTbGasket', () => side(s, 0.0015)); })(), MAT.rubber, { d: 'Pakking tussen gasklephuis en spruitstuk.', p: [0.03, 0, 0], ex: [0.04, 0, 0] }),
       A('Bouten gasklephuis', { d: 'Vier bouten van het gasklephuis.', ex: [-0.03, 0, 0] }, [[0.03, 0.03], [0.03, -0.03], [-0.03, 0.03], [-0.03, -0.03]].map(([y, z], k) => P(`Bout ${k + 1}`, hexBolt(0.028, 0.006, 'x'), MAT.darkSteel, { d: 'Bout van het gasklephuis.', p: [0.021, y, z], ex: [-0.07, 0, 0] }))),
@@ -3085,7 +3199,7 @@ function buildTurbocharger() {
   const flange = cache('engTurbOutFlange', () => merge([side(shapeOf(circlesHull([[0.034, 0, 0.012], [-0.017, 0.03, 0.012], [-0.017, -0.03, 0.012]], 0)), 0.008), ...[[0.034, 0], [-0.017, 0.03], [-0.017, -0.03]].map(([z, y]) => xf(G.cyl('x', 0.004, 0.004, 0.03, 8), [-0.012, y, z]))]));
   const TP = ENG_TURBO;
   const tm = [[0.02, 0.02], [-0.02, 0.02], [0.02, -0.02], [-0.02, -0.02]];
-  return A('Turbocompressor', { d: 'Mitsubishi TD04 (referentie 49377-07303, aannemelijk voor deze motor): de uitlaatgassen drijven het turbinewiel, dat via één as het compressorwiel laat draaien. Interne wastegate, watergekoeld lagerhuis. De wieldiameters in het model (turbine circa 47 mm, compressor circa 53 mm) zijn geschat uit de TD04-reeks.', p: TP, ex: [0.02, -0.05, -0.14], spec: [['Type', 'Mitsubishi TD04'], ['Referentie', '49377-07303 (aannemelijk)']] }, [
+  return A('Turbocompressor', { d: 'Mitsubishi TD04 (referentie 49377-07303, aannemelijk voor deze motor): de uitlaatgassen drijven het turbinewiel, dat via één as het compressorwiel laat draaien. Interne wastegate, watergekoeld lagerhuis. De wieldiameters in het model (turbine circa 47 mm, compressor circa 53 mm) zijn geschat uit de TD04-reeks.', p: TP, ex: [0.02, -0.05, -0.14], spec: [['Type', 'Mitsubishi TD04']] }, [
     A('Turbinehuis', { d: 'Twin-scroll turbinehuis van hittebestendig gietstaal met interne wastegate.', p: [-0.045, 0, 0], ex: [-0.1, 0, 0] }, [
       P('Turbinehuis', tHouse, MAT.iron, { d: 'Slakkenhuis met twee gescheiden inlaten; hier komen de hete gassen binnen.', ex: [0, 0, 0] }),
       P('Wastegateklep met as', merge([xf(G.cyl('x', 0.011, 0.011, 0.003, 14), [-0.038, 0.014, 0]), xf(G.cyl('z', 0.0025, 0.0025, 0.05, 8), [-0.034, 0.024, 0.02])]), MAT.darkSteel, { d: 'Klepje dat een omloop langs het turbinewiel opent en zo de laaddruk begrenst.', ex: [-0.04, 0.02, 0] }),
@@ -3148,7 +3262,7 @@ function buildLube() {
       P('Pan', pan, MAT.aluCast, { d: 'Carterpan: het oliereservoir onder het blok, met oliebak bij de vliegwielzijde.', ex: [0, 0, 0] }),
       P('Schotplaat', xf(G.box(0.3, 0.002, 0.15), [0.03, -0.085, 0]), MAT.steel, { d: 'Keerplaat in de pan die het klotsen van de olie tegengaat (schematisch).', ex: [0, 0.06, 0], inner: true }),
       P('Carterpakking', gasket, MAT.rubber, { d: 'Pakking tussen blok en pan.', ex: [0, 0.03, 0] }),
-      A('Carterbouten', { d: 'Achttien bouten van de carterpan.', ex: [0, -0.04, 0] }, bolts.map(([x, z], k) => P(`Carterbout ${k + 1}`, hexBolt(0.025, 0.007), MAT.darkSteel, { d: 'Bout van de carterpan.', p: [x, -0.072, z], ex: [0, -0.03, 0] }))),
+      A('Carterbouten', { d: 'Bouten die de carterpan aan het blok vastzetten: 18 in het model, aantal niet geverifieerd.', ex: [0, -0.04, 0] }, bolts.map(([x, z], k) => P(`Carterbout ${k + 1}`, hexBolt(0.025, 0.007), MAT.darkSteel, { d: 'Bout die de carterpan aan het blok vastzet.', p: [x, -0.072, z], ex: [0, -0.03, 0] }))),
       P('Aftapplug', merge([G.cyl('y', 0.007, 0.007, 0.012, 10), xf(G.box(0.008, 0.006, 0.008), [0, -0.009, 0])]), MAT.steel, { d: 'Aftapplug met vierkante kop (vierkant 8).', p: [0.05, -0.207, 0.03], ex: [0, -0.08, 0] }),
       P('Koperring aftapplug', annulus(0.007, 0.011, 0.0015, 'y', 16), MAT.copper, { d: 'Koperen afdichtring van de aftapplug.', p: [0.05, -0.2138, 0.03], ex: [0, -0.05, 0] }),
     ]),
@@ -3168,7 +3282,7 @@ function buildLube() {
       P('Aanzuigbuis', pick, MAT.steel, { d: 'Gebogen aanzuigbuis van zeef naar pomp.', ex: [0, 0, 0] }),
       P('Zeef', merge([xf(G.cyl('y', 0.036, 0.036, 0.008, 20), [0.045, -0.188, 0.02]), xf(G.cyl('y', 0.012, 0.012, 0.01, 12), [0.03, -0.182, 0.02])]), MAT.steel, { d: 'Zeef die grof vuil uit de olie houdt.', ex: [0.03, -0.03, 0] }),
       P('O-ring aanzuigbuis', engORing(0.0085, 0.0014), MAT.rubber, { d: 'Afdichting tussen aanzuigbuis en pomp.', p: [-0.168, -0.13, 0.02], ex: [-0.02, 0.03, 0] }),
-      P('Bout aanzuigbuis', hexBolt(0.016, 0.006), MAT.darkSteel, { d: 'Bout van de aanzuigbuis.', p: [-0.06, -0.17, 0.045], r: [PI, 0, 0], ex: [0, 0.06, 0] }),
+      P('Bout aanzuigbuis', hexBolt(0.016, 0.006), MAT.darkSteel, { d: 'Bout die de oliezuigbuis met zeef vastzet.', p: [-0.06, -0.17, 0.045], r: [PI, 0, 0], ex: [0, 0.06, 0] }),
     ]),
     A('Oliekoeler', { d: 'Watergekoelde plaatkoeler tussen blok en oliefilter (circa 122 × 99 × 48 mm, 8 platen).', p: [0.03, 0.015, 0.112], ex: [0, 0, 0.12] }, [
       P('Platenpakket', merge([front(shapeOf(rrectPts(0.09, 0.09, 0.02, 3)), 0.006), ...[0, 1, 2, 3, 4, 5, 6, 7].map(k => xf(front(shapeOf(rrectPts(0.084, 0.084, 0.018, 3)), 0.0035), [0, 0, 0.007 + k * 0.0045])), xf(G.cyl('z', 0.016, 0.016, 0.046, 16), [0, 0, 0.02])]), MAT.steel, { d: 'Pakket van acht stalen platen waarin olie en koelvloeistof elkaar kruisen.', ex: [0, 0, 0.02] }),
@@ -3183,7 +3297,7 @@ function buildLube() {
       P('Afdichtring filter', G.torus('z', 0.0305, 0.0018, 28, 5), MAT.rubber, { d: 'Rubber afdichtring Ø61 mm.', p: [0, 0, -0.001], ex: [0, 0, -0.03] }),
     ]),
     A('Peilstok', { d: 'Peilstok met geleidebuis aan de voorzijde van het blok; de exacte plaats voor de Laguna III is niet gevonden.', ex: [0, 0.14, 0.1] }, [
-      P('Peilstok', merge([tube([[0.205, 0.0, 0.112], [0.205, 0.2, 0.128], [0.205, 0.385, 0.142]], 0.002, 16, 5), xf(G.torus('z', 0.012, 0.0035, 18, 6), [0.205, 0.402, 0.143]), xf(G.cyl('y', 0.005, 0.005, 0.012, 8), [0.205, 0.388, 0.142])]), MAT.handle, { d: 'Peilstok met gele greep.', ex: [0, 0.12, 0] }),
+      P('Peilstok', merge([tube([[0.205, 0.0, 0.112], [0.205, 0.2, 0.128], [0.205, 0.385, 0.142]], 0.002, 16, 5), xf(G.torus('z', 0.012, 0.0035, 18, 6), [0.205, 0.402, 0.143]), xf(G.cyl('y', 0.005, 0.005, 0.012, 8), [0.205, 0.388, 0.142])]), MAT.handle, { d: 'Peilstok met gele greep: aan de markeringen op het uiteinde lees je de oliestand af.', ex: [0, 0.12, 0] }),
       P('Geleidebuis', tube([[0.205, -0.02, 0.11], [0.205, 0.2, 0.128], [0.205, 0.38, 0.142]], 0.0055, 20, 8), MAT.plastic, { d: 'Geleidebuis van de peilstok.', ex: [0, 0, 0] }),
       P('O-ring geleidebuis', engORing(0.0058, 0.0012), MAT.rubber, { d: 'Afdichting van de geleidebuis in het blok.', p: [0.205, 0.004, 0.112], ex: [0, -0.04, 0.02] }),
       P('Beugel peilstokbuis', merge([G.box(0.012, 0.01, 0.026), xf(hexBolt(0.012, 0.005, 'z'), [0, 0, -0.016], [PI, 0, 0])]), MAT.steel, { d: 'Beugel die de buis aan de kop vastzet.', p: [0.205, 0.28, 0.122], ex: [0, 0, 0.05] }),
@@ -3197,9 +3311,9 @@ function buildLube() {
     A('Olieretour turbo', { d: 'Olieretourleiding van het lagerhuis terug naar het carter, boven het oliepeil in het blok.', ex: [0, -0.04, -0.1] }, [
       P('Olieretourleiding', tube([[0.07, 0.09, -0.255], [0.07, 0.05, -0.24], [0.06, 0.02, -0.17], [0.06, 0.02, -0.11]], 0.0075, 24, 8), MAT.steel, { d: 'Retourleiding met flens aan beide kanten.', ex: [0, 0, 0] }),
       P('Pakking retourflens', G.rbox(0.03, 0.0012, 0.022, 0.0005), MAT.heat, { d: 'Pakking van de retourflens aan het lagerhuis.', p: [0.07, 0.095, -0.255], ex: [0, 0.02, 0] }),
-      P('Retourbout 1', hexBolt(0.016, 0.006, 'z'), MAT.darkSteel, { d: 'Bout van de retourflens.', p: [0.05, 0.02, -0.118], r: [PI, 0, 0], ex: [0, 0, -0.04] }),
-      P('Retourbout 2', hexBolt(0.016, 0.006, 'z'), MAT.darkSteel, { d: 'Bout van de retourflens.', p: [0.07, 0.02, -0.118], r: [PI, 0, 0], ex: [0, 0, -0.04] }),
-      P('Retourbout 3', hexBolt(0.016, 0.006, 'z'), MAT.darkSteel, { d: 'Bout van de retourflens.', p: [0.06, 0.035, -0.118], r: [PI, 0, 0], ex: [0, 0, -0.04] }),
+      P('Retourbout 1', hexBolt(0.016, 0.006, 'z'), MAT.darkSteel, { d: 'Bout die de retourflens van de olieretour van de turbo vastzet.', p: [0.05, 0.02, -0.118], r: [PI, 0, 0], ex: [0, 0, -0.04] }),
+      P('Retourbout 2', hexBolt(0.016, 0.006, 'z'), MAT.darkSteel, { d: 'Bout die de retourflens van de olieretour van de turbo vastzet.', p: [0.07, 0.02, -0.118], r: [PI, 0, 0], ex: [0, 0, -0.04] }),
+      P('Retourbout 3', hexBolt(0.016, 0.006, 'z'), MAT.darkSteel, { d: 'Bout die de retourflens van de olieretour van de turbo vastzet.', p: [0.06, 0.035, -0.118], r: [PI, 0, 0], ex: [0, 0, -0.04] }),
     ]),
     A('Carterventilatie', { d: 'Carterventilatie: oliedampafscheider op het kleppendeksel, PCV-klep en slangen naar het inlaatspruitstuk en de turbo-ingang (opbouw schematisch).', ex: [0, 0.1, -0.05] }, [
       P('Oliedampafscheider', sep, MAT.plastic, { d: 'Afscheider die olienevel uit de carterdampen haalt.', p: PCV, ex: [0, 0.03, 0] }),
@@ -3222,7 +3336,7 @@ function buildEngineCooling() {
       P('Mechanische asafdichting', annulus(0.006, 0.013, 0.006, 'x', 16), MAT.ceramic, { d: 'Glijringafdichting die koelvloeistof langs de as tegenhoudt.', p: [0.036, 0, 0], ex: [0.03, 0, 0.05] }),
       P('Waaier', merge([blades(6, 0.008, 0.03, 0.01, 0.003, 0.5, 'x'), G.cyl('x', 0.03, 0.03, 0.002, 20)]), MAT.steel, { d: 'Schoepenwiel dat de koelvloeistof rondpompt.', p: [0.043, 0, 0], ex: [0.06, 0, 0] }),
       P('Pakking waterpomp', annulus(0.016, 0.04, 0.0008, 'x', 24), MAT.rubber, { d: 'Pakking tussen pomp en blok.', p: [0.0296, 0, 0], ex: [0.045, 0, 0] }),
-      A('Bouten waterpomp', { d: 'Bouten van de waterpomp.', ex: [-0.05, 0, 0] }, [0, 1, 2].map(k => P(`Bout ${k + 1}`, hexBolt(0.025, 0.006, 'x'), MAT.darkSteel, { d: 'Bout van de waterpomp.', p: [0.0195, 0.033 * Math.cos(k * 2.1 + 0.5), 0.033 * Math.sin(k * 2.1 + 0.5)], ex: [-0.07, 0, 0] }))),
+      A('Bouten waterpomp', { d: 'Bouten die de waterpomp aan het blok vastzetten.', ex: [-0.05, 0, 0] }, [0, 1, 2].map(k => P(`Bout ${k + 1}`, hexBolt(0.025, 0.006, 'x'), MAT.darkSteel, { d: 'Bout die de waterpomp aan het blok vastzet.', p: [0.0195, 0.033 * Math.cos(k * 2.1 + 0.5), 0.033 * Math.sin(k * 2.1 + 0.5)], ex: [-0.07, 0, 0] }))),
       P('Aanvoerstomp', merge([tube([[0.078, -0.093, -0.005], [0.082, -0.093, 0.01], [0.09, -0.093, 0.04], [0.09, -0.093, 0.059]], 0.013, 16, 10), xf(G.rbox(0.03, 0.03, 0.006, 0.004), [0.09, -0.093, 0.009])]), MAT.aluCast, { d: 'Inlaatstomp van de waterpomp aan de voorkant van het blok, voor de onderste radiateurslang.', ex: [0.02, 0, 0.06] }),
     ]),
     A('Waterstuk en thermostaat', { d: 'Waterstuk (boîtier de sortie d\'eau) aan de vliegwielzijde van de kop, met thermostaat en temperatuursensor.', ex: [0.14, 0.12, 0] }, [
@@ -3241,8 +3355,8 @@ function buildEngineCooling() {
 
 function buildEngine() {
   return A('Motor F4Rt', {
-    d: 'Renault F4Rt 813 (waarschijnlijk, zie beslissingen; de RDW toont Euro 5 en onderdelencatalogi noemen de reeks F4R 811): 2,0-liter viercilinder-turbomotor met gietijzeren blok, aluminium kop, 16 kleppen met rolzwenkarmen (zoals bij de F4R-familie), vaste kleptiming zonder faseversteller (de persmap van 2007 noemt de 811; voor de 813 niet apart bevestigd), distributieriem en meerpuntsinjectie. Dwars voorin; inlaatzijde naar voren en turbo achter (aannemelijk).',
-    spec: [['Motorcode', 'F4Rt 813 (waarschijnlijk, zie beslissingen)'], ['Opbouw', '4 in lijn, 16V DOHC'], ['Cilinderinhoud', '1998 cm³'], ['Boring × slag', '82,7 × 93,0 mm'], ['Compressie', '9,5 : 1 (Renault-persmap 2007, bij de 811; L\'argus noemt 9,0 : 1)'], ['Kleptiming', 'vast, geen faseversteller'], ['Toerenbegrenzer', '6250 tpm'], ['Brandstofsysteem', 'meerpuntsinjectie'], ['Inductie', 'Mitsubishi TD04 + intercooler'], ['Vermogen', '125 kW (170 pk) bij 5000 tpm'], ['Koppel', '270 Nm bij 3250 tpm'], ['Ontsteekvolgorde', '1-3-4-2 (aannemelijk)'], ['Nokkenasaandrijving', 'distributieriem']],
+    d: 'Renault F4Rt 813 (waarschijnlijk, zie beslissingen; de RDW toont Euro 5 en onderdelencatalogi noemen de reeks F4R 811): 2,0-liter viercilinder-turbomotor met gietijzeren blok, aluminium kop, 16 kleppen met rolzwenkarmen (zoals bij de F4R-familie), vaste kleptiming zonder faseversteller (de persmap van 2007 noemt de 811; voor de 813 niet apart bevestigd), distributieriem en meerpuntsinjectie. Dwars voorin; inlaatzijde naar voren en turbo achter (aannemelijk). Ontsteekvolgorde 1-3-4-2 (aannemelijk, niet bevestigd).',
+    spec: [['Motorcode', 'F4Rt 813 (waarschijnlijk, zie beslissingen)'], ['Opbouw', '4 in lijn, 16V DOHC'], ['Cilinderinhoud', '1998 cm³'], ['Boring × slag', '82,7 × 93,0 mm'], ['Compressie', '9,5 : 1 (Renault-persmap 2007, bij de 811; L\'argus noemt 9,0 : 1)'], ['Kleptiming', 'vast, geen faseversteller'], ['Toerenbegrenzer', '6250 tpm'], ['Brandstofsysteem', 'meerpuntsinjectie'], ['Inductie', 'Mitsubishi TD04 + intercooler'], ['Vermogen', '125 kW (170 pk) bij 5000 tpm'], ['Koppel', '270 Nm bij 3250 tpm'], ['Nokkenasaandrijving', 'distributieriem']],
     ex: [0, 0.25, 0],
   }, [
     buildBlock(), buildCrank(), buildHead(), buildTiming(), buildAccessory(), buildIntake(), buildTurbo(), buildLube(), buildEngineCooling(),
@@ -3284,7 +3398,7 @@ function buildAlternator(p) {
     P('Voorlager', annulus(0.0085, 0.017, 0.01, 'x', 18), MAT.bearing, { d: 'Kogellager in het voorschild.', p: [-0.056, 0, 0], ex: [-0.125, 0, 0] }),
     P('Ventilator', merge([blades(8, 0.028, 0.054, 0.008, 0.0016, 0.3, 'x'), G.cyl('x', 0.054, 0.054, 0.0015, 24)]), MAT.steel, { d: 'Interne ventilator op de rotor voor de koeling.', p: [-0.033, 0, 0], ex: [-0.1, 0, 0] }),
     A('Rotor', { d: 'Klauwpoolrotor met veldspoel en sleepringen.', ex: [-0.07, 0, 0] }, [
-      P('Rotoras', G.cyl('x', 0.0085, 0.0085, 0.15, 12), MAT.steel, { d: 'Rotoras.', p: [-0.01, 0, 0], ex: [0, 0, 0] }),
+      P('Rotoras', G.cyl('x', 0.0085, 0.0085, 0.15, 12), MAT.steel, { d: 'As van de rotor; draagt de klauwpolen en de sleepringen en wordt door de poelie aangedreven.', p: [-0.01, 0, 0], ex: [0, 0, 0] }),
       P('Klauwpool voor', claw, MAT.darkSteel, { d: 'Klauwpool met zes vingers.', p: [-0.02, 0, 0], ex: [-0.03, 0, 0] }),
       P('Klauwpool achter', claw, MAT.darkSteel, { d: 'Tweede klauwpool, vingers in elkaar grijpend.', p: [0.02, 0, 0], r: [PI / 6, PI, 0], ex: [0.03, 0, 0] }),
       P('Veldspoel', G.cyl('x', 0.03, 0.03, 0.026, 20), MAT.copper, { d: 'Bekrachtigingsspoel tussen de klauwpolen.', ex: [0, 0.01, 0] }),
@@ -3301,11 +3415,11 @@ function buildAlternator(p) {
     A('Spanningsregelaar', { d: 'Spanningsregelaar met koolborstelhouder.', ex: [0.07, 0.1, 0.03], inner: true }, [
       P('Borstelhouder', G.box(0.016, 0.03, 0.016), MAT.ecu, { d: 'Regelaar met borstelhouder.', p: [0.05, 0.025, 0], ex: [0, 0, 0] }),
       P('Koolborstel 1', G.box(0.004, 0.008, 0.005), MAT.blackGloss, { d: 'Koolborstel op de sleepring.', p: [0.044, 0.0125, 0], ex: [0, 0.03, -0.02] }),
-      P('Koolborstel 2', G.box(0.004, 0.008, 0.005), MAT.blackGloss, { d: 'Tweede koolborstel.', p: [0.05, 0.0125, 0], ex: [0, 0.03, 0.02] }),
+      P('Koolborstel 2', G.box(0.004, 0.008, 0.005), MAT.blackGloss, { d: 'Tweede koolborstel die over de sleepring schuurt en de stroom naar de rotor voert.', p: [0.05, 0.0125, 0], ex: [0, 0.03, 0.02] }),
       P('Borstelveer 1', engSpring(0.0018, 0.0003, 0.008, 4, 6), MAT.steel, { d: 'Veer die de koolborstel aandrukt.', p: [0.044, 0.021, 0], ex: [0, 0.05, -0.02] }),
-      P('Borstelveer 2', engSpring(0.0018, 0.0003, 0.008, 4, 6), MAT.steel, { d: 'Tweede borstelveer.', p: [0.05, 0.021, 0], ex: [0, 0.05, 0.02] }),
+      P('Borstelveer 2', engSpring(0.0018, 0.0003, 0.008, 4, 6), MAT.steel, { d: 'Tweede borstelveer die de tweede koolborstel op de sleepring drukt.', p: [0.05, 0.021, 0], ex: [0, 0.05, 0.02] }),
     ]),
-    A('Doorgaande bouten', { d: 'Drie doorgaande bouten.', ex: [-0.04, 0, 0] }, bolts),
+    A('Doorgaande bouten', { d: 'Drie doorgaande bouten die voorschild en achterschild van de dynamo samentrekken.', ex: [-0.04, 0, 0] }, bolts),
     P('B+-aansluiting', merge([G.cyl('x', 0.004, 0.004, 0.02, 8), xf(engNut(0.008, 0.006, 'x'), [0.006, 0, 0]), xf(G.cyl('x', 0.008, 0.008, 0.004, 12), [-0.004, 0, 0])]), MAT.copper, { d: 'Hoofdstroomaansluiting B+ (M8) naar de accu.', p: [0.085, 0.03, 0.025], ex: [0.06, 0.03, 0.03] }),
     P('Stekker dynamo', G.rbox(0.014, 0.018, 0.022, 0.003), MAT.plastic, { d: 'Stekker voor de stuur- en signaalleidingen.', p: [0.078, -0.03, 0.03], ex: [0.06, -0.02, 0.04] }),
   ]);
@@ -3320,7 +3434,7 @@ function buildAcCompressor(p) {
     A('Magneetkoppeling', { d: 'Elektromagnetische koppeling die de compressor in- en uitschakelt.', p: [px, 0, 0], ex: [-0.12, 0, 0] }, [
       P('Poelie met lager', merge([engPolyV(0.0595, 0.026, 'Ac'), annulus(0.024, 0.032, 0.02, 'x', 24)]), MAT.steel, { d: 'Riempoelie met lager op de neus van het voorhuis, Ø119 mm.', ex: [-0.02, 0, 0] }),
       P('Ankerplaat', merge([G.cyl('x', 0.052, 0.052, 0.004, 32), ...[0, 1, 2].map(k => xf(G.box(0.003, 0.006, 0.03), [-0.003, 0.03 * Math.cos(k * 2.09), 0.03 * Math.sin(k * 2.09)], [k * 2.09, 0, 0]))]), MAT.steel, { d: 'Koppelingsplaat (anker) met veerplaten, wordt door de spoel tegen de poelie getrokken.', p: [-0.016, 0, 0], ex: [-0.05, 0, 0] }),
-      P('Naaf', merge([G.cyl('x', 0.013, 0.013, 0.012, 14), xf(G.cyl('x', 0.02, 0.02, 0.003, 16), [-0.004, 0, 0])]), MAT.darkSteel, { d: 'Naaf op de compressoras.', p: [-0.022, 0, 0], ex: [-0.058, 0, 0] }),
+      P('Naaf', merge([G.cyl('x', 0.013, 0.013, 0.012, 14), xf(G.cyl('x', 0.02, 0.02, 0.003, 16), [-0.004, 0, 0])]), MAT.darkSteel, { d: 'Naaf op de compressoras die de aandrijving van de magneetkoppeling op de as overbrengt.', p: [-0.022, 0, 0], ex: [-0.058, 0, 0] }),
       P('Borgring koppeling', G.torus('x', 0.009, 0.0012, 14, 4), MAT.steel, { d: 'Borgring die de naaf op de as vastzet.', p: [-0.029, 0, 0], ex: [-0.075, 0, 0] }),
       P('Veldspoel koppeling', annulus(0.026, 0.05, 0.018, 'x', 28), MAT.copper, { d: 'Elektromagneet in de poelie.', p: [0.012, 0, 0], ex: [0.03, 0, 0] }),
     ]),
@@ -3411,7 +3525,7 @@ function engBuildPump() {
     return xf(merge([side(arm, 0.02), side(boss, 0.02)]), [0.065, 0, 0]);
   });
   const plug = cache('engPsPlug', () => merge([engNut(0.0145, 0.009, 'z'), xf(G.cyl('z', 0.0075, 0.0075, 0.012, 12), [0, 0, 0.0105])]));
-  return A('Stuurpomp', { d: 'Riemaangedreven schottenpomp (aannemelijk voor deze motor; de stuurbekrachtiging van de F4Rt is hydraulisch met variabele assistentie): perst olie uit het reservoir naar het stuurhuis. Opbouw, afmetingen en plaats zijn geschat.', p: ENG_PS, ex: [-0.06, 0, 0.12], spec: [['Aandrijving', 'multiriem 7PK1795, zeven groeven'], ['Status', 'aannemelijk, niet bevestigd']] }, [
+  return A('Stuurpomp', { d: 'Riemaangedreven schottenpomp (aannemelijk voor deze motor, niet bevestigd; de stuurbekrachtiging van de F4Rt is hydraulisch met variabele assistentie): perst olie uit het reservoir naar het stuurhuis. Opbouw, afmetingen en plaats zijn geschat.', p: ENG_PS, ex: [-0.06, 0, 0.12], spec: [['Aandrijving', 'multiriem 7PK1795, zeven groeven']] }, [
     A('Poelie met moer', { d: 'Multiriempoelie met zeven groeven en de moer waarmee hij op de pompas zit.', ex: [-0.14, 0, 0] }, [
       P('Poelie stuurpomp', pulleyGeo, MAT.steel, { d: 'Stalen poelie met zeven groeven voor de multiriem (Ø116 mm, geschat).', ex: [0, 0, 0] }),
       P('Moer poelie', engNut(0.016, 0.006, 'x'), MAT.darkSteel, { d: 'Moer op het asuiteinde die de poelie vastzet.', p: [PXL - 0.0135, 0, 0], ex: [-0.05, 0, 0] }),
@@ -3551,8 +3665,8 @@ function drvConverter() {
   const shellT = drvL('Turb', semicircle(0.098, 0.07, 0.036, -1, 10), 32), shellP = drvL('Pump', semicircle(0.098, 0.07, 0.036, 1, 10), 32);
   const sp = 0.05;
   return A('Koppelomvormer', {
-    d: 'Hydraulische koppeling tussen motor en versnellingsbak: het pompwiel stuwt olie naar het turbinewiel, het leidwiel vergroot het koppel bij het wegrijden en de overbruggingskoppeling schakelt het slip uit vanaf de tweede versnelling.',
-    spec: [['Elementen', '3 (pompwiel, turbinewiel, leidwiel)'], ['Overbrugging', 'lock-up in 2e tot en met 6e'], ['Buitendiameter', 'circa 275 mm (geschat)']],
+    d: 'Hydraulische koppeling tussen motor en versnellingsbak: het pompwiel stuwt olie naar het turbinewiel, het leidwiel vergroot het koppel bij het wegrijden en de overbruggingskoppeling schakelt het slip uit vanaf de tweede versnelling. De buitendiameter van circa 275 mm is een schatting.',
+    spec: [['Elementen', '3 (pompwiel, turbinewiel, leidwiel)'], ['Overbrugging', 'lock-up in 2e tot en met 6e']],
     ex: [0, 0, 0.42],
   }, [
     P('Omvormerdeksel', merge([cover, G.cyl('x', 0.012, 0.012, 0.016, 12)]), MAT.steel, { d: 'Voorste schaal van de omvormer, aan het pompwiel gelast; met vier nokken naar de flexplaat van de motor.', ex: [-0.02, 0, 0] }),
@@ -3642,7 +3756,7 @@ function drvSets() {
   })();
   return A('Tandwielsets', {
     d: 'De drie planetaire tandwielsets (reductieset, voorste set en achterste set) die samen de zes versnellingen en de achteruit vormen (Lepelletier-opbouw). De koppeling tussen de sets onderling is schematisch weergegeven.',
-    spec: [['Aantal sets', '3'], ['Voorste set', '4 planeetwielen'], ['Eindoverbrenging', '3,804 volgens Renault; de getekende tandentallen (Mitsubishi F6AJA) geven 3,571, de Renault-tandentallen zijn niet gevonden']], ex: [0, 0.2, 0.12], inner: true,
+    spec: [['Aantal sets', '3'], ['Voorste set', '4 planeetwielen']], ex: [0, 0.2, 0.12], inner: true,
   }, [
     drvPlanets('fr', 'Voorste planetaire set', 'Voorste set (FR) met vier planeetwielen; de drager is de naaf van het uitgaande tandwiel. Tandentallen schematisch weergegeven.', { m: 0.0024, w: 0.02, Ns: 20, Np: 12, Nr: 44, n: 4, x: 0.2195, ex: [-0.1, 0.1, 0] }),
     A('Achterste planetaire set', { d: 'Achterste set (RR) van het Ravigneaux-type: twee zonnewielen op één drager met korte en lange planeetwielen en een holwiel dat het uitgaande tandwiel aandrijft. Rij-indeling van de planeetwielen schematisch weergegeven.', ex: [0.12, 0.1, 0] }, rr),
@@ -3670,7 +3784,7 @@ function drvPark() {
 }
 function drvCounter() {
   const [cy, cz] = CSH;
-  return A('Tussenas eindoverbrenging', { d: 'Tussenas (reductie-as) met het tandwiel van 45 tanden dat door het uitgaande tandwiel wordt aangedreven en een rondsel van 21 tanden dat het kroonwiel van het differentieel aandrijft; loopt in twee conische rollagers met een afstelplaatje.', spec: [['Tanden', '45 en 21'], ['Eindoverbrenging', '3,571']], ex: [0.0, -0.1, -0.36], inner: true }, [
+  return A('Tussenas eindoverbrenging', { d: 'Tussenas (reductie-as) met het tandwiel van 45 tanden dat door het uitgaande tandwiel wordt aangedreven en een rondsel van 21 tanden dat het kroonwiel van het differentieel aandrijft; loopt in twee conische rollagers met een afstelplaatje. De tandentallen (42 en 45, 21 en 70) zijn die van de Mitsubishi F6AJA en geven een eindoverbrenging van 3,571; de eindoverbrenging van deze auto is 3,804 (Renault-persmap, zie de specificaties van de automaat). De Renault-tandentallen zijn niet gevonden, dus de getekende tandentallen zijn schematisch.', ex: [0.0, -0.1, -0.36], inner: true }, [
     P('Reductie-as', G.cyl('x', 0.013, 0.013, 0.24, 16), MAT.steel, { d: 'As van de tussenoverbrenging.', p: [0.2, cy, cz], ex: [0, 0, 0.0001] }),
     P('Tandwiel 45 tanden', drvG(45, DRV_GM, 0.016, 0.013), MAT.steel, { d: 'Grijpt in het uitgaande tandwiel.', p: [0.2965, cy, cz], ex: [0.08, 0, 0] }),
     P('Rondsel 21 tanden', drvG(21, DRV_GM, 0.024, 0.013), MAT.steel, { d: 'Drijft het kroonwiel van het differentieel aan.', p: [0.125, cy, cz], ex: [-0.08, 0, 0] }),
@@ -3686,7 +3800,7 @@ function drvDiff() {
   const hub = cache('drvDiffCase', () => merge([
     G.lathe('x', [[0.032, -0.072], [0.032, -0.052], [0.05, -0.046], [0.064, -0.028], [0.064, 0.028], [0.05, 0.046], [0.032, 0.052], [0.032, 0.072]], 36, 'drvDiffHousing'),
     annulus(0.05, 0.072, 0.01, 'x', 36)]));
-  return A('Differentieel', { d: 'Verdeelt het koppel over beide voorwielen en laat ze in bochten verschillend snel draaien; het kroonwiel heeft 70 tanden. Het aantal planeetwielen van het differentieel is niet gevonden: schematisch weergegeven met twee satellietwielen.', spec: [['Kroonwiel', '70 tanden'], ['Eindoverbrenging', '3,804 volgens Renault; de getekende tandentallen (Mitsubishi F6AJA) geven 3,571, de Renault-tandentallen zijn niet gevonden']], p: DIFF, ex: [0.0, -0.1, -0.5], inner: true }, [
+  return A('Differentieel', { d: 'Verdeelt het koppel over beide voorwielen en laat ze in bochten verschillend snel draaien; het kroonwiel heeft 70 tanden. Het aantal planeetwielen van het differentieel is niet gevonden: schematisch weergegeven met twee satellietwielen. Het kroonwiel van 70 tanden is een getekend tandental (Mitsubishi F6AJA): met het rondsel van 21 tanden en de tussenas geeft dat 3,571, terwijl de eindoverbrenging van deze auto 3,804 is (Renault-persmap, zie de specificaties van de automaat); de Renault-tandentallen zijn niet gevonden.', p: DIFF, ex: [0.0, -0.1, -0.5], inner: true }, [
     P('Kroonwiel', drvG(70, DRV_GM, 0.022, 0.07), MAT.steel, { d: 'Kroonwiel met 70 tanden, met tien bouten (144 N·m) aan het differentieelhuis; wordt door het rondsel van 21 tanden aangedreven.', p: [0.006, 0, 0], ex: [-0.09, 0, 0] }),
     P('Kroonwielbouten', drvBoltRing('drvKroonB', 10, 0.0775, 0.02, 0.008, '-x', 0.1, [0, 0], 0.017), MAT.darkSteel, { d: 'Tien bouten die het kroonwiel aan het differentieelhuis bevestigen.', ex: [-0.15, 0, 0] }),
     P('Differentieelhuis', hub, MAT.iron, { d: 'Gegoten huis dat met het kroonwiel meedraait; in het handboek niet te demonteren.', ex: [0.0, 0.0, 0.0001] }),
@@ -3756,8 +3870,8 @@ function drvStarter() {
   const mount = (nm, d, g, mat, p, ex, inner) => P(nm, g, mat, { d, p, ex, inner });
   const cap = 0.152, bx = (k) => [cap, sy + 0.0085 * (k ? 1 : -1), sz];
   const st = A('Startmotor', {
-    d: 'Elektrische startmotor (circa 1 kW, type schematisch) met voorgeschakelde planetaire reductie en solenoïde; het rondsel grijpt in de startkrans van de flexplaat. Zit met drie bouten (flens Ø66 mm) op de koppelomvormerklok.',
-    spec: [['Vermogen', 'circa 1 kW (geschat)'], ['Flensmaat', 'Ø66 mm, 3 bouten'], ['Rondsel', '9 tanden']], p: P0, ex: [-0.12, -0.25, 0.55],
+    d: 'Elektrische startmotor (vermogen circa 1 kW geschat, type schematisch) met voorgeschakelde planetaire reductie en solenoïde; het rondsel grijpt in de startkrans van de flexplaat. Zit met drie bouten (flens Ø66 mm) op de koppelomvormerklok.',
+    spec: [['Flensmaat', 'Ø66 mm, 3 bouten'], ['Rondsel', '9 tanden']], p: P0, ex: [-0.12, -0.25, 0.55],
   }, [
     P('Rondsel', drvG(9, 0.0025, 0.014, 0.006), MAT.steel, { d: 'Rondsel met 9 tanden dat bij het starten naar voren schuift en in de startkrans van de flexplaat grijpt.', ex: [-0.08, 0, 0] }),
     A('Rondselas met vrijloop', { d: 'Aandrijfas met rondsel en vrijloopkoppeling; de vrijloop voorkomt dat de draaiende motor de startmotor meeneemt.', ex: [0.005, 0, 0], inner: true }, [
@@ -3835,12 +3949,12 @@ function drvHousing() {
       P('Keerring omvormerhuis', annulus(0.03, 0.045, 0.009, 'x', 28), MAT.rubber, { d: 'Hoofdkeerring rond de naaf van het pompwiel.', p: [0.1195, 0, 0], ex: [0.08, 0, 0] }),
       P('O-ring omvormerhuis', G.torus('x', 0.1245, 0.0032, 40, 6), MAT.rubber, { d: 'Afdichting tussen omvormerhuis en transmissiehuis.', p: [0.1255, 0, 0], ex: [0.025, 0, 0] }),
     ]),
-    A('Transmissiehuis', { d: 'Spuitgietaluminium huis rond de planetaire sets en schakelelementen, met de lobben voor de tussenas en het differentieel en de vlakken voor het klepblok en de steunen. Bakbreedte circa 385 mm incl. omvormerhuis (Planète Renault); hier iets langer weergegeven.', spec: [['Materiaal', 'spuitgietaluminium'], ['Lengte', 'circa 385 mm'], ['Hartafstand', '197 mm (geschat)']], ex: [0.1, 0.8, 0.0] }, [
+    A('Transmissiehuis', { d: 'Spuitgietaluminium huis rond de planetaire sets en schakelelementen, met de lobben voor de tussenas en het differentieel en de vlakken voor het klepblok en de steunen. Bakbreedte circa 385 mm incl. omvormerhuis (Planète Renault); hier iets langer weergegeven. De hartafstand van de assen (197 mm) is een schatting.', spec: [['Materiaal', 'spuitgietaluminium']], ex: [0.1, 0.8, 0.0] }, [
       P('Transmissiehuis (carter)', caseGeo, MAT.aluCast, { d: 'Gegoten carter met ribben en bevestigingsoren.', ex: [0, 0.0, 0.0001] }),
       P('Bouten huisverbinding', rimBolts('drvBHuis', 12, 0.1285, 0.1295, 0.1), MAT.darkSteel, { d: 'Torx-bouten tussen omvormerhuis en transmissiehuis.', ex: [-0.12, 0.0, 0.0] }),
       P('Vulplug', drvBolt(0.02, 0.012, 'z'), MAT.darkSteel, { d: 'Vulpunt van de ATF. Bij de AJ0 in de Laguna wordt gevuld via een vulkanaal met afdekplaat (6 N·m), bereikbaar vanuit de motorruimte. Na het vullen met 3,2 liter wordt het niveau gesteld met de niveauplug onder in het carter (8 N·m), bij 40 graden olietemperatuur met draaiende motor in stand P. Plaats in het model schematisch.', p: [0.345, 0.02, 0.133], r: [PI, 0, 0], ex: [0, 0.0, 0.14] }),
       P('Aftapplug', drvBolt(0.02, 0.012, 'z'), MAT.darkSteel, { d: 'Peilbout onder in het huis (8 N·m) met daarachter een overloopbuisje (inbus 5 mm, 8 N·m). Bij aftappen komt eerst circa 1 l uit de peilbout en daarna ruim 1 l na het verwijderen van het buisje.', p: [0.325, -0.19, 0.133], r: [PI, 0, 0], ex: [0, -0.04, 0.14] }),
-      P('Ontluchtingsnippel', G.cyl('y', 0.004, 0.004, 0.02, 10), MAT.brass || MAT.drvBrass, { d: 'Nippel voor de ontluchtingsslang van de bak.', p: [0.16, 0.135, 0.0], ex: [0.0, 0.1, 0] }),
+      P('Ontluchtingsnippel', G.cyl('y', 0.004, 0.004, 0.02, 10), MAT.drvBrass, { d: 'Nippel voor de ontluchtingsslang van de bak.', p: [0.16, 0.135, 0.0], ex: [0.0, 0.1, 0] }),
       P('Ontluchtingsslang', tube([[0.16, 0.145, 0.0], [0.16, 0.17, 0.0], [0.185, 0.18, 0.03]], 0.003, 16, 6), MAT.rubber, { d: 'Slangetje dat de bak ontlucht zonder dat er olie of water in komt.', ex: [0.0, 0.18, 0] }),
     ]),
     A('Zijdeksel', { d: 'Deksel aan het eind van de bak met de water-ATF-koeler en de beide koelleidingen; draagt ook de zuiger van de 2-6-rem en het vaste zonnewiel van de reductieset.', ex: [0.34, 0.5, 0.2] }, [
@@ -3873,8 +3987,8 @@ function drvOutside() {
 /* ---------- de bak als geheel ---------- */
 function buildGearbox() {
   return A('Automaatversnellingsbak', {
-    d: 'Zestraps automaat Jatco JF613E (Renault-code AJ0, gebaseerd op het Lepelletier-systeem) met koppelomvormer, drie planetaire sets, vijf schakelelementen plus vrijloop en ingebouwd differentieel; dwars links naast de motor. De interne koppeling van de sets en alle kleine onderdelen zijn schematisch weergegeven.',
-    spec: [['Type', 'Jatco JF613E (Renault AJ0)'], ['Overbrengingen', '4,199 / 2,405 / 1,583 / 1,161 / 0,855 / 0,685, achteruit 3,457 (Mitsubishi F6AJA-handboek; de snelheden per 1000 tpm in de Renault-persmap kloppen hier binnen 0,2 % mee)'], ['Eindoverbrenging', '3,804 (Renault-persmap 2007)'], ['ATF', 'Elf Elfmatic J6 (het handboek van 2009 noemt in zijn tabel ELF MATIC S6); totaal 7,6 liter, na aftappen 3,5 liter'], ['Droog gewicht', 'circa 93 kg'], ['Lengte', 'circa 385 mm']],
+    d: 'Zestraps automaat Jatco JF613E (Renault-code AJ0, gebaseerd op het Lepelletier-systeem) met koppelomvormer, drie planetaire sets, vijf schakelelementen plus vrijloop en ingebouwd differentieel; dwars links naast de motor. De interne koppeling van de sets en alle kleine onderdelen zijn schematisch weergegeven. Het droge gewicht is circa 93 kg en de lengte circa 385 mm.',
+    spec: [['Type', 'Jatco JF613E (Renault AJ0)'], ['Overbrengingen', '4,199 / 2,405 / 1,583 / 1,161 / 0,855 / 0,685, achteruit 3,457 (Mitsubishi F6AJA-handboek; de snelheden per 1000 tpm in de Renault-persmap kloppen hier binnen 0,2 % mee)'], ['Eindoverbrenging', '3,804 (Renault-persmap 2007)'], ['ATF', 'Elf Elfmatic J6 (het handboek van 2009 noemt in zijn tabel ELF MATIC S6); totaal 7,6 liter, na aftappen 3,5 liter']],
     p: [GB_X, 0, 0], ex: [0.66, 0, 0],
   }, [
     ...drvHousing(),
@@ -3900,7 +4014,7 @@ function driveshaft(name, a, b, o) {
     P('Tussenas (stam)', drvL('Tus', [[0.0125, 0.0], [0.0125, 0.052], [0.0155, 0.058], [0.0155, o.mid - 0.02], [0.0125, o.mid - 0.02], [0.0125, o.mid]], 18), MAT.steel, { d: 'Stalen stam met bakzijde 30 spiebanen, die in het zijwiel van het differentieel steekt.', ex: [0, 0, 0.0001] }),
     P('Tussenaslager', merge([annulus(0.0175, 0.031, 0.014, 'x', 32)]), MAT.bearing, { d: 'Kogellager 35 × 62 × 14 mm van de tussenas.', p: [o.mid * 0.8, 0, 0], ex: [0.0, 0.1, 0.0] }),
     P('Lagerhuis tussenas', merge([annulus(0.031, 0.038, 0.016, 'x', 32), xf(G.box(0.016, 0.016, 0.024), [0, 0, 0.0235]), xf(G.box(0.05, 0.05, 0.008), [0, 0, 0.0375])]), MAT.aluCast, { d: 'Lagerhuis dat de tussenas aan de achterkant van het motorblok steunt (positie en vorm schematisch weergegeven).', p: [o.mid * 0.8, 0, 0], ex: [0.0, 0.0, 0.2] }),
-    P('Lagerborgring tussenas', annulus(0.0155, 0.0205, 0.002, 'x', 20), MAT.steel, { d: 'Borgring op de tussenas.', p: [o.mid * 0.8 + 0.0095, 0, 0], ex: [0.0, 0.0, 0.1] }),
+    P('Lagerborgring tussenas', annulus(0.0155, 0.0205, 0.002, 'x', 20), MAT.steel, { d: 'Borgring op de tussenas die het kogellager in lengterichting op zijn plaats houdt.', p: [o.mid * 0.8 + 0.0095, 0, 0], ex: [0.0, 0.0, 0.1] }),
     ...[-1, 1].map((k, i) => P(`Lagerhuisbout ${i + 1}`, drvBolt(0.02, 0.007, 'z'), MAT.darkSteel, { d: 'Bout van het lagerhuis aan het motorblok.', p: [o.mid * 0.8 + k * 0.018, 0, 0.0335], ex: [0, 0, -0.3] })),
   ]));
   const j0 = o.mid || 0;                           // de tripode begint na de tussenas
@@ -3911,15 +4025,15 @@ function driveshaft(name, a, b, o) {
     P('Borgring tripode', annulus(0.011, 0.016, 0.0018, 'x', 20), MAT.steel, { d: 'Borgring die de tripodester op de as houdt.', p: [j0 + 0.0955, 0, 0], ex: [0.12, 0, 0], inner: true }),
   ]));
   kids.push(A('Manchet binnen', { d: 'Rubber stofhoes (manchet) met twee klemmen die het vet in de tripode-koppeling houdt.', ex: [-0.02, 0.12, 0] }, [
-    P('Manchet', bel, MAT.rubber, { d: 'Balgvormige stofhoes.', p: [j0 + 0.1, 0, 0], ex: [0, 0.0, 0.0001] }),
+    P('Manchet', bel, MAT.rubber, { d: 'Balgvormige rubber stofhoes die het vet in de tripode-koppeling houdt en vuil en water buiten sluit.', p: [j0 + 0.1, 0, 0], ex: [0, 0.0, 0.0001] }),
     P('Grote klem', G.torus('x', 0.0465, 0.0016, 28, 6), MAT.steel, { d: 'Klem op het koppelingshuis.', p: [j0 + 0.112, 0, 0], ex: [-0.04, 0.05, 0] }),
-    P('Kleine klem', G.torus('x', 0.0236, 0.0016, 24, 6), MAT.steel, { d: 'Klem op de as.', p: [j0 + 0.215, 0, 0], ex: [0.04, 0.05, 0] }),
+    P('Kleine klem', G.torus('x', 0.0236, 0.0016, 24, 6), MAT.steel, { d: 'Klem die het smalle uiteinde van de manchet op de as spant, zodat er geen vet weglekt.', p: [j0 + 0.215, 0, 0], ex: [0.04, 0.05, 0] }),
   ]));
   kids.push(P('Aandrijfas (schacht)', drvL('Sch' + name, [[0.0125, j0 + 0.09], [0.0125, outerX - 0.01]], 16), MAT.steel, { d: 'Stalen schacht (diameter geschat 24 tot 28 mm). Een trillingsdemper is voor dit motortype niet gevonden.', ex: [0, 0.18, 0] }));
   kids.push(A('Manchet buiten', { d: 'Rubber stofhoes (manchet) met twee klemmen op de buitenste kogelkoppeling.', ex: [0.02, 0.12, 0] }, [
-    P('Manchet', bel, MAT.rubber, { d: 'Balgvormige stofhoes.', p: [outerX + 0.01, 0, 0], s: [-1, 1, 1], ex: [0, 0.0, 0.0001] }),
+    P('Manchet', bel, MAT.rubber, { d: 'Balgvormige rubber stofhoes die het vet in de kogelkoppeling houdt en vuil en water buiten sluit.', p: [outerX + 0.01, 0, 0], s: [-1, 1, 1], ex: [0, 0.0, 0.0001] }),
     P('Grote klem', G.torus('x', 0.0465, 0.0016, 28, 6), MAT.steel, { d: 'Klem op de kogelkoppeling.', p: [outerX + 0.0, 0, 0], ex: [0.04, 0.05, 0] }),
-    P('Kleine klem', G.torus('x', 0.0236, 0.0016, 24, 6), MAT.steel, { d: 'Klem op de as.', p: [outerX - 0.105, 0, 0], ex: [-0.04, 0.05, 0] }),
+    P('Kleine klem', G.torus('x', 0.0236, 0.0016, 24, 6), MAT.steel, { d: 'Klem die het smalle uiteinde van de buitenste manchet op de as spant, zodat er geen vet weglekt.', p: [outerX - 0.105, 0, 0], ex: [-0.04, 0.05, 0] }),
   ]));
   const balls = Array.from({ length: 8 }, (_, k) => P(`Kogel ${k + 1}`, G.sphere(0.0072, 10), MAT.chrome, { d: 'Stalen kogel die het koppel tussen binnenste naaf en klok overbrengt.', p: [outerX + 0.036, 0.0335 * Math.cos(k * PI / 4), 0.0335 * Math.sin(k * PI / 4)], ex: [0, 0.07 * Math.cos(k * PI / 4), 0.07 * Math.sin(k * PI / 4)], inner: true }));
   kids.push(A('Buitenste homokineet (kogelkoppeling)', { d: 'Vaste kogelkoppeling aan de wielzijde (Rzeppa, 8 kogels, buitendiameter circa 90 mm): laat sturen en veren toe. Maten en opbouw volgens catalogus, schematisch weergegeven.', ex: [0.06, 0, 0] }, [
@@ -3949,8 +4063,8 @@ function drvMounts() {
       bolt('Bout carrosseriebeugel 2', 'Bout die de steun aan de carrosserie bevestigt.', [-0.355, 0.447, 0.079], '-x', [-0.3, -0.05, 0]),
     ]),
     A('Steun versnellingsbak', { d: 'Linker bak-steun: rubber-metalen steun bovenop de bak die de bak aan de linker langsligger hangt (aannemelijk; details voor de F4Rt niet gevonden).', ex: [0.2, 0.1, 0] }, [
-      P('Beugel bak', merge([G.rbox(0.06, 0.02, 0.07, 0.004), xf(G.box(0.02, 0.03, 0.07), [-0.02, -0.025, 0])]), MAT.aluCast, { d: 'Beugel op het carter.', p: [gx, 0.1505, -0.02], ex: [0, 0, 0.0001] }),
-      P('Rubber bakssteun', G.cyl('y', 0.022, 0.022, 0.036, 18), MAT.rubber, { d: 'Rubberblok van de steun.', p: [gx, 0.1785, -0.02], ex: [0, 0.07, 0] }),
+      P('Beugel bak', merge([G.rbox(0.06, 0.02, 0.07, 0.004), xf(G.box(0.02, 0.03, 0.07), [-0.02, -0.025, 0])]), MAT.aluCast, { d: 'Aluminium beugel op het carter die de rubber bakssteun draagt.', p: [gx, 0.1505, -0.02], ex: [0, 0, 0.0001] }),
+      P('Rubber bakssteun', G.cyl('y', 0.022, 0.022, 0.036, 18), MAT.rubber, { d: 'Rubberblok van de steun dat trillingen van de bak dempt en de beweging opvangt.', p: [gx, 0.1785, -0.02], ex: [0, 0.07, 0] }),
       P('Bovenplaat bakssteun', G.rbox(0.05, 0.01, 0.07, 0.003), MAT.darkSteel, { d: 'Plaat naar de langsligger van de carrosserie.', p: [gx + 0.0, 0.2015, -0.02], ex: [0.0, 0.14, 0] }),
       ...[-1, 1].map((k, i) => bolt(`Bout bakssteun ${i + 1}`, 'Bout van de bakssteun.', [gx + 0.0, 0.2065, -0.02 + k * 0.025], 'y', [0.0, 0.2, 0], [PI, 0, 0])),
     ]),
@@ -3971,10 +4085,11 @@ function buildPowertrain() {
   const gb = buildGearbox();
   // uitgangen van het differentieel (bakframe -> motorframe) en naven (autoframe -> motorframe)
   const dOutL = [GB_X + DIFF[0] + 0.082, DIFF[1], DIFF[2]], dOutR = [GB_X + DIFF[0] - 0.082, DIFF[1], DIFF[2]];
+  // naafpunt 0,775: TRACK_F (0,7785) zet de buitenste koppeling 3,5 mm naar buiten en geeft acht nieuwe doordringingen met fusee en demper (golf 5b-2); G8c wacht op een boring in de fusee
   const hubL = toPT([0.775, AY, AXF]).toArray(), hubR = toPT([-0.775, AY, AXF]).toArray();
   const shafts = A('Aandrijfassen', { d: 'Linker (kort) en rechter (lang, met tussenas en tussenaslager) aandrijfas van het differentieel naar de voorwielen, elk met een tripode-koppeling aan de bakzijde en een kogelkoppeling aan de wielzijde. Lengten volgens catalogus: links circa 640 mm, rechts circa 962 mm.', ex: [0, -0.5, -0.3] }, [
-    driveshaft('Aandrijfas links', dOutL, hubL, { sign: 1, d: 'Korte linker aandrijfas (catalogus circa 640 mm, 30 spiebanen bakzijde, 27 wielzijde).', spec: [['Lengte (catalogus)', 'circa 640 mm'], ['Binnenste koppeling', 'tripode, Ø87 mm'], ['Buitenste koppeling', 'kogelkoppeling, 8 kogels']], ex: [0.12, 0, 0.28] }),
-    driveshaft('Aandrijfas rechts', dOutR, hubR, { sign: -1, mid: 0.35, d: 'Lange rechter aandrijfas (catalogus circa 962 mm) met tussenas (circa 350 mm) en kogellager 35 × 62 × 14 mm; loopt achter het motorblok langs.', spec: [['Lengte (catalogus)', 'circa 962 mm'], ['Tussenlager', 'kogellager 35 × 62 × 14 mm'], ['Buitenste koppeling', 'kogelkoppeling, 8 kogels']], ex: [-0.12, 0, -0.28] }),
+    driveshaft('Aandrijfas links', dOutL, hubL, { sign: 1, d: 'Korte linker aandrijfas (catalogus circa 640 mm, 30 spiebanen bakzijde, 27 wielzijde).', spec: [['Binnenste koppeling', 'tripode, Ø87 mm'], ['Buitenste koppeling', 'kogelkoppeling, 8 kogels']], ex: [0.12, 0, 0.28] }),
+    driveshaft('Aandrijfas rechts', dOutR, hubR, { sign: -1, mid: 0.35, d: 'Lange rechter aandrijfas (catalogus circa 962 mm) met tussenas (circa 350 mm) en kogellager 35 × 62 × 14 mm; loopt achter het motorblok langs.', spec: [['Tussenlager', 'kogellager 35 × 62 × 14 mm'], ['Buitenste koppeling', 'kogelkoppeling, 8 kogels']], ex: [-0.12, 0, -0.28] }),
   ]);
   return A('Aandrijflijn', {
     d: 'Dwarsgeplaatste motor en automaat met differentieel en aandrijfassen naar de voorwielen.',
@@ -4074,8 +4189,8 @@ function chsHub(xm, z0, front, kn) {
     A('Wiellagereenheid', { d: 'Gesloten naaflagereenheid (generatie 2): dubbelrijig kogellager met magnetische ABS-codeerring in de afdichting; aannemelijk volgens onderdelenlijsten, uitwendige maten schematisch.', ex: [-0.1, 0.12, 0] }, [
       P('Lagerbuitenring', merge([G.lathe('x', [[0.031, -0.085], [0.0425, -0.085], [0.0425, -0.036], [0.054, -0.036], [0.054, -0.027], [0.031, -0.027], [0.031, -0.085]], 36, 'chsBrg')]), MAT.bearing, { d: 'Buitenring met flens; zit met drie bouten aan de ' + (front ? 'fusee' : 'astapflens') + '.', p: [xm, AY, z0], ex: [-0.08, 0, 0] }),
       P('Lagerbinnenring', G.lathe('x', [[0.0275, -0.095], [0.031, -0.095], [0.031, -0.024], [0.0275, -0.024], [0.0275, -0.095]], 28, 'chsBri'), MAT.steel, { d: 'Binnenring die om de naaf zit.', p: [xm, AY, z0], ex: [0.0, 0.06, 0] }),
-      P('Kogelkrans buiten', G.torus('x', 0.0295, 0.0042, 20, 5), MAT.chrome, { d: 'Rij lagerkogels aan de wielzijde (schematisch als ring weergegeven).', p: [xm - 0.035, AY, z0], ex: [0.0, 0.1, 0] }),
-      P('Kogelkrans binnen', G.torus('x', 0.0295, 0.0042, 20, 5), MAT.chrome, { d: 'Tweede rij lagerkogels aan de aandrijfzijde (schematisch als ring weergegeven).', p: [xm - 0.062, AY, z0], ex: [0.0, 0.14, 0] }),
+      P('Kogelkrans buiten', G.torus('x', 0.0295, 0.0042, 20, 5), MAT.chrome, { d: 'Rij lagerkogels aan de wielzijde (schematisch als ring weergegeven).', p: [xm - 0.035, AY, z0], ex: [0.0, 0.1, 0], inner: true }),
+      P('Kogelkrans binnen', G.torus('x', 0.0295, 0.0042, 20, 5), MAT.chrome, { d: 'Tweede rij lagerkogels aan de aandrijfzijde (schematisch als ring weergegeven).', p: [xm - 0.062, AY, z0], ex: [0.0, 0.14, 0], inner: true }),
       P('Magnetische ABS-codeerring', annulus(0.0315, 0.0375, 0.004, 'x', 28), MAT.plasticGrey, { d: 'Kunststof ring met magnetische polen in de lagerafdichting; geeft de wielsnelheid aan de ABS-sensor (geen getande ring).', p: [xm - 0.0905, AY, z0], ex: [-0.1, 0, 0] })]),
     ...[0, 1, 2].map(k => P(`Lagerbout ${k + 1}`, hexBolt(0.05, 0.009, 'x'), MAT.steel, { d: 'Bout die de lagereenheid van binnenuit op de ' + (front ? 'fusee' : 'astapflens') + ' trekt.', p: [xm - (front ? 0.0815 : 0.098), AY + 0.0485 * Math.cos(k * PI * 2 / 3 + 1.9), z0 + 0.0485 * Math.sin(k * PI * 2 / 3 + 1.9)], ex: [-0.13, 0.03 * (k - 1), 0.03] }))
   ];
@@ -4106,7 +4221,7 @@ function frontCorner(s) {
     P('Schroefveer voor', spring(0.066, 0.0068, 0.2, 5.5), MAT.chsSpring, { d: 'Draagt het voorgewicht van de auto.', p: [0, 0.21, 0] }),
     P('Stofhoes veerpoot', G.lathe('y', bellows(0.032, 0.026, 0.115, 5), 22, 'chsDb'), MAT.rubber, { d: 'Balg over de zuigerstang die vuil uit de demper houdt.', p: [0, 0.165, 0], ex: [0.16, 0.02, 0] }),
     P('Aanslagrubber', G.cyl('y', 0.024, 0.021, 0.04, 16), MAT.rubber, { d: 'Vangt het inveren aan het einde van de slag op.', p: [0, 0.285, 0], ex: [0.2, 0.06, 0] }),
-    P('Veerschotel boven', seat(-1, 'chsSeatU'), MAT.darkSteel, { d: 'Bovenste veerschotel.', p: [0, 0.318, 0], ex: [0, 0.08, 0] }),
+    P('Veerschotel boven', seat(-1, 'chsSeatU'), MAT.darkSteel, { d: 'Bovenste veerschotel waar de schroefveer tegenaan rust.', p: [0, 0.318, 0], ex: [0, 0.08, 0] }),
     P('Veerrubber boven', annulus(0.052, 0.074, 0.004, 'y', 28), MAT.rubber, { d: 'Rubber tussenlaag tussen veer en bovenste schotel.', p: [0, 0.31, 0], ex: [0, 0.05, 0] }),
     P('Veerpootlager', annulus(0.03, 0.052, 0.014, 'y', 28), MAT.bearing, { d: 'Axiaal draaglager zodat de veerpoot met het stuur mee kan draaien.', p: [0, 0.331, 0], ex: [0, 0.12, 0] }),
     P('Veerpootsteunlager', G.lathe('y', [[0.012, 0], [0.06, 0], [0.062, 0.016], [0.045, 0.026], [0.012, 0.026]], 28, 'chsTopm'), MAT.rubber, { d: 'Rubber-metalen topsteun: koppelt de veerpoot aan de veerpoottoren en dempt trillingen.', p: [0, 0.34, 0], ex: [0, 0.18, 0] }),
@@ -4125,7 +4240,7 @@ function frontCorner(s) {
     ...hubs,
     P('Remschijf voor', discGeo(0.093, 0.148, true, 'F', 0.046), MAT.iron, { d: 'Geventileerde remschijf 296 × 26 mm (vijf gaten, steek 114,3 mm, middengat Ø68 mm).', spec: [['Diameter', '296 mm'], ['Dikte', '26 mm'], ['Type', 'geventileerd']], p: [xd, AY, z0], ex: [0.14, 0, 0] }),
     P('Stofschild voor', shield, MAT.darkSteel, { d: 'Stalen schild achter de remschijf tegen steenslag en vuil.', p: [xm - 0.063, AY, z0], ex: [-0.06, 0, 0] }),
-    ...[0, 1, 2].map(k => P(`Schildbout ${k + 1}`, hexBolt(0.016, 0.007, 'x'), MAT.steel, { d: 'Bout van het stofschild.', p: [xm - 0.082, AY + 0.065 * Math.cos(k * pa + 0.7), z0 + 0.065 * Math.sin(k * pa + 0.7)], ex: [-0.12, 0, 0.02 * k] })),
+    ...[0, 1, 2].map(k => P(`Schildbout ${k + 1}`, hexBolt(0.016, 0.007, 'x'), MAT.steel, { d: 'Bout die het stofschild achter de remschijf vasthoudt.', p: [xm - 0.082, AY + 0.065 * Math.cos(k * pa + 0.7), z0 + 0.065 * Math.sin(k * pa + 0.7)], ex: [-0.12, 0, 0.02 * k] })),
     P('Wielsnelheidssensor', merge([G.cyl('x', 0.0065, 0.0065, 0.04, 10), xf(chsRb(0.012, 0.016, 0.022, 0.003), [-0.024, 0.0, 0.0])]), MAT.plastic, { d: 'Passieve magnetoresistieve sensor die het wiel-sensorsignaal uit de magnetische codeerring leest.', p: [xm - 0.104, AY + 0.034, z0], ex: [-0.14, 0.08, 0.05] }),
     P('Sensorkabel', tube([[xm - 0.128, AY + 0.034, z0 + 0.012], [0.66, AY + 0.1, z0 + 0.03], [0.625, 0.5, z0 + 0.034]], 0.0032, 20, 5), MAT.rubber, { d: 'Kabel van de wielsnelheidssensor naar de kabelboom, vastgeklikt langs de veerpoot.', ex: [-0.08, 0.14, 0.08] }),
     P('Sensorklem', chsRb(0.014, 0.012, 0.01, 0.002), MAT.plasticGrey, { d: 'Kunststof klem die de sensorkabel aan de veerpoot houdt.', p: [0.625, 0.5, z0 + 0.034], ex: [-0.06, 0.18, 0.1] }),
@@ -4143,8 +4258,8 @@ function frontCorner(s) {
       P('Staaf', rodBetween([0.557, 0.29, z0 - 0.05], [0.613, 0.49, z0 - 0.046], 0.0065), MAT.steel, { d: 'Stalen staaf van de koppelstang.', ex: [0, 0, 0] }),
       P('Kogelgewricht onder', merge([G.sphere(0.013, 12), xf(G.cyl('y', 0.005, 0.005, 0.03, 8), [0, -0.012, 0])]), MAT.steel, { d: 'Kogelgewricht aan de stabilisatorstang.', p: [0.557, 0.29, z0 - 0.05], ex: [0, -0.1, 0] }),
       P('Kogelgewricht boven', merge([G.sphere(0.013, 12), xf(G.cyl('y', 0.005, 0.005, 0.03, 8), [0, 0.012, 0])]), MAT.steel, { d: 'Kogelgewricht aan de klemtong van de demperbuis.', p: [0.613, 0.49, z0 - 0.046], ex: [0, 0.1, 0] }),
-      P('Koppelstangmoer onder', chsNut('y', 0.0085, 0.008), MAT.steel, { d: 'Moer onderaan.', p: [0.557, 0.274, z0 - 0.05], ex: [0, -0.2, 0] }),
-      P('Koppelstangmoer boven', chsNut('y', 0.0085, 0.008), MAT.steel, { d: 'Moer bovenaan.', p: [0.613, 0.51, z0 - 0.046], ex: [0, 0.2, 0] })]),
+      P('Koppelstangmoer onder', chsNut('y', 0.0085, 0.008), MAT.steel, { d: 'Moer onderaan de koppelstang die het kogelgewricht vastzet.', p: [0.557, 0.274, z0 - 0.05], ex: [0, -0.2, 0] }),
+      P('Koppelstangmoer boven', chsNut('y', 0.0085, 0.008), MAT.steel, { d: 'Moer bovenaan de koppelstang die het kogelgewricht vastzet.', p: [0.613, 0.51, z0 - 0.046], ex: [0, 0.2, 0] })]),
     strut,
     caliper(`Remklauw ${n}`, xd, z0, phi, rp, true),
     A('Remslang voor', { d: 'Flexibele remslang van de vaste remleiding op de veerpoot naar de klauw, vastgezet met een holle (banjo) bout en twee koperen ringen.', ex: [0.04, 0.12, 0.1] }, [
@@ -4170,7 +4285,7 @@ function rearCorner(s) {
     ...hubs,
     P('Remschijf achter', discGeo(0.082, 0.150, false, 'R', 0.040), MAT.iron, { d: 'Massieve remschijf 300 × 11 mm.', spec: [['Diameter', '300 mm'], ['Dikte', '11 mm'], ['Type', 'massief']], p: [xd, AY, z0], ex: [0.12, 0, 0] }),
     P('Stofschild achter', shield, MAT.darkSteel, { d: 'Afschermplaat achter de remschijf.', p: [xm - 0.063, AY, z0], ex: [-0.06, 0, 0] }),
-    ...[0, 1, 2].map(k => P(`Schildbout ${k + 1}`, hexBolt(0.016, 0.007, 'x'), MAT.steel, { d: 'Bout van het stofschild.', p: [xm - 0.082, AY + 0.065 * Math.cos(k * pa + 0.7), z0 + 0.065 * Math.sin(k * pa + 0.7)], ex: [-0.12, 0, 0.02 * k] })),
+    ...[0, 1, 2].map(k => P(`Schildbout ${k + 1}`, hexBolt(0.016, 0.007, 'x'), MAT.steel, { d: 'Bout die het stofschild achter de remschijf vasthoudt.', p: [xm - 0.082, AY + 0.065 * Math.cos(k * pa + 0.7), z0 + 0.065 * Math.sin(k * pa + 0.7)], ex: [-0.12, 0, 0.02 * k] })),
     P('Wielsnelheidssensor achter', merge([G.cyl('x', 0.0065, 0.0065, 0.04, 10), xf(chsRb(0.012, 0.016, 0.022, 0.003), [-0.024, 0, 0])]), MAT.plastic, { d: 'Passieve magnetoresistieve sensor, leest de magnetische codeerring in het naaflager.', p: [xm - 0.118, AY + 0.034, z0], ex: [-0.14, 0.08, 0.05] }),
     P('Sensorkabel achter', tube([[xm - 0.14, AY + 0.034, z0 + 0.012], [0.6, AY + 0.04, z0 + 0.1], [0.58, 0.36, z0 + 0.2]], 0.0032, 18, 5), MAT.rubber, { d: 'Kabel van de achterste wielsnelheidssensor naar de kabelboom.', ex: [-0.08, 0.14, 0.08] }),
     caliper(`Remklauw ${n}`, xd, z0, phi, rp, false),
@@ -4182,9 +4297,11 @@ function rearCorner(s) {
       P('Slangbeugel', chsRb(0.016, 0.014, 0.02, 0.003), MAT.darkSteel, { d: 'Beugel op de langsarm waar de flexibele slang overgaat in de vaste remleiding.', p: bjt, ex: [0.04, 0.1, -0.1] })])
   ]);
 }
-// poorten van de motor (stuurpomp); terugval op de afgesproken waarden als de motor ze (nog) niet kent
-function chsPort(key, fb) {
-  const pt = ENG_PORTS[key] || fb, dir = V3(...pt.dir).applyQuaternion(new THREE.Quaternion().setFromEuler(new THREE.Euler(PT_TILT, 0, 0))).normalize();
+// poorten van de motor (stuurpomp, vacuümnippel) in het autoframe; geen terugvalwaarden: een ontbrekende sleutel is een fout in het contract met de motor
+function chsPort(key) {
+  const pt = ENG_PORTS[key];
+  if (!pt) throw new Error(`chsPort: ENG_PORTS.${key} ontbreekt (contract met de motoreigenaar)`);
+  const dir = V3(...pt.dir).applyQuaternion(new THREE.Quaternion().setFromEuler(new THREE.Euler(PT_TILT, 0, 0))).normalize();
   return { p: ENG2CAR(pt.p), dir };
 }
 function chsTieRod(s, z0, rackY, rackZ) {
@@ -4201,7 +4318,7 @@ function chsTieRod(s, z0, rackY, rackZ) {
 }
 function buildFrontAxle() {
   const z0 = AXF, rackY = 0.325, rackZ = z0 - 0.14, pinX = 0.26;
-  const pOut = chsPort('psOut', { p: [-0.27, -0.07, 0.275], dir: [0, -1, 0] }), pIn = chsPort('psIn', { p: [-0.30, 0.0, 0.31], dir: [0, 0, 1] });
+  const pOut = chsPort('psOut'), pIn = chsPort('psIn');
   const vh = [pinX, rackY + 0.07, rackZ + 0.005];                           // ventielhuis (draaiafsluiter) boven op het rondsel
   const vP = [vh[0] - 0.012, vh[1] + 0.012, vh[2] - 0.055], vR = [vh[0] + 0.012, vh[1] + 0.012, vh[2] - 0.055];   // aansluitingen achter op het ventielhuis (druk, retour)
   const R0 = V3(-0.585, 0.675, 1.69);                                          // oliereservoir stuurbekrachtiging
@@ -4239,18 +4356,18 @@ function buildFrontAxle() {
   const hyd = A('Stuurbekrachtiging', { d: 'Hydraulische hulp voor het stuur: oliereservoir met filter, zuigslang naar de riemaangedreven stuurpomp op de motor (aannemelijk voor deze motor, geen elektropomp), hogedrukslang naar het ventielhuis op het stuurhuis en retourslang terug naar het reservoir.', ex: [-0.15, 0.2, 0.05] }, [
     A('Oliereservoir', { d: 'Doorzichtige kunststof voorraadbak met vuldop, peilstok en filter voor de stuurbekrachtigingsolie.', ex: [0, 0.18, 0] }, [
       P('Reservoirhuis', G.lathe('y', [[0.0, 0.0], [0.034, 0.0], [0.04, 0.01], [0.04, 0.095], [0.034, 0.105], [0.026, 0.108], [0.026, 0.118], [0.0, 0.118]], 24, 'chsRes'), MAT.tank, { d: 'Doorzichtig reservoir met min-/max-markering.', p: rp(0, 0, 0), ex: [0, 0.0, 0] }),
-      P('Reservoirdop', merge([G.cyl('y', 0.03, 0.03, 0.016, 20), xf(G.cyl('y', 0.0035, 0.0035, 0.06, 8), [0, -0.035, 0])]), MAT.plastic, { d: 'Schroefdop met peilstok.', p: rp(0, 0.126, 0), ex: [0, 0.2, 0] }),
+      P('Reservoirdop', merge([G.cyl('y', 0.03, 0.03, 0.016, 20), xf(G.cyl('y', 0.0035, 0.0035, 0.06, 8), [0, -0.035, 0])]), MAT.plastic, { d: 'Sluit het reservoir af; met de peilstok aan de dop is het oliepeil af te lezen.', p: rp(0, 0.126, 0), ex: [0, 0.2, 0] }),
       P('Reservoirfilter', G.lathe('y', [[0.012, 0], [0.026, 0], [0.026, 0.07], [0.012, 0.07], [0.012, 0]], 18, 'chsResF'), MAT.filter, { d: 'Zeef in het reservoir die vuil uit de olie houdt.', p: rp(0, 0.02, 0), ex: [0, 0.1, 0] }),
       P('Zuigaansluiting', G.cyl('x', 0.0105, 0.0105, 0.03, 12), MAT.plastic, { d: 'Aansluiting voor de zuigslang naar de pomp, aan de motorzijde van het reservoir.', p: rp(0.04, 0.012, 0.0), ex: [0.12, 0, 0] }),
       P('Retouraansluiting', G.cyl('z', 0.0105, 0.0105, 0.03, 12), MAT.plastic, { d: 'Aansluiting voor de retourslang van het stuurhuis, aan de voorzijde van het reservoir.', p: rp(0.0, 0.085, 0.045), ex: [0, 0, 0.12] }),
       P('Reservoirbeugel', merge([G.torus('y', 0.0425, 0.003, 24, 4), xf(chsRb(0.07, 0.03, 0.006, 0.002), [0, 0, 0.043])]), MAT.darkSteel, { d: 'Stalen beugel die het reservoir op het spatbord bevestigt.', p: rp(0, 0.04, 0), ex: [-0.1, -0.06, 0.1] }),
       ...[1, -1].map((sg, i) => P(`Beugelbout ${i + 1}`, hexBolt(0.016, 0.006, 'x'), MAT.steel, { d: 'Bout van de reservoirbeugel.', p: rp(-0.07, 0.04 + sg * 0.01, 0.043), ex: [-0.2, 0, 0.1] }))]),
     P('Zuigslang', tube([pIn.p, V3(...pIn.p).addScaledVector(pIn.dir, 0.02).toArray(), [-0.434, 0.49, 1.857], [-0.445, 0.522, 1.868], [-0.47, 0.535, 1.872], [-0.499, 0.535, 1.862], [-0.501, 0.54, 1.80], [-0.515, 0.60, 1.745], rp(0.052, 0.012, 0.0)], 0.011, 48, 10), MAT.rubber, { d: 'Zuigslang van het reservoir naar de aanzuiging van de stuurpomp; loopt langs de voorzijde van de pomppoelie en achter de accu om naar de motorzijde van het reservoir.', ex: [0.1, 0.0, 0.1] }),
-    ...[[0, 'pomp'], [1, 'reservoir']].map(([k, nm]) => P(`Slangklem zuigslang ${nm}`, chsClamp('x', 0.0125), MAT.steel, { d: 'Klem van de zuigslang.', p: k ? rp(0.046, 0.012, 0) : V3(...pIn.p).addScaledVector(pIn.dir, 0.012).toArray(), ex: [0.1, 0.1, 0.1] })),
+    ...[[0, 'pomp'], [1, 'reservoir']].map(([k, nm]) => P(`Slangklem zuigslang ${nm}`, chsClamp('x', 0.0125), MAT.steel, { d: 'Klem die de zuigslang op de aansluiting vasthoudt.', p: k ? rp(0.046, 0.012, 0) : V3(...pIn.p).addScaledVector(pIn.dir, 0.012).toArray(), ex: [0.1, 0.1, 0.1] })),
     P('Hogedrukslang', tube([V3(...pOut.p).addScaledVector(pOut.dir, 0.002).toArray(), [-0.397, 0.33, 1.766], [-0.399, 0.26, 1.761], [-0.40, 0.19, 1.758], [-0.405, 0.16, 1.738], [-0.415, 0.125, 1.69], [-0.42, 0.105, 1.62], [-0.42, 0.105, 1.58], [-0.42, 0.105, 1.45], [-0.42, 0.105, 1.30], [-0.40, 0.105, 1.17], [-0.34, 0.105, 1.10], [-0.2, 0.105, 1.095], [0.0, 0.105, 1.095], [0.17, 0.105, 1.095], [0.20, 0.15, 1.095], [0.20, 0.30, 1.095], [0.205, 0.42, 1.105], [0.225, 0.425, 1.15], vP], 0.0075, 90, 8), MAT.rubber, { d: 'Gevlochten hogedrukslang van de stuurpomp naar het ventielhuis: onder de motor langs, achter de achterste subframebalk om en van achteren naar het stuurhuis.', ex: [-0.05, -0.1, 0.0] }),
     ...[0, 1].map(k => P(`Wartelmoer hogedruk ${k ? 'stuurhuis' : 'pomp'}`, chsNut(k ? 'z' : 'y', 0.0105, 0.012), MAT.steel, { d: 'Wartelmoer van de hogedrukaansluiting.', p: k ? [vP[0], vP[1], vP[2] - 0.004] : V3(...pOut.p).addScaledVector(pOut.dir, 0.006).toArray(), ex: [0, -0.12, 0.05] })),
     P('Retourslang', tube([vR, [0.272, 0.40, 1.14], [0.262, 0.34, 1.11], [0.255, 0.19, 1.10], [0.25, 0.15, 1.105], [0.23, 0.145, 1.13], [0.1, 0.145, 1.13], [-0.2, 0.145, 1.13], [-0.42, 0.145, 1.13], [-0.45, 0.145, 1.2], [-0.45, 0.145, 1.30], [-0.45, 0.145, 1.50], [-0.445, 0.145, 1.62], [-0.445, 0.148, 1.70], [-0.445, 0.20, 1.75], [-0.445, 0.30, 1.755], [-0.44, 0.355, 1.775], [-0.44, 0.372, 1.835], [-0.468, 0.45, 1.842], [-0.468, 0.64, 1.84], [-0.50, 0.66, 1.80], [-0.55, 0.70, 1.775], rp(0, 0.085, 0.056)], 0.0085, 90, 8), MAT.rubber, { d: 'Retourslang met lage druk van het ventielhuis terug naar het reservoir: onder het subframe langs, voor de pomppoelie omhoog en achter de accu om naar de voorzijde van het reservoir.', ex: [0.05, -0.08, 0.0] }),
-    ...[0, 1].map(k => P(`Slangklem retourslang ${k ? 'reservoir' : 'stuurhuis'}`, chsClamp('z', 0.0135), MAT.steel, { d: 'Klem van de retourslang.', p: k ? rp(0, 0.085, 0.048) : [vR[0], vR[1], vR[2] + 0.008], ex: [0.1, 0.1, 0.1] }))]);
+    ...[0, 1].map(k => P(`Slangklem retourslang ${k ? 'reservoir' : 'stuurhuis'}`, chsClamp('z', 0.0135), MAT.steel, { d: 'Klem die de retourslang op de aansluiting vasthoudt.', p: k ? rp(0, 0.085, 0.048) : [vR[0], vR[1], vR[2] + 0.008], ex: [0.1, 0.1, 0.1] }))]);
   // ---- stuurkolom ----
   const colA = [0.26, 0.425, rackZ + 0.01], colB = [0.34, 0.7, 0.98], colC = [0.37, 0.9, 0.4];
   const column = A('Stuurkolom', { d: 'In hoogte en diepte verstelbare stuurkolom met kreukelzone en elektrisch kolomslot, via een tussenas met twee kruiskoppelingen verbonden met het rondsel; de onder-stuurmodule met wisser- en lichtschakelaar zit om de kolom.', ex: [0.2, 0.1, 0] }, [
@@ -4277,7 +4394,7 @@ function buildFrontAxle() {
     P('Stuurwielnaaf', G.cyl('z', 0.03, 0.03, 0.05, 16), MAT.darkSteel, { d: 'Naaf met spiebaan op de stuuras.', p: [0, 0, -0.03], ex: [0, 0, -0.18] }),
     A('Airbagmodule bestuurder', { d: 'Bestuurdersairbag in het stuurwielcentrum (twee ontstekingsstanden); in het deksel zit de claxon.', ex: [0, 0, 0.12] }, [
       P('Airbagdeksel', chsRb(0.15, 0.12, 0.012, 0.02), MAT.dash, { d: 'Scheurdeksel van de airbag; drukken erop bedient de claxon.', p: [0, -0.005, 0.034], ex: [0, 0, 0.1] }),
-      P('Airbag', chsRb(0.12, 0.09, 0.03, 0.012), MAT.fabric, { d: 'Opgevouwen nylon airbag.', p: [0, -0.005, 0.012], ex: [0, 0, 0.05] }),
+      P('Airbag', chsRb(0.12, 0.09, 0.03, 0.012), MAT.fabric, { d: 'Opgevouwen nylon airbag die bij een ongeval opblaast.', p: [0, -0.005, 0.012], ex: [0, 0, 0.05] }),
       P('Gasgenerator', G.cyl('z', 0.036, 0.036, 0.028, 18), MAT.darkSteel, { d: 'Gasgenerator met twee ontstekers.', p: [0, -0.005, -0.012], ex: [0, 0, -0.02] })]),
     P('Wikkelcontact', annulus(0.028, 0.052, 0.02, 'z', 28), MAT.plasticGrey, { d: 'Spiraalvormig wikkelcontact dat de airbag en de claxon met de kabelboom verbindt terwijl het stuur draait.', p: [0, 0, -0.065], ex: [0, 0, -0.28] }),
     P('Centrale bout', hexBolt(0.06, 0.014, 'z'), MAT.steel, { d: 'Bout die het stuurwiel op de stuuras trekt.', p: [0, 0, -0.1], ex: [0, 0, -0.4] })]);
@@ -4347,12 +4464,14 @@ function buildWheel(s, front) {
     ...[0, 1, 2, 3, 4].map(k => P(`Wielbout ${k + 1}`, hexBolt(0.062, 0.0145, '-x'), MAT.steel, { d: 'Wielbout M14 × 1,5 met conische zitting; klemt het wiel en de schijf op de naaf.', p: [0.068, 0.0572 * Math.cos(k * PI * 0.4), 0.0572 * Math.sin(k * PI * 0.4)], ex: [0.26, 0, 0] })),
     P('Naafdop', G.lathe('x', [[0, 0.082], [0.02, 0.08], [0.032, 0.074], [0.036, 0.066], [0, 0.066]], 32, 'chsCap'), MAT.chrome, { d: 'Aluminium afdekkap van het velgcentrum; het ontwerp is niet gevonden en is schematisch.', ex: [0.36, 0, 0] }),
     P('Ventielsteel', G.cyl('y', 0.005, 0.0045, 0.036, 10), MAT.alu, { d: 'Ventielsteel met geïntegreerde sensor: loopt door het velgbed naar binnen.', p: [-0.04, 0.188 * Math.cos(a), 0.188 * Math.sin(a)], r: [a, 0, 0], ex: [-0.12, -0.0, 0] }),
-    P('Ventieldop', G.cyl('y', 0.0055, 0.0055, 0.012, 10), MAT.plastic, { d: 'Stofdop op het ventiel.', p: [-0.04, 0.17 * Math.cos(a), 0.17 * Math.sin(a)], r: [a, 0, 0], ex: [-0.2, 0, 0] }),
+    P('Ventieldop', G.cyl('y', 0.0055, 0.0055, 0.012, 10), MAT.plastic, { d: 'Stofdop die het ventiel tegen vuil beschermt.', p: [-0.04, 0.17 * Math.cos(a), 0.17 * Math.sin(a)], r: [a, 0, 0], ex: [-0.2, 0, 0] }),
     P('Bandenspanningssensor', chsRb(0.03, 0.015, 0.04, 0.005), MAT.ecu, { d: 'Zender op de ventielvoet in de band (433 MHz, aannemelijk); meldt de bandenspanning via de UCH.', p: [-0.04, 0.2145 * Math.cos(a), 0.2145 * Math.sin(a)], r: [a, 0, 0], ex: [-0.1, 0.0, 0], inner: true }),
     ...wa.map((w, i) => P(`Balansgewicht ${i ? 'buiten' : 'binnen'}`, chsRb(0.014, 0.004, 0.05, 0.001), MAT.steel, { d: 'Plakgewichtje op het velgbed om de wielbalans te corrigeren.', p: [i ? 0.03 : -0.05, 0.2072 * Math.cos(w), 0.2072 * Math.sin(w)], r: [w, 0, 0], ex: [i ? 0.0 : -0.08, -0.07 * Math.cos(w), -0.07 * Math.sin(w)] }))]);
 }
 function buildBrakeSystem() {
   const bp = [0.41, 0.675, 1.10], mp = [0.41, 0.675, 1.275], ab = [-0.25, 0.72, 1.14];       // bekrachtiger, hoofdremcilinder, ABS/ESP-unit (passagierszijde, geschat)
+  const NIP = 0.015, vn = [bp[0], bp[1] + 0.135, bp[2] + 0.07];                       // vacuümnippel op het bekrachtigerhuis: halve lengte (as langs x) en hart; de slang eindigt op zijn vlak aan de motorzijde
+  const VACR = 0.0065;                                                                // straal van de vacuümslang
   const fz = AXF + 0.052, rz = AXR - 0.10;                                              // eindpunten van de vaste leidingen op veerpoot en langsarm
   const lev = chsPt(chsRearCM(), [-0.074, -0.0415, 0]);                                // hefboomuiteinde linksachter
   const clip = (nm, p, ex) => P(nm, chsClamp('x', 0.005), MAT.rubber, { d: 'Rubber geïsoleerde klem die de remleidingen langs de carrosserie vasthoudt.', p, ex });
@@ -4371,8 +4490,16 @@ function buildBrakeSystem() {
     P('Bekrachtigerhuis', G.lathe('z', [[0.03, -0.09], [0.12, -0.07], [0.125, -0.02], [0.125, 0.02], [0.12, 0.07], [0.03, 0.09]], 40, 'boost'), MAT.darkSteel, { d: 'Tweedelig stalen huis (voorste en achterste schaal) van de bekrachtiger.', p: bp, ex: [0, 0, 0] }),
     P('Membraan', annulus(0.03, 0.118, 0.006, 'z', 32), MAT.rubber, { d: 'Rubber membraan met stalen plaat dat het huis in twee kamers verdeelt.', p: bp, ex: [0, 0, -0.1] }),
     P('Duwstang', G.cyl('z', 0.005, 0.005, 0.16, 8), MAT.steel, { d: 'Stang tussen pedaal (interieur) en membraan, en door naar de hoofdremcilinder.', p: [bp[0], bp[1], bp[2] + 0.02], ex: [0, 0, -0.2], inner: true }),
-    P('Vacuumaansluiting', merge([G.cyl('x', 0.009, 0.009, 0.03, 10), xf(G.cyl('y', 0.007, 0.007, 0.03, 10), [0.015, -0.01, 0])]), MAT.plastic, { d: 'Aansluiting van de vacuümslang met geïntegreerde terugslagklep.', p: [bp[0] + 0.0, bp[1] + 0.115, bp[2] + 0.05], ex: [0.12, 0.12, 0.0] }),
+    P('Vacuumaansluiting', merge([G.cyl('x', 0.009, 0.009, 2 * NIP, 10), xf(G.cyl('y', 0.007, 0.007, 0.03, 10), [NIP, -0.01, 0])]), MAT.plastic, { d: 'Aansluiting van de vacuümslang met geïntegreerde terugslagklep.', p: vn, ex: [0.12, 0.12, 0.0] }),
     ...[0, 1, 2, 3].map(k => P(`Bekrachtigermoer ${k + 1}`, chsNut('z', 0.0095, 0.01), MAT.steel, { d: 'Moer op een tapeind: bevestigt de bekrachtiger aan het schutbord.', p: [bp[0] + (k < 2 ? 0.1 : -0.1), bp[1] + (k % 2 ? 0.1 : -0.1), bp[2] - 0.089], ex: [0, 0, -0.22 - k * 0.02] }))]);
+  // vacuümslang: van de nippel op het inlaatspruitstuk (ENG_PORTS.vacOut) over de motor naar de nippel op de bekrachtiger
+  const vo = chsPort('vacOut'), vE = [vn[0] - NIP - 0.0005, vn[1], vn[2]], vcl = V3(...vo.p).addScaledVector(vo.dir, 0.014).toArray();   // slang eindigt 0,5 mm voor beide nippelvlakken
+  const vacPts = [V3(...vo.p).addScaledVector(vo.dir, 0.0005).toArray(), V3(...vo.p).addScaledVector(vo.dir, 0.03).toArray(), [0.045, 0.72, 1.795], [0.07, 0.83, 1.75], [0.13, 0.84, 1.62], [0.17, 0.845, 1.45], [0.25, 0.845, 1.3],
+    [vE[0] - 0.09, vE[1] + 0.025, vE[2] + 0.07], [vE[0] - 0.04, vE[1], vE[2]], vE];
+  const vacuum = A('Vacuümslang', { d: 'Vacuümslang van de nippel op het inlaatspruitstuk, aan de voorzijde van de motor, over de motor heen naar de vacuümaansluiting met terugslagklep op de rembekrachtiger; rubber met een slangklem op elk uiteinde. De route is schematisch.', ex: [0, 0.12, 0] }, [
+    P('Slang', tube(vacPts, VACR, 90, 6), MAT.rubber, { d: 'Rubberslang voor de onderdruk uit het inlaatspruitstuk.', ex: [0, 0.1, 0] }),
+    P('Slangklem motor', chsClamp('z', VACR + 0.0021), MAT.steel, { d: 'Klem van de vacuümslang op de nippel van het inlaatspruitstuk.', p: vcl, q: quatFromTo(V3(0, 0, 1), vo.dir), ex: [0, 0.16, 0.06] }),
+    P('Slangklem bekrachtiger', chsClamp('z', VACR + 0.0021), MAT.steel, { d: 'Klem van de vacuümslang bij de vacuümaansluiting van de bekrachtiger.', p: [vE[0] - 0.012, vE[1], vE[2]], q: quatFromTo(V3(0, 0, 1), V3(1, 0, 0)), ex: [-0.04, 0.16, 0.0] })]);
   const absU = A('ABS/ESP-unit', { d: 'Hydraulische modulator met pomp en regelkleppen voor ABS, EBV, noodremassistent en ESP, met regelunit, drukopnemer en beugel; de plaats aan de passagierszijde van de motorruimte is geschat, de uitvoering (Bosch ESP 8.0) aannemelijk.', ex: [-0.1, 0.12, 0] }, [
     P('Hydraulisch blok', merge([chsRb(0.1, 0.09, 0.09, 0.008), ...[0, 1, 2, 3, 4, 5, 6, 7].map(k => xf(G.cyl('y', 0.0045, 0.0045, 0.012, 8), [-0.042 + (k % 4) * 0.028, 0.049, k < 4 ? -0.022 : 0.022]))]), MAT.alu, { d: 'Aluminium blok met boringen en vier uitgangen naar de wielen en twee ingangen van de hoofdremcilinder.', p: ab, ex: [0, -0.04, 0] }),
     P('Pompmotor', G.cyl('x', 0.032, 0.032, 0.06, 20), MAT.darkSteel, { d: 'Elektromotor met retourpomp voor de afgetapte remvloeistof.', p: [ab[0] - 0.08, ab[1], ab[2]], ex: [-0.14, 0, 0] }),
@@ -4381,7 +4508,7 @@ function buildBrakeSystem() {
     P('Drukopnemer', G.cyl('y', 0.011, 0.011, 0.03, 10), MAT.steel, { d: 'Sensor die de druk in het remcircuit meet (voor ESP).', p: [ab[0] + 0.04, ab[1] + 0.06, ab[2] - 0.005], ex: [0, 0.14, 0] }),
     P('ABS-beugel', merge([xf(chsRb(0.12, 0.012, 0.1, 0.003), [0, -0.05, 0]), xf(chsRb(0.012, 0.1, 0.1, 0.003), [0.063, 0, 0])]), MAT.darkSteel, { d: 'Stalen beugel op het spatbordframe waaraan de unit elastisch hangt.', p: ab, ex: [0.12, -0.06, 0] }),
     ...[0, 1].map(k => P(`Trillingsdemper ${k + 1}`, G.cyl('y', 0.014, 0.014, 0.014, 12), MAT.rubber, { d: 'Rubber ophanging die trillingen van de pomp isoleert.', p: [ab[0] + (k === 2 ? 0.03 : -0.04 + k * 0.02), ab[1] - 0.0575, ab[2] + (k === 2 ? 0.0 : -0.03 + k * 0.06)], ex: [0, -0.06, 0] })),
-    ...[0, 1].map(k => P(`Beugelbout ${k + 1}`, hexBolt(0.02, 0.008, 'y'), MAT.steel, { d: 'Bout van de ABS-beugel.', p: [ab[0] - 0.04 + k * 0.05, ab[1] - 0.075, ab[2] + (k ? 0.03 : -0.03)], ex: [0, -0.2, 0] }))]);
+    ...[0, 1].map(k => P(`Beugelbout ${k + 1}`, hexBolt(0.02, 0.008, 'y'), MAT.steel, { d: 'Bout die de ABS-beugel aan het spatbordframe bevestigt.', p: [ab[0] - 0.04 + k * 0.05, ab[1] - 0.075, ab[2] + (k ? 0.03 : -0.03)], ex: [0, -0.2, 0] }))]);
   const line = (nm, pts, ex, d) => P(nm, tube(pts, 0.0024, Math.max(24, pts.length * 14), 6), MAT.steel, { d, ex });
   const lines = A('Remleidingen', { d: 'Stalen remleidingen per circuit: twee van de hoofdremcilinder naar de ABS/ESP-unit en vier van de unit naar de wielen, waar een flexibele slang het laatste stuk overneemt.', ex: [0, -0.06, 0] }, [
     line('Leiding hoofdcilinder primair', [[mp[0] + 0.03, mp[1] - 0.006, mp[2] + 0.0], [0.3, 0.68, 1.26], [0.0, 0.7, 1.2], [ab[0] + 0.03, ab[1] + 0.049, ab[2] - 0.022]], [0, 0.1, 0.1], 'Leiding van het primaire circuit naar de ABS/ESP-unit.'),
@@ -4398,7 +4525,7 @@ function buildBrakeSystem() {
   const cabs = sg => [[sg > 0 ? ex0 + 0.075 : ex0 - 0.075, ey0, ez0 - 0.07], [sg * 0.46, 0.17, ez0 - 0.1], [sg * 0.6, 0.21, ez0 - 0.07], [sg * lev[0], lev[1], lev[2]]];
   const epb = A('Parkeerrem', { d: 'Elektrische parkeerrem: één gesloten unit onder het vloerpaneel bij de achteras (links van de middentunnel, achter de brandstoftank) met elektromotor, wormoverbrenging en kabelverdeler; twee stalen kabels trekken de hefbomen op de achterklauwen aan. Schakelaar naast de keuzehendel; automatisch aan bij motor uit. De noodontgrendeling via een kabel in de bagageruimte is niet gemodelleerd.', ex: [0, -0.3, 0] }, [
     P('Behuizing onder', chsRb(0.18, 0.06, 0.14, 0.01), MAT.plastic, { d: 'Onderste helft van de afgedichte behuizing.', p: [ex0, ey0 - 0.01, ez0], ex: [0, -0.12, 0] }),
-    P('Behuizingsdeksel', chsRb(0.18, 0.03, 0.14, 0.01), MAT.plasticGrey, { d: 'Deksel met afdichting.', p: [ex0, ey0 + 0.03, ez0], ex: [0, 0.18, 0] }),
+    P('Behuizingsdeksel', chsRb(0.18, 0.03, 0.14, 0.01), MAT.plasticGrey, { d: 'Deksel met afdichting op de behuizing van de parkeerremunit.', p: [ex0, ey0 + 0.03, ez0], ex: [0, 0.18, 0] }),
     P('Elektromotor', G.cyl('x', 0.022, 0.022, 0.07, 16), MAT.darkSteel, { d: 'Gelijkstroommotor die de kabels aantrekt of loslaat.', p: [ex0 - 0.04, ey0, ez0 + 0.03], ex: [-0.1, 0, 0.1], inner: true }),
     P('Wormas', merge([G.cyl('x', 0.007, 0.007, 0.08, 10), xf(spring(0.0095, 0.0025, 0.05, 6, 'x'), [0, 0, 0])]), MAT.steel, { d: 'As met worm op de motoras (schematisch).', p: [ex0 + 0.02, ey0, ez0 + 0.03], ex: [0.12, 0, 0.06], inner: true }),
     P('Wormwiel', gear(22, 0.032, 0.029, 0.012, 0.006, 'y'), MAT.steel, { d: 'Wormwiel dat de spindel of kabeltrommel aandrijft.', p: [ex0 + 0.02, ey0, ez0 - 0.01], ex: [0.0, 0.08, 0], inner: true }),
@@ -4409,7 +4536,7 @@ function buildBrakeSystem() {
     ...[0, 1, 2].map(k => P(`Beugelbout ${k + 1}`, hexBolt(0.03, 0.008, 'y'), MAT.steel, { d: 'Bout waarmee de beugel aan de vloer zit.', p: [ex0 + (k === 2 ? 0.0 : (k ? 0.09 : -0.09)), ey0 - 0.05, ez0 + (k === 2 ? -0.07 : 0.06)], ex: [0, -0.3, 0] })),
     ...[1, -1].map(sg => P(`Parkeerremkabel ${sideName(sg)}`, tube(cabs(sg), 0.0022, 40, 6), MAT.steel, { d: `Binnenkabel naar de hefboom op de ${sideName(sg)} achterklauw.`, ex: [sg * 0.08, -0.04, 0] })),
     ...[1, -1].map(sg => P(`Kabelhuls ${sideName(sg)}`, tube([[sg > 0 ? ex0 + 0.075 : ex0 - 0.075, ey0, ez0 - 0.07], [sg * 0.46, 0.17, ez0 - 0.1], [sg * 0.58, 0.2, ez0 - 0.08]], 0.0042, 28, 6), MAT.rubber, { d: `Buitenkabel (huls) van de ${sideName(sg)} parkeerremkabel.`, ex: [sg * 0.1, -0.08, 0] }))]);
-  return A('Remsysteem', { d: 'Hydraulisch remsysteem met bekrachtiger, tandem-hoofdremcilinder, ABS/ESP-unit, vaste leidingen en de elektrische parkeerrem. Voor: geventileerde schijven 296 × 26 mm met zwevende klauw (zuiger Ø57 mm); achter: massieve schijven 300 × 11 mm met zwevende klauw (zuiger Ø38 mm) met parkeerremhefboom.', spec: [['Schijf voor', '296 × 26 mm, geventileerd'], ['Zuiger voor', 'Ø 57 mm'], ['Schijf achter', '300 × 11 mm, massief'], ['Zuiger achter', 'Ø 38 mm'], ['Parkeerrem', 'elektrisch, centrale unit']], ex: [1.55, 0.55, 1.0] }, [boost, mc, absU, lines, epb]);
+  return A('Remsysteem', { d: 'Hydraulisch remsysteem met bekrachtiger, vacuümslang, tandem-hoofdremcilinder, ABS/ESP-unit, vaste leidingen en de elektrische parkeerrem. Voor: geventileerde schijven 296 × 26 mm met zwevende klauw (zuiger Ø57 mm); achter: massieve schijven 300 × 11 mm met zwevende klauw (zuiger Ø38 mm) met parkeerremhefboom.', spec: [['Schijf voor', '296 × 26 mm, geventileerd'], ['Zuiger voor', 'Ø 57 mm'], ['Schijf achter', '300 × 11 mm, massief'], ['Zuiger achter', 'Ø 38 mm'], ['Parkeerrem', 'elektrisch, centrale unit']], ex: [1.55, 0.55, 1.0] }, [boost, mc, absU, lines, epb, vacuum]);
 }
 
 /* ===================== interieur ===================== */
@@ -4660,7 +4787,7 @@ function intDashboard() {
   ]);
   const audio = (() => { const f = intFace(0.795, 0.03); return A('Audiobediening', { d: 'Bediening van de audio: radiopaneel van de Carminat met cd-sleuf en twee draaiknoppen; Bose-geluidssysteem met tien luidsprekers, waarvan er negen zijn weergegeven (drie in het dashboard, twee op de achterplank, vier in de portieren); de tiende is niet getoond.', p: [0, f.y, f.z], r: [f.rx, 0, 0], ex: [0, 0, -0.12] }, [
     intPart('Audiopaneel', G.rbox(0.2, 0.06, 0.016, 0.006), MAT.blackGloss, 'Pianozwart paneel met de audiobediening.', { ex: [0, 0, -0.02] }),
-    intPart('CD-sleuf', G.box(0.09, 0.006, 0.004), MAT.plastic, 'Sleuf voor de cd.', { p: [0, 0.01, -0.009], ex: [0, 0, -0.06] }),
+    intPart('CD-sleuf', G.box(0.09, 0.006, 0.004), MAT.plastic, 'Sleuf in het radiopaneel waarin de cd wordt geschoven.', { p: [0, 0.01, -0.009], ex: [0, 0, -0.06] }),
     intPart('Volumeknop', G.cyl('z', 0.014, 0.014, 0.014, 20), MAT.chrome, 'Draaiknop voor het volume.', { p: [-0.075, -0.004, -0.014], ex: [0, 0, -0.08] }),
     intPart('Zoekknop', G.cyl('z', 0.014, 0.014, 0.014, 20), MAT.chrome, 'Draaiknop voor zender of titel.', { p: [0.075, -0.004, -0.014], ex: [0, 0, -0.08] }),
   ]); })();
@@ -4698,7 +4825,7 @@ function intDashboard() {
     intPart('Airbagklep', G.rbox(0.3, 0.008, 0.2, 0.003), MAT.dash, 'Scheurnaad in het dashboard die bij ontsteking openklapt.', { p: [0, intDashTop(0.7) - 0.0015, 0], ex: [0, 0.1, 0] }),
     intPart('Airbagbehuizing', G.rbox(0.28, 0.1, 0.18, 0.012), MAT.plastic, 'Behuizing van de airbagmodule.', { p: [0, 0.89, 0], inner: true, ex: [0, 0.04, 0] }),
     intPart('Airbaggasgenerator', xf(G.cyl('x', 0.025, 0.025, 0.24, 14), [0, 0.88, 0.0]), MAT.darkSteel, 'Gasgenerator die de airbag vult.', { inner: true, ex: [0, -0.02, 0.06] }),
-    intPart('Airbagkussen', G.rbox(0.22, 0.04, 0.14, 0.012), MAT.fabric, 'Opgevouwen airbagkussen.', { p: [0, 0.93, 0], inner: true, ex: [0, 0.06, 0] }),
+    intPart('Airbagkussen', G.rbox(0.22, 0.04, 0.14, 0.012), MAT.fabric, 'Opgevouwen kussen van de passagiersairbag; bij een botsing blaast de gasgenerator het op en breekt het door de klep.', { p: [0, 0.93, 0], inner: true, ex: [0, 0.06, 0] }),
   ]);
   const uch = (() => { const f = intFace(0.66, 0.008); return intPart('Onderpaneel bestuurder', G.rbox(0.36, 0.12, 0.014, 0.006), MAT.dash, 'Onderpaneel met afdekklep links van de stuurkolom onderin het dashboard (linkse besturing). Achter het paneel zitten de centrale cabine-unit (UCH) en de zekeringen; die horen bij het elektrische systeem.', { p: [0.37, f.y, f.z], r: [f.rx, 0, 0], ex: [0, -0.08, -0.14] }); })();
   const beam = A('Dwarsbalk dashboard', { d: 'Stalen dwarsbalk die stuurkolom, dashboard en klimaatunit draagt; zit in de carrosserie tussen de A-stijlen.', ex: [0, -0.1, -0.12], inner: true }, [
@@ -4714,7 +4841,7 @@ function intDashboard() {
     intPart('Kachelradiateur', G.rbox(0.3, 0.16, 0.03, 0.004), MAT.heater, 'Warmtewisselaar die de lucht met koelvloeistof opwarmt.', { p: [0, 0, 0.0], ex: [0, 0, 0.03] }),
     intPart('Mengkleppen', merge([bx(0.28, 0.005, 0.07, 0.002, [0, 0.05, 0.08], [0.5, 0, 0]), bx(0.28, 0.005, 0.07, 0.002, [0, -0.05, 0.08], [-0.5, 0, 0])]), MAT.steel, 'Kleppen die warme en koude lucht mengen en over de uitstroomopeningen verdelen.', { ex: [0, 0, 0.1] }),
     intPart('Aanjagerhuis', G.cyl('x', 0.08, 0.08, 0.14, 24), MAT.plastic, 'Slakkenhuis van de aanjager aan passagierszijde.', { p: [-0.33, -0.03, 0], ex: [-0.12, 0, 0] }),
-    intPart('Aanjagerwaaier', blades(18, 0.018, 0.066, 0.1, 0.004, 0.2, 'x'), MAT.steel, 'Waaier van de aanjager.', { p: [-0.33, -0.03, 0], ex: [-0.2, 0, 0] }),
+    intPart('Aanjagerwaaier', blades(18, 0.018, 0.066, 0.1, 0.004, 0.2, 'x'), MAT.steel, 'Schoepenwiel van de aanjager dat de lucht door het filter en de verdamper blaast.', { p: [-0.33, -0.03, 0], ex: [-0.2, 0, 0] }),
     intPart('Aanjagermotor', G.cyl('x', 0.03, 0.03, 0.08, 16), MAT.darkSteel, 'Elektromotor van de aanjager.', { p: [-0.42, -0.03, 0], ex: [-0.3, 0, 0] }),
     intPart('Servomotoren', merge([bx(0.04, 0.03, 0.03, 0.006, [0.2, 0.1, -0.1]), bx(0.04, 0.03, 0.03, 0.006, [0.2, -0.1, 0.1]), bx(0.04, 0.03, 0.03, 0.006, [-0.2, 0.1, 0.1])]), MAT.plastic, 'Stelmotoren van de mengkleppen en de recirculatieklep (aantal geschat).', { ex: [0.1, 0, 0] }),
     intPart('Pollen- en koolstoffilter', G.rbox(0.26, 0.04, 0.12, 0.004), MAT.filter, 'Combinatiefilter tegen stuifmeel en geuren; het filter zit achter het handschoenenkastje.', { p: [-0.1, 0.12, -0.04], ex: [-0.1, 0.1, 0] }),
@@ -4755,7 +4882,7 @@ function intConsole() {
   const sel = A('Keuzehendelmodule', { d: 'Keuzehendel van de automaat met poort P-R-N-D, ontgrendelknop op de hendel (rempedaal nodig) en een handmatige stand door de hendel naar links te duwen; de standindicatie staat in het instrumentenpaneel.', p: [0, 0.495, 0.2], ex: [0, 0.18, 0] }, [
     intPart('Standaanduiding', G.rbox(0.12, 0.006, 0.2, 0.003), MAT.satin, 'Afdekplaat met de poort en de standaanduiding.', { p: [0, -0.003, 0], ex: [0, 0.04, 0] }),
     intPart('Keuzehendelhoes', boot, MAT.rubber, 'Rubber hoes die de poort afdicht.', { ex: [0, 0.08, 0] }),
-    intPart('Keuzehendel', merge([xf(G.cyl('y', 0.007, 0.007, 0.07, 10), [0, 0.035, 0]), knob]), MAT.leather, 'Hendel met lederen knop.', { ex: [0, 0.16, 0] }),
+    intPart('Keuzehendel', merge([xf(G.cyl('y', 0.007, 0.007, 0.07, 10), [0, 0.035, 0]), knob]), MAT.leather, 'Hendel met lederen knop waarmee de stand van de automaat wordt gekozen.', { ex: [0, 0.16, 0] }),
     intPart('Ontgrendelknop hendel', xf(G.cyl('z', 0.006, 0.006, 0.01, 10), [0, 0.075, -0.018]), MAT.chrome, 'Drukknop in de knop die de hendel uit de parkeerstand vrijgeeft.', { ex: [0, 0.18, -0.06] }),
     intPart('Keuzehendelhuis', G.rbox(0.1, 0.07, 0.16, 0.012), MAT.darkSteel, 'Mechaniekhuis met de poort onder de plaat.', { p: [0, -0.045, 0], inner: true, ex: [0, -0.08, 0] }),
     intPart('Keuzekabel', tube([[0, -0.05, 0.08], [0, -0.062, 0.16], [0, -0.07, 0.24]], 0.005, 12, 6), MAT.steel, 'Schakelkabel naar de automaatbak, hier kort weergegeven; de aansluiting op de bak hoort bij de aandrijflijn.', { inner: true, ex: [0, -0.1, 0.1] }),
@@ -4786,7 +4913,7 @@ function intConsole() {
     intPart('Startknop', G.cyl('z', 0.015, 0.015, 0.012, 20), MAT.chrome, 'Start-/stopknop van de motor.', { p: [0.08, 0.575, 0.413], ex: [0, 0, -0.12] }),
     intPart('Parkeerremschakelaar', G.rbox(0.04, 0.015, 0.05, 0.005), MAT.plastic, 'Schakelaar van de elektrische parkeerrem.', { p: [0.07, 0.496, 0.34], ex: [0.04, 0.1, 0] }),
     A('Joystick navigatie', { d: 'Joystick op de middenconsole waarmee het navigatiescherm van de Carminat wordt bediend.', p: [0, 0.495, 0.03], ex: [0, 0.1, 0] }, [
-      intPart('Joystickbasis', G.cyl('y', 0.03, 0.03, 0.008, 20), MAT.satin, 'Ring rond de joystick.', { p: [0, 0.002, 0], ex: [0, 0.02, 0] }),
+      intPart('Joystickbasis', G.cyl('y', 0.03, 0.03, 0.008, 20), MAT.satin, 'Ring rond de joystick van de navigatie, vast in de console.', { p: [0, 0.002, 0], ex: [0, 0.02, 0] }),
       intPart('Joystickknop', stick, MAT.plasticGrey, 'Kantelbare en draaibare knop.', { p: [0, 0.006, 0], ex: [0, 0.06, 0] }),
     ]),
     A('Bekerhouders', { d: 'Twee bekerhouders achter de keuzehendel.', ex: [0, 0.08, 0] }, [
@@ -4897,7 +5024,12 @@ function intTrim() {
     intPart('Standmarkeringen dakraam', merge([-0.9, -0.45, 0, 0.45, 0.9].map(a => xf(G.box(0.003, 0.0015, 0.007), [0.03 + Math.sin(a) * 0.022, -0.0068, -Math.cos(a) * 0.022], [0, a, 0]))), MAT.plastic, 'Vijf streepjes bij de stand 0, A, B, C en D.', { ex: [0, -0.03, 0] }),
     intPart('Noodsluitknop dakraam', xf(G.cyl('y', 0.006, 0.006, 0.008, 14), [-0.03, -0.007, 0]), MAT.plastic, 'Drukknop waarmee het dak in noodgeval wordt gesloten (antiklem dan uit).', { ex: [0, -0.06, 0] }),
   ]);
-  return A('Bekleding', { d: 'Hemel met zonkleppen, grepen en plafonniers, vloerbedekking met matten, dorpellijsten en de bekleding van de bagageruimte met de luidsprekers van de achterplank en de versterker.', ex: [0, 0.4, 0] }, [
+  const stijl = A('Stijlbekleding', { d: 'Bekleding van de B- en C-stijlen: de B-stijl in twee delen (onder over de oprolautomaat, boven met de uitsparing voor de hoogteversteller van de gordel) en de C-stijl boven de zijbekleding van de bagageruimte. De A-stijlbekleding hoort bij de dakbekleding.', ex: [0, 0.12, 0] }, [
+    ...[1, -1].map(s => intPart(`B-stijlbekleding boven ${sideName(s)}`, intBPillar(s, true), MAT.fabric, 'Bovenste bekleding van de B-stijl in de kleur van de hemel, van de gordellijn tot onder de gordijnairbag. In de achterrand zit een uitsparing waarin de hoogteversteller met de gordelgeleider loopt (vorm en maten geschat).', { ex: [s * 0.14, 0.05, 0] })),
+    ...[1, -1].map(s => intPart(`B-stijlbekleding onder ${sideName(s)}`, intBPillar(s, false), MAT.dash, 'Onderste bekleding van de B-stijl in donker kunststof, van de dorpel tot de gordellijn; erachter zit de oprolautomaat van de voorgordel (vorm en maten geschat).', { ex: [s * 0.14, -0.05, 0] })),
+    ...[1, -1].map(s => intPart(`C-stijlbekleding ${sideName(s)}`, intCPillar(s), MAT.fabric, 'Bekleding van de C-stijl in de kleur van de hemel, tussen de kwartsruit en de opening van de achterklep, boven de zijbekleding van de bagageruimte. Onderaan een smalle richel naast de scharnierpen van de hoedenplank (vorm en maten geschat).', { ex: [s * 0.14, 0.06, -0.06] })),
+  ]);
+  return A('Bekleding', { d: 'Hemel met zonkleppen, grepen en plafonniers, stijlbekleding, vloerbedekking met matten, dorpellijsten en de bekleding van de bagageruimte met de luidsprekers van de achterplank en de versterker.', ex: [0, 0.4, 0] }, [
     A('Dakbekleding', { d: 'Hemel met de openingen van het panoramadak, zonkleppen, handgrepen, plafonniers en de opgerolde gordijnairbags.', ex: [0, 0.3, 0] }, [
     intPart('Hemelbekleding panoramadak', liningGeo, MAT.fabric, 'Lichtbeige hemelbekleding met twee openingen voor het voorste en het achterste glas van het panoramadak (maten geschat, glas tot 0,47 m van de hartlijn).', { ex: [0, 0.48, 0] }),
     intPart('Afwerkring panoramadak', ringGeo, MAT.fabric, 'Afwerkring in de kleur van de hemel rond beide dakopeningen.', { ex: [0, 0.34, 0] }),
@@ -4907,12 +5039,13 @@ function intTrim() {
     handle(1, 0.0, 'voor'), handle(-1, 0.0, 'voor'), handle(1, -0.9, 'achter'), handle(-1, -0.9, 'achter'),
     A('Plafonnier voor', { d: 'Plafonnier met twee leeslampjes voor de voorpassagiers, onder de voorrand van het dak bij de binnenspiegel.', p: [0, intRoofY(lampZ, 0) - 0.016, lampZ], r: [roofTilt(lampZ), 0, 0], ex: [0, 0.2, 0] }, [
       intPart('Lamphuis voor', G.rbox(0.3, 0.02, 0.08, 0.008), MAT.plasticGrey, 'Behuizing van het plafonnier.', { ex: [0, 0.04, 0] }),
-      ...[1, -1].map(s => intPart(`Leeslampje ${sideName(s)}`, G.cyl('y', 0.025, 0.025, 0.004, 16), MAT.lensClear, 'Leeslampje met lens.', { p: [s * 0.1, -0.011, 0], ex: [0, -0.06, 0] })),
+      ...[1, -1].map(s => intPart(`Leeslampje ${sideName(s)}`, G.cyl('y', 0.025, 0.025, 0.004, 16), MAT.lensClear, 'Leeslampje met lens boven de voorstoel aan deze kant.', { p: [s * 0.1, -0.011, 0], ex: [0, -0.06, 0] })),
     ]),
     intPart('Plafonnier achter', G.rbox(0.12, 0.016, 0.045, 0.006), MAT.plasticGrey, 'Middenlamp achter met lens, tussen het achterste glas en de achterrand van de hemel.', { p: [0, intRoofY(-1.133, 0) - 0.016, -1.133], r: [roofTilt(-1.133), 0, 0], ex: [0, 0.2, 0] }),
     curtain(1), curtain(-1),
     pillarCover(1), pillarCover(-1),
     ]),
+    stijl,
     A('Vloerbekleding', { d: 'Vloerbedekking met losse matten en de dorpellijsten.', ex: [0, -0.1, 0] }, [
     intPart('Vloerbedekking', carpet, MAT.carpet, 'Getufte vloerbedekking als dunne laag op de vloer en over de tunnel; de uitlaat in de tunnel blijft eronder vrij.', { ex: [0, -0.22, 0] }),
     mat(1, 'bestuurder'), mat(-1, 'passagier'),
@@ -4928,11 +5061,11 @@ function intTrim() {
     intPart('Bagagevloer onderzijde', intBootPlate(0.004, 0.006), MAT.intBoard, 'Lichte hardboardplaat onder het tapijt van de klapbare bagagevloer; zichtbaar als de vloer omhoog staat. Hij klapt mee met de vloer.', { p: [0, 0.4505, -1.8275], ex: [0, -0.12, -0.3],
       open: intFollow('Bagageruimtevloer', [0, 0.46, -1.485], [1, 0, 0], 1.08) }),
     intPart('Laadvloer voorstuk', (() => { const hx = 0.505, hz = 0.141, g = roundPlate([[-hx, -hz], [hx, -hz], [hx, hz], [-hx, hz]], 0.015, 0.005); g.rotateX(HALF); return g; })(), MAT.carpet, 'Vast stuk vloerbekleding tussen de klapbare bagagevloer en de zitting van de achterbank (z -1,48 tot -1,20), op dezelfde hoogte als de bagagevloer. Het dekt de bak in de vloerplaat af, zodat bij neergeklapte rugleuningen een doorlopende laadvloer ontstaat.', { p: [0, 0.46, -1.341], ex: [0, -0.1, -0.1] }),
-    intPart('Opbergbak bagageruimte', (() => { const x = 0.4, z0 = -2.18, z1 = -1.62, y0 = 0.409, y1 = 0.45, t = 0.01, hh = y1 - y0, yc = (y0 + y1) / 2, zc = (z0 + z1) / 2, bx = intBox;
+    intPart('Opbergbak bagageruimte', (() => { const x = 0.4, z0 = -2.18, z1 = -1.62, y0 = 0.409, y1 = 0.448, t = 0.01, hh = y1 - y0, yc = (y0 + y1) / 2, zc = (z0 + z1) / 2, bx = intBox;
       return merge([bx(2 * x, 0.006, z1 - z0, [0, y0 + 0.003, zc]), bx(t, hh, z1 - z0, [x - t / 2, yc, zc]), bx(t, hh, z1 - z0, [-x + t / 2, yc, zc]),
         bx(2 * x, hh, t, [0, yc, z0 + t / 2]), bx(2 * x, hh, t, [0, yc, z1 - t / 2]), bx(0.008, hh - 0.004, z1 - z0 - 2 * t, [0.14, yc + 0.002, zc]), bx(0.008, hh - 0.004, z1 - z0 - 2 * t, [-0.14, yc + 0.002, zc]),
         bx(0.28 - 0.008, hh - 0.004, 0.008, [0, yc + 0.002, zc + 0.05])]); })(), MAT.intTray, 'Opbergbak onder de bagagevloer voor gereedschap, bandenreparatieset en de gevarendriehoek: open bak met vakken (schematisch; de Initiale heeft geen reservewiel).', { ex: [0, -0.1, -0.2] }),
-    ...[1, -1].map(s => intPart(`Zijbekleding bagageruimte ${sideName(s)}`, intLining(s), MAT.intFelt, 'Beklede zijwand van de bagageruimte in donker vilt. Hij dekt de achterwielkast, de vulpijp en het leidingwerk erachter af en loopt langs de zijwand omhoog tot de hoogte van de hoedenplank; de klapbare vloer en de rugleuningen bewegen eraan voorbij (vorm en maten geschat).', { ex: [s * 0.12, 0, -0.04] })),
+    ...[1, -1].map(s => intPart(`Zijbekleding bagageruimte ${sideName(s)}`, intLining(s), MAT.intFelt, 'Beklede zijwand van de bagageruimte in donker vilt, uit één stuk. Hij dekt de veerkoker, de achterwielkast, de vulpijp en het leidingwerk erachter af: een binnenwand over veerkoker en wielkast, een verhoging voor de vulpijp en een schouder die zonder trede in de zijwand overgaat tot de hoogte van de hoedenplank. Vooraan sluit hij de ruimte naast de rugleuning af; de klapbare vloer en de rugleuningen bewegen eraan voorbij (vorm en maten geschat).', { ex: [s * 0.12, 0, -0.04] })),
     intPart('Versterker Bose', G.rbox(0.28, 0.06, 0.2, 0.01), MAT.ecu, 'Digitale versterker met zes kanalen van het Bose-systeem, links achter in een opbergvak (plaats aannemelijk).', { p: [0.46, 0.4975, -2.0], ex: [0.1, 0.12, -0.1] }),    ])
   ]);
 }
@@ -4943,7 +5076,7 @@ function intPedals() {
     intPart('Rempedaalarm', rodBetween([0.4, 0.72, 0.86], [0.4, 0.42, 0.74], 0.01), MAT.steel, 'Pedaalarm die de rembekrachtiger bedient.', { ex: [0.04, 0, 0.04] }),
     intPart('Rempedaalpad', bx(0.13, 0.065, 0.012, 0.005, [0.4, 0.4, 0.73], [-0.35, 0, 0]), MAT.rubber, 'Breed rempedaalrubber, typisch voor een automaat.', { ex: [0.04, 0, -0.06] }),
     intPart('Gaspedaalarm', rodBetween([0.23, 0.7, 0.86], [0.23, 0.4, 0.78], 0.006), MAT.steel, 'Arm van het elektronische gaspedaal.', { ex: [-0.04, 0, 0.04] }),
-    intPart('Gaspedaalpad', bx(0.06, 0.15, 0.012, 0.005, [0.23, 0.36, 0.77], [-0.4, 0, 0]), MAT.rubber, 'Gaspedaalrubber.', { ex: [-0.06, 0, -0.06] }),
+    intPart('Gaspedaalpad', bx(0.06, 0.15, 0.012, 0.005, [0.23, 0.36, 0.77], [-0.4, 0, 0]), MAT.rubber, 'Rubber trede van het gaspedaal waarop de rechtervoet rust.', { ex: [-0.06, 0, -0.06] }),
     intPart('Gaspedaalsensor', bx(0.04, 0.04, 0.03, 0.006, [0.23, 0.7, 0.8]), MAT.ecu, 'Stand-opnemer van het elektronische gaspedaal (drive-by-wire).', { ex: [-0.06, 0.04, 0] }),
     intPart('Remlichtschakelaar', xf(G.cyl('z', 0.012, 0.012, 0.04, 10), [0.4, 0.78, 0.8]), MAT.plasticGrey, 'Schakelaar die de remlichten inschakelt.', { ex: [0.05, 0.06, 0] }),
     intPart('Voetsteun', bx(0.07, 0.17, 0.02, 0.006, [0.58, 0.33, 0.76], [-0.6, 0, 0]), MAT.satin, 'Steun voor de linkervoet.', { ex: [0.08, 0, -0.04] }),
@@ -4958,26 +5091,137 @@ function intMirror() {
     intPart('Spiegelglas binnen', G.box(0.24, 0.05, 0.003), MAT.reflector, 'Elektrochroom spiegelglas dat automatisch dimt.', { p: [0, hy, hz - 0.019], ex: [0, 0, -0.08] }),
   ]);
 }
-// vloerplaat van de bagageruimte (wereld z -2,17 tot -1,485): achter z -1,80 tot |x| 0,6, daarvoor smaller langs de wielkastbekleding (0,455)
-// en bij de veerkoker (0,425); de zijbekleding staat erbuiten, de verhoging voor de vulpijp erboven
+// vloerplaat van de bagageruimte (wereld z -2,17 tot -1,485): achter z -1,80 tot |x| 0,6, daarvoor smaller (0,425) langs de veerkoker en
+// de wielkast, zodat de zijbekleding daar één doorlopende binnenwand op |x| 0,429 kan hebben; de verhoging voor de vulpijp hangt erboven
 function intBootPlate(t = 0.015, k = 0) {
-  const zc = -1.8275, hd = 0.3425 - k, v1 = -1.80 - zc, v2 = -1.552 - zc, w0 = 0.6 - k, w1 = 0.455 - k, w2 = 0.425 - k, g = roundPlate([[-w0, -hd], [w0, -hd], [w0, v1], [w1, v1], [w1, v2], [w2, v2], [w2, hd], [-w2, hd], [-w2, v2], [-w1, v2], [-w1, v1], [-w0, v1]], t, Math.min(0.005, t / 2 - 0.0008), 0.025);
+  const zc = -1.8275, hd = 0.3425 - k, v1 = -1.80 - zc, w0 = 0.6 - k, w2 = 0.425 - k, g = roundPlate([[-w0, -hd], [w0, -hd], [w0, v1], [w2, v1], [w2, hd], [-w2, hd], [-w2, v1], [-w0, v1]], t, Math.min(0.005, t / 2 - 0.0008), 0.006);
   g.rotateX(HALF); return g;
 }
-// zijbekleding van de bagageruimte (donker vilt) over de achterwielkast en de vulpijp: een blok in de vorm van de wielkast (straal 0,435 om
-// z -1,391, y 0,33), een wigvormige verhoging die boven het bereik van de klapbare vloer hangt en waarin de vulpijp naar het achterscherm verdwijnt en een wandpaneel tot de hoogte
-// van de hoedenplank. Het wandpaneel ligt buiten het bereik van de klapbare vloer (tot |x| 0,6) en het blok onder de bakken van die vloer.
-const intLinY = 0.466;
+// gesloten loft door doorsneden: secs is een lijst lussen van punten [x, y, z], alle even lang en in dezelfde volgorde; de eerste en de
+// laatste lus krijgen een dop. Driehoeken zonder oppervlak vallen in de mantel weg; de normalen zijn glad met een knik boven 30 graden (zoals roundPlate)
+// en wijzen naar buiten (teken van het ingesloten volume).
+function intLoft(secs) {
+  const n = secs[0].length, m = secs.length, pos = [], idx = [], P = (i, j) => secs[i][j];
+  secs.forEach(L => L.forEach(p => pos.push(p[0], p[1], p[2])));
+  const area2 = (a, b, c) => { const A = pos.slice(3 * a, 3 * a + 3), B = pos.slice(3 * b, 3 * b + 3), C = pos.slice(3 * c, 3 * c + 3);
+    const u = [B[0] - A[0], B[1] - A[1], B[2] - A[2]], v = [C[0] - A[0], C[1] - A[1], C[2] - A[2]];
+    return Math.hypot(u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]); };
+  const tri = (a, b, c, keep) => { if (keep || area2(a, b, c) > 1e-10) idx.push(a, b, c); };
+  for (let i = 0; i < m - 1; i++) for (let j = 0; j < n; j++) {
+    const a = i * n + j, b = i * n + (j + 1) % n, c = (i + 1) * n + (j + 1) % n, d = (i + 1) * n + j;
+    tri(a, b, c); tri(a, c, d);
+  }
+  // dop: lus geprojecteerd op het vlak loodrecht op zijn Newell-normaal; de eerste dop loopt tegen de lus in, de laatste met de lus mee
+  const cap = (i, withLoop) => {
+    const L = secs[i]; let nx = 0, ny = 0, nz = 0;
+    for (let j = 0; j < n; j++) { const p = P(i, j), q = P(i, (j + 1) % n); nx += (p[1] - q[1]) * (p[2] + q[2]); ny += (p[2] - q[2]) * (p[0] + q[0]); nz += (p[0] - q[0]) * (p[1] + q[1]); }
+    const N = V3(nx, ny, nz).normalize(), U = Math.abs(N.x) < 0.9 ? V3(1, 0, 0) : V3(0, 1, 0);
+    U.sub(N.clone().multiplyScalar(U.dot(N))).normalize(); const W = N.clone().cross(U);
+    const pts = L.map(p => new THREE.Vector2(U.x * p[0] + U.y * p[1] + U.z * p[2], W.x * p[0] + W.y * p[1] + W.z * p[2]));
+    const loopSign = Math.sign(THREE.ShapeUtils.area(pts)) || 1;
+    THREE.ShapeUtils.triangulateShape(pts, []).forEach(([a, b, c]) => {
+      const s2 = Math.sign((pts[b].x - pts[a].x) * (pts[c].y - pts[a].y) - (pts[b].y - pts[a].y) * (pts[c].x - pts[a].x));
+      // ook driehoeken zonder oppervlak (drie punten op een lijn) blijven staan, anders heeft de dop open randen
+      if ((s2 === loopSign) === withLoop) tri(i * n + a, i * n + b, i * n + c, true); else tri(i * n + a, i * n + c, i * n + b, true);
+    });
+  };
+  cap(0, false); cap(m - 1, true);
+  // ingesloten volume (divergentiestelling); negatief: alle driehoeken omdraaien
+  let vol = 0;
+  for (let k = 0; k < idx.length; k += 3) { const a = idx[k] * 3, b = idx[k + 1] * 3, c = idx[k + 2] * 3;
+    vol += pos[a] * (pos[b + 1] * pos[c + 2] - pos[b + 2] * pos[c + 1]) - pos[a + 1] * (pos[b] * pos[c + 2] - pos[b + 2] * pos[c]) + pos[a + 2] * (pos[b] * pos[c + 1] - pos[b + 1] * pos[c]); }
+  if (vol < 0) for (let k = 0; k < idx.length; k += 3) { const t = idx[k + 1]; idx[k + 1] = idx[k + 2]; idx[k + 2] = t; }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx);
+  return cleanG(THREE.BufferGeometryUtils.toCreasedNormals(THREE.BufferGeometryUtils.mergeVertices(g, 1e-5), 0.52));
+}
+// kubische Bézier van a naar b met controlepunten c1 en c2 (in het vlak), k punten strikt tussen a en b
+const intBez = (a, c1, c2, b, k) => Array.from({ length: k }, (_, i) => { const t = (i + 1) / (k + 1), u = 1 - t;
+  return [u * u * u * a[0] + 3 * t * u * u * c1[0] + 3 * t * t * u * c2[0] + t * t * t * b[0], u * u * u * a[1] + 3 * t * u * u * c1[1] + 3 * t * t * u * c2[1] + t * t * t * b[1]]; });
+// Zijbekleding van de bagageruimte (donker vilt) als één doorlopend profiel: een loft van doorsneden in z, van de rugleuning tot de
+// achterkant. Per doorsnede (van binnen onder rond naar buiten): de binnenwand op |x| 0,429 over veerkoker en wielkast (de vloer is daar
+// 0,425 breed), de verhoging voor de vulpijp op |x| 0,37 met een schuine onderkant, een S-vormige schouder die zonder trede in de
+// zijwand (|x| 0,615) overgaat, de zijwand tot de hoedenplank (y 0,98) en aan de buitenkant een uitsparing boven de wielkuip.
+// Klapbare vloer: scharnier y 0,46, z -1,485, 62 graden, plaat 15 mm. De bovenkant van de plaat haalt in de eindstand y 0,476 + 1,88 dz
+// (dz achter het scharnier); de verhoging blijft daar 14 mm boven (intLinU). Het brede deel van de vloer (|x| tot 0,6, vanaf z -1,80,
+// straal 0,315 tot het scharnier) zwaait door de hoek bij de wielkast: daar blijft de bovenkant van de wielkastbult binnen straal 0,305.
+// Vooraan volgt de voorrand de schuine achterkant van de rugleuning (8 mm ervoor), en een dop sluit de holte tussen zijwand en
+// achterscherm naast de rugleuning af.
+const intLinB = 0.469;
+const intLinU = z => z > -1.475 ? 0.472 : z > -1.485 ? lerp(0.472, 0.49, (-1.475 - z) / 0.01) : 0.49 + 1.88 * (-1.485 - z);
+const intLinCirc = z => { const d = Math.max(0, -1.485 - z); return d >= 0.305 ? 0.46 : 0.46 + Math.sqrt(0.305 * 0.305 - d * d); };
+const intKuipY = z => 0.33 + Math.sqrt(Math.max(0, 0.405 * 0.405 - (z + 1.391) * (z + 1.391)));   // bovenkant wielkuip (carrosserie)
+const intSeatBackZ = y => -1.267 - (y - 0.472) * 0.255;   // achterkant van de rechtopstaande rugleuning achter op hoogte y
 function intLining(s) {
-  const R = 0.435, cz = -1.391, cy = 0.33, zF = -1.405, arch = [];
-  const zE = -1.77;   // het blok eindigt voor de rand van de klapbare vloer (die bij kleine hoek vlak langs de achterkant schuift)
-  for (let i = 0; i <= 12; i++) { const z = zF + (zE - zF) * i / 12, dz = z - cz, y = cy + Math.sqrt(Math.max(0, R * R - dz * dz)); arch.push([z, Math.max(y, intLinY)]); }
-  // profielen in (z, y) tegen de klok in; roundPlate rondt de randen af, het blok staat daarna dwars (diepte langs x)
-  const blk = (poly, w, xc) => { const g = roundPlate(poly, w, Math.min(0.008, w / 2 - 0.001), 0.02, 2); g.rotateY(-HALF); g.translate(s * xc, 0, 0); return g; };
-  const hump = blk([[zF, intLinY], ...arch, [zE, intLinY]], 0.165, 0.5525);
-  const pod = blk([[zF, intLinY], [zF, 0.66], [-1.62, 0.86], [-1.62, 0.744], [-1.485, 0.49]], 0.265, 0.5025);
-  const wall = blk([[zF, intLinY], [zF, 0.98], [-2.10, 0.98], [-2.10, intLinY]], 0.02, 0.625);
-  return merge([hump, pod, wall]);
+  const yb = intLinB, yT = 0.98, xo = 0.635, xw = 0.615, xP = 0.37, podTop = 0.78, podWall = 0.84, zPod = -1.616;
+  const sec = z => {
+    // achter zPod trekt de verhoging terug naar de binnenwand; de schouder loopt nog 1 cm door tot de vulpijp in de zijwand verdwijnt
+    // (het brede deel van de vloer komt hier nog niet boven de wielkastbult), daarna begint de wielkastbult
+    const wallOnly = z <= -1.79, hump = z < zPod - 0.012, xL = wallOnly ? 0.605 : 0.429, xK = wallOnly ? 0.625 : 0.50;
+    const yk = wallOnly ? yb + 0.006 : Math.max(yb + 0.006, intKuipY(z) + 0.008);
+    let pts;
+    if (!hump) {
+      // verhoging voor de vulpijp: binnenwand tot de schuine onderkant, verhoging op |x| 0,37, S-schouder naar de zijwand
+      const y1 = Math.max(yb + 0.004, intLinU(z)), xa = z < zPod - 0.001 ? xL + 0.002 : xP;
+      pts = [[xL, yb], [xL, y1], [xa, y1], [xa, podTop], ...intBez([xa, podTop], [xa, podTop + 0.027], [xw, podWall - 0.027], [xw, podWall], 6), [xw, podWall],
+        [xw, podWall + 0.01], [xw, podWall + 0.02], [xw, podWall + 0.03], [xw, podWall + 0.04]];
+    } else {
+      // wielkastbult: bovenkant ruim boven de wielkuip, binnen straal 0,305 van het vloerscharnier; afgeronde rand en holle overgang in de zijwand
+      const y1 = wallOnly ? yb + 0.012 : Math.max(yk + 0.012, Math.min(intLinCirc(z) - 0.008, intKuipY(z) + 0.045)), xa = xL + 0.008;
+      pts = [[xL, yb], [xL, y1 - 0.006], [xL + 0.003, y1 - 0.001], [xa, y1]];
+      pts.push(...intBez([xa, y1], [xa + 0.45 * (xw - xa), y1], [xw, y1 + 0.004], [xw, y1 + 0.03], 6), [xw, y1 + 0.03]);
+      // richel net achter de verhoging: de vulpijp loopt hier nog tot 3 cm binnen de zijwand (y 0,78 tot 0,81) voor hij erin verdwijnt;
+      // de richel hangt boven het bereik van de vloer (onderkant 2 mm boven intLinU), de wielkastbult eronder blijft binnen straal 0,305
+      const ledge = z >= -1.639, yA = intLinU(z) + 0.002;
+      pts.push(...(ledge ? [[xw, yA], [0.575, yA + 0.004], [0.575, 0.84], [xw, 0.87]] : [1, 2, 3, 4].map(k => [xw, y1 + 0.03 + 0.01 * k])));
+    }
+    // buitenkant onder: uitsparing boven de wielkuip en, bij de veerkoker, een tweede uitsparing tot net boven de koker (y 0,572), zodat
+    // de veer met schotel en aanslagrubber in de koker vrij blijft; de binnenwand is daar 2,5 mm dik (vilt op de binnenwand van de koker)
+    const koker = !wallOnly && z > -1.55, xK1 = koker ? 0.4315 : xK - 0.002, yk1 = koker ? 0.582 : yk - 0.003;
+    pts.push([xw, yT - 0.008], [xw + 0.002, yT - 0.002], [xw + 0.008, yT], [xo - 0.008, yT], [xo, yT - 0.008], [xo, yk], [xK, yk], [xK, yk1], [xK1, yk1], [xK1, yb]);
+    return pts;
+  };
+  const zs = [-1.36, -1.41, -1.45, -1.475, -1.485, -1.50, -1.53, -1.548, -1.56, -1.59, -1.612, zPod, -1.618, -1.626, -1.630, -1.637, -1.643, -1.67, -1.70, -1.72, -1.74, -1.755, -1.77, -1.78, -1.787, -1.795, -2.085];
+  const zFront = y => Math.min(-1.36, intSeatBackZ(y) - 0.008);
+  const loops = zs.map((z, i) => sec(z).map(([x, y]) => [s * x, y, i === 0 ? zFront(y) : z]));
+  // dop tussen zijwand en achterscherm naast de rugleuning (boven de wielkuip), 12 mm dik, met dezelfde schuine voorkant
+  const zc = -1.38, yc0 = intKuipY(zc) + 0.008, ys = [yc0, 0.80, 0.86, 0.92, 0.95, 0.965, yT];
+  const capSec = dz => [[0.633, yT], [0.633, yc0], ...ys.map(y => [Math.min(surfX(-1.36, y), surfX(-1.42, y)) - 0.012, y])].map(([x, y]) => [s * x, y, zFront(y) - dz]);
+  return merge([intLoft(loops), intLoft([capSec(0), capSec(0.012)])]);
+}
+// B-stijlbekleding in twee delen, langs de schuine B-stijl (as door y 0,66, z -0,17, 0,21 rad naar achteren; binnenvlak van de stijl
+// op |x| 0,71). Het onderste deel loopt van de dorpel tot y 0,925 over de oprolautomaat; het bovenste deel van y 0,93 tot onder de
+// gordijnairbag en heeft aan de achterrand een uitsparing waarin de hoogteversteller met de gordelgeleider zit.
+const intBzc = y => -0.17 - (y - 0.66) * 0.2132;
+function intBPillar(s, upper) {
+  const ys = upper ? [0.93, 0.935, 0.94, 0.99, 1.04, 1.07, 1.10, 1.13, 1.145, 1.15, 1.18, 1.21, 1.235, 1.26] : [0.27, 0.33, 0.40, 0.50, 0.60, 0.70, 0.80, 0.88, 0.925];
+  const loops = ys.map(y => {
+    const zc = intBzc(y), hw = upper ? 0.046 : 0.046 + 0.012 * clamp((0.5 - y) / 0.23, 0, 1), zF = zc + hw;
+    const zR = upper && y > 0.937 && y < 1.147 ? -0.258 : zc - hw;
+    const xo = Math.min(0.700, surfX(zc, y) - 0.03), xi = xo - 0.016;
+    return [[xo, zF], [xi + 0.006, zF - 0.004], [xi, zF - 0.012], [xi, zR + 0.012], [xi + 0.006, zR + 0.004], [xo, zR]].map(([x, z]) => [s * x, y, z]);
+  });
+  return intLoft(loops);
+}
+// C-stijlbekleding: paneel langs de binnenkant van de C-stijl boven de zijbekleding, van achter de kwartsruit tot de sponning van de
+// achterklep (bovenrand 1 tot 2 cm onder de sponning en onder de kogel van de gasveer), 7 tot 19 mm binnen de huid, met onderaan een
+// richel (y 0,985 tot 0,995) naar binnen tot |x| 0,705, net buiten de scharnierpen van de hoedenplank.
+const intCTop = z => { const T = [[-1.185, 1.235], [-1.262, 1.235], [-1.30, 1.195], [-1.36, 1.19], [-1.45, 1.18], [-1.55, 1.16], [-1.65, 1.135], [-1.75, 1.11], [-1.85, 1.06], [-1.95, 1.035], [-2.03, 1.0]];
+  for (let i = 0; i < T.length - 1; i++) if (z <= T[i][0] && z >= T[i + 1][0]) return lerp(T[i][1], T[i + 1][1], (T[i][0] - z) / (T[i][0] - T[i + 1][0]));
+  return z > T[0][0] ? T[0][1] : T[T.length - 1][1]; };
+// z van de achterrand van de kwartsruit op hoogte y (bodQtop is de bovenrand van de ruit als functie van z)
+const intQuarterZ = y => { let lo = -1.25, hi = -1.14; if (bodQtop(lo) >= y) return lo; for (let i = 0; i < 30; i++) { const m = (lo + hi) / 2; if (bodQtop(m) >= y) hi = m; else lo = m; } return lo; };
+function intCPillar(s) {
+  const zs = [-1.258, -1.27, -1.30, -1.33, -1.36, -1.40, -1.45, -1.50, -1.55, -1.60, -1.65, -1.70, -1.75, -1.80, -1.85, -1.90, -1.95, -2.0], m = 7;
+  const loops = zs.map((z0, i) => {
+    const zAt = y => i === 0 ? clamp(intQuarterZ(y) - 0.008, -1.258, -1.185) : z0;
+    const yt = Math.max(1.0, intCTop(i === 0 ? -1.262 : z0)), yo = [], yi = [];
+    for (let j = 0; j <= m; j++) yo.push(0.985 + (yt - 0.985) * j / m);
+    for (let j = 0; j <= m; j++) yi.push(yt - 0.003 - (yt - 0.003 - 0.995) * j / m);
+    const sx = (y, o) => surfX(zAt(y), y) - o, tip = Math.max(0.688, Math.min(0.705, sx(0.995, 0.019) - 0.008));   // richel tot |x| 0,705, achteraan korter
+    const pts = [[tip, 0.985], ...yo.map(y => [sx(y, 0.007), y]), ...yi.map(y => [sx(y, 0.019), y]), [tip + 0.004, 0.995], [tip, 0.992]];
+    return pts.map(([x, y]) => [s * x, y, zAt(y)]);
+  });
+  return intLoft(loops);
 }
 function buildInterior() {
   const seats = A('Stoelen', { d: 'Voorstoelen met verwarming en elektrische verstelling, achterbank met gedeeld neerklapbare rugleuning en de veiligheidsgordels.', ex: [0, 0.26, -0.1] }, [frontSeat(1), frontSeat(-1), intRearBench(), intBelts()]);
@@ -5026,7 +5270,7 @@ function buildCooling() {
     P('Inlaatstomp', G.cyl('z', 0.0185, 0.0185, 0.045, 14), MAT.plastic, { d: 'Aansluiting van de bovenste radiateurslang op de linker waterkast.', p: [0.30, 0.62, RZ - 0.0455], ex: [0, 0.05, -0.1] }),
     P('Uitlaatstomp', G.cyl('z', 0.0185, 0.0185, 0.045, 14), MAT.plastic, { d: 'Aansluiting van de onderste radiateurslang op de rechter waterkast.', p: [-0.30, 0.34, RZ - 0.0455], ex: [0, -0.05, -0.1] }),
     P('Aftapkraan', merge([G.cyl('y', 0.008, 0.008, 0.026, 10), xf(G.box(0.03, 0.008, 0.008), [0, -0.016, 0])]), MAT.plastic, { d: 'Kraan onderin de rechter waterkast om de koelvloeistof af te tappen.', p: [-0.30, 0.285, RZ], ex: [0, -0.1, 0] }),
-    P('Ontluchtingsschroef', G.cyl('y', 0.007, 0.007, 0.02, 8), MAT.brass || MAT.bearing, { d: 'Schroef bovenin de waterkast om lucht uit het koelsysteem te laten ontsnappen.', p: [-0.30, 0.67, RZ], ex: [0, 0.12, 0] }),
+    P('Ontluchtingsschroef', G.cyl('y', 0.007, 0.007, 0.02, 8), MAT.bearing, { d: 'Schroef bovenin de waterkast om lucht uit het koelsysteem te laten ontsnappen.', p: [-0.30, 0.67, RZ], ex: [0, 0.12, 0] }),
     ...[1, -1].map(s => P(`Ophangrubber boven ${sideName(s)}`, merge([G.cyl('y', 0.011, 0.011, 0.018, 12), xf(G.cyl('y', 0.005, 0.005, 0.03, 8), [0, 0.012, 0])]), MAT.rubber, { d: 'Rubber ophangpen waarmee de radiateur bovenin in de frontmodule rust.', p: [s * 0.2, 0.67, RZ], ex: [0, 0.14, 0] })),
     ...[1, -1].map(s => P(`Steunblok onder ${sideName(s)}`, G.rbox(0.04, 0.02, 0.04, 0.005), MAT.rubber, { d: 'Rubber steunblok onder de radiateur in de frontmodule.', p: [s * 0.2, 0.29, RZ], ex: [0, -0.14, 0] })),
   ]);
@@ -5035,17 +5279,17 @@ function buildCooling() {
     P('Condensorblok', cache('sysCondCore', () => merge([G.box(0.58, 0.34, 0.014), ...[-0.12, -0.06, 0, 0.06, 0.12].map(y => xf(G.box(0.58, 0.004, 0.017), [0, y, 0]))])), MAT.darkSteel, { d: 'Aluminium parallelstroomblok waar het koudemiddel zijn warmte aan de lucht afgeeft.', p: [0, RY, 2.015] }),
     P('Droger', G.cyl('y', 0.021, 0.021, 0.2, 16), MAT.alu, { d: 'Droger-filtereenheid met vochtopname voor het koudemiddel.', p: [0.26, RY, 2.045], ex: [0.12, 0, 0.1] }),
     P('Dop droger', G.cyl('y', 0.024, 0.024, 0.02, 12), MAT.plastic, { d: 'Dop op de droger; verwisselbaar bij vervanging van het filter.', p: [0.26, RY + 0.11, 2.045], ex: [0, 0.14, 0] }),
-    P('Leidingblok', G.rbox(0.05, 0.04, 0.03, 0.006), MAT.steel, { d: 'Aansluitblok voor de hoge- en lagedrukleiding van de airconditioning.', p: [-0.3, RY - 0.12, 2.03], ex: [-0.1, 0, 0.1] }),
+    P('Leidingblok', G.rbox(0.05, 0.04, 0.03, 0.006), MAT.steel, { d: 'Aansluitblok voor de hoge- en lagedrukleiding van de airconditioning, naast de rechterrand van het condensorblok (plaats schematisch).', p: [-0.315, RY - 0.01, 2.034], ex: [-0.1, 0, 0.1] }),
     ...[1, -1].map(s => P(`Condensorclip ${sideName(s)}`, G.box(0.03, 0.016, 0.02), MAT.plastic, { d: 'Kunststof clip die de condensor aan de frontmodule bevestigt.', p: [s * 0.26, 0.655, 2.025], ex: [s * 0.04, 0.1, 0.04] })),
   ]);
   // ---------- intercooler ----------
   const ICY = 0.31, ICZ = 2.15;
-  const intercooler = A('Intercooler', { d: 'Lucht-luchtkoeler achter de onderste luchtinlaat: koelt de door de turbo samengeperste lucht voordat die naar het gasklephuis gaat. De warme lucht komt links binnen, de gekoelde lucht verlaat hem rechts.', spec: [['Inlaat', 'ø 57 mm (aannemelijk)'], ['Uitlaat', 'ø 47 mm (aannemelijk)']], ex: [0, -0.04, 0.36] }, [
+  const intercooler = A('Intercooler', { d: 'Lucht-luchtkoeler achter de onderste luchtinlaat: koelt de door de turbo samengeperste lucht voordat die naar het gasklephuis gaat. De warme lucht komt links binnen, de gekoelde lucht verlaat hem rechts. De stompmaten van 57 mm (inlaat) en 47 mm (uitlaat) zijn aannemelijk, niet bevestigd.', ex: [0, -0.04, 0.36] }, [
     P('Intercoolerkern', cache('sysIcCore', () => merge([G.box(0.54, 0.11, 0.09), ...[-0.03, 0, 0.03].map(y => xf(G.box(0.54, 0.003, 0.094), [0, y, 0]))])), MAT.alu, { d: 'Aluminium kern met plaatvormige luchtkanalen en koelribben.', p: [0, ICY, ICZ] }),
     P('Eindkap links', G.rbox(0.06, 0.12, 0.096, 0.012), MAT.aluCast, { d: 'Gegoten eindkap aan de inlaatzijde (links), met de aansluiting voor de hete laadluchtslang.', p: [0.30, ICY, ICZ], ex: [0.12, 0, 0] }),
     P('Eindkap rechts', G.rbox(0.06, 0.12, 0.096, 0.012), MAT.aluCast, { d: 'Gegoten eindkap aan de uitlaatzijde (rechts), met de aansluiting voor de gekoelde laadluchtslang.', p: [-0.30, ICY, ICZ], ex: [-0.12, 0, 0] }),
-    P('Inlaatstomp intercooler', G.cyl('z', 0.0285, 0.0285, 0.05, 18), MAT.aluCast, { d: 'Inlaatstomp van 57 mm voor de hete laadluchtslang van de turbo.', p: [0.30, ICY, ICZ - 0.07], ex: [0.06, 0, -0.1] }),
-    P('Uitlaatstomp intercooler', G.cyl('z', 0.0235, 0.0235, 0.05, 18), MAT.aluCast, { d: 'Uitlaatstomp van 47 mm voor de koude laadluchtslang naar het gasklephuis.', p: [-0.30, ICY, ICZ - 0.07], ex: [-0.06, 0, -0.1] }),
+    P('Inlaatstomp intercooler', G.cyl('z', 0.0285, 0.0285, 0.05, 18), MAT.aluCast, { d: 'Inlaatstomp voor de hete laadluchtslang van de turbo (57 mm, aannemelijk).', p: [0.30, ICY, ICZ - 0.07], ex: [0.06, 0, -0.1] }),
+    P('Uitlaatstomp intercooler', G.cyl('z', 0.0235, 0.0235, 0.05, 18), MAT.aluCast, { d: 'Uitlaatstomp voor de koude laadluchtslang naar het gasklephuis (47 mm, aannemelijk).', p: [-0.30, ICY, ICZ - 0.07], ex: [-0.06, 0, -0.1] }),
     ...[1, -1].map(s => P(`Steunbeugel ${sideName(s)}`, merge([G.box(0.03, 0.02, 0.12), xf(G.box(0.03, 0.06, 0.012), [0, 0.03, 0.054])]), MAT.darkSteel, { d: 'Steunbeugel dat de intercooler aan de bumperbalk en de frontmodule vasthoudt.', p: [s * 0.2, ICY - 0.07, ICZ + 0.0], ex: [s * 0.06, -0.12, 0] })),
   ]);
   // ---------- koelventilatormodule ----------
@@ -5062,11 +5306,11 @@ function buildCooling() {
   ]);
   // ---------- expansievat ----------
   const EV = [-0.45, 0.70, 1.24];   // vat vlak voor de torpedobak (die loopt tot z 1,146), zodat de dop er niet onder zit
-  const expansie = A('Expansievat', { d: 'Doorzichtig kunststof expansievat met min- en maxmarkering; vangt de uitzetting van de koelvloeistof op en houdt het systeem onder druk.', spec: [['Dopdruk', '1,4 bar (aannemelijk)']], ex: [-0.18, 0.2, -0.04] }, [
+  const expansie = A('Expansievat', { d: 'Doorzichtig kunststof expansievat met min- en maxmarkering; vangt de uitzetting van de koelvloeistof op en houdt het systeem onder druk. De openingsdruk van de dop van ongeveer 1,4 bar is aannemelijk, niet bevestigd.', ex: [-0.18, 0.2, -0.04] }, [
     P('Vat', merge([G.rbox(0.12, 0.13, 0.15, 0.018), xf(G.cyl('y', 0.03, 0.03, 0.02, 16), [0.02, 0.07, 0.0])]), MAT.tank, { d: 'Doorzichtig vat met de niveaumarkering voor koelvloeistof.', p: EV }),
     // vulhals met een donkere opening (de dop sluit hem af); de dop klapt om een scharnierlip aan de achterrand van de hals omhoog (zoals de olievuldop) en blijft eraan vast
     P('Vulopening expansievat', G.cyl('y', 0.022, 0.022, 0.002, 20), MAT.blackGloss, { d: 'Open vulhals van het expansievat: een donkere opening in de opstaande hals; de drukdop sluit hem af.', p: [EV[0] + 0.02, EV[1] + 0.0805, EV[2]], ex: [0, 0.03, 0] }),
-    P('Expansiedop', merge([G.cyl('y', 0.034, 0.034, 0.016, 16), xf(G.box(0.07, 0.01, 0.014), [0, 0.011, 0]), xf(G.box(0.018, 0.006, 0.016), [0, -0.005, -0.042]), xf(G.cyl('x', 0.0045, 0.0045, 0.024, 8), [0, -0.0045, -0.0485])]), MAT.plastic, { d: 'Drukdop met overdrukklep die bij 1,4 bar opent; klapt in dit model om een scharnierlip aan de achterrand van de hals omhoog en blijft eraan vast (opener, schematisch: in werkelijkheid draai je de dop los).', p: [EV[0] + 0.02, EV[1] + 0.088, EV[2]], ex: [0, 0.14, 0], open: { type: 'hinge', pivot: [EV[0] + 0.02, EV[1] + 0.0835, EV[2] - 0.0485], axis: [1, 0, 0], angle: -1.8, min: 1.44, needs: 'Motorkap', label: 'Dop expansievat', look: { dir: [0.4, 0.8, 0.9], nodes: ['Expansiedop', 'Koeling en luchtinlaat/Expansievat/Vat'] } } }),
+    P('Expansiedop', merge([G.cyl('y', 0.034, 0.034, 0.016, 16), xf(G.box(0.07, 0.01, 0.014), [0, 0.011, 0]), xf(G.box(0.018, 0.006, 0.016), [0, -0.005, -0.042]), xf(G.cyl('x', 0.0045, 0.0045, 0.024, 8), [0, -0.0045, -0.0485])]), MAT.plastic, { d: 'Drukdop met overdrukklep die bij ongeveer 1,4 bar opent (aannemelijk); klapt in dit model om een scharnierlip aan de achterrand van de hals omhoog en blijft eraan vast (opener, schematisch: in werkelijkheid draai je de dop los).', p: [EV[0] + 0.02, EV[1] + 0.088, EV[2]], ex: [0, 0.14, 0], open: { type: 'hinge', pivot: [EV[0] + 0.02, EV[1] + 0.0835, EV[2] - 0.0485], axis: [1, 0, 0], angle: -1.8, min: 1.44, needs: 'Motorkap', label: 'Dop expansievat', look: { dir: [0.4, 0.8, 0.9], nodes: ['Expansiedop', 'Koeling en luchtinlaat/Expansievat/Vat'] } } }),
     P('Niveauschakelaar', G.rbox(0.03, 0.026, 0.026, 0.005), MAT.plastic, { d: 'Schakelaar die het dashboard waarschuwt bij een te laag koelvloeistofpeil.', p: [EV[0] + 0.068, EV[1] - 0.02, EV[2]], ex: [0.1, 0, 0] }),
     P('Vathouder', merge([G.box(0.13, 0.012, 0.16), xf(G.box(0.012, 0.09, 0.16), [0.06, 0.05, 0])]), MAT.darkSteel, { d: 'Beugel die het expansievat aan de carrosserie vasthoudt.', p: [EV[0], EV[1] - 0.07, EV[2]], ex: [0, -0.12, 0] }),
   ]);
@@ -5104,8 +5348,8 @@ function buildCooling() {
   ]);
   // ---------- laadluchtleidingen ----------
   const cO = ENG_PORTS.compOut, tI = ENG_PORTS.throttleIn;
-  const hot = sysHose('Hete laadluchtslang', 'Voert de door de turbo samengeperste, hete lucht van de compressoruitlaat naar de linker eindkap van de intercooler.', [sysP(cO.p), sysE(cO, 0.035), [0.0, 0.64, 1.16], [0.14, 0.62, 1.2], [0.17, 0.605, 1.45], [0.19, 0.6, 1.72], [0.31, 0.56, 1.86], [0.375, 0.46, 1.96], [0.35, 0.37, 2.02], [0.30, 0.31, 2.07]], 0.031, { n0: 'Klem turbo', n1: 'Klem intercooler', seg: 80, rad: 12, ex: [0.12, 0.2, 0], spec: [['Aansluiting op de intercooler', 'ø 57 mm (aannemelijk)']] });
-  const cold = sysHose('Koude laadluchtslang', 'Voert de gekoelde lucht van de rechter eindkap van de intercooler naar het gasklephuis. De slang buigt binnen enkele centimeters na het gasklephuis naar voren, vóór de multiriem, en loopt boven de stuurbekrachtigingspomp langs.', [[-0.30, 0.31, 2.07], [-0.33, 0.33, 2.04], [-0.37, 0.40, 1.98], [-0.39, 0.50, 1.90], [-0.42, 0.57, 1.83], sysP([tI.p[0] - 0.03, tI.p[1] + 0.01, 0.30]), sysP([tI.p[0] - 0.029, tI.p[1], 0.245]), sysP([tI.p[0] - 0.021, tI.p[1], tI.p[2] + 0.005]), sysP(tI.p)], 0.027, { n0: 'Klem intercooler', n1: 'Klem gasklephuis', seg: 80, rad: 12, ex: [-0.12, 0.2, 0], spec: [['Aansluiting op de intercooler', 'ø 47 mm (aannemelijk)']] });
+  const hot = sysHose('Hete laadluchtslang', 'Voert de door de turbo samengeperste, hete lucht van de compressoruitlaat naar de linker eindkap van de intercooler. Aansluiting op de intercooler 57 mm (aannemelijk).', [sysP(cO.p), sysE(cO, 0.035), [0.0, 0.64, 1.16], [0.14, 0.62, 1.2], [0.17, 0.605, 1.45], [0.19, 0.6, 1.72], [0.31, 0.56, 1.86], [0.375, 0.46, 1.96], [0.35, 0.37, 2.02], [0.30, 0.31, 2.07]], 0.031, { n0: 'Klem turbo', n1: 'Klem intercooler', seg: 80, rad: 12, ex: [0.12, 0.2, 0] });
+  const cold = sysHose('Koude laadluchtslang', 'Voert de gekoelde lucht van de rechter eindkap van de intercooler naar het gasklephuis. De slang buigt binnen enkele centimeters na het gasklephuis naar voren, vóór de multiriem, en loopt boven de stuurbekrachtigingspomp langs. Aansluiting op de intercooler 47 mm (aannemelijk).', [[-0.30, 0.31, 2.07], [-0.33, 0.33, 2.04], [-0.37, 0.40, 1.98], [-0.39, 0.50, 1.90], [-0.42, 0.57, 1.83], sysP([tI.p[0] - 0.03, tI.p[1] + 0.01, 0.30]), sysP([tI.p[0] - 0.029, tI.p[1], 0.245]), sysP([tI.p[0] - 0.021, tI.p[1], tI.p[2] + 0.005]), sysP(tI.p)], 0.027, { n0: 'Klem intercooler', n1: 'Klem gasklephuis', seg: 80, rad: 12, ex: [-0.12, 0.2, 0] });
   const laadlucht = A('Laadluchtleidingen', { d: 'De twee slangen die de aangezogen lucht van de turbo naar de intercooler en van de intercooler naar het gasklephuis brengen.', ex: [0, 0.22, 0.1] }, [hot, cold]);
 
   return A('Koeling en luchtinlaat', { d: 'Koelpakket (intercooler, condensor, radiateur en koelventilator), expansievat, koelslangen en het luchtinlaattraject naar de turbo.', ex: [0, 0.3, 2.0] }, [radiateur, condensor, intercooler, ventilator, expansie, slangen, inlaat, laadlucht]);
@@ -5283,12 +5527,12 @@ function buildElectrical() {
   const PZ = BZ - 0.08;                                  // z van de polen
   const W = 0.16, L = 0.20, Hh = 0.15;
   const cellGeo = cache('sysCell', () => G.box(W - 0.02, Hh - 0.04, (L - 0.02) / 6 - 0.004));
-  const accu = A('Accu', { d: '12-voltaccu in de motorruimte, in een accubak met afdekkap, poolklemmen, hoofdhouder en een ontgassingsslang. Naast de accubak zit de zekerings- en relaisdoos van de motorruimte.', spec: [['Spanning', '12 V'], ['Plaats', 'motorruimte rechtsvoor (geschat; bronnen verschillen)']], ex: [-0.15, 0.3, 0.1] }, [
+  const accu = A('Accu', { d: '12-voltaccu in de motorruimte, in een accubak met afdekkap, poolklemmen, hoofdhouder en een ontgassingsslang. Naast de accubak zit de zekerings- en relaisdoos van de motorruimte. De plaats rechtsvoor is geschat; bronnen verschillen.', spec: [['Spanning', '12 V']], ex: [-0.15, 0.3, 0.1] }, [
     P('Accubak', G.rbox(W, Hh, L, 0.012), MAT.sysBattery, { d: 'Kunststof accubak met de zes cellen.', p: [BX, BY, BZ] }),
     P('Accudeksel', G.rbox(W + 0.002, 0.018, L + 0.002, 0.006), MAT.plasticGrey, { d: 'Deksel met ontgassingskanaal.', p: [BX, BY + Hh / 2 + 0.009, BZ], ex: [0, 0.2, 0] }),
     A('Cellen', { d: 'De zes in serie geschakelde cellen van de accu (2 volt per cel), in de accubak onder het deksel.', ex: [0, 0.1, 0], inner: true }, [0, 1, 2, 3, 4, 5].map(k => P(`Cel ${k + 1}`, cellGeo, MAT.sysBattery, { d: 'Loodzuurcel van 2 volt, in serie geschakeld met de andere cellen.', p: [BX, BY - 0.004, BZ + (k - 2.5) * ((L - 0.02) / 6)], ex: [0, k * 0.02, (k - 2.5) * 0.03], inner: true }))),
-    P('Pluspool', G.cyl('y', 0.009, 0.009, 0.026, 12), MAT.steel, { d: 'Pluspool van de accu.', p: [BX + 0.05, BY + Hh / 2 + 0.03, PZ], ex: [0, 0.27, 0] }),
-    P('Minpool', G.cyl('y', 0.008, 0.008, 0.026, 12), MAT.steel, { d: 'Minpool van de accu.', p: [BX - 0.05, BY + Hh / 2 + 0.03, PZ], ex: [0, 0.27, 0] }),
+    P('Pluspool', G.cyl('y', 0.009, 0.009, 0.026, 12), MAT.steel, { d: 'Pluspool van de accu, iets dikker dan de minpool zodat de klemmen niet te verwisselen zijn.', p: [BX + 0.05, BY + Hh / 2 + 0.03, PZ], ex: [0, 0.27, 0] }),
+    P('Minpool', G.cyl('y', 0.008, 0.008, 0.026, 12), MAT.steel, { d: 'Minpool van de accu, waarop de massakabel naar de carrosserie aansluit.', p: [BX - 0.05, BY + Hh / 2 + 0.03, PZ], ex: [0, 0.27, 0] }),
     P('Poolklem plus', merge([G.cyl('y', 0.014, 0.014, 0.02, 12), xf(G.box(0.014, 0.02, 0.03), [0.016, 0, 0])]), MAT.steel, { d: 'Poolklem op de pluspool, aangesloten op de accuafkoppelunit.', p: [BX + 0.05, BY + Hh / 2 + 0.045, PZ], ex: [0.04, 0.33, 0] }),
     P('Poolklem min', merge([G.cyl('y', 0.013, 0.013, 0.02, 12), xf(G.box(0.014, 0.02, 0.03), [-0.016, 0, 0])]), MAT.steel, { d: 'Poolklem op de minpool, met de massakabel naar de carrosserie.', p: [BX - 0.05, BY + Hh / 2 + 0.045, PZ], ex: [-0.04, 0.33, 0] }),
     P('Afdekkap plus', G.cyl('y', 0.02, 0.02, 0.026, 14), MAT.red, { d: 'Rode afdekkap over de pluspool tegen kortsluiting.', p: [BX + 0.05, BY + Hh / 2 + 0.065, PZ], ex: [0, 0.42, 0] }),
@@ -5300,11 +5544,11 @@ function buildElectrical() {
   const uHeight = 0.462, UZ = BZ + 0.02;               // zekeringkast: tussen de zuigslang (achter) en de frontmodule (voor)
   const upc = A('Zekeringkast motorruimte', { d: 'Zekerings- en relaisdoos van de motorruimte (UPC) op een bakje naast de accubak (in het werkplaatsboek op een bakje bovenop de accubak), met de hoofdzekeringen voor de motorruimte.', ex: [0.14, 0.2, 0] }, [
     P('Doosbasis', G.rbox(0.08, 0.04, 0.13, 0.008), MAT.plastic, { d: 'Onderbak met de zekeringen en relais.', p: [-0.47, uHeight, UZ], ex: [0, 0.02, 0] }),
-    P('Doosdeksel', merge([G.rbox(0.082, 0.012, 0.132, 0.005), xf(G.box(0.04, 0.012, 0.03), [0.0, 0.012, 0])]), MAT.plasticGrey, { d: 'Afsluitdeksel met clips.', p: [-0.47, uHeight + 0.026, UZ], ex: [0, 0.14, 0] }),
+    P('Doosdeksel', merge([G.rbox(0.082, 0.012, 0.132, 0.005), xf(G.box(0.04, 0.012, 0.03), [0.0, 0.012, 0])]), MAT.plasticGrey, { d: 'Kunststof deksel dat met clips op de zekeringkast vastzit en de zekeringen tegen vocht en vuil afschermt.', p: [-0.47, uHeight + 0.026, UZ], ex: [0, 0.14, 0] }),
     P('Maxizekeringblok', merge([G.box(0.06, 0.016, 0.03), ...[-0.02, 0, 0.02].map(x => xf(G.box(0.012, 0.014, 0.012), [x, 0.012, 0]))]), MAT.red, { d: 'Blok met de hoofdzekeringen.', p: [-0.47, uHeight + 0.04, UZ + 0.05], ex: [0, 0.2, 0.08] }),
     P('Doosstekker', G.rbox(0.03, 0.03, 0.04, 0.006), MAT.plastic, { d: 'Stekker voor de kabelboom van de motorruimte.', p: [-0.47, uHeight + 0.045, UZ - 0.03], ex: [0.05, 0.12, -0.05] }),
   ]);
-  const ecu = A('Motorcomputer', { d: 'Motormanagementcomputer (ECU) van de F4Rt op een beugel aan het schutbord: regelt inspuiting, ontsteking, turbodruk en nokkenasverstelling. De exacte plaats is voor dit model niet gevonden (opbouw schematisch).', ex: [0, 0.2, -0.12] }, [
+  const ecu = A('Motorcomputer', { d: 'Motormanagementcomputer (ECU) van de F4Rt op een beugel aan het schutbord: regelt inspuiting, ontsteking en turbodruk. De exacte plaats is voor dit model niet gevonden (opbouw schematisch).', ex: [0, 0.2, -0.12] }, [
     P('ECU behuizing', G.rbox(0.16, 0.04, 0.13, 0.007), MAT.ecu, { d: 'Aluminium behuizing met de printplaat van de motorcomputer.', p: [-0.27, 0.615, 1.1] }),
     P('ECU beugel', merge([G.box(0.17, 0.012, 0.14), xf(G.box(0.17, 0.05, 0.01), [0, 0.025, -0.07])]), MAT.darkSteel, { d: 'Beugel die de motorcomputer aan het schutbord bevestigt.', p: [-0.27, 0.589, 1.1], ex: [0, -0.1, 0] }),
     P('ECU stekker', G.rbox(0.06, 0.03, 0.03, 0.006), MAT.plastic, { d: 'Grote stekker voor de motorbedrading.', p: [-0.27, 0.62, 1.175], ex: [0, 0.06, 0.12] }),
@@ -5340,7 +5584,25 @@ function buildElectrical() {
     P('Kabelboom cabine', tube([uchAt(-0.05, -0.062, 0.083), [0.4, 0.45, 0.66], [0.5, 0.27, 0.7], [0.42, 0.255, 0.0], [0.42, 0.255, -1.0], [0.45, 0.26, -1.9], [0.53, 0.27, -2.1], [0.59, 0.32, -2.2], [0.6, 0.42, -2.22], [0.6, 0.55, -2.235]], 0.01, 80, 6), MAT.sysHose, { d: 'Bedrading van de centrale cabine-unit onder de bekleding langs de dorpel en onder de bagagevloer door naar de achterlichten; hij stijgt pas achter de achterrand van de vloerplaat.', ex: [0.1, 0, 0] }),
     P('Doorvoer schutbord', G.cyl('z', 0.04, 0.04, 0.02, 14), MAT.rubber, { d: 'Rubber doorvoer in het schutbord voor de kabelboom.', p: [0.18, 0.62, 1.03], ex: [0, 0, 0.12] }),
   ]);
-  return A('Elektrisch systeem', { d: 'Accu met zekeringkast, motorcomputer, cabine-unit, claxons, voedings- en massakabels en de kabelbomen.', ex: [-1.5, 0.7, 1.4] }, [accu, upc, ecu, uch, ...horns, plusCable, massa, harness]);
+  // ruitensproeierinstallatie: tank in het vak linksvoor tussen de langsligger (x tot 0,572) en de bumpersteun (vanaf x 0,715), achter de
+  // frontmodule en onder de koplamp; de vulhals staat achter de koplamp en vóór de wielkast. De slang loopt over de tank en de wielkast naar
+  // de koppeling vóór de linker veerpoottoren, waar de sproeierslang van de kap aansluit (plaats schematisch, geen bron voor de echte plek).
+  std('sysWashCap', 0x2b5fb4, 0, 0.55);
+  const WX = 0.6425, WY = 0.46, WZ = 1.91, WW = 0.115, WH = 0.22, WL = 0.22;      // hart en maten van de tank
+  const neck = [0.62, WZ - 0.075], NT = 0.745;                                   // vulhals: x, z en de hoogte van de bovenrand
+  const pu = [0.655, 0.395, WZ + WL / 2 + 0.017];                                // hart van de pomp, tegen de voorkant van de tank
+  const wEnd = [0.60, 0.815, 1.48];                                              // koppeling vóór de veerpoottoren
+  const washer = A('Ruitensproeierinstallatie', { d: 'Ruitensproeiertank met elektrische pomp en de sproeierslang naar de motorkap, schematisch geplaatst in het vak linksvoor in de motorruimte, onder de koplamp. De echte plaats en inhoud van de tank zijn voor deze auto niet gevonden.', ex: [0.16, 0.06, 0.06] }, [
+    P('Sproeiertank', G.rbox(WW, WH, WL, 0.016), MAT.tank, { d: 'Doorschijnend kunststof reservoir voor de ruitensproeiervloeistof (vorm en maten schematisch).', p: [WX, WY, WZ] }),
+    P('Vulhals sproeiertank', G.cyl('y', 0.02, 0.02, NT - (WY + WH / 2) - 0.0005, 16), MAT.tank, { d: 'Opstaande vulhals die vanaf de tank tot net onder de motorkap reikt, zodat je hem bij open kap kunt bijvullen.', p: [neck[0], (NT + WY + WH / 2 + 0.0005) / 2, neck[1]], ex: [0, 0.05, 0] }),
+    P('Vuldop sproeiertank', merge([G.cyl('y', 0.026, 0.026, 0.018, 18), xf(G.box(0.036, 0.008, 0.008), [0, 0.012, 0])]), MAT.sysWashCap, { d: 'Blauwe kunststof dop op de vulhals met een greep om hem los te trekken (kleur schematisch).', p: [neck[0], NT + 0.0093, neck[1]], ex: [0, 0.12, 0] }),
+    P('Sproeierpomp', merge([G.cyl('y', 0.015, 0.015, 0.07, 16), xf(G.cyl('z', 0.006, 0.006, 0.008, 10), [0, -0.025, -0.01275]), xf(G.cyl('y', 0.004, 0.004, 0.016, 8), [0, 0.043, 0])]), MAT.plastic, { d: 'Elektrische pomp die onderin tegen de tank zit en de vloeistof door de slang naar de sproeiers op de kap perst.', p: pu, ex: [0, -0.02, 0.1] }),
+    P('Stekker sproeierpomp', G.rbox(0.014, 0.02, 0.016, 0.004), MAT.plasticGrey, { d: 'Stekker met de voeding van de pomp (bedrading schematisch).', p: [pu[0] + 0.0225, pu[1] - 0.005, pu[2]], ex: [0.06, 0, 0.06] }),
+    P('Tankbeugel sproeiertank', G.box(0.011, 0.03, 0.08), MAT.darkSteel, { d: 'Stalen beugel waarmee de tank aan de linker langsligger vastzit (schematisch).', p: [0.5785, 0.44, WZ], ex: [-0.06, 0, 0] }),
+    P('Sproeierslang motorruimte', tube([[pu[0], pu[1] + 0.0515, pu[2]], [pu[0], 0.50, pu[2]], [0.655, 0.565, pu[2] - 0.003], [0.655, 0.582, 2.025], [0.655, 0.582, 2.0], [0.655, 0.58, 1.93], [0.655, 0.58, 1.84], [0.652, 0.59, 1.78], [0.648, 0.60, 1.74], [0.645, 0.60, 1.70], [0.642, 0.648, 1.66], [0.638, 0.683, 1.62], [0.634, 0.71, 1.58], [0.628, 0.731, 1.54], [0.618, 0.752, 1.495], [wEnd[0], wEnd[1] - 0.04, wEnd[2]], [wEnd[0], wEnd[1] - 0.0165, wEnd[2]]], 0.0035, 64, 6), MAT.rubber, { d: 'Dunne rubber slang van de pomp over de tank en de wielkast naar de koppeling vóór de veerpoottoren, waar de slang naar de sproeiers op de kap aansluit.', ex: [0, 0.06, 0] }),
+    P('Slangkoppeling sproeierslang', G.cyl('y', 0.006, 0.006, 0.02, 10), MAT.plastic, { d: 'Kunststof verbindingsstuk tussen de slang in de motorruimte en de sproeierslang van de motorkap.', p: [wEnd[0], wEnd[1] - 0.005, wEnd[2]], ex: [0, 0.08, 0] }),
+  ]);
+  return A('Elektrisch systeem', { d: 'Accu met zekeringkast, motorcomputer, cabine-unit, claxons, voedings- en massakabels, de kabelbomen en de ruitensproeierinstallatie.', ex: [-1.5, 0.7, 1.4] }, [accu, upc, ecu, uch, ...horns, plusCable, massa, harness, washer]);
 }
 
 /* ============================ de hele auto ============================ */
