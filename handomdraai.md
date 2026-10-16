@@ -38,9 +38,11 @@ De volledige lijst met nummers, vindplaatsen en volgorde staat in [docs/masterpl
 ## Wat bij de gebruiker ligt
 
 1. `gh-pages` verwijderen in GitHub (de proxy weigert het).
-2. De telefoontest volgens [docs/telefoontest.md](docs/telefoontest.md) zodra versie 7 op Pages staat (`?debug=1` voor de overlay).
-3. Het motorplaatje (F4R 811 of 813) en de metingen aan de auto (hoeken, velgmaat, accuzijde, startknop).
-4. Besluit over golf 6 (ES-modules en een actuele three.js; advies: nee tot er een aanleiding is) en over een tweede bestand naast de pagina voor de nummergegevens (alleen als het artefact als kanaal mag vervallen).
+2. De tags `v1` tot `v6` naar GitHub brengen; de proxy weigert `git push --tags` en de API (403). In een eigen kloon:
+   `git tag -a v1 9164d0a -m "Versie 1" && git tag -a v2 8095a3e -m "Versie 2" && git tag -a v3 60909fe -m "Versie 3" && git tag -a v4 9c03015 -m "Versie 4" && git tag -a v5 5b6cefa -m "Versie 5" && git tag -a v6 f3a7854 -m "Versie 6" && git push origin --tags`. Daarna kan `docs/v1/index.html` weg (tag `v1` is de terugvaloptie).
+3. De telefoontest volgens [docs/telefoontest.md](docs/telefoontest.md) zodra versie 7 op Pages staat (`?debug=1` voor de overlay).
+4. Het motorplaatje (F4R 811 of 813) en de metingen aan de auto (hoeken, velgmaat, accuzijde, startknop).
+5. Besluit over golf 6 (ES-modules en een actuele three.js; advies: nee tot er een aanleiding is) en over een tweede bestand naast de pagina voor de nummergegevens (alleen als het artefact als kanaal mag vervallen).
 
 ## Werkwijze die werkte
 
