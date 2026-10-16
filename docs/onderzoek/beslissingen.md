@@ -56,3 +56,10 @@ Grondslag: de open data van de RDW voor de auto van de gebruiker en het VIN-onde
 | Niet overgenomen | Toerentalsensor ingaand, vrijloopoelie van de dynamo en aandrijfas rechts. | Bij de sensor staat de uitvoering al in de eenheid en blijft het nummer open (twee Renault-nummers in dezelfde OE-lijst). De andere twee zijn alleen waarschijnlijk. | Open |
 | Spoor en gewicht | Geen onderdeelkeuze gebaseerd op spoorbreedte of gewicht van de RDW. | Spoor 156 en 151 cm en massa ledig 1.381 kg bepalen geen velgmaat, onderstel of vierwielbesturing zonder een bron die dat koppelt. De maten komen overeen met het model (afgerond), het gewicht is niet vergeleken. | Besloten |
 
+
+## Aanvulling golf 5b-3: omvang van de pagina (T4)
+
+| Onderwerp | Beslissing | Grond | Status in tekst |
+|---|---|---|---|
+| Definitie MB en gzip (T4) | MB betekent 10^6 bytes (niet 2^20). De gzip-maat is `gzip -6` over `index.html`. | Zonder vaste definitie hangt de toets aan de gekozen maat. Gemeten op `a42aa20`: 355.867 bytes bij gzip -6; de toets is daarmee rood op gzip (grens 330 kB), terwijl de ruwe grens (1,4 MB) apart bekeken wordt. Ongeveer 39,6 procent van de pagina is `src/partnumbers.js`. | Gemeten |
+| Voorstel grensverhoging (T4) | Voorstel, geen besluit: grens verhogen naar 1,5 MB raw en 360 kB gzip. De beslissing ligt bij de gebruiker (B1 in het masterplan, voorlopig). Alternatief: de nummergegevens apart laden (golf 5c-2). | De overschrijding komt vrijwel geheel uit de onderdeelnummers, niet uit geometrie. Een hogere grens is een keuze over laadtijd op de telefoon, geen meetuitkomst. | Voorstel, wacht op de gebruiker |
