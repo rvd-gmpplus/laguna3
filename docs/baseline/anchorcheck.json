@@ -1,10 +1,10 @@
 {
- "commit": "69cd0fd Premortem golf 5c-1 (app-laag en tests) in docs/premortem.md",
+ "commit": "452916e Samenvoegen golf 5c-1 app-laag: foutafhandeling, contextverlies, uiLastFit centraal, rondleiding met knoppen, integrity op de CDN-tags, +n meer, fade en badge bij isoleren, themaknop, toegankelijkheid, hulpvenster uit PRESETS, synoniemen, toast, Beeld opslaan en printstijl; controle 18 (36 controles)",
  "viewport": "1280x800",
  "totaal": {
   "labels": 352,
   "eigen": 319,
-  "vrij": 267
+  "vrij": 265
  },
  "presets": {
   "assembled": {
@@ -71,8 +71,10 @@
    "label": "Motor tot op de bout",
    "labels": 13,
    "eigen": 11,
-   "vrij": 13,
-   "achter": [],
+   "vrij": 12,
+   "achter": [
+    "Distributie achter Wikkelkop achterzijde"
+   ],
    "lucht": [
     "Cilinderkop",
     "Motorblok"
@@ -85,7 +87,7 @@
    "vrij": 8,
    "achter": [
     "Nokkenas inlaat achter Huis met massa-elektrode",
-    "Afdichting nokkenassen achter Rol met naaldlager",
+    "Afdichting nokkenassen achter Rubber bougiekap",
     "Cilinderkopbouten achter Nokkenas inlaat"
    ],
    "lucht": [
@@ -162,7 +164,7 @@
    "vrij": 6,
    "achter": [
     "Radiateur achter Condensorblok",
-    "Koelventilatormodule achter Waterkast links"
+    "Koelventilatormodule achter Inlaatstomp"
    ],
    "lucht": []
   },
@@ -206,8 +208,9 @@
    "label": "Automaat tot op de bout",
    "labels": 16,
    "eigen": 14,
-   "vrij": 15,
+   "vrij": 14,
    "achter": [
+    "Differentieel achter Trommel hoge koppeling",
     "Tussenas eindoverbrenging achter Stalen plaat 5"
    ],
    "lucht": [
@@ -221,7 +224,7 @@
    "eigen": 8,
    "vrij": 4,
    "achter": [
-    "Omvormerdeksel achter Turbineschoepen",
+    "Omvormerdeksel achter Overbruggingszuiger",
     "Overbruggingskoppeling achter Turbineschoepen",
     "Torsiedemper achter Turbineschoepen",
     "Leidwiel met vrijloop achter Pompwielschaal"
@@ -232,8 +235,10 @@
    "label": "Tandwielsets en koppelingen",
    "labels": 6,
    "eigen": 6,
-   "vrij": 6,
-   "achter": [],
+   "vrij": 5,
+   "achter": [
+    "Lage/achteruitrem achter Holwiel achterste set"
+   ],
    "lucht": []
   },
   "diff": {
@@ -263,7 +268,7 @@
    "eigen": 4,
    "vrij": 3,
    "achter": [
-    "Remsysteem achter Velgbed"
+    "Remsysteem achter Band"
    ],
    "lucht": []
   },
@@ -338,13 +343,12 @@
    "label": "Carrosserie",
    "labels": 17,
    "eigen": 17,
-   "vrij": 12,
+   "vrij": 13,
    "achter": [
-    "Achterbumper achter C-stijl links",
+    "Achterbumper achter Afdekking B-stijl",
     "Portier rechtsvoor achter Veerpoottoren rechts",
     "Portier rechtsachter achter Buitenpaneel motorkap",
-    "Voorscherm rechts achter Buitenpaneel motorkap",
-    "Achterlicht rechts achter Keramische rand achter"
+    "Voorscherm rechts achter Buitenpaneel motorkap"
    ],
    "lucht": []
   },
