@@ -25,6 +25,10 @@ Chromium start met `--use-angle=swiftshader --enable-unsafe-swiftshader --ignore
 
 Het gebruikte bestand is de testversie (`python3 build.py --test-only MAP`): die laadt three.js lokaal. De gepubliceerde `index.html` laadt het van jsDelivr en wordt door `pubsmoke.py` apart getoetst.
 
+## CI op GitHub
+
+`.github/workflows/ci.yml` draait bij elke push en PR de snelle set (lint, `index.html` hoort bij `src/`, smoke, integrity, silhouette, `tri.py --gate`, de testlijst van `finaltests.sh`), richting 5 tot 10 minuten; `nightly.yml` draait elke nacht en op aanvraag de lange set (itest met poorten, `opentest --strikt-min`, `ui_inner --open --strict`, pubsmoke, stats en cijfers), met ruimere wachttijden (`LAGUNA_TIMEOUT_MS` 600 s, `PUBSMOKE_READY_MS` 60 s) en de uitvoer als artefact. Een rode push-job stopt het werk tot hij groen is; een rode nachtrun is een melding. SwiftShader op een gedeelde runner is trager dan de container; de eerste runs zijn een proef van de tijdgrenzen.
+
 ## Scripts
 
 ### `python3 build.py --lint`
