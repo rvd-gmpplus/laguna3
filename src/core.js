@@ -347,7 +347,8 @@ function mkNode(obj, name, o) {
     opn: o.open || null,    // openmodus: scharnier of schuif (zie docs/ontwerp-en-architectuur.md, "Openmodus")
     strut: o.strut || null, // telescoop (gasveer) die de app tussen twee punten richt
     stay: !!o.stay,         // blijft op zijn plek als de opener erboven draait (carrosseriezijde van een scharnier)
-    hideWhen: o.hideWhen || null // openmodus: onzichtbaar zolang een van deze openers open is (uitgenomen, zoals de hoedenplank)
+    hideWhen: o.hideWhen || null, // openmodus: onzichtbaar zolang een van deze openers open is (uitgenomen, zoals de hoedenplank)
+    uitsteek: o.uitsteek || 0    // meter die dit deel en zijn kinderen bewust voor of achter ZF..ZR uitsteken (trekhaak); integrity.py
   };
   obj.userData.node = n;
   if (o.p) obj.position.set(...o.p);
