@@ -104,6 +104,11 @@ class Session:
         timeout = int(os.environ.get('MODEL_TIMEOUT_MS', timeout or 120000))
         ctx = self.browser.new_context(viewport={'width': w, 'height': h}, device_scale_factor=scale, has_touch=touch, is_mobile=touch)
         ctx.add_init_script('window.__MODEL_CACHECHECK = true;')
+        # Google Fonts lokaal beantwoorden, zoals pubsmoke.py: met een tweede, nog renderende pagina in dezelfde browser
+        # faalt het echte verzoek op macOS met net::ERR_SOCKET_NOT_CONNECTED. Bereikbaarheid controleert pubsmoke.py met
+        # curl. (orkestrator, 16 oktober 2026)
+        ctx.route(lambda u: u.startswith(('https://fonts.googleapis.com/', 'https://fonts.gstatic.com/')),
+                  lambda rt: rt.fulfill(status=200, body='', headers={'content-type': 'text/css', 'access-control-allow-origin': '*'}))
         pg = ctx.new_page()
         tag = f'{w}x{h}'
 
