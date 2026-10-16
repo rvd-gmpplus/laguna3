@@ -1,7 +1,8 @@
 """Bouwt index.html uit src/ en controleert de broncode.
 
 Gebruik:
-  python3 build.py                 schrijft index.html (three.js via CDN)
+  python3 build.py                 schrijft index.html: een volledig document met doctype en viewport-regel (GitHub Pages), three.js via CDN
+  python3 build.py --bare BESTAND  schrijft ook de kale pagina zonder documentgeraamte naar BESTAND (het artefact: de host zet er zelf een geraamte omheen)
   python3 build.py MAP             schrijft ook MAP/index.html die three.js uit MAP/three/ laadt
   python3 build.py --lint          controleert alleen, schrijft niets
   python3 build.py --test-only MAP schrijft alleen MAP/index.html (gebruikt door de tests; laat index.html ongemoeid)
@@ -123,6 +124,12 @@ def version(head, js, test=False):
     return f'{num} (bron {h}{", testversie" if test else ""})'
 
 
+# documentgeraamte voor index.html: zonder doctype staat de pagina in quirks-modus en zonder viewport-regel rekent een telefoon
+# met 980 px breedte (pubsmoke toetst beide op de Pages-versie)
+DOC_HEAD = '<!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"></head><body>\n'
+DOC_TAIL = '</body></html>\n'
+
+
 def page(head, js, prefix, test=False):
     tags = '\n'.join(f'<script src="{prefix}{l}" integrity="{integrity(l)}" crossorigin="anonymous"></script>' for l in LIBS)
     head = head.replace('__LAGUNA_VERSION__', version(head, js, test))
@@ -132,6 +139,14 @@ def page(head, js, prefix, test=False):
 def main(argv):
     lint_only = '--lint' in argv
     test_only = '--test-only' in argv
+    bare = None
+    if '--bare' in argv:
+        i = argv.index('--bare')
+        if i + 1 >= len(argv) or argv[i + 1].startswith('--'):
+            print('--bare vraagt een bestandsnaam', file=sys.stderr)
+            return 2
+        bare = argv[i + 1]
+        argv = argv[:i] + argv[i + 2:]
     args = [a for a in argv if not a.startswith('--')]
     sources = [(f, read(f)) for f in ORDER]
     errors = lint(sources) + lint_head(read('head.html'))
@@ -151,13 +166,16 @@ def main(argv):
         return 2
     if not test_only:
         with open(out, 'w', encoding='utf-8') as f:
-            f.write(page(head, js, CDN))
+            f.write(DOC_HEAD + page(head, js, CDN) + DOC_TAIL)
+        if bare:
+            with open(bare, 'w', encoding='utf-8') as f:
+                f.write(page(head, js, CDN))
     if args:
         test_dir = args[0]
         os.makedirs(test_dir, exist_ok=True)
         body = page(head, js, 'three/', test=True)
         with open(os.path.join(test_dir, 'index.html'), 'w', encoding='utf-8') as f:
-            f.write('<!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"></head><body>\n' + body + '</body></html>')
+            f.write(DOC_HEAD + body + DOC_TAIL)
     print('ok', 'testversie' if test_only else f'{os.path.getsize(out)} bytes')
     return 0
 

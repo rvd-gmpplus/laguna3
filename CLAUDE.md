@@ -30,7 +30,7 @@ taal van code-commentaar, beschrijvingen, docs en commits. Geen em-dashes in tek
 ## Werkwijze
 
 - Golven per domein in eigen worktrees; `tools/orkestratie/mergecheck.py` vóór samenvoegen; na samenvoegen de volledige
-  set, dan pas `index.html` herbouwen en publiceren; na publiceren de URL teruglezen en byte voor byte vergelijken.
+  set, dan pas `index.html` herbouwen en publiceren; na publiceren de URL teruglezen en byte voor byte vergelijken (Pages: `index.html`, een volledig document; artefact: de kale pagina uit `build.py --bare`).
 - `VERSION` is het versienummer van de volgende publicatie; `build.py` zet nummer plus inhoudshash in de pagina.
 - Begin elke sessie met `git ls-remote --heads origin` en een vergelijking van elke tak met `main`.
 - Volledige uitleg: `docs/ontwerp-en-architectuur.md`, `docs/testen.md`, `handomdraai.md`.

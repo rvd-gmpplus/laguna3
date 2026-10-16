@@ -112,14 +112,15 @@ De uitzonderingen in `tools/open_allow.json` zijn contacten die bij de echte aut
 
 ### `python3 tools/pubsmoke.py`
 
-Publicatierooktest. Zet de CDN-versie zoals `build.py` hem in `index.html` schrijft in hetzelfde HTML-geraamte als de artefacthost (zonder eigen doctype en met een eigen viewport-regel), laadt hem in Chromium en beantwoordt de verzoeken naar `cdn.jsdelivr.net/npm/three@0.147.0/` uit het lokale pakket. Controleert:
+Publicatierooktest voor beide kanalen. Zet de kale CDN-pagina (zoals `build.py --bare` hem schrijft) in hetzelfde HTML-geraamte als de artefacthost, en laadt daarnaast `index.html` zoals GitHub Pages het serveert: een volledig document met doctype en viewport-regel. Hij laadt in Chromium en beantwoordt de verzoeken naar `cdn.jsdelivr.net/npm/three@0.147.0/` uit het lokale pakket. Controleert:
 
 - geen console- of paginafouten, `__laguna` klaar binnen 20 s, `THREE.REVISION` is 147;
 - het canvas heeft `touch-action: none` en `user-select: none`, en `-webkit-touch-callout: none` staat in de stylesheet (lang drukken op iOS);
 - geen horizontale scroll op 1280 × 800 en 390 × 844;
+- de Pages-versie op een telefoon (390 × 844): documentmodus `CSS1Compat` en een schermbreedte van 390 px. Tot 16 oktober had `index.html` geen doctype en geen viewport-regel, waardoor een telefoon de Pages-versie in quirks-modus op 980 px breedte toonde; het artefact had daar geen last van, omdat de host een geraamte toevoegt. De tests vingen het niet, omdat ze de pagina altijd in een eigen geraamte laadden. Gevonden bij de vergelijking met espace5, waar `build.py` het al zo deed;
 - via `curl` en de proxy: elk CDN-bestand bestaat en is byte voor byte gelijk aan het lokale pakket, en de stylesheet van Google Fonts is bereikbaar.
 
-Na publicatie moet de inhoud van de gepubliceerde URL gelijk zijn aan `index.html`. Dat controleert dit script niet. De orkestrator leest de URL terug en zoekt `index.html` byte voor byte in de teruggelezen pagina: het bestand moet er precies één keer en aaneengesloten in staan, met alleen het paginaskelet van de host eromheen. De uitkomst staat in de tabel hieronder.
+Na publicatie moet GitHub Pages byte voor byte `index.html` serveren, en moet het artefact de kale pagina uit `build.py --bare` bevatten. Dat controleert dit script niet. De orkestrator leest beide URL's terug; in de pagina van het artefact zoekt hij de kale pagina byte voor byte: het bestand moet er precies één keer en aaneengesloten in staan, met alleen het paginaskelet van de host eromheen. De uitkomst staat in de tabel hieronder.
 
 ### `python3 tools/pncheck.py [--tree] [--update]`
 

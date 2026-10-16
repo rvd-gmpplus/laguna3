@@ -3,8 +3,9 @@
     python3 tools/pubsmoke.py          # exitcode 1 bij een fout
 
 Wat hij doet:
-1. Bouwt de CDN-pagina in het geheugen (zoals build.py hem in index.html schrijft) en zet hem in hetzelfde
-   HTML-geraamte dat de artefacthost eromheen zet.
+1. Bouwt de kale CDN-pagina in het geheugen (zoals build.py --bare hem schrijft) en zet hem in hetzelfde
+   HTML-geraamte dat de artefacthost eromheen zet; daarnaast laadt hij index.html zoals GitHub Pages het serveert
+   (een volledig document) op een telefoon en eist standaardmodus en een schermbreedte van 390 px.
 2. Laadt hem in Chromium. Verzoeken naar cdn.jsdelivr.net/npm/three@0.147.0/ worden beantwoord uit het lokale
    npm-pakket (de container heeft geen directe internettoegang voor Chromium); lettertypen krijgen een lege stylesheet.
 3. Controleert: geen console- of paginafouten, __laguna klaar binnen 20 s, THREE.REVISION = 147, het canvas heeft
@@ -38,7 +39,9 @@ def main():
         print('lint faalt:', *errs, sep='\n  ')
         return 1
     page = b.page(b.read('head.html'), '\n'.join(t for _, t in sources), b.CDN)
-    html = SKELETON_HEAD + page + SKELETON_TAIL
+    html = SKELETON_HEAD + page + SKELETON_TAIL   # artefact: de kale pagina (build.py --bare) in het geraamte van de host
+    # GitHub Pages serveert index.html zoals het is: dat moet zelf een volledig document zijn (doctype, viewport)
+    pages = open(os.path.join(ROOT, 'index.html'), encoding='utf-8').read()
     three = ensure_three()
     fails = []
 
@@ -64,11 +67,11 @@ def main():
     with sync_playwright() as p:
         exe = chromium_path()
         br = p.chromium.launch(executable_path=exe, args=ARGS) if exe else p.chromium.launch(args=ARGS)
-        for (w, h, touch) in ((1280, 800, False), (390, 844, True)):
+        for (w, h, touch, kanaal) in ((1280, 800, False, 'artefact'), (390, 844, True, 'artefact'), (390, 844, True, 'pages')):
             ctx = br.new_context(viewport={'width': w, 'height': h}, device_scale_factor=2 if touch else 1, has_touch=touch, is_mobile=touch)
             ctx.add_init_script('window.__LAGUNA_CACHECHECK = true;')
             pg = ctx.new_page()
-            tag = f'{w}x{h}'
+            tag = f'{w}x{h}' + (' pages' if kanaal == 'pages' else '')
             pg.on('console', lambda m, tag=tag: logs.append(f'[{tag}] {m.type}: {m.text}') if m.type in ('error', 'warning') else None)
             pg.on('pageerror', lambda e, tag=tag: logs.append(f'[{tag}] PAGEERROR: {e}'))
 
@@ -82,7 +85,7 @@ def main():
                 if 'fonts.googleapis.com' in url or 'fonts.gstatic.com' in url:
                     return rt.fulfill(status=200, body='', headers={'content-type': 'text/css', 'access-control-allow-origin': '*'})
                 if url.startswith('https://artifact.local/'):
-                    return rt.fulfill(status=200, body=html, headers={'content-type': 'text/html; charset=utf-8'})
+                    return rt.fulfill(status=200, body=html if kanaal == 'artefact' else pages, headers={'content-type': 'text/html; charset=utf-8'})
                 return rt.abort()
             pg.route('**/*', route)
             t0 = time.time()
@@ -98,13 +101,16 @@ def main():
             r = pg.evaluate("""(() => { const c = document.querySelector('canvas'); const cs = getComputedStyle(c);
                 const css = [...document.styleSheets].map(s => { try { return [...s.cssRules].map(r => r.cssText).join('\\n'); } catch (e) { return ''; } }).join('\\n');
                 return { rev: THREE.REVISION, touch: cs.touchAction, select: cs.userSelect || cs.webkitUserSelect, callout: /-webkit-touch-callout\\s*:\\s*none/.test(css) || /touch-callout/.test(document.documentElement.innerHTML),
-                         hscroll: document.documentElement.scrollWidth > innerWidth }; })()""")
+                         hscroll: document.documentElement.scrollWidth > innerWidth, mode: document.compatMode, iw: innerWidth }; })()""")
             print(f'[{tag}] klaar in {dt:.1f} s, three r{r["rev"]}, touch-action {r["touch"]}, user-select {r["select"]}, touch-callout uit: {r["callout"]}, horizontale scroll: {r["hscroll"]}')
             if r['rev'] != '147': fails.append(f'[{tag}] THREE.REVISION is {r["rev"]}')
             if r['touch'] != 'none': fails.append(f'[{tag}] canvas touch-action is {r["touch"]}, moet none')
             if r['select'] != 'none': fails.append(f'[{tag}] canvas user-select is {r["select"]}, moet none')
             if not r['callout']: fails.append(f'[{tag}] -webkit-touch-callout: none ontbreekt (lang drukken op iOS opent dan het systeemmenu)')
             if r['hscroll']: fails.append(f'[{tag}] horizontale scroll')
+            # zonder doctype staat de pagina in quirks-modus, zonder viewport-regel rekent een telefoon met 980 px breedte
+            if r['mode'] != 'CSS1Compat': fails.append(f'[{tag}] documentmodus {r["mode"]}, moet CSS1Compat (doctype ontbreekt)')
+            if touch and r['iw'] != w: fails.append(f'[{tag}] schermbreedte {r["iw"]} px in plaats van {w} (viewport-regel ontbreekt)')
             ctx.close()
         br.close()
     errs = [l for l in logs if 'error' in l.lower() or 'PAGEERROR' in l]
