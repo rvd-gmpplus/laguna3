@@ -28,6 +28,7 @@ ARGS = ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-
 # Contract: consolemeldingen die geen fout zijn. Alleen de orkestrator wijzigt deze lijst, elke regel met reden en datum.
 IGNORE = (
     'favicon.ico',  # de testpagina heeft geen favicon en de browser vraagt hem toch op (golf 1, 13 oktober 2026)
+    'GPU stall due to ReadPixels',  # prestatiemelding van de GPU-driver (macOS, OpenGL) bij het teruglezen van pixels voor de meting; geen fout in de pagina (16 oktober 2026)
 )
 
 
