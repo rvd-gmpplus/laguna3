@@ -165,7 +165,7 @@ Vorm zoals 5b-2: eerst een premortem, dan meten met `clash.py` en `huid.py` vó�
 | Nr | Wat | Eigenaar of grond |
 |---|---|---|
 | G5c | Aircoleidingen en expansieventiel; hoogste risico van G5, plaats van de droger onbekend | systemen; premortem 5b-2 |
-| G8c | Naafpunt op `TRACK_F` met een boring in de fusee, zodat de doordringing weg is (was acht doordringingen tot 2,44 mm) | aandrijving en onderstel |
+| G8c | Naafpunt op `TRACK_F`. Diagnose gecorrigeerd: een boring in de fusee lost geen van de acht doordringingen op (gemeten). Wat wel werkt: eerst de klemarm omhoog en de Demperbuis 45 mm korter aan de voet, daarna pas de naaf op `TRACK_F`. Twee stappen in twee takken (was acht doordringingen tot 2,44 mm) | aandrijving en onderstel |
 | G8d | Gedeelde maten voor achterveer, torsiebalk en koppelstang op een plek (drie eigenaren, raakt `body.js`) | orkestrator |
 | G8e | Gedeelde constructies generiek in `core.js` (bellows, slangklem, moer, scharnier, Sutherland-Hodgman, lasnaad), met `framework.py export` naar espace5 | orkestrator |
 | G8f | Geometrie van portierpanelen en spiegels delen (negatieve schaal; labels, pick en `ex` zijn niet gemeten) | carrosserie met de orkestrator |
@@ -180,6 +180,19 @@ Vorm zoals 5b-2: eerst een premortem, dan meten met `clash.py` en `huid.py` vó�
 | Meldingen van beoordelaars | Los zwart blokje bij de C-stijl (`ext-zij`, `ext-34achter`), onrustig achterpaneel, spikkels | carrosserie |
 | Nieuwe `docs/baseline` | Een Linux-basis (de container of een VM) zodat `visdiff` weer tegen de repo kan en niet tegen de eigen basis van een machine; alleen als de gebruiker dat wil | orkestrator |
 | T4 | `index.html` van versie 9 is 1.445.874 bytes (versie 8 herpubliceerd: 1.413.341). Of dat boven struikeldraad T4 valt (1,4 MB raw en 330 kB gzip) hangt van de definitie van MB en van de gzip-maat af, die in deze golf niet is gemeten: vaststellen, en zo nodig de grens verhogen met een reden in `beslissingen.md` of de nummergegevens apart laden | orkestrator, dan gebruiker |
+
+### Besluiten van de gebruiker voor 5b-3
+
+Alle zes staan op "voorlopig, wacht op de gebruiker": de standaard geldt zolang er geen antwoord is, en elk besluit kan nog wijzigen.
+
+| Nr | Vraag | Standaard (voorlopig, wacht op de gebruiker) |
+|---|---|---|
+| B1 | T4: definitie (MB = 10^6 bytes, gzip -6) en grens | Definitie vastleggen (gedaan in `docs/onderzoek/beslissingen.md`); de grensverhoging staat daar alleen als voorstel. Nummergegevens apart laden naar 5c-2. |
+| B2 | Koppel: `Nm` of `N·m` | `Nm` (zoals `spec` en `data/pn`); de plekken met `N·m` omzetten. |
+| B3 | G9e ook voor `auto.json`, `presetdata.js`, `partnumbers.js` | Ja voor `auto.json` en `presetdata.js` (zichtbaar in de pagina); nee voor `data/pn` en `partnumbers.js` (bronnamen en citaten blijven letterlijk). |
+| B4 | S7 kenmerk 8 (bovenaanzicht zonder heupen) | Criterium herformuleren naar "evenwijdig tussen de assen, taps naar neus en staart" (meting: 1,3 procent spreiding, binnen de referentie). Geen geometrie. |
+| B5 | G8f (portiergeometrie delen, geen driehoekwinst) | Niet in 5b-3; laten vervallen tenzij geheugen een doel wordt. |
+| B6 | Actieve categorieknop afkappen (ellipsis) tegen de tweede rij van de presetbalk | Niet doen; alleen de herkadrering oplossen. |
 
 Poort 5b-3: `finaltests.sh` strikt groen, `visdiff` tegen een basis van hetzelfde platform met alleen bedoelde verschillen, `clash.py` 0 op de nieuwe delen, K1 tot K13 niet lager, S7 hoogstens twee runs.
 
