@@ -74,6 +74,19 @@ Elke stap eindigt met een poort; pas als die groen is, begint de volgende.
 - **Afwijking meten:** `python3 tools/framework.py vergelijk ../andere-repo` geeft per generiek bestand gelijk, afwijkend of ontbrekend.
 - **Bewaken:** `python3 tools/framework.py check` draait in CI; een autonaam of motorcode in een generiek bestand is rood.
 
+## Wat golf 5b-2 aan de generieke laag toevoegde
+
+Op 16 oktober 2026 kwamen in laguna3 (tak `golf-5b2`, nog niet in `main` en dus nog niet geëxporteerd) de volgende generieke wijzigingen. Ze staan in `framework.json` bij de generieke bestanden en gaan mee met de volgende `framework.py export`:
+
+- `tools/harness.py`: Google Fonts-verzoeken worden uit een lokale cache beantwoord (`~/.cache/explosietekening/fonts`), omdat Chromium op macOS met `net::ERR_SOCKET_NOT_CONNECTED` faalde zodra een tweede pagina laadde terwijl de eerste nog renderde. Een auto die op macOS test, heeft dit nodig.
+- `tools/orkestratie/finaltests.sh`: `VISDIFF_BASIS` kiest een andere basislijn voor `visdiff`. De basislijn (`docs/baseline`) hoort bij een auto en bij een platform: software-rendering wijkt tussen macOS, een Linux-container en een Linux-VM 2 tot 33 procent per beeld af. Een nieuwe auto maakt dus eigen basislijnen en meet op een ander platform eerst een eigen basis van een groene startstand.
+- `tools/orkestratie/clash.py`, `huid.py` en `meetlib.js`: meting van doordringing tussen delen (ook binnen een hoofdgroep, waar `integrity.py` niet kijkt) en van de afwijking van een buitenhuid. Ze kennen geen onderdeelnamen; een toegestaan paar staat per auto in `data/clash-toegestaan.json` (autobestand). Bij een nieuwe auto is `clash.py` de eerste maat om de eigen kalibratie te toetsen: kies een bekend geval, zoals de laguna3-meting op het Leidingblok met de Koude laadluchtslang (-10,5 mm), en kijk of het script het vindt.
+- `tools/orkestratie/mergecheck.py`: `src/core.js` en `src/body.js` zijn voor domeineigenaren alleen-lezen (voorheen telde "eigen" vóór "alleen-lezen").
+- `tools/orkestratie/shots.py`: wacht twee animatieframes en gebruikt `MODEL_TIMEOUT_MS`.
+- `src/core.js`: `hexBolt` met steel 6 en ring 8 segmenten (minder driehoeken per bout in elke auto; de tekenopdrachten blijven gelijk). De verdere generieke opschoning van `core.js` (G8e: gedeelde constructies als bellows, slangklem en Sutherland-Hodgman) is uitgesteld naar golf 5b-3 en gaat dan eenmalig met een export naar espace5, niet in twee repo's apart.
+
+Wat dit voor het framework betekent: de premortem van de golf leverde een patroon voor elke auto. Een poort die alleen het bestaande meet (`integrity.py` slaat de Carrosserie over), laat de schade van nieuwe geometrie door; meet dus eerst met `clash.py` en `huid.py` op een bekend geval, en geef elke tak een presetlijst vooraf zodat elk rood beeld aan één wijziging hangt.
+
 ## espace5 naar het framework
 
 Stand van 16 oktober: alle generieke bestanden wijken af of ontbreken, omdat espace5 op versie 6 is blijven staan. De overstap, in de sessie die aan espace5 werkt (niet vanuit hier, om haar werk niet te kruisen):

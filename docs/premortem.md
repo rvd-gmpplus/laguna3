@@ -169,3 +169,58 @@ Eindstand van de code is `33b2b50`; de testset `g5final3` draaide op die stand e
 - Draad 6 (cache-sleutels): smoke zonder consolemeldingen in testmodus.
 - Draad 7 (publicatie): `pubsmoke.py` ok (de telefoon is klaar in 6,5 s). Versie 7 is op 16 oktober 2026 teruggelezen: `index.html` (1.378.969 bytes) staat er precies een keer in, byte voor byte gelijk, met 531 bytes paginaskelet ervoor en 15 erna. `main` staat nog op versie 6.
 - Niet gesloten: niet getest op een echte telefoon of GPU (U19 en de zijkolom voor de liggende telefoon zijn in golf 5 gebouwd maar alleen in de container gedraaid); wat poort 3 op deels liet staan (K6, K11 en K9 in de interieurplak); 58 varianten van onderdeelnummers zonder gekozen uitvoering; motorcode 811 of 813 (waarschijnlijk 813).
+
+## Premortem golf 5b-2 (16 oktober 2026)
+
+Voor de start getoetst door een premortem in vijf fasen (autopsie, oordeel, herbouw, tegenstander, struikeldraden), uitgevoerd op Opus; de herbouw is overgenomen als plan. Het volledige verslag stond in het scratchpad van de sessie (`premortem-5b2.md`, vluchtig); hier staat de kern en wat er van is gebleken. Het plan was golf 5b-2 uit het masterplan: zes domeinagents in worktrees, G1 (ruimte in de Carrosserie) eerst, daarna de ontbrekende delen en het tekstcontract, versie 9.
+
+Vier feiten uit de repo weken af van de opdracht en zijn als feit meegenomen: `VERSION` stond op 8 (de golf zet 9, het masterplan zei nog 10), de basislijn van `visdiff` kwam van versie 8 en niet van versie 7, de Fonts-fix `426d6aa` stond alleen op deze tak, en de doorsteekcontrole van `integrity.py` sloeg de Carrosserie over en keek bij andere delen alleen naar het hoogste punt.
+
+### Oordeel
+
+Overleefbaar, mits vijf wijzigingen: (a) een mesh-tegen-mesh-meting en een huidmeting vóór G1 en G5 beginnen, gekalibreerd op het bekende Leidingblok-geval; (b) samenvoegen per tak met een presetlijst vooraf; (c) de reikwijdte terug naar wat binnen twee dagen te meten is; (d) een S7-referentie op de startstand en een item voor kenmerk 4, of het criterium uitdrukkelijk als niet gehaald melden; (e) een vaste basis met de Fonts-fix. Zonder (a) en (b) was de golf in de dure vorm dood.
+
+- Meest waarschijnlijk: S7 blijft op 7. Geen item in de golf mikte op de twee kenmerken die op deels stonden, en het enige exterieuritem (G1) haalt resolutie weg.
+- Gevaarlijkst: een doorsteek of ingezakte huid die `integrity.py` niet ziet, of een regressie die meelift op een bedoeld verschil en dan met een vernieuwde basislijn de nieuwe norm wordt. Na publicatie vindt alleen de gebruiker hem.
+- Verborgen aanname: "De poort meet wat deze golf kapot kan maken." Waar ze werk deed: in "geen nieuwe doorsteken (integrity 0)", in "visdiff met alleen bedoelde verschillen" en in "K1 tot K13 niet lager". Integrity keek niet binnen de Carrosserie en niet tussen slangen en motordelen; `visdiff` ziet een paar millimeter inzakking op 640 x 400 niet boven de drempel; de K-panels hebben een spreiding die groter is dan de winst per ronde.
+
+### Wat de herbouw veranderde
+
+| Wijziging | Sluit |
+|---|---|
+| Fase 0 vóór de takken: `hexBolt` en `ENG_PORTS.vacOut` (contract), `VERSION` 9, `mergecheck.py` sluit `core.js` en `body.js` af voor domeineigenaren (eerder telde "eigen" vóór "alleen-lezen") | Orkestrator als enige weg; een domeinagent die `patch()` of `lowSide()` aanpast komt niet meer groen door de controle |
+| `clash.py` en `huid.py` (generiek, `meetlib.js`), gekalibreerd op het Leidingblok met de Koude laadluchtslang | Doorsteken buiten `integrity.py` |
+| Presetlijst per item vooraf, samenvoegen per tak, een basis op dezelfde machine | Basislijn in één keer vernieuwd |
+| G1 eerst; kapdeel en S7 kenmerk 4 in een golf B, alleen onder de 180.000-grens van de Carrosserie | `bodyparts.js` als knelpunt |
+| "Schematisch geplaatst" in `d` zonder bron; G9b met beide getallen in `d`; G9d zonder getalclaim | Feiten zonder bron in een golf die tegenstrijdigheden opruimt |
+| S7 hoogstens twee runs, de lagere telt, vooraf vastgelegd; K-panels twee keer op B0 gemeten, een kenmerk telt pas als lager als beide na-panels onder het laagste B0-oordeel uitkomen | S7 halen door herhalen; ruis van de panels |
+| Uitgesteld naar 5b-3: G5c (behalve het Leidingblok), G8c tot en met G8f, G9e, rest van G9h, `spring()`-parameter, G4c, handomdraai punt 1 en 2 | Te veel eigenaren en contractwijzigingen in twee dagen |
+
+### Struikeldraden en wat er gebeurde
+
+| Draad | Uitkomst |
+|---|---|
+| 1 S7 zonder item | B0 gaf 7 van 9 (kenmerk 4 en 8 deels). Na golf B, met de chroomlijst langs de B-stijl als item voor kenmerk 4: opnieuw 7 van 9 met 4 en 8 deels. Doel 8 niet gehaald; niet herhaald, zoals vooraf vastgelegd. Kenmerk 8 (bovenaanzicht zonder heupen) had nog steeds geen item. Let op: de S7-prompt zei in B0 en na abusievelijk "fase 1"; het model is fase 2; de vergelijking blijft gelijk. |
+| 2 Doorsteek buiten integrity | Afgegaan en gevangen. `clash.py` vond het Leidingblok (-10,5 mm met de Koude laadluchtslang) en de reparatie liep door in golf A. G1: huid hoogstens 1,22 mm van de oude (grens 2 mm), geen nieuwe doordringing. G8c (naafpunt op `TRACK_F`) gaf acht nieuwe doordringingen tot 2,44 mm en is door de orkestrator teruggedraaid. De scharnieren (melding van de gebruiker) hadden 22 doordringingen dicht en 28 open; na golf B 0. |
+| 3 Basislijn in één keer | Niet gebeurd: `docs/baseline` is niet vernieuwd. Wel veranderde de maatstaf: `visdiff` liep tegen een eigen basis B0 op de Mac (zie de nieuwe aanname hieronder). Eindpoort: 11 rode beelden, alle in de vooraf opgegeven lijsten (bodyOff, engine, engineAll, psPump, battery, gearbox, gearboxAll, converter, diff, doorLF, interior). |
+| 4 `bodyparts.js` | De grens van 180.000 voor de Carrosserie is niet overschreden (188.102 naar 177.291 na golf A), dus golf B ging door; de bijbehorende grens voor de voorschaal van G1 (2.500 driehoeken) is in de feiten van de golf niet apart vastgelegd; huidige stand in [cijfers.md](cijfers.md). |
+| 5 Orkestrator | Contractwijzigingen zaten vóór de takken (fase 0), G8e is uitgesteld. Nazorg door de orkestrator na golf A bleef wel nodig: `inner` van de voorportier-botsbalk, de Raambediening linksachter en het Membraan, die bij 400 richtingen of met de kap open van buiten te zien waren. |
+| 6 Feiten zonder bron | Afgegaan en afgehandeld: de plek van de sproeiertank staat als "schematisch geplaatst" in `d`; in de nazorg zijn een bedradingsclaim bij de stekker van de sproeierpomp, "versterkt" in het onderstel en de tekst bij de Reservoirdop afgezwakt. |
+| 7 Omgeving | Afgegaan, zwaarder dan voorzien. De Fonts-route van `426d6aa` (een leeg antwoord) liet de tekst op een systeemletter terugvallen en `visdiff` week op elk beeld circa 10 procent af; `7609e3e` beantwoordt Fonts nu uit een lokale cache. `shots.py` liep tegen de screenshot-timeout van 30 s bij software-rendering onder belasting. Parallelle sessie: zie hieronder. |
+
+### Wat het plan niet zag
+
+- Software-rendering is niet vergelijkbaar tussen platforms. Op macOS wijkt een beeld circa 2 procent af van `docs/baseline` (Linux-container). In de Linux-VM `lag3-vm` (Apple container, image `explosie-test:1`, Ubuntu 24.04 arm64) is het 33 procent door bredere tekstrendering, en ook tegen de Mac 6 tot 31 procent. De poort "visdiff tegen de basislijn" werd daardoor "visdiff tegen B0 van dezelfde machine", wat een zwakkere poort is: een afwijking die al in B0 zit, is onzichtbaar. `docs/baseline` is bovendien verouderd (een ander aantal onderdelen dan de huidige boom). De Linux-VM draaide wel de functietests (itest 222 van 222, en de opentest die de Membraan-fout vond; de ankerpoort is daar platformgebonden: 351/318/263 tegen 352/319/265 op de Mac).
+- De K-panels verschillen onderling op K2 en K9 (B0 tweemaal gemeten: beide 10 ja, 3 deels, 0 nee, maar niet dezelfde kenmerken). De vooraf vastgelegde regel hield de uitkomst eerlijk: een kenmerk telt pas als lager als beide na-panels onder het laagste B0-oordeel uitkomen; dat gebeurde bij geen kenmerk.
+- Een parallelle sessie schreef opnieuw naar `main`: `57b4d18` (`app2.js`, `uiPlaceMore` wist de onthouden plek bij verbergen, met een herbouwde `index.html`) kwam op 16 oktober om 17:19 UTC op `origin/main`, na de basis `c2ee58d` van deze tak. Struikeldraad 7 ("nieuwe commit op `origin/main`") is hiermee afgegaan; de tak moet vóór de PR met `main` worden samengevoegd en `index.html` opnieuw worden gebouwd.
+
+### Geaccepteerd, niet gesloten
+
+- S7 blijft 7 (stochastisch panel; meer runs maken het criterium waardeloos). Naar 5b-3 met een item voor kenmerk 8.
+- De echte plaats van de sproeiertank is onbekend; "schematisch geplaatst" begrenst de schade. Een meting aan de auto van de gebruiker (Meetlijst in `handomdraai.md`) sluit dit.
+- `clash.py` bemonstert op 5 mm en mist een holte binnen een deel; een gat valt dan alleen in de K-panels op.
+- Niet gepubliceerd: versie 9 is gebouwd maar wacht op de gebruiker, dus de byte-voor-byte controle van beide kanalen is nog niet gedaan.
+
+### Verwachting voor de volgende golf (5b-3)
+
+Dezelfde vorm: eerst meten (`clash.py` en `huid.py` vooraf op de nieuwe delen, vooral G5c-leidingen met de hoogste kans op een kluwen), dan bouwen, presetlijst per item vooraf. Een contractronde in `core.js` (G8d, G8e, G8f) gaat vóór de takken en met `framework.py export` naar espace5, niet erbij. Eigen basis van de machine voor `visdiff` tot er een Linux-basis is; zie het masterplan.

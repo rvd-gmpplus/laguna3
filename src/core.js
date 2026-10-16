@@ -188,11 +188,11 @@ const G = {
     return key ? cache('l' + ax + key + seg, build) : build();
   },
 };
-function hexBolt(len, d, ax = 'y') { // kop bij oorsprong, steel richting +as
+function hexBolt(len, d, ax = 'y') { // kop bij oorsprong, steel richting +as; steel 6 en ring 8 segmenten (golf 5b-2, G6: 80 in plaats van 128 driehoeken)
   return cache(`bolt${len}|${d}|${ax}`, () => {
     const head = new THREE.CylinderGeometry(d * 0.9, d * 0.9, d * 0.65, 6); head.translate(0, -d * 0.325, 0);
-    const shank = new THREE.CylinderGeometry(d / 2, d / 2, len, 10); shank.translate(0, len / 2, 0);
-    const washer = new THREE.CylinderGeometry(d * 1.05, d * 1.05, d * 0.12, 16); washer.translate(0, d * 0.06, 0);
+    const shank = new THREE.CylinderGeometry(d / 2, d / 2, len, 6); shank.translate(0, len / 2, 0);
+    const washer = new THREE.CylinderGeometry(d * 1.05, d * 1.05, d * 0.12, 8); washer.translate(0, d * 0.06, 0);
     return yTo(merge([head, shank, washer]), ax);
   });
 }

@@ -34,6 +34,7 @@ const ENG_PORTS = {
   psOut: { p: [ENG_PS[0] + 0.008, ENG_PS[1] - 0.065, ENG_PS[2] + 0.02], dir: [0, -1, 0] },       // hogedrukuitgang stuurpomp (einde van de stalen pijpstomp; drukslang naar het stuurhuis)
   psIn: { p: [ENG_PS[0] - 0.03, ENG_PS[1], ENG_PS[2] + 0.065], dir: [0, 0, 1] },                // aanzuigstomp stuurpomp (zuigslang uit het reservoir)
   fuelRailIn: { p: [0.205, ENG_RAIL[1] - 0.044, ENG_RAIL[2]], dir: [0, -1, 0] },                              // snelkoppeling brandstofrail
+  vacOut: { p: [0.17, 0.12, 0.277], dir: [0, 0, 1] },                                           // tip van de nippel Vacuümaansluiting rembekrachtiger op het spruitstuk (engine2.js; vacuümslang naar de bekrachtiger)
 };
 // punt op afstand d buiten een aansluiting, langs dir (motorframe)
 function portAt(port, d = 0) { return [port.p[0] + port.dir[0] * d, port.p[1] + port.dir[1] * d, port.p[2] + port.dir[2] * d]; }
@@ -248,7 +249,7 @@ function pistonGroup(i) {
     G.cyl('x', 0.0145, 0.0145, 0.056, 12),
   ]));
   const ring = r => G.torus('y', 0.0408, r, 32, 4);
-  return A(`Zuiger en drijfstang ${n}`, { d: `Zuiger-drijfstanggroep van cilinder ${n} (geteld vanaf de vliegwielzijde); ontsteekvolgorde 1-3-4-2.`, p: [XC[i], 0, 0], ex: [XC[i] * 1.0, 0.13, 0] }, [
+  return A(`Zuiger en drijfstang ${n}`, { d: `Zuiger-drijfstanggroep van cilinder ${n} (geteld vanaf de vliegwielzijde); ontsteekvolgorde 1-3-4-2 (aannemelijk, niet bevestigd).`, p: [XC[i], 0, 0], ex: [XC[i] * 1.0, 0.13, 0] }, [
     P('Zuiger', piston, MAT.alu, { d: 'Aluminium zuiger, Ø82,69 mm, met drie veergroeven; de zuigerpen ligt 0,8 mm uit het midden en het merkteken "V" wijst naar het vliegwiel.', p: [0, pp, 0], ex: [0, 0.05, 0], spec: [['Diameter', '82,69 mm'], ['Zuigerveren', '3']] }),
     A('Zuigerveren', { d: 'De drie zuigerveren: twee compressieveren en de olieschraapveer.', p: [0, pp, 0], ex: [0, 0.11, 0] }, [
       P('Compressieveer 1', ring(0.0011), MAT.darkSteel, { d: 'Bovenste compressieveer (vuurveer): dicht de verbrandingsruimte af.', p: [0, 0.0245, 0], ex: [0, 0.028, 0] }),
@@ -314,10 +315,10 @@ function valveGroup(cyl, k, sg) {
     P(intake ? 'Inlaatklep' : 'Uitlaatklep', valve, intake ? MAT.steel : MAT.darkSteel, { d: intake ? 'Inlaatklep: kop Ø33,5 mm, steel Ø5,47 mm, lengte 110,08 mm.' : 'Uitlaatklep van hittebestendige nikkellegering (Nimonic): kop Ø29 mm, steel Ø5,447 mm, lengte 106,87 mm.', ex: [0, -0.3, 0], spec: intake ? [['Kop', 'Ø33,5 mm'], ['Steel', 'Ø5,47 mm'], ['Lengte', '110,08 mm']] : [['Kop', 'Ø29 mm'], ['Steel', 'Ø5,447 mm'], ['Lengte', '106,87 mm']] }),
     P('Klepveerzitting', annulus(0.0035, 0.0145, 0.001, 'y', 12), MAT.steel, { d: 'Onderste veerschotel op de cilinderkop.', p: [0, yB - 0.0005, 0], ex: [0, 0.02, 0] }),
     P('Klepsteelafdichting', G.lathe('y', [[0.0028, 0], [0.0058, 0], [0.0058, 0.007], [0.0042, 0.0095], [0.0028, 0.0095]], 12, 'engStemSeal12'), MAT.rubber, { d: 'Rubber afdichting op de klepgeleider die olieverbruik langs de klepsteel voorkomt.', p: [0, yB, 0], ex: [0, 0.034, 0] }),
-    P('Klepveer', engSpring(0.01145, 0.0019, 0.036, 6.2, 10), MAT.steel, { d: 'Klepveer van ovaal draad: vrije lengte 41,3 mm, buiten Ø27 mm, binnen Ø18,8 mm.', p: [0, (yS + yB) / 2, 0], ex: [0, 0.06, 0], spec: [['Vrije lengte', '41,3 mm'], ['Buitendiameter', '27 mm']] }),
+    P('Klepveer', engSpring(0.01145, 0.0019, 0.036, 6.2, 8), MAT.steel, { d: 'Klepveer van ovaal draad: vrije lengte 41,3 mm, buiten Ø27 mm, binnen Ø18,8 mm.', p: [0, (yS + yB) / 2, 0], ex: [0, 0.06, 0], spec: [['Vrije lengte', '41,3 mm'], ['Buitendiameter', '27 mm']] }),
     P('Veerschotel', G.lathe('y', [[0.0038, 0], [0.0135, 0.0015], [0.0135, 0.003], [0.0065, 0.0065], [0.0038, 0.0065]], 12, 'engRetainer'), MAT.steel, { d: 'Bovenste veerschotel die de klepveer vasthoudt.', p: [0, yS, 0], ex: [0, 0.088, 0] }),
     P('Klepspie 1', keeper(0), MAT.darkSteel, { d: 'Halve kegelspie die de veerschotel op de klepsteel klemt.', p: [0, L - 0.0045, 0], ex: [0.013, 0.104, 0] }),
-    P('Klepspie 2', keeper(PI), MAT.darkSteel, { d: 'Tweede halve kegelspie.', p: [0, L - 0.0045, 0], ex: [-0.013, 0.104, 0] }),
+    P('Klepspie 2', keeper(PI), MAT.darkSteel, { d: 'Tweede halve kegelspie; samen met de eerste klemt hij de veerschotel op de klepsteel.', p: [0, L - 0.0045, 0], ex: [-0.013, 0.104, 0] }),
     A('Hydraulische klepstoter', { d: 'Hydraulische speling-opvanger: het steunpunt van de rolzwenkarm; houdt de klepspeling automatisch op nul. Binnenwerk schematisch weergegeven.', p: [0, hY, sg * hU], ex: [0, 0.12, sg * 0.012] }, [
       P('Huis', G.lathe('y', [[0, -0.026], [0.0062, -0.026], [0.0062, -0.004], [0.0053, -0.004], [0.0053, -0.024], [0, -0.024]], 10, 'engHlaBody'), MAT.steel, { d: 'Stalen huis dat in een boring in de kop staat.', ex: [0, 0, 0] }),
       P('Plunjer', cache('engHlaPlunger', () => merge([xf(G.cyl('y', 0.005, 0.005, 0.0125, 8), [0, -0.0085, 0]), xf(G.sphere(0.0032, 8), [0, -0.0012, 0])])), MAT.steel, { d: 'Plunjer met kogelkop waarop de rolzwenkarm scharniert; olie onder de plunjer neemt de speling op.', ex: [0, 0.04, 0] }),
@@ -412,8 +413,8 @@ function buildHead() {
     P('Cilinderkop (gietstuk)', merge([head, ...ports]), MAT.aluCast, { d: 'Aluminium cilinderkop met ingeperste klepzittingen en klepgeleiders, inlaatpoorten aan de voorzijde en uitlaatpoorten aan de achterzijde.', spec: [['Materiaal', 'aluminium'], ['Hoogte', '138,15 mm'], ['Kleppen', '16 (4 per cilinder)']], ex: [0, 0.09, 0] }),
     P('Koppakking', gasket, MAT.darkSteel, { d: 'Koppakking tussen blok en kop, geklemde dikte circa 0,65 mm (meerlaags staal aangenomen).', spec: [['Dikte geklemd', '0,65 mm']], ex: [0, 0.025, 0] }),
     A('Cilinderkopbouten', { d: 'Tien cilinderkopbouten (Torx); herbruikbaar tot 117,5 mm lengte onder de kop.', ex: [0, 0.27, 0] }, XM.flatMap((x, i) => [0.074, -0.074].map((z, j) => P(`Cilinderkopbout ${i * 2 + j + 1}`, headBolt, MAT.darkSteel, { d: 'Rekbout die kop en koppakking op het blok klemt.', p: [x, DECK + 0.084, z], r: [PI, 0, 0], ex: [0, 0.05 + (i % 2) * 0.012, 0] })))),
-    A('Kleppen inlaatzijde', { d: 'Acht inlaatklepgroepen.', ex: [0, 0.2, 0.19], inner: true }, valvesIn),
-    A('Kleppen uitlaatzijde', { d: 'Acht uitlaatklepgroepen.', ex: [0, 0.2, -0.19], inner: true }, valvesOut),
+    A('Kleppen inlaatzijde', { d: 'Acht inlaatklepgroepen die de lucht de cilinders in laten en door de nokkenas worden geopend.', ex: [0, 0.2, 0.19], inner: true }, valvesIn),
+    A('Kleppen uitlaatzijde', { d: 'Acht uitlaatklepgroepen die de verbrande gassen uit de cilinders laten ontsnappen.', ex: [0, 0.2, -0.19], inner: true }, valvesOut),
     P('Nokkenas inlaat', camGeo(-PI / 4, true), MAT.steel, { d: 'Inlaatnokkenas met zes lagertappen (Ø25, aan de distributiezijde Ø28 mm), nokhoogte 41,0 mm, en een doel voor de nokkenassensor.', p: [0, CAMY, CAMZ], ex: [0, 0.24, 0.07], inner: true, spec: [['Lagers', '6'], ['Nokhoogte', '41,0 mm']] }),
     P('Nokkenas uitlaat', camGeo(-3 * PI / 4, false), MAT.steel, { d: 'Uitlaatnokkenas met zes lagertappen, nokhoogte 40,2 mm.', p: [0, CAMY, -CAMZ], ex: [0, 0.24, -0.07], inner: true, spec: [['Lagers', '6'], ['Nokhoogte', '40,2 mm']] }),
     A('Afdichting nokkenassen', { d: 'Keerringen aan de distributiezijde en afdichtdoppen aan de vliegwielzijde.', ex: [0, 0.24, 0] }, [

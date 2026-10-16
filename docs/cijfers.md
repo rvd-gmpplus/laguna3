@@ -1,16 +1,16 @@
 # Kerncijfers
 
-Gegenereerd door `tools/orkestratie/cijfers.py` uit `stats.json` op 2026-10-16, bron `4429582 2026-10-16`. Niet met de hand bewerken; andere documenten verwijzen hiernaar in plaats van getallen te herhalen.
+Gegenereerd door `tools/orkestratie/cijfers.py` uit `stats.json` op 2026-10-16, bron `0bdbef1 2026-10-16`. Niet met de hand bewerken; andere documenten verwijzen hiernaar in plaats van getallen te herhalen.
 
 ## Boom
 
 | Grootheid | Waarde |
 |---|---|
-| Knopen | 3.023 |
-| Groepen | 499 |
-| Onderdelen | 2.524 |
+| Knopen | 3.057 |
+| Groepen | 502 |
+| Onderdelen | 2.555 |
 | Diepte | 8 |
-| Ingesloten knopen (`inner`) | 217 |
+| Ingesloten knopen (`inner`) | 228 |
 | Presets | 43 |
 | Presets per categorie | Overzicht 6, Motor 11, Aandrijving 6, Onderstel 7, Carrosserie 4, Interieur 3, Openen 6 |
 
@@ -18,37 +18,38 @@ Gegenereerd door `tools/orkestratie/cijfers.py` uit `stats.json` op 2026-10-16, 
 
 | Hoofdgroep | Onderdelen | Driehoeken | Budget |
 |---|---|---|---|
-| Aandrijflijn | 1.048 | 235.546 | 240.000 |
-| Carrosserie | 496 | 189.446 | 190.000 |
-| Onderstel | 497 | 113.228 | 125.000 |
-| Interieur | 277 | 81.084 | 95.000 |
+| Aandrijflijn | 1.048 | 228.490 | 240.000 |
+| Carrosserie | 510 | 174.827 | 190.000 |
+| Onderstel | 500 | 110.140 | 125.000 |
+| Interieur | 283 | 82.340 | 95.000 |
 | Koeling en luchtinlaat | 74 | 18.824 | 25.000 |
-| Uitlaatsysteem | 52 | 13.184 | 20.000 |
-| Brandstofsysteem | 37 | 9.220 | 12.000 |
-| Elektrisch systeem | 43 | 7.488 | 12.000 |
-| Totaal | 2.524 | 668.020 | 700.000 |
+| Uitlaatsysteem | 52 | 13.040 | 20.000 |
+| Elektrisch systeem | 51 | 9.144 | 12.000 |
+| Brandstofsysteem | 37 | 9.028 | 12.000 |
+| Totaal | 2.555 | 645.833 | 700.000 |
 
 ## Tekenopdrachten (gemonteerd)
 
 | Stand | Waarde |
 |---|---|
-| Met gebundeld renderen | 444 |
-| Zonder bundelen | 1.886 |
-| Batches | 46 groepen, 368 batchmeshes, 1.810 losse meshes vervangen, 27 MB van 48.2 MB |
+| Met gebundeld renderen | 450 |
+| Zonder bundelen | 1.908 |
+| Batches | 46 groepen, 370 batchmeshes, 1.828 losse meshes vervangen, 25.5 MB van 46.2 MB |
 
 ## Opstarttijdlijn (software-rendering in de container, ms sinds het begin van de navigatie)
 
 | Moment | ms |
 |---|---|
-| script | 617 |
-| buildStart | 1.427 |
-| buildCar | 1.250 |
-| startUp | 2.759 |
-| render0 | 2.848 |
-| firstFrame | 5.609 |
-| interactive | 5.617 |
-| ready | 10.356 |
-| duur buildCar() | 1.250 |
+| script | 35 |
+| buildStart | 82 |
+| buildCar | 405 |
+| startUp | 514 |
+| render0 | 1.121 |
+| firstFrame | 1.314 |
+| interactive | 1.315 |
+| ready | 5.790 |
+| batches | 1.343 |
+| duur buildCar() | 323 |
 
 Deze tijden zeggen niets over een echt apparaat; zie `docs/telefoontest.md`.
 

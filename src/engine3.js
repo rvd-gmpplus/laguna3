@@ -32,7 +32,7 @@ function buildAlternator(p) {
     P('Voorlager', annulus(0.0085, 0.017, 0.01, 'x', 18), MAT.bearing, { d: 'Kogellager in het voorschild.', p: [-0.056, 0, 0], ex: [-0.125, 0, 0] }),
     P('Ventilator', merge([blades(8, 0.028, 0.054, 0.008, 0.0016, 0.3, 'x'), G.cyl('x', 0.054, 0.054, 0.0015, 24)]), MAT.steel, { d: 'Interne ventilator op de rotor voor de koeling.', p: [-0.033, 0, 0], ex: [-0.1, 0, 0] }),
     A('Rotor', { d: 'Klauwpoolrotor met veldspoel en sleepringen.', ex: [-0.07, 0, 0] }, [
-      P('Rotoras', G.cyl('x', 0.0085, 0.0085, 0.15, 12), MAT.steel, { d: 'Rotoras.', p: [-0.01, 0, 0], ex: [0, 0, 0] }),
+      P('Rotoras', G.cyl('x', 0.0085, 0.0085, 0.15, 12), MAT.steel, { d: 'As van de rotor; draagt de klauwpolen en de sleepringen en wordt door de poelie aangedreven.', p: [-0.01, 0, 0], ex: [0, 0, 0] }),
       P('Klauwpool voor', claw, MAT.darkSteel, { d: 'Klauwpool met zes vingers.', p: [-0.02, 0, 0], ex: [-0.03, 0, 0] }),
       P('Klauwpool achter', claw, MAT.darkSteel, { d: 'Tweede klauwpool, vingers in elkaar grijpend.', p: [0.02, 0, 0], r: [PI / 6, PI, 0], ex: [0.03, 0, 0] }),
       P('Veldspoel', G.cyl('x', 0.03, 0.03, 0.026, 20), MAT.copper, { d: 'Bekrachtigingsspoel tussen de klauwpolen.', ex: [0, 0.01, 0] }),
@@ -49,11 +49,11 @@ function buildAlternator(p) {
     A('Spanningsregelaar', { d: 'Spanningsregelaar met koolborstelhouder.', ex: [0.07, 0.1, 0.03], inner: true }, [
       P('Borstelhouder', G.box(0.016, 0.03, 0.016), MAT.ecu, { d: 'Regelaar met borstelhouder.', p: [0.05, 0.025, 0], ex: [0, 0, 0] }),
       P('Koolborstel 1', G.box(0.004, 0.008, 0.005), MAT.blackGloss, { d: 'Koolborstel op de sleepring.', p: [0.044, 0.0125, 0], ex: [0, 0.03, -0.02] }),
-      P('Koolborstel 2', G.box(0.004, 0.008, 0.005), MAT.blackGloss, { d: 'Tweede koolborstel.', p: [0.05, 0.0125, 0], ex: [0, 0.03, 0.02] }),
+      P('Koolborstel 2', G.box(0.004, 0.008, 0.005), MAT.blackGloss, { d: 'Tweede koolborstel die over de sleepring schuurt en de stroom naar de rotor voert.', p: [0.05, 0.0125, 0], ex: [0, 0.03, 0.02] }),
       P('Borstelveer 1', engSpring(0.0018, 0.0003, 0.008, 4, 6), MAT.steel, { d: 'Veer die de koolborstel aandrukt.', p: [0.044, 0.021, 0], ex: [0, 0.05, -0.02] }),
-      P('Borstelveer 2', engSpring(0.0018, 0.0003, 0.008, 4, 6), MAT.steel, { d: 'Tweede borstelveer.', p: [0.05, 0.021, 0], ex: [0, 0.05, 0.02] }),
+      P('Borstelveer 2', engSpring(0.0018, 0.0003, 0.008, 4, 6), MAT.steel, { d: 'Tweede borstelveer die de tweede koolborstel op de sleepring drukt.', p: [0.05, 0.021, 0], ex: [0, 0.05, 0.02] }),
     ]),
-    A('Doorgaande bouten', { d: 'Drie doorgaande bouten.', ex: [-0.04, 0, 0] }, bolts),
+    A('Doorgaande bouten', { d: 'Drie doorgaande bouten die voorschild en achterschild van de dynamo samentrekken.', ex: [-0.04, 0, 0] }, bolts),
     P('B+-aansluiting', merge([G.cyl('x', 0.004, 0.004, 0.02, 8), xf(engNut(0.008, 0.006, 'x'), [0.006, 0, 0]), xf(G.cyl('x', 0.008, 0.008, 0.004, 12), [-0.004, 0, 0])]), MAT.copper, { d: 'Hoofdstroomaansluiting B+ (M8) naar de accu.', p: [0.085, 0.03, 0.025], ex: [0.06, 0.03, 0.03] }),
     P('Stekker dynamo', G.rbox(0.014, 0.018, 0.022, 0.003), MAT.plastic, { d: 'Stekker voor de stuur- en signaalleidingen.', p: [0.078, -0.03, 0.03], ex: [0.06, -0.02, 0.04] }),
   ]);
@@ -68,7 +68,7 @@ function buildAcCompressor(p) {
     A('Magneetkoppeling', { d: 'Elektromagnetische koppeling die de compressor in- en uitschakelt.', p: [px, 0, 0], ex: [-0.12, 0, 0] }, [
       P('Poelie met lager', merge([engPolyV(0.0595, 0.026, 'Ac'), annulus(0.024, 0.032, 0.02, 'x', 24)]), MAT.steel, { d: 'Riempoelie met lager op de neus van het voorhuis, Ø119 mm.', ex: [-0.02, 0, 0] }),
       P('Ankerplaat', merge([G.cyl('x', 0.052, 0.052, 0.004, 32), ...[0, 1, 2].map(k => xf(G.box(0.003, 0.006, 0.03), [-0.003, 0.03 * Math.cos(k * 2.09), 0.03 * Math.sin(k * 2.09)], [k * 2.09, 0, 0]))]), MAT.steel, { d: 'Koppelingsplaat (anker) met veerplaten, wordt door de spoel tegen de poelie getrokken.', p: [-0.016, 0, 0], ex: [-0.05, 0, 0] }),
-      P('Naaf', merge([G.cyl('x', 0.013, 0.013, 0.012, 14), xf(G.cyl('x', 0.02, 0.02, 0.003, 16), [-0.004, 0, 0])]), MAT.darkSteel, { d: 'Naaf op de compressoras.', p: [-0.022, 0, 0], ex: [-0.058, 0, 0] }),
+      P('Naaf', merge([G.cyl('x', 0.013, 0.013, 0.012, 14), xf(G.cyl('x', 0.02, 0.02, 0.003, 16), [-0.004, 0, 0])]), MAT.darkSteel, { d: 'Naaf op de compressoras die de aandrijving van de magneetkoppeling op de as overbrengt.', p: [-0.022, 0, 0], ex: [-0.058, 0, 0] }),
       P('Borgring koppeling', G.torus('x', 0.009, 0.0012, 14, 4), MAT.steel, { d: 'Borgring die de naaf op de as vastzet.', p: [-0.029, 0, 0], ex: [-0.075, 0, 0] }),
       P('Veldspoel koppeling', annulus(0.026, 0.05, 0.018, 'x', 28), MAT.copper, { d: 'Elektromagneet in de poelie.', p: [0.012, 0, 0], ex: [0.03, 0, 0] }),
     ]),
@@ -159,7 +159,7 @@ function engBuildPump() {
     return xf(merge([side(arm, 0.02), side(boss, 0.02)]), [0.065, 0, 0]);
   });
   const plug = cache('engPsPlug', () => merge([engNut(0.0145, 0.009, 'z'), xf(G.cyl('z', 0.0075, 0.0075, 0.012, 12), [0, 0, 0.0105])]));
-  return A('Stuurpomp', { d: 'Riemaangedreven schottenpomp (aannemelijk voor deze motor; de stuurbekrachtiging van de F4Rt is hydraulisch met variabele assistentie): perst olie uit het reservoir naar het stuurhuis. Opbouw, afmetingen en plaats zijn geschat.', p: ENG_PS, ex: [-0.06, 0, 0.12], spec: [['Aandrijving', 'multiriem 7PK1795, zeven groeven'], ['Status', 'aannemelijk, niet bevestigd']] }, [
+  return A('Stuurpomp', { d: 'Riemaangedreven schottenpomp (aannemelijk voor deze motor, niet bevestigd; de stuurbekrachtiging van de F4Rt is hydraulisch met variabele assistentie): perst olie uit het reservoir naar het stuurhuis. Opbouw, afmetingen en plaats zijn geschat.', p: ENG_PS, ex: [-0.06, 0, 0.12], spec: [['Aandrijving', 'multiriem 7PK1795, zeven groeven']] }, [
     A('Poelie met moer', { d: 'Multiriempoelie met zeven groeven en de moer waarmee hij op de pompas zit.', ex: [-0.14, 0, 0] }, [
       P('Poelie stuurpomp', pulleyGeo, MAT.steel, { d: 'Stalen poelie met zeven groeven voor de multiriem (Ø116 mm, geschat).', ex: [0, 0, 0] }),
       P('Moer poelie', engNut(0.016, 0.006, 'x'), MAT.darkSteel, { d: 'Moer op het asuiteinde die de poelie vastzet.', p: [PXL - 0.0135, 0, 0], ex: [-0.05, 0, 0] }),

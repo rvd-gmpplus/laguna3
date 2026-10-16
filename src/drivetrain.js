@@ -94,8 +94,8 @@ function drvConverter() {
   const shellT = drvL('Turb', semicircle(0.098, 0.07, 0.036, -1, 10), 32), shellP = drvL('Pump', semicircle(0.098, 0.07, 0.036, 1, 10), 32);
   const sp = 0.05;
   return A('Koppelomvormer', {
-    d: 'Hydraulische koppeling tussen motor en versnellingsbak: het pompwiel stuwt olie naar het turbinewiel, het leidwiel vergroot het koppel bij het wegrijden en de overbruggingskoppeling schakelt het slip uit vanaf de tweede versnelling.',
-    spec: [['Elementen', '3 (pompwiel, turbinewiel, leidwiel)'], ['Overbrugging', 'lock-up in 2e tot en met 6e'], ['Buitendiameter', 'circa 275 mm (geschat)']],
+    d: 'Hydraulische koppeling tussen motor en versnellingsbak: het pompwiel stuwt olie naar het turbinewiel, het leidwiel vergroot het koppel bij het wegrijden en de overbruggingskoppeling schakelt het slip uit vanaf de tweede versnelling. De buitendiameter van circa 275 mm is een schatting.',
+    spec: [['Elementen', '3 (pompwiel, turbinewiel, leidwiel)'], ['Overbrugging', 'lock-up in 2e tot en met 6e']],
     ex: [0, 0, 0.42],
   }, [
     P('Omvormerdeksel', merge([cover, G.cyl('x', 0.012, 0.012, 0.016, 12)]), MAT.steel, { d: 'Voorste schaal van de omvormer, aan het pompwiel gelast; met vier nokken naar de flexplaat van de motor.', ex: [-0.02, 0, 0] }),
@@ -185,7 +185,7 @@ function drvSets() {
   })();
   return A('Tandwielsets', {
     d: 'De drie planetaire tandwielsets (reductieset, voorste set en achterste set) die samen de zes versnellingen en de achteruit vormen (Lepelletier-opbouw). De koppeling tussen de sets onderling is schematisch weergegeven.',
-    spec: [['Aantal sets', '3'], ['Voorste set', '4 planeetwielen'], ['Eindoverbrenging', '3,804 volgens Renault; de getekende tandentallen (Mitsubishi F6AJA) geven 3,571, de Renault-tandentallen zijn niet gevonden']], ex: [0, 0.2, 0.12], inner: true,
+    spec: [['Aantal sets', '3'], ['Voorste set', '4 planeetwielen']], ex: [0, 0.2, 0.12], inner: true,
   }, [
     drvPlanets('fr', 'Voorste planetaire set', 'Voorste set (FR) met vier planeetwielen; de drager is de naaf van het uitgaande tandwiel. Tandentallen schematisch weergegeven.', { m: 0.0024, w: 0.02, Ns: 20, Np: 12, Nr: 44, n: 4, x: 0.2195, ex: [-0.1, 0.1, 0] }),
     A('Achterste planetaire set', { d: 'Achterste set (RR) van het Ravigneaux-type: twee zonnewielen op één drager met korte en lange planeetwielen en een holwiel dat het uitgaande tandwiel aandrijft. Rij-indeling van de planeetwielen schematisch weergegeven.', ex: [0.12, 0.1, 0] }, rr),
@@ -213,7 +213,7 @@ function drvPark() {
 }
 function drvCounter() {
   const [cy, cz] = CSH;
-  return A('Tussenas eindoverbrenging', { d: 'Tussenas (reductie-as) met het tandwiel van 45 tanden dat door het uitgaande tandwiel wordt aangedreven en een rondsel van 21 tanden dat het kroonwiel van het differentieel aandrijft; loopt in twee conische rollagers met een afstelplaatje.', spec: [['Tanden', '45 en 21'], ['Eindoverbrenging', '3,571']], ex: [0.0, -0.1, -0.36], inner: true }, [
+  return A('Tussenas eindoverbrenging', { d: 'Tussenas (reductie-as) met het tandwiel van 45 tanden dat door het uitgaande tandwiel wordt aangedreven en een rondsel van 21 tanden dat het kroonwiel van het differentieel aandrijft; loopt in twee conische rollagers met een afstelplaatje. De tandentallen (42 en 45, 21 en 70) zijn die van de Mitsubishi F6AJA en geven een eindoverbrenging van 3,571; de eindoverbrenging van deze auto is 3,804 (Renault-persmap, zie de specificaties van de automaat). De Renault-tandentallen zijn niet gevonden, dus de getekende tandentallen zijn schematisch.', ex: [0.0, -0.1, -0.36], inner: true }, [
     P('Reductie-as', G.cyl('x', 0.013, 0.013, 0.24, 16), MAT.steel, { d: 'As van de tussenoverbrenging.', p: [0.2, cy, cz], ex: [0, 0, 0.0001] }),
     P('Tandwiel 45 tanden', drvG(45, DRV_GM, 0.016, 0.013), MAT.steel, { d: 'Grijpt in het uitgaande tandwiel.', p: [0.2965, cy, cz], ex: [0.08, 0, 0] }),
     P('Rondsel 21 tanden', drvG(21, DRV_GM, 0.024, 0.013), MAT.steel, { d: 'Drijft het kroonwiel van het differentieel aan.', p: [0.125, cy, cz], ex: [-0.08, 0, 0] }),
@@ -229,7 +229,7 @@ function drvDiff() {
   const hub = cache('drvDiffCase', () => merge([
     G.lathe('x', [[0.032, -0.072], [0.032, -0.052], [0.05, -0.046], [0.064, -0.028], [0.064, 0.028], [0.05, 0.046], [0.032, 0.052], [0.032, 0.072]], 36, 'drvDiffHousing'),
     annulus(0.05, 0.072, 0.01, 'x', 36)]));
-  return A('Differentieel', { d: 'Verdeelt het koppel over beide voorwielen en laat ze in bochten verschillend snel draaien; het kroonwiel heeft 70 tanden. Het aantal planeetwielen van het differentieel is niet gevonden: schematisch weergegeven met twee satellietwielen.', spec: [['Kroonwiel', '70 tanden'], ['Eindoverbrenging', '3,804 volgens Renault; de getekende tandentallen (Mitsubishi F6AJA) geven 3,571, de Renault-tandentallen zijn niet gevonden']], p: DIFF, ex: [0.0, -0.1, -0.5], inner: true }, [
+  return A('Differentieel', { d: 'Verdeelt het koppel over beide voorwielen en laat ze in bochten verschillend snel draaien; het kroonwiel heeft 70 tanden. Het aantal planeetwielen van het differentieel is niet gevonden: schematisch weergegeven met twee satellietwielen. Het kroonwiel van 70 tanden is een getekend tandental (Mitsubishi F6AJA): met het rondsel van 21 tanden en de tussenas geeft dat 3,571, terwijl de eindoverbrenging van deze auto 3,804 is (Renault-persmap, zie de specificaties van de automaat); de Renault-tandentallen zijn niet gevonden.', p: DIFF, ex: [0.0, -0.1, -0.5], inner: true }, [
     P('Kroonwiel', drvG(70, DRV_GM, 0.022, 0.07), MAT.steel, { d: 'Kroonwiel met 70 tanden, met tien bouten (144 N·m) aan het differentieelhuis; wordt door het rondsel van 21 tanden aangedreven.', p: [0.006, 0, 0], ex: [-0.09, 0, 0] }),
     P('Kroonwielbouten', drvBoltRing('drvKroonB', 10, 0.0775, 0.02, 0.008, '-x', 0.1, [0, 0], 0.017), MAT.darkSteel, { d: 'Tien bouten die het kroonwiel aan het differentieelhuis bevestigen.', ex: [-0.15, 0, 0] }),
     P('Differentieelhuis', hub, MAT.iron, { d: 'Gegoten huis dat met het kroonwiel meedraait; in het handboek niet te demonteren.', ex: [0.0, 0.0, 0.0001] }),
@@ -299,8 +299,8 @@ function drvStarter() {
   const mount = (nm, d, g, mat, p, ex, inner) => P(nm, g, mat, { d, p, ex, inner });
   const cap = 0.152, bx = (k) => [cap, sy + 0.0085 * (k ? 1 : -1), sz];
   const st = A('Startmotor', {
-    d: 'Elektrische startmotor (circa 1 kW, type schematisch) met voorgeschakelde planetaire reductie en solenoïde; het rondsel grijpt in de startkrans van de flexplaat. Zit met drie bouten (flens Ø66 mm) op de koppelomvormerklok.',
-    spec: [['Vermogen', 'circa 1 kW (geschat)'], ['Flensmaat', 'Ø66 mm, 3 bouten'], ['Rondsel', '9 tanden']], p: P0, ex: [-0.12, -0.25, 0.55],
+    d: 'Elektrische startmotor (vermogen circa 1 kW geschat, type schematisch) met voorgeschakelde planetaire reductie en solenoïde; het rondsel grijpt in de startkrans van de flexplaat. Zit met drie bouten (flens Ø66 mm) op de koppelomvormerklok.',
+    spec: [['Flensmaat', 'Ø66 mm, 3 bouten'], ['Rondsel', '9 tanden']], p: P0, ex: [-0.12, -0.25, 0.55],
   }, [
     P('Rondsel', drvG(9, 0.0025, 0.014, 0.006), MAT.steel, { d: 'Rondsel met 9 tanden dat bij het starten naar voren schuift en in de startkrans van de flexplaat grijpt.', ex: [-0.08, 0, 0] }),
     A('Rondselas met vrijloop', { d: 'Aandrijfas met rondsel en vrijloopkoppeling; de vrijloop voorkomt dat de draaiende motor de startmotor meeneemt.', ex: [0.005, 0, 0], inner: true }, [
@@ -378,12 +378,12 @@ function drvHousing() {
       P('Keerring omvormerhuis', annulus(0.03, 0.045, 0.009, 'x', 28), MAT.rubber, { d: 'Hoofdkeerring rond de naaf van het pompwiel.', p: [0.1195, 0, 0], ex: [0.08, 0, 0] }),
       P('O-ring omvormerhuis', G.torus('x', 0.1245, 0.0032, 40, 6), MAT.rubber, { d: 'Afdichting tussen omvormerhuis en transmissiehuis.', p: [0.1255, 0, 0], ex: [0.025, 0, 0] }),
     ]),
-    A('Transmissiehuis', { d: 'Spuitgietaluminium huis rond de planetaire sets en schakelelementen, met de lobben voor de tussenas en het differentieel en de vlakken voor het klepblok en de steunen. Bakbreedte circa 385 mm incl. omvormerhuis (Planète Renault); hier iets langer weergegeven.', spec: [['Materiaal', 'spuitgietaluminium'], ['Lengte', 'circa 385 mm'], ['Hartafstand', '197 mm (geschat)']], ex: [0.1, 0.8, 0.0] }, [
+    A('Transmissiehuis', { d: 'Spuitgietaluminium huis rond de planetaire sets en schakelelementen, met de lobben voor de tussenas en het differentieel en de vlakken voor het klepblok en de steunen. Bakbreedte circa 385 mm incl. omvormerhuis (Planète Renault); hier iets langer weergegeven. De hartafstand van de assen (197 mm) is een schatting.', spec: [['Materiaal', 'spuitgietaluminium']], ex: [0.1, 0.8, 0.0] }, [
       P('Transmissiehuis (carter)', caseGeo, MAT.aluCast, { d: 'Gegoten carter met ribben en bevestigingsoren.', ex: [0, 0.0, 0.0001] }),
       P('Bouten huisverbinding', rimBolts('drvBHuis', 12, 0.1285, 0.1295, 0.1), MAT.darkSteel, { d: 'Torx-bouten tussen omvormerhuis en transmissiehuis.', ex: [-0.12, 0.0, 0.0] }),
       P('Vulplug', drvBolt(0.02, 0.012, 'z'), MAT.darkSteel, { d: 'Vulpunt van de ATF. Bij de AJ0 in de Laguna wordt gevuld via een vulkanaal met afdekplaat (6 N·m), bereikbaar vanuit de motorruimte. Na het vullen met 3,2 liter wordt het niveau gesteld met de niveauplug onder in het carter (8 N·m), bij 40 graden olietemperatuur met draaiende motor in stand P. Plaats in het model schematisch.', p: [0.345, 0.02, 0.133], r: [PI, 0, 0], ex: [0, 0.0, 0.14] }),
       P('Aftapplug', drvBolt(0.02, 0.012, 'z'), MAT.darkSteel, { d: 'Peilbout onder in het huis (8 N·m) met daarachter een overloopbuisje (inbus 5 mm, 8 N·m). Bij aftappen komt eerst circa 1 l uit de peilbout en daarna ruim 1 l na het verwijderen van het buisje.', p: [0.325, -0.19, 0.133], r: [PI, 0, 0], ex: [0, -0.04, 0.14] }),
-      P('Ontluchtingsnippel', G.cyl('y', 0.004, 0.004, 0.02, 10), MAT.brass || MAT.drvBrass, { d: 'Nippel voor de ontluchtingsslang van de bak.', p: [0.16, 0.135, 0.0], ex: [0.0, 0.1, 0] }),
+      P('Ontluchtingsnippel', G.cyl('y', 0.004, 0.004, 0.02, 10), MAT.drvBrass, { d: 'Nippel voor de ontluchtingsslang van de bak.', p: [0.16, 0.135, 0.0], ex: [0.0, 0.1, 0] }),
       P('Ontluchtingsslang', tube([[0.16, 0.145, 0.0], [0.16, 0.17, 0.0], [0.185, 0.18, 0.03]], 0.003, 16, 6), MAT.rubber, { d: 'Slangetje dat de bak ontlucht zonder dat er olie of water in komt.', ex: [0.0, 0.18, 0] }),
     ]),
     A('Zijdeksel', { d: 'Deksel aan het eind van de bak met de water-ATF-koeler en de beide koelleidingen; draagt ook de zuiger van de 2-6-rem en het vaste zonnewiel van de reductieset.', ex: [0.34, 0.5, 0.2] }, [
@@ -416,8 +416,8 @@ function drvOutside() {
 /* ---------- de bak als geheel ---------- */
 function buildGearbox() {
   return A('Automaatversnellingsbak', {
-    d: 'Zestraps automaat Jatco JF613E (Renault-code AJ0, gebaseerd op het Lepelletier-systeem) met koppelomvormer, drie planetaire sets, vijf schakelelementen plus vrijloop en ingebouwd differentieel; dwars links naast de motor. De interne koppeling van de sets en alle kleine onderdelen zijn schematisch weergegeven.',
-    spec: [['Type', 'Jatco JF613E (Renault AJ0)'], ['Overbrengingen', '4,199 / 2,405 / 1,583 / 1,161 / 0,855 / 0,685, achteruit 3,457 (Mitsubishi F6AJA-handboek; de snelheden per 1000 tpm in de Renault-persmap kloppen hier binnen 0,2 % mee)'], ['Eindoverbrenging', '3,804 (Renault-persmap 2007)'], ['ATF', 'Elf Elfmatic J6 (het handboek van 2009 noemt in zijn tabel ELF MATIC S6); totaal 7,6 liter, na aftappen 3,5 liter'], ['Droog gewicht', 'circa 93 kg'], ['Lengte', 'circa 385 mm']],
+    d: 'Zestraps automaat Jatco JF613E (Renault-code AJ0, gebaseerd op het Lepelletier-systeem) met koppelomvormer, drie planetaire sets, vijf schakelelementen plus vrijloop en ingebouwd differentieel; dwars links naast de motor. De interne koppeling van de sets en alle kleine onderdelen zijn schematisch weergegeven. Het droge gewicht is circa 93 kg en de lengte circa 385 mm.',
+    spec: [['Type', 'Jatco JF613E (Renault AJ0)'], ['Overbrengingen', '4,199 / 2,405 / 1,583 / 1,161 / 0,855 / 0,685, achteruit 3,457 (Mitsubishi F6AJA-handboek; de snelheden per 1000 tpm in de Renault-persmap kloppen hier binnen 0,2 % mee)'], ['Eindoverbrenging', '3,804 (Renault-persmap 2007)'], ['ATF', 'Elf Elfmatic J6 (het handboek van 2009 noemt in zijn tabel ELF MATIC S6); totaal 7,6 liter, na aftappen 3,5 liter']],
     p: [GB_X, 0, 0], ex: [0.66, 0, 0],
   }, [
     ...drvHousing(),
@@ -443,7 +443,7 @@ function driveshaft(name, a, b, o) {
     P('Tussenas (stam)', drvL('Tus', [[0.0125, 0.0], [0.0125, 0.052], [0.0155, 0.058], [0.0155, o.mid - 0.02], [0.0125, o.mid - 0.02], [0.0125, o.mid]], 18), MAT.steel, { d: 'Stalen stam met bakzijde 30 spiebanen, die in het zijwiel van het differentieel steekt.', ex: [0, 0, 0.0001] }),
     P('Tussenaslager', merge([annulus(0.0175, 0.031, 0.014, 'x', 32)]), MAT.bearing, { d: 'Kogellager 35 × 62 × 14 mm van de tussenas.', p: [o.mid * 0.8, 0, 0], ex: [0.0, 0.1, 0.0] }),
     P('Lagerhuis tussenas', merge([annulus(0.031, 0.038, 0.016, 'x', 32), xf(G.box(0.016, 0.016, 0.024), [0, 0, 0.0235]), xf(G.box(0.05, 0.05, 0.008), [0, 0, 0.0375])]), MAT.aluCast, { d: 'Lagerhuis dat de tussenas aan de achterkant van het motorblok steunt (positie en vorm schematisch weergegeven).', p: [o.mid * 0.8, 0, 0], ex: [0.0, 0.0, 0.2] }),
-    P('Lagerborgring tussenas', annulus(0.0155, 0.0205, 0.002, 'x', 20), MAT.steel, { d: 'Borgring op de tussenas.', p: [o.mid * 0.8 + 0.0095, 0, 0], ex: [0.0, 0.0, 0.1] }),
+    P('Lagerborgring tussenas', annulus(0.0155, 0.0205, 0.002, 'x', 20), MAT.steel, { d: 'Borgring op de tussenas die het kogellager in lengterichting op zijn plaats houdt.', p: [o.mid * 0.8 + 0.0095, 0, 0], ex: [0.0, 0.0, 0.1] }),
     ...[-1, 1].map((k, i) => P(`Lagerhuisbout ${i + 1}`, drvBolt(0.02, 0.007, 'z'), MAT.darkSteel, { d: 'Bout van het lagerhuis aan het motorblok.', p: [o.mid * 0.8 + k * 0.018, 0, 0.0335], ex: [0, 0, -0.3] })),
   ]));
   const j0 = o.mid || 0;                           // de tripode begint na de tussenas
@@ -454,15 +454,15 @@ function driveshaft(name, a, b, o) {
     P('Borgring tripode', annulus(0.011, 0.016, 0.0018, 'x', 20), MAT.steel, { d: 'Borgring die de tripodester op de as houdt.', p: [j0 + 0.0955, 0, 0], ex: [0.12, 0, 0], inner: true }),
   ]));
   kids.push(A('Manchet binnen', { d: 'Rubber stofhoes (manchet) met twee klemmen die het vet in de tripode-koppeling houdt.', ex: [-0.02, 0.12, 0] }, [
-    P('Manchet', bel, MAT.rubber, { d: 'Balgvormige stofhoes.', p: [j0 + 0.1, 0, 0], ex: [0, 0.0, 0.0001] }),
+    P('Manchet', bel, MAT.rubber, { d: 'Balgvormige rubber stofhoes die het vet in de tripode-koppeling houdt en vuil en water buiten sluit.', p: [j0 + 0.1, 0, 0], ex: [0, 0.0, 0.0001] }),
     P('Grote klem', G.torus('x', 0.0465, 0.0016, 28, 6), MAT.steel, { d: 'Klem op het koppelingshuis.', p: [j0 + 0.112, 0, 0], ex: [-0.04, 0.05, 0] }),
-    P('Kleine klem', G.torus('x', 0.0236, 0.0016, 24, 6), MAT.steel, { d: 'Klem op de as.', p: [j0 + 0.215, 0, 0], ex: [0.04, 0.05, 0] }),
+    P('Kleine klem', G.torus('x', 0.0236, 0.0016, 24, 6), MAT.steel, { d: 'Klem die het smalle uiteinde van de manchet op de as spant, zodat er geen vet weglekt.', p: [j0 + 0.215, 0, 0], ex: [0.04, 0.05, 0] }),
   ]));
   kids.push(P('Aandrijfas (schacht)', drvL('Sch' + name, [[0.0125, j0 + 0.09], [0.0125, outerX - 0.01]], 16), MAT.steel, { d: 'Stalen schacht (diameter geschat 24 tot 28 mm). Een trillingsdemper is voor dit motortype niet gevonden.', ex: [0, 0.18, 0] }));
   kids.push(A('Manchet buiten', { d: 'Rubber stofhoes (manchet) met twee klemmen op de buitenste kogelkoppeling.', ex: [0.02, 0.12, 0] }, [
-    P('Manchet', bel, MAT.rubber, { d: 'Balgvormige stofhoes.', p: [outerX + 0.01, 0, 0], s: [-1, 1, 1], ex: [0, 0.0, 0.0001] }),
+    P('Manchet', bel, MAT.rubber, { d: 'Balgvormige rubber stofhoes die het vet in de kogelkoppeling houdt en vuil en water buiten sluit.', p: [outerX + 0.01, 0, 0], s: [-1, 1, 1], ex: [0, 0.0, 0.0001] }),
     P('Grote klem', G.torus('x', 0.0465, 0.0016, 28, 6), MAT.steel, { d: 'Klem op de kogelkoppeling.', p: [outerX + 0.0, 0, 0], ex: [0.04, 0.05, 0] }),
-    P('Kleine klem', G.torus('x', 0.0236, 0.0016, 24, 6), MAT.steel, { d: 'Klem op de as.', p: [outerX - 0.105, 0, 0], ex: [-0.04, 0.05, 0] }),
+    P('Kleine klem', G.torus('x', 0.0236, 0.0016, 24, 6), MAT.steel, { d: 'Klem die het smalle uiteinde van de buitenste manchet op de as spant, zodat er geen vet weglekt.', p: [outerX - 0.105, 0, 0], ex: [-0.04, 0.05, 0] }),
   ]));
   const balls = Array.from({ length: 8 }, (_, k) => P(`Kogel ${k + 1}`, G.sphere(0.0072, 10), MAT.chrome, { d: 'Stalen kogel die het koppel tussen binnenste naaf en klok overbrengt.', p: [outerX + 0.036, 0.0335 * Math.cos(k * PI / 4), 0.0335 * Math.sin(k * PI / 4)], ex: [0, 0.07 * Math.cos(k * PI / 4), 0.07 * Math.sin(k * PI / 4)], inner: true }));
   kids.push(A('Buitenste homokineet (kogelkoppeling)', { d: 'Vaste kogelkoppeling aan de wielzijde (Rzeppa, 8 kogels, buitendiameter circa 90 mm): laat sturen en veren toe. Maten en opbouw volgens catalogus, schematisch weergegeven.', ex: [0.06, 0, 0] }, [
@@ -492,8 +492,8 @@ function drvMounts() {
       bolt('Bout carrosseriebeugel 2', 'Bout die de steun aan de carrosserie bevestigt.', [-0.355, 0.447, 0.079], '-x', [-0.3, -0.05, 0]),
     ]),
     A('Steun versnellingsbak', { d: 'Linker bak-steun: rubber-metalen steun bovenop de bak die de bak aan de linker langsligger hangt (aannemelijk; details voor de F4Rt niet gevonden).', ex: [0.2, 0.1, 0] }, [
-      P('Beugel bak', merge([G.rbox(0.06, 0.02, 0.07, 0.004), xf(G.box(0.02, 0.03, 0.07), [-0.02, -0.025, 0])]), MAT.aluCast, { d: 'Beugel op het carter.', p: [gx, 0.1505, -0.02], ex: [0, 0, 0.0001] }),
-      P('Rubber bakssteun', G.cyl('y', 0.022, 0.022, 0.036, 18), MAT.rubber, { d: 'Rubberblok van de steun.', p: [gx, 0.1785, -0.02], ex: [0, 0.07, 0] }),
+      P('Beugel bak', merge([G.rbox(0.06, 0.02, 0.07, 0.004), xf(G.box(0.02, 0.03, 0.07), [-0.02, -0.025, 0])]), MAT.aluCast, { d: 'Aluminium beugel op het carter die de rubber bakssteun draagt.', p: [gx, 0.1505, -0.02], ex: [0, 0, 0.0001] }),
+      P('Rubber bakssteun', G.cyl('y', 0.022, 0.022, 0.036, 18), MAT.rubber, { d: 'Rubberblok van de steun dat trillingen van de bak dempt en de beweging opvangt.', p: [gx, 0.1785, -0.02], ex: [0, 0.07, 0] }),
       P('Bovenplaat bakssteun', G.rbox(0.05, 0.01, 0.07, 0.003), MAT.darkSteel, { d: 'Plaat naar de langsligger van de carrosserie.', p: [gx + 0.0, 0.2015, -0.02], ex: [0.0, 0.14, 0] }),
       ...[-1, 1].map((k, i) => bolt(`Bout bakssteun ${i + 1}`, 'Bout van de bakssteun.', [gx + 0.0, 0.2065, -0.02 + k * 0.025], 'y', [0.0, 0.2, 0], [PI, 0, 0])),
     ]),
@@ -514,10 +514,11 @@ function buildPowertrain() {
   const gb = buildGearbox();
   // uitgangen van het differentieel (bakframe -> motorframe) en naven (autoframe -> motorframe)
   const dOutL = [GB_X + DIFF[0] + 0.082, DIFF[1], DIFF[2]], dOutR = [GB_X + DIFF[0] - 0.082, DIFF[1], DIFF[2]];
+  // naafpunt 0,775: TRACK_F (0,7785) zet de buitenste koppeling 3,5 mm naar buiten en geeft acht nieuwe doordringingen met fusee en demper (golf 5b-2); G8c wacht op een boring in de fusee
   const hubL = toPT([0.775, AY, AXF]).toArray(), hubR = toPT([-0.775, AY, AXF]).toArray();
   const shafts = A('Aandrijfassen', { d: 'Linker (kort) en rechter (lang, met tussenas en tussenaslager) aandrijfas van het differentieel naar de voorwielen, elk met een tripode-koppeling aan de bakzijde en een kogelkoppeling aan de wielzijde. Lengten volgens catalogus: links circa 640 mm, rechts circa 962 mm.', ex: [0, -0.5, -0.3] }, [
-    driveshaft('Aandrijfas links', dOutL, hubL, { sign: 1, d: 'Korte linker aandrijfas (catalogus circa 640 mm, 30 spiebanen bakzijde, 27 wielzijde).', spec: [['Lengte (catalogus)', 'circa 640 mm'], ['Binnenste koppeling', 'tripode, Ø87 mm'], ['Buitenste koppeling', 'kogelkoppeling, 8 kogels']], ex: [0.12, 0, 0.28] }),
-    driveshaft('Aandrijfas rechts', dOutR, hubR, { sign: -1, mid: 0.35, d: 'Lange rechter aandrijfas (catalogus circa 962 mm) met tussenas (circa 350 mm) en kogellager 35 × 62 × 14 mm; loopt achter het motorblok langs.', spec: [['Lengte (catalogus)', 'circa 962 mm'], ['Tussenlager', 'kogellager 35 × 62 × 14 mm'], ['Buitenste koppeling', 'kogelkoppeling, 8 kogels']], ex: [-0.12, 0, -0.28] }),
+    driveshaft('Aandrijfas links', dOutL, hubL, { sign: 1, d: 'Korte linker aandrijfas (catalogus circa 640 mm, 30 spiebanen bakzijde, 27 wielzijde).', spec: [['Binnenste koppeling', 'tripode, Ø87 mm'], ['Buitenste koppeling', 'kogelkoppeling, 8 kogels']], ex: [0.12, 0, 0.28] }),
+    driveshaft('Aandrijfas rechts', dOutR, hubR, { sign: -1, mid: 0.35, d: 'Lange rechter aandrijfas (catalogus circa 962 mm) met tussenas (circa 350 mm) en kogellager 35 × 62 × 14 mm; loopt achter het motorblok langs.', spec: [['Tussenlager', 'kogellager 35 × 62 × 14 mm'], ['Buitenste koppeling', 'kogelkoppeling, 8 kogels']], ex: [-0.12, 0, -0.28] }),
   ]);
   return A('Aandrijflijn', {
     d: 'Dwarsgeplaatste motor en automaat met differentieel en aandrijfassen naar de voorwielen.',
