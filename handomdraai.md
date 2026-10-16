@@ -1,118 +1,142 @@
 # Handomdraai laguna3
 
-Stand 15 okt 2026, 17:20 UTC. Golf 4 (modus Openen, panoramadak, onderdeelnummers, kennisverwerking) is af en staat live als versie 6. Sinds de publicatie om 02:10 UTC is er geen code veranderd.
+Stand 16 okt 2026, 02:10 UTC. Golf 5 (de verbeterpunten uit de vorige handomdraai) is af en staat live als versie 7. `main` staat nog op versie 6.
 
 ## Waar
 
-- Repo `rvd-gmpplus/laguna3`, tak `ccr-bd755431-1qfniw`. Code van de eindstand: `3ab6a8d`. `index.html` van versie 6 gebouwd uit die bron in `31a8f0d`; de commits daarna zijn alleen docs.
-- PR #1: https://github.com/rvd-gmpplus/laguna3/pull/1 (carrosserieronde). PR #2: https://github.com/rvd-gmpplus/laguna3/pull/2 (golf 4, concept). Geen CI in repo. PR #2 was om 11:09 UTC samenvoegbaar, zonder reviews of opmerkingen; de controlemomenten zijn daarna gestopt.
-- Live: https://claude.ai/artifact/4qJq7YUk5nGSFmexY7WkZR, versie 6, gepubliceerd op 15 oktober om 02:10 UTC. Teruggelezen om 02:11 UTC: `index.html` (1.337.555 bytes, md5 `17b21be36108d7ee8531bc232de5c35c`, uit `3ab6a8d`) staat er een keer in, byte voor byte gelijk, alleen het hostskelet eromheen (531 bytes ervoor, 15 erna). De groei ten opzichte van versie 5 (678.887 bytes) komt vooral van `src/partnumbers.js` (565 kB). Het artefact is privé; delen gaat via het menu Delen op de pagina.
-- GitHub Pages: https://rvd-gmpplus.github.io/laguna3/, bediend vanaf `main`. `main` staat nog op versie 5. Bijwerken van `main` gebeurt alleen na een ja van de gebruiker.
-- De tak `gh-pages` bestond om 17:20 UTC nog op origin. Hij is overbodig; de gebruiker verwijdert hem in GitHub (de proxy weigerde het verwijderen).
-- Versie 1 bewaard: `docs/v1/index.html`. Tussenstand golf 1 los: https://claude.ai/artifact/CchXLCsG3x8A4purHXpYRf
-- Bouwen: `python3 build.py` plakt `src/*.js` tot `index.html`. Volgorde staat in `ORDER` in `build.py`: core, body, bodyparts, panorama, engine1 tot engine3, drivetrain, chassis, interior, systems, partnumbers, app1, presets, app2. `src/partnumbers.js` is gegevens, gemaakt door `tools/orkestratie/build_pn.py`; niet met de hand bewerken.
+- Repo `rvd-gmpplus/laguna3`, tak `ccr-bd755431-1qfniw`. Code van de eindstand: `33b2b50`. `index.html` van versie 7 gebouwd uit die bron in `25c3ddf`; de commits daarna zijn alleen docs.
+- PR #1 (carrosserieronde) en PR #2 (golf 4) zijn samengevoegd. PR #2 sloot op 15 oktober om 18:22 UTC doordat `main` met een fast-forward naar de kop van de tak ging. Voor golf 5 hoort een nieuwe PR.
+- Live: https://claude.ai/artifact/4qJq7YUk5nGSFmexY7WkZR, versie 7, gepubliceerd op 16 oktober om 02:02 UTC. Teruggelezen: `index.html` (1.378.969 bytes, md5 `faca1a6c384df897149fd5a6538dcaaa`) staat er een keer in, byte voor byte gelijk, met 531 bytes hostskelet ervoor en 15 erna. Het artefact is privé; delen gaat via het menu Delen op de pagina.
+- GitHub Pages: https://rvd-gmpplus.github.io/laguna3/, bediend vanaf `main`. `main` staat op `f3a7854` (versie 6, op 15 oktober nagekeken: byte voor byte gelijk aan `index.html` van versie 6). Versie 7 naar `main` gaat pas na een ja van de gebruiker.
+- De tak `gh-pages` bestond nog op origin; de gebruiker verwijdert hem in GitHub (de proxy weigerde het verwijderen).
+- Bouwen: `python3 build.py` plakt `src/*.js` tot `index.html`, volgorde in `ORDER` in `build.py`. `src/partnumbers.js` is gegevens uit `tools/orkestratie/build_pn.py`; niet met de hand bewerken (zie Werkwijze voor hoe het script draait).
+
+## De auto van de gebruiker
+
+- Renault Laguna III hatchback, Initiale Paris, fase 2, zilvergrijs, 2.0 Turbo 125 kW met zestraps automaat AJ0, panoramadak, geen 4Control (opgave van de gebruiker).
+- Volgens de RDW: eerste toelating 18 februari 2011, benzine 1998 cc, EURO 5 A, 8,7 l/100 km, 201 g/km, spoor voor 156 cm en achter 151 cm. De RDW geeft geen bandenmaat en geen motorsuffix.
+- Motor waarschijnlijk F4Rt 813: MR 415 geeft bij de hatchback de F4R 811 alleen Euro 4 en de 813 ook Euro 5. Het motorplaatje beslist. Zie `docs/onderzoek/beslissingen.md`.
+- Kenteken en chassisnummer zijn bekend in de sessie maar staan bewust niet in de repo (openbaar). De docs zeggen "volgens de RDW" of "volgens het chassisnummer van de gebruiker".
 
 ## Wat werkt
 
-- Boom (`g4final4`): 3.012 knopen, 499 groepen, 2.513 onderdelen, diepte 8, 659.496 driehoeken (budget 700.000). Aandrijflijn 235.534 (budget 240.000), Carrosserie 187.554 (budget 190.000), Onderstel 110.204, Interieur 77.612. 223 ingesloten knopen.
-- Uitklappen werkt als voorheen: klik klapt de eigen groep uit, dubbelklik duikt naar het onderdeel, rechtsklik, Shift+klik en lang drukken klappen in. Explosieschuif, Demonteren en Monteren, Stap terug.
-- Modus Openen (segmentknop of toets O): 26 openers, klikregel van buiten naar binnen, sluiten met rechtsklik, Shift+klik of lang drukken, dock met Alles open, Alles dicht en Openers n/26, paneelknop op de geselecteerde opener, zes presets in de categorie Openen. De camera kijkt bij openen in de opening.
-- Panoramadak: twee getinte glaspanelen met dwarsbalk, voorste glas kantelt en schuift 0,60 m, zonneschermen met cassette in hemelkleur, luchtgeleider met armpjes, waterafvoer, hemelbekleding met twee openingen, draaiknop in de hemelconsole.
-- Onderdeelnummers in het paneel: 546 verkoopeenheden (110 past volgens catalogus, 71 variant, 365 niet gevonden), 1.334 nummers (446 Renault, 888 van 197 andere merken), bewijs A 807, B 436, C 89, D 2, vaste VIN-waarschuwing, bij 14 eenheden het blok Gekozen voor deze auto (volgens de RDW en het chassisnummer van de gebruiker), zoeken op nummer, CSV in `docs/onderdeelnummers.csv`. Onderhoudsinformatie bij 43 paden.
-- Kennis uit het rapport van de gebruiker en MR 415 (X91): geen faseversteller op de F4R 811 (bron: persmap 2007; voor de 813 niet apart bevestigd), eindoverbrenging 3,804, aluminium motorkap, capless vulhals, aanhaalmomenten en inhouden. Zie `docs/onderzoek/kennisbasis.md` en `docs/onderzoek/beslissingen.md`.
-- 43 presets in 7 categorieën plus rondleiding. Gebundeld: 439 tekenopdrachten gemonteerd, 1.867 zonder, 774 met alles open. Titel linksboven met een doorschijnend vlak, leesbaar bij close-ups.
+- Boom (`g5final3`): 3.023 knopen, 499 groepen, 2.524 onderdelen, 668.020 driehoeken (budget 700.000). Carrosserie 189.446 (budget 190.000, nog ruim 500), Aandrijflijn 235.546, Onderstel 113.228, Interieur 81.084. Tekenopdrachten 444 gebundeld, 1.878 zonder bundelen.
+- Uitklappen zoals voorheen, plus U19: bij duiken naar een onderdeel dimt de rest.
+- Modus Openen met 26 openers. Nieuw in golf 5: camera's van achterklep, motorkap, voorportieren, spiegels, zonneschermen en de interieuropeners; hoedenplank op 40 graden aan dunne koordjes en uitgenomen zolang een rugleuning of de bagagevloer open is (optie `hideWhen` in de engine); gasveren langs de zijwand; achterruit van binnen als glas; olievuldop en expansiedop scharnieren aan de hals; voorruit van binnen doorzichtiger; zijbekleding in de bagageruimte over wielkasten en vulpijp.
+- Panoramadak: glas zo goed als zwart (dekking 0,92, zoals de auto van de gebruiker), van binnen blauwgrijs met een lichte weerspiegeling en zwarte binnenlijsten.
+- Onderkant: voorste langsliggers boven de aandrijfassen, achterste langsliggers langs de veer, bodemplaat met opkant boven de torsiebalk, tank en koolstoffilter voor de balk, ATF-koeler lager, multiriem 1.672 mm (echt 1.795 mm).
+- Telefoon: staand een schuivende presetrij, compacte kaart, de openerlijst sluit na een keuze en het kader volgt kaart en dock; liggend een zijkolom.
+- Onderdeelnummers: 546 verkoopeenheden, 1.334 nummers. Voor 13 eenheden staat de uitvoering voor deze auto vast (blok Gekozen voor deze auto, volgens de RDW en het chassisnummer); 58 varianten blijven open. Punt 13: Vulopening en Vulklepring gekoppeld, de overige nieuwe knopen bewust op niet onderzocht.
+- Feiten bijgewerkt: verbruik en CO2 volgens de RDW, emissienorm Euro 5, ATF 7,6 l (Elfmatic J6; het handboek van 2009 noemt ELF MATIC S6), motorcode, geen 4Control. Analyse databankenrecht in `docs/onderzoek/databankenrecht.md`.
+- Hulpmiddelen van de poort staan nu in de repo: `tools/orkestratie/` (pick, shots, probe, gateshots, dumptree, phone, rays_bagage, poort.js).
 
 ## Tests
 
-Eindstand `g4final4` op `3ab6a8d`, alles groen: lint ok; smoke zonder consolemeldingen en zonder horizontale scroll; integrity 0 fouten, 0 ankerfouten, 0 presetfouten (124 waarschuwingen, uitklapvector nul); silhouette ok; `ITEST_GATES=1 tools/itest.py` 150 van 150; `ui_inner.py --open` 0 eerste treffers op een ingesloten onderdeel; pubsmoke klaar na 11,6 s (1280 x 800) en 10,1 s (390 x 844); opentest 26 openers zonder fouten (9 uitzonderingen in `tools/open_allow.json`); frametijd p95 3,1 ms bij openAll(1) en 2,2 ms bij openAll(0). Details: [docs/testen.md](docs/testen.md).
+Eindstand `g5final3` op `33b2b50`, alles groen: lint ok; smoke zonder consolemeldingen en zonder horizontale scroll; integrity 0 fouten (124 waarschuwingen uitklapvector nul); silhouette ok; `ui_inner.py --open` ok; `ITEST_GATES=1 tools/itest.py` 155 van 155; opentest 26 openers, 0 fouten, 33 meldingen (open.min ontbreekt bij volgers); pubsmoke ok.
 
-Na de nummerronde van golf 5 (alleen `src/partnumbers.js`, `src/app2.js`, `src/head.html`, docs): `build.py --lint` ok; `ITEST_GATES=1 tools/itest.py` 151 van 151 (een controle erbij voor het blok Gekozen voor deze auto; controle 15 en `pnCheck` groen). De andere tests zijn voor die ronde niet opnieuw gedraaid; `index.html` is niet opnieuw gebouwd.
+Visuele poort golf 5, telkens 9 beoordelaars op dezelfde kenmerken K1 tot K13 (`tools/orkestratie/poort.js`, beelden met `gateshots.py`): poort 1 op `f581bca` 11 ja, 6 deels, 0 nee; poort 2 op `b529ac1` 12, 4, 1 (K13, door een slechte vaste binnencamera); poort 3 op `33b2b50` 13, 4, 0. Ter vergelijking versie 6: 10, 7, 0. S7 (exterieur, carrosserieronde) opnieuw gedraaid: 7 van 9 ja, gehaald. Na poort 3 gestopt: geen nee en niets blokkerend meer.
 
-Visuele poort golf 4, drie keer met een herstelronde ertussen (9 beoordelaars, 3 plakken, meerderheid per kenmerk): poort 1 op `0ac1052` 6 ja, 9 deels, 2 nee; poort 2 op `4fc11cd` 10, 7, 0; poort 3 op `3ab6a8d` 10, 7, 0. Na poort 3 gestopt: de spreiding tussen beoordelaars was even groot als de laatste winst.
+Let op bij het lezen van poort 3: de binnencamera van het dak (92 en 93) kijkt met 70 graden beeldhoek (was 36) om beide openingen in een beeld te krijgen. Dat is alleen het poortbeeld; de app gebruikt zijn eigen camera.
 
 ## Wat nog verbetering verdient
 
-Op volgorde van wat de gebruiker het eerst ziet. Bij elk punt staat wat er mis is, de oorzaak voor zover vastgesteld, en een aanpak. Beeldnummers verwijzen naar `g4gate3/` in het scratchpad (vluchtig).
+Op volgorde van wat de gebruiker het eerst ziet. Beeldnummers verwijzen naar `g5gate3/` in het scratchpad (vluchtig).
 
-### Modus Openen, wat de poort op deels liet staan
+### Modus Openen, wat poort 3 op deels liet staan
 
-1. Hoedenplank bij de achterklep (K6, alle drie de beoordelaars; 05, 95, 18, 20, 23). De plank draait goed mee (24 graden, aan twee koordjes), maar de camera van de Achterklep (`look.dir` [0.25, 0.22, -1] in `src/bodyparts.js`) staat laag achter de auto, zodat de opgetilde plank als vlak liggend leest en bij de rugleuningen en de bagagevloer het zicht afdekt. Aanpak: de camera van de achterklep hoger zetten (meer van boven), de hoek van de plank naar 30 tot 35 graden als de zijwanden dat toelaten, of de plank voor de interieuropeners (rugleuningen, bagagevloer) niet mee laten gaan als de klep alleen via `needs` open gaat.
-2. Beige staafje in de bagageruimte (05, 95; drie beoordelaars). Geen los deel: met `pick.py` vastgesteld dat het de crèmekleurige zijkant van de Rugbekleding van het grote rugleuningdeel is, op de naad tussen de twee delen, die tegen de donkere achterkant als staafje oogt. Aanpak: de zijvlakken bij de naad in de kleur van de achterkant, of een kleine spleet tussen de delen.
-3. Steunstang van de motorkap (K1; 04). Op desktop nauwelijks te zien, op de telefoon wel. Aanpak: stang dikker (de echte is ongeveer 8 mm) en de camera zo dat de stang vrij voor de motorruimte staat.
-4. B-stijl in de opening van de voorportieren (K2; 06, 09). Onder de gordellijn leest de opening alsof hij direct op het achterportier eindigt; de B-stijl en de slotbeugel zijn niet als eigen deel te zien. Aanpak: de B-stijl onder de gordellijn een eigen vlak in lak met de slotbeugel geven, of de camera iets meer van voren.
-5. Camera's in het interieur (K11): bij het Armsteunkussen (17) kijkt de camera tegen het opgeklapte deksel aan en is het vak niet te zien; bij de Middenarmsteun achter (19) staat de donkere ruit van het open achterportier half voor de armsteun. Aanpak: per opener `look.dir` opnieuw kiezen met een opname per kandidaat; voor 19 eventueel de zijruit achter mee laten zakken (`needs`).
-6. Voorruit van binnen (21, 22, 80-alles-open): leest als egaal zwart vlak. Het glasmateriaal is van binnen bijna ondoorzichtig. Aanpak: de voorruit van binnen lichter (minder dekking), of een omgeving achter de ruit; meten wat het kost aan tekentijd.
-7. Olievuldop (24): de opgetilde gele dop hangt opzij van de open vulhals (de dop gaat opzij om de rand van de afdekkap te ontwijken; gemeten verplaatsing 0,10 m) en leest als zwevend. Aanpak: kortere zijstap met meer kanteling, of de dop laten scharnieren aan de vulhals.
-8. Dakglas (K8 nu ja, maar genoemd): van boven middengrijs en lichter dan de voorruit. Bewust: bij donkerder glas (dekking 0,8) zijn de zonneschermen van buiten niet te zien. Aanpak alleen als de gebruiker het wil: een tussenwaarde rond 0,7.
-9. Achterklep met alles open (80-alles-open-rechtsachter): een beoordelaar zag de lichte huid verder naar achteren steken dan het zwarte binnenframe. Niet nagekeken; met `pick.py` controleren of buitenpaneel en binnenpaneel samen draaien.
+1. Hoedenplank bij de achterklep (K6, alle drie; 05, 95-telefoon-achterklep): de plank gaat 40 graden mee, maar van achteren en van boven leest hij nog als vlak liggend. Aanpak: de camera van de achterklep meer van opzij, of de plank aan de koordjes verder omhoog als de zijwanden dat toelaten (meten met `rays_bagage.py`).
+2. Linker gasveer van de achterklep (05, 95): valt samen met de zijrand en leest dun. Aanpak: iets dikker of een lichtere kleur, of de camera iets naar rechts.
+3. Zijbekleding van de bagageruimte (18, 20, 23): leest trapvormig, als losse blokken. Oorzaak: de bekleding moet boven het zwaaibereik van de klapbare vloer blijven en de vulpijp omsluiten. Aanpak: de vulpijp in `src/systems.js` korter onder de bekleding laten lopen (de interieuragent stelde dat voor), dan kan de bekleding een gladde wand worden.
+4. Camera handschoenenkastje (16): dicht op het dashboard, het portier is niet in beeld. Aanpak: een optie `look.pad` of `look.dist` in `uiOpenTo` (`src/app2.js`), zodat de afstand niet afhangt van de gekozen knopen.
+5. Luchtroosters (16): wit, rafelig streeppatroon, vermoedelijk z-fighting in de lamellen. Nakijken met `pick.py`.
+6. Vaste zijruit achter (19, 80): leest als groot los ruitvlak in de opening van het achterportier. Nakijken of de maat klopt met de echte vaste ruit.
+7. Telefoon (95-telefoon-portier-linksvoor): de auto valt links en rechts buiten beeld met veel lege vloer eronder. Bewust: het kader past op het onderdeel. Aanpak als het moet: de marge in `uiOpenTo` op smalle schermen van 1,1 naar 1,25.
+8. B-stijl in de voorste opening (06, 09): in lak met slotbeugel, maar nog dun. Kleine winst.
+9. Labels die de dop bedekken (24, 25): het selectielabel ankert midden op de opener. Aanpak: anker aan de rand bij een opener.
 
 ### Onderdeelnummers
 
-10. Dekking: 1.113 van de 2.513 onderdelen zijn niet onderzocht (vooral interieur, carrosseriedelen en kleine bevestigingsmiddelen) en 751 zijn onderzocht zonder nummer. Aanpak: een vervolgronde in plakken met dezelfde verificatiepoort (opnieuw ophalen, letterlijk op de pagina, lokvogels), te beginnen bij de delen die een eigenaar werkelijk bestelt.
-11. Renault-catalogus: partsouq en 7zap zaten achter Cloudflare, de catalogussleutels van partsouq waren verlopen. Daardoor geen B-nummers voor het panoramadak (twee D-nummers uit advertenties) en weinig Renault-nummers voor carrosserie en interieur. Aanpak: een nieuwe route vanaf de modelkeuze (BT0H of BT06 met F4R811) zodra de catalogus bereikbaar is, of de gebruiker laat een dealer een lijst op VIN maken.
-12. Varianten: 71 verkoopeenheden hebben meer dan een uitvoering (schijfmaten, kant, bak). Voor 14 is de uitvoering gekozen (`VIN_KEUZE` in `build_pn.py`, veld `kz`, blok Gekozen voor deze auto), volgens de RDW en het chassisnummer van de gebruiker: spanrol, geleiderol, dynamo, stuurpomp, aircocompressor, inlaatluchttemperatuursensor, injector, radiateur, intercooler, voorkatalysator, aandrijfas links, remschijf voor, wisserblad achter en wissermotor achter. 57 blijven open. Wat de RDW geeft: eerste toelating 18 februari 2011, benzine 1998 cc 125 kW, EURO 5 A, CO2 201 g/km (`docs/onderzoek/kennisbasis.md`, sectie 14). Open: het motorsuffix. MR 415 geeft Euro 5 alleen bij de F4R 813; de repo en de gebruiker zeggen 811. Het motorplaatje beslist; als het 813 is, moeten de artikelen die in de bron "F4R 811" noemen opnieuw bekeken worden. Voor de rest van de varianten is het typeplaatje op de deurstijl of een uitrustingsblad van een dealer nodig (velgmaat, onderstel, voorruit, xenon, accu). Kenteken en chassisnummer staan niet in de repo.
-13. Nieuwe knopen uit de herstelronden: Vulopening (kleppendeksel) en Vulklepring zijn in `build_pn.py` (INHERIT) gekoppeld aan de eenheid van de ouder. Armsteunbekleding, A-stijlbekleding links en rechts, Hoedenplankkoord links en rechts en Plankscharnierpen links en rechts blijven bewust op niet onderzocht: hun ouders hebben geen eenheid (de groepen zijn niet onderzocht) en of ze los of met de ouder geleverd worden is niet vastgesteld. De reden staat als commentaar bij INHERIT. Ook Vulklep (zonder regel) is niet gekoppeld, hoewel de eenheid Vulhals "met klepje" heet; dat vraagt eigen onderzoek.
-14. Firecrawl had geen tegoed meer; het onderzoek liep daarna via de Jina-reader en curl. Een vervolgronde met Firecrawl vraagt nieuw tegoed.
+10. Dekking: ongeveer 1.120 onderdelen niet onderzocht (Aandrijflijn 578, Carrosserie 269, Interieur 267 volgens de inventaris van golf 5) en 750 onderzocht zonder nummer. Aanpak: een vervolgronde in plakken met de verificatiepoort, Firecrawl heeft weer tegoed (ander account) en Exa werkt ook (komt langs Cloudflare).
+11. Varianten: 58 eenheden open. Beslissend: het typeplaatje op de B-stijl, de bandenmaat en het motorplaatje (811 of 813). De dynamo is bewust weer open: bij de 813 geeft MR 415 een vrijloopriemschijf.
+12. Artikelen die in de bron "F4R 811" noemen (injector, inlaatluchttemperatuursensor, katalysator) moeten opnieuw bekeken worden als het motorplaatje 813 zegt.
+13. Renault-catalogus op VIN: geen bron gevonden die het chassisnummer kent (partsouq kende het niet). Een uitrustingsblad van een dealer geeft alles in een keer.
 
 ### Feiten en model
 
-15. ATF van de automaat: opgelost voor zover het kan. MR 415 geeft voor de AJ0 7,6 l totaal, 3,5 l na aftappen en 3,2 l vullen, met het niveau bij 40 graden; de olienaam staat in de Spaanse editie van 2007 (23A-7) als Elfmatic J6 en in de Engelse en Franse editie van 2009 (23A-28) als ELF MATIC S6 voor de familie AJX, waar de AJ0-procedure zelf naar verwijst. Elf noemt alleen Elfmatic J6 (goedgekeurd voor Renault AJ0 en AJ8). Open: of S6 en J6 dezelfde olie zijn; vraag bij een Renault-dealer naar de olie per chassisnummer.
-16. Hoeken en slagen van de openers zijn geschat uit foto's, het instructieboekje en het werkplaatshandboek; aan de echte auto is niets gemeten. Met de auto van de gebruiker zijn kap, portieren en klep na te meten.
-17. Oud en bekend: voorste langsliggers snijden de aandrijfassen; multiriem 1.569 mm tegen 1.795 mm echt; torsiebalk boven de vlakke vloer; de veer achter steekt door de voorrand van de bagagevloer; 84 van de 345 labelankers liggen achter een ander deel; donkere spikkels op de motorkap in het bovenaanzicht (vermoedelijk software-rasterisatie, niet bewezen).
-18. Geen 4Control in het model. Dat was een optie; of de auto van de gebruiker het heeft, is niet vastgesteld.
+14. Motorcode 811 of 813: waarschijnlijk 813, zekerheid middel. "Geen faseversteller" is alleen voor de 811 bewezen (persmap 2007).
+15. ATF: hoeveelheid bevestigd; of Elfmatic J6 en ELF MATIC S6 dezelfde olie zijn, is open. Navragen bij een dealer.
+16. Hoeken en slagen van de openers zijn geschat. De gebruiker kan ze aan de eigen auto meten (zie Meetlijst).
+17. Oud en bekend: de kabelboom in de cabine raakt de nieuwe opkant in de bodemplaat; achterarm en veerrubber liggen aan de binnenkant van de wielkast boven de vloerplaat; de tank is schematisch kleiner dan 66 liter; 84 van de 345 labelankers liggen achter een ander deel; donkere spikkels op motorkap en dak in het bovenaanzicht (vermoedelijk software-rasterisatie); de spoilerlip leest van opzij als losse zwarte wig (S7).
+18. In `src/systems.js` noemt de ECU nog "nokkenasverstelling", wat botst met "geen faseversteller".
 
 ### Techniek en tests
 
-19. Niet getest op een echte telefoon en GPU. De container meet alleen software-rendering (tekenopdrachten en JavaScript-tijd). Grootste onbekende, ook voor alles open.
-20. Paginagrootte: 1,34 MB, waarvan 565 kB nummergegevens. Laadtijd in de container rond 10 s. Als dat op een telefoon tegenvalt: de nummergegevens pas laden als het paneel ze nodig heeft.
-21. De hulpmiddelen voor de poort en het narekenen (`gateshots.py`, `pick.py`, `shots.py`, `probe.py`, de poortscripts) staan alleen in het scratchpad en verdwijnen met de container. Aanpak: naar `tools/orkestratie/` halen voor een volgende ronde. De kenmerken van de poort staan hieronder.
-22. Niet gebouwd: UX-punt U19 (rest dimmen bij duiken naar een onderdeel) en een zijkolom voor telefoons in liggende stand.
-23. S7 uit de carrosserieronde (7 van 9 op `9c731c8`, deels kenmerk 4 en 8) is na golf 4 niet opnieuw gedraaid.
-24. Databankenrecht: de CSV bevat alleen nummers en URL's; een juridische toets is niet gedaan. De bureau-analyse staat in `docs/onderzoek/databankenrecht.md` (risico laag tot middel bij AUTODOC, maatregelen in sectie 8, vragen voor een jurist in sectie 9).
-25. Motorcode: de RDW toont Euro 5 A en MR 415 geeft Euro 5 bij de hatchback alleen bij de F4R 813. Het model en de docs noemen de motor daarom "F4Rt 813 (waarschijnlijk, zie beslissingen)"; zekerheid middel, het motorplaatje beslist. De onderdeelkeuzes in het nummerpaneel (dynamo met vaste poelie, injector, inlaatluchttemperatuursensor) volgen nog de catalogus van de 811 en zijn niet herzien.
+19. Niet getest op een echte telefoon en GPU. De gebruiker test zelf (zie Testlijst).
+20. Paginagrootte 1,38 MB, waarvan ongeveer 575 kB nummergegevens. Als de telefoon traag laadt: de nummergegevens pas laden als het paneel ze nodig heeft.
+21. Carrosserie zit op 189.446 van 190.000 driehoeken. Elke volgende carrosseriewijziging moet eerst ergens anders besparen.
+22. De engine kent geen uitnemen met beweging; `hideWhen` laat de plank wegvallen. Goed genoeg; een animatie is een mogelijke verbetering.
+23. Databankenrecht: 6.498 van de 6.508 nummerregels komen van autodoc.parts. Maatregelen en toetsvragen voor een advocaat staan in `docs/onderzoek/databankenrecht.md`.
 
-### Kenmerken van de visuele poort golf 4
+## Meetlijst voor de eigen auto
 
-Per plak drie beoordelaars, elk beeld een keer bekeken, oordeel ja, deels of nee, meerderheid per kenmerk. Plak a (voorkant en voorportieren): K1 motorkap scharniert aan de achterrand, steunstang houdt hem, motorruimte goed te zien; K2 voorportieren draaien om de voorrand, de opening ziet er af uit; K3 zijruiten zakken in het portier; K4 spiegels klappen naar achteren; K5 olievuldop en expansiedop komen omhoog; K9 geen doorsteken, gaten of zwevende delen; K10 de bediening van Openen is duidelijk, ook op de telefoon. Plak b (achterkant en dak van buiten): K2 achterportieren; K3 zijruiten achter zakken gedeeltelijk; K6 achterklep met gasveren en hoedenplank, bagageruimte te zien; K7 tankklep rechtsachter met capless vulhals; K8 panoramadak van buiten; K9. Plak c (interieur, overzicht, dak van binnen): K11 interieuropeners, te zien door het geopende portier of de klep; K12 alles open leest als Laguna III hatchback; K13 panoramadak van binnen; K9.
+Wat de gebruiker met een rolmaat, een hoekmeter (telefoon) en een blik kan vaststellen; elk gegeven vervangt een schatting.
+
+1. Motorplaatje op het blok: F4R 811 of F4R 813.
+2. Typeplaatje op de B-stijl aan de bestuurderskant: type en uitrustingscode.
+3. Bandenmaat op de band, bijvoorbeeld 225/45 R18.
+4. Openingshoek van de motorkap op de steunstang, en de lengte van de steunstang.
+5. Openingshoek van een voorportier en een achterportier in de eerste en de laatste stand.
+6. Openingshoek van de achterklep, en waar de gasveren onderaan vastzitten (hoogte boven de bagagevloer).
+7. Hoek van de hoedenplank als de klep open is.
+8. Hoe ver het voorste dakglas naar achteren schuift.
+9. Hoe ver de achterste zijruit zakt (hoeveel glas blijft staan).
+
+## Testlijst voor een echte telefoon
+
+1. Laadtijd tot de auto draait, op wifi en op 4G.
+2. Draaien en zoomen met twee vingers: vloeiend of schokkerig.
+3. Modus Openen: motorkap, een portier en de achterklep openen; staat het onderdeel goed in beeld?
+4. Alles open: blijft het vloeiend?
+5. Telefoon dwars: de zijkolom, en is alles bereikbaar?
+6. Een onderdeel kiezen en het paneel met onderdeelnummers openen.
+7. Wordt de telefoon warm na een paar minuten?
 
 ## Wat bij de gebruiker ligt
 
-1. Akkoord om `main` naar versie 6 te brengen, zodat GitHub Pages bijwerkt.
-2. Het chassisnummer (VIN), voor de 71 varianten.
-3. De tak `gh-pages` verwijderen in GitHub.
-4. Desgewenst het delen van de handleiding op Google Drive weer uitzetten, en het artefact delen via het menu Delen als anderen het moeten zien.
+1. Akkoord om `main` naar versie 7 te brengen, zodat GitHub Pages bijwerkt.
+2. Het motorplaatje, het typeplaatje en de bandenmaat (zie Meetlijst).
+3. Testen op de eigen telefoon (zie Testlijst).
+4. De tak `gh-pages` verwijderen in GitHub.
+5. Desgewenst het artefact delen via het menu Delen, en het delen van de handleiding op Google Drive weer uitzetten.
 
 ## Advies, op volgorde
 
-1. Punten 1 tot 7 van de lijst hierboven in een gerichte ronde (camera's, hoedenplank, B-stijl, steunstang, rugleuningnaad, voorruit van binnen), daarna de poort opnieuw met dezelfde kenmerken. Eerst de hulpmiddelen naar de repo halen (punt 21).
-2. Na een ja van de gebruiker `main` bijwerken en Pages nakijken.
-3. Vervolgronde nummers (punten 10 tot 13), met het VIN als dat er is.
-4. ATF: de olienaam bij een Renault-dealer navragen (punt 15).
-5. Testen op een echte telefoon en GPU (punt 19 en 20).
-6. Oude modelpunten (punt 17), U19 en de zijkolom liggend.
+1. Na een ja: `main` naar versie 7 en Pages nakijken.
+2. Met de gegevens van de auto: motorcode vastleggen, varianten beslissen (punten 11 en 12).
+3. Vervolgronde nummers (punt 10) met Firecrawl en Exa.
+4. Punten 1 tot 3 (achterkant in Openen) met de vulpijp in `systems.js`, daarna poort 4.
+5. Wat de telefoontest oplevert.
 
 ## Werkwijze die werkte
 
-- Golven per domein, elk in eigen worktree, alleen eigen bestanden. Eigendom checken voor samenvoegen.
-- Na samenvoegen hele testset, dan pas publiceren. Na publiceren URL teruglezen, byte voor byte vergelijken.
-- Twee premortems op het plan van golf 4 (openmodus en gegevens), met struikeldraden die tijdens de bouw afgingen: zie `docs/premortem.md`. De spookbatchproef vond echt een fout die geen andere toets zag.
-- Een ondergrens per opener (`open.min`), een asregel en botsing gemeten als nieuw ten opzichte van de gesloten stand. Zonder ondergrens beloont een botsingstoets kleinere hoeken.
-- Nummeronderzoek in plakken met een harde stop, een verificatiepoort met lokvogels (alle 15 afgewezen) en de status `niet onderzocht` voor wat niet geverifieerd is.
-- Visuele poort klein: plakken van max ca. 18 beelden, elk beeld 1x lezen, notities direct naar bestand, harde eindtijd.
-- Meldingen eerst met stralen en schermafbeeldingen narekenen voor je iets verandert.
+- Golven per domein, elk in een eigen worktree, alleen eigen bestanden. Takken die toch andere bestanden raken: alleen de eigen bestanden overnemen (`git checkout <tak> -- <bestand>`).
+- Na samenvoegen de hele testset (`tools/orkestratie/finaltests.sh`), dan pas publiceren. Na publiceren teruglezen en byte voor byte vergelijken.
+- Visuele poort met vaste beelden (`gateshots.py`) en vaste kenmerken (`poort.js`), drie plakken met drie beoordelaars op Opus high; herstel per eigenaar op Sonnet high; stoppen als er geen nee meer is en de winst kleiner wordt dan de spreiding.
+- Onderzoek op Sonnet high (feiten, juridisch), tellen en inventariseren op Haiku 5.5 (werkte, maar deed ongevraagd extra werk; alleen voor afgebakend telwerk).
+- Container kan herstarten: worktrees en commits blijven, achtergrondtaken niet. Na een herstart eerst `git worktree list` en de journals van de workflows nakijken.
+- `build_pn.py` draait vanuit een stagingmap met de geverifieerde gegevens: kopieer `golf4/pn/*-verified.json`, `golf4/kennis/info.json` en het script naar `golf5/nummers/stage/` en draai `python3 stage/orkestratie/build_pn.py tree.json REPO` (zie `golf5/nummers/run.sh`).
+- Meldingen eerst met stralen, `pick.py` en opnames narekenen voor je iets verandert.
 
 ## Bewaard in repo
 
-- Onderzoek: `docs/onderzoek/` (kennisbasis, beslissingen met de aanvulling van 14 oktober, exterieur, motor, automaat, onderstel en interieur, UX-audit). Index: `docs/onderzoek/README.md`.
-- Onderdeelnummers: `docs/onderdeelnummers.csv`, gegevens in `src/partnumbers.js`, bouwscript `tools/orkestratie/build_pn.py`.
-- Openmodus: `tools/opentest.py`, `tools/open_allow.json`, `src/panorama.js`.
-- Hulpscripts: `tools/orkestratie/` (`finaltests.sh`, `gallery.py`, `presetshots.py`, `docshots.py`, `stats.py`, `pickview.py`, `zone.py`, `mergecheck.py`, `build_pn.py`). Uitleg: `tools/orkestratie/README.md`.
-- Screenshots: `docs/screenshots`, gemaakt uit de bron van `3ab6a8d` met `tools/orkestratie/docshots.py`, met vijf beelden van de modus Openen.
-- Het werkplaatshandboek MR 415 (114 MB) en de referentiefoto's staan niet in de repo (rechten van Renault en derden). Alleen korte verwijzingen met paginanummer.
+- Onderzoek: `docs/onderzoek/` (kennisbasis met de RDW-gegevens, beslissingen met motorcode en ATF, databankenrecht, exterieur, motor, automaat, onderstel en interieur, UX-audit).
+- Onderdeelnummers: `docs/onderdeelnummers.csv`, `src/partnumbers.js`, `tools/orkestratie/build_pn.py` (met `VIN_KEUZE`).
+- Openmodus: `tools/opentest.py`, `tools/open_allow.json`, `src/panorama.js`; poort: `tools/orkestratie/gateshots.py` en `poort.js`.
+- Het werkplaatshandboek MR 415 (114 MB) en de referentiefoto's staan niet in de repo (rechten van Renault en derden).
 
 ## Vluchtig: scratchpad, weg als container stopt
 
 - Pad: `/tmp/claude-0/-home-user-laguna3/30068ba5-ed5c-5f1b-b200-1ce4840ed639/scratchpad`
-- Map `golf4/`: feitenblad `docs-feiten.md`, de volledige premortems `premortem-A.md` en `premortem-B.md`, `feiten-mechanismen.md`, `feiten-panorama.md`, `mr415-feiten.md`, `kennisbasis-gebruiker.md`, de plannen `plan.md` en `plan-v2.md`, en de onderzoeks- en verificatiegegevens van de nummers in `golf4/pn/` (per plak de ruwe uitvoer, de geverifieerde uitvoer, het verslag en de opgehaalde pagina's).
-- Testuitvoer `g4final2/` tot `g4final4/` (eindstand) en de poortbeelden met notities `g4gate/`, `g4gate2/` en `g4gate3/`; de hulpmiddelen van de orkestrator in `g4fix/` (pick.py, shots.py, probe.py).
-- Referentiefoto's `research/img/`. Niet in repo: rechten derden. Bronlinks staan in de notities.
+- `golf5/`: feitenblad, verslagen `motorcode.md`, `atf.md`, `databankenrecht.md`, inventaris (`inventaris.md`, `.csv`, `.py`), VIN-onderzoek `vin/`, RDW-gegevens `rdw/`, stagingmap van de nummers `nummers/`.
+- Testuitvoer `g5final1/` tot `g5final3/`; poortbeelden met notities `g5gate/`, `g5gate2/`, `g5gate3/`; S7 `g5s7/`.
+- `golf4/` met de gegevens van golf 4 en `research/` met het handboek en de referentiefoto's.
