@@ -12,13 +12,19 @@
 // cabine achterzijden (gang BackSide, FLIP_SIDED). Alleen in die tweede gang krijgt het glas een lichtere, blauwgrijze kleur: van binnen leest het
 // glas als een donkergrijs vlak met een zwakke weerspiegeling van de hemel, van buiten blijft het zo goed als zwart met dekking 0,92.
 function panGlassIn(m) {
-  m.onBeforeCompile = sh => { sh.fragmentShader = sh.fragmentShader.replace('#include <alphamap_fragment>', '#include <alphamap_fragment>\n#ifdef FLIP_SIDED\n\tdiffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.13, 0.15, 0.18), 0.9);\n#endif'); };
+  // van binnen (FLIP_SIDED): blauwgrijze tint plus een zwakke weerspiegeling (randglans en een schuine lichtband in beeldruimte), zodat het glas als vlak
+  // leest tegen de lichte lucht van de open opening; de buitenkant blijft ongewijzigd
+  m.onBeforeCompile = sh => {
+    sh.fragmentShader = sh.fragmentShader.replace('#include <alphamap_fragment>', '#include <alphamap_fragment>\n#ifdef FLIP_SIDED\n\tdiffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.15, 0.19, 0.25), 0.9);\n#endif')
+      .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n#ifdef FLIP_SIDED\n\t{ vec3 pv = normalize(vViewPosition); float fr = pow(1.0 - abs(dot(pv, normal)), 2.0); float bd = dot(vViewPosition.xy, vec2(0.7071, 0.7071)); float st = smoothstep(0.17, 0.0, abs(bd - 0.1)) * 0.07;\n\ttotalEmissiveRadiance += vec3(0.07, 0.10, 0.14) * (fr * 0.9 + st); }\n#endif');
+  };
   m.clone = function () { return panGlassIn(THREE.MeshPhysicalMaterial.prototype.clone.call(this)); };
   return m;
 }
 panGlassIn(phys('bodPanoGlass', { color: 0x030405, metalness: 0.05, roughness: 0.05, transparent: true, opacity: 0.92, depthWrite: false, envMapIntensity: 0.4 }));
 std('bodPanoFrit', 0x040405, 0, 0.35);                  // zwarte keramische rand (frit) op het glas
 std('bodPanoBar', 0x15161a, 0.3, 0.5);                  // dwarsbalk: donkergrijs tot zwart gelakt
+std('bodPanoCass', 0xa49c8a, 0, 0.9);                   // cassette van het zonnescherm: donkerder taupe dan de hemel, zodat het huis en het opgerolde scherm zich aftekenen
 const PAN_X = 0.47, PAN_XO = 0.50, PAN_XR = 0.52;       // glas, opening in de dakplaat, buitenrand van omlijsting en rails
 const PAN_GF = [0.20, -0.50], PAN_GR = [-0.58, -1.11];  // z-bereik van het voorste en achterste glas
 const PAN_OF = [0.22, -0.50], PAN_OR = [-0.58, -1.11];  // z-bereik van de openingen in de dakplaat
@@ -100,7 +106,7 @@ const panLook = { dir: [0.6, 1, -0.3], nodes: ['Panoramadak', 'Dakrail links', '
 // voor het voorste scherm de greep aan de achterrand van de opening en het lamphuis onder de voorrand (camera achter in de cabine, vanaf de achterbank),
 // voor het achterste scherm de lamellen en de greep (camera tussen de voorstoelen, kijkt naar achteren en omhoog)
 const panLookScrF = { dir: [0, -0.35, -0.94], nodes: ['Schermgreep voor', 'Lamphuis voor'] };
-const panLookScrR = { dir: [0, -0.3, 0.95], nodes: ['Schermdoek achter 1', 'Schermgreep achter'] };
+const panLookScrR = { dir: [0, -0.5, 0.87], nodes: ['Schermdoek achter 1', 'Schermgreep achter'] };
 // bouwt het hele panoramadak als groep
 function buildPanorama() {
   /* ---- schuifglas voor: kantelen aan de achterrand (0,045 m), dan over de dakkromming 0,60 m naar achteren ---- */
@@ -150,12 +156,12 @@ function buildPanorama() {
     const leader = A(`Zonnescherm ${nm}`, { d: `Handbediend rolgordijn onder het ${nm}e glaspaneel, in dit model een stapel lamellen die in de cassette schuift (schematisch). Met de zwarte greep open of dicht; het dak werkt alleen met geopend scherm.`, ex: [0, -0.12, nm === 'voor' ? 0.1 : -0.1],
       open: { ...lead.open, label: `Zonnescherm ${nm}`, look } }, [
       P(`Schermdoek ${nm} 1`, strip(lead), MAT.fabric, { d: 'Eerste lamel van het zonnescherm, met de greep.', ex: [0, -0.04, 0] }),
-      P(`Schermgreep ${nm}`, G.rbox(0.05, 0.005, 0.012, 0.002), MAT.bodPillar, { d: 'Kleine zwarte greep onder de voorrand van het zonnescherm om het te openen en te sluiten; blijft bij een geopend scherm aan de achterrand van de opening zichtbaar, net voor de afwerkring.', p: panP(lead.za - 0.0045, 0, lead.lev - 0.0035), ex: [0, -0.06, 0] }),
+      P(`Schermgreep ${nm}`, G.rbox(0.08, 0.006, 0.018, 0.003), MAT.bodPillar, { d: 'Kleine zwarte greep onder de voorrand van het zonnescherm om het te openen en te sluiten; blijft bij een geopend scherm aan de achterrand van de opening zichtbaar, net voor de afwerkring.', p: panP(lead.za - 0.0045, 0, lead.lev - 0.0035), ex: [0, -0.06, 0] }),
     ]);
     const rest = lam.slice(1).map(l => P(`Schermdoek ${nm} ${l.i + 1}`, strip(l), MAT.fabric, { d: l.steps ? 'Lamel van het zonnescherm; schuift naar de cassette en stapelt zich daar.' : 'Laatste lamel van het zonnescherm, vast in de cassette (de rol).', ex: [0, -0.05, 0],
       open: l.steps ? { ...l.open, follow: `Zonnescherm ${nm}` } : undefined }));
     const zc0 = cassZ[0], zc1 = cassZ[1];
-    const cass = P(`Schermcassette ${nm}`, merge([panSlab(zc1, zc0, -0.49, 0.49, -0.0295, -0.027, 2, 10), panSlab(zc1, zc1 + 0.004, -0.49, 0.49, -0.027, -0.008, 1, 10), panSlab(zc1, zc0, 0.486, 0.49, -0.027, -0.008, 2, 1), panSlab(zc1, zc0, -0.49, -0.486, -0.027, -0.008, 2, 1)]), MAT.fabric, { d: `Cassette (rolhuis) van het ${nm}e zonnescherm, bekleed in de kleur van de hemel; het scherm schuift er onder in (vorm geschat).`, ex: [0, -0.1, 0] });
+    const cass = P(`Schermcassette ${nm}`, merge([panSlab(zc1, zc0, -0.49, 0.49, -0.0295, -0.027, 2, 10), panSlab(zc1, zc1 + 0.004, -0.49, 0.49, -0.027, -0.008, 1, 10), panSlab(zc1, zc0, 0.486, 0.49, -0.027, -0.008, 2, 1), panSlab(zc1, zc0, -0.49, -0.486, -0.027, -0.008, 2, 1)]), MAT.bodPanoCass, { d: `Cassette (rolhuis) van het ${nm}e zonnescherm, bekleed in een iets donkerder tint dan de hemel; het scherm schuift er onder in (vorm geschat).`, ex: [0, -0.1, 0] });
     return [leader, ...rest, cass];
   };
   const scrF = screen('voor', 0.165, -0.58, 8, -0.0165, [-0.50, -0.60], 0.0465, panLookScrF);
