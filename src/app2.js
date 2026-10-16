@@ -248,7 +248,7 @@ function uiSyncToggles() {
 function uiAfterAction() {
   renderPanel();
   if (treeVisible()) renderTree();
-  uiSyncExplode(); uiSyncCats(); uiSyncUndo(); uiSyncToggles(); uiSyncOpenUi();
+  uiSyncExplode(); uiSyncCats(); uiSyncUndo(); uiSyncToggles(); uiSyncOpenUi(); uiSyncIso();
   applyMats(); // I3: geen gele selectietint meer op een groep die open is gegaan
   uiHideTip();
   uiSyncLabels();
@@ -371,10 +371,21 @@ function uiProject(pts) {
   return Number.isFinite(x0) ? { x0, y0, x1, y1 } : null;
 }
 function uiFreeView() { return { x0: VIEW.l, y0: VIEW.t, x1: W - VIEW.r, y1: H - VIEW.b }; }
-function isolate(list) { uiSetDim(null); ISO = list.slice(); applyVisibility(); applyMats(); updateGround(); requestRender(); }
+// U4: isoleren met een korte fade van wat uit beeld gaat (uiFadeFrom in app1.js) en de badge in het dock (uiSyncIso)
+function isolate(list) {
+  uiSetDim(null);
+  const before = uiVisibleMeshes();
+  ISO = list.slice(); applyVisibility(); uiFadeFrom(before); applyMats(); updateGround(); uiSyncIso(); requestRender();
+}
+function uiSyncIso() {
+  const on = ISO.length > 0, txt = ISO.map(n => n.name).join(' en ');
+  if (els.isoBadge.hidden !== !on) { els.isoBadge.hidden = !on; uiUiChanged(); layoutView(); }
+  if (on && els.isoName.textContent !== txt) { els.isoName.textContent = txt; uiUiDirty = true; }
+}
+$('isoShowAll').onclick = () => $('btnShowAll').click();
 
 els.toggle.onclick = () => { const n = SEL; if (!n.asm) return; uiOpen(n) ? doCollapse(n) : doExplode(n); };
-els.all.onclick = () => { const n = SEL; if (!n.asm) return; uiPush(); explodeAllUnder(n); CTX = n; uiLabelForce = false; clearPreset(); focusNodes([n], null, 1.04); uiLastFit = { nodes: [n], dir: null, pad: 1.04 }; uiAfterAction(); };
+els.all.onclick = () => { const n = SEL; if (!n.asm) return; uiPush(); explodeAllUnder(n); CTX = n; uiLabelForce = false; clearPreset(); focusNodes([n], null, 1.04); uiAfterAction(); };
 els.up.onclick = uiUp;
 els.dim.onclick = () => { uiPush(); uiSetDim(null); uiAfterAction(); };
 els.dive.onclick = () => uiDive(SEL);
@@ -1249,8 +1260,9 @@ function uiMeasureUi() {
   const add = (id, el) => { if (!el || el.hidden) return; const r = el.getBoundingClientRect(); if (r.width > 0 && r.height > 0) out.push({ id, x: r.left, y: r.top, w: r.width, h: r.height }); };
   add('panel', els.sheet);
   add('modes', $('modes')); add('explode', $('xctl')); add('presets', els.presets);
-  add('openSeg', $('openSeg')); add('openCtl', $('openCtl')); add('openList', $('openList'));
+  add('openSeg', $('openSeg')); add('openCtl', $('openCtl')); add('openList', $('openList')); add('isoBadge', els.isoBadge);
   add('title', els.topbar.querySelector('.title')); add('topActions', els.topbar.querySelector('.top-actions'));
+  add('notice', els.notice); if (!els.toast.classList.contains('gone')) add('toast', els.toast);
   if (!els.hint.hidden && !els.hint.classList.contains('gone')) add('hint', els.hint);
   if (!els.menu.hidden) add('menu', els.menu);
   if (!els.tourBar.hidden) add('tour', els.tourBar);
@@ -1263,12 +1275,13 @@ const uiRadii = [30, 52, 78, 110, 150];
 function updateLabels() {
   if (uiUiDirty) { uiRectCache = uiMeasureUi(); uiUiDirty = false; }
   const g = uiLabelGroup();
-  const max = W < 600 ? 10 : 24;
+  const max = W < 600 ? UI_LABEL_MAX_NARROW : UI_LABEL_MAX;
   uiCands.length = 0;
   if (SEL && !SEL.asm && SEL.ev && LABELS) uiCands.push(SEL);
   const lp = uiLabelForce && ACTIVE_PRESET ? appPresetById.get(ACTIVE_PRESET) : null;
   const only = lp && lp.labelOnly && g && g.name === lp.labels ? lp.labelOnly : null;
-  if (g) for (const k of g.bySize) { if (uiCands.length >= max) break; if (k !== SEL && k.ev && (!only || only.includes(k.name))) uiCands.push(k); }
+  let eligible = 0; // U2: alle kinderen die een label zouden kunnen krijgen, ook voorbij het maximum
+  if (g) for (const k of g.bySize) { if (k !== SEL && k.ev && (!only || only.includes(k.name))) { eligible++; if (uiCands.length < max) uiCands.push(k); } }
   // nieuwe teksten eerst toewijzen, dan in één keer meten
   while (labelPool.length < uiCands.length) uiNewLabel();
   for (let i = 0; i < uiCands.length; i++) {
@@ -1328,7 +1341,33 @@ function updateLabels() {
     shown++;
   }
   for (let i = uiCands.length; i < labelPool.length; i++) uiHideLabel(i);
+  // U2: wat niet getoond is (voorbij het maximum of zonder vrije plek) staat als "+n meer" in een hoek van het vrije beeld
+  const selShown = uiCands.length && uiCands[0] === SEL && !SEL.asm ? 1 : 0;
+  uiLabelsMore = g ? Math.max(0, eligible - (shown - selShown)) : 0;
+  uiPlaceMore(g);
   return shown;
+}
+let uiLabelsMore = 0, uiMoreEl = null;
+function uiPlaceMore(g) {
+  if (!uiMoreEl) {
+    uiMoreEl = document.createElement('button'); uiMoreEl.className = 'lmore'; uiMoreEl.hidden = true; uiMoreEl.tabIndex = -1;
+    uiMoreEl.title = 'Alle onderdelen van deze groep in de lijst';
+    uiMoreEl.onclick = () => { showTab('tree'); if (uiSheetBottom()) setSheet('open'); if (uiMoreEl._g) { openRows.add(uiMoreEl._g.id); renderTree(); } };
+    els.labels.appendChild(uiMoreEl);
+  }
+  const el = uiMoreEl;
+  if (!uiLabelsMore) { if (!el.hidden) { el.hidden = true; el.style.transform = 'translate(-9999px,-9999px)'; } return; }
+  const txt = `+${uiLabelsMore} meer`;
+  if (el.textContent !== txt) { el.textContent = txt; el.setAttribute('aria-label', `${uiLabelsMore} onderdelen meer zonder label; open de lijst`); el._w = 0; }
+  el._g = g;
+  if (el.hidden) el.hidden = false;
+  if (!el._w) { el._w = el.offsetWidth; el._h = el.offsetHeight; }
+  const w = el._w || 70, h = el._h || 22;
+  // hoeken van het vrije beeld, rechtsonder eerst; past geen enkele, dan toch rechtsonder
+  const spots = [[uiVx1 - w, uiVy1 - h], [uiVx0, uiVy1 - h], [uiVx1 - w, uiVy0], [uiVx0, uiVy0]];
+  let p = spots.find(([x, y]) => uiFits(x, y, w, h)) || spots[0];
+  const rx = Math.round(p[0]), ry = Math.round(p[1]);
+  if (el._x !== rx || el._y !== ry) { el._x = rx; el._y = ry; el.style.transform = 'translate(' + rx + 'px,' + ry + 'px)'; }
 }
 // vrije plek voor een label: binnen het vrije beeld, niet over andere labels of hun ankers, niet over de bediening
 function uiFits(x, y, w, h) {
@@ -1356,7 +1395,7 @@ function layoutView() {
   const acts = els.topbar.querySelector('.top-actions').getBoundingClientRect();
   const sheet = els.sheet.getBoundingClientRect();
   let dockTop = H;
-  for (const el of [$('modes'), $('xctl'), els.presets, $('openCtl'), $('openList')]) { const r = el.getBoundingClientRect(); if (r.height > 0 && r.top < dockTop) dockTop = r.top; }
+  for (const el of [$('modes'), $('xctl'), els.presets, $('openCtl'), $('openList'), els.isoBadge]) { const r = el.getBoundingClientRect(); if (r.height > 0 && r.top < dockTop) dockTop = r.top; }
   if (wide) {
     VIEW.l = 0; VIEW.r = Math.max(0, W - sheet.left + 8);
     VIEW.t = Math.min(H * 0.3, title.bottom + 6);
@@ -1508,6 +1547,7 @@ function uiTick(dt) {
   if (uiStepPlay(dt)) active = true;
   if (stepCam(dt)) active = true;
   if (stepGround(dt)) active = true;
+  if (uiStepFade(dt)) active = true; // U4
   if (uiVisDirty) { applyVisibility(); active = true; }
   return active;
 }
@@ -1628,6 +1668,7 @@ function finishAll() {
   if (uiOpenAnim.size) { uiOpenAnim.clear(); uiStrutSync(); }
   if (uiPlayS) { const s = uiPlayS; uiPlayS = null; uiApplyX(s.w, s.x1, true); updateGround(); }
   if (camAnim) { camera.position.copy(camAnim.p1); controls.target.copy(camAnim.t1); camAnim = null; }
+  uiFadeEnd(); // U4: ook de fade bij isoleren is dan klaar
   applyVisibility();
   ground.position.y = groundTarget; blob.position.y = groundTarget + 0.002;
   controls.update();

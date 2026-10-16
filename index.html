@@ -1,5 +1,5 @@
 <title>Laguna III explosietekening</title>
-<meta name="laguna-version" content="7 (bron 2e38b82)">
+<meta name="laguna-version" content="7 (bron 26651b7)">
 <meta name="description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback (2011, 2.0 Turbo, automaat): 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
 <meta property="og:title" content="Laguna III explosietekening">
 <meta property="og:description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback: 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
@@ -160,6 +160,18 @@ input[type=range]{width:100%;accent-color:var(--ink)}
 .legend{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--ink-2)}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
 .qnote{font-size:12px;color:var(--ink-2);margin:-6px 0 0}
+/* thema (U5): segmentknop in het tabblad Weergave */
+#themeSeg{box-shadow:none;align-self:flex-start}
+#themeSeg button{padding:6px 12px}
+/* isolatiebadge (U4): bovenin het dock zolang een groep geïsoleerd is */
+#isoBadge{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px 5px 4px 12px;box-shadow:var(--shadow);font-size:12.5px;max-width:100%;box-sizing:border-box}
+#isoBadge span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+#isoBadge .btn{flex:0 0 auto;padding:5px 10px;font-size:12px;border-radius:999px}
+/* meldingen: #notice blijft staan (contextverlies), #toast verdwijnt vanzelf (U8, U9) */
+#notice,#toast{position:absolute;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);border-radius:14px;padding:8px 14px;font-size:13px;font-weight:700;border:1px solid var(--line);pointer-events:none;max-width:min(560px,calc(100% - 32px));box-sizing:border-box;text-align:center;z-index:45}
+#notice{top:calc(50% - 20px);background:var(--danger);color:#fff}
+#toast{bottom:calc(var(--sheet-h,0px) + 16px + env(safe-area-inset-bottom,0px));transition:opacity .3s}
+#toast.gone{opacity:0}
 /* ---------- labels (callouts met leiderlijn) ---------- */
 #labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 #leaders{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
@@ -171,6 +183,9 @@ input[type=range]{width:100%;accent-color:var(--ink)}
 .lbl b{font-family:var(--f-mono);font-weight:500;font-size:10px;background:var(--ink);color:var(--bg);border-radius:999px;min-width:18px;height:18px;display:inline-grid;place-items:center;padding:0 4px;flex:0 0 auto}
 .lbl.sel{background:var(--accent);color:var(--on-accent);border-color:transparent}
 .touch .lbl{padding:5px 11px 5px 5px;font-size:12px}
+/* U2: "+n meer" als er meer onderdelen zijn dan er labels passen; geen .lbl (geen leiderlijn, telt niet als label) */
+.lmore{position:absolute;left:0;top:0;pointer-events:auto;border:1px dashed var(--ink-2);background:var(--surface);color:var(--ink-2);border-radius:999px;padding:3px 10px;font-size:11.5px;font-weight:700;white-space:nowrap;transform:translate(-9999px,-9999px);will-change:transform}
+.lmore:hover{color:var(--ink);border-style:solid}
 @media (max-width:600px){.lbl,.touch .lbl{padding:1px 7px 1px 2px;font-size:10px;gap:4px;max-width:min(220px,58vw);box-shadow:0 1px 4px rgba(0,0,0,.12)}.lbl b{font-size:9px;min-width:15px;height:15px;padding:0 3px}}
 #tip{position:fixed;left:0;top:0;z-index:40;pointer-events:none;background:var(--ink);color:var(--bg);border-radius:9px;padding:6px 10px;font-size:12.5px;font-weight:700;box-shadow:var(--shadow);white-space:nowrap;max-width:min(420px,80vw);overflow:hidden;text-overflow:ellipsis}
 #tip i{font-style:normal;font-weight:400;opacity:.8}
@@ -534,6 +549,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
     </div>
   </aside>
   <nav id="dock" aria-label="Bediening">
+    <div id="isoBadge" role="status" hidden><span>Geïsoleerd: <b id="isoName"></b></span><button class="btn" id="isoShowAll" title="De isolatie opheffen en de hele auto tonen">Alles tonen</button></div>
     <div id="openList" role="group" aria-label="Alle openers" hidden></div>
     <div class="dock-main">
       <div class="seg" id="modes" role="radiogroup" aria-label="Wat doet een klik op een onderdeel">
@@ -567,7 +583,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
   <div id="press" hidden><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="28"/></svg></div>
   <div id="helpDlg" hidden><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
     <h2 id="helpTitle">Bediening</h2>
-    <p class="ver">Laguna III explosietekening, versie 7 (bron 2e38b82)</p>
+    <p class="ver">Laguna III explosietekening, versie 7 (bron 26651b7)</p>
     <div id="helpMouse"><h3>Met de muis</h3><dl>
       <dt>Klik</dt><dd>De groep van het onderdeel klapt uit; de rest blijft staan. Staat die groep al open, dan wordt het onderdeel uitgelicht.</dd>
       <dt>Dubbelklik</dt><dd>Direct naar dit onderdeel: alle groepen erboven gaan laag voor laag open.</dd>
@@ -5687,7 +5703,40 @@ function applyVisibility() {
     if (!n.asm) { if (n.ev && ins) uiPickable.push(n.obj); return; }
     for (const k of n.kids) walk(k, ins, n.ev);
   })(ROOT, false, true);
+  if (uiFade) uiFadeShow(); // U4: wat uitfadet blijft tot het einde van de fade getekend
   uiVisDirty = false; uiPickVer++;
+}
+// U4: overgang bij isoleren. Wat uit beeld gaat, wordt UI_ISO_FADE_MS lang als vervagend spook getekend (één gedeeld
+// materiaal, geen kloon per mesh) en pas daarna verborgen. De zichtbaarheid (ev, aanwijzen, labels) staat al meteen
+// op de nieuwe stand; alleen obj.visible van de vervagende meshes en hun groepen wordt zolang overschreven.
+const uiFadeMat = new THREE.MeshBasicMaterial({ color: 0xaab5c2, transparent: true, opacity: 0.5, depthWrite: false, toneMapped: false });
+uiFadeMat.name = 'uiFade';
+let uiFade = null; // { t: verstreken s, out: Set<mesh> }
+function uiVisibleMeshes() { const s = new Set(); for (const m of MESHES) if (m.userData.node.ev) s.add(m); return s; }
+function uiFadeShow() {
+  for (const m of uiFade.out) for (let o = m; o && o !== scene; o = o.parent) o.visible = true;
+}
+// before: de zichtbare meshes vóór de wijziging (uiVisibleMeshes); na applyVisibility() aanroepen
+function uiFadeFrom(before) {
+  if (uiFade) { uiFade = null; applyVisibility(); } // een lopende fade eindigt eerst (zijn meshes stonden nog zichtbaar)
+  if (REDUCED || !before) return false;
+  const out = new Set();
+  for (const m of before) if (!m.userData.node.ev) out.add(m);
+  if (!out.size) return false;
+  uiFade = { t: 0, out };
+  uiFadeMat.opacity = 0.5;
+  uiFadeShow();
+  for (const m of out) m.material = uiFadeMat;
+  return true;
+}
+function uiFadeEnd() { if (!uiFade) return; uiFade = null; applyVisibility(); applyMats(); }
+function uiStepFade(dt) {
+  if (!uiFade) return false;
+  uiFade.t += dt;
+  const k = Math.min(1, uiFade.t / (UI_ISO_FADE_MS / 1000));
+  uiFadeMat.opacity = 0.5 * (1 - k);
+  if (k >= 1) uiFadeEnd();
+  return true;
 }
 // Markering door de kleur zelf te verschuiven (een optelsom met emissive verdwijnt op glanzend, licht metaal:
 // gemeten 218 -> 222 in rood op de lak). Minder metaal en minder reflectie, zodat de tint ook op de lak leesbaar is.
@@ -5729,6 +5778,7 @@ function uiMatFor(m) {
   const ghost = XRAY && n.isBody;
   if (ghost) mat = GHOST;
   const dim = uiDimmed(m);
+  if (uiFade && uiFade.out.has(m)) return uiFadeMat;
   if (uiSelSet.has(m)) return ghost ? GHOST_HL : uiSelMat(mat);
   if (uiHovSet.has(m)) return ghost || dim ? uiGhostHv : uiHvMat(mat);
   return dim && !ghost ? uiDimMat : mat;
@@ -6335,7 +6385,8 @@ function appApplyPreset(p, opt = {}) {
   const want = new Set();
   for (const name of p.open || []) want.add(byName(name));
   for (const name of p.deep || []) subtree(byName(name)).forEach(a => { if (a.asm) want.add(a); });
-  // isolatie en weergave
+  // isolatie en weergave (U4: wat door de isolatie uit beeld gaat, fadet uit; zie uiFadeFrom in app1.js)
+  const wasVisible = uiVisibleMeshes();
   ISO = (p.iso || []).map(byName);
   XRAY = !!p.xray; SYSCOL = !!p.sys;
   if (SPREAD !== (p.spread || 1)) uiSetSpread(p.spread || 1, false);
@@ -6364,7 +6415,7 @@ function appApplyPreset(p, opt = {}) {
     if (v) { n.pull.set(v[0], v[1], v[2]); uiOffTo(n, 1.0, closeT); }
     else if (n.pull.lengthSq() > 0) { n.pull.set(0, 0, 0); uiOffTo(n, 0.6, 0); }
   }
-  applyVisibility(); applyMats();
+  applyVisibility(); uiFadeFrom(wasVisible); applyMats();
   // selectie, labels en camera
   CTX = p.labels ? byName(p.labels) : (p.select ? byName(p.select) : ((p.open || p.deep || []).length ? byName((p.open || p.deep)[0]) : null));
   uiLabelForce = !!p.labels;
@@ -6661,7 +6712,7 @@ function uiSyncToggles() {
 function uiAfterAction() {
   renderPanel();
   if (treeVisible()) renderTree();
-  uiSyncExplode(); uiSyncCats(); uiSyncUndo(); uiSyncToggles(); uiSyncOpenUi();
+  uiSyncExplode(); uiSyncCats(); uiSyncUndo(); uiSyncToggles(); uiSyncOpenUi(); uiSyncIso();
   applyMats(); // I3: geen gele selectietint meer op een groep die open is gegaan
   uiHideTip();
   uiSyncLabels();
@@ -6784,10 +6835,21 @@ function uiProject(pts) {
   return Number.isFinite(x0) ? { x0, y0, x1, y1 } : null;
 }
 function uiFreeView() { return { x0: VIEW.l, y0: VIEW.t, x1: W - VIEW.r, y1: H - VIEW.b }; }
-function isolate(list) { uiSetDim(null); ISO = list.slice(); applyVisibility(); applyMats(); updateGround(); requestRender(); }
+// U4: isoleren met een korte fade van wat uit beeld gaat (uiFadeFrom in app1.js) en de badge in het dock (uiSyncIso)
+function isolate(list) {
+  uiSetDim(null);
+  const before = uiVisibleMeshes();
+  ISO = list.slice(); applyVisibility(); uiFadeFrom(before); applyMats(); updateGround(); uiSyncIso(); requestRender();
+}
+function uiSyncIso() {
+  const on = ISO.length > 0, txt = ISO.map(n => n.name).join(' en ');
+  if (els.isoBadge.hidden !== !on) { els.isoBadge.hidden = !on; uiUiChanged(); layoutView(); }
+  if (on && els.isoName.textContent !== txt) { els.isoName.textContent = txt; uiUiDirty = true; }
+}
+$('isoShowAll').onclick = () => $('btnShowAll').click();
 
 els.toggle.onclick = () => { const n = SEL; if (!n.asm) return; uiOpen(n) ? doCollapse(n) : doExplode(n); };
-els.all.onclick = () => { const n = SEL; if (!n.asm) return; uiPush(); explodeAllUnder(n); CTX = n; uiLabelForce = false; clearPreset(); focusNodes([n], null, 1.04); uiLastFit = { nodes: [n], dir: null, pad: 1.04 }; uiAfterAction(); };
+els.all.onclick = () => { const n = SEL; if (!n.asm) return; uiPush(); explodeAllUnder(n); CTX = n; uiLabelForce = false; clearPreset(); focusNodes([n], null, 1.04); uiAfterAction(); };
 els.up.onclick = uiUp;
 els.dim.onclick = () => { uiPush(); uiSetDim(null); uiAfterAction(); };
 els.dive.onclick = () => uiDive(SEL);
@@ -7662,8 +7724,9 @@ function uiMeasureUi() {
   const add = (id, el) => { if (!el || el.hidden) return; const r = el.getBoundingClientRect(); if (r.width > 0 && r.height > 0) out.push({ id, x: r.left, y: r.top, w: r.width, h: r.height }); };
   add('panel', els.sheet);
   add('modes', $('modes')); add('explode', $('xctl')); add('presets', els.presets);
-  add('openSeg', $('openSeg')); add('openCtl', $('openCtl')); add('openList', $('openList'));
+  add('openSeg', $('openSeg')); add('openCtl', $('openCtl')); add('openList', $('openList')); add('isoBadge', els.isoBadge);
   add('title', els.topbar.querySelector('.title')); add('topActions', els.topbar.querySelector('.top-actions'));
+  add('notice', els.notice); if (!els.toast.classList.contains('gone')) add('toast', els.toast);
   if (!els.hint.hidden && !els.hint.classList.contains('gone')) add('hint', els.hint);
   if (!els.menu.hidden) add('menu', els.menu);
   if (!els.tourBar.hidden) add('tour', els.tourBar);
@@ -7676,12 +7739,13 @@ const uiRadii = [30, 52, 78, 110, 150];
 function updateLabels() {
   if (uiUiDirty) { uiRectCache = uiMeasureUi(); uiUiDirty = false; }
   const g = uiLabelGroup();
-  const max = W < 600 ? 10 : 24;
+  const max = W < 600 ? UI_LABEL_MAX_NARROW : UI_LABEL_MAX;
   uiCands.length = 0;
   if (SEL && !SEL.asm && SEL.ev && LABELS) uiCands.push(SEL);
   const lp = uiLabelForce && ACTIVE_PRESET ? appPresetById.get(ACTIVE_PRESET) : null;
   const only = lp && lp.labelOnly && g && g.name === lp.labels ? lp.labelOnly : null;
-  if (g) for (const k of g.bySize) { if (uiCands.length >= max) break; if (k !== SEL && k.ev && (!only || only.includes(k.name))) uiCands.push(k); }
+  let eligible = 0; // U2: alle kinderen die een label zouden kunnen krijgen, ook voorbij het maximum
+  if (g) for (const k of g.bySize) { if (k !== SEL && k.ev && (!only || only.includes(k.name))) { eligible++; if (uiCands.length < max) uiCands.push(k); } }
   // nieuwe teksten eerst toewijzen, dan in één keer meten
   while (labelPool.length < uiCands.length) uiNewLabel();
   for (let i = 0; i < uiCands.length; i++) {
@@ -7741,7 +7805,33 @@ function updateLabels() {
     shown++;
   }
   for (let i = uiCands.length; i < labelPool.length; i++) uiHideLabel(i);
+  // U2: wat niet getoond is (voorbij het maximum of zonder vrije plek) staat als "+n meer" in een hoek van het vrije beeld
+  const selShown = uiCands.length && uiCands[0] === SEL && !SEL.asm ? 1 : 0;
+  uiLabelsMore = g ? Math.max(0, eligible - (shown - selShown)) : 0;
+  uiPlaceMore(g);
   return shown;
+}
+let uiLabelsMore = 0, uiMoreEl = null;
+function uiPlaceMore(g) {
+  if (!uiMoreEl) {
+    uiMoreEl = document.createElement('button'); uiMoreEl.className = 'lmore'; uiMoreEl.hidden = true; uiMoreEl.tabIndex = -1;
+    uiMoreEl.title = 'Alle onderdelen van deze groep in de lijst';
+    uiMoreEl.onclick = () => { showTab('tree'); if (uiSheetBottom()) setSheet('open'); if (uiMoreEl._g) { openRows.add(uiMoreEl._g.id); renderTree(); } };
+    els.labels.appendChild(uiMoreEl);
+  }
+  const el = uiMoreEl;
+  if (!uiLabelsMore) { if (!el.hidden) { el.hidden = true; el.style.transform = 'translate(-9999px,-9999px)'; } return; }
+  const txt = `+${uiLabelsMore} meer`;
+  if (el.textContent !== txt) { el.textContent = txt; el.setAttribute('aria-label', `${uiLabelsMore} onderdelen meer zonder label; open de lijst`); el._w = 0; }
+  el._g = g;
+  if (el.hidden) el.hidden = false;
+  if (!el._w) { el._w = el.offsetWidth; el._h = el.offsetHeight; }
+  const w = el._w || 70, h = el._h || 22;
+  // hoeken van het vrije beeld, rechtsonder eerst; past geen enkele, dan toch rechtsonder
+  const spots = [[uiVx1 - w, uiVy1 - h], [uiVx0, uiVy1 - h], [uiVx1 - w, uiVy0], [uiVx0, uiVy0]];
+  let p = spots.find(([x, y]) => uiFits(x, y, w, h)) || spots[0];
+  const rx = Math.round(p[0]), ry = Math.round(p[1]);
+  if (el._x !== rx || el._y !== ry) { el._x = rx; el._y = ry; el.style.transform = 'translate(' + rx + 'px,' + ry + 'px)'; }
 }
 // vrije plek voor een label: binnen het vrije beeld, niet over andere labels of hun ankers, niet over de bediening
 function uiFits(x, y, w, h) {
@@ -7769,7 +7859,7 @@ function layoutView() {
   const acts = els.topbar.querySelector('.top-actions').getBoundingClientRect();
   const sheet = els.sheet.getBoundingClientRect();
   let dockTop = H;
-  for (const el of [$('modes'), $('xctl'), els.presets, $('openCtl'), $('openList')]) { const r = el.getBoundingClientRect(); if (r.height > 0 && r.top < dockTop) dockTop = r.top; }
+  for (const el of [$('modes'), $('xctl'), els.presets, $('openCtl'), $('openList'), els.isoBadge]) { const r = el.getBoundingClientRect(); if (r.height > 0 && r.top < dockTop) dockTop = r.top; }
   if (wide) {
     VIEW.l = 0; VIEW.r = Math.max(0, W - sheet.left + 8);
     VIEW.t = Math.min(H * 0.3, title.bottom + 6);
@@ -7921,6 +8011,7 @@ function uiTick(dt) {
   if (uiStepPlay(dt)) active = true;
   if (stepCam(dt)) active = true;
   if (stepGround(dt)) active = true;
+  if (uiStepFade(dt)) active = true; // U4
   if (uiVisDirty) { applyVisibility(); active = true; }
   return active;
 }
@@ -8041,6 +8132,7 @@ function finishAll() {
   if (uiOpenAnim.size) { uiOpenAnim.clear(); uiStrutSync(); }
   if (uiPlayS) { const s = uiPlayS; uiPlayS = null; uiApplyX(s.w, s.x1, true); updateGround(); }
   if (camAnim) { camera.position.copy(camAnim.p1); controls.target.copy(camAnim.t1); camAnim = null; }
+  uiFadeEnd(); // U4: ook de fade bij isoleren is dan klaar
   applyVisibility();
   ground.position.y = groundTarget; blob.position.y = groundTarget + 0.002;
   controls.update();

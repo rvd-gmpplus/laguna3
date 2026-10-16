@@ -160,6 +160,18 @@ input[type=range]{width:100%;accent-color:var(--ink)}
 .legend{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--ink-2)}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
 .qnote{font-size:12px;color:var(--ink-2);margin:-6px 0 0}
+/* thema (U5): segmentknop in het tabblad Weergave */
+#themeSeg{box-shadow:none;align-self:flex-start}
+#themeSeg button{padding:6px 12px}
+/* isolatiebadge (U4): bovenin het dock zolang een groep geïsoleerd is */
+#isoBadge{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px 5px 4px 12px;box-shadow:var(--shadow);font-size:12.5px;max-width:100%;box-sizing:border-box}
+#isoBadge span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+#isoBadge .btn{flex:0 0 auto;padding:5px 10px;font-size:12px;border-radius:999px}
+/* meldingen: #notice blijft staan (contextverlies), #toast verdwijnt vanzelf (U8, U9) */
+#notice,#toast{position:absolute;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);border-radius:14px;padding:8px 14px;font-size:13px;font-weight:700;border:1px solid var(--line);pointer-events:none;max-width:min(560px,calc(100% - 32px));box-sizing:border-box;text-align:center;z-index:45}
+#notice{top:calc(50% - 20px);background:var(--danger);color:#fff}
+#toast{bottom:calc(var(--sheet-h,0px) + 16px + env(safe-area-inset-bottom,0px));transition:opacity .3s}
+#toast.gone{opacity:0}
 /* ---------- labels (callouts met leiderlijn) ---------- */
 #labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 #leaders{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
@@ -171,6 +183,9 @@ input[type=range]{width:100%;accent-color:var(--ink)}
 .lbl b{font-family:var(--f-mono);font-weight:500;font-size:10px;background:var(--ink);color:var(--bg);border-radius:999px;min-width:18px;height:18px;display:inline-grid;place-items:center;padding:0 4px;flex:0 0 auto}
 .lbl.sel{background:var(--accent);color:var(--on-accent);border-color:transparent}
 .touch .lbl{padding:5px 11px 5px 5px;font-size:12px}
+/* U2: "+n meer" als er meer onderdelen zijn dan er labels passen; geen .lbl (geen leiderlijn, telt niet als label) */
+.lmore{position:absolute;left:0;top:0;pointer-events:auto;border:1px dashed var(--ink-2);background:var(--surface);color:var(--ink-2);border-radius:999px;padding:3px 10px;font-size:11.5px;font-weight:700;white-space:nowrap;transform:translate(-9999px,-9999px);will-change:transform}
+.lmore:hover{color:var(--ink);border-style:solid}
 @media (max-width:600px){.lbl,.touch .lbl{padding:1px 7px 1px 2px;font-size:10px;gap:4px;max-width:min(220px,58vw);box-shadow:0 1px 4px rgba(0,0,0,.12)}.lbl b{font-size:9px;min-width:15px;height:15px;padding:0 3px}}
 #tip{position:fixed;left:0;top:0;z-index:40;pointer-events:none;background:var(--ink);color:var(--bg);border-radius:9px;padding:6px 10px;font-size:12.5px;font-weight:700;box-shadow:var(--shadow);white-space:nowrap;max-width:min(420px,80vw);overflow:hidden;text-overflow:ellipsis}
 #tip i{font-style:normal;font-weight:400;opacity:.8}
@@ -534,6 +549,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
     </div>
   </aside>
   <nav id="dock" aria-label="Bediening">
+    <div id="isoBadge" role="status" hidden><span>Geïsoleerd: <b id="isoName"></b></span><button class="btn" id="isoShowAll" title="De isolatie opheffen en de hele auto tonen">Alles tonen</button></div>
     <div id="openList" role="group" aria-label="Alle openers" hidden></div>
     <div class="dock-main">
       <div class="seg" id="modes" role="radiogroup" aria-label="Wat doet een klik op een onderdeel">

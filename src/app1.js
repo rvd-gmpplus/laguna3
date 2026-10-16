@@ -384,7 +384,40 @@ function applyVisibility() {
     if (!n.asm) { if (n.ev && ins) uiPickable.push(n.obj); return; }
     for (const k of n.kids) walk(k, ins, n.ev);
   })(ROOT, false, true);
+  if (uiFade) uiFadeShow(); // U4: wat uitfadet blijft tot het einde van de fade getekend
   uiVisDirty = false; uiPickVer++;
+}
+// U4: overgang bij isoleren. Wat uit beeld gaat, wordt UI_ISO_FADE_MS lang als vervagend spook getekend (één gedeeld
+// materiaal, geen kloon per mesh) en pas daarna verborgen. De zichtbaarheid (ev, aanwijzen, labels) staat al meteen
+// op de nieuwe stand; alleen obj.visible van de vervagende meshes en hun groepen wordt zolang overschreven.
+const uiFadeMat = new THREE.MeshBasicMaterial({ color: 0xaab5c2, transparent: true, opacity: 0.5, depthWrite: false, toneMapped: false });
+uiFadeMat.name = 'uiFade';
+let uiFade = null; // { t: verstreken s, out: Set<mesh> }
+function uiVisibleMeshes() { const s = new Set(); for (const m of MESHES) if (m.userData.node.ev) s.add(m); return s; }
+function uiFadeShow() {
+  for (const m of uiFade.out) for (let o = m; o && o !== scene; o = o.parent) o.visible = true;
+}
+// before: de zichtbare meshes vóór de wijziging (uiVisibleMeshes); na applyVisibility() aanroepen
+function uiFadeFrom(before) {
+  if (uiFade) { uiFade = null; applyVisibility(); } // een lopende fade eindigt eerst (zijn meshes stonden nog zichtbaar)
+  if (REDUCED || !before) return false;
+  const out = new Set();
+  for (const m of before) if (!m.userData.node.ev) out.add(m);
+  if (!out.size) return false;
+  uiFade = { t: 0, out };
+  uiFadeMat.opacity = 0.5;
+  uiFadeShow();
+  for (const m of out) m.material = uiFadeMat;
+  return true;
+}
+function uiFadeEnd() { if (!uiFade) return; uiFade = null; applyVisibility(); applyMats(); }
+function uiStepFade(dt) {
+  if (!uiFade) return false;
+  uiFade.t += dt;
+  const k = Math.min(1, uiFade.t / (UI_ISO_FADE_MS / 1000));
+  uiFadeMat.opacity = 0.5 * (1 - k);
+  if (k >= 1) uiFadeEnd();
+  return true;
 }
 // Markering door de kleur zelf te verschuiven (een optelsom met emissive verdwijnt op glanzend, licht metaal:
 // gemeten 218 -> 222 in rood op de lak). Minder metaal en minder reflectie, zodat de tint ook op de lak leesbaar is.
@@ -426,6 +459,7 @@ function uiMatFor(m) {
   const ghost = XRAY && n.isBody;
   if (ghost) mat = GHOST;
   const dim = uiDimmed(m);
+  if (uiFade && uiFade.out.has(m)) return uiFadeMat;
   if (uiSelSet.has(m)) return ghost ? GHOST_HL : uiSelMat(mat);
   if (uiHovSet.has(m)) return ghost || dim ? uiGhostHv : uiHvMat(mat);
   return dim && !ghost ? uiDimMat : mat;

@@ -150,7 +150,8 @@ function appApplyPreset(p, opt = {}) {
   const want = new Set();
   for (const name of p.open || []) want.add(byName(name));
   for (const name of p.deep || []) subtree(byName(name)).forEach(a => { if (a.asm) want.add(a); });
-  // isolatie en weergave
+  // isolatie en weergave (U4: wat door de isolatie uit beeld gaat, fadet uit; zie uiFadeFrom in app1.js)
+  const wasVisible = uiVisibleMeshes();
   ISO = (p.iso || []).map(byName);
   XRAY = !!p.xray; SYSCOL = !!p.sys;
   if (SPREAD !== (p.spread || 1)) uiSetSpread(p.spread || 1, false);
@@ -179,7 +180,7 @@ function appApplyPreset(p, opt = {}) {
     if (v) { n.pull.set(v[0], v[1], v[2]); uiOffTo(n, 1.0, closeT); }
     else if (n.pull.lengthSq() > 0) { n.pull.set(0, 0, 0); uiOffTo(n, 0.6, 0); }
   }
-  applyVisibility(); applyMats();
+  applyVisibility(); uiFadeFrom(wasVisible); applyMats();
   // selectie, labels en camera
   CTX = p.labels ? byName(p.labels) : (p.select ? byName(p.select) : ((p.open || p.deep || []).length ? byName((p.open || p.deep)[0]) : null));
   uiLabelForce = !!p.labels;
