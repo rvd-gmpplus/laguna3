@@ -318,7 +318,7 @@ function buildDoor(s, isFront) {
     P('Buitenpaneel', outer, MAT.paint, { d: `Geperste plaatstalen buitenhuid van het ${pos}portier, zilvergrijs metallic gelakt.`, ex: [s * 0.4, 0.14, 0.5] }),
     P('Portierrand', doorEdge, MAT.paintIn, { d: 'Gevouwen rand rondom het portier (onderkant en zijkanten) die buitenpaneel en binnenpaneel verbindt; zo heeft de sluitrand dikte.', ex: [-s * 0.1, -0.06, 0] }),
     P('Binnenpaneel', inner, MAT.paintIn, { d: 'Draagframe van het portier waarop raammechaniek, slot, luidspreker en bekleding vastzitten.', ex: [0, 0, 0] }),
-    P('Zijdelingse botsbalk', tube(isFront ? [[xin(za) * 1.0, 0.37, za], [xin(zm), 0.4, zm], [xin(zb), 0.43, zb]] : [[xin(-0.78), 0.43, -0.78], [xin(zm), 0.435, zm], [xin(zb), 0.44, zb]], 0.018, 16, 10), MAT.steel, { d: 'Hogesterktestalen buis in het portier die bij een zijaanrijding de indringing beperkt.', inner: true, ex: [s * 0.22, 0, 0.3] }),
+    P('Zijdelingse botsbalk', tube(isFront ? [[xin(za) * 1.0, 0.37, za], [xin(zm), 0.4, zm], [xin(zb), 0.43, zb]] : [[xin(-0.78), 0.43, -0.78], [xin(zm), 0.435, zm], [xin(zb), 0.44, zb]], 0.018, 16, 10), MAT.steel, { d: 'Hogesterktestalen buis in het portier die bij een zijaanrijding de indringing beperkt.', inner: !isFront, ex: [s * 0.22, 0, 0.3] }),
     P('Waterscherm', lowSide(s, z0 + 0.05, z1 - 0.05, 12, z => [bodSY(z, Math.max(lo(z) + 0.05, 0.4)), bodSY(z, 0.86)], 6, br, 0.075), MAT.plastic, { d: 'Kunststof folie tussen binnenpaneel en bekleding die vocht uit de bekleding houdt.', ex: [-s * 0.14, 0.12, -0.26] }),
     P('Zijruit', glass, MAT.glass, { d: 'Zakbare zijruit van gehard veiligheidsglas. Zakt elektrisch in het portier; ' + (isFront ? 'de zijruit gaat bijna volledig omlaag.' : 'de zijruit blijft een stukje boven de gordellijn staan (de wielkast beperkt de diepte).'), ex: [0, 0.32, 0],
       open: winSlide({ min: dDropMin, label: `Zijruit ${n}${pos}`, look: { dir: [s * 1, 0.7, isFront ? 0.4 : 0.15], nodes: [dName] } }) }),
@@ -336,7 +336,7 @@ function buildDoor(s, isFront) {
       P('Rubberrand', lijstP(-0.16, 0.02, 1, 0.0016), MAT.rubber, { d: 'Dunne zwarte rand onder de lijst, zichtbaar als schaduwlijn.', ex: [-s * 0.01, -0.02, 0] }),
     ]),
     ]),
-    A('Raambediening', { d: 'Elektrische raambediening met kabeltrommel: twee geleiderails, een ruitdrager en een motor.', inner: s > 0 && !isFront, ex: [-s * 0.3, -0.02, 0] }, [
+    A('Raambediening', { d: 'Elektrische raambediening met kabeltrommel: twee geleiderails, een ruitdrager en een motor.', ex: [-s * 0.3, -0.02, 0] }, [
       P('Geleiderail voor', rodBetween([xin(zm + 0.16), 0.42, zm + 0.16], [xin(zm + 0.16), 0.9, zm + 0.16], 0.008, 8), MAT.steel, { d: 'Stalen geleiderail voor de ruitdrager.', ex: [0, 0, 0.05] }),
       P('Geleiderail achter', rodBetween([xin(zm - 0.16), 0.42, zm - 0.16], [xin(zm - 0.16), 0.9, zm - 0.16], 0.008, 8), MAT.steel, { d: 'Stalen geleiderail voor de ruitdrager.', ex: [0, 0, -0.05] }),
       P('Ruitdrager', G.rbox(0.02, 0.03, 0.36, 0.006), MAT.darkSteel, { d: 'Drager waarop de onderrand van de zijruit is geklemd; zakt mee met de ruit.', p: [xin(zm), 0.848, zm], ex: [0, 0.08, 0], open: winSlide({ follow: `${dPath}/Zijruit` }) }),
