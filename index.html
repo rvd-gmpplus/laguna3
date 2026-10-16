@@ -1,5 +1,5 @@
 <title>Laguna III explosietekening</title>
-<meta name="laguna-version" content="7 (bron f96646d)">
+<meta name="laguna-version" content="7 (bron 4145cc7)">
 <meta name="description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback (2011, 2.0 Turbo, automaat): 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
 <meta property="og:title" content="Laguna III explosietekening">
 <meta property="og:description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback: 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
@@ -609,7 +609,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
   <div id="press" hidden><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="28"/></svg></div>
   <div id="helpDlg" hidden><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
     <h2 id="helpTitle">Bediening</h2>
-    <p class="ver">Laguna III explosietekening, versie 7 (bron f96646d)</p>
+    <p class="ver">Laguna III explosietekening, versie 7 (bron 4145cc7)</p>
     <div id="helpMouse"><h3>Met de muis</h3><dl>
       <dt>Klik</dt><dd>De groep van het onderdeel klapt uit; de rest blijft staan. Staat die groep al open, dan wordt het onderdeel uitgelicht.</dd>
       <dt>Dubbelklik</dt><dd>Direct naar dit onderdeel: alle groepen erboven gaan laag voor laag open.</dd>
@@ -6449,6 +6449,7 @@ function appApplyPreset(p, opt = {}) {
     else if (n.pull.lengthSq() > 0) { n.pull.set(0, 0, 0); uiOffTo(n, 0.6, 0); }
   }
   applyVisibility(); uiFadeFrom(wasVisible); applyMats();
+  uiSyncIso(); // U4: de badge staat in het dock en verandert het vrije beeld; eerst bijwerken, dan pas kadreren
   // selectie, labels en camera
   CTX = p.labels ? byName(p.labels) : (p.select ? byName(p.select) : ((p.open || p.deep || []).length ? byName((p.open || p.deep)[0]) : null));
   uiLabelForce = !!p.labels;

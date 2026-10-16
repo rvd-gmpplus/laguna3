@@ -181,6 +181,7 @@ function appApplyPreset(p, opt = {}) {
     else if (n.pull.lengthSq() > 0) { n.pull.set(0, 0, 0); uiOffTo(n, 0.6, 0); }
   }
   applyVisibility(); uiFadeFrom(wasVisible); applyMats();
+  uiSyncIso(); // U4: de badge staat in het dock en verandert het vrije beeld; eerst bijwerken, dan pas kadreren
   // selectie, labels en camera
   CTX = p.labels ? byName(p.labels) : (p.select ? byName(p.select) : ((p.open || p.deep || []).length ? byName((p.open || p.deep)[0]) : null));
   uiLabelForce = !!p.labels;
