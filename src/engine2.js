@@ -26,11 +26,11 @@ function buildTiming() {
   const belt = engBelt(TIM, 0.027, 0.004);
   return A('Distributie', { d: 'Getande distributieriem (126 tanden, 27 mm breed) die beide nokkenassen en de waterpomp synchroon met de krukas aandrijft; spanrol met excentriek en een geleiderol.', ex: [-0.38, 0.1, 0], spec: [['Riem', '126 tanden, 27 mm breed, 1200 mm'], ['Spoed', '9,525 mm'], ['Overbrenging', '2 : 1']] }, [
     P('Distributieriem', xf(belt.geo, [XT, 0, 0]), MAT.belt, { d: `HNBR-riem met glasvezelkoord en afgeronde tanden; riemlengte in het model ${Math.round(belt.len * 1000)} mm (opgave 1200 mm).`, ex: [-0.09, 0, 0] }),
-    P('Krukastandwiel', gear(19, 0.0281, 0.0258, 0.03, 0.019, 'x'), MAT.steel, { d: 'Tandwiel met 19 tanden op de krukasneus (afgeleid uit de 2 : 1-overbrenging).', p: [XT, 0, 0], ex: [-0.045, -0.02, 0], spec: [['Tanden', '19 (geschat)']] }),
+    P('Krukastandwiel', gear(19, 0.0281, 0.0258, 0.03, 0.019, 'x'), MAT.steel, { d: 'Tandwiel op de krukasneus dat de distributieriem aandrijft: 19 tanden, afgeleid uit de 2 : 1-overbrenging (tandental geschat).', p: [XT, 0, 0], ex: [-0.045, -0.02, 0], inner: true }),
     P('Spie krukastandwiel', G.box(0.024, 0.004, 0.005), MAT.darkSteel, { d: 'Spie (clavette) die het krukastandwiel op de krukas vastzet.', p: [XT, 0.0205, 0], ex: [-0.03, 0.04, 0] }),
-    P('Nokkenaswiel inlaat', merge([gear(38, 0.0569, 0.0545, 0.027, 0.012, 'x'), xf(G.cyl('x', 0.022, 0.022, 0.012, 20), [0.016, 0, 0])]), MAT.steel, { d: 'Distributiewiel van de inlaatnokkenas, 38 tanden (afgeleid). Volgens de Renault-persmap van 2007 heeft de F4Rt 811 vaste kleptiming en geen faseversteller; voor de 813 is dat niet apart bevestigd.', p: [XT, CAMY, CAMZ], ex: [-0.045, 0.02, 0.03], spec: [['Tanden', '38 (geschat)'], ['Kleptiming', 'vast']] }),
+    P('Nokkenaswiel inlaat', merge([gear(38, 0.0569, 0.0545, 0.027, 0.012, 'x'), xf(G.cyl('x', 0.022, 0.022, 0.012, 20), [0.016, 0, 0])]), MAT.steel, { d: 'Distributiewiel van de inlaatnokkenas, 38 tanden (afgeleid, tandental geschat). Volgens de Renault-persmap van 2007 heeft de F4Rt 811 vaste kleptiming en geen faseversteller; voor de 813 is dat niet apart bevestigd.', p: [XT, CAMY, CAMZ], ex: [-0.045, 0.02, 0.03], spec: [['Kleptiming', 'vast']] }),
     P('Moer nokkenaswiel inlaat', engNut(0.016, 0.009, 'x'), MAT.darkSteel, { d: 'Moer van het inlaatnokkenaswiel; vervangen bij demontage.', p: [XT - 0.019, CAMY, CAMZ], ex: [-0.1, 0.02, 0.03] }),
-    P('Nokkenaswiel uitlaat', merge([gear(38, 0.0569, 0.0545, 0.027, 0.012, 'x'), xf(G.cyl('x', 0.022, 0.022, 0.012, 20), [0.016, 0, 0])]), MAT.steel, { d: 'Distributiewiel van de uitlaatnokkenas, 38 tanden (afgeleid).', p: [XT, CAMY, -CAMZ], ex: [-0.045, 0.02, -0.03], spec: [['Tanden', '38 (geschat)']] }),
+    P('Nokkenaswiel uitlaat', merge([gear(38, 0.0569, 0.0545, 0.027, 0.012, 'x'), xf(G.cyl('x', 0.022, 0.022, 0.012, 20), [0.016, 0, 0])]), MAT.steel, { d: 'Distributiewiel van de uitlaatnokkenas, 38 tanden (afgeleid, tandental geschat).', p: [XT, CAMY, -CAMZ], ex: [-0.045, 0.02, -0.03] }),
     P('Moer nokkenaswiel uitlaat', engNut(0.016, 0.009, 'x'), MAT.darkSteel, { d: 'Moer van het uitlaatnokkenaswiel; vervangen bij demontage.', p: [XT - 0.019, CAMY, -CAMZ], ex: [-0.1, 0.02, -0.03] }),
     A('Spanrol', { d: 'Halfautomatische spanrol met excentrische verstelling: bij het afstellen worden de merkstrepen uitgelijnd.', p: [XT, TIM[5][1], TIM[5][0]], ex: [-0.07, -0.02, -0.05] }, [
       P('Excentrische naaf met wijzer', merge([G.cyl('x', 0.012, 0.012, 0.034, 16), xf(G.box(0.003, 0.004, 0.026), [-0.017, 0.008, 0.012])]), MAT.steel, { d: 'Excentrische naaf; de wijzer geeft de juiste spanning aan.', ex: [0, 0, 0] }),
@@ -43,7 +43,7 @@ function buildTiming() {
     ]),
     A('Distributiekappen', { d: 'Drie kunststof kappen: boven-, tussen- en onderkap.', ex: [-0.12, 0, 0] }, [
       P('Distributiekap boven', engTimingCover(0.27, 0.6, false), MAT.plastic, { d: 'Bovenste kap over de nokkenaswielen.', ex: [-0.03, 0.17, 0] }),
-      P('Distributiekap midden', engTimingCover(0.13, 0.27, false), MAT.plastic, { d: 'Tussenkap langs de riem.', ex: [-0.05, 0, 0.2] }),
+      P('Distributiekap midden', engTimingCover(0.13, 0.27, false), MAT.plastic, { d: 'Tussenkap die de distributieriem tussen boven- en onderkap tegen vuil en aanraking afschermt.', ex: [-0.05, 0, 0.2] }),
       P('Distributiekap onder', engTimingCover(-0.2, 0.13, true), MAT.plastic, { d: 'Onderkap rond het krukastandwiel en de waterpomppoelie.', ex: [-0.03, -0.17, 0] }),
     ]),
   ]);
@@ -55,7 +55,7 @@ function buildAccessory() {
     xf(G.cyl('z', 0.012, 0.012, 0.035, 12), [-0.205, 0.27, 0.142]), xf(G.cyl('z', 0.012, 0.012, 0.04, 12), [-0.205, -0.115, 0.145]), xf(G.cyl('z', 0.014, 0.014, 0.03, 12), [-0.2, 0.07, 0.14]),
   ]));
   const tp = ACC[5], piv = [0.045, 0.1];
-  return A('Hulpaandrijving', { d: `Multiriem 7PK1795 die de aircocompressor, de stuurpomp en de dynamo aandrijft, met een automatische spanner op de rug en een vaste geleiderol. De riemloop in het model is korter (${Math.round(belt.len * 1000)} mm) dan de opgegeven 1795 mm, omdat de poelies in dit model dichter bij elkaar staan dan op de echte motor (plaats en diameters zijn geschat). Verder uit elkaar kan niet: de dynamo zit onder de motorkap, de aircocompressor tegen de stuurbekrachtigingsslangen en de bumper, de stuurpomp vast aan zijn slangaansluitingen, en de spanrol en de geleiderol tegen de veerpoot en de motorsteun. De riemaangedreven stuurpomp is aannemelijk voor deze motor.`, ex: [-0.42, -0.1, 0.26], spec: [['Riem', '7PK1795 (7 ribben, 1795 mm)'], ['Verbruikers', 'aircocompressor, stuurpomp (aannemelijk), dynamo']] }, [
+  return A('Hulpaandrijving', { d: `Multiriem 7PK1795 die de aircocompressor, de stuurpomp en de dynamo aandrijft, met een automatische spanner op de rug en een vaste geleiderol. De riemloop in het model is korter (${Math.round(belt.len * 1000)} mm) dan de opgegeven 1795 mm, omdat de poelies in dit model dichter bij elkaar staan dan op de echte motor (plaats en diameters zijn geschat). Verder uit elkaar kan niet: de dynamo zit onder de motorkap, de aircocompressor tegen de stuurbekrachtigingsslangen en de bumper, de stuurpomp vast aan zijn slangaansluitingen, en de spanrol en de geleiderol tegen de veerpoot en de motorsteun. Dat de riem ook de stuurpomp aandrijft is aannemelijk voor deze motor, niet bevestigd.`, ex: [-0.42, -0.1, 0.26], spec: [['Riem', '7PK1795 (7 ribben, 1795 mm)'], ['Verbruikers', 'aircocompressor, dynamo']] }, [
     P('Multiriem', xf(belt.geo, [XA, 0, 0]), MAT.belt, { d: `Poly-V-riem met zeven ribben; de spanner drukt op de rug. Riemlengte in het model ${Math.round(belt.len * 1000)} mm, ${Math.round(1795 - belt.len * 1000)} mm korter dan de opgegeven 1795 mm (compacte poeliestand); de exacte riemloop is niet gevonden.`, ex: [-0.1, 0, 0] }),
     P('Krukaspoelie', merge([engPolyV(0.07, 0.026, 'Crank'), xf(G.cyl('x', 0.021, 0.021, 0.055, 20), [0.03, 0, 0]), xf(G.cyl('x', 0.05, 0.05, 0.004, 32), [0.012, 0, 0])]), MAT.darkSteel, { d: 'Krukaspoelie met zeven groeven (Ø140 mm geschat); of hij een trillingsdemper heeft is niet gevonden.', p: [XA, 0, 0], ex: [-0.06, -0.03, 0] }),
     P('Poeliebout krukas', hexBolt(0.06, 0.012, 'x'), MAT.darkSteel, { d: 'Krukaspoeliebout: aanhalen plus 115° ± 15°; herbruikbaar zolang de lengte onder de kop ≤ 49,1 mm is.', p: [XA - 0.015, 0, 0], ex: [-0.12, -0.03, 0] }),
@@ -65,7 +65,7 @@ function buildAccessory() {
       P('Bevestigingsbout spanner', hexBolt(0.1, 0.01, 'x'), MAT.darkSteel, { d: 'Bout waarmee de spanner op de accessoiresteun zit.', p: [-0.335, piv[1], piv[0]], ex: [-0.09, 0, 0] }),
     ]),
     A('Geleiderol multiriem', { d: 'Vaste geleiderol in de multiriemloop.', p: [XA, ACC[4][1], ACC[4][0]], ex: [-0.06, 0.04, 0] }, [
-      P('Rol met lager', pulley(0.03, 0.027, 'engAccI'), MAT.alu, { d: 'Gladde rol met lager.', ex: [0, 0, 0] }),
+      P('Rol met lager', pulley(0.03, 0.027, 'engAccI'), MAT.alu, { d: 'Gladde geleiderol met lager die de multiriem langs de poelies leidt.', ex: [0, 0, 0] }),
       P('Bout geleiderol', hexBolt(0.1, 0.01, 'x'), MAT.darkSteel, { d: 'Bout van de geleiderol, aanhaalmoment 5,8 daN·m.', p: [-0.018, 0, 0], ex: [-0.07, 0, 0] }),
     ]),
     P('Accessoiresteun', bracket, MAT.aluCast, { d: 'Multifunctionele steun op het blok waaraan dynamo, aircocompressor en spanner vastzitten; de stuurpomp zit via de pompsteun op dezelfde steun.', ex: [0.0, 0.0, 0.08] }),
@@ -109,13 +109,13 @@ function buildIntake() {
     A('Gasklephuis', { d: 'Elektronisch bediend gasklephuis (drive-by-wire); binnenwerk schematisch weergegeven.', p: T, ex: [-0.15, 0, 0.03] }, [
       P('Huis', tbHousing, MAT.alu, { d: 'Aluminium huis met doorlaat, motorkamer en tandwielkamer.', ex: [0, 0, 0] }),
       P('Vlinderklep', G.cyl('x', 0.0295, 0.0295, 0.0015, 24), MAT.steel, { d: 'Gasklep die de luchtstroom doseert.', r: [0, 0, 0.14], ex: [-0.06, 0, 0] }),
-      P('Klepas', G.cyl('z', 0.004, 0.004, 0.084, 8), MAT.steel, { d: 'As van de gasklep.', ex: [0, 0, 0.09] }),
+      P('Klepas', G.cyl('z', 0.004, 0.004, 0.084, 8), MAT.steel, { d: 'As waarop de gasklepplaat draait; de klepstandsensoren lezen de stand van deze as af.', ex: [0, 0, 0.09] }),
       P('Terugstelveer', engSpring(0.008, 0.0011, 0.012, 3, 10, 'z'), MAT.steel, { d: 'Veer die de klep zonder stroom in de noodloopstand terugzet.', p: [0, 0, -0.044], ex: [0, 0, -0.05] }),
       P('Gelijkstroommotor', merge([G.cyl('z', 0.015, 0.015, 0.045, 16), xf(G.cyl('z', 0.002, 0.002, 0.01, 6), [0, 0, 0.027])]), MAT.darkSteel, { d: 'Elektromotor die de gasklep via de tandwielen verdraait.', p: [0, -0.05, 0.002], ex: [0, -0.05, 0] , inner: true }),
       P('Tussentandwiel', gear(22, 0.012, 0.0105, 0.004, 0.002, 'z'), MAT.plasticGrey, { d: 'Tussenwiel van de tandwielreductie.', p: [0, -0.028, 0.047], ex: [0, -0.02, 0.06] }),
       P('Sectortandwiel', gear(44, 0.022, 0.0205, 0.004, 0.004, 'z'), MAT.plasticGrey, { d: 'Tandwiel op de klepas (in werkelijkheid een sector).', p: [0, 0, 0.049], ex: [0, 0, 0.075] }),
       P('Positiesensor 1', G.rbox(0.008, 0.01, 0.004, 0.001), MAT.ecu, { d: 'Eerste klepstandsensor; twee sensoren voor redundantie.', p: [0, 0.008, 0.056], ex: [0, 0.03, 0.1] }),
-      P('Positiesensor 2', G.rbox(0.008, 0.01, 0.004, 0.001), MAT.ecu, { d: 'Tweede klepstandsensor.', p: [0, -0.008, 0.056], ex: [0, -0.03, 0.1] }),
+      P('Positiesensor 2', G.rbox(0.008, 0.01, 0.004, 0.001), MAT.ecu, { d: 'Tweede klepstandsensor die de stand van de gasklep meet, als controle op de eerste.', p: [0, -0.008, 0.056], ex: [0, -0.03, 0.1] }),
       P('Deksel met stekker', merge([G.rbox(0.034, 0.092, 0.008, 0.004), xf(G.rbox(0.02, 0.016, 0.02, 0.003), [0, -0.05, 0.006])]), MAT.plastic, { d: 'Kunststof deksel van de tandwielkamer met de sensoren en de stekker.', p: [0, -0.022, 0.06], ex: [0, 0, 0.13] }),
       P('Pakking gasklephuis', (() => { const s = shapeOf(rrectPts(0.07, 0.07, 0.008)); s.holes.push(circlePath(0, 0, 0.031)); return cache('engTbGasket', () => side(s, 0.0015)); })(), MAT.rubber, { d: 'Pakking tussen gasklephuis en spruitstuk.', p: [0.03, 0, 0], ex: [0.04, 0, 0] }),
       A('Bouten gasklephuis', { d: 'Vier bouten van het gasklephuis.', ex: [-0.03, 0, 0] }, [[0.03, 0.03], [0.03, -0.03], [-0.03, 0.03], [-0.03, -0.03]].map(([y, z], k) => P(`Bout ${k + 1}`, hexBolt(0.028, 0.006, 'x'), MAT.darkSteel, { d: 'Bout van het gasklephuis.', p: [0.021, y, z], ex: [-0.07, 0, 0] }))),
@@ -161,7 +161,7 @@ function buildTurbocharger() {
   const flange = cache('engTurbOutFlange', () => merge([side(shapeOf(circlesHull([[0.034, 0, 0.012], [-0.017, 0.03, 0.012], [-0.017, -0.03, 0.012]], 0)), 0.008), ...[[0.034, 0], [-0.017, 0.03], [-0.017, -0.03]].map(([z, y]) => xf(G.cyl('x', 0.004, 0.004, 0.03, 8), [-0.012, y, z]))]));
   const TP = ENG_TURBO;
   const tm = [[0.02, 0.02], [-0.02, 0.02], [0.02, -0.02], [-0.02, -0.02]];
-  return A('Turbocompressor', { d: 'Mitsubishi TD04 (referentie 49377-07303, aannemelijk voor deze motor): de uitlaatgassen drijven het turbinewiel, dat via één as het compressorwiel laat draaien. Interne wastegate, watergekoeld lagerhuis. De wieldiameters in het model (turbine circa 47 mm, compressor circa 53 mm) zijn geschat uit de TD04-reeks.', p: TP, ex: [0.02, -0.05, -0.14], spec: [['Type', 'Mitsubishi TD04'], ['Referentie', '49377-07303 (aannemelijk)']] }, [
+  return A('Turbocompressor', { d: 'Mitsubishi TD04 (referentie 49377-07303, aannemelijk voor deze motor): de uitlaatgassen drijven het turbinewiel, dat via één as het compressorwiel laat draaien. Interne wastegate, watergekoeld lagerhuis. De wieldiameters in het model (turbine circa 47 mm, compressor circa 53 mm) zijn geschat uit de TD04-reeks.', p: TP, ex: [0.02, -0.05, -0.14], spec: [['Type', 'Mitsubishi TD04']] }, [
     A('Turbinehuis', { d: 'Twin-scroll turbinehuis van hittebestendig gietstaal met interne wastegate.', p: [-0.045, 0, 0], ex: [-0.1, 0, 0] }, [
       P('Turbinehuis', tHouse, MAT.iron, { d: 'Slakkenhuis met twee gescheiden inlaten; hier komen de hete gassen binnen.', ex: [0, 0, 0] }),
       P('Wastegateklep met as', merge([xf(G.cyl('x', 0.011, 0.011, 0.003, 14), [-0.038, 0.014, 0]), xf(G.cyl('z', 0.0025, 0.0025, 0.05, 8), [-0.034, 0.024, 0.02])]), MAT.darkSteel, { d: 'Klepje dat een omloop langs het turbinewiel opent en zo de laaddruk begrenst.', ex: [-0.04, 0.02, 0] }),
@@ -224,7 +224,7 @@ function buildLube() {
       P('Pan', pan, MAT.aluCast, { d: 'Carterpan: het oliereservoir onder het blok, met oliebak bij de vliegwielzijde.', ex: [0, 0, 0] }),
       P('Schotplaat', xf(G.box(0.3, 0.002, 0.15), [0.03, -0.085, 0]), MAT.steel, { d: 'Keerplaat in de pan die het klotsen van de olie tegengaat (schematisch).', ex: [0, 0.06, 0], inner: true }),
       P('Carterpakking', gasket, MAT.rubber, { d: 'Pakking tussen blok en pan.', ex: [0, 0.03, 0] }),
-      A('Carterbouten', { d: 'Achttien bouten van de carterpan.', ex: [0, -0.04, 0] }, bolts.map(([x, z], k) => P(`Carterbout ${k + 1}`, hexBolt(0.025, 0.007), MAT.darkSteel, { d: 'Bout van de carterpan.', p: [x, -0.072, z], ex: [0, -0.03, 0] }))),
+      A('Carterbouten', { d: 'Bouten die de carterpan aan het blok vastzetten: 18 in het model, aantal niet geverifieerd.', ex: [0, -0.04, 0] }, bolts.map(([x, z], k) => P(`Carterbout ${k + 1}`, hexBolt(0.025, 0.007), MAT.darkSteel, { d: 'Bout die de carterpan aan het blok vastzet.', p: [x, -0.072, z], ex: [0, -0.03, 0] }))),
       P('Aftapplug', merge([G.cyl('y', 0.007, 0.007, 0.012, 10), xf(G.box(0.008, 0.006, 0.008), [0, -0.009, 0])]), MAT.steel, { d: 'Aftapplug met vierkante kop (vierkant 8).', p: [0.05, -0.207, 0.03], ex: [0, -0.08, 0] }),
       P('Koperring aftapplug', annulus(0.007, 0.011, 0.0015, 'y', 16), MAT.copper, { d: 'Koperen afdichtring van de aftapplug.', p: [0.05, -0.2138, 0.03], ex: [0, -0.05, 0] }),
     ]),
@@ -244,7 +244,7 @@ function buildLube() {
       P('Aanzuigbuis', pick, MAT.steel, { d: 'Gebogen aanzuigbuis van zeef naar pomp.', ex: [0, 0, 0] }),
       P('Zeef', merge([xf(G.cyl('y', 0.036, 0.036, 0.008, 20), [0.045, -0.188, 0.02]), xf(G.cyl('y', 0.012, 0.012, 0.01, 12), [0.03, -0.182, 0.02])]), MAT.steel, { d: 'Zeef die grof vuil uit de olie houdt.', ex: [0.03, -0.03, 0] }),
       P('O-ring aanzuigbuis', engORing(0.0085, 0.0014), MAT.rubber, { d: 'Afdichting tussen aanzuigbuis en pomp.', p: [-0.168, -0.13, 0.02], ex: [-0.02, 0.03, 0] }),
-      P('Bout aanzuigbuis', hexBolt(0.016, 0.006), MAT.darkSteel, { d: 'Bout van de aanzuigbuis.', p: [-0.06, -0.17, 0.045], r: [PI, 0, 0], ex: [0, 0.06, 0] }),
+      P('Bout aanzuigbuis', hexBolt(0.016, 0.006), MAT.darkSteel, { d: 'Bout die de oliezuigbuis met zeef vastzet.', p: [-0.06, -0.17, 0.045], r: [PI, 0, 0], ex: [0, 0.06, 0] }),
     ]),
     A('Oliekoeler', { d: 'Watergekoelde plaatkoeler tussen blok en oliefilter (circa 122 × 99 × 48 mm, 8 platen).', p: [0.03, 0.015, 0.112], ex: [0, 0, 0.12] }, [
       P('Platenpakket', merge([front(shapeOf(rrectPts(0.09, 0.09, 0.02, 3)), 0.006), ...[0, 1, 2, 3, 4, 5, 6, 7].map(k => xf(front(shapeOf(rrectPts(0.084, 0.084, 0.018, 3)), 0.0035), [0, 0, 0.007 + k * 0.0045])), xf(G.cyl('z', 0.016, 0.016, 0.046, 16), [0, 0, 0.02])]), MAT.steel, { d: 'Pakket van acht stalen platen waarin olie en koelvloeistof elkaar kruisen.', ex: [0, 0, 0.02] }),
@@ -259,7 +259,7 @@ function buildLube() {
       P('Afdichtring filter', G.torus('z', 0.0305, 0.0018, 28, 5), MAT.rubber, { d: 'Rubber afdichtring Ø61 mm.', p: [0, 0, -0.001], ex: [0, 0, -0.03] }),
     ]),
     A('Peilstok', { d: 'Peilstok met geleidebuis aan de voorzijde van het blok; de exacte plaats voor de Laguna III is niet gevonden.', ex: [0, 0.14, 0.1] }, [
-      P('Peilstok', merge([tube([[0.205, 0.0, 0.112], [0.205, 0.2, 0.128], [0.205, 0.385, 0.142]], 0.002, 16, 5), xf(G.torus('z', 0.012, 0.0035, 18, 6), [0.205, 0.402, 0.143]), xf(G.cyl('y', 0.005, 0.005, 0.012, 8), [0.205, 0.388, 0.142])]), MAT.handle, { d: 'Peilstok met gele greep.', ex: [0, 0.12, 0] }),
+      P('Peilstok', merge([tube([[0.205, 0.0, 0.112], [0.205, 0.2, 0.128], [0.205, 0.385, 0.142]], 0.002, 16, 5), xf(G.torus('z', 0.012, 0.0035, 18, 6), [0.205, 0.402, 0.143]), xf(G.cyl('y', 0.005, 0.005, 0.012, 8), [0.205, 0.388, 0.142])]), MAT.handle, { d: 'Peilstok met gele greep: aan de markeringen op het uiteinde lees je de oliestand af.', ex: [0, 0.12, 0] }),
       P('Geleidebuis', tube([[0.205, -0.02, 0.11], [0.205, 0.2, 0.128], [0.205, 0.38, 0.142]], 0.0055, 20, 8), MAT.plastic, { d: 'Geleidebuis van de peilstok.', ex: [0, 0, 0] }),
       P('O-ring geleidebuis', engORing(0.0058, 0.0012), MAT.rubber, { d: 'Afdichting van de geleidebuis in het blok.', p: [0.205, 0.004, 0.112], ex: [0, -0.04, 0.02] }),
       P('Beugel peilstokbuis', merge([G.box(0.012, 0.01, 0.026), xf(hexBolt(0.012, 0.005, 'z'), [0, 0, -0.016], [PI, 0, 0])]), MAT.steel, { d: 'Beugel die de buis aan de kop vastzet.', p: [0.205, 0.28, 0.122], ex: [0, 0, 0.05] }),
@@ -273,9 +273,9 @@ function buildLube() {
     A('Olieretour turbo', { d: 'Olieretourleiding van het lagerhuis terug naar het carter, boven het oliepeil in het blok.', ex: [0, -0.04, -0.1] }, [
       P('Olieretourleiding', tube([[0.07, 0.09, -0.255], [0.07, 0.05, -0.24], [0.06, 0.02, -0.17], [0.06, 0.02, -0.11]], 0.0075, 24, 8), MAT.steel, { d: 'Retourleiding met flens aan beide kanten.', ex: [0, 0, 0] }),
       P('Pakking retourflens', G.rbox(0.03, 0.0012, 0.022, 0.0005), MAT.heat, { d: 'Pakking van de retourflens aan het lagerhuis.', p: [0.07, 0.095, -0.255], ex: [0, 0.02, 0] }),
-      P('Retourbout 1', hexBolt(0.016, 0.006, 'z'), MAT.darkSteel, { d: 'Bout van de retourflens.', p: [0.05, 0.02, -0.118], r: [PI, 0, 0], ex: [0, 0, -0.04] }),
-      P('Retourbout 2', hexBolt(0.016, 0.006, 'z'), MAT.darkSteel, { d: 'Bout van de retourflens.', p: [0.07, 0.02, -0.118], r: [PI, 0, 0], ex: [0, 0, -0.04] }),
-      P('Retourbout 3', hexBolt(0.016, 0.006, 'z'), MAT.darkSteel, { d: 'Bout van de retourflens.', p: [0.06, 0.035, -0.118], r: [PI, 0, 0], ex: [0, 0, -0.04] }),
+      P('Retourbout 1', hexBolt(0.016, 0.006, 'z'), MAT.darkSteel, { d: 'Bout die de retourflens van de olieretour van de turbo vastzet.', p: [0.05, 0.02, -0.118], r: [PI, 0, 0], ex: [0, 0, -0.04] }),
+      P('Retourbout 2', hexBolt(0.016, 0.006, 'z'), MAT.darkSteel, { d: 'Bout die de retourflens van de olieretour van de turbo vastzet.', p: [0.07, 0.02, -0.118], r: [PI, 0, 0], ex: [0, 0, -0.04] }),
+      P('Retourbout 3', hexBolt(0.016, 0.006, 'z'), MAT.darkSteel, { d: 'Bout die de retourflens van de olieretour van de turbo vastzet.', p: [0.06, 0.035, -0.118], r: [PI, 0, 0], ex: [0, 0, -0.04] }),
     ]),
     A('Carterventilatie', { d: 'Carterventilatie: oliedampafscheider op het kleppendeksel, PCV-klep en slangen naar het inlaatspruitstuk en de turbo-ingang (opbouw schematisch).', ex: [0, 0.1, -0.05] }, [
       P('Oliedampafscheider', sep, MAT.plastic, { d: 'Afscheider die olienevel uit de carterdampen haalt.', p: PCV, ex: [0, 0.03, 0] }),
@@ -298,7 +298,7 @@ function buildEngineCooling() {
       P('Mechanische asafdichting', annulus(0.006, 0.013, 0.006, 'x', 16), MAT.ceramic, { d: 'Glijringafdichting die koelvloeistof langs de as tegenhoudt.', p: [0.036, 0, 0], ex: [0.03, 0, 0.05] }),
       P('Waaier', merge([blades(6, 0.008, 0.03, 0.01, 0.003, 0.5, 'x'), G.cyl('x', 0.03, 0.03, 0.002, 20)]), MAT.steel, { d: 'Schoepenwiel dat de koelvloeistof rondpompt.', p: [0.043, 0, 0], ex: [0.06, 0, 0] }),
       P('Pakking waterpomp', annulus(0.016, 0.04, 0.0008, 'x', 24), MAT.rubber, { d: 'Pakking tussen pomp en blok.', p: [0.0296, 0, 0], ex: [0.045, 0, 0] }),
-      A('Bouten waterpomp', { d: 'Bouten van de waterpomp.', ex: [-0.05, 0, 0] }, [0, 1, 2].map(k => P(`Bout ${k + 1}`, hexBolt(0.025, 0.006, 'x'), MAT.darkSteel, { d: 'Bout van de waterpomp.', p: [0.0195, 0.033 * Math.cos(k * 2.1 + 0.5), 0.033 * Math.sin(k * 2.1 + 0.5)], ex: [-0.07, 0, 0] }))),
+      A('Bouten waterpomp', { d: 'Bouten die de waterpomp aan het blok vastzetten.', ex: [-0.05, 0, 0] }, [0, 1, 2].map(k => P(`Bout ${k + 1}`, hexBolt(0.025, 0.006, 'x'), MAT.darkSteel, { d: 'Bout die de waterpomp aan het blok vastzet.', p: [0.0195, 0.033 * Math.cos(k * 2.1 + 0.5), 0.033 * Math.sin(k * 2.1 + 0.5)], ex: [-0.07, 0, 0] }))),
       P('Aanvoerstomp', merge([tube([[0.078, -0.093, -0.005], [0.082, -0.093, 0.01], [0.09, -0.093, 0.04], [0.09, -0.093, 0.059]], 0.013, 16, 10), xf(G.rbox(0.03, 0.03, 0.006, 0.004), [0.09, -0.093, 0.009])]), MAT.aluCast, { d: 'Inlaatstomp van de waterpomp aan de voorkant van het blok, voor de onderste radiateurslang.', ex: [0.02, 0, 0.06] }),
     ]),
     A('Waterstuk en thermostaat', { d: 'Waterstuk (boîtier de sortie d\'eau) aan de vliegwielzijde van de kop, met thermostaat en temperatuursensor.', ex: [0.14, 0.12, 0] }, [
@@ -317,8 +317,8 @@ function buildEngineCooling() {
 
 function buildEngine() {
   return A('Motor F4Rt', {
-    d: 'Renault F4Rt 813 (waarschijnlijk, zie beslissingen; de RDW toont Euro 5 en onderdelencatalogi noemen de reeks F4R 811): 2,0-liter viercilinder-turbomotor met gietijzeren blok, aluminium kop, 16 kleppen met rolzwenkarmen (zoals bij de F4R-familie), vaste kleptiming zonder faseversteller (de persmap van 2007 noemt de 811; voor de 813 niet apart bevestigd), distributieriem en meerpuntsinjectie. Dwars voorin; inlaatzijde naar voren en turbo achter (aannemelijk).',
-    spec: [['Motorcode', 'F4Rt 813 (waarschijnlijk, zie beslissingen)'], ['Opbouw', '4 in lijn, 16V DOHC'], ['Cilinderinhoud', '1998 cm³'], ['Boring × slag', '82,7 × 93,0 mm'], ['Compressie', '9,5 : 1 (Renault-persmap 2007, bij de 811; L\'argus noemt 9,0 : 1)'], ['Kleptiming', 'vast, geen faseversteller'], ['Toerenbegrenzer', '6250 tpm'], ['Brandstofsysteem', 'meerpuntsinjectie'], ['Inductie', 'Mitsubishi TD04 + intercooler'], ['Vermogen', '125 kW (170 pk) bij 5000 tpm'], ['Koppel', '270 Nm bij 3250 tpm'], ['Ontsteekvolgorde', '1-3-4-2 (aannemelijk)'], ['Nokkenasaandrijving', 'distributieriem']],
+    d: 'Renault F4Rt 813 (waarschijnlijk, zie beslissingen; de RDW toont Euro 5 en onderdelencatalogi noemen de reeks F4R 811): 2,0-liter viercilinder-turbomotor met gietijzeren blok, aluminium kop, 16 kleppen met rolzwenkarmen (zoals bij de F4R-familie), vaste kleptiming zonder faseversteller (de persmap van 2007 noemt de 811; voor de 813 niet apart bevestigd), distributieriem en meerpuntsinjectie. Dwars voorin; inlaatzijde naar voren en turbo achter (aannemelijk). Ontsteekvolgorde 1-3-4-2 (aannemelijk, niet bevestigd).',
+    spec: [['Motorcode', 'F4Rt 813 (waarschijnlijk, zie beslissingen)'], ['Opbouw', '4 in lijn, 16V DOHC'], ['Cilinderinhoud', '1998 cm³'], ['Boring × slag', '82,7 × 93,0 mm'], ['Compressie', '9,5 : 1 (Renault-persmap 2007, bij de 811; L\'argus noemt 9,0 : 1)'], ['Kleptiming', 'vast, geen faseversteller'], ['Toerenbegrenzer', '6250 tpm'], ['Brandstofsysteem', 'meerpuntsinjectie'], ['Inductie', 'Mitsubishi TD04 + intercooler'], ['Vermogen', '125 kW (170 pk) bij 5000 tpm'], ['Koppel', '270 Nm bij 3250 tpm'], ['Nokkenasaandrijving', 'distributieriem']],
     ex: [0, 0.25, 0],
   }, [
     buildBlock(), buildCrank(), buildHead(), buildTiming(), buildAccessory(), buildIntake(), buildTurbo(), buildLube(), buildEngineCooling(),
