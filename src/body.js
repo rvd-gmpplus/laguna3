@@ -10,6 +10,11 @@ const TRACK_F = 0.7785, TRACK_R = 0.756;            // halve spoorbreedte voor e
 const WS0 = 1.06, WS1 = 0.30, RW0 = -1.17, SP = -2.11; // voorruitbasis, voorruitkop, knik dak/achterruit, onderkant achterruit (lip)
 const bodZT = -2.268, bodYLEDGE = 0.635;            // staartvlak boven de bumper; bovenkant van de achterbumperrichel
 const bodBELT = 0.085;                              // gordel ligt zoveel binnen de grootste breedte (0,905 -> ca. 0,82)
+// gedeelde maten achteras/carrosserie (golf 5b-3, fase 0.3c); de takken zetten chassis, wielkast, interieur en aandrijving erop om.
+// Waarden gelijk aan de getallen in de bestanden hieronder (wereldmaten, meter):
+const REAR_SPR = { x: 0.51, z: -1.47, sprZ: [-1.545, -1.395], sprY: [0.322, 0.572], sprX: 0.432 }; // veerhart achter (chassis.js:310,315-319), veerkoker (bodyparts.js:600)
+const REAR_BEAM = { z: -1.15, y: 0.29, hy: 0.036, hz: 0.05, len: 1.14, slot: 0.003 };               // torsiebalk: hart (chassis.js:331), halve hoogte en breedte (chassis.js:307), lengte (chassis.js:331), speling sleuf (bodyparts.js:606, sleuf z -1,203..-1,097 y 0,251..0,329)
+const SUB_ROD = { p: [-0.01, 0.27, 1.2] };                                                          // oog koppelstang in het subframe, in autoframe (drivetrain.js:480, vóór toPT)
 function pchip(pts) {
   const n = pts.length, xs = pts.map(p => p[0]), ys = pts.map(p => p[1]), h = [], dl = [], m = new Array(n);
   for (let i = 0; i < n - 1; i++) { h[i] = xs[i + 1] - xs[i]; dl[i] = (ys[i + 1] - ys[i]) / h[i]; }
