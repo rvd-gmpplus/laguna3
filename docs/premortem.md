@@ -158,3 +158,14 @@ Eén lens: de app-laag en de tests. Golf 5c-1 is robuustheid, bediening, toegank
 - Verborgen aanname: de lettertypes van Google zijn als woff2 in te sluiten. Niet waar binnen het paginabudget (vier gewichten, ruwweg 130 kB base64) en niet als losse bestanden (het artefact eist één bestand). Besluit: de Google-link blijft, met `font-display: swap`; vastgelegd als beslispunt voor de gebruiker.
 
 Oordeel: overleefbaar met de verdedigingen hierboven. Struikeldraden: T4 (pagina), T8 (`IGNORE`, `anchors.json`, de testlijst alleen door de orkestrator), en de basislijn van `visdiff` wordt pas na het samenvoegen door de orkestrator gezet.
+## Stand na golf 5
+
+Eindstand van de code is `33b2b50`; de testset `g5final3` draaide op die stand en `index.html` van versie 7 is er in `25c3ddf` uit gebouwd. Golf 5 had geen eigen premortem; deze regels geven de stand van de struikeldraden.
+
+- Draad 1 (klik): `ITEST_GATES=1 itest.py` 155 van 155, inclusief vier nieuwe controles voor de telefoon. Zie [testen.md](testen.md).
+- Draad 2 (integratie): integrity 0 fouten, 0 ankerfouten, 0 presetfouten, 124 waarschuwingen (uitklapvector nul). `ui_inner.py --open` ok, 223 ingesloten knopen.
+- Draad 3 (herkenbaarheid): S7 is opnieuw gedraaid op `8e03e87`: 7 van 9 ja, gehaald. De visuele poort van golf 5 (K1 tot K13, negen beoordelaars, drie poorten) gaf 11 ja, 6 deels, 0 nee; daarna 12, 4, 1 (de nee was K13, door een slechte vaste binnencamera) en tot slot 13, 4, 0 (versie 6: 10, 7, 0). Na poort 3 is gestopt: geen nee en de winst per ronde kleiner dan de spreiding tussen beoordelaars.
+- Draad 5 (schaal): 668.020 driehoeken tegen 700.000, 444 tekenopdrachten gemonteerd met bundelen (1.878 zonder) en ongeveer 784 met alle openers open (grens 3.000). Het triangle budget van de Carrosserie is een dunne marge: 189.446 van 190.000, dus 554 driehoeken ruimte. De Aandrijflijn zit op 235.546 van 240.000. Elke volgende wijziging aan de carrosserie moet eerst elders besparen.
+- Draad 6 (cache-sleutels): smoke zonder consolemeldingen in testmodus.
+- Draad 7 (publicatie): `pubsmoke.py` ok (de telefoon is klaar in 6,5 s). Versie 7 is op 16 oktober 2026 teruggelezen: `index.html` (1.378.969 bytes) staat er precies een keer in, byte voor byte gelijk, met 531 bytes paginaskelet ervoor en 15 erna. `main` staat nog op versie 6.
+- Niet gesloten: niet getest op een echte telefoon of GPU (U19 en de zijkolom voor de liggende telefoon zijn in golf 5 gebouwd maar alleen in de container gedraaid); wat poort 3 op deels liet staan (K6, K11 en K9 in de interieurplak); 58 varianten van onderdeelnummers zonder gekozen uitvoering; motorcode 811 of 813 (waarschijnlijk 813).

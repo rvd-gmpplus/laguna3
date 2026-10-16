@@ -93,7 +93,7 @@ Interactietest op desktop (muis) en telefoon (touch). Per controle een regel `ok
 
 Twee eigenschappen van de testbrowser (headless Chromium met SwiftShader) waar controle 18 rekening mee houdt: `requestAnimationFrame` tikt niet zolang er niets te tekenen is (0 frames per 500 ms in rust), dus animaties lopen in een test alleen via `finishAll()` of door `uiTick` zelf aan te roepen; en `page.click` duurt door de stabiliteitswacht seconden, zodat een rondleiding van 5 s per stap tijdens een test vanzelf doorloopt (de controle pauzeert hem eerst). De foutpaden draaien buiten de logregistratie van de harness (`fault_page`), omdat de melding zelf een consolefout is. Bij R5 (golf 5c-1) zijn in controle 15 twee verwachte `rel`-waarden aangescherpt van `noopener` naar `noopener noreferrer` (`UI_LINK_REL` in `src/app2.js`).
 
-`ITEST_SHOTS=MAP` bewaart screenshots van de stappen. `ITEST_GATES=1` zet controle 11 als poort aan; zonder die variabele blijft 11 alleen informatie. De controles voor gebundeld renderen (nummer 13) staan in `tools/itest.py`. Het script telde voor golf 4 79 controles over desktop en telefoon samen (alle 79 slaagden op `9c731c8`). Op de stand van golf 5c-1 zijn het er 218: 161 tot en met controle 17, 36 in controle 18 en 21 in de controles 19 tot 22.js` bestaat); zie de resultaten van golf 4 hieronder. Omdat gebundeld renderen losse meshes naar laag 1 verplaatst, zetten alle raycasters in de tools alle lagen aan.
+`ITEST_SHOTS=MAP` bewaart screenshots van de stappen. `ITEST_GATES=1` zet controle 11 als poort aan; zonder die variabele blijft 11 alleen informatie. De controles voor gebundeld renderen (nummer 13) staan in `tools/itest.py`. Het script telde voor golf 4 79 controles over desktop en telefoon samen (alle 79 slaagden op `9c731c8`). Op de stand van golf 5c-1 zijn het er 218: 161 tot en met controle 17 (golf 5 bracht er 155, controle 17 zes), 36 in controle 18 en 21 in de controles 19 tot 22; zie de resultaten hieronder. Omdat gebundeld renderen losse meshes naar laag 1 verplaatst, zetten alle raycasters in de tools alle lagen aan.
 
 ### `python3 tools/opentest.py [--only namen] [--out map] [--strikt-min]`
 
@@ -180,6 +180,21 @@ Haken op `window.__laguna` die golf 5c-1 toevoegde en die controle 18 gebruikt: 
 
 Daarnaast hangen de tests aan element-id's, klassen en data-attributen uit `src/head.html` en `src/app2.js`. Voor `tools/itest.py`: `#sheet`, `#modes [data-mode]`, `#openSeg [data-omode]`, `#explode`, `#presets`, `[data-cat]`, `#menu`, `.mi`, `[data-preset]`, `#undo`, `#tabbtn-info`, `#tabbtn-tree`, `#tab-tree`, `#treeSearch`, `#treeInfo`, `#tree .trow .tn`, `#labels .lbl`, `#tip`, `#btnOpenAll`, `#btnCloseAll`, `#btnOpenList`, `#openList`, `#actOpen`, `#pnBody`, `#pnWarn`, `#pnBox`, `.pn-tab`, `#help`, `#helpDlg`, `#helpClose`, `#debug`. `pubsmoke.py` toetst de stijlregels van het canvas (`touch-action`, `user-select`, `-webkit-touch-callout`). Ook deze namen vallen onder het contract. De basislijn van `visdiff.py` (`docs/baseline/`), `IGNORE` in `tools/harness.py` en `tools/anchors.json` wijzigt alleen de orkestrator (struikeldraad T8).
 
+### Hulpmiddelen van de visuele poort (`tools/orkestratie/`)
+
+Golf 5 bracht de hulpmiddelen van de visuele poort en van het nameten in de repo. De scripts zonder REPO-argument gebruiken de checkout waarin ze staan. De tabel in `tools/orkestratie/README.md` heeft de aanroepen.
+
+| Script | Wat het doet |
+|---|---|
+| `gateshots.py UITMAP` | De vaste beelden van de poort: elke opener via zijn knop, drie overzichten met alles open, het dak van boven en van binnen en drie telefoonbeelden, met een `index.json`. |
+| `poort.js` | De poort zelf (Workflow-script): drie plakken met elk drie beoordelaars, meerderheid per kenmerk K1 tot K13. Leest de beelden van `gateshots.py`. |
+| `pick.py` | Zet Openen aan, draait een voorbereiding en noemt per schermpunt het pad van het onderdeel dat er ligt. |
+| `shots.py` | Gerichte opnames in de modus Openen. |
+| `probe.py` | Draait een JS-expressie op de pagina en drukt het resultaat als JSON af; `window.__box(naam)` geeft het wereldkader van een knoop. |
+| `rays_bagage.py` | Stralen vanuit het midden van de bagageruimte naar links en rechts: vrije ruimte en het eerste onderdeel. |
+| `phone.py` | Twee telefoonbeelden (390 x 844) en de scrollbreedte. |
+| `dumptree.py` | De hele boom als JSON. |
+
 ## Resultaten
 
 De kolom "Na golf 1" is de tussenstand van 13 oktober 2026 rond 11:30 UTC, ongewijzigd uit het overdrachtsdocument van golf 1. De kolom "Eind golf 2" is gemeten op commit `ead92f6`, behalve waar een rij anders zegt. De derde kolom is gemeten op `d6d0456`, na de visuele herstelronde (`index.html` gebouwd in `60909fe`). De laatste kolom is de carrosserieronde: de volledige testset (uitvoer in het scratchpad, `g3final5`) draaide op `9c731c8` op 13 oktober rond 23:45 UTC. De eindstand van de code is `ff42dbd`; die commit verandert alleen de eindstukken van de uitlaat (`src/systems.js`). Daarop zijn alleen `integrity.py`, `ui_inner.py`, `smoke.py` en de publicatierooktest opnieuw gedraaid, en die waren groen. De overige scripts zijn niet op `ff42dbd` gedraaid; hun getallen horen bij `9c731c8`. `index.html` is gebouwd in `5b6cefa` uit `ff42dbd`. Alle tijden komen uit een container met software-rendering.
@@ -203,7 +218,7 @@ De kolom "Na golf 1" is de tussenstand van 13 oktober 2026 rond 11:30 UTC, ongew
 | `ui_inner.py` | bestond nog niet | 0 eerste treffers op 256 ingesloten knopen (na golf 2 waren het er 52) | 0 eerste treffers op 256 ingesloten knopen | 0 eerste treffers op 253 ingesloten knopen (39.200 stralen op de hele auto, 20.000 per hoofdgroep). Op `ff42dbd` hetzelfde |
 | URL na publicatie gelijk aan `index.html` | niet van toepassing | Gelijk. Versie 2 van de URL, teruggelezen op 13 oktober om 17:00 UTC, bevat `index.html` van `8095a3e` (618.341 bytes, md5 `dc2bc3b0…`) precies één keer en aaneengesloten. Daaromheen staan alleen het vaste paginaskelet van de host (531 bytes: doctype, charset, viewport en basisstijl tot en met `<body>`) en de afsluiting `</body></html>` (15 bytes). | Gelijk. Versie 3 van de URL, teruggelezen op 13 oktober om 17:37 UTC, bevat `index.html` van `60909fe` (620.025 bytes, md5 `d92a8bb2…`) precies één keer en aaneengesloten, met hetzelfde paginaskelet ervoor (531 bytes) en dezelfde afsluiting erna (15 bytes). | Gelijk. Versie 4 van de URL bevat `index.html` uit `ec92a53` (commit `9c03015`, 663.654 bytes, md5 `70b2e62a426312ec788fc851086ab4c6`) precies één keer, met alleen het paginaskelet van de host eromheen (531 bytes ervoor, 15 erna). Versie 5, gepubliceerd op 14 oktober en teruggelezen om 00:02 UTC, bevat `index.html` uit `ff42dbd` (commit `5b6cefa`, 678.887 bytes, md5 `649cbf95397d877f6a361600c42a4afd`) precies één keer en byte voor byte gelijk, met hetzelfde skelet (531 bytes ervoor, 15 erna) |
 
-## Resultaten versie 7 na golf 5c-1 en 5d (structureel)
+## Resultaten golf 5c-1 en 5d (structureel), tak van PR #3 (versie 8)
 
 Strikte set op de samengevoegde stand `452916e` (app-laag van golf 5c-1 erbij; de docs daarna raken de pagina niet), 16 oktober 2026, 02:55 tot 03:16 UTC, alle dertien tests groen. Versiestempel van de pagina: `7 (bron 65d7276)`. De statistieken staan in [cijfers.md](cijfers.md).
 
@@ -223,7 +238,7 @@ Strikte set op de samengevoegde stand `452916e` (app-laag van golf 5c-1 erbij; d
 | `visdiff.py` | 42 van 42 binnen de drempel tegen de basislijn van `452916e` | 1 s |
 | `anchorcheck.py` | poort ok tegen `docs/baseline/anchorcheck.json` (352 labels, eigen 319, vrij 265) | 27 s |
 
-## Resultaten versie 7 (golf 5 en 5a)
+## Resultaten golf 5 en 5a, tak van PR #3
 
 Strikte set (`tools/orkestratie/finaltests.sh`) op de samengevoegde stand `2c179a5`, 16 oktober 2026, 01:21 tot 01:52 UTC; CI op GitHub groen op dezelfde commit. De statistieken staan in [cijfers.md](cijfers.md).
 
@@ -259,7 +274,7 @@ Statistieken `g4final4`: 3.012 knopen, 499 groepen, 2.513 onderdelen, diepte 8, 
 
 Tussenstanden: `g4final2` op `7f54e61` (opentest een fout: Gordelrolautomaat voor rechts 8,8 mm in de bekleding van het open achterportier, opgelost in `0ac1052`) en `g4final3` op `4fc11cd` (alles groen, maar Carrosserie 199.394 driehoeken door een fijner gaas van de achterportieren; dat gaas is in `3ab6a8d` teruggezet).
 
-Visuele poort golf 4: drie plakken (voorkant en voorportieren, achterkant en dak van buiten, interieur en dak van binnen), per plak drie beoordelaars die elk beeld een keer bekijken, meerderheid per kenmerk. Na elke poort volgde een herstelronde.
+Visuele poort golf 4: drie plakken (voorkant en voorportieren, achterkant en dak van buiten, interieur en dak van binnen), per plak drie beoordelaars die elk beeld een keer bekijken, meerderheid per kenmerk. Na poort 1 en poort 2 volgde een herstelronde; na poort 3 is gestopt.
 
 | Poort | Stand | Ja | Deels | Nee |
 |---|---|---|---|---|
@@ -270,6 +285,37 @@ Visuele poort golf 4: drie plakken (voorkant en voorportieren, achterkant en dak
 Op de eindstand staan op ja: K2 achterportieren, K3 zijruiten voor en achter, K4 spiegels, K5 doppen, K7 tankklep, K8 panoramadak van buiten, K9 (geen doorsteken) bij de voorkant, K10 bediening en K12 alles open leest als Laguna III. Deels: K1 motorkap (de steunstang is op desktop nauwelijks te zien), K2 voorportieren (de B-stijl onder de gordellijn is weinig te onderscheiden), K6 achterklep (de opgetilde hoedenplank leest van achter als vlak liggend), K9 van slice b en c, K11 interieuropeners (camera bij de armsteun en de middenarmsteun), K13 dak van binnen. Tussen poort 2 en 3 gingen K5 en K8 naar ja en K1 en K2 naar deels zonder wijziging aan kap en portieren: de spreiding tussen beoordelaars is van dezelfde orde als de laatste verbeteringen. Daarom is na poort 3 gestopt; de punten staan in `handomdraai.md`.
 
 De spookbatchproef vond bij de telescoop een echte spookbatch; die is opgelost in `a116db9`.
+
+## Resultaten golf 5
+
+Eindstand van de code is `33b2b50`; de testset heet `g5final3` en draaide op die stand (de uitvoer staat in het scratchpad). `index.html` van versie 7 is er in `25c3ddf` uit gebouwd en daarna veranderden alleen documenten.
+
+| Test | Uitslag |
+|---|---|
+| `build.py --lint` | ok |
+| `smoke.py` | geen consolemeldingen, geen horizontale scroll |
+| `integrity.py` | 0 fouten, 0 ankerfouten, 0 presetfouten, 124 waarschuwingen (uitklapvector nul) |
+| `silhouette.py` | ok |
+| `itest.py` met `ITEST_GATES=1` | 155 van 155 (vier nieuwe controles voor de telefoon, plus een voor het blok Gekozen voor deze auto; zie de tabel met controles) |
+| `ui_inner.py --open` | ok; 223 ingesloten knopen in de boom |
+| `opentest.py` | 26 openers, 0 fouten, 33 meldingen (`open.min` ontbreekt bij volgers) |
+| `pubsmoke.py` | ok; de telefoon is klaar in 6,5 s (grens 20 s) |
+
+Statistieken `g5final3`: 3.023 knopen, 499 groepen, 2.524 onderdelen, diepte 8, 668.020 driehoeken (budget 700.000). Per hoofdgroep: Carrosserie 189.446 (budget 190.000, een dunne marge van 554), Aandrijflijn 235.546 (budget 240.000), Onderstel 113.228, Interieur 81.084, Koeling en luchtinlaat 18.824, Uitlaatsysteem 13.184, Brandstofsysteem 9.220 en Elektrisch systeem 7.488. Tekenopdrachten: 444 gebundeld en 1.878 zonder bundelen; met alle openers open ongeveer 784 (grens 3.000). 43 presets in 7 categorieën.
+
+Visuele poort golf 5: dezelfde kenmerken K1 tot K13 als in golf 4 (`tools/orkestratie/poort.js`, beelden van `gateshots.py`), telkens negen beoordelaars (Opus, high) in drie plakken van drie, meerderheid per kenmerk. Elke poort telt 17 oordelen, omdat K2, K3 en K9 in meer dan een plak voorkomen. Na poort 1 en poort 2 volgde een herstelronde; na poort 3 is gestopt.
+
+| Poort | Stand | Ja | Deels | Nee |
+|---|---|---|---|---|
+| 1 | `f581bca` | 11 | 6 | 0 |
+| 2 | `b529ac1` | 12 | 4 | 1 (K13, dak van binnen, door een slechte vaste binnencamera) |
+| 3 | `33b2b50` | 13 | 4 | 0 |
+
+Ter vergelijking haalde golf 4 10 ja, 7 deels en 0 nee. Na poort 3 is gestopt: geen nee, niets blokkerends en de winst per ronde kleiner dan de spreiding tussen beoordelaars. Deels in poort 3: K6 (achterklep: de hoedenplank leest vlak liggend en de linker gasveer is dun), K11 (interieuropeners: de zijbekleding van de bagageruimte is trapvormig en de camera van het handschoenenkastje staat dicht op het dashboard) en K9 in de interieurplak (de vaste zijruit achter is groot, de luchtroosters hebben ruis). Voor poort 3 kreeg de vaste binnencamera van het dak een beeldhoek van 70 graden, zodat beide openingen in een beeld staan; dat geldt alleen voor het poortbeeld, de app gebruikt zijn eigen camera.
+
+S7 (herkenbaarheid van het exterieur, negen kenmerken) is opnieuw gedraaid op `8e03e87`: 7 van 9 ja, kenmerk 4 en 8 deels. De eis is 7, dus S7 is gehaald.
+
+Tussenstanden: `g5final1` en `g5final2` zijn de eerdere runs van de testset in dezelfde golf; de eindstand is `g5final3`.
 
 ## Het itest-randgeval
 
@@ -304,15 +350,15 @@ Aanleiding was de melding van de gebruiker dat het interieur (beige leder, de ba
 ## Bekende beperkingen
 
 - De metingen komen uit een container met software-rendering (SwiftShader). Laadtijden daar (5 tot 28 seconden, afhankelijk van de belasting van de machine) zeggen niets over een echt apparaat.
-- De frametijd is alleen JavaScript-tijd. Zonder gebundeld renderen heeft de gemonteerde auto 1.726 tekenopdrachten; gebundeld renderen staat standaard aan en brengt dat op 390. De grens van 1.500 geldt dus alleen met bundelen.
-- De Aandrijflijn heeft 237.310 driehoeken tegen een budget van 240.000 en zit dus binnen budget. De hele auto (630.368) blijft binnen 700.000.
+- De frametijd is alleen JavaScript-tijd. Zonder gebundeld renderen heeft de gemonteerde auto 1.878 tekenopdrachten (op `33b2b50`); gebundeld renderen staat standaard aan en brengt dat op 444. De grens van 1.500 geldt dus alleen met bundelen.
+- De Aandrijflijn heeft 235.546 driehoeken tegen een budget van 240.000 en zit dus binnen budget. De hele auto (668.020) blijft binnen 700.000. Carrosserie zit op 189.446 van 190.000 driehoeken: een dunne marge, dus een volgende wijziging moet eerst elders besparen.
 - Het aandeel labelankers dat achter een ander deel ligt (84 van 345) en de spikkels op de motorkap in het bovenaanzicht zijn open; zie de twee secties hierboven en de README.
 - Golf 4: de metingen aan de openmodus komen uit software-rendering. Tekenopdrachten en JavaScript-tijd zijn het meetbare deel; er is geen echte telefoon of GPU. De eindhoeken zijn geschat uit foto's, het instructieboekje en het werkplaatshandboek; aan de echte auto is niets gemeten.
 - De testset van de carrosserieronde liep op `9c731c8`. Op `ff42dbd` (alleen de eindstukken van de uitlaat veranderd) zijn alleen `integrity.py`, `ui_inner.py`, `smoke.py` en de publicatierooktest opnieuw gedraaid. De visuele poort (poort 5) is op `9c731c8` gedraaid en niet opnieuw na de uitlaatreparatie.
-- De getekende multiriem is 1.569 mm lang tegen 1.795 mm (7PK1795).
-- De voorste langsliggers snijden de aandrijfassen. Dat was al zo en is niet opgelost.
+- De getekende multiriem is 1.672 mm lang tegen 1.795 mm (7PK1795); in golf 4 was het 1.569 mm.
+- De voorste langsliggers lopen sinds golf 5 boven de aandrijfassen (ribdoorboringen van 1.855 naar 34).
 - De positie van de stuurpomp en de routes van de slangen zijn schematisch.
-- UX-punt U19 en een zijkolomindeling voor telefoons in liggende stand zijn niet gebouwd.
+- UX-punt U19 (rest dimmen bij duiken) en de zijkolom voor telefoons in liggende stand zijn in golf 5 gebouwd; er is geen echte telefoon gebruikt om ze te beproeven.
 - In SwiftShader (software-rendering) duurt een frame tijdens grote animaties enkele seconden. Een echte GPU is veel sneller. Op oudere telefoons kan "Alles uit elkaar" wel haperen. De pagina schakelt dan zelf over op een lichte weergave.
 - Screenshots van grote explosies hebben in de testomgeving een lange time-out nodig.
 - De gemeten frametijd is alleen JavaScript-tijd (explosie-update en labelindeling, zonder `render`). Echte GPU-tijd is in de container niet te meten; er is geen GPU en geen telefoon.
