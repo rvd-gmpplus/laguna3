@@ -1,0 +1,11 @@
+# Linux-testomgeving lag3-vm (Apple container, linux/arm64). Nagebouwd uit de geschiedenis van het image explosie-test:1
+# (16 oktober 2026, digest sha256:c9672118f5b36dc10af98985ca1205d6c86b22b90360c88eaf5420130eed57e0), met de versies van
+# dat image vastgezet. Het exacte image staat als OCI-archief in ~/.cache/explosietekening/lag3-vm/lag3-vm-1.oci.tar;
+# tools/lag3-vm.sh laadt dat eerst en bouwt dit bestand alleen als het archief ontbreekt. Uitleg: docs/testen.md.
+FROM ubuntu:24.04
+ENV DEBIAN_FRONTEND=noninteractive PLAYWRIGHT_BROWSERS_PATH=/ms-playwright PIP_BREAK_SYSTEM_PACKAGES=1
+RUN apt-get update && apt-get install -y --no-install-recommends python3 python3-pip python3-venv nodejs git ca-certificates curl \
+ && rm -rf /var/lib/apt/lists/*
+RUN python3 -m pip install --no-cache-dir playwright==1.64.0 pillow==12.3.0 numpy==2.5.4 \
+ && python3 -m playwright install --with-deps chromium
+WORKDIR /repo

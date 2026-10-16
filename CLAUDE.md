@@ -9,6 +9,7 @@ taal van code-commentaar, beschrijvingen, docs en commits. Geen em-dashes in tek
 - `tools/setup.sh` maakt een verse omgeving klaar (Playwright uit `requirements.txt`, three.js 0.147.0 met hashcontrole).
 - `python3 build.py --lint` voor elke commit; `python3 build.py` herbouwt `index.html` (gecommit, hoort bij `src/`).
 - Volledige set: `tools/orkestratie/finaltests.sh UITMAP` (strikt, één exitcode, tijd per test). Losse scripts in `tools/`.
+- Linux-tests en de visdiff-basislijn: VM `lag3-vm` via `tools/lag3-vm.sh start` en `tools/lag3-vm.sh test` (Apple container; instellingen in `docs/testen.md`, sectie Linux-VM).
 - Budgetten (driehoeken per hoofdgroep) staan in `tools/anchors.json`; `tools/tri.py --gate` bewaakt ze.
 - Een melding van de gebruiker eerst narekenen met `tools/orkestratie/pick.py`, `probe.py` of stralen; dan pas wijzigen.
 
