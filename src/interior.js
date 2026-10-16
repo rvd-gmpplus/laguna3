@@ -115,7 +115,7 @@ function intRearBack(cx, w, name, d, label, extra) {
   const xo = out > 0 ? hi - 0.03 : lo + 0.03, xi = out > 0 ? -hw + 0.03 : hw - 0.03;            // buitenste en binnenste framebuis
   return A(name, { d, p: [cx, intRB.y, intRB.z], r: [intRB.tilt, 0, 0], ex: [cx > 0 ? 0.14 : -0.14, 0.12, -0.12],
     open: intHinge([cx, intRBP.y, intRBP.z], [1, 0, 0], intRBP.ang, Object.assign({ min: 1.456, label, look: { dir: [cx > 0 ? 0.3 : -0.3, 0.75, -0.8], nodes: [name, 'Zitting achterbank', 'Renault Laguna III/Carrosserie/Achterklep/Klepafdichting'] } }, intNeed('Achterklep'))) }, [
-    intPart('Rugframe', merge([cy('y', 0.009, 0.54, [xo, 0.28, -0.03]), cy('y', 0.009, 0.54, [xi, 0.28, -0.03]), cy('x', 0.009, w - 0.06, [0, 0.54, -0.03]), cy('x', 0.009, hi - lo - 0.06, [(hi + lo) / 2, 0.02, -0.03])]), MAT.steel, 'Stalen buisframe van het rugleuningdeel.', { inner: true, ex: [0, 0, -0.02] }),
+    intPart('Rugframe', merge([cy('y', 0.009, 0.54, [xo, 0.28, -0.03]), cy('y', 0.009, 0.54, [xi, 0.28, -0.03]), cy('x', 0.009, w - 0.06, [0, 0.54, -0.03]), cy('x', 0.009, hi - lo - 0.06, [(hi + lo) / 2, 0.02, -0.03])]), MAT.steel, 'Stalen buisframe van het rugleuningdeel.', { ex: [0, 0, -0.02] }),
     intPart('Rugschuim', notched(0.01, 0.065, 0.03, 0, 0.016), MAT.intFoam, 'Schuimlaag van het rugleuningdeel.', { inner: true, ex: [0, 0, 0.04] }),
     intPart('Rugbekleding', notched(0, 0.11, 0.03, 0, 0.014), MAT.leather, 'Beige lederen bekleding, onderaan aan de buitenkant ingesneden om de wielkast heen.', { ex: [0, 0, 0.14] }),
     intPart('Rugachterbekleding', merge([notched(0.01, 0.012, 0.006, -0.062), flange]), MAT.carpet, 'Bekleding aan de bagageruimtezijde van het rugleuningdeel.', { ex: [0, 0, -0.14] }),
@@ -299,7 +299,7 @@ function intDashboard() {
     intPart('Servomotoren', merge([bx(0.04, 0.03, 0.03, 0.006, [0.2, 0.1, -0.1]), bx(0.04, 0.03, 0.03, 0.006, [0.2, -0.1, 0.1]), bx(0.04, 0.03, 0.03, 0.006, [-0.2, 0.1, 0.1])]), MAT.plastic, 'Stelmotoren van de mengkleppen en de recirculatieklep (aantal geschat).', { ex: [0.1, 0, 0] }),
     intPart('Pollen- en koolstoffilter', G.rbox(0.26, 0.04, 0.12, 0.004), MAT.filter, 'Combinatiefilter tegen stuifmeel en geuren; het filter zit achter het handschoenenkastje.', { p: [-0.1, 0.12, -0.04], ex: [-0.1, 0.1, 0] }),
   ]);
-  const harness = A('Kabelboom dashboard', { d: 'Kabelboom van het dashboard met connectorblokken (schematisch).', ex: [0, -0.1, -0.1], inner: true }, [
+  const harness = A('Kabelboom dashboard', { d: 'Kabelboom van het dashboard met connectorblokken (schematisch).', ex: [0, -0.1, -0.1] }, [
     intPart('Kabelboom', tube([[0.7, 0.74, 0.58], [0.35, 0.73, 0.6], [0, 0.72, 0.6], [-0.35, 0.73, 0.6], [-0.7, 0.74, 0.58]], 0.012, 32, 6), MAT.plastic, 'Hoofdkabelboom langs de dwarsbalk.', { ex: [0, -0.04, 0] }),
     intPart('Connectorblok bestuurderszijde', G.rbox(0.07, 0.04, 0.03, 0.006), MAT.plasticGrey, 'Stekkerblok naar de UCH en het instrumentenpaneel.', { p: [0.55, 0.74, 0.58], ex: [0.05, -0.04, 0] }),
     intPart('Connectorblok passagierszijde', G.rbox(0.07, 0.04, 0.03, 0.006), MAT.plasticGrey, 'Stekkerblok naar airbag en klimaatunit.', { p: [-0.55, 0.74, 0.58], ex: [-0.05, -0.04, 0] }),

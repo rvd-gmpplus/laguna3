@@ -36,7 +36,7 @@ function buildCooling() {
     P('Waterkast links', G.rbox(0.04, 0.36, 0.046, 0.008), MAT.plastic, { d: 'Kunststof waterkast waar de warme koelvloeistof binnenkomt.', p: [0.30, RY, RZ], ex: [0.13, 0, 0] }),
     P('Waterkast rechts', G.rbox(0.04, 0.36, 0.046, 0.008), MAT.plastic, { d: 'Kunststof waterkast waar de afgekoelde vloeistof het blok verlaat.', p: [-0.30, RY, RZ], ex: [-0.13, 0, 0] }),
     P('Pakking waterkast links', G.box(0.012, 0.34, 0.024), MAT.rubber, { d: 'Rubber afdichting tussen waterkast en blok.', p: [0.285, RY, RZ], ex: [0.06, 0, 0], inner: true }),
-    P('Pakking waterkast rechts', G.box(0.012, 0.34, 0.024), MAT.rubber, { d: 'Rubber afdichting tussen waterkast en blok.', p: [-0.285, RY, RZ], ex: [-0.06, 0, 0], inner: true }),
+    P('Pakking waterkast rechts', G.box(0.012, 0.34, 0.024), MAT.rubber, { d: 'Rubber afdichting tussen waterkast en blok.', p: [-0.285, RY, RZ], ex: [-0.06, 0, 0] }),
     P('Inlaatstomp', G.cyl('z', 0.0185, 0.0185, 0.045, 14), MAT.plastic, { d: 'Aansluiting van de bovenste radiateurslang op de linker waterkast.', p: [0.30, 0.62, RZ - 0.0455], ex: [0, 0.05, -0.1] }),
     P('Uitlaatstomp', G.cyl('z', 0.0185, 0.0185, 0.045, 14), MAT.plastic, { d: 'Aansluiting van de onderste radiateurslang op de rechter waterkast.', p: [-0.30, 0.34, RZ - 0.0455], ex: [0, -0.05, -0.1] }),
     P('Aftapkraan', merge([G.cyl('y', 0.008, 0.008, 0.026, 10), xf(G.box(0.03, 0.008, 0.008), [0, -0.016, 0])]), MAT.plastic, { d: 'Kraan onderin de rechter waterkast om de koelvloeistof af te tappen.', p: [-0.30, 0.285, RZ], ex: [0, -0.1, 0] }),
