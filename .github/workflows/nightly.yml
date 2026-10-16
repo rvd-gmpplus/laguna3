@@ -37,6 +37,13 @@ jobs:
         run: python3 tools/pncheck.py --tree
       - name: pubsmoke
         run: python3 tools/pubsmoke.py
+      - name: "labelankers (poort, geen van beide totalen daalt)"
+        run: python3 tools/anchorcheck.py --json uit/anchorcheck.json --basis docs/baseline/anchorcheck.json
+      - name: "visuele regressie (informatie tot de ruisvloer op de runner bekend is)"
+        continue-on-error: true
+        run: |
+          python3 tools/orkestratie/presetshots.py . uit/presets
+          python3 tools/visdiff.py uit/presets docs/baseline --uit uit/visdiff
       - name: stats en cijfers
         run: |
           python3 tools/orkestratie/stats.py "$PWD" uit/stats.json
