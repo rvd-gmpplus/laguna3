@@ -1,13 +1,13 @@
 # Handomdraai laguna3
 
-Stand 16 oktober 2026, 09:50 UTC. Versie 7 is live: de parallelle sessie zette `main` op `edab342` (PR #4, fast-forward); GitHub Pages en het artefact serveren `index.html` van golf 5 (bron `33b2b50`, 1.378.969 bytes, md5 `faca1a6c…`, zonder versiestempel). Concept-PR #3 op de tak `ccr-63d946bb-ng8q5l` brengt daar het vangnet (golf 5a-1 en 5a-2), golf 5c-1 (robuustheid, bediening, toegankelijkheid en tests) en het structurele deel van golf 5d (nummers) bovenop; `main` is erin samengevoegd en de pagina heet daarmee versie 8. Het volledige verbeterplan staat in [docs/masterplan.md](docs/masterplan.md).
+Stand 16 oktober 2026, 10:20 UTC. Versie 8 is live: PR #3 is als `4e837c5` in `main` samengevoegd (bovenop versie 7 van de parallelle sessie, PR #4). GitHub Pages en het artefact serveren `index.html` met stempel `8 (bron 58abc68)` (1.410.035 bytes), byte voor byte teruggelezen. Het volledige verbeterplan staat in [docs/masterplan.md](docs/masterplan.md); de volgende golven starten vanaf `main`.
 
 ## Waar
 
-- Repo `rvd-gmpplus/laguna3`. `main` staat op `edab342` (versie 7, golf 5). Werktak `ccr-63d946bb-ng8q5l`, PR #3 (concept): https://github.com/rvd-gmpplus/laguna3/pull/3, met `main` samengevoegd op 16 oktober. De tak `ccr-bd755431-1qfniw` van de parallelle sessie is gelijk aan `main`.
-- Live: https://rvd-gmpplus.github.io/laguna3/ en https://claude.ai/artifact/4qJq7YUk5nGSFmexY7WkZR, beide versie 7. GitHub Pages is het kanaal; het artefact is een spiegel met dezelfde bytes en wordt na de publicatie van versie 8 bijgewerkt en teruggelezen.
+- Repo `rvd-gmpplus/laguna3`. `main` staat op `4e837c5` (versie 8). PR #3 en PR #4 zijn samengevoegd. Werktak voor vervolgwerk: `ccr-63d946bb-ng8q5l`, opnieuw gestart vanaf `main`.
+- Live: https://rvd-gmpplus.github.io/laguna3/ en https://claude.ai/artifact/4qJq7YUk5nGSFmexY7WkZR, beide versie 8, op 16 oktober om 10:15 UTC teruggelezen (het artefact bevat `index.html` precies een keer, met 531 bytes hostskelet ervoor en 15 erna). GitHub Pages is het kanaal; het artefact is een spiegel met dezelfde bytes. In het artefact werkt Beeld opslaan niet: de viewer staat downloads vanuit de pagina niet toe; op Pages werkt het wel.
 - De tak `gh-pages` (versie 5) is overbodig. De proxy weigert hem te verwijderen (403 op `git push --delete` en op de API); de gebruiker verwijdert hem in GitHub.
-- Bouwen: `python3 build.py`. Versie: `VERSION` (nu 8) plus een inhoudshash van `src/`, zichtbaar in het hulpvenster (`?`), in `<meta name="laguna-version">` en in `__laguna.version`. Versie 7 op `main` heeft nog geen stempel.
+- Bouwen: `python3 build.py`. Versie: `VERSION` (nu 8) plus een inhoudshash van `src/`, zichtbaar in het hulpvenster (`?`), in `<meta name="laguna-version">` en in `__laguna.version`. Versie 7 had nog geen stempel.
 - Verse omgeving: `tools/setup.sh` (Playwright en Pillow uit `requirements.txt`, three.js 0.147.0 met npm-hashcontrole). In een Claude Code-sessie in de cloud doet de SessionStart-hook dat.
 - Kerncijfers: [docs/cijfers.md](docs/cijfers.md), gegenereerd uit `stats.json` en `tri.json`; andere documenten verwijzen ernaar in plaats van getallen te herhalen.
 
@@ -111,16 +111,15 @@ Wat de gebruiker met een rolmaat, een hoekmeter (telefoon) en een blik kan vasts
 
 ## Wat bij de gebruiker ligt
 
-1. PR #3 beoordelen en samenvoegen in `main` (merge, geen rebase). Daarna serveert GitHub Pages versie 8; dan het artefact bijwerken met dezelfde bytes en de URL teruglezen (zie `docs/testen.md`, pubsmoke).
-2. `gh-pages` verwijderen in GitHub (de proxy weigert het).
-3. De tags `v1` tot `v8` naar GitHub brengen; de proxy weigert `git push --tags` en de API (403). In een eigen kloon, na het samenvoegen van PR #3:
-   `git tag -a v1 9164d0a -m "Versie 1" && git tag -a v2 8095a3e -m "Versie 2" && git tag -a v3 60909fe -m "Versie 3" && git tag -a v4 9c03015 -m "Versie 4" && git tag -a v5 5b6cefa -m "Versie 5" && git tag -a v6 f3a7854 -m "Versie 6" && git tag -a v7 25c3ddf -m "Versie 7" && git tag -a v8 <samenvoegcommit> -m "Versie 8" && git push origin --tags`
-4. De telefoontest volgens [docs/telefoontest.md](docs/telefoontest.md) (en de Testlijst hieronder) op versie 7 of 8 (`?debug=1` voor de overlay vanaf versie 8).
-5. Het motorplaatje, het typeplaatje en de bandenmaat, en de andere punten van de Meetlijst.
-6. Tegoed voor Jina of Firecrawl (of een dealerlijst op het chassisnummer) voor de nummerronden N2 en N5 en de 24 `?page=N`-URL's: de accounts gaven 402 en "insufficient credits"; autodoc zit achter Cloudflare.
-7. Besluit over golf 6 (ES-modules en een actuele three.js; advies: nee tot er een aanleiding is) en over een tweede bestand naast de pagina voor de nummergegevens (alleen als het artefact als kanaal mag vervallen).
-8. Desgewenst het artefact delen via het menu Delen, en het delen van de handleiding op Google Drive weer uitzetten.
-9. Eén spoor tegelijk: twee sessies op `main` gaven twee keer "versie 7". Nieuwe golven starten vanaf `main` na het samenvoegen van PR #3.
+1. `gh-pages` verwijderen in GitHub (de proxy weigert het).
+2. De tags `v1` tot `v8` naar GitHub brengen; de proxy weigert `git push --tags` en de API (403). In een eigen kloon:
+   `git tag -a v1 9164d0a -m "Versie 1" && git tag -a v2 8095a3e -m "Versie 2" && git tag -a v3 60909fe -m "Versie 3" && git tag -a v4 9c03015 -m "Versie 4" && git tag -a v5 5b6cefa -m "Versie 5" && git tag -a v6 f3a7854 -m "Versie 6" && git tag -a v7 25c3ddf -m "Versie 7" && git tag -a v8 4e837c5 -m "Versie 8" && git push origin --tags`
+3. De telefoontest volgens [docs/telefoontest.md](docs/telefoontest.md) (en de Testlijst hieronder) op versie 7 of 8 (`?debug=1` voor de overlay vanaf versie 8).
+4. Het motorplaatje, het typeplaatje en de bandenmaat, en de andere punten van de Meetlijst.
+5. Tegoed voor Jina of Firecrawl (of een dealerlijst op het chassisnummer) voor de nummerronden N2 en N5 en de 24 `?page=N`-URL's: de accounts gaven 402 en "insufficient credits"; autodoc zit achter Cloudflare.
+6. Besluit over golf 6 (ES-modules en een actuele three.js; advies: nee tot er een aanleiding is) en over een tweede bestand naast de pagina voor de nummergegevens (alleen als het artefact als kanaal mag vervallen).
+7. Desgewenst het artefact delen via het menu Delen, en het delen van de handleiding op Google Drive weer uitzetten.
+8. Eén spoor tegelijk: twee sessies op `main` gaven twee keer "versie 7". Nieuwe golven starten vanaf `main` na het samenvoegen van PR #3.
 
 ## Werkwijze die werkte
 
