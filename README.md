@@ -228,7 +228,7 @@ Voorbereiding, alle scripts en de resultaten staan in [docs/testen.md](docs/test
 - Op de motorkap zijn in het bovenaanzicht donkere spikkels te zien op een vaste plek. Samenvallende vlakken en de omgevingsreflectie zijn uitgesloten. De vermoedelijke oorzaak is de software-rasterisatie in de container. Dat is niet bewezen; op een echte GPU nakijken.
 - Labelankers: `tools/anchorcheck.py` meet per preset of een anker op het eigen deel ligt en of het een vrije zichtlijn heeft. Op de stand van golf 5c-1 (42 presets): 352 labels, 319 op het eigen deel, 265 met vrije zichtlijn (de basis in `docs/baseline/anchorcheck.json`; geen van beide mag dalen). Vóór golf 4 waren het 261 van 345 op het eigen deel.
 - Driehoeken per hoofdgroep, tekenopdrachten met en zonder bundelen, opstarttijden en de andere kerncijfers staan in [docs/cijfers.md](docs/cijfers.md); de budgetten in `tools/anchors.json`.
-- Interactietest: op de stand van golf 5c-1 slagen alle 218 controles van `tools/itest.py` (desktop en telefoon, openmodus, onderdeelnummers, toetsenbord, formaatwissel, foutpaden); zie [docs/testen.md](docs/testen.md).
+- Interactietest: op de stand van golf 5c-1 slagen alle 222 controles van `tools/itest.py` (desktop en telefoon, openmodus, onderdeelnummers, toetsenbord, formaatwissel, foutpaden); zie [docs/testen.md](docs/testen.md).
 - Niet getest op een echte telefoon en een echte GPU.
 - Alle laadtijden zijn in een container met software-rendering gemeten (de pagina is daar na 5 tot 28 seconden klaar, afhankelijk van de belasting van de machine). Ze zeggen niets over een echt apparaat.
 - De gedragingen van de webview van een telefoon-app (lang drukken, sneltoetsen in een iframe) zijn niet te testen in de container. De stijlregels ervoor zijn wel getoetst.
