@@ -37,12 +37,12 @@
   "oe": [
    [
     "7701067658",
-    "OE-lijst MAXGEAR 24-0347 (positie Inlet) en FAE 79489",
+    "OE-lijst MAXGEAR 24-0347 (positie ingaande as) en FAE 79489",
     "B"
    ],
    [
     "7701065844",
-    "OE-lijst MAXGEAR 24-0347 (positie Inlet) en FAE 79489",
+    "OE-lijst MAXGEAR 24-0347 (positie ingaande as) en FAE 79489",
     "B"
    ]
   ],
@@ -50,29 +50,29 @@
    [
     "MAXGEAR",
     "24-0347",
-    "RPM-sensor automaat, positie Inlet, F4R 811",
+    "toerentalsensor automaat, positie ingaande as, F4R 811",
     "A"
    ],
    [
     "FACET",
     "9.0710",
-    "RPM-sensor automaat, positie Inlet, F4R 811",
+    "toerentalsensor automaat, positie ingaande as, F4R 811",
     "A"
    ],
    [
     "EPS",
     "1.953.710",
-    "RPM-sensor automaat, positie Inlet, F4R 811",
+    "toerentalsensor automaat, positie ingaande as, F4R 811",
     "A"
    ],
    [
     "KW",
     "453 710",
-    "RPM-sensor automaat, positie Inlet, F4R 811",
+    "toerentalsensor automaat, positie ingaande as, F4R 811",
     "A"
    ]
   ],
-  "var": "Autodoc noemt voor type 23370 \"RPM Sensor, automatic transmission\" met positie Inlet (MAXGEAR 24-0347, FACET 9.0710, EPS 1.953.710, KW 453 710) en TecDoc-motor F4R 811. De OE-nummers 7701067658 en 7701065844 staan samen in de OE-lijst van MAXGEAR 24-0347; welk van de twee bij welke uitvoering hoort, staat niet op de bron. Artikelen zonder positie zijn weggelaten.",
+  "var": "Autodoc noemt voor type 23370 een toerentalsensor automaat met positie ingaande as (MAXGEAR 24-0347, FACET 9.0710, EPS 1.953.710, KW 453 710) en TecDoc-motor F4R 811. De OE-nummers 7701067658 en 7701065844 staan samen in de OE-lijst van MAXGEAR 24-0347; welk van de twee bij welke uitvoering hoort, staat niet op de bron. Artikelen zonder positie zijn weggelaten.",
   "per": "1 stuk",
   "note": "De bak heeft een ingaande en een uitgaande sensor; alleen artikelen met positie Inlet zijn opgenomen. Per VIN controleren.",
   "src": [
@@ -239,13 +239,13 @@
    [
     "BOSCH",
     "1 004 336 667",
-    "categorielijst noemt het artikel \"Starter motor\"; productpagina: \"Holder, carbon brushes\", 2.0 16V Turbo 170 hp in de toepassingslijst",
+    "categorielijst zet het artikel bij de startmotoren; de productpagina noemt het een koolborstelhouder; 2.0 16V Turbo 170 pk in de toepassingslijst",
     "A"
    ],
    [
     "BOSCH",
     "1 004 336 416",
-    "categorielijst noemt het artikel \"Starter motor\"; productpagina: \"Holder, carbon brushes\", 2.0 16V Turbo 170 hp in de toepassingslijst",
+    "categorielijst zet het artikel bij de startmotoren; de productpagina noemt het een koolborstelhouder; 2.0 16V Turbo 170 pk in de toepassingslijst",
     "A"
    ]
   ],
@@ -273,7 +273,7 @@
   "oe": [
    [
     "7701052617",
-    "OE-lijst KAMOKA 8640032, ERA 227033, LAUBER CQ2030504, ERA ZM1379; \"for OE number\" bij MEAT & DORIA 46264",
+    "OE-lijst KAMOKA 8640032, ERA 227033, LAUBER CQ2030504, ERA ZM1379; OE-verwijzing bij MEAT & DORIA 46264",
     "B"
    ]
   ],
@@ -573,7 +573,7 @@
   "oe": [
    [
     "8200196615",
-    "Artikel van RENAULT zelf in Autodoc-lijst 23370 (transmission sided, Front Axle Left)",
+    "Artikel van RENAULT zelf in Autodoc-lijst 23370 (versnellingsbakzijde, vooras links)",
     "A"
    ]
   ],
@@ -616,7 +616,7 @@
   "oe": [
    [
     "7703066381",
-    "Artikel van RENAULT zelf in Autodoc-lijst 23370 (Front Axle Right)",
+    "Artikel van RENAULT zelf in Autodoc-lijst 23370 (vooras rechts)",
     "A"
    ],
    [
@@ -707,7 +707,7 @@
   "oe": [
    [
     "7701209991",
-    "\"for OE number\" bij SASIC 1904026, bouwdatum vanaf 10/07",
+    "OE-verwijzing bij SASIC 1904026, bouwdatum vanaf 10/07",
     "B"
    ]
   ],
@@ -759,7 +759,7 @@
   "oe": [
    [
     "7701209474",
-    "\"for OE number\" bij SASIC 1904019, bouwdatum vanaf 10/07",
+    "OE-verwijzing bij SASIC 1904019, bouwdatum vanaf 10/07",
     "B"
    ]
   ],
@@ -779,7 +779,7 @@
    [
     "SNR",
     "IBK55.010",
-    "Front Axle Right/Left",
+    "vooras rechts/links",
     "A"
    ],
    [
@@ -823,7 +823,7 @@
     "A"
    ]
   ],
-  "var": "SNR IBK55.010 noemt in Autodoc 23370 \"Front Axle Right, Front Axle Left\"; de andere sets in de lijst noemen geen zijde.",
+  "var": "SNR IBK55.010 noemt in Autodoc 23370 vooras rechts en links; de andere sets in de lijst noemen geen zijde.",
   "per": "1 set",
   "note": "Rechts zit de tripode op de tussenas; maat niet apart bevestigd.",
   "src": [
@@ -885,7 +885,7 @@
    ],
    [
     "402109478R",
-    "Artikel van RENAULT zelf in Autodoc-lijst 23370 (Front Axle Left, Front Axle Right)",
+    "Artikel van RENAULT zelf in Autodoc-lijst 23370 (vooras links, vooras rechts)",
     "A"
    ]
   ],
@@ -1353,7 +1353,7 @@
    [
     "TEDGUM",
     "00588853",
-    "Rear, Front Axle, Lower; diameter 58 mm (andere merken 72 tot 73 mm), binnen 15, lengte 65",
+    "achter, vooras, onder; Ø 58 mm (andere merken 72 tot 73 mm), binnen 15, lengte 65",
     "A"
    ]
   ],
@@ -1644,13 +1644,13 @@
    [
     "MONROE",
     "G8186",
-    "Front Axle; de lijst noemt geen onderstel (aanbevolen toebehoren MK383, PK352)",
+    "vooras; de lijst noemt geen onderstel (aanbevolen toebehoren MK383, PK352)",
     "A"
    ],
    [
     "TRW",
     "JGM1134T",
-    "Front Axle, standard suspension, vanaf 03/2008",
+    "vooras, standaardonderstel, vanaf 03/2008",
     "A"
    ],
    [
@@ -1662,23 +1662,23 @@
    [
     "SACHS",
     "317 419",
-    "Front Axle, standard suspension; for OE number 54 30 233 05R, 54 30 270 68R",
+    "vooras, standaardonderstel; voor OE-nummer 54 30 233 05R, 54 30 270 68R",
     "A"
    ],
    [
     "SACHS",
     "317 420",
-    "Front Axle, standard suspension; for OE number 54 30 200 15R, 54 30 200 30R",
+    "vooras, standaardonderstel; voor OE-nummer 54 30 200 15R, 54 30 200 30R",
     "A"
    ],
    [
     "FEBI BILSTEIN",
     "1002699",
-    "Front Axle",
+    "vooras",
     "A"
    ]
   ],
-  "var": "Lijst 23370: TRW JGM1134T en beide SACHS-dempers \"for vehicles with standard suspension\", KYB 339704 \"without sports suspension\"; RIDEX, MONROE en febi noemen geen onderstel. SACHS 317 419 (for OE number 543023305R, 543027068R) en SACHS 317 420 (for OE number 543020015R, 543020030R) zijn twee uitvoeringen voor de vooras; welke bij de VIN hoort, staat niet op de bron.",
+  "var": "Lijst 23370: TRW JGM1134T en beide SACHS-dempers voor standaardonderstel, KYB 339704 zonder sportonderstel; RIDEX, MONROE en febi noemen geen onderstel. SACHS 317 419 (OE-verwijzing 543023305R, 543027068R) en SACHS 317 420 (OE-verwijzing 543020015R, 543020030R) zijn twee uitvoeringen voor de vooras; welke bij de VIN hoort, staat niet op de bron.",
   "per": "1 stuk, links en rechts gelijk",
   "note": "Demperbuis, zuigerstang en onderste veerschotel zijn niet los verkrijgbaar. De Renault-nummers van de RIDEX-lijst staan voor meerdere uitvoeringen; het VIN is bepalend.",
   "src": [
@@ -1806,7 +1806,7 @@
    [
     "FEBI BILSTEIN",
     "103190",
-    "not for rim size 18 inch (lijst 23370)",
+    "niet voor 18-inchvelgen (lijst 23370)",
     "A"
    ],
    [
@@ -1868,17 +1868,17 @@
    [
     "RIDEX",
     "1180S0479",
-    "with bearing(s); for model code BT06, BT0Y, BT0H",
+    "met lager(s); voor modelcode BT06, BT0Y, BT0H",
     "A"
    ],
    [
     "KYB",
     "SM1533",
-    "Suspension Mounting Kit; zonder sportonderstel en zonder verhoogde bodemvrijheid; inhoud niet vermeld",
+    "montageset veerpoot; zonder sportonderstel en zonder verhoogde bodemvrijheid; inhoud niet vermeld",
     "A"
    ]
   ],
-  "var": "RIDEX 1180S0479 (with bearing) noemt modelcodes BT06, BT0Y, BT0H; KYB SM1533 is een \"Suspension Mounting Kit\" voor wagens zonder sportonderstel. De modelcode van deze auto is niet bekend; per VIN controleren.",
+  "var": "RIDEX 1180S0479 (met lager) noemt modelcodes BT06, BT0Y, BT0H; KYB SM1533 is een montageset veerpoot voor wagens zonder sportonderstel. De modelcode van deze auto is niet bekend; per VIN controleren.",
   "per": "1 stuk per veerpoot",
   "note": "Geen eigen Renault-nummer voor de complete topsteun bevestigd: de nummers in de OE-lijst van KYB SM1533 zijn het lagernummer (zie U_STRUTBRG) en het steunrubber. Steunrubbers zonder lager en een set zonder vermeld lager zijn weggelaten.",
   "src": [
@@ -2511,7 +2511,7 @@
    [
     "JP GROUP",
     "1163651210",
-    "Rim Size 16 inch volgens de lijst 23370",
+    "velgmaat 16 inch volgens de lijst 23370",
     "A"
    ],
    [

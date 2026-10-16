@@ -110,12 +110,12 @@
    ],
    [
     "288902727R",
-    "OE-lijst HELLA 9XW 358 164-111; HELLA staat in de lijst 23370 (Front).",
+    "OE-lijst HELLA 9XW 358 164-111; HELLA staat in de lijst 23370 (voor).",
     "B"
    ],
    [
     "288907458R",
-    "OE-lijst HELLA 9XW 358 164-111; HELLA staat in de lijst 23370 (Front).",
+    "OE-lijst HELLA 9XW 358 164-111; HELLA staat in de lijst 23370 (voor).",
     "B"
    ]
   ],
@@ -123,31 +123,31 @@
    [
     "RIDEX",
     "298W0112",
-    "Lijst 23370, Fitting Position Front, 650, 400 mm, set van 2; geen bouwjaargrens.",
+    "Lijst 23370, positie voor, 650 en 400 mm, set van 2; geen bouwjaargrens.",
     "A"
    ],
    [
     "VALEO",
     "574653",
-    "Lijst 23370, Fitting Position Front, 650, 400 mm, set van 2; geen bouwjaargrens.",
+    "Lijst 23370, positie voor, 650 en 400 mm, set van 2; geen bouwjaargrens.",
     "A"
    ],
    [
     "BOSCH",
     "3 397 007 422",
-    "Lijst 23370, Fitting Position Front, 650, 400 mm, set van 2; geen bouwjaargrens.",
+    "Lijst 23370, positie voor, 650 en 400 mm, set van 2; geen bouwjaargrens.",
     "A"
    ],
    [
     "HELLA",
     "9XW 358 164-111",
-    "Lijst 23370, Fitting Position Front, 650, 400 mm, set van 2; geen bouwjaargrens.",
+    "Lijst 23370, positie voor, 650 en 400 mm, set van 2; geen bouwjaargrens.",
     "A"
    ],
    [
     "CONTINENTAL",
     "2800011234280",
-    "Lijst 23370, Fitting Position Front, 650, 400 mm, set van 2; geen bouwjaargrens.",
+    "Lijst 23370, positie voor, 650 en 400 mm, set van 2; geen bouwjaargrens.",
     "A"
    ],
    [
@@ -201,19 +201,19 @@
    [
     "BOSCH",
     "3 397 004 759",
-    "Lijst 23370, Rear, 475 mm, type R; geen bouwjaargrens.",
+    "Lijst 23370, achter, 475 mm, type R; geen bouwjaargrens.",
     "A"
    ],
    [
     "BOSCH",
     "3 397 004 760",
-    "Lijst 23370, Rear, 500 mm; geen bouwjaargrens.",
+    "Lijst 23370, achter, 500 mm; geen bouwjaargrens.",
     "A"
    ],
    [
     "KAMOKA",
     "29054",
-    "Lijst 23370, pos. Rear; lengte niet vermeld.",
+    "Lijst 23370, pos. achter; lengte niet vermeld.",
     "A"
    ]
   ],
@@ -260,7 +260,7 @@
    [
     "M MODECAR",
     "DA-29399",
-    "Lijst 23370: M Modecar DA-29399 Wiper arm set Rear.",
+    "Lijst 23370: M Modecar DA-29399, wisserarmset achter.",
     "A"
    ]
   ],
@@ -310,31 +310,31 @@
    [
     "MAGNETI MARELLI",
     "064377400010",
-    "Lijst 23370, Fitting Position Front, 12V; geen bouwjaargrens.",
+    "Lijst 23370, positie voor, 12 V; geen bouwjaargrens.",
     "A"
    ],
    [
     "VEMO",
     "V46-07-0033",
-    "Lijst 23370, Fitting Position Front, 12V; geen bouwjaargrens.",
+    "Lijst 23370, positie voor, 12 V; geen bouwjaargrens.",
     "A"
    ],
    [
     "BOGAP",
     "R5511120",
-    "Lijst 23370, Fitting Position Front, 12V; geen bouwjaargrens.",
+    "Lijst 23370, positie voor, 12 V; geen bouwjaargrens.",
     "A"
    ],
    [
     "FRANKBERG",
     "5481FB0085643",
-    "Lijst 23370, Fitting Position Front, 12V; geen bouwjaargrens.",
+    "Lijst 23370, positie voor, 12 V; geen bouwjaargrens.",
     "A"
    ],
    [
     "ALANKO",
     "10800866",
-    "Lijst 23370, Fitting Position Front, 12V; geen bouwjaargrens.",
+    "Lijst 23370, positie voor, 12 V; geen bouwjaargrens.",
     "A"
    ]
   ],
@@ -380,31 +380,31 @@
    [
     "MAGNETI MARELLI",
     "064073400010",
-    "Lijst 23370, Rear, linksgestuurd.",
+    "Lijst 23370, achter, linksgestuurd.",
     "A"
    ],
    [
     "SANDO",
     "SWM10314.1",
-    "Lijst 23370, Rear (titel SANDO; het veld Manufacturer RENAULT is de OE-aanduiding).",
+    "Lijst 23370, achter (titel SANDO; het veld fabrikant RENAULT is de OE-aanduiding).",
     "A"
    ],
    [
     "CASCO",
     "CWM10314GS",
-    "Lijst 23370, Rear (titel CASCO).",
+    "Lijst 23370, achter (titel CASCO).",
     "A"
    ],
    [
     "FRANKBERG",
     "5481FB0052067",
-    "Autodoc OE-pagina 287100004R: Frankberg, Rear, linksgestuurd.",
+    "Autodoc OE-pagina 287100004R: Frankberg, achter, linksgestuurd.",
     "C"
    ],
    [
     "NTY",
     "ESW-RE-026",
-    "Autodoc OE-pagina 287100004R, pos. Rear, voor auto met vaste achterruit (in de klep).",
+    "Autodoc OE-pagina 287100004R, pos. achter, voor auto met vaste achterruit (in de klep).",
     "C"
    ]
   ],
@@ -453,7 +453,7 @@
   "oe": [
    [
     "8200082347",
-    "OE-lijst NTY EDS-RE-002 (A-artikel); Spareto: Washer fluid jet.",
+    "OE-lijst NTY EDS-RE-002 (A-artikel); Spareto: sproeier.",
     "B"
    ]
   ],
@@ -467,31 +467,31 @@
    [
     "3RG",
     "86605",
-    "Lijst 23370, both sides, for windscreen cleaning.",
+    "Lijst 23370, beide zijden, voor de voorruit.",
     "A"
    ],
    [
     "MEHA AUTOMOTIVE",
     "MH72367",
-    "Lijst 23370, Left Front, Right Front.",
+    "Lijst 23370, linksvoor, rechtsvoor.",
     "A"
    ],
    [
     "METZGER",
     "2220812",
-    "Lijst 23370, pos. Left Front, Right Front, vanaf productiedatum 15.09.2008; ook Spareto-kruisverwijzing van 8200082347.",
+    "Lijst 23370, pos. linksvoor, rechtsvoor, vanaf productiedatum 15.09.2008; ook Spareto-kruisverwijzing van 8200082347.",
     "A"
    ],
    [
     "TOPRAN",
     "702 226",
-    "Lijst 23370, pos. Left Front, Right Front; ook Spareto-kruisverwijzing van 8200082347.",
+    "Lijst 23370, pos. linksvoor, rechtsvoor; ook Spareto-kruisverwijzing van 8200082347.",
     "A"
    ],
    [
     "AIC",
     "57935",
-    "Lijst 23370, pos. Front; ook Spareto-kruisverwijzing van 8200082347.",
+    "Lijst 23370, pos. voor; ook Spareto-kruisverwijzing van 8200082347.",
     "A"
    ]
   ],
@@ -540,19 +540,19 @@
    [
     "SEIM",
     "109110",
-    "Lijst 23370, Headlight washer jet, kant klopt.",
+    "Lijst 23370, koplampsproeier, kant klopt.",
     "A"
    ],
    [
     "SEIM",
     "119035",
-    "Lijst 23370, Headlight washer jet, kant klopt.",
+    "Lijst 23370, koplampsproeier, kant klopt.",
     "A"
    ],
    [
     "METZGER",
     "2221178",
-    "Lijst 23370, Headlight washer jet, kant klopt.",
+    "Lijst 23370, koplampsproeier, kant klopt.",
     "A"
    ]
   ],
@@ -592,19 +592,19 @@
    [
     "SEIM",
     "109111",
-    "Lijst 23370, Headlight washer jet, kant klopt.",
+    "Lijst 23370, koplampsproeier, kant klopt.",
     "A"
    ],
    [
     "SEIM",
     "119036",
-    "Lijst 23370, Headlight washer jet, kant klopt.",
+    "Lijst 23370, koplampsproeier, kant klopt.",
     "A"
    ],
    [
     "METZGER",
     "2221179",
-    "Lijst 23370, Headlight washer jet, kant klopt.",
+    "Lijst 23370, koplampsproeier, kant klopt.",
     "A"
    ]
   ],
@@ -639,37 +639,37 @@
    [
     "MONROE",
     "ML5657",
-    "Lijst 23370, Tailgate strut 610N, 495 mm.",
+    "Lijst 23370, gasveer achterklep 610 N, 495 mm.",
     "A"
    ],
    [
     "RIDEX",
     "219G0253",
-    "Lijst 23370, Tailgate strut 610N, 495 mm.",
+    "Lijst 23370, gasveer achterklep 610 N, 495 mm.",
     "A"
    ],
    [
     "MAGNETI MARELLI",
     "430719069600",
-    "Lijst 23370, Tailgate strut 610N, 495 mm.",
+    "Lijst 23370, gasveer achterklep 610 N, 495 mm.",
     "A"
    ],
    [
     "TOPRAN",
     "700 839",
-    "Lijst 23370, Tailgate strut 610N, 495 mm.",
+    "Lijst 23370, gasveer achterklep 610 N, 495 mm.",
     "A"
    ],
    [
     "KAMOKA",
     "7092473",
-    "Lijst 23370, Tailgate strut 610N, 497 mm.",
+    "Lijst 23370, gasveer achterklep 610 N, 497 mm.",
     "A"
    ],
    [
     "FEBI BILSTEIN",
     "47912",
-    "Lijst 23370, Tailgate strut 610N, 497 mm.",
+    "Lijst 23370, gasveer achterklep 610 N, 497 mm.",
     "A"
    ]
   ],
@@ -701,35 +701,35 @@
    [
     "ALKAR",
     "2241230",
-    "Lijst 23370, Left, Outer section, LED, Construction Year from 01 / 2011.",
+    "Lijst 23370, links, buitendeel, led, bouwjaar vanaf 01/2011.",
     "A"
    ],
    [
     "JOHNS",
     "60 26 87-2",
-    "Lijst 23370, Left, Outer section, LED, Construction Year from 01 / 2011.",
+    "Lijst 23370, links, buitendeel, led, bouwjaar vanaf 01/2011.",
     "A"
    ],
    [
     "ABAKUS",
     "551-1975L-UE2",
-    "Lijst 23370, Left, Outer section, LED; geen bouwjaargrens.",
+    "Lijst 23370, links, buitendeel, led; geen bouwjaargrens.",
     "A"
    ],
    [
     "VAN WEZEL",
     "4383931",
-    "Lijst 23370 (pagina 3), Left, Outer section; ook OE-pagina 265554712R.",
+    "Lijst 23370 (pagina 3), links, buitendeel; ook OE-pagina 265554712R.",
     "A"
    ],
    [
     "VALEO",
     "044556",
-    "Autodoc OE-pagina 265554712R, pos. Left, buitendeel met lamphouder en lampen.",
+    "Autodoc OE-pagina 265554712R, pos. links, buitendeel met lamphouder en lampen.",
     "C"
    ]
   ],
-  "var": "Fase 2: de A-artikelen van ALKAR en JOHNS hebben Construction Year from 01 / 2011. Voor fase 1 (tot 11 of 12/2010) bestaan andere artikelen.",
+  "var": "Fase 2: de A-artikelen van ALKAR en JOHNS hebben bouwjaar vanaf 01/2011. Voor fase 1 (tot 11 of 12/2010) bestaan andere artikelen.",
   "per": "stuk",
   "note": "Autodoc: Rear light, Section Outer section, LED, zonder lamphouder, linksgestuurd.",
   "src": [
@@ -774,41 +774,41 @@
    [
     "ALKAR",
     "2242230",
-    "Lijst 23370, Right, Outer section, LED, Construction Year from 01 / 2011.",
+    "Lijst 23370, rechts, buitendeel, led, bouwjaar vanaf 01/2011.",
     "A"
    ],
    [
     "JOHNS",
     "60 26 88-2",
-    "Lijst 23370, Right, Outer section, LED, Construction Year from 01 / 2011.",
+    "Lijst 23370, rechts, buitendeel, led, bouwjaar vanaf 01/2011.",
     "A"
    ],
    [
     "JUMASA",
     "42484063",
-    "Lijst 23370, Right, Outer section, LED, Construction Year from 01 / 2011.",
+    "Lijst 23370, rechts, buitendeel, led, bouwjaar vanaf 01/2011.",
     "A"
    ],
    [
     "VAN WEZEL",
     "4383932",
-    "Lijst 23370 (pagina 3), Right, Outer section, Construction Year from 11 / 2010.",
+    "Lijst 23370 (pagina 3), rechts, buitendeel, bouwjaar vanaf 11/2010.",
     "A"
    ],
    [
     "IPARLUX",
     "16804912",
-    "Lijst 23370, Right, Outer section, LED, Construction Year from 01 / 2011.",
+    "Lijst 23370, rechts, buitendeel, led, bouwjaar vanaf 01/2011.",
     "A"
    ],
    [
     "ABAKUS",
     "551-1975R-UE2",
-    "Lijst 23370, Right, Outer section, LED; geen bouwjaargrens.",
+    "Lijst 23370, rechts, buitendeel, led; geen bouwjaargrens.",
     "A"
    ]
   ],
-  "var": "Fase 2: de A-artikelen van ALKAR, JOHNS, JUMASA en IPARLUX hebben Construction Year from 01 / 2011, VAN WEZEL 4383932 from 11 / 2010. Voor fase 1 bestaan andere artikelen.",
+  "var": "Fase 2: de A-artikelen van ALKAR, JOHNS, JUMASA en IPARLUX hebben bouwjaar vanaf 01/2011, VAN WEZEL 4383932 vanaf 11/2010. Voor fase 1 bestaan andere artikelen.",
   "per": "stuk",
   "note": "Autodoc: Rear light, Section Outer section, LED, zonder lamphouder, linksgestuurd.",
   "src": [
@@ -854,37 +854,37 @@
    [
     "VAN WEZEL",
     "4356929",
-    "Lijst 23370, Rear fog light, Left.",
+    "Lijst 23370, mistachterlicht, links.",
     "A"
    ],
    [
     "TYC",
     "19-0846-01-2",
-    "Lijst 23370, Rear fog light, Left.",
+    "Lijst 23370, mistachterlicht, links.",
     "A"
    ],
    [
     "DIEDERICHS",
     "4474097",
-    "Lijst 23370, Rear fog light, Left.",
+    "Lijst 23370, mistachterlicht, links.",
     "A"
    ],
    [
     "PRASCO",
     "RN0864454",
-    "Lijst 23370, Rear fog light, Left.",
+    "Lijst 23370, mistachterlicht, links.",
     "A"
    ],
    [
     "AIC",
     "72361",
-    "Autodoc OE-pagina 265850001R: AIC 72361, Left, with bulb holder, Model Year from 2008.",
+    "Autodoc OE-pagina 265850001R: AIC 72361, links, met lamphouder, modeljaar vanaf 2008.",
     "C"
    ],
    [
     "JOHNS",
     "60 26 87-9",
-    "Autodoc OE-pagina 265850001R: JOHNS, Left, without bulb holder.",
+    "Autodoc OE-pagina 265850001R: JOHNS, links, zonder lamphouder.",
     "C"
    ]
   ],
@@ -919,31 +919,31 @@
    [
     "VAN WEZEL",
     "4356930",
-    "Lijst 23370, Right Rear.",
+    "Lijst 23370, rechtsachter.",
     "A"
    ],
    [
     "TYC",
     "19-0845-01-2",
-    "Lijst 23370, Right, without rear fog light, Dummy Lamp.",
+    "Lijst 23370, rechts, zonder mistachterlicht, blindlamp.",
     "A"
    ],
    [
     "DIEDERICHS",
     "4474096",
-    "Lijst 23370, Right.",
+    "Lijst 23370, rechts.",
     "A"
    ],
    [
     "PRASCO",
     "RN0864453",
-    "Lijst 23370, Right.",
+    "Lijst 23370, rechts.",
     "A"
    ],
    [
     "JOHNS",
     "60 26 88-9",
-    "Autodoc OE-pagina 265600001R: JOHNS, Right.",
+    "Autodoc OE-pagina 265600001R: JOHNS, rechts.",
     "C"
    ]
   ],
@@ -978,31 +978,31 @@
    [
     "ALKAR",
     "2403228",
-    "Lijst 23370, Left, Right, W5W.",
+    "Lijst 23370, links, rechts, W5W.",
     "A"
    ],
    [
     "TYC",
     "15-0221-00-2",
-    "Lijst 23370, pos. both sides; ook Spareto-kruisverwijzing van 8200480127.",
+    "Lijst 23370, pos. beide zijden; ook Spareto-kruisverwijzing van 8200480127.",
     "A"
    ],
    [
     "VAN WEZEL",
     "4387920",
-    "Lijst 23370, pos. Left, Right, both sides; ook Spareto-kruisverwijzing van 8200480127.",
+    "Lijst 23370, pos. links, rechts, beide zijden; ook Spareto-kruisverwijzing van 8200480127.",
     "A"
    ],
    [
     "FAST",
     "FT87811",
-    "Lijst 23370, pos. both sides; ook Spareto-kruisverwijzing van 8200480127.",
+    "Lijst 23370, pos. beide zijden; ook Spareto-kruisverwijzing van 8200480127.",
     "A"
    ],
    [
     "ESEN SKV",
     "72SKV035",
-    "Lijst 23370, pos. Right, Left; ook Spareto-kruisverwijzing van 8200480127.",
+    "Lijst 23370, pos. rechts, links; ook Spareto-kruisverwijzing van 8200480127.",
     "A"
    ]
   ],
@@ -1034,7 +1034,7 @@
    ],
    [
     "284421414R",
-    "for OE number 284421414R bij NTY EPDC-RE-003 in de lijst 23370.",
+    "OE-verwijzing 284421414R bij NTY EPDC-RE-003 in de lijst 23370.",
     "B"
    ]
   ],
@@ -1042,13 +1042,13 @@
    [
     "NTY",
     "EPDC-RE-003",
-    "Lijst 23370, outer, Rear, both sides, Front and Rear; for OE number 284421414R.",
+    "Lijst 23370, buiten, achter, beide zijden, voor en achter; voor OE-nummer 284421414R.",
     "A"
    ],
    [
     "RIDEX",
     "2412P0064",
-    "Autodoc OE-pagina 284376606R, pos. Front and Rear.",
+    "Autodoc OE-pagina 284376606R, pos. voor en achter.",
     "C"
    ],
    [
@@ -1060,19 +1060,19 @@
    [
     "MAGNETI MARELLI",
     "021016081010",
-    "Autodoc OE-pagina 284376606R, pos. both sides.",
+    "Autodoc OE-pagina 284376606R, pos. beide zijden.",
     "C"
    ],
    [
     "BLIC",
     "5902-01-0461P",
-    "Autodoc OE-pagina 284376606R, pos. Rear.",
+    "Autodoc OE-pagina 284376606R, pos. achter.",
     "C"
    ],
    [
     "ABAKUS",
     "120-01-065",
-    "Autodoc OE-pagina 284376606R, pos. Rear.",
+    "Autodoc OE-pagina 284376606R, pos. achter.",
     "C"
    ]
   ],
@@ -1108,37 +1108,37 @@
    [
     "BLIC",
     "6504-04-6056311P",
-    "Lijst 23370, Wing fender Left Front.",
+    "Lijst 23370, spatbord linksvoor.",
     "A"
    ],
    [
     "VAN WEZEL",
     "4356657",
-    "Lijst 23370, Wing fender Left Front.",
+    "Lijst 23370, spatbord linksvoor.",
     "A"
    ],
    [
     "DIEDERICHS",
     "4474007",
-    "Lijst 23370, Wing fender Left Front.",
+    "Lijst 23370, spatbord linksvoor.",
     "A"
    ],
    [
     "PRASCO",
     "RN0863014",
-    "Lijst 23370, Wing fender Left Front.",
+    "Lijst 23370, spatbord linksvoor.",
     "A"
    ],
    [
     "ABAKUS",
     "042-23-201",
-    "Lijst 23370, Wing fender Left Front.",
+    "Lijst 23370, spatbord linksvoor.",
     "A"
    ],
    [
     "JUMASA",
     "08314063",
-    "Lijst 23370, Wing fender Left Front.",
+    "Lijst 23370, spatbord linksvoor.",
     "A"
    ]
   ],
@@ -1169,37 +1169,37 @@
    [
     "BLIC",
     "6504-04-6056312P",
-    "Lijst 23370, Wing fender Right Front.",
+    "Lijst 23370, spatbord rechtsvoor.",
     "A"
    ],
    [
     "VAN WEZEL",
     "4356658",
-    "Lijst 23370, Wing fender Right Front.",
+    "Lijst 23370, spatbord rechtsvoor.",
     "A"
    ],
    [
     "DIEDERICHS",
     "4474006",
-    "Lijst 23370, Wing fender Right Front.",
+    "Lijst 23370, spatbord rechtsvoor.",
     "A"
    ],
    [
     "PRASCO",
     "RN0863013",
-    "Lijst 23370, Wing fender Right Front.",
+    "Lijst 23370, spatbord rechtsvoor.",
     "A"
    ],
    [
     "ABAKUS",
     "042-23-202",
-    "Lijst 23370, Wing fender Right Front.",
+    "Lijst 23370, spatbord rechtsvoor.",
     "A"
    ],
    [
     "JUMASA",
     "08324063",
-    "Lijst 23370, Wing fender Right Front.",
+    "Lijst 23370, spatbord rechtsvoor.",
     "A"
    ]
   ],
@@ -1230,7 +1230,7 @@
    [
     "VAN WEZEL",
     "4356796",
-    "Lijst 23370, Mounting Kit, mud guard, Left Front, Right Front.",
+    "Lijst 23370, montageset spatlap, linksvoor, rechtsvoor.",
     "A"
    ]
   ],
@@ -1288,37 +1288,37 @@
    [
     "ALKAR",
     "6143231",
-    "Lijst 23370, Left, with memory, with temperature sensor, Electronically foldable, blue tinted, Aspherical, with indicator, linksgestuurd.",
+    "Lijst 23370, links, met geheugen, met temperatuursensor, elektrisch inklapbaar, blauw getint, asferisch, met knipperlicht, linksgestuurd.",
     "A"
    ],
    [
     "PRASCO",
     "RN0867334",
-    "Lijst 23370, Left, with memory, Electronically foldable, blue tinted, with indicator, Construction Year from 01 / 2011.",
+    "Lijst 23370, links, met geheugen, elektrisch inklapbaar, blauw getint, met knipperlicht, bouwjaar vanaf 01/2011.",
     "A"
    ],
    [
     "ABAKUS",
     "3121M05",
-    "Autodoc OE-pagina 963020141R: Left, Model Year from 2007, with memory, Electronically foldable.",
+    "Autodoc OE-pagina 963020141R: links, modeljaar vanaf 2007, met geheugen, elektrisch inklapbaar.",
     "C"
    ],
    [
     "DIEDERICHS",
     "4474425",
-    "Autodoc OE-pagina 963020141R: Left, with memory, Electronically foldable.",
+    "Autodoc OE-pagina 963020141R: links, met geheugen, elektrisch inklapbaar.",
     "C"
    ],
    [
     "BLIC",
     "5402-09-2002175P",
-    "Autodoc OE-pagina 963020141R: Left, Heated, with memory, Electronically foldable.",
+    "Autodoc OE-pagina 963020141R: links, verwarmd, met geheugen, elektrisch inklapbaar.",
     "C"
    ],
    [
     "IPARLUX",
     "27259901",
-    "Autodoc OE-pagina 963020141R: Left, with memory, Electronically foldable.",
+    "Autodoc OE-pagina 963020141R: links, met geheugen, elektrisch inklapbaar.",
     "C"
    ]
   ],
@@ -1363,31 +1363,31 @@
    [
     "ABAKUS",
     "3121G05",
-    "Lijst 23370, Wing mirror glass Left.",
+    "Lijst 23370, spiegelglas links.",
     "A"
    ],
    [
     "ALKAR",
     "6451231",
-    "Lijst 23370, Wing mirror glass Left.",
+    "Lijst 23370, spiegelglas links.",
     "A"
    ],
    [
     "BLIC",
     "6102-02-1232594P",
-    "Lijst 23370, Wing mirror glass Left.",
+    "Lijst 23370, spiegelglas links.",
     "A"
    ],
    [
     "KRAFT",
     "8105020",
-    "Lijst 23370, Wing mirror glass Left.",
+    "Lijst 23370, spiegelglas links.",
     "A"
    ],
    [
     "ABAKUS",
     "3121G07",
-    "Lijst 23370, Wing mirror glass Left.",
+    "Lijst 23370, spiegelglas links.",
     "A"
    ]
   ],
@@ -1431,37 +1431,37 @@
    [
     "MAGNETI MARELLI",
     "182208013620",
-    "Lijst 23370, Wing mirror cover Left, primed.",
+    "Lijst 23370, spiegelkap links, gegrond.",
     "A"
    ],
    [
     "MAX",
     "MRN194-L",
-    "Lijst 23370, Wing mirror cover Left, primed.",
+    "Lijst 23370, spiegelkap links, gegrond.",
     "A"
    ],
    [
     "OLSA",
     "75415",
-    "Lijst 23370, Wing mirror cover Left, primed.",
+    "Lijst 23370, spiegelkap links, gegrond.",
     "A"
    ],
    [
     "AIC",
     "75415",
-    "Lijst 23370, Wing mirror cover Left, primed.",
+    "Lijst 23370, spiegelkap links, gegrond.",
     "A"
    ],
    [
     "REPIAUTO",
     "RA36749",
-    "Lijst 23370, Wing mirror cover Left, primed.",
+    "Lijst 23370, spiegelkap links, gegrond.",
     "A"
    ],
    [
     "SPJ",
     "V-0339",
-    "Lijst 23370, Wing mirror cover Left, primed.",
+    "Lijst 23370, spiegelkap links, gegrond.",
     "A"
    ]
   ],
@@ -1514,37 +1514,37 @@
    [
     "BLIC",
     "5402-09-2002174P",
-    "Lijst 23370, Right, with memory, Electronically foldable, Heated, Convex, with indicator.",
+    "Lijst 23370, rechts, met geheugen, elektrisch inklapbaar, verwarmd, convex, met knipperlicht.",
     "A"
    ],
    [
     "PRASCO",
     "RN0867333",
-    "Lijst 23370, Right, with memory, Electronically foldable, Construction Year from 01 / 2011.",
+    "Lijst 23370, rechts, met geheugen, elektrisch inklapbaar, bouwjaar vanaf 01/2011.",
     "A"
    ],
    [
     "ABAKUS",
     "3121M06",
-    "Lijst 23370, Right, blue tinted, Convex, Electronically foldable, with memory.",
+    "Lijst 23370, rechts, blauw getint, convex, elektrisch inklapbaar, met geheugen.",
     "A"
    ],
    [
     "ALKAR",
     "6144231",
-    "Autodoc OE-pagina 963010154R: Right, with memory, Electronically foldable.",
+    "Autodoc OE-pagina 963010154R: rechts, met geheugen, elektrisch inklapbaar.",
     "C"
    ],
    [
     "DIEDERICHS",
     "4474424",
-    "Autodoc OE-pagina 963010154R: Right, with memory, Electronically foldable.",
+    "Autodoc OE-pagina 963010154R: rechts, met geheugen, elektrisch inklapbaar.",
     "C"
    ],
    [
     "IPARLUX",
     "27259902",
-    "Autodoc OE-pagina 963010154R: Right, with memory, Electronically foldable.",
+    "Autodoc OE-pagina 963010154R: rechts, met geheugen, elektrisch inklapbaar.",
     "C"
    ]
   ],
@@ -1589,25 +1589,25 @@
    [
     "ABAKUS",
     "3121G06",
-    "Lijst 23370, Wing mirror glass Right, Convex.",
+    "Lijst 23370, spiegelglas rechts, convex.",
     "A"
    ],
    [
     "ALKAR",
     "6402231",
-    "Lijst 23370, Wing mirror glass Right, Convex.",
+    "Lijst 23370, spiegelglas rechts, convex.",
     "A"
    ],
    [
     "BLIC",
     "6102-02-1232231P",
-    "Lijst 23370, Wing mirror glass Right, Convex.",
+    "Lijst 23370, spiegelglas rechts, convex.",
     "A"
    ],
    [
     "ABAKUS",
     "3121G08",
-    "Lijst 23370, Wing mirror glass Right, Convex.",
+    "Lijst 23370, spiegelglas rechts, convex.",
     "A"
    ]
   ],
@@ -1647,37 +1647,37 @@
    [
     "MAGNETI MARELLI",
     "182208013720",
-    "Lijst 23370, Wing mirror cover Right, primed.",
+    "Lijst 23370, spiegelkap rechts, gegrond.",
     "A"
    ],
    [
     "MAX",
     "MRN194-R",
-    "Lijst 23370, Wing mirror cover Right, primed.",
+    "Lijst 23370, spiegelkap rechts, gegrond.",
     "A"
    ],
    [
     "OLSA",
     "75422",
-    "Lijst 23370, Wing mirror cover Right, primed.",
+    "Lijst 23370, spiegelkap rechts, gegrond.",
     "A"
    ],
    [
     "AIC",
     "75422",
-    "Lijst 23370, Wing mirror cover Right, primed.",
+    "Lijst 23370, spiegelkap rechts, gegrond.",
     "A"
    ],
    [
     "REPIAUTO",
     "RA36750",
-    "Lijst 23370, Wing mirror cover Right, primed.",
+    "Lijst 23370, spiegelkap rechts, gegrond.",
     "A"
    ],
    [
     "SPJ",
     "V-0340",
-    "Lijst 23370, Wing mirror cover Right, primed.",
+    "Lijst 23370, spiegelkap rechts, gegrond.",
     "A"
    ]
   ],
@@ -1749,43 +1749,43 @@
    [
     "SAINT-GOBAIN",
     "6102701102",
-    "Lijst 23370, Windscreen.",
+    "Lijst 23370, voorruit.",
     "A"
    ],
    [
     "SAINT-GOBAIN",
     "6102701000",
-    "Lijst 23370, Windscreen.",
+    "Lijst 23370, voorruit.",
     "A"
    ],
    [
     "JUMASA",
     "V3354063",
-    "Lijst 23370, Windscreen.",
+    "Lijst 23370, voorruit.",
     "A"
    ],
    [
     "JUMASA",
     "R3334063",
-    "Lijst 23370, Windscreen.",
+    "Lijst 23370, voorruit.",
     "A"
    ],
    [
     "GLAVISTA",
     "WS/PU7273GS",
-    "Lijst 23370, Windscreen.",
+    "Lijst 23370, voorruit.",
     "A"
    ],
    [
     "DIEDERICHS",
     "8413862",
-    "Lijst 23370, Windscreen.",
+    "Lijst 23370, voorruit.",
     "A"
    ],
    [
     "REPIAUTO",
     "RA36755",
-    "Lijst 23370, Windscreen.",
+    "Lijst 23370, voorruit.",
     "A"
    ]
   ],
@@ -1874,37 +1874,37 @@
    [
     "OSRAM",
     "66140",
-    "Lijst 23370, Xenon bulb D1S, Pk32d-2.",
+    "Lijst 23370, xenonlamp D1S, voet Pk32d-2.",
     "A"
    ],
    [
     "NEOLUX®",
     "NX1S",
-    "Lijst 23370, Xenon bulb D1S, Pk32d-2.",
+    "Lijst 23370, xenonlamp D1S, voet Pk32d-2.",
     "A"
    ],
    [
     "RIDEX",
     "106B0054",
-    "Lijst 23370, Xenon bulb D1S, Pk32d-2.",
+    "Lijst 23370, xenonlamp D1S, voet Pk32d-2.",
     "A"
    ],
    [
     "QUINTON HAZELL",
     "QBL402G",
-    "Lijst 23370, Xenon bulb D1S, Pk32d-2.",
+    "Lijst 23370, xenonlamp D1S, voet Pk32d-2.",
     "A"
    ],
    [
     "VEMO",
     "V99-84-0021",
-    "Lijst 23370, Xenon bulb D1S, Pk32d-2.",
+    "Lijst 23370, xenonlamp D1S, voet Pk32d-2.",
     "A"
    ],
    [
     "AIC",
     "59120",
-    "Lijst 23370, Xenon bulb D1S, Pk32d-2.",
+    "Lijst 23370, xenonlamp D1S, voet Pk32d-2.",
     "A"
    ]
   ],
@@ -1935,31 +1935,31 @@
    [
     "ERA",
     "661400",
-    "Lijst 23370, Lighting control module, both sides (ESEN SKV: Right, Left); geen bouwjaargrens.",
+    "Lijst 23370, lichtregelmodule, beide zijden (ESEN SKV: rechts, links); geen bouwjaargrens.",
     "A"
    ],
    [
     "ESEN SKV",
     "59SKV030",
-    "Lijst 23370, Lighting control module, both sides (ESEN SKV: Right, Left); geen bouwjaargrens.",
+    "Lijst 23370, lichtregelmodule, beide zijden (ESEN SKV: rechts, links); geen bouwjaargrens.",
     "A"
    ],
    [
     "AE TOPLIGHT",
     "608603",
-    "Lijst 23370, Lighting control module, both sides (ESEN SKV: Right, Left); geen bouwjaargrens.",
+    "Lijst 23370, lichtregelmodule, beide zijden (ESEN SKV: rechts, links); geen bouwjaargrens.",
     "A"
    ],
    [
     "BOGAP",
     "B7526129",
-    "Lijst 23370, Lighting control module, both sides (ESEN SKV: Right, Left); geen bouwjaargrens.",
+    "Lijst 23370, lichtregelmodule, beide zijden (ESEN SKV: rechts, links); geen bouwjaargrens.",
     "A"
    ],
    [
     "VALEO",
     "043731",
-    "Spareto OE 7701208945 (Ballast, ignitor, control unit): VALEO 043731; Spareto-productpagina: Left en Right, Laguna 2007-2015.",
+    "Spareto OE 7701208945 (ballast, ontsteekunit): VALEO 043731; Spareto-productpagina: links en rechts, Laguna 2007-2015.",
     "C"
    ]
   ],
@@ -2031,37 +2031,37 @@
    [
     "MANN-FILTER",
     "CUK 2723-2",
-    "Lijst 23370, Activated Carbon Filter.",
+    "Lijst 23370, actiefkoolfilter.",
     "A"
    ],
    [
     "BOSCH",
     "1 987 432 500",
-    "Lijst 23370, Activated Carbon Filter.",
+    "Lijst 23370, actiefkoolfilter.",
     "A"
    ],
    [
     "HELLA",
     "8ZC 366 122-191",
-    "Lijst 23370, Activated Carbon Filter.",
+    "Lijst 23370, actiefkoolfilter.",
     "A"
    ],
    [
     "RIDEX",
     "424I0325",
-    "Lijst 23370, Activated Carbon Filter.",
+    "Lijst 23370, actiefkoolfilter.",
     "A"
    ],
    [
     "MAXGEAR",
     "26-0625",
-    "Lijst 23370, Activated Carbon Filter.",
+    "Lijst 23370, actiefkoolfilter.",
     "A"
    ],
    [
     "TOPRAN",
     "700 726",
-    "Lijst 23370, Activated Carbon Filter.",
+    "Lijst 23370, actiefkoolfilter.",
     "A"
    ]
   ],
@@ -2113,37 +2113,37 @@
    [
     "VARTA",
     "563400061K262",
-    "Lijst 23370, Battery 12V, lengte 242 mm.",
+    "Lijst 23370, accu 12 V, lengte 242 mm.",
     "A"
    ],
    [
     "BOSCH",
     "0 092 S50 050",
-    "Lijst 23370, Battery 12V, lengte 242 mm.",
+    "Lijst 23370, accu 12 V, lengte 242 mm.",
     "A"
    ],
    [
     "EXIDE",
     "EA640",
-    "Lijst 23370, Battery 12V, lengte 242 mm.",
+    "Lijst 23370, accu 12 V, lengte 242 mm.",
     "A"
    ],
    [
     "RIDEX",
     "1S0003",
-    "Lijst 23370, Battery 12V, lengte 242 mm.",
+    "Lijst 23370, accu 12 V, lengte 242 mm.",
     "A"
    ],
    [
     "CONTINENTAL",
     "2800012021280",
-    "Lijst 23370, Battery 12V, lengte 242 mm.",
+    "Lijst 23370, accu 12 V, lengte 242 mm.",
     "A"
    ],
    [
     "BOSCH",
     "0 092 S40 050",
-    "Lijst 23370, Battery 12V, lengte 242 mm.",
+    "Lijst 23370, accu 12 V, lengte 242 mm.",
     "A"
    ]
   ],
@@ -2185,31 +2185,31 @@
    [
     "BLIC",
     "6803-00-6056280P",
-    "Autodoc OE-pagina 651000021R: Bonnet.",
+    "Autodoc OE-pagina 651000021R: motorkap.",
     "C"
    ],
    [
     "PRASCO",
     "RN0863100",
-    "Autodoc OE-pagina 651000021R: Bonnet.",
+    "Autodoc OE-pagina 651000021R: motorkap.",
     "C"
    ],
    [
     "ABAKUS",
     "042-23-100",
-    "Autodoc OE-pagina 651000021R: Bonnet, Front.",
+    "Autodoc OE-pagina 651000021R: motorkap, voor.",
     "C"
    ],
    [
     "KLOKKERHOLM",
     "6056280",
-    "Autodoc OE-pagina 651000021R: Bonnet.",
+    "Autodoc OE-pagina 651000021R: motorkap.",
     "C"
    ],
    [
     "VAN WEZEL",
     "4356660",
-    "Autodoc OE-pagina 651000021R: Bonnet.",
+    "Autodoc OE-pagina 651000021R: motorkap.",
     "C"
    ]
   ],
