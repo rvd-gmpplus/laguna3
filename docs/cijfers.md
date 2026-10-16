@@ -1,6 +1,6 @@
 # Kerncijfers
 
-Gegenereerd door `tools/orkestratie/cijfers.py` uit `stats.json` op 2026-10-16, bron `2c179a5 2026-10-16`. Niet met de hand bewerken; andere documenten verwijzen hiernaar in plaats van getallen te herhalen.
+Gegenereerd door `tools/orkestratie/cijfers.py` uit `stats.json` op 2026-10-16, bron `0d7cd2e 2026-10-16`. Niet met de hand bewerken; andere documenten verwijzen hiernaar in plaats van getallen te herhalen.
 
 ## Boom
 
@@ -40,16 +40,15 @@ Gegenereerd door `tools/orkestratie/cijfers.py` uit `stats.json` op 2026-10-16, 
 
 | Moment | ms |
 |---|---|
-| script | 429 |
-| buildStart | 1.110 |
-| buildCar | 931 |
-| startUp | 2.114 |
-| render0 | 2.245 |
-| firstFrame | 4.651 |
-| interactive | 4.657 |
-| ready | 9.367 |
-| batches | 9.365 |
-| duur buildCar() | 931 |
+| script | 476 |
+| buildStart | 1.141 |
+| buildCar | 1.417 |
+| startUp | 2.628 |
+| render0 | 2.722 |
+| firstFrame | 5.432 |
+| interactive | 5.439 |
+| ready | 10.260 |
+| duur buildCar() | 276 |
 
 Deze tijden zeggen niets over een echt apparaat; zie `docs/telefoontest.md`.
 

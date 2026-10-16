@@ -1,6 +1,6 @@
 # Handomdraai laguna3
 
-Stand 16 oktober 2026, 02:00 UTC. Golf 5 van de parallelle sessie (15 oktober 19:10 tot 16 oktober 00:12 UTC, inclusief haar herstelronde), golf 5a-1 (vangnet-kern) en golf 5a-2 (vangnet-rest) staan samengevoegd op de tak `ccr-63d946bb-ng8q5l`, als concept-PR #3 naar `main`. De strikte testset is groen op die stand en `index.html` is gebouwd als versie 7 (`7 (bron 7d0e606)`). Publicatie is het samenvoegen van PR #3: dan serveert GitHub Pages versie 7. Het volledige verbeterplan staat in [docs/masterplan.md](docs/masterplan.md).
+Stand 16 oktober 2026, 03:30 UTC. Golf 5 van de parallelle sessie (15 oktober 19:10 tot 16 oktober 00:12 UTC, inclusief haar herstelronde), golf 5a-1 en 5a-2 (vangnet), golf 5c-1 (robuustheid, bediening, toegankelijkheid en tests) en het structurele deel van golf 5d (nummers) staan samengevoegd op de tak `ccr-63d946bb-ng8q5l`, als concept-PR #3 naar `main`. De strikte testset (dertien tests) is groen op die stand en `index.html` is gebouwd als versie 7 (`7 (bron 65d7276)`). Publicatie is het samenvoegen van PR #3: dan serveert GitHub Pages versie 7. Het volledige verbeterplan staat in [docs/masterplan.md](docs/masterplan.md).
 
 ## Waar
 
@@ -23,7 +23,9 @@ Stand 16 oktober 2026, 02:00 UTC. Golf 5 van de parallelle sessie (15 oktober 19
 
 ## Tests
 
-Strikte set op de samengevoegde stand (`2c179a5`, uitvoer `g5merge` in het scratchpad, 01:21 tot 01:52 UTC), alles groen: lint ok; smoke (geen consolefouten of -waarschuwingen, geen horizontale scroll); integrity 0 fouten, 0 ankerfouten, 0 presetfouten; silhouette ok; `ui_inner --open --strict` geen ingesloten knoop van buiten zichtbaar; opentest 26 openers 0 fouten met `--strikt-min` (515 s; twee meldingen over volgers zonder `min`, toegestaan); `ITEST_GATES=1 itest` 161 van 161 (899 s); `tri --gate` budgetpoort ok; pubsmoke klaar na 9,5 s op 390 x 844; stats ok. CI op GitHub: groen op `2c179a5` (push- en PR-run).
+Strikte set op de eindstand van deze ronde (`452916e`, uitvoer `g5c/final` in het scratchpad, 02:55 tot 03:16 UTC), alle dertien tests groen: lint ok (ook het inline script in `head.html`); smoke, integrity (0 fouten), silhouette, `ui_inner --open --strict`, opentest strikt (26 openers, 0 fouten), `ITEST_GATES=1 itest` 218 van 218 (1.067 s), `tri --gate` ok, pubsmoke klaar na 9,9 s met `integrity` van de CDN, stats, presetshots (42), `visdiff` 42 van 42 tegen de basislijn van `452916e`, `anchorcheck` ok tegen de basis (352 labels, eigen 319, vrij 265). Details in `docs/testen.md`.
+
+Eerder, strikte set op de samenvoeging van golf 5 (`2c179a5`, uitvoer `g5merge` in het scratchpad, 01:21 tot 01:52 UTC), alles groen: lint ok; smoke (geen consolefouten of -waarschuwingen, geen horizontale scroll); integrity 0 fouten, 0 ankerfouten, 0 presetfouten; silhouette ok; `ui_inner --open --strict` geen ingesloten knoop van buiten zichtbaar; opentest 26 openers 0 fouten met `--strikt-min` (515 s; twee meldingen over volgers zonder `min`, toegestaan); `ITEST_GATES=1 itest` 161 van 161 (899 s); `tri --gate` budgetpoort ok; pubsmoke klaar na 9,5 s op 390 x 844; stats ok. CI op GitHub: groen op `2c179a5` (push- en PR-run).
 
 Eerder op deze tak: strikte set op de stand van 00:01 UTC groen na vier `inner`-vlaggen minder (Aanslagrubber achter, Rugframe, Kabelboom dashboard, Pakking waterkast rechts, elk door één straal van buiten te zien), itest 157 van 157 op een rustige machine (controle 14 was onder belasting een flake). De basislijn van golf 5 (tip `8e03e87`, oude testset) was groen op één frametijdmeting na die onder zware belasting 8,4 ms gaf.
 
