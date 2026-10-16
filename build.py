@@ -10,8 +10,11 @@ Controles (de bouw stopt bij een fout):
   - dubbele functienamen op het hoogste niveau over alle bestanden (die zouden elkaar stil overschrijven)
   - dubbele materiaalnamen in std()/phys()
   - syntaxis van het samengevoegde script via `node --check` (vangt ook dubbele const/let)
+
+De scripttags van three.js krijgen integrity (sha384) en crossorigin="anonymous"; de hash komt uit het lokale npm-pakket
+(THREE_DIR of ~/.cache/laguna/three-0.147.0/package, zie tools/harness.py --ensure-three). Ontbreekt dat, dan stopt de bouw.
 """
-import os, re, sys, shutil, subprocess, tempfile, hashlib
+import os, re, sys, shutil, subprocess, tempfile, hashlib, base64
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, 'src')
@@ -19,6 +22,25 @@ ORDER = ['core.js', 'body.js', 'bodyparts.js', 'panorama.js', 'engine1.js', 'eng
 LIBS = ['build/three.min.js', 'examples/js/controls/OrbitControls.js', 'examples/js/environments/RoomEnvironment.js', 'examples/js/geometries/RoundedBoxGeometry.js', 'examples/js/utils/BufferGeometryUtils.js']
 THREE_VERSION = '0.147.0'  # r147: de laatste three.js met de niet-module examples/js (OrbitControls enz.)
 CDN = f'https://cdn.jsdelivr.net/npm/three@{THREE_VERSION}/'
+
+
+def three_dir():
+    """Map met het uitgepakte npm-pakket three@THREE_VERSION (dezelfde padlogica als tools/harness.py: THREE_DIR, anders de
+    cache van `python3 tools/harness.py --ensure-three`)."""
+    d = os.environ.get('THREE_DIR')
+    if d and os.path.isfile(os.path.join(d, 'build', 'three.min.js')):
+        return d
+    return os.path.expanduser(f'~/.cache/laguna/three-{THREE_VERSION}/package')
+
+
+def integrity(lib):
+    """R5: sha384-integriteit van een CDN-bestand, berekend uit het lokale npm-pakket (tools/pubsmoke.py bewaakt dat de CDN
+    byte voor byte hetzelfde levert). Zonder pakket stopt de bouw: een pagina zonder integrity zou stil anders zijn."""
+    path = os.path.join(three_dir(), lib)
+    if not os.path.isfile(path):
+        raise SystemExit(f'three.js-bestand {path} ontbreekt voor de integriteitshash; haal het pakket op met: python3 tools/harness.py --ensure-three')
+    with open(path, 'rb') as f:
+        return 'sha384-' + base64.b64encode(hashlib.sha384(f.read()).digest()).decode()
 
 
 def read(name):
@@ -82,7 +104,7 @@ def version(head, js, test=False):
 
 
 def page(head, js, prefix, test=False):
-    tags = '\n'.join(f'<script src="{prefix}{l}"></script>' for l in LIBS)
+    tags = '\n'.join(f'<script src="{prefix}{l}" integrity="{integrity(l)}" crossorigin="anonymous"></script>' for l in LIBS)
     head = head.replace('__LAGUNA_VERSION__', version(head, js, test))
     return f"{head}\n{tags}\n<script>\n{js}\n</script>\n"
 
