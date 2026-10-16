@@ -189,7 +189,7 @@ Statistieken `g4final4`: 3.012 knopen, 499 groepen, 2.513 onderdelen, diepte 8, 
 
 Tussenstanden: `g4final2` op `7f54e61` (opentest een fout: Gordelrolautomaat voor rechts 8,8 mm in de bekleding van het open achterportier, opgelost in `0ac1052`) en `g4final3` op `4fc11cd` (alles groen, maar Carrosserie 199.394 driehoeken door een fijner gaas van de achterportieren; dat gaas is in `3ab6a8d` teruggezet).
 
-Visuele poort golf 4: drie plakken (voorkant en voorportieren, achterkant en dak van buiten, interieur en dak van binnen), per plak drie beoordelaars die elk beeld een keer bekijken, meerderheid per kenmerk. Na elke poort volgde een herstelronde.
+Visuele poort golf 4: drie plakken (voorkant en voorportieren, achterkant en dak van buiten, interieur en dak van binnen), per plak drie beoordelaars die elk beeld een keer bekijken, meerderheid per kenmerk. Na poort 1 en poort 2 volgde een herstelronde; na poort 3 is gestopt.
 
 | Poort | Stand | Ja | Deels | Nee |
 |---|---|---|---|---|
@@ -218,7 +218,7 @@ Eindstand van de code is `33b2b50`; de testset heet `g5final3` en draaide op die
 
 Statistieken `g5final3`: 3.023 knopen, 499 groepen, 2.524 onderdelen, diepte 8, 668.020 driehoeken (budget 700.000). Per hoofdgroep: Carrosserie 189.446 (budget 190.000, een dunne marge van 554), Aandrijflijn 235.546 (budget 240.000), Onderstel 113.228, Interieur 81.084, Koeling en luchtinlaat 18.824, Uitlaatsysteem 13.184, Brandstofsysteem 9.220 en Elektrisch systeem 7.488. Tekenopdrachten: 444 gebundeld en 1.878 zonder bundelen; met alle openers open ongeveer 784 (grens 3.000). 43 presets in 7 categorieën.
 
-Visuele poort golf 5: dezelfde kenmerken K1 tot K13 als in golf 4 (`tools/orkestratie/poort.js`, beelden van `gateshots.py`), telkens negen beoordelaars (Opus, high) in drie plakken van drie, meerderheid per kenmerk. Elke poort telt 17 oordelen, omdat K2, K3 en K9 in meer dan een plak voorkomen. Na elke poort volgde een herstelronde.
+Visuele poort golf 5: dezelfde kenmerken K1 tot K13 als in golf 4 (`tools/orkestratie/poort.js`, beelden van `gateshots.py`), telkens negen beoordelaars (Opus, high) in drie plakken van drie, meerderheid per kenmerk. Elke poort telt 17 oordelen, omdat K2, K3 en K9 in meer dan een plak voorkomen. Na poort 1 en poort 2 volgde een herstelronde; na poort 3 is gestopt.
 
 | Poort | Stand | Ja | Deels | Nee |
 |---|---|---|---|---|
