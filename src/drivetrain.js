@@ -514,7 +514,8 @@ function buildPowertrain() {
   const gb = buildGearbox();
   // uitgangen van het differentieel (bakframe -> motorframe) en naven (autoframe -> motorframe)
   const dOutL = [GB_X + DIFF[0] + 0.082, DIFF[1], DIFF[2]], dOutR = [GB_X + DIFF[0] - 0.082, DIFF[1], DIFF[2]];
-  const hubL = toPT([TRACK_F, AY, AXF]).toArray(), hubR = toPT([-TRACK_F, AY, AXF]).toArray();   // naaf op de halve spoorbreedte voor, gelijk aan het onderstel
+  // naafpunt 0,775: TRACK_F (0,7785) zet de buitenste koppeling 3,5 mm naar buiten en geeft acht nieuwe doordringingen met fusee en demper (golf 5b-2); G8c wacht op een boring in de fusee
+  const hubL = toPT([0.775, AY, AXF]).toArray(), hubR = toPT([-0.775, AY, AXF]).toArray();
   const shafts = A('Aandrijfassen', { d: 'Linker (kort) en rechter (lang, met tussenas en tussenaslager) aandrijfas van het differentieel naar de voorwielen, elk met een tripode-koppeling aan de bakzijde en een kogelkoppeling aan de wielzijde. Lengten volgens catalogus: links circa 640 mm, rechts circa 962 mm.', ex: [0, -0.5, -0.3] }, [
     driveshaft('Aandrijfas links', dOutL, hubL, { sign: 1, d: 'Korte linker aandrijfas (catalogus circa 640 mm, 30 spiebanen bakzijde, 27 wielzijde).', spec: [['Binnenste koppeling', 'tripode, Ø87 mm'], ['Buitenste koppeling', 'kogelkoppeling, 8 kogels']], ex: [0.12, 0, 0.28] }),
     driveshaft('Aandrijfas rechts', dOutR, hubR, { sign: -1, mid: 0.35, d: 'Lange rechter aandrijfas (catalogus circa 962 mm) met tussenas (circa 350 mm) en kogellager 35 × 62 × 14 mm; loopt achter het motorblok langs.', spec: [['Tussenlager', 'kogellager 35 × 62 × 14 mm'], ['Buitenste koppeling', 'kogelkoppeling, 8 kogels']], ex: [-0.12, 0, -0.28] }),

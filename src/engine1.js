@@ -34,7 +34,7 @@ const ENG_PORTS = {
   psOut: { p: [ENG_PS[0] + 0.008, ENG_PS[1] - 0.065, ENG_PS[2] + 0.02], dir: [0, -1, 0] },       // hogedrukuitgang stuurpomp (einde van de stalen pijpstomp; drukslang naar het stuurhuis)
   psIn: { p: [ENG_PS[0] - 0.03, ENG_PS[1], ENG_PS[2] + 0.065], dir: [0, 0, 1] },                // aanzuigstomp stuurpomp (zuigslang uit het reservoir)
   fuelRailIn: { p: [0.205, ENG_RAIL[1] - 0.044, ENG_RAIL[2]], dir: [0, -1, 0] },                              // snelkoppeling brandstofrail
-  vacOut: { p: [0.17, 0.12, 0.277], dir: [0, 0, 1] },                                           // einde nippel Vacuümaansluiting rembekrachtiger (vacuümslang naar de bekrachtiger)
+  vacOut: { p: [0.17, 0.12, 0.277], dir: [0, 0, 1] },                                           // tip van de nippel Vacuümaansluiting rembekrachtiger op het spruitstuk (engine2.js; vacuümslang naar de bekrachtiger)
 };
 // punt op afstand d buiten een aansluiting, langs dir (motorframe)
 function portAt(port, d = 0) { return [port.p[0] + port.dir[0] * d, port.p[1] + port.dir[1] * d, port.p[2] + port.dir[2] * d]; }
