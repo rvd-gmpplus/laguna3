@@ -143,3 +143,18 @@ Controle van de verificatiepoort: de verifieerder kreeg in elk van de vijf hoofd
 - Geen echte telefoon of GPU in de container. Tekenopdrachten en JavaScript-tijd zijn het meetbare deel.
 - De uitrusting van deze auto zonder chassisnummer: varianten worden getoond en niet vastgelegd.
 - Databankenrecht: de CSV bevat alleen nummers en URL's, geen productteksten of prijzen. Een juridische toets is niet gedaan.
+
+## Premortem golf 5c-1 (16 oktober 2026, 02:00 UTC)
+
+Eén lens: de app-laag en de tests. Golf 5c-1 is robuustheid, bediening, toegankelijkheid en de tests die daar bij horen (masterplan, golf 5c-1), met twee agents in eigen worktrees: app (bron) en tests (nieuwe controles, `visdiff`, `anchorcheck`, het bevroren testcontract).
+
+- Meest waarschijnlijk: de itest wordt groen gemaakt met vulcontroles of met een `aria-hidden` op het canvas voor axe. Verdediging: elke nieuwe controle noemt de fout uit golf 1 tot 4 die hij gevangen zou hebben, en de toetsenbord-itest is de poort, axe alleen informatie.
+- Gevaarlijkst: twee agents in `tools/itest.py` tegelijk; een samenvoeging die een controle stil laat vallen. Verdediging: de app-agent schrijft alleen controle 18 (eigen functies), de test-agent 19 en hoger; de orkestrator voegt samen, telt de controles vóór en na, en draait de strikte set.
+- `uiLastFit` centraal (R3) verandert het kadreren bij elke formaatwissel; een regressie zit in een pad dat geen test dekt (telefoon draaien na een duik). Verdediging: de app-agent levert de formaatwisselcontrole bij R3 zelf.
+- SRI op de CDN-tags (R5) breekt de pagina als de bytes op jsDelivr afwijken van het npm-pakket, of als de harness de lokale bestanden anders serveert. Verdediging: `pubsmoke` tegen de echte CDN én de harness blijven groen vóór samenvoegen; bij twijfel geen `integrity`.
+- Themaknop (U5) en badge (U4) raken de CSS-tokens; donkere modus per preset was al zwak getest. Verdediging: thema-wissel per preset in de itest van de app-agent, screenshots in beide thema's.
+- Paginabudget: hulpvenster uit `PRESETS`, toast, badge, printstijl en de synoniemenlijst groeien de pagina. Struikeldraad T4: meer dan 100 kB zonder reden is rood; de agent meldt de groei in het commitbericht.
+- Capaciteit: de lijst is langer dan een nacht. Verdediging: prioriteit in de brief (R1b, R2, R3, R4, R5, U2, U4, U5, U6, U7, U10 eerst; U8 en U9 als er tijd is), harde stop, wat niet af is gaat terug in het masterplan.
+- Verborgen aanname: de lettertypes van Google zijn als woff2 in te sluiten. Niet waar binnen het paginabudget (vier gewichten, ruwweg 130 kB base64) en niet als losse bestanden (het artefact eist één bestand). Besluit: de Google-link blijft, met `font-display: swap`; vastgelegd als beslispunt voor de gebruiker.
+
+Oordeel: overleefbaar met de verdedigingen hierboven. Struikeldraden: T4 (pagina), T8 (`IGNORE`, `anchors.json`, de testlijst alleen door de orkestrator), en de basislijn van `visdiff` wordt pas na het samenvoegen door de orkestrator gezet.
