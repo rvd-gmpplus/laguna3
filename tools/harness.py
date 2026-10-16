@@ -79,6 +79,33 @@ def chromium_path():
     return None
 
 
+FONT_HOSTS = ('https://fonts.googleapis.com/', 'https://fonts.gstatic.com/')
+
+
+def _font_route(rt):
+    """Antwoord op een Fonts-verzoek uit ~/.cache/explosietekening/fonts; haalt het één keer op met Python. Lukt ophalen
+    niet, dan een leeg antwoord (de pagina valt terug op de systeemletter, zonder consolefout)."""
+    import urllib.request
+    url = rt.request.url
+    d = os.path.expanduser('~/.cache/explosietekening/fonts')
+    f = os.path.join(d, hashlib.sha256(url.encode()).hexdigest())
+    css = 'fonts.googleapis.com' in url
+    if not os.path.isfile(f):
+        try:
+            req = urllib.request.Request(url, headers={'User-Agent': rt.request.headers.get('user-agent', 'Mozilla/5.0')})
+            with urllib.request.urlopen(req, timeout=30) as r:
+                body = r.read()
+            os.makedirs(d, exist_ok=True)
+            with open(f + '.tmp', 'wb') as o:
+                o.write(body)
+            os.replace(f + '.tmp', f)
+        except Exception:
+            return rt.fulfill(status=200, body='', headers={'content-type': 'text/css' if css else 'font/woff2', 'access-control-allow-origin': '*'})
+    with open(f, 'rb') as i:
+        body = i.read()
+    return rt.fulfill(status=200, body=body, headers={'content-type': 'text/css; charset=utf-8' if css else 'font/woff2', 'access-control-allow-origin': '*'})
+
+
 class _Quiet(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a):
         pass
@@ -104,11 +131,10 @@ class Session:
         timeout = int(os.environ.get('MODEL_TIMEOUT_MS', timeout or 120000))
         ctx = self.browser.new_context(viewport={'width': w, 'height': h}, device_scale_factor=scale, has_touch=touch, is_mobile=touch)
         ctx.add_init_script('window.__MODEL_CACHECHECK = true;')
-        # Google Fonts lokaal beantwoorden, zoals pubsmoke.py: met een tweede, nog renderende pagina in dezelfde browser
-        # faalt het echte verzoek op macOS met net::ERR_SOCKET_NOT_CONNECTED. Bereikbaarheid controleert pubsmoke.py met
-        # curl. (orkestrator, 16 oktober 2026)
-        ctx.route(lambda u: u.startswith(('https://fonts.googleapis.com/', 'https://fonts.gstatic.com/')),
-                  lambda rt: rt.fulfill(status=200, body='', headers={'content-type': 'text/css', 'access-control-allow-origin': '*'}))
+        # Google Fonts uit een lokale cache beantwoorden: met een tweede, nog renderende pagina in dezelfde browser faalt het
+        # echte verzoek op macOS met net::ERR_SOCKET_NOT_CONNECTED. De cache houdt de letters gelijk aan de echte pagina
+        # (visdiff); bereikbaarheid controleert pubsmoke.py met curl. (orkestrator, 16 oktober 2026)
+        ctx.route(lambda u: u.startswith(FONT_HOSTS), _font_route)
         pg = ctx.new_page()
         tag = f'{w}x{h}'
 

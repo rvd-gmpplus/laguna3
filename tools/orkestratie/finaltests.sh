@@ -31,7 +31,9 @@ run lint python3 build.py --lint
   run pub python3 tools/pubsmoke.py
   run stats python3 tools/orkestratie/stats.py "$R" "$OUT/stats.json"
   run shots python3 tools/orkestratie/presetshots.py "$R" "$OUT/presets"
-  run visdiff python3 tools/visdiff.py "$OUT/presets" docs/baseline --uit "$OUT/visdiff"
+  # VISDIFF_BASIS: andere basislijn, bijvoorbeeld een eigen meting op dezelfde machine (software-rendering verschilt per
+  # platform: macOS tegen de Linux-container circa 2 procent per beeld)
+  run visdiff python3 tools/visdiff.py "$OUT/presets" "${VISDIFF_BASIS:-docs/baseline}" --uit "$OUT/visdiff"
   run anchor python3 tools/anchorcheck.py --json "$OUT/anchorcheck.json" --basis docs/baseline/anchorcheck.json ) &
 wait
 date -u +"%Y-%m-%dT%H:%M:%SZ" > "$OUT/einde.txt"
