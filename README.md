@@ -78,7 +78,7 @@ Onderin staan de presets in zeven categorieën: Overzicht, Motor, Aandrijving, O
 
 - Aantal presets: 43, de rondleiding meegeteld (in de eerste golf waren het er 31): Overzicht 6, Motor 11, Aandrijving 6, Onderstel 7, Carrosserie 4, Interieur 3, Openen 6. In de herstelronde van golf 2 kwamen er zes bij: Stuurpomp, Koeling en luchtinlaat, Uitlaatsysteem, Accu, Stuurinrichting en Parkeerrem. Golf 4 voegde de categorie Openen toe (zie hieronder).
 - Een preset in een andere categorie dan Openen zet de modus terug op Uitklappen.
-- `Rondleiding` in Overzicht speelt de belangrijkste presets na elkaar af met een bijschrift per stap, ongeveer vijf seconden per stap. `Stop rondleiding` of Esc breekt af.
+- `Rondleiding` in Overzicht speelt de belangrijkste presets na elkaar af met een bijschrift per stap, ongeveer vijf seconden per stap. De balk heeft knoppen voor vorige, pauze of hervat, volgende en stop; Esc breekt af. Een verborgen tabblad pauzeert de rondleiding vanzelf.
 - De lijst van presets staat in `src/presets.js`.
 
 ### Het paneel
@@ -87,9 +87,9 @@ Het paneel rechts (op de telefoon onderaan) heeft drie tabbladen.
 
 | Tab | Inhoud |
 |---|---|
-| Onderdeel | Kruimelpad, naam, beschrijving, specificaties en de onderdelen waaruit de selectie bestaat. Knoppen: Uitklappen of Inklappen, Duik hierheen (bij een onderdeel), Groter geheel, Alles hieronder uit, Isoleren, In beeld. |
-| Onderdelen | De volledige boom met zoekfunctie, bijvoorbeeld "klepveer". Een treffer openen klapt het pad ernaartoe uit en selecteert het onderdeel. |
-| Weergave | Spreiding (40 tot 220 %), Labels, Röntgen (carrosserie doorzichtig), Kleuren per systeem, Langzaam draaien, zes camerastanden (Voor, Zij, Achter, Boven, ¾ voor, ¾ achter), de schakelaar `Gesloten groepen samenvoegen` (gebundeld renderen, standaard aan) en de knoppen Alles uitklappen, Alles inklappen en Alles tonen. |
+| Onderdeel | Kruimelpad, naam, beschrijving, specificaties en de onderdelen waaruit de selectie bestaat. Knoppen: Uitklappen of Inklappen, Duik hierheen (bij een onderdeel), Groter geheel, Alles hieronder uit, Isoleren, In beeld. Bij isoleren vervaagt de rest in 0,3 s en staat er een badge "Geïsoleerd: naam" met de knop Alles tonen. |
+| Onderdelen | De volledige boom met zoekfunctie, bijvoorbeeld "klepveer". Zoeken negeert hoofdletters en accenten en kent synoniemen (remvoering en remblok, dynamo en alternator, accu en batterij, versnellingsbak, transmissie en automaat, en meer). Een treffer openen klapt het pad ernaartoe uit en selecteert het onderdeel. |
+| Weergave | Spreiding (40 tot 220 %), Labels, Röntgen (carrosserie doorzichtig), Kleuren per systeem, Langzaam draaien, zes camerastanden (Voor, Zij, Achter, Boven, ¾ voor, ¾ achter), de schakelaar `Gesloten groepen samenvoegen` (gebundeld renderen, standaard aan) en de knoppen Alles uitklappen, Alles inklappen en Alles tonen. Verder de themaknop (licht, donker, systeem; de keuze wordt onthouden), Beeld opslaan (een PNG met de naam, het onderdeelnummer en de versie onderin) en Kaart afdrukken (alleen de onderdeelkaart). |
 
 ### Onderdeelnummers in het paneel
 
@@ -115,7 +115,7 @@ Boven de sectie staat een vaste waarschuwing: controleer het nummer altijd op he
 
 Alle nummers staan ook in [docs/onderdeelnummers.csv](docs/onderdeelnummers.csv): 23 kolommen met per rij het pad, de verkoopeenheid (`unit_id`), de relatie, het statuslabel zoals in het paneel, merk, nummer, bewijs, een korte Nederlandse aanduiding van maat of uitvoering, variant, verpakking, alle bron-URL's van de eenheid, en waar een uitvoering voor de auto van de gebruiker is gekozen de keuze met grond; paden zonder record staan erin als "niet onderzocht". Het schema staat in [docs/onderdeelnummers-schema.md](docs/onderdeelnummers-schema.md). De zoekfunctie in de tab Onderdelen vindt ook een nummer.
 
-Labels zijn genummerde bijschriften met een lijntje naar het onderdeel. Ze verschijnen bij de kinderen van de laatst uitgeklapte groep en vermijden elkaar en de bediening.
+Labels zijn genummerde bijschriften met een lijntje naar het onderdeel. Ze verschijnen bij de kinderen van de laatst uitgeklapte groep en vermijden elkaar en de bediening. Passen ze niet allemaal (hoogstens 24, op een smal scherm 10), dan staat er een label "+n meer" dat de lijst van de groep opent. Op een aanraakscherm toont een tik op een afgekort label de volledige naam.
 
 ### Toetsenbord
 
@@ -132,7 +132,9 @@ De toetsen werken zodra de pagina de focus heeft; het canvas krijgt die bij de e
 | Pijl omhoog, omlaag, links, rechts (niet op een knop) | Door de boom lopen: omhoog is de bovenliggende groep, omlaag het eerste deel, links en rechts de vorige of volgende op hetzelfde niveau. Er klapt niets uit. |
 | Pijl omhoog of omlaag, Home, End | Door een geopend presetmenu lopen |
 
-### Beeldkwaliteit
+### Beeldkwaliteit en meldingen
+
+Gaat er bij het laden iets mis (three.js niet geladen, geen WebGL, een fout in het script), dan vervangt de pagina de laadmelding door een korte melding met de versie erbij. Verliest de browser de WebGL-context (bijvoorbeeld een tablet die geheugen vrijmaakt), dan staat er een melding tot de context terug is; de omgevingskaart wordt dan opnieuw gemaakt. De drie scripts van de CDN worden met `integrity` geladen: een gewijzigd bestand wordt geweigerd.
 
 Haperen de eerste frames (gemiddeld meer dan 40 ms over 20 frames tijdens een animatie), dan schakelt de pagina één keer over op een lichte weergave: pixelratio 1 en geen lakglans. Een melding in Weergave vertelt dat, en de schakelaar `Volle kwaliteit` zet het terug. Tijdens grote animaties (meer dan 800 bewegende onderdelen) zakt de pixelratio tijdelijk naar driekwart.
 
@@ -203,18 +205,14 @@ Voorbereiding, alle scripts en de resultaten staan in [docs/testen.md](docs/test
 - Het werkplaatshandboek MR 415 en de referentiefoto's staan niet in de repo (rechten van Renault en derden). In de tekst staan alleen korte verwijzingen met paginanummer.
 - De stuurbekrachtiging is hydraulisch met een pomp op de multiriem. Dat is aannemelijk voor deze motor, niet met een eigen bron bevestigd.
 - De prestaties zijn alleen in een container met software-rendering gemeten. Op een echte telefoon is de framesnelheid niet getest; de pagina schakelt zelf over op een lichte weergave als hij haperen gaat.
-- Gebundeld renderen van gesloten groepen staat standaard aan (schakelaar in Weergave). Zonder bundelen heeft de gemonteerde auto 1.867 tekenopdrachten, met bundelen 439; met alles open zijn het er 774 (grens 3.000). De grens van 1.500 voor de gemonteerde stand geldt dus alleen met bundelen.
-- De Aandrijflijn heeft 235.534 driehoeken tegen een budget van 240.000 en zit daarmee binnen budget. De hele auto (659.496) blijft binnen het budget van 700.000. Carrosserie telt 187.554 (budget 190.000), Onderstel 110.204 en Interieur 77.612.
 - De multiriem is in het model 1.569 mm lang tegen 1.795 mm (7PK1795); de beschrijving in de pagina zegt dat. De positie van de stuurpomp en de routes van de slangen zijn schematisch.
-- De voorste langsliggers snijden de aandrijfassen. Dit was al zo en is niet opgelost.
-- De torsiebalk ligt in het model boven de vlakke vloer (y 0,25 tot 0,33, vloer y 0,18). Bij de echte auto loopt de balk onder een verhoogd vloerdeel. Van buiten is het niet te zien en het is niet aangepast.
 - De veer achter steekt door de voorrand van de bagagevloer in de veerkoker. De koker staat in de bagageruimte als kastje naast de rugleuning; op de echte auto zit daar de zijbekleding, die het model niet heeft.
-- Niet gebouwd: UX-punt U19 (de rest dimmen bij het duiken naar een onderdeel) en een zijkolomindeling voor telefoons in liggende stand.
-- Interactietest: op de eindstand van golf 4 (`3ab6a8d`) slagen alle 150 controles van `tools/itest.py`, inclusief de openmodus en de onderdeelnummers; zie [docs/testen.md](docs/testen.md). Op `9c731c8` (voor golf 4) slaagden 79 van de 79 controles. Het randgeval van de vorige stand (een telefoontik die een ander deel koos) was een echte app-fout: na de tik stuurde de browser nog een muisklik die op een label viel dat net onder de vinger was geschoven. Dat is opgelost in `src/app2.js` en de test is niet veranderd. Zie [docs/testen.md](docs/testen.md).
 - Herkenbaarheid: de laatste visuele poort (poort 5, op `9c731c8`, drie onafhankelijke beoordelaars, meerderheid per kenmerk) vond 7 van de 9 herkenningskenmerken volledig aanwezig. De eis is 7, dus S7 is gehaald. Twee kenmerken zijn deels aanwezig: drie zijruiten met zwarte B-stijl en chromen raamlijst (op galerijformaat leest de B-stijl als dunne lijn en is de raamlijst nauwelijks te zien) en het bovenaanzicht (het leest evenwijdig, zonder heupen; de bouwtekening is per kolom gemeten en de breedte is van net voor de achteras tot de vooras constant binnen 1 %, dus dit is niet aangepast). De einduitlaten, die alle drie de beoordelaars als groot gebrek noemden, zijn daarna opgelost in `ff42dbd` en in de galerij nagelopen. De poort is daarna niet opnieuw gedraaid. Zie [docs/premortem.md](docs/premortem.md), struikeldraad 3.
 - Onderkant: bij het nalopen van de meldingen van de gebruiker over de onderkant bleek het interieur door de wielbogen en van onderen te zien. Dat is opgelost met gesloten wielkasten en een vloer tot de wielkast. Stralen loodrecht door de vier wielbogen geven 0 interieurtreffers. Stralen van onderen in zeven richtingen geven 2 randgevallen op ruim 60.000. Die controle is met scripts in het scratchpad gedaan en zit niet in de repo.
 - Op de motorkap zijn in het bovenaanzicht donkere spikkels te zien op een vaste plek. Samenvallende vlakken en de omgevingsreflectie zijn uitgesloten. De vermoedelijke oorzaak is de software-rasterisatie in de container. Dat is niet bewezen; op een echte GPU nakijken.
 - Van de 345 labelankers over alle 36 presets liggen er 261 op het eigen deel en 0 in de lucht (was 175 en 52). De overige 84 liggen ook op het eigen deel, maar liggen afhankelijk van de camera achter een ander deel.
+- Driehoeken per hoofdgroep, tekenopdrachten met en zonder bundelen, opstarttijden en de andere kerncijfers staan in [docs/cijfers.md](docs/cijfers.md); de budgetten in `tools/anchors.json`.
+- Interactietest: op de stand van golf 5c-1 slagen alle 218 controles van `tools/itest.py` (desktop en telefoon, openmodus, onderdeelnummers, toetsenbord, formaatwissel, foutpaden); zie [docs/testen.md](docs/testen.md).
 - Niet getest op een echte telefoon en een echte GPU.
 - Alle laadtijden zijn in een container met software-rendering gemeten (de pagina is daar na 5 tot 28 seconden klaar, afhankelijk van de belasting van de machine). Ze zeggen niets over een echt apparaat.
 - De gedragingen van de webview van een telefoon-app (lang drukken, sneltoetsen in een iframe) zijn niet te testen in de container. De stijlregels ervoor zijn wel getoetst.

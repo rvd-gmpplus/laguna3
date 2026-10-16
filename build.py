@@ -9,7 +9,7 @@ Gebruik:
 Controles (de bouw stopt bij een fout):
   - dubbele functienamen op het hoogste niveau over alle bestanden (die zouden elkaar stil overschrijven)
   - dubbele materiaalnamen in std()/phys()
-  - syntaxis van het samengevoegde script via `node --check` (vangt ook dubbele const/let)
+  - syntaxis van het samengevoegde script via `node --check` (vangt ook dubbele const/let), en van elk inline script in head.html
 
 De scripttags van three.js krijgen integrity (sha384) en crossorigin="anonymous"; de hash komt uit het lokale npm-pakket
 (THREE_DIR of ~/.cache/laguna/three-0.147.0/package, zie tools/harness.py --ensure-three). Ontbreekt dat, dan stopt de bouw.
@@ -94,6 +94,26 @@ def lint(sources):
     return errors
 
 
+def lint_head(head):
+    """Inline scripts in head.html (zoals de foutafhandeling vóór de scripttags) vallen buiten het samengevoegde script;
+    ze gaan apart door node --check."""
+    errors = []
+    node = shutil.which('node')
+    if not node:
+        return errors
+    for i, sc in enumerate(re.findall(r'<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>', head, re.S), 1):
+        with tempfile.NamedTemporaryFile('w', suffix='.js', delete=False, encoding='utf-8') as f:
+            f.write(sc)
+            tmp = f.name
+        try:
+            r = subprocess.run([node, '--check', tmp], capture_output=True, text=True)
+            if r.returncode != 0:
+                errors.append(f'syntaxfout in inline script {i} van head.html:\n' + (r.stderr or r.stdout).strip().replace(tmp, 'head-inline.js'))
+        finally:
+            os.unlink(tmp)
+    return errors
+
+
 def version(head, js, test=False):
     """Versiestempel: het nummer uit VERSION plus een inhoudshash (7 tekens) van head.html en het samengevoegde script,
     zodat de pagina zelf zegt uit welke bron hij komt. Niet uit HEAD: de commit die index.html bevat bestaat bij het bouwen nog niet."""
@@ -114,7 +134,7 @@ def main(argv):
     test_only = '--test-only' in argv
     args = [a for a in argv if not a.startswith('--')]
     sources = [(f, read(f)) for f in ORDER]
-    errors = lint(sources)
+    errors = lint(sources) + lint_head(read('head.html'))
     if errors:
         print('BOUW GESTOPT:', file=sys.stderr)
         for e in errors:
