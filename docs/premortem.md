@@ -142,7 +142,7 @@ Controle van de verificatiepoort: de verifieerder kreeg in elk van de vijf hoofd
 
 - Geen echte telefoon of GPU in de container. Tekenopdrachten en JavaScript-tijd zijn het meetbare deel.
 - De uitrusting van deze auto zonder chassisnummer: varianten worden getoond en niet vastgelegd.
-- Databankenrecht: de CSV bevat alleen nummers en URL's, geen productteksten of prijzen. Een juridische toets is niet gedaan.
+- Databankenrecht: de CSV bevat nummers, bron-URL's en korte Nederlandse aanduidingen van maat of uitvoering; geen productbeschrijvingen, prijzen of foto's (sinds golf 5d ook geen Engelse catalogusattributen of advertentietitels meer). Een juridische toets is niet gedaan.
 
 ## Premortem golf 5c-1 (16 oktober 2026, 02:00 UTC)
 

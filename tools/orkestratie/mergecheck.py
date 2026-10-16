@@ -16,7 +16,7 @@ OWN = {
     'chassis': ['src/chassis.js'],
     'interior': ['src/interior.js'],
     'systems': ['src/systems.js'],
-    'data': ['src/partnumbers.js', 'docs/onderdeelnummers.csv', 'data/*', 'tools/orkestratie/build_pn.py', 'tools/pncheck.py'],
+    'data': ['src/partnumbers.js', 'docs/onderdeelnummers.csv', 'docs/onderdeelnummers-schema.md', 'data/*', 'tools/orkestratie/build_pn.py', 'tools/pncheck.py'],
     'docs': ['README.md', 'docs/*.md', 'docs/screenshots/*', 'CHANGELOG.md', 'handomdraai.md'],
     # de orkestrator mag alles; deze lijst dient om een orkestratortak te laten zien wat hij raakt
     'orkestrator': ['*'],

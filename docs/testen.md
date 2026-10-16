@@ -114,7 +114,7 @@ Na publicatie moet de inhoud van de gepubliceerde URL gelijk zijn aan `index.htm
 
 ### `python3 tools/pncheck.py [--tree] [--update]`
 
-Herbouwt `src/partnumbers.js` en `docs/onderdeelnummers.csv` uit `data/pn/` in het geheugen en vergelijkt byte voor byte met de gecommitte bestanden (zonder browser; in de push-job van CI). Met `--tree` vergelijkt hij ook `data/tree.json` met de boom van de pagina; `--tree --update` schrijft `data/tree.json` opnieuw. Exitcode 1 bij een verschil, een pad buiten de boom, een onbekende eenheid, een keuze met een nummer dat niet in de lijst staat, of een bron zonder https.
+Herbouwt `src/partnumbers.js` en `docs/onderdeelnummers.csv` uit `data/pn/` in het geheugen en vergelijkt byte voor byte met de gecommitte bestanden (zonder browser; in de push-job van CI). Met `--tree` vergelijkt hij ook `data/tree.json` met de boom van de pagina; `--tree --update` schrijft `data/tree.json` opnieuw. Exitcode 1 bij een verschil, een pad buiten de boom, een onbekende eenheid, een keuze met een nummer dat niet in de lijst staat, of een bron zonder https. De bouw stopt ook bij een bron-URL met `|` of een spatie (de CSV scheidt bronnen met `|`). De statistiek noemt sinds golf 5d ook `csv_rijen`, `bytes_csv`, `bronnen_uniek_in_csv`, `bronnen_met_page` (URL's met `?page=N`, nog 24) en `namen_met_schuine_streep`. Het schema van de CSV staat in `onderdeelnummers-schema.md`.
 
 ### `python3 tools/tri.py [--gate] [--json UIT.json]`
 

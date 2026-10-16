@@ -35,6 +35,10 @@ De CSV legt per rij een bron-URL vast (kolom bron). De JS-gegevens leggen per ve
 
 Er zijn dus feitelijk twee bronsites van betekenis. Plaats drie wordt gedeeld door twee webwinkels met elk een advertentie waaruit een Renault-nummer is gehaald (bewijs D). In de JS-gegevens staan 230 nummers in eenheden waar Spareto een van de bronnen is; die zijn meestal ook door AUTODOC gestaafd.
 
+### Aanvulling 16 oktober 2026 (golf 5d, structureel)
+
+De CSV is genormaliseerd (`docs/onderdeelnummers-schema.md`): 23 kolommen met `unit_id`, alle bron-URL's van de eenheid per rij (429 verschillende URL's in de CSV, tegen 166 toen alleen de eerste per eenheid werd getoond; het aantal bronnen per nummer in de JS-gegevens is ongewijzigd, 503 bij 1.334 nummers), variant, verpakking, regel, keuze en info; 8.748 gegevensrijen, waarvan 1.358 "niet onderzocht" zonder nummer. De kolom opmerking bevat geen Engelse catalogusattributen en geen advertentietitels meer: 252 verschillende teksten in 400 records zijn in de bron (`data/pn/units`) vervangen door korte Nederlandse aanduidingen met dezelfde feiten (maat, temperatuur, draad, positie, uitrusting), en de twee D-nummers van het panoramadak hebben een eigen omschrijving (maatregel 8 is daarmee gedaan). Wat bleef: de onderzoeksnotities (`note`, niet in de CSV en niet in het paneel) en de regelteksten in `map.json` noemen soms de categorie van de bron (bijvoorbeeld "Autodoc Crankshaft seal"). De tabel hierboven telt de oude CSV met één URL per rij.
+
 ## 3. Databankenrecht
 
 ### 3.1 Wettelijk kader
@@ -131,7 +135,7 @@ Volgorde naar effect en inspanning.
 5. Leg een verwijderprocedure vast: bij een sommatie de gegevens van die bron binnen enkele dagen verwijderen, ook uit de geschiedenis waar dat kan, en niet reageren zonder juridisch overleg.
 6. Geen verdere uitbreiding naar andere voertuigtypen of naar periodiek verversen zonder toestemming van de rechthebbende. Dat is de stap waarmee herhaald en systematisch opvragen aannemelijker wordt.
 7. Vraag toestemming. Een kort verzoek aan AUTODOC (en eventueel TecAlliance) om gebruik voor een niet-commercieel hobbyproject, met bronvermelding, kost weinig en neemt de onzekerheid weg als het antwoord ja is. Een weigering geeft in elk geval duidelijkheid voor de volgende stap.
-8. Vervang de advertentietitel-citaten in de kolom opmerking door eigen omschrijvingen, en laat de kolom opmerking geen tekst van de bronsites overnemen.
+8. Vervang de advertentietitel-citaten in de kolom opmerking door eigen omschrijvingen, en laat de kolom opmerking geen tekst van de bronsites overnemen. Gedaan op 16 oktober 2026 (golf 5d): eigen omschrijvingen bij de D-nummers en Nederlandse aanduidingen in plaats van Engelse catalogusattributen.
 9. Zet een licentie of auteursrechtvermelding op de eigen code en eigen modeldata, en vermeld dat het project geen aanspraak maakt op rechten op de onderdeelnummers zelf.
 10. Overweeg de bron-URL's te laten staan als verwijzing. Ze tonen herkomst en sturen bezoekers naar de rechthebbende, wat de schadevraag (3.6) gunstiger maakt.
 
