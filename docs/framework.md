@@ -76,7 +76,7 @@ Elke stap eindigt met een poort; pas als die groen is, begint de volgende.
 
 ## Wat golf 5b-2 aan de generieke laag toevoegde
 
-Op 16 oktober 2026 kwamen in laguna3 (tak `golf-5b2`, nog niet in `main` en dus nog niet geëxporteerd) de volgende generieke wijzigingen. Ze staan in `framework.json` bij de generieke bestanden en gaan mee met de volgende `framework.py export`:
+Op 16 oktober 2026 kwamen in laguna3 (golf 5b-2, versie 9, in `main` sinds `3be230e`) de volgende generieke wijzigingen. Ze staan in `framework.json` bij de generieke bestanden en zijn dezelfde avond met `framework.py export` naar espace5 gebracht, op de tak `framework-laguna3-v9` (niet in de `main` van espace5, want die publiceert de pagina van espace5):
 
 - `tools/harness.py`: Google Fonts-verzoeken worden uit een lokale cache beantwoord (`~/.cache/explosietekening/fonts`), omdat Chromium op macOS met `net::ERR_SOCKET_NOT_CONNECTED` faalde zodra een tweede pagina laadde terwijl de eerste nog renderde. Een auto die op macOS test, heeft dit nodig.
 - `tools/orkestratie/finaltests.sh`: `VISDIFF_BASIS` kiest een andere basislijn voor `visdiff`. De basislijn (`docs/baseline`) hoort bij een auto en bij een platform: software-rendering wijkt tussen macOS, een Linux-container en een Linux-VM 2 tot 33 procent per beeld af. Een nieuwe auto maakt dus eigen basislijnen en meet op een ander platform eerst een eigen basis van een groene startstand.
