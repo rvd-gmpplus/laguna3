@@ -985,7 +985,7 @@ function uiCommitPress(d, fromUp) {
   if (d.consumed || (d.ended && !fromUp)) return;
   d.consumed = true;
   if (uiPressS && uiPressS.d === d) uiCancelPress();
-  try { navigator.vibrate && navigator.vibrate(12); } catch (_) { }
+  try { navigator.vibrate && navigator.vibrate(UI_PRESS_VIBRATE_MS); } catch (_) { } // U8: de ring is vol (alleen waar vibrate bestaat)
   if (d.pick) uiCollapseAt(d.pick);
 }
 function uiStartPress(d) {
@@ -1067,18 +1067,28 @@ canvas.addEventListener('wheel', () => { uiStopPlay(); uiStopTour(); hideHint();
 
 /* ---------- hint en hulp ---------- */
 const uiHintKey = 'laguna3-hint-v2';
+let uiHintStage = 0; // 0 geen, 1 de uitleg, 2 de suggestie (U8); elke handeling sluit hem voorgoed
 function uiInitHint() {
   let seen = false;
   try { seen = window.localStorage.getItem(uiHintKey) === '1'; } catch (_) { seen = false; }
   if (seen) { els.hint.hidden = true; return; }
+  uiHintStage = 1;
   els.hint.textContent = uiTouch
     ? 'Tik op een onderdeel om het uit te klappen · dubbeltik om er direct heen te gaan · houd vast om in te klappen'
     : 'Klik op een onderdeel om het uit te klappen · dubbelklik om er direct naartoe te gaan · rechtsklik om in te klappen';
-  setTimeout(hideHint, 9000);
+  setTimeout(uiHintNext, UI_HINT_MS);
+}
+// U8: na de uitleg één concrete suggestie, tot de eerste klik of tik (daarna nooit meer: de hint telt als gezien)
+function uiHintNext() {
+  if (uiHintStage !== 1 || els.hint.hidden || els.hint.classList.contains('gone')) return;
+  uiHintStage = 2;
+  els.hint.textContent = uiTouch ? 'Probeer: tik op de motorkap' : 'Probeer: klik op de motorkap';
+  uiUiChanged();
 }
 function hideHint(instant) {
-  if (instant === true && !els.hint.hidden) { els.hint.hidden = true; els.hint.classList.add('gone'); try { window.localStorage.setItem(uiHintKey, '1'); } catch (_) { } uiUiChanged(); return; }
+  if (instant === true && !els.hint.hidden) { uiHintStage = 0; els.hint.hidden = true; els.hint.classList.add('gone'); try { window.localStorage.setItem(uiHintKey, '1'); } catch (_) { } uiUiChanged(); return; }
   if (els.hint.hidden || els.hint.classList.contains('gone')) return;
+  uiHintStage = 0;
   els.hint.classList.add('gone');
   try { window.localStorage.setItem(uiHintKey, '1'); } catch (_) { }
   setTimeout(() => { els.hint.hidden = true; uiUiChanged(); uiSyncLabels(); }, REDUCED ? 0 : 450);
@@ -1308,7 +1318,12 @@ function uiNewLabel() {
   // alleen een klik die op dit label begon (of een klik zonder aanwijzer: toetsenbord, schermlezer); geen nagekomen
   // click van een tik die op het canvas begon en waarna het label onder de vinger is geschoven
   el.addEventListener('pointerdown', () => { el._pd = true; });
-  el.addEventListener('click', e => { const was = el._pd; el._pd = false; const k = el._k; if (!k || (e.detail > 0 && !was)) return; uiStopPlay(); uiStopTour(); hideHint(); uiAct(k); });
+  el.addEventListener('click', e => {
+    const was = el._pd; el._pd = false; const k = el._k; if (!k || (e.detail > 0 && !was)) return;
+    // U8: op een aanraakscherm is er geen title-tip; een afgekapt label toont zijn volledige naam als toast
+    if (uiTouch && el.lastChild.scrollWidth > el.lastChild.clientWidth + 1) uiToast(k.name);
+    uiStopPlay(); uiStopTour(); hideHint(); uiAct(k);
+  });
   els.labels.appendChild(el);
   const ln = document.createElementNS(uiSvgNs, 'line'); ln.style.display = 'none'; els.leaders.appendChild(ln);
   const dot = document.createElementNS(uiSvgNs, 'circle'); dot.setAttribute('r', '3'); dot.style.display = 'none'; els.leaders.appendChild(dot);
