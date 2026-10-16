@@ -33,6 +33,8 @@ jobs:
         run: python3 tools/opentest.py --strikt-min --out uit/opentest
       - name: ui_inner strikt
         run: python3 tools/ui_inner.py --open --strict
+      - name: pncheck met boom
+        run: python3 tools/pncheck.py --tree
       - name: pubsmoke
         run: python3 tools/pubsmoke.py
       - name: stats en cijfers

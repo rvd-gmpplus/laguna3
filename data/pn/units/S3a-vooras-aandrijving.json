@@ -1,0 +1,3343 @@
+{
+ "S3a-vooras-aandrijving:G_BED": {
+  "n": "Groep Bediening en sensoren automaat",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Groepering in de modelboom, geen verkoopeenheid (kind niet_gevonden omdat het schema geen niet_los kent).",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_SELSHAFT": {
+  "n": "Keuzeas met hendel (handklepas automaat)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet onderzocht buiten Autodoc: de Autodoc-transmissiepagina voor type 23370 toont geen keuzeas, keuzehendel of kabelbediening voor deze automaat (alleen filter, olie, steun, carter en sensor). Renault-nummer niet gevonden.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_CABLEBRKT": {
+  "n": "Kabelbeugel keuzekabel",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar. Beugel voor de keuzekabel; niet in de Autodoc-lijsten voor type 23370 gevonden.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_PNP": {
+  "n": "Standenschakelaar (PNP) met detentveer",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Autodoc heeft voor type 23370 geen categorie voor de standenschakelaar van de automaat (transmissiepagina toont die niet). Renault-nummer niet gevonden.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_SPD_IN": {
+  "n": "Toerentalsensor automaat (RPM sensor, ingaand)",
+  "st": "vin",
+  "oe": [
+   [
+    "7701067658",
+    "OE-lijst MAXGEAR 24-0347 (positie Inlet) en FAE 79489",
+    "B"
+   ],
+   [
+    "7701065844",
+    "OE-lijst MAXGEAR 24-0347 (positie Inlet) en FAE 79489",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "MAXGEAR",
+    "24-0347",
+    "RPM-sensor automaat, positie Inlet, F4R 811",
+    "A"
+   ],
+   [
+    "FACET",
+    "9.0710",
+    "RPM-sensor automaat, positie Inlet, F4R 811",
+    "A"
+   ],
+   [
+    "EPS",
+    "1.953.710",
+    "RPM-sensor automaat, positie Inlet, F4R 811",
+    "A"
+   ],
+   [
+    "KW",
+    "453 710",
+    "RPM-sensor automaat, positie Inlet, F4R 811",
+    "A"
+   ]
+  ],
+  "var": "Autodoc noemt voor type 23370 \"RPM Sensor, automatic transmission\" met positie Inlet (MAXGEAR 24-0347, FACET 9.0710, EPS 1.953.710, KW 453 710) en TecDoc-motor F4R 811. De OE-nummers 7701067658 en 7701065844 staan samen in de OE-lijst van MAXGEAR 24-0347; welk van de twee bij welke uitvoering hoort, staat niet op de bron. Artikelen zonder positie zijn weggelaten.",
+  "per": "1 stuk",
+  "note": "De bak heeft een ingaande en een uitgaande sensor; alleen artikelen met positie Inlet zijn opgenomen. Per VIN controleren.",
+  "src": [
+   [
+    "https://www.autodoc.parts/maxgear/19361084",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/fae/18120872",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/sensor-speed-13031/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_SPD_OUT": {
+  "n": "Toerentalsensor automaat (uitgaand)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Autodoc toont voor type 23370 maar een soort \"RPM Sensor, automatic transmission\" (positie Inlet, zie U_SPD_IN); een aparte uitgaande sensor staat niet in de lijst. Als de nummers 7701067658/7701065844 beide sensoren dekken, bevestigt de bron dat niet.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_TERMINAL": {
+  "n": "Stekker interne kabelboom automaat (terminal assembly)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar. Zit in het klepblok/de bak; niet in Autodoc-lijsten voor type 23370.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_START": {
+  "n": "Startmotor 12 V 0,9 kW, rondsel 9 tanden",
+  "st": "vin",
+  "oe": [
+   [
+    "8200792969",
+    "OE-lijst RIDEX 2S0243, 2S0222 en STARK SKSTR-0330221",
+    "B"
+   ],
+   [
+    "8200724805",
+    "idem",
+    "B"
+   ],
+   [
+    "8200466744",
+    "idem",
+    "B"
+   ],
+   [
+    "8200186144",
+    "idem",
+    "B"
+   ],
+   [
+    "7700115294",
+    "idem",
+    "B"
+   ],
+   [
+    "7700875450",
+    "idem",
+    "B"
+   ],
+   [
+    "8200050150",
+    "idem",
+    "B"
+   ],
+   [
+    "8200466761",
+    "idem",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "2S0243",
+    "0,9 kW, 9 tanden",
+    "A"
+   ],
+   [
+    "RIDEX",
+    "2S0222",
+    "0,9 kW, 9 tanden",
+    "A"
+   ],
+   [
+    "STARK",
+    "SKSTR-0330221",
+    "0,9 kW, 9 tanden",
+    "A"
+   ],
+   [
+    "VALEO",
+    "438415",
+    "0,9 kW, 9 tanden",
+    "A"
+   ],
+   [
+    "LUCAS",
+    "LRS01545",
+    "0,9 kW, 9 tanden",
+    "A"
+   ],
+   [
+    "AS-PL",
+    "S0223",
+    "0,9 kW, 9 tanden",
+    "A"
+   ]
+  ],
+  "var": "Autodoc-lijst 23370 bevat 0,9 kW met 9 tanden (RIDEX 2S0243/2S0222, STARK SKSTR-0330221, AS-PL S0223, VALEO 438415, LUCAS LRS01545) en 1,1 kW met 11 tanden (RIDEX 2S0337, AS-PL S0741S). Het model beschrijft een rondsel met 9 tanden en ongeveer 1 kW, dus de 9-tandenversie. Welk fabrikaat (Valeo of Bosch) er in de auto zit, staat niet in de bronnen.",
+  "per": "1 stuk",
+  "note": "De OE-nummers staan op alle drie gelezen 9-tandenpagina's (RIDEX 2S0243, RIDEX 2S0222, STARK SKSTR-0330221); de OE-lijsten zijn breed (meerdere Renault-modellen). BOSCH 0 986 018 860 (9 en 11 tanden) is weggelaten.",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/13633688",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/ridex/13633671",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/stark/8272736",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/starter-10459/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/starter-10459/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=2",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_STARTBOLT": {
+  "n": "Montagebouten startmotor",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_STARTSHIELD": {
+  "n": "Hitteschild startmotor",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_BRUSH": {
+  "n": "Koolborstelhouder met koolborstels (starter)",
+  "st": "vin",
+  "oe": [],
+  "am": [
+   [
+    "BOSCH",
+    "1 004 336 667",
+    "categorielijst noemt het artikel \"Starter motor\"; productpagina: \"Holder, carbon brushes\", 2.0 16V Turbo 170 hp in de toepassingslijst",
+    "A"
+   ],
+   [
+    "BOSCH",
+    "1 004 336 416",
+    "categorielijst noemt het artikel \"Starter motor\"; productpagina: \"Holder, carbon brushes\", 2.0 16V Turbo 170 hp in de toepassingslijst",
+    "A"
+   ]
+  ],
+  "var": "Twee BOSCH-uitvoeringen in de Autodoc-lijst voor type 23370 (1 004 336 667 en 1 004 336 416); welke bij de gemonteerde startmotor hoort volgt uit het fabrikaat van de startmotor.",
+  "per": "1 stuk",
+  "note": "De categorielijst Starter voor 23370 toont beide BOSCH-artikelen met de titel \"Starter motor\"; de productpagina's noemen \"Holder, carbon brushes\" en de 2.0 16V Turbo 170 hp. Geen Renault-nummer gevonden.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/starter-10459/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/bosch/7602816",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/bosch/717945",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_SOLENOID": {
+  "n": "Magneetschakelaar (solenoïde) startmotor",
+  "st": "vin",
+  "oe": [
+   [
+    "7701052617",
+    "OE-lijst KAMOKA 8640032, ERA 227033, LAUBER CQ2030504, ERA ZM1379; \"for OE number\" bij MEAT & DORIA 46264",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "AS-PL",
+    "SS0130",
+    "",
+    "A"
+   ],
+   [
+    "KAMOKA",
+    "8640032",
+    "",
+    "A"
+   ],
+   [
+    "ERA",
+    "227033",
+    "",
+    "A"
+   ],
+   [
+    "LAUBER",
+    "CQ2030504",
+    "",
+    "A"
+   ],
+   [
+    "ERA",
+    "ZM1379",
+    "",
+    "A"
+   ],
+   [
+    "MEAT & DORIA",
+    "46264",
+    "",
+    "A"
+   ]
+  ],
+  "var": "Meerdere uitvoeringen (Bosch- en Valeo-startmotor) in de Autodoc-lijst voor 23370; Renault-nummer 7701052617 staat op de pagina's van KAMOKA, ERA en LAUBER.",
+  "per": "1 stuk",
+  "note": "Renault-nummer 7701052617 staat op de OE-lijsten van KAMOKA, ERA (twee artikelen) en LAUBER en als \"for OE number\" bij MEAT & DORIA. De Bosch-nummers 0 001 106 0xx uit de OE-lijst van KAMOKA zijn startmotornummers en weggelaten.",
+  "src": [
+   [
+    "https://www.autodoc.parts/kamoka/26526622",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/era/9293940",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/lauber/10929910",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/era/14556596",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/solenoid-switch-10462/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_FORK": {
+  "n": "Schakelvork startmotor",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:G_AS": {
+  "n": "Groep Aandrijfassen",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Groepering in de modelboom, geen verkoopeenheid (kind niet_gevonden omdat het schema geen niet_los kent).",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_DS_L": {
+  "n": "Aandrijfas links (automaat, compleet)",
+  "st": "vin",
+  "oe": [
+   [
+    "8200687910",
+    "OE-lijst POINT GEAR PNG72589, EAI T49257, LPR DS52419 en GSP 201268",
+    "B"
+   ],
+   [
+    "7711497199",
+    "alleen OE-lijst EAI T49257",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "GSP",
+    "250626",
+    "links, 642 mm, 6-kogelhomokineet, 6-traps automaat",
+    "A"
+   ],
+   [
+    "GSP",
+    "201268",
+    "links, 642 mm, 8-kogelhomokineet, 6-traps automaat",
+    "A"
+   ],
+   [
+    "SHAFTEC",
+    "R390L",
+    "links, 640 mm, 6-traps automaat",
+    "A"
+   ],
+   [
+    "EAI",
+    "T49257",
+    "links, 640 mm, automaat",
+    "A"
+   ],
+   [
+    "POINT GEAR",
+    "PNG72589",
+    "links, 640 mm, automaat",
+    "A"
+   ],
+   [
+    "EURODRIVELINE",
+    "RN-708",
+    "links, 642 mm, automaat",
+    "A"
+   ],
+   [
+    "LPR",
+    "DS52419",
+    "links, 640 mm; de lijst noemt geen transmissietype, vertanding differentiaalzijde 30 zoals de automaatassen (handbak: 39)",
+    "A"
+   ]
+  ],
+  "var": "Lijst 23370: links, automaat; lengte 640 mm (POINT GEAR, EAI, SHAFTEC R390L, LPR) of 642 mm (GSP, EURODRIVELINE). GSP 250626 heeft een 6-kogel-, GSP 201268 een 8-kogelhomokineet. SNR DK55.118 (656 mm, geen transmissietype) en SHAFTEC R388L (6-bak handgeschakeld) zijn weggelaten.",
+  "per": "1 stuk",
+  "note": "Links en rechts hebben aparte nummers (zie U_DS_R). 8200687910 staat ook in de OE-lijsten van buitenste homokineetsets; lees het als aandrijfasnummer. De lijst is via het Jina-hulpmiddel gelezen (Cloudflare bij de gewone weergave).",
+  "src": [
+   [
+    "https://www.autodoc.parts/point-gear/16842304",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/eai/12183143",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/lpr/11052710",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/gsp/27252778",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/drive-shaft-10162/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ],
+  "kz": {
+   "o": [
+    "8200687910"
+   ],
+   "a": [],
+   "v": "Aandrijfas links voor automaat, 640 tot 642 mm",
+   "b": "B",
+   "z": "middel",
+   "g": "Zestraps automaat AJ0 volgens het chassisnummer van de gebruiker (negende teken E, afgeleid uit vier andere auto's met AJ0); de RDW noemt de bak niet. Het nummer staat in de OE-lijsten van POINT GEAR PNG72589, EAI T49257, LPR DS52419 en GSP 201268. Het verschil tussen 640 en 642 mm is een merkverschil bij hetzelfde Renault-nummer. Of de binnenste homokineet 6 of 8 kogels heeft, is niet beslist (GSP 250626 en GSP 201268).",
+   "s": [
+    "https://www.autodoc.parts/spares/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo"
+   ]
+  }
+ },
+ "S3a-vooras-aandrijving:U_DS_R": {
+  "n": "Aandrijfas rechts (automaat)",
+  "st": "vin",
+  "oe": [],
+  "am": [
+   [
+    "GSP",
+    "250413",
+    "rechts, 824 mm, automaat (AT), vertanding differentiaalzijde 26",
+    "A"
+   ],
+   [
+    "GSP",
+    "201269",
+    "rechts, 962 mm, 8-kogelhomokineet, 6-traps automaat, vertanding differentiaalzijde 30",
+    "A"
+   ]
+  ],
+  "var": "Twee uitvoeringen in de Autodoc-lijst 23370: GSP 250413 (824 mm, automaat) en GSP 201269 (962 mm, 6-traps automaat). Welke bij deze auto hoort (met of zonder tussenas) volgt uit het VIN of de lengte.",
+  "per": "1 stuk",
+  "note": "Alleen GSP in de lijst. Links en rechts hebben aparte nummers. De lijst is via het Jina-hulpmiddel gelezen.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/drive-shaft-10162/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_OJ": {
+  "n": "Buitenste homokineet (wielzijde, 8 kogels)",
+  "st": "vin",
+  "oe": [
+   [
+    "8200618182",
+    "OE-lijst MAXGEAR 49-1530, LPR KRN868 en METELLI 15-1844; deze lijsten noemen ook het aandrijfasnummer 8200687910",
+    "B"
+   ],
+   [
+    "8200618168",
+    "idem",
+    "B"
+   ],
+   [
+    "8200786810",
+    "idem",
+    "B"
+   ],
+   [
+    "8200618177",
+    "idem",
+    "B"
+   ],
+   [
+    "8200618176",
+    "idem",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "SNR",
+    "OJK55.022",
+    "8 kogels",
+    "A"
+   ],
+   [
+    "MAXGEAR",
+    "49-1530",
+    "8 kogels",
+    "A"
+   ],
+   [
+    "METELLI",
+    "15-1844",
+    "8 kogels",
+    "A"
+   ],
+   [
+    "CIFAM",
+    "607-844",
+    "8 kogels",
+    "A"
+   ],
+   [
+    "LPR",
+    "KRN868",
+    "",
+    "A"
+   ]
+  ],
+  "var": "Lijst 23370 heeft 6-kogelversies (GSP 850161, JPN 10P9221-JPN) en 8-kogelversies (SNR OJK55.022, MAXGEAR 49-1530, METELLI 15-1844, CIFAM 607-844); het model heeft 8 kogels, dus de 8-kogelversie; 27 tanden buiten, 36 binnen, afdichtring 56,6 tot 57 mm. GSP 801101 (alleen links) is weggelaten.",
+  "per": "1 stuk, links en rechts gelijk",
+  "note": "Joint kit = homokineet met kogelkooi, kogels, binnenring en borgring; losse onderdelen worden niet apart verkocht. De OE-lijsten van deze sets bevatten ook het aandrijfasnummer 8200687910; het VIN is bepalend.",
+  "src": [
+   [
+    "https://www.autodoc.parts/maxgear/13593327",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/lpr/8240829",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/metelli/9004546",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/joint-set-10171/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_IJ_L": {
+  "n": "Binnenste homokineet links (tripode, transmissiezijde)",
+  "st": "past",
+  "oe": [
+   [
+    "8200196615",
+    "Artikel van RENAULT zelf in Autodoc-lijst 23370 (transmission sided, Front Axle Left)",
+    "A"
+   ]
+  ],
+  "am": [
+   [
+    "FEBEST",
+    "2411-ESPLH",
+    "",
+    "A"
+   ]
+  ],
+  "per": "1 stuk",
+  "note": "RENAULT 8200196615 staat in de Autodoc-lijst 23370 als OE-artikel voor \"Front Axle Left, transmission sided\". Spareto koppelt FEBEST 2411-ESPLH aan dit nummer.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/joint-set-10171/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_IJ_R": {
+  "n": "Binnenste homokineet rechts (tripode, op tussenas)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "In de lijst 23370 staat voor rechts alleen GSP 601163 (CV joint kit, transmission sided, Front Axle Right, 439 mm). Of dat de tripode rechts of de tussenas met tripodehuis is, staat niet op de pagina; niet toegewezen.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_INTSHAFT": {
+  "n": "Tussenas rechts (met tripodehuis, automaat)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "In de lijst 23370 staat voor rechts alleen GSP 601163 \"CV joint kit, transmission sided, Front Axle Right, 6-Speed Automatic Transmission, 439 mm\". De bron noemt dat een homokineetset, geen tussenas; het nummer is daarom niet bij de tussenas gezet.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_INTBRG": {
+  "n": "Tussenaslager (lager van de rechter aandrijfas)",
+  "st": "past",
+  "oe": [
+   [
+    "7703066381",
+    "Artikel van RENAULT zelf in Autodoc-lijst 23370 (Front Axle Right)",
+    "A"
+   ],
+   [
+    "7701071133",
+    "OE-lijst FARE SA 33498 en BIRTH 6621",
+    "B"
+   ],
+   [
+    "7703090428",
+    "idem",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "METALCAUCHO",
+    "05760",
+    "",
+    "A"
+   ],
+   [
+    "MAPCO",
+    "77100",
+    "",
+    "A"
+   ],
+   [
+    "STC",
+    "T405760",
+    "",
+    "A"
+   ],
+   [
+    "FARE SA",
+    "33498",
+    "",
+    "A"
+   ],
+   [
+    "BIRTH",
+    "6621",
+    "",
+    "A"
+   ],
+   [
+    "CAUTEX",
+    "754813",
+    "",
+    "A"
+   ]
+  ],
+  "per": "1 stuk",
+  "note": "FARE SA 33498 en BIRTH 6621 tonen daarnaast OE-nummers 7701071133 en 7703090428; 7703066381 is het nummer van het RENAULT-artikel zelf in de Autodoc-lijst.",
+  "src": [
+   [
+    "https://www.autodoc.parts/fare-sa/19221094",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/intermediate-bearing-drive-shaft-15164/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/birth/22292604",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_INTHOUSE": {
+  "n": "Lagerhuis tussenas met borgring en bouten",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar. Lagerhuis, borgring en twee bouten van het tussenaslager; niet in Autodoc-lijsten voor type 23370.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_TRIPOD": {
+  "n": "Tripodester (aandrijfas-tripode, 23 tanden)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "In de lijst 23370 staat een tripodester (VEMA, 23 tanden) zonder positie; de auto heeft een tripode links en rechts. Zijde niet bevestigd, daarom geen nummer.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_BOOT_O": {
+  "n": "Manchetset buitenste homokineet (manchet, klemmen, vet)",
+  "st": "vin",
+  "oe": [
+   [
+    "7701209991",
+    "\"for OE number\" bij SASIC 1904026, bouwdatum vanaf 10/07",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "SNR",
+    "OBK55.001",
+    "8 kogels",
+    "A"
+   ],
+   [
+    "METALCAUCHO",
+    "11091",
+    "110 mm",
+    "A"
+   ],
+   [
+    "RIDEX",
+    "194B0005",
+    "146 mm",
+    "A"
+   ],
+   [
+    "SKF",
+    "VKJP 01001",
+    "met klemmen, 146 mm",
+    "A"
+   ],
+   [
+    "SASIC",
+    "1904026",
+    "OE 7701209991, bouwdatum vanaf 10/07",
+    "A"
+   ]
+  ],
+  "var": "Twee soorten in de lijst 23370: voor de 8-kogelhomokineet (SNR OBK55.001 en Metalcaucho 11091: 110 mm, 29/87 mm) en een maat van 146 mm, 22/86 mm (RIDEX 194B0005, SKF VKJP 01001). SASIC 1904026 noemt geen maat. Het model heeft 8 kogels; maat controleren aan de homokineet.",
+  "per": "1 set, links en rechts gelijk",
+  "note": "SKF VKJP 01001 noemt \"with clamps\"; bij de andere sets staat dat niet in de lijst. MAXGEAR 49-1925 (zonder wielzijde, ook achteras) is weggelaten.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/cv-boot-10174/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_BOOT_IL": {
+  "n": "Manchetset binnenste homokineet links (tripode)",
+  "st": "vin",
+  "oe": [
+   [
+    "7701209474",
+    "\"for OE number\" bij SASIC 1904019, bouwdatum vanaf 10/07",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "FEBI BILSTEIN",
+    "173033",
+    "automaat, tripode",
+    "A"
+   ],
+   [
+    "PASCAL",
+    "G6R015PC",
+    "tripode",
+    "A"
+   ],
+   [
+    "SNR",
+    "IBK55.010",
+    "Front Axle Right/Left",
+    "A"
+   ],
+   [
+    "ORIGINAL IMPERIUM",
+    "33839",
+    "links, met OETIKER-klemmen",
+    "A"
+   ],
+   [
+    "AUTOFREN SEINSA",
+    "D8523T",
+    "",
+    "A"
+   ],
+   [
+    "SASIC",
+    "1904019",
+    "OE 7701209474, bouwdatum vanaf 10/07",
+    "A"
+   ]
+  ],
+  "var": "Autodoc-lijst 23370 heeft meerdere maten: febi 173033 (30/75 mm, 86 mm, automaat, tripode), PASCAL G6R015PC (29,7/75 mm), SNR IBK55.010 (26/83 mm, 88 mm), ORIGINAL IMPERIUM 33839 (links, 26/76 mm, 89 mm, OETIKER-klemmen), AUTOFREN SEINSA D8523T (96 mm).",
+  "per": "1 set",
+  "note": "Maat controleren aan de tripode.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/cv-boot-10174/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_BOOT_IR": {
+  "n": "Manchetset binnenste homokineet rechts",
+  "st": "vin",
+  "oe": [],
+  "am": [
+   [
+    "SNR",
+    "IBK55.010",
+    "",
+    "A"
+   ]
+  ],
+  "var": "SNR IBK55.010 noemt in Autodoc 23370 \"Front Axle Right, Front Axle Left\"; de andere sets in de lijst noemen geen zijde.",
+  "per": "1 set",
+  "note": "Rechts zit de tripode op de tussenas; maat niet apart bevestigd.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/cv-boot-10174/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:G_WIEL": {
+  "n": "Groep Wielophanging rechtsvoor",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Groepering in de modelboom, geen verkoopeenheid (kind niet_gevonden omdat het schema geen niet_los kent).",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_KNUCKLE_R": {
+  "n": "Fusee rechts (wieldrager)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "De Autodoc-categoriepagina Steering knuckle voor type 23370 toont geen artikel voor dit type, alleen een algemene lijst; de artikelen daarin noemen de Laguna III niet. Geen Renault-nummer bevestigd.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_BEARING": {
+  "n": "Wiellagereenheid voor (naaflager met naaf, ABS-ring en lagerbouten)",
+  "st": "past",
+  "oe": [
+   [
+    "402104630R",
+    "OE-lijst RIDEX 654W0316, FAG 713 6311 20 en febi 175094",
+    "B"
+   ],
+   [
+    "402104687R",
+    "idem",
+    "B"
+   ],
+   [
+    "402100006R",
+    "idem",
+    "B"
+   ],
+   [
+    "402105662R",
+    "idem",
+    "B"
+   ],
+   [
+    "402105019R",
+    "idem",
+    "B"
+   ],
+   [
+    "402020002R",
+    "alleen OE-lijst RIDEX 654W0316 en GSP 9327071K",
+    "B"
+   ],
+   [
+    "402109478R",
+    "Artikel van RENAULT zelf in Autodoc-lijst 23370 (Front Axle Left, Front Axle Right)",
+    "A"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "654W0316",
+    "met ABS-sensorring en bouten",
+    "A"
+   ],
+   [
+    "FAG",
+    "713 6311 20",
+    "met ABS-ring",
+    "A"
+   ],
+   [
+    "FEBI BILSTEIN",
+    "175094",
+    "",
+    "A"
+   ],
+   [
+    "GSP",
+    "9327071K",
+    "met naaf en aandrijfasbout",
+    "A"
+   ],
+   [
+    "METZGER",
+    "WM 6616",
+    "met naaf",
+    "A"
+   ],
+   [
+    "MEYLE",
+    "16-14 652 0003",
+    "met ABS-ring",
+    "A"
+   ]
+  ],
+  "var": "Flensdiameter 143 mm, 5 gaten, ABS-ring met 96 tanden (GSP, MEYLE). Autodoc noemt bij QUINTON HAZELL QWB1465 \"4 gaten\"; dat artikel is weggelaten.",
+  "per": "1 stuk, links en rechts gelijk",
+  "note": "Aftermarket-lagereenheid bevat naaf, lager en magnetische ABS-ring (en bij RIDEX en GSP de bouten); kogelkransen en lagerringen worden niet apart verkocht. 402020002R staat alleen op de RIDEX-pagina.",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/8226762",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/fag/7005103",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/febi-bilstein/17014618",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/gsp/12956822",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/wheel-hub-10678/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=2",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/wheel-hub-10678/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_AXLENUT": {
+  "n": "Aandrijfasmoer M24 (flensmoer)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "De Autodoc-categorie Nut, stub axle voor 23370 toont vier moeren: METZGER en RENAULT 7703034275 met positie Rear Axle, AIC en GH zonder positie met dezelfde OE-lijst. Een moer voor de aandrijfas voor is niet bevestigd.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_AXLECOLLAR": {
+  "n": "Borgkraag aandrijfasmoer",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar. Niet apart in de Autodoc-lijst 23370; de moeren in de lijst zijn flensmoeren (\"Hexagon Collar\").",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_DISC": {
+  "n": "Remschijf voor (296 x 26, geventileerd, per as 2 stuks)",
+  "st": "vin",
+  "oe": [
+   [
+    "402066949R",
+    "OE-lijst RIDEX 82B0504",
+    "B"
+   ],
+   [
+    "402064408R",
+    "idem",
+    "B"
+   ],
+   [
+    "402060002R",
+    "OE-lijst RIDEX 82B0504 en ATE 24.0126-0158.1",
+    "B"
+   ],
+   [
+    "402066813R",
+    "idem",
+    "B"
+   ],
+   [
+    "402067023R",
+    "idem",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "82B0504",
+    "296x26 ongecoat",
+    "A"
+   ],
+   [
+    "ATE",
+    "24.0126-0158.1",
+    "296x26 gecoat",
+    "A"
+   ],
+   [
+    "FERODO",
+    "DDF1726C",
+    "296x26 gecoat",
+    "A"
+   ],
+   [
+    "ZIMMERMANN",
+    "470.2432.20",
+    "296x26 gecoat",
+    "A"
+   ],
+   [
+    "TRW",
+    "DF6184",
+    "296x26",
+    "A"
+   ],
+   [
+    "BOSCH",
+    "0 986 479 E77",
+    "296x26 gecoat",
+    "A"
+   ]
+  ],
+  "var": "Lijst 23370 heeft voor de vooras ook 280 x 24 mm (BREMBO 09.A727.1X en 09.A727.11) en 320 x 28 mm (FERODO DDF1727C, BREMBO 09.B352.1X). Het model legt 296 x 26 vast. ZIMMERMANN 470.2432.52 is de geperforeerde sportschijf en niet gekozen.",
+  "per": "per paar; links en rechts gelijk",
+  "note": "Alleen 296 x 26 past bij dit model. De OE-nummers staan in de OE-lijst van RIDEX 82B0504 en ATE 24.0126-0158.1 zonder maat. ZIMMERMANN 470.2432.20 is \"for vehicles without four wheel steering\".",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/7999398",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/ate/957701",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/brake-disc-10132/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/brake-disc-10132/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=2",
+    "autodoc.parts"
+   ]
+  ],
+  "kz": {
+   "o": [
+    "402060002R"
+   ],
+   "a": [
+    [
+     "ATE",
+     "24.0126-0158.1"
+    ],
+    [
+     "RIDEX",
+     "82B0504"
+    ]
+   ],
+   "v": "Remschijf voor 296 x 26 mm, geventileerd; de maten 280 x 24 en 320 x 28 zijn uitgesloten",
+   "b": "B",
+   "z": "hoog",
+   "g": "De maat volgt uit de motor: voor de F4R geeft het werkplaatshandboek MR 415 (30A-16) 296 x 26 mm; 320 x 28 hoort bij de 175 en 180 pk diesels en de GT. De RDW noemt benzine en 125 kW. De auto heeft geen vierwielbesturing (4Control), volgens de gebruiker; ZIMMERMANN 470.2432.20 geldt zonder dat systeem. Het nummer 402060002R staat in de OE-lijst van twee fabrikanten (ATE en RIDEX); de vier andere Renault-nummers staan alleen bij RIDEX en zijn niet uitgesloten.",
+   "s": [
+    "https://www.ultimatespecs.com/car-specs/Renault/137858/Renault-Laguna-3-Coupe-Phase-2-20T-170-Auto.html",
+    "https://www.autodoc.parts/car-parts/brake-disc-10132/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo"
+   ]
+  }
+ },
+ "S3a-vooras-aandrijving:U_SHIELD": {
+  "n": "Stofschild voor (remschijfschild)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Autodoc-categorie Brake disc backing plate geeft voor type 23370 maar één onbruikbare treffer (Simoni Racing, racing) en verder vulling met andere onderdelen.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_SHBOLT": {
+  "n": "Schildbouten (3 stuks)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_ABS_R": {
+  "n": "Wielsnelheidssensor rechtsvoor (ABS, actief, 2 polen)",
+  "st": "past",
+  "oe": [
+   [
+    "479100001N",
+    "OE-lijst RIDEX 412W0694, STARK SKWSS-0350694, BOGAP R7117110 en NTY HCA-RE-030",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "412W0694",
+    "",
+    "A"
+   ],
+   [
+    "NTY",
+    "HCA-RE-030",
+    "",
+    "A"
+   ],
+   [
+    "MAXGEAR",
+    "20-0445",
+    "",
+    "A"
+   ],
+   [
+    "ESEN SKV",
+    "06SKV520",
+    "",
+    "A"
+   ],
+   [
+    "SNR",
+    "ASB155.55",
+    "",
+    "A"
+   ],
+   [
+    "KAMOKA",
+    "1060601",
+    "",
+    "A"
+   ]
+  ],
+  "per": "1 stuk",
+  "note": "Rechts heeft andere nummers dan links. Kabellengte rechts 615 of 616 mm. Autodoc toont actieve tweepolige sensoren; de modelomschrijving noemt passief.",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/13658135",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/stark/13658134",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/bogap/25913428",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/nty/17108118",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/abs-sensor-10138/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/abs-sensor-10138/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=2",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_ABSCLIP": {
+  "n": "Sensorklem (kabelklem ABS)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_ARM_R": {
+  "n": "Onderste draagarm rechts (met kogelgewricht en rubbers)",
+  "st": "past",
+  "oe": [
+   [
+    "545000011R",
+    "OE-lijst RIDEX 273C0866, SKF VKDS 326062 B en MONROE L25559",
+    "B"
+   ],
+   [
+    "545000002R",
+    "idem",
+    "B"
+   ],
+   [
+    "545000001R",
+    "OE-lijst RIDEX 273C0866",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "273C0866",
+    "",
+    "A"
+   ],
+   [
+    "SKF",
+    "VKDS 326062 B",
+    "",
+    "A"
+   ],
+   [
+    "MONROE",
+    "L25559",
+    "",
+    "A"
+   ],
+   [
+    "MEYLE",
+    "16-16 050 0044/HD",
+    "",
+    "A"
+   ],
+   [
+    "LEMFÖRDER",
+    "38535 01",
+    "",
+    "A"
+   ],
+   [
+    "MOOG",
+    "RE-WP-8330",
+    "",
+    "A"
+   ]
+  ],
+  "per": "1 stuk",
+  "note": "Links heeft andere nummers. febi 172563 (rechts) geldt tot 05/2008 en is weggelaten. De arm is compleet met kogelgewricht en lagers; kogelgewricht en rubbers staan ook los (zie U_BJOINT, U_ARMBUSH_F, U_ARMBUSH_A).",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/13635686",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/skf/15247900",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/monroe/7848280",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/steering-links-control-arm-trailing-link-diagonal-arm-10671/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_ARMBUSH_F": {
+  "n": "Draagarmrubber voor (silentblok, Ø55 x 53 mm, binnen Ø18)",
+  "st": "past",
+  "oe": [],
+  "am": [
+   [
+    "FAG",
+    "829 0381 10",
+    "",
+    "A"
+   ],
+   [
+    "SKF",
+    "VKDS 336027",
+    "",
+    "A"
+   ],
+   [
+    "MONROE",
+    "L25829",
+    "",
+    "A"
+   ],
+   [
+    "MOOG",
+    "RE-SB-8332",
+    "",
+    "A"
+   ],
+   [
+    "TOPRAN",
+    "700 828",
+    "",
+    "A"
+   ],
+   [
+    "A.B.S.",
+    "271161",
+    "",
+    "A"
+   ]
+  ],
+  "per": "1 stuk",
+  "note": "Geen eigen Renault-nummer voor het silentblok gevonden; SASIC 2254012 noemt in de lijst 545010012R als \"Part of\" (het nummer van de linker arm).",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/arm-bushes-10672/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=2",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/arm-bushes-10672/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_ARMBUSH_A": {
+  "n": "Draagarmrubber achter (silentblok, Ø14 tot 15, 65 mm)",
+  "st": "vin",
+  "oe": [],
+  "am": [
+   [
+    "FAG",
+    "829 0382 10",
+    "",
+    "A"
+   ],
+   [
+    "METZGER",
+    "52098808",
+    "",
+    "A"
+   ],
+   [
+    "MOOG",
+    "RE-SB-8333",
+    "",
+    "A"
+   ],
+   [
+    "SIDEM",
+    "805635",
+    "",
+    "A"
+   ],
+   [
+    "TEDGUM",
+    "00588853",
+    "Rear, Front Axle, Lower; diameter 58 mm (andere merken 72 tot 73 mm), binnen 15, lengte 65",
+    "A"
+   ]
+  ],
+  "var": "Lijst 23370: binnen 14 tot 15 mm, hoogte of breedte 65 mm, diameter 72 tot 73 mm (TEDGUM noemt 58 mm). MONROE L25830 (zonder positie) is weggelaten.",
+  "per": "1 stuk",
+  "note": "Renault-nummer niet bevestigd.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/arm-bushes-10672/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=2",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/arm-bushes-10672/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_ARMBOLT": {
+  "n": "Draagarmbouten (voor en achter scharnierbout)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_BJOINT": {
+  "n": "Fuseekogel (kogelgewricht onder, met stofhoes)",
+  "st": "past",
+  "oe": [
+   [
+    "401600004R",
+    "OE-lijst RIDEX 2462S0356, NTY ZSD-RE-004, MOOG RE-BJ-7212 en SKF VKDS 316021",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "2462S0356",
+    "",
+    "A"
+   ],
+   [
+    "NTY",
+    "ZSD-RE-004",
+    "",
+    "A"
+   ],
+   [
+    "MOOG",
+    "RE-BJ-7212",
+    "",
+    "A"
+   ],
+   [
+    "SKF",
+    "VKDS 316021",
+    "",
+    "A"
+   ],
+   [
+    "OYODO",
+    "10Z9159-OYO",
+    "",
+    "A"
+   ],
+   [
+    "SASIC",
+    "7574005",
+    "",
+    "A"
+   ]
+  ],
+  "per": "1 stuk, links en rechts gelijk",
+  "note": "Kegelmaat 15,8 mm (RIDEX, NTY, Oyodo), M12 x 1,25. De kegelmaat in de lijst verschilt per merk (15,8 bij RIDEX/NTY/OYODO, 22,2 bij MOOG); alle zes noemen OE 401600004R.",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/13635987",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/nty/17110002",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/moog/7024157",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/skf/15089958",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/support-steering-link-10681/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=2",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/support-steering-link-10681/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_BJNUT": {
+  "n": "Kroonmoer en splitpen kogelgewricht",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_LINK": {
+  "n": "Koppelstang voor (stabilisatorstang, 298 mm, M10 x 1,5)",
+  "st": "past",
+  "oe": [
+   [
+    "546183913R",
+    "OE-lijst RIDEX 3229S0031 en STARK SKST-0230030",
+    "B"
+   ],
+   [
+    "546189538R",
+    "idem",
+    "B"
+   ],
+   [
+    "546180010R",
+    "idem",
+    "B"
+   ],
+   [
+    "546180001R",
+    "OE-lijst NTY ZLP-RE-004",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "3229S0031",
+    "",
+    "A"
+   ],
+   [
+    "STARK",
+    "SKST-0230030",
+    "",
+    "A"
+   ],
+   [
+    "NTY",
+    "ZLP-RE-004",
+    "",
+    "A"
+   ],
+   [
+    "MONROE",
+    "L25611",
+    "",
+    "A"
+   ],
+   [
+    "GOCORE",
+    "GCC2290022",
+    "",
+    "A"
+   ],
+   [
+    "SKF",
+    "VKDS 346009",
+    "",
+    "A"
+   ]
+  ],
+  "per": "1 stuk, links en rechts gelijk; vervangen per paar",
+  "note": "Lengte 298 mm bij RIDEX, STARK en goCORE; REINHOCH, MAPCO en MOTOTECHNIKA noemen 294 mm. FAST FT20561 noemt \"with nut\".",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/8000025",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/stark/7587991",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/nty/14678057",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/twist-rod-10677/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_STRUT": {
+  "n": "Veerpoot compleet rechts (demper, topsteun gemonteerd)",
+  "st": "past",
+  "oe": [],
+  "am": [
+   [
+    "GH",
+    "GH-353968C02",
+    "",
+    "A"
+   ]
+  ],
+  "per": "1 stuk, beide zijden",
+  "note": "Eén artikel in de Autodoc-lijst 23370: GH GH-353968C02, \"Suspension Strut, Damper Module\", pre-assembled, with bolts. Of de veer en topsteun meegeleverd zijn, staat niet in de lijst.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/suspension-strut-10222/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_DAMPER": {
+  "n": "Schokdemper voor (McPherson veerpoot, gasdruk, Ø51)",
+  "st": "vin",
+  "oe": [
+   [
+    "543020030R",
+    "OE-lijst RIDEX 854S2325, MONROE G8186 en KYB 339704",
+    "B"
+   ],
+   [
+    "543021437R",
+    "idem",
+    "B"
+   ],
+   [
+    "543020001R",
+    "idem",
+    "B"
+   ],
+   [
+    "543020014R",
+    "idem",
+    "B"
+   ],
+   [
+    "543027068R",
+    "idem",
+    "B"
+   ],
+   [
+    "543020003R",
+    "idem",
+    "B"
+   ],
+   [
+    "543020015R",
+    "idem",
+    "B"
+   ],
+   [
+    "543020002R",
+    "idem",
+    "B"
+   ],
+   [
+    "543025668R",
+    "alleen RIDEX 854S2325",
+    "B"
+   ],
+   [
+    "843020002R",
+    "Renault met afwijkend voorvoegsel, op RIDEX 854S2325 en KYB 339704",
+    "B"
+   ],
+   [
+    "543028512R",
+    "alleen MONROE G8186",
+    "B"
+   ],
+   [
+    "543023305R",
+    "OE-lijst TRW JGM1134T en SACHS 317 419",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "854S2325",
+    "",
+    "A"
+   ],
+   [
+    "MONROE",
+    "G8186",
+    "Front Axle; de lijst noemt geen onderstel (aanbevolen toebehoren MK383, PK352)",
+    "A"
+   ],
+   [
+    "TRW",
+    "JGM1134T",
+    "Front Axle, standard suspension, vanaf 03/2008",
+    "A"
+   ],
+   [
+    "KYB",
+    "339704",
+    "zonder sportonderstel",
+    "A"
+   ],
+   [
+    "SACHS",
+    "317 419",
+    "Front Axle, standard suspension; for OE number 54 30 233 05R, 54 30 270 68R",
+    "A"
+   ],
+   [
+    "SACHS",
+    "317 420",
+    "Front Axle, standard suspension; for OE number 54 30 200 15R, 54 30 200 30R",
+    "A"
+   ],
+   [
+    "FEBI BILSTEIN",
+    "1002699",
+    "Front Axle",
+    "A"
+   ]
+  ],
+  "var": "Lijst 23370: TRW JGM1134T en beide SACHS-dempers \"for vehicles with standard suspension\", KYB 339704 \"without sports suspension\"; RIDEX, MONROE en febi noemen geen onderstel. SACHS 317 419 (for OE number 543023305R, 543027068R) en SACHS 317 420 (for OE number 543020015R, 543020030R) zijn twee uitvoeringen voor de vooras; welke bij de VIN hoort, staat niet op de bron.",
+  "per": "1 stuk, links en rechts gelijk",
+  "note": "Demperbuis, zuigerstang en onderste veerschotel zijn niet los verkrijgbaar. De Renault-nummers van de RIDEX-lijst staan voor meerdere uitvoeringen; het VIN is bepalend.",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/15185493",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/monroe/11279094",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/sachs/9543943",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/kyb/827491",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/trw/11518024",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/sachs/9543942",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/shock-absorber-10221/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_SPRING": {
+  "n": "Schroefveer voor (359 mm, Ø169)",
+  "st": "vin",
+  "oe": [
+   [
+    "540100006R",
+    "OE-lijst RIDEX 188C0553, DENCKERMANN D700167 en DACO 803022",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "188C0553",
+    "",
+    "A"
+   ],
+   [
+    "DENCKERMANN",
+    "D700167",
+    "",
+    "A"
+   ],
+   [
+    "DACO GERMANY",
+    "803022",
+    "",
+    "A"
+   ],
+   [
+    "MAXGEAR",
+    "60-0670D",
+    "",
+    "A"
+   ],
+   [
+    "LESJÖFORS",
+    "4072978",
+    "",
+    "A"
+   ],
+   [
+    "FEBI BILSTEIN",
+    "46968",
+    "",
+    "A"
+   ]
+  ],
+  "var": "Autodoc-lijst 23370: RIDEX 188C0553, DACO 803022, MAXGEAR 60-0670D en ASHIKA ZCA2946H noemen 359 mm en Ø169; KAMOKA 2110337 noemt 357 mm. Veerkeuze hangt af van standaard of sportonderstel.",
+  "per": "1 stuk, links en rechts gelijk",
+  "note": "Zelfde nummer links en rechts.",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/13635479",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/denckermann/15273169",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/daco-germany/16074943",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/coil-springs-10213/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/coil-springs-10213/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=2",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_BUMP": {
+  "n": "Stofhoes en aanslagrubber (set voor de vooras)",
+  "st": "vin",
+  "oe": [
+   [
+    "540500001R",
+    "OE-lijst RIDEX 919D0211, febi 103190, MAGNETI MARELLI 310116110216 en SKF VKDP 31604 T",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "919D0211",
+    "",
+    "A"
+   ],
+   [
+    "FEBI BILSTEIN",
+    "103190",
+    "not for rim size 18 inch (lijst 23370)",
+    "A"
+   ],
+   [
+    "MAGNETI MARELLI",
+    "310116110216",
+    "",
+    "A"
+   ],
+   [
+    "SKF",
+    "VKDP 31604 T",
+    "",
+    "A"
+   ],
+   [
+    "KAMOKA",
+    "2020171",
+    "",
+    "A"
+   ],
+   [
+    "MONROE",
+    "PK352",
+    "",
+    "A"
+   ]
+  ],
+  "var": "Standaard onderstel volgens de lijst (MONROE PK352) of zonder sportonderstel (SKF VKDP 31604 T, RIDEX 919D0211). febi 103190 is volgens de lijst niet voor 18 inch velgen; de velgmaat van deze auto is niet bekend (16, 17 of 18 inch).",
+  "per": "1 set per veerpoot",
+  "note": "Wordt als set verkocht. Bij 18 inch velgen febi 103190 niet gebruiken.",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/16157329",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/febi-bilstein/12829217",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/magneti-marelli/9520662",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/skf/19782617",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/shock-absorber-dust-cover-and-bump-stops-10472/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_TOPSET": {
+  "n": "Topsteun met lager (veerpootsteunlager, complete set)",
+  "st": "vin",
+  "oe": [],
+  "am": [
+   [
+    "RIDEX",
+    "1180S0479",
+    "with bearing(s); for model code BT06, BT0Y, BT0H",
+    "A"
+   ],
+   [
+    "KYB",
+    "SM1533",
+    "Suspension Mounting Kit; zonder sportonderstel en zonder verhoogde bodemvrijheid; inhoud niet vermeld",
+    "A"
+   ]
+  ],
+  "var": "RIDEX 1180S0479 (with bearing) noemt modelcodes BT06, BT0Y, BT0H; KYB SM1533 is een \"Suspension Mounting Kit\" voor wagens zonder sportonderstel. De modelcode van deze auto is niet bekend; per VIN controleren.",
+  "per": "1 stuk per veerpoot",
+  "note": "Geen eigen Renault-nummer voor de complete topsteun bevestigd: de nummers in de OE-lijst van KYB SM1533 zijn het lagernummer (zie U_STRUTBRG) en het steunrubber. Steunrubbers zonder lager en een set zonder vermeld lager zijn weggelaten.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/strut-mount-and-bearing-10471/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_STRUTBRG": {
+  "n": "Veerpootlager (axiaallager topsteun)",
+  "st": "past",
+  "oe": [
+   [
+    "543256557R",
+    "OE-lijst RIDEX 1626F0004",
+    "B"
+   ],
+   [
+    "543250005R",
+    "idem",
+    "B"
+   ],
+   [
+    "543251867R",
+    "idem",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "1626F0004",
+    "",
+    "A"
+   ],
+   [
+    "RIDEX",
+    "1626F0082",
+    "",
+    "A"
+   ],
+   [
+    "NTY",
+    "AD-NS-050",
+    "",
+    "A"
+   ],
+   [
+    "MEYLE",
+    "16-14 641 0026",
+    "",
+    "A"
+   ],
+   [
+    "FEBI BILSTEIN",
+    "32714",
+    "",
+    "A"
+   ],
+   [
+    "MAXGEAR",
+    "72-2593",
+    "",
+    "A"
+   ],
+   [
+    "TOPRAN",
+    "701 064",
+    "",
+    "A"
+   ]
+  ],
+  "per": "1 stuk",
+  "note": "Renault-nummers 543256557R, 543250005R, 543251867R staan op RIDEX 1626F0004.",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/13634161",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/strut-mount-and-bearing-10471/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/strut-mount-and-bearing-10471/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=2",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_STRUTNUT": {
+  "n": "Veerpootmoer en topsteunmoeren",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar. Niet apart in Autodoc-lijsten voor type 23370 gevonden.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_SPRINGPAD": {
+  "n": "Veerrubbers (boven en onder) en bovenste veerschotel",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Autodoc-categorie Spring cap geeft voor type 23370 geen passend artikel (alleen een LASER TOOLS-gereedschap).",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_CLAMP": {
+  "n": "Fuseebouten en moeren (klembouten, 2 sets)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_CAL_R": {
+  "n": "Remklauw rechtsvoor (1 zuiger Ø57, zonder drager)",
+  "st": "past",
+  "oe": [
+   [
+    "410010001R",
+    "OE-lijst RIDEX 78B1458, TRW BHX596E, NTY HZP-RE-020 en ESEN SKV 46SKV932",
+    "B"
+   ],
+   [
+    "410016711R",
+    "OE-lijst NTY HZP-RE-020 en ESEN SKV 46SKV932",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "78B1458",
+    "",
+    "A"
+   ],
+   [
+    "TRW",
+    "BHX596E",
+    "",
+    "A"
+   ],
+   [
+    "NTY",
+    "HZP-RE-020",
+    "",
+    "A"
+   ],
+   [
+    "ESEN SKV",
+    "46SKV932",
+    "",
+    "A"
+   ],
+   [
+    "MAPCO",
+    "144117",
+    "",
+    "A"
+   ],
+   [
+    "FEBI BILSTEIN",
+    "198592",
+    "",
+    "A"
+   ]
+  ],
+  "per": "1 stuk",
+  "note": "Rechts heeft andere nummers dan links. RIDEX en TRW noemen \"for vehicles without four wheel steering\"; RIDEX 78B1458 wordt met houderframe geleverd.",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/16351279",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/trw/7620706",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/nty/18602683",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/esen-skv/16528040",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/brake-calipers-10907/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_CALBRK": {
+  "n": "Remklauwdrager (houder) voor",
+  "st": "past",
+  "oe": [
+   [
+    "410150001R",
+    "OE-lijst AXIA 384794-1 (296 x 26 mm, ATE)",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "BUDWEG CALIPER",
+    "384794-1",
+    "",
+    "A"
+   ],
+   [
+    "AXIA",
+    "384794-1",
+    "",
+    "A"
+   ]
+  ],
+  "per": "1 stuk, links en rechts gelijk",
+  "note": "Beide artikelen noemen in de lijst \"only for article number 344794, 344795\"; de drager is voor het ATE-remsysteem, schijf 296 x 26. Renault-nummer 410150001R staat op AXIA 384794-1.",
+  "src": [
+   [
+    "https://www.autodoc.parts/axia/24081084",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/brake-caliper-mounting-12329/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_PADS": {
+  "n": "Remblokset voor (per as 4 blokken met toebehoren)",
+  "st": "vin",
+  "oe": [
+   [
+    "410605055R",
+    "OE-lijst ATE 13.0460-7249.2 en FERODO FDB4181",
+    "B"
+   ],
+   [
+    "440608746R",
+    "idem",
+    "B"
+   ],
+   [
+    "410607369R",
+    "OE-lijst RIDEX 402B0969 en FERODO FDB4181",
+    "B"
+   ],
+   [
+    "410600011R",
+    "alleen ATE 13.0460-7249.2",
+    "B"
+   ],
+   [
+    "410607585R",
+    "idem",
+    "B"
+   ],
+   [
+    "410600032R",
+    "alleen RIDEX 402B0969",
+    "B"
+   ],
+   [
+    "410602933R",
+    "idem",
+    "B"
+   ],
+   [
+    "410603152R",
+    "idem",
+    "B"
+   ],
+   [
+    "410600629R",
+    "alleen FERODO FDB4181",
+    "B"
+   ],
+   [
+    "8660004546",
+    "idem",
+    "B"
+   ],
+   [
+    "8660004533",
+    "idem",
+    "B"
+   ],
+   [
+    "8660000782",
+    "idem",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "402B0969",
+    "",
+    "A"
+   ],
+   [
+    "ATE",
+    "13.0460-7249.2",
+    "",
+    "A"
+   ],
+   [
+    "FERODO",
+    "FDB4181",
+    "",
+    "A"
+   ],
+   [
+    "BREMBO",
+    "P 68 047",
+    "",
+    "A"
+   ],
+   [
+    "BOSCH",
+    "0 986 494 401",
+    "",
+    "A"
+   ],
+   [
+    "MAPCO",
+    "6953",
+    "",
+    "A"
+   ]
+  ],
+  "var": "Autodoc-lijst 23370 heeft voor de vooras meerdere dikten: 17,1 mm (RIDEX 402B0969, BOSCH 0 986 494 401), 18 tot 18,6 mm (ATE 13.0460-7249.2, BREMBO P 68 047, RIDEX 402B0660, MAPCO 6953; FERODO FDB4181 noemt geen dikte) en velgmaat-varianten (FERODO FDB4068 voor 16 inch, FDB4249 voor 17 inch).",
+  "per": "1 set per as; links en rechts gelijk",
+  "note": "Voorste blokken per as als set; binnen en buiten, inclusief rugplaat, voering en anti-piepplaat. De OE-lijsten van ATE, RIDEX en FERODO verschillen; uitvoering per VIN.",
+  "src": [
+   [
+    "https://www.autodoc.parts/ate/956322",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/ferodo/1508421",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/ridex/8051844",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/brake-pad-set-10130/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=2",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/brake-pad-set-10130/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_PISTON": {
+  "n": "Remzuiger Ø57 (staal)",
+  "st": "past",
+  "oe": [],
+  "am": [
+   [
+    "RIDEX",
+    "2248P0053",
+    "",
+    "A"
+   ],
+   [
+    "RIDEX",
+    "2248P0283",
+    "Ø57; de lijst noemt bij dit artikel ook remvloeistof DOT 5.1, 0,5 liter (set met vloeistof)",
+    "A"
+   ],
+   [
+    "QUICK BRAKE",
+    "185085",
+    "",
+    "A"
+   ],
+   [
+    "BUDWEG CALIPER",
+    "235726",
+    "",
+    "A"
+   ],
+   [
+    "AUTOFREN SEINSA",
+    "D025107",
+    "",
+    "A"
+   ],
+   [
+    "MAXGEAR",
+    "27-0604",
+    "",
+    "A"
+   ],
+   [
+    "FRENKIT",
+    "P575504",
+    "",
+    "A"
+   ]
+  ],
+  "per": "1 stuk",
+  "note": "Ø57 mm voor de enkelzuigerklauw. RIDEX noemt bij 2248P0053 alleen Ford-OE-nummers, geen Renault-nummer.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/piston-brake-caliper-15094/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/piston-brake-caliper-15094/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=2",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_CALKIT": {
+  "n": "Remklauw-reparatieset Ø57 (zuigerafdichting en stofhoes)",
+  "st": "past",
+  "oe": [
+   [
+    "411200001R",
+    "OE-lijst RIDEX 405R0064",
+    "B"
+   ],
+   [
+    "411200002R",
+    "idem",
+    "B"
+   ],
+   [
+    "7701206600",
+    "idem",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "405R0153",
+    "",
+    "A"
+   ],
+   [
+    "RIDEX",
+    "405R0123",
+    "",
+    "A"
+   ],
+   [
+    "RIDEX",
+    "405R0064",
+    "",
+    "A"
+   ],
+   [
+    "AUTOFREN SEINSA",
+    "D43945",
+    "",
+    "A"
+   ],
+   [
+    "QUICK BRAKE",
+    "114-0011",
+    "",
+    "A"
+   ],
+   [
+    "STARK",
+    "SKRK-0730063",
+    "",
+    "A"
+   ],
+   [
+    "BUDWEG CALIPER",
+    "205728",
+    "",
+    "A"
+   ],
+   [
+    "FAST",
+    "FT10261",
+    "",
+    "A"
+   ]
+  ],
+  "per": "1 set per klauw",
+  "note": "RIDEX 405R0064 is als enige expliciet voor Front Axle, Right. De Renault-nummers staan op de RIDEX-pagina en horen mogelijk ook bij andere zuigermaten.",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/8156133",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/brake-caliper-repair-kit-10733/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/brake-caliper-repair-kit-10733/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=2",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_GUIDEPIN": {
+  "n": "Geleidepennen met hoezen (set)",
+  "st": "past",
+  "oe": [
+   [
+    "7701049101",
+    "OE-lijst RIDEX 1165G0019",
+    "B"
+   ],
+   [
+    "440016332R",
+    "idem",
+    "B"
+   ],
+   [
+    "7701206601",
+    "OE-lijst FEBEST 2173-FOC",
+    "B"
+   ],
+   [
+    "440A00877R",
+    "idem",
+    "B"
+   ],
+   [
+    "410118579R",
+    "idem",
+    "B"
+   ],
+   [
+    "410014752R",
+    "idem",
+    "B"
+   ],
+   [
+    "410113834R",
+    "idem",
+    "B"
+   ],
+   [
+    "410016069R",
+    "idem",
+    "B"
+   ],
+   [
+    "410116639R",
+    "idem",
+    "B"
+   ],
+   [
+    "410010121R",
+    "idem",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "1165G0019",
+    "",
+    "A"
+   ],
+   [
+    "FEBEST",
+    "2173-FOC",
+    "",
+    "A"
+   ],
+   [
+    "KRAFT",
+    "6210055",
+    "",
+    "A"
+   ],
+   [
+    "AIC",
+    "54072",
+    "",
+    "A"
+   ]
+  ],
+  "per": "1 set per klauw",
+  "note": "De Renault-nummers staan op brede OE-lijsten (meerdere Renault-modellen); welk nummer bij deze klauw hoort volgt uit het VIN. BLUE PRINT ADBP450265 en febi 1000444 zijn weggelaten: titel Rear Axle, kenmerk Front Axle.",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/8140399",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/febest/9260440",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/guide-sleeve-kit-brake-caliper-15092/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_BLEED": {
+  "n": "Ontluchtingsnippel met dop",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar. Geen categorie met passend artikel gevonden voor type 23370.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_PADKIT": {
+  "n": "Montageset remblokken voor (veren en klemmen)",
+  "st": "vin",
+  "oe": [
+   [
+    "410830001R",
+    "OE-lijst RIDEX 1164A0062, JP GROUP 1163651210 en febi 182716",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "1164A0062",
+    "",
+    "A"
+   ],
+   [
+    "JP GROUP",
+    "1163651210",
+    "Rim Size 16 inch volgens de lijst 23370",
+    "A"
+   ],
+   [
+    "QUICK BRAKE",
+    "109-1678",
+    "",
+    "A"
+   ],
+   [
+    "FEBI BILSTEIN",
+    "182716",
+    "",
+    "A"
+   ],
+   [
+    "BLUE PRINT",
+    "ADV1848600",
+    "",
+    "A"
+   ],
+   [
+    "TOMEX BRAKES",
+    "TX 43-07",
+    "",
+    "A"
+   ]
+  ],
+  "var": "JP GROUP 1163651210 is volgens de lijst 23370 voor 16 inch velgen; de andere sets noemen geen velgmaat. De velgmaat van deze auto is niet bekend (16, 17 of 18 inch).",
+  "per": "1 set per as",
+  "note": "Bevat veren en klemmen van het blok.",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/12754687",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/jp-group/8176446",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/febi-bilstein/19921485",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/accessory-kit-disc-brake-pads-10730/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_BRKBOLT": {
+  "n": "Remklauwdragerbouten (2)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_HOSE": {
+  "n": "Remslang voor (flexibel)",
+  "st": "vin",
+  "oe": [
+   [
+    "462100001R",
+    "OE-lijst RIDEX 83B1289 en RAP BRAKES R-H1442",
+    "B"
+   ],
+   [
+    "462100014R",
+    "OE-lijst RIDEX 83B1289",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "83B1289",
+    "468 mm",
+    "A"
+   ],
+   [
+    "RAP BRAKES",
+    "R-H1442",
+    "410 mm",
+    "A"
+   ],
+   [
+    "A.B.S.",
+    "SL 7042",
+    "468 mm",
+    "A"
+   ],
+   [
+    "BOSCH",
+    "1 987 481 565",
+    "462 mm",
+    "A"
+   ],
+   [
+    "NK",
+    "853982",
+    "465 mm",
+    "A"
+   ],
+   [
+    "QUICK BRAKE",
+    "32.839",
+    "415 mm",
+    "A"
+   ]
+  ],
+  "var": "Lengtes in de Autodoc-lijst 23370: 468 mm (RIDEX 83B1289, A.B.S. SL 7042), 465 mm (NK, MAXGEAR), 462 mm (BOSCH 1 987 481 565), 415 mm (QUICK BRAKE 32.839) en 410 mm (RAP BRAKES R-H1442, OE 462100001R). Lengte per VIN controleren.",
+  "per": "1 stuk, links en rechts gelijk",
+  "note": "Aanvullende artikelen staan op de tweede pagina van de Autodoc-lijst.",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/18207508",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/rap-brakes/23085945",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/brake-hoses-10135/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/brake-hoses-10135/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=2",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_BANJO": {
+  "n": "Hollebout met twee koperringen (remslang)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_HBRK": {
+  "n": "Slangbeugel op veerpoot",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_SUBFRAME": {
+  "n": "Subframe voor (hulpframe onder de motor)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "De Autodoc-categorie Support frame/engine carrier geeft voor type 23370 alleen achteras-artikelen en geen voorste hulpframe. Geen nummer bevestigd voor de F4R fase 2.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_SUBBUSH": {
+  "n": "Subframelagers (4 rubberlagers)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_SUBBOLT": {
+  "n": "Subframebouten (4)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_STABBAR": {
+  "n": "Stabilisatorstang voor (Ø24 mm)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "De Autodoc-categorie Stabilizer toont voor type 23370 geen artikel en vult aan met onderdelen van andere modellen; geen bevestigd artikel.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_STABBUSH": {
+  "n": "Stabilisatorrubber (lagerbus Ø24, per stuk, 2 per as)",
+  "st": "past",
+  "oe": [
+   [
+    "546130003R",
+    "OE-lijst FAG 819 0149 10, METZGER 52100708 en GATES AWS1223; ook als RENAULT-artikel in Autodoc-lijst 23370",
+    "A"
+   ]
+  ],
+  "am": [
+   [
+    "FAG",
+    "819 0149 10",
+    "",
+    "A"
+   ],
+   [
+    "MEYLE",
+    "16-14 615 0017",
+    "",
+    "A"
+   ],
+   [
+    "FEBI BILSTEIN",
+    "105931",
+    "",
+    "A"
+   ],
+   [
+    "DELPHI",
+    "TD1845W",
+    "",
+    "A"
+   ],
+   [
+    "SIDEM",
+    "805837",
+    "",
+    "A"
+   ],
+   [
+    "GATES",
+    "AWS1223",
+    "",
+    "A"
+   ]
+  ],
+  "per": "1 stuk; 2 per as, links en rechts gelijk",
+  "note": "Binnendiameter 24 mm komt overeen met de Ø24 stabilisatorstang uit het model. METZGER 52100708 noemt 22 mm en is weggelaten als artikel (het OE-nummer staat wel op die pagina).",
+  "src": [
+   [
+    "https://www.autodoc.parts/fag/14459047",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/metzger/18752427",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/gates/19150499",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/stabilizer-bushes-10696/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/stabilizer-bushes-10696/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=2",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_STABBRKT": {
+  "n": "Stabilisatorbeugels (links en rechts) met bouten",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:G_STUUR": {
+  "n": "Groep Stuurinrichting",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Groepering in de modelboom, geen verkoopeenheid (kind niet_gevonden omdat het schema geen niet_los kent).",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_RACK": {
+  "n": "Stuurhuis (hydraulische tandheugel, servotronic, linksgestuurd, 2,9 slagen)",
+  "st": "vin",
+  "oe": [
+   [
+    "490010047R",
+    "OE-lijst LAUBER 66.9483 (KOYO, servotronic, linksgestuurd)",
+    "B"
+   ],
+   [
+    "490010046R",
+    "OE-lijst LAUBER 66.9483 (KOYO, servotronic, linksgestuurd)",
+    "B"
+   ],
+   [
+    "490010045R",
+    "OE-lijst LAUBER 66.9483 (KOYO, servotronic, linksgestuurd)",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "ERA BENELUX",
+    "SR23278",
+    "JTEKT, servotronic, linksgestuurd",
+    "A"
+   ],
+   [
+    "LAUBER",
+    "66.9483",
+    "KOYO, servotronic, linksgestuurd",
+    "A"
+   ],
+   [
+    "SERVOTEC",
+    "STSR085L",
+    "servotronic, linksgestuurd",
+    "A"
+   ],
+   [
+    "TRISCAN",
+    "8510 25433",
+    "servotronic, linksgestuurd",
+    "A"
+   ]
+  ],
+  "var": "Lijst 23370 heeft hydraulische stuurhuizen van KOYO en JTEKT, met en zonder servotronic, links- en rechtsgestuurd. Het model noemt variabele assistentie, 2,9 slagen en linksgestuurd; daarom alleen artikelen met servotronic en linksgestuurd. De Renault-nummers zijn van de KOYO-uitvoering (LAUBER 66.9483); voor JTEKT (ERA SR23278) is geen Renault-nummer bevestigd. KOYO of JTEKT per VIN.",
+  "per": "1 stuk (wissel/reman of nieuw)",
+  "note": "Veel van deze artikelen zijn revisie- of ruilstuurhuizen. Artikelen zonder vermelding van links- of rechtsgestuurd en OE-nummers van een stuurhuis zonder servotronic-vermelding zijn weggelaten.",
+  "src": [
+   [
+    "https://www.autodoc.parts/lauber/7481993",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/steering-gear-pump-10299/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_CYLPIPE": {
+  "n": "Cilinderleidingen (hydraulische leidingen links en rechts)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_RACKBOOT": {
+  "n": "Stuurhoes (stofhoes stuurhuis, 182 mm, Ø14/60,5)",
+  "st": "vin",
+  "oe": [
+   [
+    "482030001R",
+    "OE-lijst TRW JBE396 en SIDEM 310.138",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "TRW",
+    "JBE396",
+    "",
+    "A"
+   ],
+   [
+    "LEMFÖRDER",
+    "35362 01",
+    "",
+    "A"
+   ],
+   [
+    "FEBI BILSTEIN",
+    "193827",
+    "",
+    "A"
+   ],
+   [
+    "SWAG",
+    "33 11 1409",
+    "",
+    "A"
+   ],
+   [
+    "TOPRAN",
+    "700 741",
+    "",
+    "A"
+   ],
+   [
+    "SIDEM",
+    "310.138",
+    "",
+    "A"
+   ]
+  ],
+  "var": "TRW JBE396 en LEMFÖRDER 35362 01 zijn 182 mm; febi 193827 en SWAG 33 11 1409 zijn 176 mm. Klemmen (met klemmen) staan bij febi, SWAG, TOPRAN en MAXGEAR.",
+  "per": "1 stuk, links en rechts gelijk",
+  "note": "Renault-nummer 482030001R staat ook als \"for OE number\" bij SASIC 2754009 en AUTOFREN SEINSA D9354.",
+  "src": [
+   [
+    "https://www.autodoc.parts/trw/13847140",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/sidem/9519620",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/steering-rack-boot-10301/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_RACKMOUNT": {
+  "n": "Stuurhuissteunen en -klemmen (links en rechts)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Autodoc-categorie Steering mounting is voor type 23370 niet beschikbaar (vervangende lijst met andere modellen).",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_RACKBOLT": {
+  "n": "Klembouten stuurhuis (4)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_TIESET": {
+  "n": "Spoorstangset (axiaalgewricht + spoorstangeind)",
+  "st": "past",
+  "oe": [],
+  "am": [
+   [
+    "RIDEX",
+    "770T0094",
+    "",
+    "A"
+   ]
+  ],
+  "per": "1 set, links en rechts",
+  "note": "Eén artikel in de Autodoc-lijst 23370: RIDEX 770T0094 (\"Repair Kit, tie rod\", set met spoorstangeind en axiaalgewricht, Front Axle Left/Right).",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/track-rod-end-10703/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_INTIE": {
+  "n": "Axiaalgewricht (binnenkogel met spoorstang, M14 x 1,5)",
+  "st": "past",
+  "oe": [
+   [
+    "485210001R",
+    "OE-lijst RIDEX 51T0233, SKF VKDY 326027, KAMOKA 9020156 en A.B.S. 240565",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "51T0233",
+    "",
+    "A"
+   ],
+   [
+    "SKF",
+    "VKDY 326027",
+    "",
+    "A"
+   ],
+   [
+    "MEYLE",
+    "16-16 031 0017",
+    "",
+    "A"
+   ],
+   [
+    "FAG",
+    "840 0393 10",
+    "",
+    "A"
+   ],
+   [
+    "KAMOKA",
+    "9020156",
+    "",
+    "A"
+   ],
+   [
+    "MAPCO",
+    "49176",
+    "",
+    "A"
+   ]
+  ],
+  "per": "1 stuk, links en rechts gelijk",
+  "note": "Lengte 190 mm (RIDEX, KAMOKA, MAPCO) of 205 mm (SKF, DELPHI, MOOG).",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/13627376",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/skf/15248509",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/kamoka/15500746",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/abs/7803602",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/inner-tie-rod-10298/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/inner-tie-rod-10298/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=2",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_TRE_L": {
+  "n": "Spoorstangeind links (buitenste kogelgewricht)",
+  "st": "past",
+  "oe": [
+   [
+    "485200001R",
+    "OE-lijst RIDEX 914T0440, KAMOKA 9010249 en FEBEST 2421-L70LH",
+    "B"
+   ],
+   [
+    "485201502R",
+    "OE-lijst RIDEX 914T0440 en KAMOKA 9010249",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "914T0440",
+    "",
+    "A"
+   ],
+   [
+    "KAMOKA",
+    "9010249",
+    "",
+    "A"
+   ],
+   [
+    "SIDEM",
+    "5738",
+    "",
+    "A"
+   ],
+   [
+    "A.B.S.",
+    "230844",
+    "",
+    "A"
+   ],
+   [
+    "FEBEST",
+    "2421-L70LH",
+    "",
+    "A"
+   ],
+   [
+    "GOCORE",
+    "GCI140158",
+    "",
+    "A"
+   ]
+  ],
+  "per": "1 stuk",
+  "note": "Links en rechts hebben aparte nummers. Kegel 13,9 mm; schroefdraad M12 x 1,5. Uitvoeringen met M12 x 1,25 (SKF VKDY 316042) of kegel 19 mm (VAICO V46-0213) staan ook in de lijst en zijn weggelaten.",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/12745531",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/kamoka/15500460",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/febest/18536446",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/track-rod-end-10703/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_TRE_R": {
+  "n": "Spoorstangeind rechts (buitenste kogelgewricht)",
+  "st": "past",
+  "oe": [
+   [
+    "485200002R",
+    "OE-lijst RIDEX 914T0447 en STARK SKTE-0280468",
+    "B"
+   ],
+   [
+    "485202733R",
+    "idem",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "914T0447",
+    "",
+    "A"
+   ],
+   [
+    "STARK",
+    "SKTE-0280468",
+    "",
+    "A"
+   ],
+   [
+    "SIDEM",
+    "5739",
+    "",
+    "A"
+   ],
+   [
+    "A.B.S.",
+    "230845",
+    "",
+    "A"
+   ],
+   [
+    "KAMOKA",
+    "9010250",
+    "",
+    "A"
+   ],
+   [
+    "GOCORE",
+    "GCI140161",
+    "",
+    "A"
+   ]
+  ],
+  "per": "1 stuk",
+  "note": "Links en rechts hebben aparte nummers. Kegel 13,9 mm; schroefdraad M12 x 1,5.",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/12745691",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/stark/12745690",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/track-rod-end-10703/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_TIENUT": {
+  "n": "Contramoeren, kroonmoeren en splitpennen spoorstangen",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:G_SB": {
+  "n": "Groep Stuurbekrachtiging",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Groepering in de modelboom, geen verkoopeenheid (kind niet_gevonden omdat het schema geen niet_los kent).",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_RES": {
+  "n": "Oliereservoir stuurbekrachtiging (met dop en filter)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "De Autodoc-categorie Power steering reservoir geeft voor type 23370 alleen racing-reservoirs; geen passend artikel en geen Renault-nummer bevestigd.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_RESBRKT": {
+  "n": "Reservoirbeugel met bouten",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_HSUC": {
+  "n": "Zuigslang stuurbekrachtiging (reservoir naar pomp)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Autodoc-categorie Power steering pipe/hose is voor type 23370 \"niet beschikbaar\" (vervangende lijst met andere modellen).",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_HHP": {
+  "n": "Hogedrukslang stuurbekrachtiging (pomp naar stuurhuis)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Autodoc-categorie Power steering pipe/hose is voor type 23370 \"niet beschikbaar\".",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_HRET": {
+  "n": "Retourslang stuurbekrachtiging (stuurhuis naar reservoir)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Autodoc-categorie Power steering pipe/hose is voor type 23370 \"niet beschikbaar\".",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_HCLAMP": {
+  "n": "Slangklemmen en wartelmoeren stuurbekrachtiging",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_COLUMN": {
+  "n": "Stuurkolom (kolombuis, kolomas, kolomslot, stelhendel)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Autodoc-categorie Steering column toont voor type 23370 \"niet beschikbaar\"; de getoonde elektrische stuurkolommen zijn voor andere uitvoeringen. Geen bevestigd artikel.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_STEERSHAFT": {
+  "n": "Stuurtussenas met kruiskoppelingen en schutbordafdichting",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "De Autodoc-categorie Joint, steering column geeft voor type 23370 geen passend artikel (alleen een artikel zonder voertuigbinding).",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_COLTRIM": {
+  "n": "Kolomomkasting boven en onder",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar. Interieurdeel; niet in Autodoc-lijsten voor type 23370 gevonden.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_COLMOD": {
+  "n": "Onder-stuurmodule",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar. Elektronisch onderdeel; niet in Autodoc-lijsten voor type 23370 gevonden.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_COLSW": {
+  "n": "Stuurkolomschakelaar (verlichting, mistlicht, regensensor), linksgestuurd",
+  "st": "past",
+  "oe": [
+   [
+    "255670001R",
+    "op de pagina van METZGER 09161273",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "METZGER",
+    "09161273",
+    "voor auto's met mistlampen voor, automatische dimlichtschakeling en regensensor; linksgestuurd",
+    "A"
+   ]
+  ],
+  "per": "1 stuk",
+  "note": "Een artikel in de lijst 23370 (METZGER 09161273, \"Steering column switch\"), voor wagens met mistlampen voor, automatische dimlichtschakeling en regensensor, linksgestuurd. Of de wisserfuncties in dit artikel zitten, staat niet in de bron. Uitrusting controleren.",
+  "src": [
+   [
+    "https://www.autodoc.parts/metzger/25786035",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/steering-column-switch-12795/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3a-vooras-aandrijving:U_WIPERSW": {
+  "n": "Wissergreep (kolomschakelaar ruitenwissers)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Geen apart artikel in Autodoc-lijst 23370; METZGER 09161273 (zie U_COLSW) noemt een regensensor, maar niet letterlijk de wisserschakelaar.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_WHEEL": {
+  "n": "Stuurwiel (kroon, spaken, naaf, centrale bout)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Autodoc toont voor type 23370 alleen racing-stuurwielen (Simoni Racing, OCC Motorsport); geen origineel stuurwiel.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_WHBOLT": {
+  "n": "Centrale bout stuurwiel",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_AIRBAG": {
+  "n": "Airbagmodule bestuurder (deksel, airbag, gasgenerator)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar.",
+  "src": []
+ },
+ "S3a-vooras-aandrijving:U_CLOCKSPRING": {
+  "n": "Wikkelcontact (airbag-contactrol)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Autodoc heeft wikkelcontacten voor andere Laguna-generaties, maar in de lijst voor type 23370 staat geen wikkelcontact.",
+  "src": []
+ }
+}

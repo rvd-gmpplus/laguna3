@@ -1,0 +1,1737 @@
+{
+ "S3b-achteras-remmen-wielen:B_G_ACHTERAS": {
+  "n": "Achteras (groep)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Groepsknoop, geen verkoopeenheid.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_G_WIELOPH": {
+  "n": "Wielophanging achter (groep, per zijde)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Groepsknoop, geen verkoopeenheid.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_G_VEER": {
+  "n": "Veer achter (groep, per zijde)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Groepsknoop, geen verkoopeenheid.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_G_REMSLANG": {
+  "n": "Remslang achter (groep, per zijde)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Groepsknoop, geen verkoopeenheid.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_G_REMSYS": {
+  "n": "Remsysteem (groep)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Groepsknoop, geen verkoopeenheid.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_G_LEIDINGEN": {
+  "n": "Remleidingen (groep)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Groepsknoop, geen verkoopeenheid.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_G_WIELEN": {
+  "n": "Wielen (groep)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Groepsknoop, geen verkoopeenheid.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_G_WIEL": {
+  "n": "Wiel compleet met band (groep, per wiel)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "note": "Groepsknoop, geen verkoopeenheid.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_TORS": {
+  "n": "Torsiebalk achter compleet (H-as met langsarmen, dwarsbalk, stabilisatorstaaf)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per auto",
+  "note": "Niet gevonden: complete torsieas niet in de Autodoc-lijst voor 23370; Renault-catalogus niet bereikbaar.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_BUSH_L": {
+  "n": "Draaipuntbus torsiebalk links (rubber-metalen scharnierlager)",
+  "st": "past",
+  "oe": [
+   [
+    "550450001R",
+    "OE-lijst van MOOG RE-SB-10845 en SKF VKDS 476021 (links)",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "MOOG",
+    "RE-SB-10845",
+    "achteras links",
+    "A"
+   ],
+   [
+    "MAPCO",
+    "37128",
+    "achteras links",
+    "A"
+   ],
+   [
+    "SIDEM",
+    "805308",
+    "achteras links",
+    "A"
+   ],
+   [
+    "TEDGUM",
+    "TED98895",
+    "achteras links",
+    "A"
+   ],
+   [
+    "SPIDAN CHASSIS PARTS",
+    "411719",
+    "achteras links",
+    "A"
+   ],
+   [
+    "SKF",
+    "VKDS 476021",
+    "Autodoc noemt het artikel \"Axle Beam\" (prijsklasse bus); productpagina: OE 55 04 500 01R, gepaard met VKDS 476018",
+    "A"
+   ]
+  ],
+  "per": "links",
+  "note": "Links en rechts hebben verschillende nummers (links 550450001R, rechts 550440001R). Autodoc toont voor 23370 ook bussen \"for vehicles with four wheel steering\" (4Control); die zijn niet gekozen.",
+  "src": [
+   [
+    "https://www.autodoc.parts/moog/12840136",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/axle-bushes-10686/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/support-frame-engine-carrier-11604/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/skf/24963305",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3b-achteras-remmen-wielen:B_BUSH_R": {
+  "n": "Draaipuntbus torsiebalk rechts (rubber-metalen scharnierlager)",
+  "st": "past",
+  "oe": [
+   [
+    "550440001R",
+    "OE-lijst van MOOG RE-SB-10846 en SKF VKDS 476018 (rechts)",
+    "B"
+   ],
+   [
+    "550446624R",
+    "for OE number bij SASIC 2604007 (Rear Axle) en OE-lijst van SKF VKDS 476018 (Rear Axle Right); geen Renault-artikel in de lijst, daarom B in plaats van A",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "MOOG",
+    "RE-SB-10846",
+    "achteras rechts",
+    "A"
+   ],
+   [
+    "MAPCO",
+    "37129",
+    "achteras rechts",
+    "A"
+   ],
+   [
+    "SIDEM",
+    "805309",
+    "achteras rechts",
+    "A"
+   ],
+   [
+    "TEDGUM",
+    "TED44710",
+    "achteras rechts",
+    "A"
+   ],
+   [
+    "SPIDAN CHASSIS PARTS",
+    "411720",
+    "achteras rechts",
+    "A"
+   ],
+   [
+    "SKF",
+    "VKDS 476018",
+    "Autodoc noemt het artikel \"Axle Beam\" (prijsklasse bus); productpagina: OE 55 04 466 24R en 55 04 400 01R",
+    "A"
+   ]
+  ],
+  "per": "rechts",
+  "note": "Links en rechts hebben verschillende nummers (links 550450001R, rechts 550440001R). 550446624R staat bij SKF VKDS 476018 samen met 550440001R en bij SASIC 2604007 zonder zijde.",
+  "src": [
+   [
+    "https://www.autodoc.parts/moog/12840137",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/axle-bushes-10686/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/support-frame-engine-carrier-11604/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/skf/22782368",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3b-achteras-remmen-wielen:B_DRAAIBOUT": {
+  "n": "Draaipuntbout torsiebalk (per langsarm)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: geen bout los in Autodoc; de bussen worden zonder bout verkocht.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_DRAAIMOER": {
+  "n": "Draaipuntmoer torsiebalk (zelfborgend, per langsarm)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: niet apart in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_SPRING": {
+  "n": "Schroefveer achter",
+  "st": "vin",
+  "oe": [
+   [
+    "550200001N",
+    "OE-lijst van MONROE SP3802",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "MONROE",
+    "SP3802",
+    "standaardonderstel",
+    "A"
+   ],
+   [
+    "MAXGEAR",
+    "60-0683D",
+    "",
+    "A"
+   ],
+   [
+    "ABAKUS",
+    "234-02-054",
+    "",
+    "A"
+   ],
+   [
+    "DENCKERMANN",
+    "D700164",
+    "",
+    "A"
+   ],
+   [
+    "ASHIKA",
+    "ZCA6394H",
+    "",
+    "A"
+   ],
+   [
+    "JAPANPARTS",
+    "ZC6394H",
+    "",
+    "A"
+   ]
+  ],
+  "var": "Autodoc toont voor type 23370 achterveren van 400 tot 403 mm met kleurcode blauw (tot 07/2013, SUPLEX 27348, SKF VKDL 33054) of wit (SUPLEX 27351), en een van 370 mm wit/oranje (SUPLEX 27353). MONROE SP3802 en SACHS 994 891 zijn voor standaardonderstel. Onderstel en kleurcode van deze auto zijn niet vastgelegd; de VIN is bepalend.",
+  "per": "per stuk, links gelijk aan rechts (per as 2)",
+  "note": "Links en rechts hetzelfde nummer. Spareto kent 550200001N (met N-achtervoegsel) niet.",
+  "src": [
+   [
+    "https://www.autodoc.parts/monroe/7530286",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/coil-springs-10213/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3b-achteras-remmen-wielen:B_VEERRUBBER": {
+  "n": "Veerrubber onder (tussenlaag op het veerpad)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: Autodoc heeft voor 23370 geen veerrubber voor de achteras.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_VEERSCHOTEL": {
+  "n": "Veerschotel boven (rubber bovenschotel achter)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: Autodoc-categorie Spring cap is voor 23370 niet beschikbaar.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_STOFKIT": {
+  "n": "Stofhoes en aanslagrubber achter (beschermingsset schokdemper)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: Autodoc toont voor 23370 alleen stofhoessets voor de vooras.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_SHOCK": {
+  "n": "Schokdemper achter",
+  "st": "vin",
+  "oe": [
+   [
+    "562100001R",
+    "OE-lijst van RIDEX 854S2143",
+    "B"
+   ],
+   [
+    "562100007R",
+    "OE-lijst van RIDEX 854S2143",
+    "B"
+   ],
+   [
+    "562100033R",
+    "OE-lijst van RIDEX 854S2143",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "SACHS",
+    "317 421",
+    "gas, twin-tube",
+    "A"
+   ],
+   [
+    "BILSTEIN",
+    "19-171395",
+    "B4, gas, twin-tube",
+    "A"
+   ],
+   [
+    "MONROE",
+    "43134",
+    "gas, monotube",
+    "A"
+   ],
+   [
+    "TRW",
+    "JGT1256T",
+    "gas, twin-tube",
+    "A"
+   ],
+   [
+    "RIDEX",
+    "854S2143",
+    "gas, 551 mm, 50x12,5",
+    "A"
+   ],
+   [
+    "KYB",
+    "344813",
+    "Excel-G, gas, twin-tube",
+    "A"
+   ]
+  ],
+  "var": "Autodoc toont voor type 23370 achterdempers gas twin-tube en monotube (MONROE 43134), voor voertuigen zonder sportonderstel of verhoogde bodemvrijheid. De OE-lijsten noemen drie Renault-nummers (562100001R, 562100007R, 562100033R); welke bij de VIN hoort is niet vastgesteld.",
+  "per": "per stuk, links gelijk aan rechts (per as 2)",
+  "note": "Modelmaten: huis 45 mm, zuigerstang 12,5 mm; RIDEX noemt 50 x 12,5 mm.",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/12766949",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/shock-absorber-10221/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3b-achteras-remmen-wielen:B_TOPMOUNT": {
+  "n": "Bovensteun schokdemper achter (rubber-metaal)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: Autodoc toont voor 23370 alleen vooras-veerpootlagers.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_TOPNUT": {
+  "n": "Moer bovenop de zuigerstang achterdemper (zelfborgend)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: niet apart in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_SHOCKBOLT": {
+  "n": "Onderbout achterdemper",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: niet apart in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_SHOCKNUT": {
+  "n": "Ondermoer achterdemper (zelfborgend)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: niet apart in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_ASTAP": {
+  "n": "Astapflens achter (flens met astaphuis aan de langsarm)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per zijde",
+  "note": "Niet gevonden: geen astapflens in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_FLENSBOUT": {
+  "n": "Flensbout astapflens (aan de langsarm)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: niet apart in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_AXLENUT": {
+  "n": "Naafmoer achter (op de astap)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: moer niet apart in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_BORGKRAAG": {
+  "n": "Borgkraag naafmoer achter",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: niet apart in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_LAGER": {
+  "n": "Wiellagereenheid achter (gesloten lagerset met ABS-codeerring)",
+  "st": "vin",
+  "oe": [
+   [
+    "432100366R",
+    "alleen in OE-lijst van QUINTON HAZELL QWB1675",
+    "B"
+   ],
+   [
+    "432102103R",
+    "\"for OE number\" bij GSP GK7032 en OE-lijst van QUINTON HAZELL QWB1675",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "MOOG",
+    "RE-WB-11520",
+    "62 mm",
+    "A"
+   ],
+   [
+    "MAPCO",
+    "26157",
+    "62 mm",
+    "A"
+   ],
+   [
+    "OPTIMAL",
+    "702976L",
+    "62 mm, met ABS-sensorring",
+    "A"
+   ],
+   [
+    "QUINTON HAZELL",
+    "QWB1675",
+    "62 mm",
+    "A"
+   ],
+   [
+    "GSP",
+    "GK7032",
+    "links en rechts, met toebehoren, 62 mm",
+    "A"
+   ],
+   [
+    "NTY",
+    "KLT-RE-038",
+    "links en rechts, 52 mm",
+    "A"
+   ]
+  ],
+  "var": "Voor type 23370 toont Autodoc achterlagersets van 62 mm (MOOG, MAPCO, OPTIMAL, QH, GSP) en een van NTY met 52 mm; OPTIMAL 702976L is met ABS-sensorring, OPTIMAL 702976 zonder. Daarnaast zijn er achterschijven met ingeperst lager (zie remschijf). De VIN is bepalend.",
+  "per": "per stuk, links gelijk aan rechts",
+  "note": "GSP GK7032 is \"with accessories\" (inhoud niet nagelezen). De modelboom hangt de ABS-codeerring, ringen en kogelkransen onder de lagereenheid; aftermarket verkoopt de lagerset als geheel. Brede OE-lijsten van de lagersets zijn teruggebracht tot de Renault-nummers.",
+  "src": [
+   [
+    "https://www.autodoc.parts/quinton-hazell/16614592",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/wheel-bearing-10679/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3b-achteras-remmen-wielen:B_LAGERBOUT": {
+  "n": "Lagerbout (trekt de lagereenheid op de astapflens)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: geen bout los; GSP GK7032 \"with accessories\" bevat mogelijk bevestigingsmateriaal (niet nagelezen).",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_DISC": {
+  "n": "Remschijf achter 300 x 11 mm massief (met naaf)",
+  "st": "vin",
+  "oe": [
+   [
+    "432000015R",
+    "OE-lijst van RIDEX 82B1128 (300x11, with wheel hub, in de lijst 23370)",
+    "B"
+   ],
+   [
+    "432022434R",
+    "OE-lijst van RIDEX 82B1128",
+    "B"
+   ],
+   [
+    "432027112R",
+    "OE-lijst van RIDEX 82B1128",
+    "B"
+   ],
+   [
+    "432028192R",
+    "OE-lijst van RIDEX 82B1128",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "82B0542",
+    "met naaf (with wheel hub), zonder lager, 300x11, hoogte 81,7",
+    "A"
+   ],
+   [
+    "ATE",
+    "24.0111-0173.2",
+    "met wiellager en ABS-ring (with wheel bearing, with ABS sensor ring)",
+    "A"
+   ],
+   [
+    "BREMBO",
+    "08.A826.47",
+    "Prime; met wiellagerset, ABS-ring en bouten",
+    "A"
+   ],
+   [
+    "BOSCH",
+    "0 986 479 445",
+    "met wiellager en ABS-ring, hoogte 83,5",
+    "A"
+   ],
+   [
+    "TRW",
+    "DF6044BS",
+    "met ABS-ring en wiellager, hoogte 83,6",
+    "A"
+   ],
+   [
+    "ZIMMERMANN",
+    "470.2434.20",
+    "gecoat, met ABS-ring, zonder lager vermeld",
+    "A"
+   ]
+  ],
+  "var": "Alle achterschijven voor 23370 zijn 300 x 11 mm massief met naaf. Er zijn twee leveringsvormen: met ingeperst wiellager en ABS-ring (ATE 24.0111-0173.2, BREMBO 08.A826.47, BOSCH 0 986 479 445, TRW DF6044BS) en zonder lager (RIDEX 82B0542 met naaf, ZIMMERMANN 470.2434.20 met ABS-ring). De vier Renault-nummers komen uit een OE-lijst en zijn niet per uitvoering toegewezen. Welke bij de VIN hoort en of het lager apart besteld moet worden, is niet vastgesteld.",
+  "per": "per stuk, links gelijk aan rechts (per as 2)",
+  "note": "RIDEX 82B0542 en 82B1128 noemen \"with wheel hub\" (hoogte 81,7 mm): de naaf zit aan de schijf. Vooras-nummers uit dezelfde OE-lijst zijn niet overgenomen.",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/8100449",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/brake-disc/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/brake-disc-10132/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=5",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/brake-disc-10132/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo?page=4",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3b-achteras-remmen-wielen:B_STOFSCHILD": {
+  "n": "Stofschild remschijf achter (afschermplaat)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per zijde",
+  "note": "Niet gevonden: Autodoc-categorie Brake disc back plate is voor 23370 niet beschikbaar.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_SCHILDBOUT": {
+  "n": "Bout stofschild achter",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: niet apart in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_ABSSENS": {
+  "n": "Wielsnelheidssensor achter (ABS-sensor, actief 2-pins, met kabel)",
+  "st": "past",
+  "oe": [
+   [
+    "479500005R",
+    "OE-lijst van RIDEX 412W1132",
+    "B"
+   ],
+   [
+    "479500001R",
+    "OE-lijst van RIDEX 412W1132",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "412W1132",
+    "667 mm, met kabel",
+    "A"
+   ],
+   [
+    "FEBI BILSTEIN",
+    "193430",
+    "650 mm, links en rechts",
+    "A"
+   ],
+   [
+    "NTY",
+    "HCA-RE-031",
+    "links en rechts",
+    "A"
+   ]
+  ],
+  "per": "per stuk, links gelijk aan rechts (per as 2)",
+  "note": "Autodoc toont voor de achteras actieve tweepolige sensoren; de modelomschrijving noemt een passieve sensor. De bronnen noemen \"Rear Axle Left, Rear Axle Right\" met een nummer, dus links en rechts gelijk. Kabellengte verschilt per fabrikant (650 tot 667 mm). Een RIDEX-sensor voor 4Control is weggelaten.",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/16352021",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/abs-sensor-10138/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3b-achteras-remmen-wielen:B_CAL_L": {
+  "n": "Remklauw achter links (zwevend, 1 zuiger Ø38, ATE/TEVES, zonder drager)",
+  "st": "past",
+  "oe": [
+   [
+    "440110006R",
+    "OE-lijst van NTY HZT-RE-016",
+    "B"
+   ],
+   [
+    "440113626R",
+    "OE-lijst van NTY HZT-RE-016",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "78B0845",
+    "links, zonder drager",
+    "A"
+   ],
+   [
+    "NTY",
+    "HZT-RE-016",
+    "links",
+    "A"
+   ],
+   [
+    "ESEN SKV",
+    "42SKV543",
+    "links, 144 mm",
+    "A"
+   ]
+  ],
+  "per": "links",
+  "note": "Zuiger Ø38 mm en schijfdikte 11 mm komen overeen met het model. RIDEX 78B0845 is \"without holder\". Links en rechts hebben verschillende nummers.",
+  "src": [
+   [
+    "https://www.autodoc.parts/nty/16550244",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/brake-calipers-10907/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3b-achteras-remmen-wielen:B_CAL_R": {
+  "n": "Remklauw achter rechts (zwevend, 1 zuiger Ø38, ATE/TEVES, zonder drager)",
+  "st": "past",
+  "oe": [
+   [
+    "440010014R",
+    "OE-lijst van NTY HZT-RE-017",
+    "B"
+   ],
+   [
+    "440019184R",
+    "OE-lijst van NTY HZT-RE-017",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "78B0908",
+    "rechts, aluminium",
+    "A"
+   ],
+   [
+    "NTY",
+    "HZT-RE-017",
+    "rechts",
+    "A"
+   ],
+   [
+    "ESEN SKV",
+    "42SKV544",
+    "rechts, 144 mm",
+    "A"
+   ],
+   [
+    "ENERGY",
+    "ZH0199",
+    "rechts, 144 mm",
+    "A"
+   ]
+  ],
+  "per": "rechts",
+  "note": "Zie remklauw links. De ENERGY-pagina heeft een lange OE-lijst met aftermarketnummers onder \"RENAULT\"; die zijn niet overgenomen.",
+  "src": [
+   [
+    "https://www.autodoc.parts/nty/16550245",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/brake-calipers-10907/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3b-achteras-remmen-wielen:B_CARRIER": {
+  "n": "Remklauwdrager achter (met geleidingen voor de blokken)",
+  "st": "past",
+  "oe": [
+   [
+    "440010015R",
+    "OE-lijst van ATE 11.8170-0872.1",
+    "B"
+   ],
+   [
+    "7701206687",
+    "OE-lijst van ATE 11.8170-0872.1",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "ATE",
+    "11.8170-0872.1",
+    "achteras",
+    "A"
+   ],
+   [
+    "ABE",
+    "CJH096ABE",
+    "achteras; Autodoc noemt ook \"Rear Axle Right\"",
+    "A"
+   ],
+   [
+    "KAMOKA",
+    "JCC0088",
+    "Spareto-kruisverwijzing van 7701206687",
+    "C"
+   ]
+  ],
+  "per": "per stuk (links en rechts hetzelfde nummer volgens ATE; ABE noemt rechts)",
+  "note": "ATE noemt geen zijde, ABE noemt \"Rear Axle Right\"; beide hebben dezelfde OE-nummers, dus waarschijnlijk links gelijk aan rechts (niet bevestigd).",
+  "src": [
+   [
+    "https://www.autodoc.parts/ate/7882949",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/brake-caliper-mounting-12329/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.spareto.com/oe/7701206687",
+    "spareto.com"
+   ]
+  ]
+ },
+ "S3b-achteras-remmen-wielen:B_PADS": {
+  "n": "Remblokset achter (per as 4 blokken met anti-piepplaat)",
+  "st": "past",
+  "oe": [
+   [
+    "440601689R",
+    "OE-lijst van RIDEX 402B0008",
+    "B"
+   ],
+   [
+    "8671016711",
+    "OE-lijst van RIDEX 402B0008",
+    "B"
+   ],
+   [
+    "440600002R",
+    "OE-lijst van RIDEX 402B0008",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "402B0008",
+    "met anti-piepplaat, zonder slijtagecontact",
+    "A"
+   ],
+   [
+    "BOSCH",
+    "0 986 494 528",
+    "low-metallic",
+    "A"
+   ],
+   [
+    "BREMBO",
+    "P 59 042",
+    "Prime",
+    "A"
+   ],
+   [
+    "TRW",
+    "GDB2086",
+    "COTEC",
+    "A"
+   ],
+   [
+    "FERODO",
+    "FDB1766",
+    "PREMIER ECO FRICTION",
+    "A"
+   ],
+   [
+    "ATE",
+    "13.0460-7251.2",
+    "Spareto-kruisverwijzing van 8671016711; staat ook als Rear Axle-blokset voor 23370 op andere Autodoc-categoriepagina's",
+    "C"
+   ]
+  ],
+  "per": "per as (2 wielen)",
+  "note": "De OE-lijsten zijn breed (ook Ford, Volvo, Opel); alleen de Renault-nummers zijn overgenomen. Welke van de drie Renault-nummers bij de VIN hoort is niet vastgesteld. RIDEX 402B0008 noemt \"with anti-squeak\", dus de anti-piepplaat zit bij de set. Links en rechts hetzelfde nummer.",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/7998955",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/brake-pad-set-10130/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.spareto.com/oe/8671016711",
+    "spareto.com"
+   ]
+  ]
+ },
+ "S3b-achteras-remmen-wielen:B_PADKIT": {
+  "n": "Montageset remblokken achter (veren en clips)",
+  "st": "past",
+  "oe": [
+   [
+    "7701049284",
+    "OE-lijst van A.B.S. 1755Q (77 01 049 284)",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "A.B.S.",
+    "1755Q",
+    "achteras",
+    "A"
+   ],
+   [
+    "FEBEST",
+    "0103-001",
+    "achter",
+    "A"
+   ],
+   [
+    "JP GROUP",
+    "1564004410",
+    "achteras",
+    "A"
+   ],
+   [
+    "TEXTAR",
+    "82503500",
+    "Spareto-kruisverwijzing van 7701049284",
+    "C"
+   ],
+   [
+    "MAXGEAR",
+    "27-0553",
+    "Spareto-kruisverwijzing van 7701049284",
+    "C"
+   ],
+   [
+    "HELLA",
+    "8DZ 355 201-501",
+    "Spareto-kruisverwijzing van 7701049284",
+    "C"
+   ]
+  ],
+  "per": "per as",
+  "note": "Spareto noemt bij 7701049284 ook ATE 11.8116-0340.1, METZGER 109-1755 en ERT 420009. De OE-lijst van A.B.S. 1755Q is breed (24 nummers); alleen het Renault-nummer is overgenomen.",
+  "src": [
+   [
+    "https://www.autodoc.parts/abs/7710596",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/accessory-kit-disc-brake-pads-10730/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.spareto.com/oe/7701049284",
+    "spareto.com"
+   ]
+  ]
+ },
+ "S3b-achteras-remmen-wielen:B_PISTON": {
+  "n": "Remklauwzuiger achter Ø38 mm",
+  "st": "past",
+  "oe": [],
+  "am": [
+   [
+    "LTD",
+    "LTD-063",
+    "38 mm achteras",
+    "A"
+   ],
+   [
+    "AUTOFREN SEINSA",
+    "D025251",
+    "38 mm achteras, ATE",
+    "A"
+   ]
+  ],
+  "per": "per stuk",
+  "note": "Renault-nummer niet vastgesteld: de OE-lijst van LTD-063 is niet nagelezen in deze verificatie.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/piston-brake-caliper-15094/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3b-achteras-remmen-wielen:B_REPAIRKIT": {
+  "n": "Reparatieset remklauw achter rechts Ø38 (zuigerafdichting en stofhoes)",
+  "st": "past",
+  "oe": [],
+  "am": [
+   [
+    "RIDEX",
+    "405R0031",
+    "Rear Axle, Right; Required quantity 2; Ø38, ATE, floating caliper",
+    "A"
+   ]
+  ],
+  "per": "per remklauw (rechts)",
+  "note": "De RIDEX-set staat in de lijst 23370 als \"Rear Axle, Right\" met \"Required quantity: 2\"; dat kan op beide zijden wijzen, maar links is niet bevestigd. Geen Renault-nummer.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/brake-caliper-repair-kit-10733/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3b-achteras-remmen-wielen:B_GUIDEPIN": {
+  "n": "Geleidebouten remklauw achter (set, met hoezen of toebehoren)",
+  "st": "past",
+  "oe": [
+   [
+    "7701049101",
+    "OE-lijst van RIDEX 1165G0434",
+    "B"
+   ],
+   [
+    "440016332R",
+    "OE-lijst van RIDEX 1165G0434",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "1165G0434",
+    "achteras en vooras, 2 per as",
+    "A"
+   ],
+   [
+    "A.B.S.",
+    "55006",
+    "voor- en achteras; \"with additional guide bolt\", \"without bolts / screws\"",
+    "A"
+   ],
+   [
+    "FAST",
+    "FT32467",
+    "voor- en achteras",
+    "A"
+   ],
+   [
+    "AIC",
+    "54072",
+    "voor- en achteras",
+    "A"
+   ],
+   [
+    "ATE",
+    "11.8171-0008.1",
+    "Spareto-kruisverwijzing van 7701049101 (Guide Bolt, brake caliper); geen positie op Spareto",
+    "C"
+   ]
+  ],
+  "per": "per as",
+  "note": "De artikelen staan in de lijst 23370 voor voor- en achteras. De RIDEX-reparatieset 1165G0019 die in 1165G0434 zit, staat op een andere pagina als Front Axle; of de achterklauw dezelfde geleiders heeft, rust op de positie \"Rear Axle\" bij RIDEX, A.B.S., FAST en AIC.",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/27216312",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/guide-sleeve-kit-brake-caliper-15092/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.spareto.com/oe/7701049101",
+    "spareto.com"
+   ]
+  ]
+ },
+ "S3b-achteras-remmen-wielen:B_BOOT": {
+  "n": "Stofhoes geleidepen remklauw (balg)",
+  "st": "past",
+  "oe": [],
+  "am": [
+   [
+    "RIDEX",
+    "1165G0100",
+    "voor- en achteras",
+    "A"
+   ],
+   [
+    "AUTOFREN SEINSA",
+    "D7003",
+    "voor- en achteras",
+    "A"
+   ]
+  ],
+  "per": "per as",
+  "note": "Renault-nummer niet gevonden. RIDEX 1165G0442 bevat 1165G0100 (balg) plus remvloeistof 71B0006.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/guide-sleeve-kit-brake-caliper-15092/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3b-achteras-remmen-wielen:B_BLEED": {
+  "n": "Ontluchtingsnippel remklauw achter",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: niet apart in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_BLEEDCAP": {
+  "n": "Stofdop ontluchtingsnippel",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: niet apart in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_DRAGERBOUT": {
+  "n": "Bout remklauwdrager achter (op de astapflens)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: niet apart in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_HOSE_L": {
+  "n": "Remslang achter links (binnenslang, links gelijk aan rechts)",
+  "st": "vin",
+  "oe": [
+   [
+    "8200256166",
+    "binnenslang: OE-lijst van RIDEX 83B0322",
+    "B"
+   ],
+   [
+    "7701050073",
+    "binnenslang: OE-lijst van RIDEX 83B0322",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "83B0322",
+    "binnenslang, 185 mm, M10x1",
+    "A"
+   ],
+   [
+    "FEBI BILSTEIN",
+    "45301",
+    "binnenslang, 210 mm, links en rechts",
+    "A"
+   ],
+   [
+    "CORTECO",
+    "19030300",
+    "binnenslang (inner), 185 mm",
+    "A"
+   ]
+  ],
+  "var": "Autodoc toont voor 23370 twee soorten achterslangen. De buitenslang met leiding (346 tot 360 mm, per zijde een nummer) is volgens de lijst voor auto's met 4Control en is weggelaten; het model heeft de standaard H-as. Daarnaast een binnenslang, links gelijk aan rechts, in 185 mm (RIDEX 83B0322, CORTECO 19030300) en 209/210 mm (febi 45301). Welke lengte bij de VIN hoort en of de binnenslang de modelslang (langsarm naar klauw) is, is niet vastgesteld.",
+  "per": "per stuk (binnenslang links gelijk aan rechts)",
+  "note": "De zoeker koos de 4Control-buitenslang zonder grond; die nummers zijn verwijderd.",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/8093720",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/brake-hoses-10135/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3b-achteras-remmen-wielen:B_HOSE_R": {
+  "n": "Remslang achter rechts (binnenslang, links gelijk aan rechts)",
+  "st": "vin",
+  "oe": [
+   [
+    "8200256166",
+    "binnenslang: OE-lijst van RIDEX 83B0322",
+    "B"
+   ],
+   [
+    "7701050073",
+    "binnenslang: OE-lijst van RIDEX 83B0322",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "83B0322",
+    "binnenslang, 185 mm, M10x1",
+    "A"
+   ],
+   [
+    "FEBI BILSTEIN",
+    "45301",
+    "binnenslang, 210 mm, links en rechts",
+    "A"
+   ],
+   [
+    "CORTECO",
+    "19030300",
+    "binnenslang (inner), 185 mm",
+    "A"
+   ]
+  ],
+  "var": "Zie remslang achter links: de 4Control-buitenslang is weggelaten; binnenslang 185 mm of 209/210 mm, de VIN is bepalend.",
+  "per": "per stuk (binnenslang links gelijk aan rechts)",
+  "note": "De zoeker koos de 4Control-buitenslang zonder grond; die nummers zijn verwijderd.",
+  "src": [
+   [
+    "https://www.autodoc.parts/ridex/8093720",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/brake-hoses-10135/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3b-achteras-remmen-wielen:B_BANJO": {
+  "n": "Holle bout (banjo) remslang achter",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: niet apart in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_COPPER": {
+  "n": "Koperen afdichtringen holle bout (2 stuks)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per 2 stuks",
+  "note": "Niet gevonden: niet apart in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_HOSEBRACKET": {
+  "n": "Slangbeugel op de langsarm",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: niet apart in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_BOOSTER": {
+  "n": "Rembekrachtiger (vacuum)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per auto",
+  "note": "Het enige bekrachtigerartikel in de lijst 23370 (BOSCH) is \"for vehicles without ESP\"; het model heeft ESP. Voor de ESP-uitvoering is geen bekrachtiger gevonden.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_BOOSTERMOER": {
+  "n": "Bevestigingsmoer rembekrachtiger (M8, tapeind)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: niet apart in de Autodoc-lijst voor 23370; geen nummer voor de F4R bevestigd.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_MASTER": {
+  "n": "Hoofdremcilinder (tandem, aluminium, Ø23,81)",
+  "st": "past",
+  "oe": [
+   [
+    "460110001R",
+    "OE-lijst van A.B.S. 61321",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "BOSCH",
+    "0 204 123 761",
+    "MC1317",
+    "A"
+   ],
+   [
+    "TRW",
+    "PMK951",
+    "",
+    "A"
+   ],
+   [
+    "BREMBO",
+    "M 68 086",
+    "",
+    "A"
+   ],
+   [
+    "A.B.S.",
+    "61321",
+    "",
+    "A"
+   ],
+   [
+    "FTE",
+    "9220288",
+    "",
+    "A"
+   ],
+   [
+    "DELPHI",
+    "LM80379",
+    "",
+    "A"
+   ]
+  ],
+  "per": "per auto",
+  "note": "Het reservoir, de dop en de niveauschakelaar zijn in de Autodoc-lijst voor deze auto niet apart gevonden.",
+  "src": [
+   [
+    "https://www.autodoc.parts/abs/8160422",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/brake-master-cylinder-10126/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3b-achteras-remmen-wielen:B_RESERVOIR": {
+  "n": "Remvloeistofreservoir (met zeef)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: niet apart in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_RESCAP": {
+  "n": "Reservoirdop hoofdremcilinder",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: niet apart in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_LEVELSW": {
+  "n": "Niveauschakelaar remvloeistof",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: niet apart in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_RESGROMMET": {
+  "n": "Reservoirrubber (doorvoer reservoir-cilinderhuis)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: niet apart in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_ABSUNIT": {
+  "n": "ABS/ESP-hydraulische unit (Bosch ESP, met regelunit)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per auto",
+  "note": "Niet gevonden: Autodoc meldt voor 23370 \"Abs pump not available\".",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_ABSCONN": {
+  "n": "Stekker ABS/ESP-unit",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: niet apart in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_PRESSSENS": {
+  "n": "Drukopnemer remcircuit (ESP)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: niet apart in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_ABSBRACKET": {
+  "n": "ABS-beugel (op het spatbordframe)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: niet apart in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_ABSRUBBER": {
+  "n": "Trillingsdemper ABS-unit (rubber)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: niet apart in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_ABSBOLT": {
+  "n": "Beugelbout ABS-beugel",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: niet apart in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_LINE_P": {
+  "n": "Remleiding hoofdcilinder primair naar ABS/ESP-unit",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: vaste remleidingen niet in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_LINE_S": {
+  "n": "Remleiding hoofdcilinder secundair naar ABS/ESP-unit",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: vaste remleidingen niet in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_LINE_LV": {
+  "n": "Remleiding linksvoor",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: vaste remleidingen niet in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_LINE_RV": {
+  "n": "Remleiding rechtsvoor",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: vaste remleidingen niet in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_LINE_LA": {
+  "n": "Remleiding linksachter (vaste leiding langs de vloer)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: vaste remleidingen niet in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_LINE_RA": {
+  "n": "Remleiding rechtsachter (vaste leiding langs de vloer)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: vaste remleidingen niet in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_LINECLIP": {
+  "n": "Leidingklem remleidingen (rubber geïsoleerd)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: niet apart in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_EPB": {
+  "n": "Elektrische parkeerremunit (FPA, motor, wormoverbrenging, kabelverdeler, regelprint)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per auto",
+  "note": "Niet gevonden: geen Renault-unit in de Autodoc-lijst; NTY HZS-BM-001A heeft geen Renault-OE en is niet overgenomen.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_EPBCONN": {
+  "n": "Stekker parkeerremunit",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: niet apart in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_EPBBRACKET": {
+  "n": "Montagebeugel parkeerremunit",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: niet apart in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_EPBBOLT": {
+  "n": "Beugelbout parkeerremunit",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: niet apart in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_PARKCABLE": {
+  "n": "Parkeerremkabel set links en rechts (met buitenkabel/huls)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "set voor links en rechts",
+  "note": "De kabelsets van 2224/1295 mm in de lijst 23370 zijn voor auto's zonder elektrische parkeerrem (zo vermeld bij TRISCAN, NK, COFLE 92.10.6793, RIDEX, BOSCH, MALO). Het model heeft een elektrische parkeerrem; de kabels daarvoor zijn niet bevestigd.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_VELG": {
+  "n": "Lichtmetalen velg (18 inch, tien spaken, 5 x 114,3)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: velgontwerp niet vastgelegd (17 of 18 inch); geen betrouwbaar nummer.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_BAND": {
+  "n": "Band 225/45 R18 (radiaal)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: band is een handelsartikel op maat (225/45 R18 in het model), geen nummer.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_WIELBOUT": {
+  "n": "Wielbout M14 x 1,5, conische zitting, SW17 (voor lichtmetalen velgen)",
+  "st": "past",
+  "oe": [
+   [
+    "8200473363",
+    "OE-lijst op de productpagina van febi 36293 (82 00 473 363)",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "FEBI BILSTEIN",
+    "36293",
+    "24 mm, voor lichtmetaal en staal",
+    "A"
+   ],
+   [
+    "FEBI BILSTEIN",
+    "46699",
+    "24 mm",
+    "A"
+   ],
+   [
+    "SWAG",
+    "60 93 6293",
+    "24 mm",
+    "A"
+   ]
+  ],
+  "var": "Voor staalvelgen noemt Autodoc voor 23370 een bout met 23 mm draadlengte (febi 36255, febi 46698, SWAG 60 93 6255). Het model heeft lichtmetalen velgen; de gekozen bouten (24 mm) zijn volgens Autodoc voor lichtmetaal en staal.",
+  "per": "per stuk (5 per wiel)",
+  "note": "Aanhaalmoment 145 Nm volgens het werkplaatshandboek (niet door de bronnen bevestigd).",
+  "src": [
+   [
+    "https://www.autodoc.parts/febi-bilstein/1891027",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/wheel-bolt-and-wheel-nuts-10313/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3b-achteras-remmen-wielen:B_NAAFDOP": {
+  "n": "Naafdop velg (aluminium afdekkap)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: ontwerp niet bevestigd; geen nummer voor dit voertuig nagelezen.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_TPMS": {
+  "n": "Bandenspanningssensor (TPMS, ventiel met sensor, 433 MHz)",
+  "st": "vin",
+  "oe": [
+   [
+    "407000435R",
+    "OE-lijst van RIDEX 2232W0011 (40700 0435R) en BOSCH 0 273 014 060 (40 70 004 35R)",
+    "B"
+   ],
+   [
+    "407001859R",
+    "OE-lijst van RIDEX 2232W0011 (40700 1859R)",
+    "B"
+   ],
+   [
+    "400014704R",
+    "OE-lijst van RIDEX 2232W0011 (40001 4704R)",
+    "B"
+   ],
+   [
+    "7701478868",
+    "OE-lijst van BOSCH 0 273 014 060 (77 01 478 868)",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "RIDEX",
+    "2232W0011",
+    "",
+    "A"
+   ],
+   [
+    "BOSCH",
+    "0 273 014 060",
+    "",
+    "A"
+   ],
+   [
+    "HUF",
+    "73909001",
+    "",
+    "A"
+   ],
+   [
+    "SCHRADER",
+    "1210",
+    "met schroef",
+    "A"
+   ],
+   [
+    "VDO",
+    "S180052064Z",
+    "",
+    "A"
+   ],
+   [
+    "HELLA",
+    "6PP 358 375-001",
+    "",
+    "A"
+   ]
+  ],
+  "var": "Autodoc toont 19 sensoren voor type 23370 (met en zonder ventielen, verschillende uitvoeringen: RIDEX 2232W0011/0101/0105, BOSCH 0 273 014 056 tot 061, HUF 73909000 tot 002, SCHRADER 1210/2200/2210). De OE-lijsten noemen meerdere Renault-nummers; welke bij de VIN hoort is niet vastgesteld.",
+  "per": "per wiel (4 stuks)",
+  "note": "De OE-lijsten van HUF, SCHRADER en BOSCH zijn breed (60 tot 70 nummers, ook Nissan, Dacia); alleen de Renault-nummers op RIDEX en BOSCH zijn overgenomen. Ventielsteel en sensor worden als een geheel verkocht.",
+  "src": [
+   [
+    "https://www.autodoc.parts/bosch/25370186",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/ridex/8120775",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/tyre-pressure-control-system-10934/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "S3b-achteras-remmen-wielen:B_VALVECAP": {
+  "n": "Ventieldop (stofdop)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: niet apart in de Autodoc-lijst voor 23370.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_BALANS": {
+  "n": "Balansgewicht (plakgewicht)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per stuk",
+  "note": "Niet gevonden: handelsartikel zonder voertuigspecifiek nummer.",
+  "src": []
+ },
+ "S3b-achteras-remmen-wielen:B_REPAIRKIT_L": {
+  "n": "Reparatieset remklauw achter links Ø38 (zuigerafdichting en stofhoes)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "per remklauw (links)",
+  "note": "In de lijst 23370 alleen een set met \"Rear Axle, Right\" gevonden (RIDEX 405R0031); voor links niet bevestigd.",
+  "src": []
+ }
+}

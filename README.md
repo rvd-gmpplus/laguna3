@@ -143,12 +143,13 @@ Haperen de eerste frames (gemiddeld meer dan 40 ms over 20 frames tijdens een an
 | `index.html` | De gebouwde pagina (identiek aan het gepubliceerde artefact). |
 | `src/` | Broncode in delen: opmaak, geometrie, carrosserie, motor, aandrijflijn, onderstel, interieur, systemen, app-logica en presets. |
 | `src/panorama.js` | Het panoramadak: dakplaat met twee openingen, glaspanelen, dwarsbalk, zonneschermen met cassette, luchtgeleider en waterafvoer, met hun openers. De hemelbekleding met de afwerkring en de draaiknop in de hemelconsole staan in `src/interior.js`. |
-| `src/partnumbers.js` | De onderdeelnummers als gegevens. Gemaakt door `tools/orkestratie/build_pn.py`; niet met de hand bewerken. |
+| `src/partnumbers.js` | De onderdeelnummers als gegevens. Gemaakt door `tools/orkestratie/build_pn.py` uit `data/pn/` (de canonieke gegevens, zie `data/pn/README.md`); niet met de hand bewerken. |
 | `docs/onderdeelnummers.csv` | Dezelfde nummers als tabel: pad, verkoopeenheid, status, merk, nummer, bewijsniveau, opmerking, bron en de gekozen uitvoering voor de auto van de gebruiker. |
 | `build.py` | Voegt `src/` samen tot `index.html`, controleert de broncode en maakt een testversie. |
 | `tools/` | Testscripts (Playwright, headless Chromium) en `anchors.json` met de ankernamen. |
 | `tools/opentest.py` | Toetst elke opener op eindstand, ondergrens, botsing, blootleggen, prestaties en spookbatch. |
 | `tools/open_allow.json` | De uitzonderingen op de botsingscontrole van opentest: 9 regels, elk met reden. |
+| `data/` | De canonieke nummergegevens (`data/pn/`, zie de README daar) en `tree.json`, alle paden van de boom. |
 | `tools/orkestratie/` | Hulpscripts van de bouwsessie: screenshotsets, eindcijfers, volledige testset in één keer, ruimtebezetting en eigendomscontrole. Zie de README in die map. |
 | `docs/` | Specificaties met bronnen, ontwerp en architectuur, testverslag, premortem, screenshots. |
 | `docs/v1/index.html` | De eerste versie van de pagina, bewaard als terugvaloptie. |

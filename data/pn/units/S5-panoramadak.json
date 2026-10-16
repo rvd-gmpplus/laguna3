@@ -1,0 +1,161 @@
+{
+ "S5-panoramadak:U_PANO_COMPLEET": {
+  "n": "Panoramadak compleet (dakeenheid met glas)",
+  "st": "vin",
+  "oe": [
+   [
+    "913500002R",
+    "Alleen uit een advertentie: \"DACH PANORAMA TEHNK RENAULT LAGUNA III\", Numery katalogowe 913500002R, uit een Laguna III liftback 5-deurs uit 2008 (fase 1, 2.0 dCi M9R, automaat AJ0) met SZYBERDACH-PANORAMA. Niet in de Renault-catalogus gecontroleerd; fase 2 niet bevestigd; mogelijk vervangen door een nieuwer nummer. Wat de eenheid precies omvat (met of zonder dakplaat, motor en schermen) is niet vastgesteld.",
+    "D"
+   ]
+  ],
+  "am": [],
+  "var": "Laguna III hatchback (liftback) met elektrisch panoramadak; advertentie betreft fase 1",
+  "per": "stuk",
+  "note": "Niveau C: advertentie noemt type en panoramadak. De Renault-catalogus (partsouq) was in deze controle niet bereikbaar (Cloudflare en verlopen catalogussleutels), dus geen nummer kon op niveau B worden bevestigd. Controleer het nummer op VIN bij een Renault-dealer voor bestellen.",
+  "src": [
+   [
+    "https://czesci-kruszwica.pl/pl/p/DACH-PANORAMA-TEHNK-RENAULT-LAGUNA-III-913500002R/32214",
+    "czesci-kruszwica.pl"
+   ]
+  ]
+ },
+ "S5-panoramadak:U_DAKPLAAT": {
+  "n": "Dakplaat hatchback met openingen voor panoramadak",
+  "st": "vin",
+  "oe": [
+   [
+    "732100002R",
+    "Alleen uit een advertentie: \"ROOF PANORAMA RENAULT LAGUNA III 3 HATCHBACK HB\", catalogusnummer 732100002R, Renault OE, gebruikt, rood, 17 kg. De foto toont de dakplaat met de twee glazen erin; of het nummer de kale plaat of de plaat met panoramadak is, is niet vastgesteld. Niet in de Renault-catalogus gecontroleerd; fase niet genoemd.",
+    "D"
+   ]
+  ],
+  "am": [],
+  "var": "Laguna III hatchback met panoramadak",
+  "per": "stuk",
+  "note": "Niveau C: advertentie noemt hatchback en panorama. De Renault-catalogus (partsouq) was in deze controle niet bereikbaar (Cloudflare en verlopen catalogussleutels), dus geen nummer kon op niveau B worden bevestigd.",
+  "src": [
+   [
+    "https://autobutik.com.ua/en/product/17834280200/",
+    "autobutik.com.ua"
+   ]
+  ]
+ },
+ "S5-panoramadak:U_GLAS_VOOR": {
+  "n": "Glaspaneel voor (beweegbaar)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Geen controleerbaar nummer. De Renault-catalogus (partsouq) was in deze controle niet bereikbaar (Cloudflare en verlopen catalogussleutels), dus geen nummer kon op niveau B worden bevestigd.",
+  "src": []
+ },
+ "S5-panoramadak:U_GLASKADER_ACHTER": {
+  "n": "Glaskader met vast achterglas",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Kandidaat uit de catalogus (GLASS FRAME) kon niet worden gecontroleerd; de Allegro-advertentie gaf geen inhoud terug. De Renault-catalogus (partsouq) was in deze controle niet bereikbaar (Cloudflare en verlopen catalogussleutels), dus geen nummer kon op niveau B worden bevestigd.",
+  "src": []
+ },
+ "S5-panoramadak:U_MECHANISME": {
+  "n": "Mechanisme en frame panoramadak (rails, dwarsbalk, dakframe)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Kandidaten uit de catalogus (SUNROOF MECHANISM, reparatieset schuifgeleiders) niet controleerbaar. De Renault-catalogus (partsouq) was in deze controle niet bereikbaar (Cloudflare en verlopen catalogussleutels), dus geen nummer kon op niveau B worden bevestigd.",
+  "src": []
+ },
+ "S5-panoramadak:U_DAKMOTOR": {
+  "n": "Dakmotor panoramadak",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Motornummer komt alleen voor in advertenties voor Laguna III fase 1 (koetswerk niet genoemd) en fase 2 break; geen advertentie noemt de hatchback, dus niet doorgelaten. Ook het Webasto-nummer staat alleen op een gebruikt fase 1-exemplaar zonder koetsvermelding. De Renault-catalogus (partsouq) was in deze controle niet bereikbaar (Cloudflare en verlopen catalogussleutels), dus geen nummer kon op niveau B worden bevestigd.",
+  "src": []
+ },
+ "S5-panoramadak:U_KABELBOOM": {
+  "n": "Kabelboom dakmotor",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Catalogus-kandidaat niet controleerbaar. De Renault-catalogus (partsouq) was in deze controle niet bereikbaar (Cloudflare en verlopen catalogussleutels), dus geen nummer kon op niveau B worden bevestigd.",
+  "src": []
+ },
+ "S5-panoramadak:U_LUCHTGELEIDER": {
+  "n": "Luchtgeleider (windscherm) panoramadak",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Catalogus-kandidaat niet controleerbaar. De Renault-catalogus (partsouq) was in deze controle niet bereikbaar (Cloudflare en verlopen catalogussleutels), dus geen nummer kon op niveau B worden bevestigd.",
+  "src": []
+ },
+ "S5-panoramadak:U_AFDICHTINGEN": {
+  "n": "Afdichtingen panoramadak",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Drie catalogus-kandidaten (SUN ROOF GASKET) niet controleerbaar; welke afdichting bij welke opening hoort is ook niet vastgesteld. De Renault-catalogus (partsouq) was in deze controle niet bereikbaar (Cloudflare en verlopen catalogussleutels), dus geen nummer kon op niveau B worden bevestigd.",
+  "src": []
+ },
+ "S5-panoramadak:U_SIERLIJST": {
+  "n": "Omlijsting (sierlijst) dakopening",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Catalogus-kandidaat (EMBELLISHER) niet controleerbaar. De Renault-catalogus (partsouq) was in deze controle niet bereikbaar (Cloudflare en verlopen catalogussleutels), dus geen nummer kon op niveau B worden bevestigd.",
+  "src": []
+ },
+ "S5-panoramadak:U_ZONNESCHERM_VOOR": {
+  "n": "Zonnescherm voor met cassette",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Geen nummer gevonden; ook de catalogusgroep Sunroof had volgens het eerdere onderzoek geen regel voor het scherm.",
+  "src": []
+ },
+ "S5-panoramadak:U_ZONNESCHERM_ACHTER": {
+  "n": "Zonnescherm achter met cassette",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Geen nummer gevonden; ook de catalogusgroep Sunroof had volgens het eerdere onderzoek geen regel voor het scherm.",
+  "src": []
+ },
+ "S5-panoramadak:U_WATERAFVOER": {
+  "n": "Waterafvoer panoramadak (goten en slangen)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Geen nummer gevonden; geen regel in de catalogusgroep Sunroof volgens het eerdere onderzoek.",
+  "src": []
+ },
+ "S5-panoramadak:U_HEMELCONSOLE": {
+  "n": "Hemelconsole dak (behuizing)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Geen nummer gevonden.",
+  "src": []
+ },
+ "S5-panoramadak:U_DAKSCHAKELAAR": {
+  "n": "Bediening panoramadak (draaiknop met noodsluitknop)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Catalogus-kandidaat (SW-SUN ROOF CONT, met vervangend nummer) niet controleerbaar; geen advertentie gevonden. De Renault-catalogus (partsouq) was in deze controle niet bereikbaar (Cloudflare en verlopen catalogussleutels), dus geen nummer kon op niveau B worden bevestigd.",
+  "src": []
+ }
+}

@@ -111,6 +111,10 @@ Publicatierooktest. Zet de CDN-versie zoals `build.py` hem in `index.html` schri
 
 Na publicatie moet de inhoud van de gepubliceerde URL gelijk zijn aan `index.html`. Dat controleert dit script niet. De orkestrator leest de URL terug en zoekt `index.html` byte voor byte in de teruggelezen pagina: het bestand moet er precies één keer en aaneengesloten in staan, met alleen het paginaskelet van de host eromheen. De uitkomst staat in de tabel hieronder.
 
+### `python3 tools/pncheck.py [--tree] [--update]`
+
+Herbouwt `src/partnumbers.js` en `docs/onderdeelnummers.csv` uit `data/pn/` in het geheugen en vergelijkt byte voor byte met de gecommitte bestanden (zonder browser; in de push-job van CI). Met `--tree` vergelijkt hij ook `data/tree.json` met de boom van de pagina; `--tree --update` schrijft `data/tree.json` opnieuw. Exitcode 1 bij een verschil, een pad buiten de boom, een onbekende eenheid, een keuze met een nummer dat niet in de lijst staat, of een bron zonder https.
+
 ### `python3 tools/tri.py [--gate] [--json UIT.json]`
 
 Telt driehoeken per hoofdgroep (met het aantal onderdelen per groep, zodat een zwaar deel dat van groep wisselt zichtbaar blijft) en toont de 25 zwaarste onderdelen. Met `--gate` faalt hij boven de budgetten in `tools/anchors.json` (`triangle_budgets`: 700.000 totaal, 240.000 Aandrijflijn, 190.000 Carrosserie, 125.000 Onderstel, 95.000 Interieur, en per systeem). De budgetten zijn alleen-lezen voor domeineigenaars; wijzigen alleen met een reden in `docs/onderzoek/beslissingen.md`. Zonder `--gate` is hij informatie.
