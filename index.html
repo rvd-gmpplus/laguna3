@@ -1,6 +1,6 @@
 <!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"></head><body>
 <title>Laguna III explosietekening</title>
-<meta name="model-version" content="8 (bron f1152a2)">
+<meta name="model-version" content="8 (bron 30a0da9)">
 <meta name="description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback (2011, 2.0 Turbo, automaat): 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
 <meta property="og:title" content="Laguna III explosietekening">
 <meta property="og:description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback: 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
@@ -610,7 +610,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
   <div id="press" hidden><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="28"/></svg></div>
   <div id="helpDlg" hidden><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
     <h2 id="helpTitle">Bediening</h2>
-    <p class="ver">Laguna III explosietekening, versie 8 (bron f1152a2)</p>
+    <p class="ver">Laguna III explosietekening, versie 8 (bron 30a0da9)</p>
     <div id="helpMouse"><h3>Met de muis</h3><dl>
       <dt>Klik</dt><dd>De groep van het onderdeel klapt uit; de rest blijft staan. Staat die groep al open, dan wordt het onderdeel uitgelicht.</dd>
       <dt>Dubbelklik</dt><dd>Direct naar dit onderdeel: alle groepen erboven gaan laag voor laag open.</dd>
@@ -8008,7 +8008,8 @@ function uiPlaceMore(g) {
     els.labels.appendChild(uiMoreEl);
   }
   const el = uiMoreEl;
-  if (!uiLabelsMore) { if (!el.hidden) { el.hidden = true; el.style.transform = 'translate(-9999px,-9999px)'; } return; }
+  // bij verbergen ook de onthouden plek wissen, anders blijft een chip die op dezelfde plek terugkomt op -9999 staan
+  if (!uiLabelsMore) { if (!el.hidden) { el.hidden = true; el.style.transform = 'translate(-9999px,-9999px)'; el._x = el._y = null; } return; }
   const txt = `+${uiLabelsMore} meer`;
   if (el.textContent !== txt) { el.textContent = txt; el.setAttribute('aria-label', `${uiLabelsMore} onderdelen meer zonder label; open de lijst`); el._w = 0; }
   el._g = g;

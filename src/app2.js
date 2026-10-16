@@ -1438,7 +1438,8 @@ function uiPlaceMore(g) {
     els.labels.appendChild(uiMoreEl);
   }
   const el = uiMoreEl;
-  if (!uiLabelsMore) { if (!el.hidden) { el.hidden = true; el.style.transform = 'translate(-9999px,-9999px)'; } return; }
+  // bij verbergen ook de onthouden plek wissen, anders blijft een chip die op dezelfde plek terugkomt op -9999 staan
+  if (!uiLabelsMore) { if (!el.hidden) { el.hidden = true; el.style.transform = 'translate(-9999px,-9999px)'; el._x = el._y = null; } return; }
   const txt = `+${uiLabelsMore} meer`;
   if (el.textContent !== txt) { el.textContent = txt; el.setAttribute('aria-label', `${uiLabelsMore} onderdelen meer zonder label; open de lijst`); el._w = 0; }
   el._g = g;
