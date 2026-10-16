@@ -1,6 +1,8 @@
 # Onderdeelnummers: de canonieke gegevens
 
-`tools/orkestratie/build_pn.py` bouwt hieruit `src/partnumbers.js` (het object `PN_DATA` in de pagina) en `docs/onderdeelnummers.csv`.
+`tools/orkestratie/build_pn.py` bouwt hieruit `src/partnumbers.js` (het object `PN_DATA` in de pagina) en `docs/onderdeelnummers.csv`
+(één rij per pad en nummer, met de eenheid, alle bronnen, variant, verpakking, regel, keuze en onderhoudsregels per rij; de kolommen
+staan in `docs/onderdeelnummers-schema.md`).
 `tools/pncheck.py` controleert dat die twee bestanden byte voor byte bij deze map horen, en met `--tree` dat `data/tree.json`
 gelijk is aan de boom van de pagina. Het chassisnummer en het kenteken van de gebruiker staan nergens in deze gegevens; alleen
 afgeleide feiten (bouwperiode, bak, emissieniveau) met hun grond.
