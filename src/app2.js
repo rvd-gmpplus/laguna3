@@ -8,7 +8,15 @@ const els = {
   menu: $('menu'), tip: $('tip'), press: $('press'), explode: $('explode'), explodeName: $('explodeName'), explodeOut: $('explodeOut'), play: $('play'), undo: $('undo'),
   help: $('help'), helpDlg: $('helpDlg'), tourBar: $('tourBar'), tourText: $('tourText'), tourStop: $('tourStop'), dock: $('dock'), topbar: $('topbar'),
   quality: $('tQuality'), qualityRow: $('qualityRow'), qualityNote: $('qualityNote'),
+  notice: $('notice'), toast: $('toast'), isoBadge: $('isoBadge'), isoName: $('isoName'),
 };
+// Tijden en afstanden van golf 5c-1 bij elkaar (er is nog geen CFG; oudere constanten staan bij hun gebruik).
+const UI_ISO_FADE_MS = 300;                  // U4: uitfaden van wat bij isoleren uit beeld gaat
+const UI_TOAST_MS = 1800;                    // U8, U9: korte melding onderin (volledige labelnaam, beeld opgeslagen)
+const UI_HINT_MS = 9000;                     // hint bij de start, daarna (U8) de suggestie tot de eerste klik
+const UI_LABEL_MAX = 24, UI_LABEL_MAX_NARROW = 10; // U2: hoogstens zoveel labels; smal scherm (onder 600 px) minder
+const UI_THEME_KEY = 'laguna3-theme';        // U5: onthouden themakeuze (light, dark; systeem = niets bewaard)
+const UI_PRESS_VIBRATE_MS = 10;              // U8: trilling als de ring bij lang drukken vol is
 let MODE = 'part', LABELS = true, CTX = null, ACTIVE_PRESET = 'assembled', needs = true;
 let uiLabelForce = false;
 const requestRender = () => { needs = true; };
@@ -575,7 +583,62 @@ els.quality.addEventListener('change', e => uiSetLite(!e.target.checked));
 $('tDim').addEventListener('change', e => { uiDimOn = e.target.checked; if (!uiDimOn) uiSetDim(null); applyMats(); uiAfterAction(); });
 $('tBatch').addEventListener('change', e => { uiSetBatching(e.target.checked); requestRender(); });
 els.legend.innerHTML = Object.entries(SYS_COLORS).map(([k, c]) => `<span><i style="background:#${c.toString(16).padStart(6, '0')}"></i>${esc(k)}</span>`).join('');
-document.querySelectorAll('[data-cam]').forEach(b => b.addEventListener('click', () => { const nodes = contextNodes(), dir = DIRS[b.dataset.cam]; focusNodes(nodes, dir); uiLastFit = { nodes, dir, pad: 1.08 }; }));
+document.querySelectorAll('[data-cam]').forEach(b => b.addEventListener('click', () => focusNodes(contextNodes(), DIRS[b.dataset.cam])));
+// U5: thema. 'system' volgt prefers-color-scheme (geen data-theme); 'light' en 'dark' staan op <html> en in localStorage.
+// De MutationObserver op data-theme (hieronder bij thema) past lichten en vloer aan.
+const uiThemeBtns = [...document.querySelectorAll('#themeSeg [data-theme]')];
+function uiThemeChoice() { const t = document.documentElement.getAttribute('data-theme'); return t === 'light' || t === 'dark' ? t : 'system'; }
+function uiSetTheme(t) {
+  t = t === 'light' || t === 'dark' ? t : 'system';
+  if (t === 'system') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', t);
+  try { if (t === 'system') window.localStorage.removeItem(UI_THEME_KEY); else window.localStorage.setItem(UI_THEME_KEY, t); } catch (_) { }
+  uiSyncTheme();
+}
+function uiSyncTheme() {
+  const cur = uiThemeChoice();
+  uiThemeBtns.forEach(b => { const on = b.dataset.theme === cur; b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1; });
+}
+uiThemeBtns.forEach((b, i) => {
+  b.addEventListener('click', () => uiSetTheme(b.dataset.theme));
+  b.addEventListener('keydown', e => { if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return; const j = (i + (e.key === 'ArrowRight' ? 1 : uiThemeBtns.length - 1)) % uiThemeBtns.length; uiSetTheme(uiThemeBtns[j].dataset.theme); uiThemeBtns[j].focus(); e.preventDefault(); });
+});
+uiSyncTheme();
+// U9: beeld opslaan en de kaart afdrukken
+function uiSlug(s) { return uiNorm(s).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'beeld'; }
+function uiSaveImage() {
+  const n = SEL || ROOT, r = uiPnRec(n), nums = r && r.kind === 'zelf' && r.u ? [...(r.u.oe || []).map(x => x[0]), ...(r.u.am || []).map(x => x[0] + ' ' + x[1])] : [];
+  renderer.render(scene, camera); // op verzoek tekenen: de buffer wordt na het tonen niet bewaard
+  const dpr = renderer.getPixelRatio(), w = canvas.width, h = canvas.height, bar = Math.round(44 * dpr);
+  const c2 = document.createElement('canvas'); c2.width = w; c2.height = h + bar;
+  const g = c2.getContext('2d');
+  const cs = getComputedStyle(document.body);
+  g.fillStyle = cs.backgroundColor || '#e5e9ed'; g.fillRect(0, 0, w, h + bar);
+  g.drawImage(canvas, 0, 0);
+  g.fillStyle = cs.color || '#151a21'; g.textBaseline = 'middle';
+  g.font = `700 ${Math.round(15 * dpr)}px ${cs.fontFamily}`; g.fillText(n.name, Math.round(14 * dpr), h + bar / 2, w * 0.55);
+  g.font = `${Math.round(12 * dpr)}px ${cs.fontFamily}`; g.textAlign = 'right';
+  g.fillText((nums.length ? 'Onderdeelnummer ' + nums.slice(0, 2).join(', ') + ' · ' : '') + 'Laguna III explosietekening, versie ' + uiVersion, w - Math.round(14 * dpr), h + bar / 2, w * 0.43);
+  const name = `laguna3-${uiSlug(n.name)}.png`;
+  return new Promise(res => c2.toBlob(blob => {
+    if (!blob) { uiToast('Het beeld kon niet worden opgeslagen.'); res(null); return; }
+    const a = document.createElement('a'), url = URL.createObjectURL(blob);
+    a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    uiToast('Beeld opgeslagen als ' + name);
+    res({ name, w: c2.width, h: c2.height, numbers: nums });
+  }, 'image/png'));
+}
+$('btnShot').onclick = () => { uiSaveImage(); };
+$('btnPrint').onclick = () => { showTab('info'); try { window.print(); } catch (_) { } };
+// korte melding onderin (U8, U9); een nieuwe vervangt de vorige
+let uiToastTimer = 0;
+function uiToast(txt) {
+  els.toast.textContent = txt; els.toast.hidden = false; els.toast.classList.remove('gone');
+  clearTimeout(uiToastTimer);
+  uiToastTimer = setTimeout(() => { els.toast.classList.add('gone'); setTimeout(() => { if (els.toast.classList.contains('gone')) els.toast.hidden = true; }, REDUCED ? 0 : 300); }, UI_TOAST_MS);
+}
+// R2: melding die blijft staan tot ze wordt weggehaald (contextverlies)
+function uiNotice(txt) { els.notice.hidden = !txt; els.notice.textContent = txt || ''; }
 $('btnExplodeAll').onclick = () => { const r = uiScopeRoot(); uiPush(); explodeAllUnder(r); CTX = r; uiLabelForce = false; clearPreset(); focusNodes(contextNodes(), null, 1.02); uiAfterAction(); };
 $('btnCollapseAll').onclick = () => { uiPush(); collapseAll(); uiDrop(); CTX = null; clearPreset(); focusNodes(contextNodes()); uiAfterAction(); };
 $('btnShowAll').onclick = () => { uiPush(); isolate([]); clearPreset(); select(ROOT); focusNodes([ROOT]); uiAfterAction(); };
@@ -1421,8 +1484,19 @@ function uiWarmMaterials() {
   };
   setTimeout(step, 600);
 }
-canvas.addEventListener('webglcontextlost', e => e.preventDefault());
-canvas.addEventListener('webglcontextrestored', () => requestRender());
+// R2: bij contextverlies een melding en preventDefault (anders herstelt de browser de context niet); bij herstel de
+// omgevingskaart opnieuw maken (een rendertarget heeft geen kopie in het geheugen) en de melding weghalen
+let uiContextLost = false;
+canvas.addEventListener('webglcontextlost', e => {
+  e.preventDefault(); uiContextLost = true;
+  uiNotice('De 3D-weergave is onderbroken (de grafische context is verloren). De pagina herstelt dit meestal zelf; zo niet, laad haar dan opnieuw.');
+});
+canvas.addEventListener('webglcontextrestored', () => {
+  uiContextLost = false;
+  uiRemakeEnvironment(); // geometrie en gegevenstexturen zet three.js zelf opnieuw op de kaart
+  uiNotice(null);
+  requestRender();
+});
 
 /* ---------- render-lus ---------- */
 controls.addEventListener('change', requestRender);
@@ -1663,4 +1737,19 @@ window.__laguna = {
   pnRebuild: uiPnBuild, pnCheck: uiPnCheck, pnOf: x => { const n = typeof x === 'string' ? (uiByPath(x) || byName(x)) : x; const r = n && uiPnRec(n); return r ? { kind: r.kind, unit: r.id, rule: r.rule || null } : null; },
   setOpen: (name, v, instant) => { const r = uiSetOpen(name, v, instant); uiSyncOpenUi(); renderPanel(); requestRender(); return r; },
   openAll: (v, instant) => { for (const n of OPENERS) uiSetOpen(n, v, instant); uiSyncOpenUi(); renderPanel(); requestRender(); return OPENERS.length; },
+  // golf 5c-1: toetsbare toestand van de nieuwe functies
+  get lastError() { return window.__lagunaLastError || null; },           // R1b: laatste fout uit de globale handler
+  get contextLost() { return uiContextLost; },                           // R2
+  lastFit: () => !uiLastFit ? null : uiLastFit.preset ? { preset: uiLastFit.preset.id } : { nodes: uiLastFit.nodes.map(n => n.name), dir: uiLastFit.dir ? uiLastFit.dir.toArray() : null, pad: uiLastFit.pad }, // R3
+  tourState: () => appTour ? { step: appTour.i, steps: appTourSteps.length, paused: !!appTour.paused, auto: !!appTour.auto, preset: appTourSteps[appTour.i] } : null, // R4
+  tour: { pause: () => uiTourPause(true), resume: () => uiTourPause(false), prev: () => uiTourStep(-1), next: () => uiTourStep(1) },
+  labelsMore: () => uiLabelsMore,                                       // U2
+  get hintStage() { return uiHintStage; }, hintNext: uiHintNext,        // U8
+  get fading() { return !!uiFade; },                                    // U4
+  isolated: () => ISO.map(n => n.name),                                 // U4
+  theme: () => ({ choice: uiThemeChoice(), dark: getComputedStyle(document.documentElement).getPropertyValue('color-scheme').trim() === 'dark' }), // U5
+  setTheme: uiSetTheme,
+  norm: uiNorm, searchTerms: uiSearchTerms,                             // U10
+  saveImage: uiSaveImage,                                               // U9
+  toast: uiToast,                                                       // U8
 };

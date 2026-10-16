@@ -413,10 +413,42 @@ input[type=range]{width:100%;accent-color:var(--ink)}
   .xlbl{font-size:11px}
 }
 @media (prefers-reduced-motion: reduce){
-  #sheet,#hint,.switch,.switch::after{transition:none}
+  #sheet,#hint,#toast,.switch,.switch::after{transition:none}
   #press.run circle{animation-duration:.01s}
 }
+/* U9: afdrukken geeft alleen de onderdeelkaart (naam, beschrijving, specificaties, onderdeelnummers) */
+@media print{
+  #stage,#labels,#topbar,#dock,#menu,#hint,#tourBar,#tip,#press,#loading,#helpDlg,#notice,#toast,.grab,.tabs,#tab-tree,#tab-view,.sel-actions{display:none!important}
+  html,body,#app{position:static;overflow:visible;height:auto;background:#fff;color:#000}
+  #sheet{position:static;width:auto;height:auto!important;max-height:none;border:0;box-shadow:none;border-radius:0}
+  #tab-info{display:block!important}
+  .tabpanels{overflow:visible}
+}
 </style>
+<script>
+/* R1b: fouten vóór de eerste weergave vervangen de laadmelding door een korte melding met de versie; daarna alleen de console.
+   Staat hier (vóór de scripttags), zodat ook een script dat niet laadt of niet parset een melding geeft.
+   U5: een eerder gekozen thema staat al op <html> voordat de pagina tekent (geen flits). */
+(function () {
+  function fail(msg, src) {
+    var el = document.getElementById('loading'), v = (document.querySelector('meta[name="laguna-version"]') || {}).content || '?';
+    var loading = !!(el && !el.classList.contains('gone'));
+    window.__lagunaLastError = { message: String(msg), source: src, loading: loading, when: Date.now() };
+    if (!loading) { console.error('laguna3 (versie ' + v + '): ' + msg); return; }
+    var t = el.textContent || '', vt = 'Versie ' + v + '.';
+    // een voortgangsmelding ("Model opbouwen…", met daarachter de noscript-tekst) wordt vervangen; een eigen foutmelding van
+    // core.js of app1.js (zonder beletselteken) blijft staan en krijgt alleen de versie erbij
+    if (!t.trim() || t.indexOf('…') >= 0) el.textContent = 'De pagina kon niet worden geladen (' + msg + '). Laad de pagina opnieuw.';
+    if (el.textContent.indexOf(vt) < 0) el.textContent += ' ' + vt;
+  }
+  window.addEventListener('error', function (e) {
+    if (e.target && e.target !== window && e.target.tagName) fail('bestand niet geladen: ' + (e.target.src || e.target.href || e.target.tagName), 'resource');
+    else fail(e.message || (e.error && e.error.message) || 'onbekende fout', 'error');
+  }, true);
+  window.addEventListener('unhandledrejection', function (e) { var r = e.reason; fail(r && r.message ? r.message : String(r), 'rejection'); });
+  try { var th = window.localStorage.getItem('laguna3-theme'); if (th === 'light' || th === 'dark') document.documentElement.setAttribute('data-theme', th); } catch (e) { }
+})();
+</script>
 
 <div id="app">
   <canvas id="stage" tabindex="0" role="application" aria-label="3D-explosietekening van een Renault Laguna III hatchback. Klik op een onderdeel om het uit te klappen."></canvas>
