@@ -44,6 +44,8 @@ function uiClosedAbove(n) { for (let a = n.parent; a; a = a.parent) { if (!uiOpe
 function uiDeepestOpen(p) { let a = null; pathFrom(p).forEach(x => { if (x.asm && uiOpen(x)) a = x; }); return a; }
 
 /* ---------- selectie en paneel ---------- */
+// U7: de uitleg bij de hele auto in de modus Openen (de beschrijving in systems.js noemt het uitklappen)
+const uiOpenRootDesc = 'Renault Laguna III hatchback (fase 2, 2011) in Initiale Paris-uitvoering, zilvergrijs metallic (Gris Platine), met de 2.0 Turbo F4Rt-motor, zestraps automaat en elektrisch panoramadak. Openen: klik op de motorkap, een portier, een ruit, een spiegel, de achterklep, de tankklep of het panoramadak om het te openen; nog een klik sluit het weer. Rechtsklik, Shift+klik of vasthouden sluit de binnenste open opener.';
 function select(n, opts = {}) {
   n = n || uiScopeRoot();
   if (uiLifted && uiLifted !== n) uiDrop();
@@ -63,16 +65,19 @@ function renderPanel() {
     if (i) { const sp = document.createElement('span'); sp.textContent = '›'; els.crumbs.appendChild(sp); }
     const b = document.createElement('button'); b.textContent = a.name; b.onclick = () => { uiPush(); select(a, { focus: true }); uiAfterAction(); }; els.crumbs.appendChild(b);
   });
-  els.name.textContent = n.name;
+  // U6: de live regions (#selName, #selMeta) alleen beschrijven als er iets verandert; een schermlezer leest anders elke
+  // herhaalde opbouw van het paneel voor (bij elke handeling twee tot drie keer)
+  if (els.name.textContent !== n.name) els.name.textContent = n.name;
   let state;
   if (OPENMODE && n.opn && !n.opn.lead) state = n.ot > 0 ? '<span class="state open">Open</span>' : '<span class="state">Dicht</span>';
   else if (OPENMODE && n.asm) state = '<span class="state">Gemonteerd</span>';
   else if (n.asm) state = uiOpen(n) ? '<span class="state open">Uitgeklapt</span>' : (n.target > 0 ? '<span class="state">Deels uitgeklapt</span>' : '<span class="state">Ingeklapt</span>');
   else state = n === uiLifted ? '<span class="state open">Uitgelicht</span>' : '<span class="state">Onderdeel</span>';
   const isoTxt = ISO.includes(n) ? ' · geïsoleerd' : '';
-  els.meta.innerHTML = `${state}${n.asm ? fmtCount(n) : (n.parent ? 'in ' + esc(n.parent.name) : '')}${isoTxt}`;
-  // in Openen past de uitleg bij de wortel bij de modus (de beschrijving zelf noemt het uitklappen)
-  els.desc.textContent = (OPENMODE && n === ROOT) ? (n.d || '').replace(/ Klik op een onderdeel om het uit te klappen.*$/, '') + ' Openen: klik op de motorkap, een portier, een ruit, een spiegel, de achterklep, de tankklep of het panoramadak om het te openen; nog een klik sluit het weer.' : (n.d || '');
+  const meta = `${state}${n.asm ? fmtCount(n) : (n.parent ? 'in ' + esc(n.parent.name) : '')}${isoTxt}`;
+  if (els.meta._h !== meta) { els.meta._h = meta; els.meta.innerHTML = meta; }
+  // in Openen krijgt de wortel een eigen uitleg bij de modus (U7: een eigen tekst, geen knip uit de beschrijving in systems.js)
+  els.desc.textContent = (OPENMODE && n === ROOT) ? uiOpenRootDesc : (n.d || '');
   els.spec.innerHTML = (n.spec || []).map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('');
   els.spec.hidden = !n.spec;
   els.kids.innerHTML = '';
@@ -528,9 +533,24 @@ function treeRow(n, level) {
   if (n.asm && openRows.has(n.id)) { const ul = document.createElement('ul'); ul.setAttribute('role', 'group'); n.kids.forEach(k => ul.appendChild(treeRow(k, level + 1))); li.appendChild(ul); }
   return li;
 }
-const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+// U10: synoniemen. Een zoekterm die een woord uit een groep bevat, zoekt ook met de andere woorden van die groep
+// ("alternator" vindt de Dynamo, "remblok binnen" ook een remvoering). Vergelijken gebeurt op uiNorm (app1.js):
+// kleine letters zonder diakrieten, zodat "Röntgen", "rontgen" en "RONTGEN" hetzelfde zijn.
+const uiSynonyms = [
+  ['remvoering', 'remblok'], ['dynamo', 'alternator'], ['accu', 'batterij'], ['versnellingsbak', 'transmissie', 'automaat'],
+  ['uitlaat', 'demper'], ['koppeling', 'koppelomvormer'], ['bougie', 'ontstekingskaars'], ['schokdemper', 'demper'],
+  ['ruitenwisser', 'wisser'], ['stuurbekrachtiging', 'stuurpomp'],
+];
+// alle zoektermen voor q: q zelf en elke variant waarin een synoniem is ingevuld; terms[0] is q
+function uiSearchTerms(q) {
+  q = uiNorm(q).trim();
+  const terms = [q];
+  if (!q) return terms;
+  for (const group of uiSynonyms) for (const w of group) if (q.includes(w)) for (const o of group) { if (o === w) continue; const v = q.replace(w, o); if (!terms.includes(v)) terms.push(v); }
+  return terms;
+}
 function renderTree() {
-  const q = norm(els.search.value.trim());
+  const terms = uiSearchTerms(els.search.value), q = terms[0];
   els.tree.innerHTML = '';
   const ul = document.createElement('ul');
   if (q.length >= 2) {
@@ -736,13 +756,24 @@ function uiBuildCats() {
     if (!list.length) continue;
     const b = document.createElement('button');
     b.className = 'cat'; b.dataset.cat = cat; b.setAttribute('aria-haspopup', 'menu'); b.setAttribute('aria-expanded', 'false');
+    b.tabIndex = els.presets.children.length ? -1 : 0; // U6: één tabstop voor de werkbalk, pijlen lopen erdoorheen
     b.innerHTML = `<b>${esc(cat)}</b><small></small>`;
     b.onclick = () => (uiMenuCat === cat ? uiCloseMenu(true) : uiOpenMenu(cat, b));
     b.addEventListener('keydown', e => { if (e.key === 'ArrowUp' || e.key === 'ArrowDown') { e.preventDefault(); uiOpenMenu(cat, b); } });
+    b.addEventListener('focus', () => uiCatTabStop(b));
     els.presets.appendChild(b);
   }
   uiSyncCats();
 }
+function uiCatTabStop(b) { for (const c of els.presets.children) c.tabIndex = c === b ? 0 : -1; }
+// pijlen links en rechts, Home en End in de werkbalk met presetcategorieën (role="toolbar")
+els.presets.addEventListener('keydown', e => {
+  if (!/^(ArrowLeft|ArrowRight|Home|End)$/.test(e.key)) return;
+  const cats = [...els.presets.children], i = cats.indexOf(document.activeElement);
+  if (i < 0 || !cats.length) return;
+  const j = e.key === 'Home' ? 0 : e.key === 'End' ? cats.length - 1 : (i + (e.key === 'ArrowRight' ? 1 : cats.length - 1)) % cats.length;
+  e.preventDefault(); uiCatTabStop(cats[j]); cats[j].focus();
+});
 function uiSyncCats() {
   const p = ACTIVE_PRESET && appPresetById.get(ACTIVE_PRESET);
   for (const b of els.presets.children) {
@@ -772,11 +803,12 @@ function uiOpenMenu(cat, btn) {
   uiMenuCat = cat; uiMenuBtn = btn;
   const m = els.menu;
   m.innerHTML = '';
-  m.setAttribute('aria-label', 'Presets ' + cat);
+  // U6: de kop met de sluitknop staat buiten het element met role="menu"; dat bevat alleen menuitems
   const head = document.createElement('div'); head.className = 'mhead';
   head.innerHTML = `<span>${esc(cat)}</span>`;
   const close = document.createElement('button'); close.className = 'mclose'; close.setAttribute('aria-label', 'Menu sluiten'); close.textContent = '×'; close.onclick = () => uiCloseMenu(true);
   head.appendChild(close); m.appendChild(head);
+  const list = document.createElement('div'); list.setAttribute('role', 'menu'); list.setAttribute('aria-label', 'Presets ' + cat); m.appendChild(list);
   for (const p of PRESETS.filter(q => q.cat === cat && appPresetOk(q))) {
     const b = document.createElement('button');
     b.className = 'mi'; b.setAttribute('role', 'menuitem'); b.dataset.preset = p.id; b.tabIndex = -1;
@@ -784,7 +816,7 @@ function uiOpenMenu(cat, btn) {
     b.innerHTML = `<span class="mi-t">${esc(label)}${p.key ? `<kbd>${p.key}</kbd>` : ''}</span><span class="mi-n">${esc(p.note)}</span>`;
     if (p.id === ACTIVE_PRESET) b.setAttribute('aria-current', 'true');
     b.onclick = () => { uiCloseMenu(false); uiRunPreset(p.id); };
-    m.appendChild(b);
+    list.appendChild(b);
   }
   m.hidden = false;
   btn.setAttribute('aria-expanded', 'true');
@@ -1051,9 +1083,24 @@ function hideHint(instant) {
   try { window.localStorage.setItem(uiHintKey, '1'); } catch (_) { }
   setTimeout(() => { els.hint.hidden = true; uiUiChanged(); uiSyncLabels(); }, REDUCED ? 0 : 450);
 }
+// U7: het hulpvenster leest de categorieën en sneltoetsen uit appCats en PRESETS (niet met de hand bijhouden)
+function uiFillHelp() {
+  const keyed = PRESETS.filter(p => p.key && appPresetOk(p)).sort((a, b) => a.key.localeCompare(b.key));
+  $('helpCats').textContent = `${appCats.length} categorieën (${appCats.join(', ')}) met kant-en-klare standen, ook de rondleiding.`;
+  $('helpKeysT').innerHTML = keyed.length ? `<kbd>${esc(keyed[0].key)}</kbd> tot <kbd>${esc(keyed[keyed.length - 1].key)}</kbd>` : '';
+  $('helpKeys').textContent = keyed.map(p => p.label).join(', ') + '.';
+}
+// U6: zolang het hulpvenster open is, is de rest van de pagina inert (waar de browser dat kent) en blijft Tab in het venster
+function uiHelpInert(on) {
+  if (!('inert' in HTMLElement.prototype)) return;
+  for (const el of els.helpDlg.parentElement.children) if (el !== els.helpDlg) el.inert = on;
+}
+function uiHelpFocusables() { return [...els.helpDlg.querySelectorAll('button, a[href], input, [tabindex]:not([tabindex="-1"])')].filter(e => !e.disabled && e.offsetParent !== null); }
 function uiHelp(open) {
   els.helpDlg.hidden = !open;
+  uiHelpInert(open);
   if (open) {
+    uiFillHelp();
     const m = $('helpMouse'), t = $('helpTouch');
     if (uiTouch) m.before(t); else t.before(m);
     $('helpClose').focus({ preventScroll: true });
@@ -1081,12 +1128,23 @@ function uiEnter(shift) {
 if (!uiTouch) els.search.placeholder += ' (toets /)';
 window.addEventListener('keydown', e => {
   const t = e.target;
-  if (!els.helpDlg.hidden) { if (e.key === 'Escape') { e.preventDefault(); uiHelp(false); } return; }
+  if (!els.helpDlg.hidden) {
+    if (e.key === 'Escape') { e.preventDefault(); uiHelp(false); return; }
+    if (e.key === 'Tab') { // focusval: Tab en Shift+Tab lopen rond binnen het venster
+      const f = uiHelpFocusables(); if (!f.length) return;
+      const i = f.indexOf(document.activeElement);
+      if (e.shiftKey && (i <= 0)) { e.preventDefault(); f[f.length - 1].focus(); }
+      else if (!e.shiftKey && (i < 0 || i >= f.length - 1)) { e.preventDefault(); f[0].focus(); }
+    }
+    return;
+  }
   if (uiMenuCat && uiMenuKey(e)) return;
   const typing = t && ((t.tagName === 'INPUT' && !/^(range|checkbox|radio|button)$/.test(t.type)) || t.tagName === 'TEXTAREA' || t.isContentEditable);
   if (typing) { if (e.key === 'Escape') t.blur(); return; }
   if (e.ctrlKey || e.metaKey || e.altKey) return;
   const onCtl = !!(t && t.closest && t.closest('button, a, input, select, summary'));
+  // U6: Esc sluit eerst het mobiele paneel (de lade), daarna pas de rest
+  if (e.key === 'Escape' && uiSheetBottom() && els.sheet.dataset.state === 'open') { e.preventDefault(); setSheet('peek'); return; }
   if (e.key === 'Escape') { uiStopPlay(); uiStopTour(); hideHint(); uiBackground(); return; }
   if (e.key === 'Enter') { if (onCtl) return; e.preventDefault(); uiStopPlay(); uiStopTour(); hideHint(); uiEnter(e.shiftKey); return; }
   if (e.key === 'Backspace') { e.preventDefault(); uiStopPlay(); uiStopTour(); uiUndo(); return; }

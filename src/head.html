@@ -22,6 +22,7 @@
   --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
   --r:12px; --shadow:0 12px 32px rgba(18,24,32,.14);
   --panel-w:clamp(312px,29vw,368px);
+  --switch-off:#6b7683; /* schakelaar in de stand uit: minstens 3:1 tegen het paneel (WCAG 1.4.11) */
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){
@@ -30,7 +31,7 @@
     --ink:#e6eaee; --ink-2:#9ba6b2; --line:rgba(230,234,238,.13); --chip:#212a33; --chip-ink:#e6eaee;
     --accent:#f2c230; --on-accent:#1b1500; --focus:#86bcff; --danger:#ff8a80; --hover:#6aa8ff;
     --grid:rgba(230,234,238,.12); --grid-strong:rgba(230,234,238,.24); --shade:rgba(0,0,0,.55); --leader:rgba(230,234,238,.6);
-    --shadow:0 12px 32px rgba(0,0,0,.5); color-scheme:dark;
+    --shadow:0 12px 32px rgba(0,0,0,.5); --switch-off:#8a95a2; color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
@@ -38,7 +39,7 @@
   --ink:#e6eaee; --ink-2:#9ba6b2; --line:rgba(230,234,238,.13); --chip:#212a33; --chip-ink:#e6eaee;
   --accent:#f2c230; --on-accent:#1b1500; --focus:#86bcff; --danger:#ff8a80; --hover:#6aa8ff;
   --grid:rgba(230,234,238,.12); --grid-strong:rgba(230,234,238,.24); --shade:rgba(0,0,0,.55); --leader:rgba(230,234,238,.6);
-  --shadow:0 12px 32px rgba(0,0,0,.5); color-scheme:dark;
+  --shadow:0 12px 32px rgba(0,0,0,.5); --switch-off:#8a95a2; color-scheme:dark;
 }
 [hidden]{display:none!important}
 html,body{height:100%}
@@ -49,7 +50,9 @@ button{cursor:pointer}
 kbd{font-family:var(--f-mono);font-size:10.5px;font-weight:500;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 5px;color:var(--ink-2);background:var(--chip)}
 #app{position:fixed;inset:0;overflow:hidden}
 #stage{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;outline:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
-#stage:focus,#stage:focus-visible{outline:none}
+/* toetsenbordfocus op het canvas is zichtbaar als rand langs het beeld (WCAG 2.4.7); na een klik of tik niet */
+#stage:focus{outline:none}
+#stage:focus-visible{outline:3px solid var(--focus);outline-offset:-3px}
 /* ---------- bovenbalk ---------- */
 #topbar{position:absolute;left:0;right:0;top:0;display:flex;align-items:flex-start;gap:12px;justify-content:space-between;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 10px;pointer-events:none}
 #topbar>*{pointer-events:auto}
@@ -149,7 +152,7 @@ dl.spec dd{margin:0;font-family:var(--f-mono);font-size:12.5px;font-variant-nume
 .ctl{display:grid;gap:14px}
 .ctl label.row{display:flex;align-items:center;justify-content:space-between;gap:12px;font-weight:700;font-size:14px}
 .ctl .row small{display:block;font-weight:400;color:var(--ink-2);font-size:12px}
-.switch{appearance:none;-webkit-appearance:none;width:44px;height:26px;border-radius:999px;background:var(--line);position:relative;flex:0 0 auto;margin:0;cursor:pointer;transition:background .2s}
+.switch{appearance:none;-webkit-appearance:none;width:44px;height:26px;border-radius:999px;background:var(--switch-off);position:relative;flex:0 0 auto;margin:0;cursor:pointer;transition:background .2s}
 .switch::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--surface-solid);box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .2s}
 .switch:checked{background:var(--ink)}
 .switch:checked::after{transform:translateX(18px)}
@@ -509,9 +512,9 @@ input[type=range]{width:100%;accent-color:var(--ink)}
       </div>
     </div>
     <div class="tabs" role="tablist">
-      <button role="tab" id="tabbtn-info" aria-selected="true" aria-controls="tab-info">Onderdeel</button>
-      <button role="tab" id="tabbtn-tree" aria-selected="false" aria-controls="tab-tree">Onderdelen</button>
-      <button role="tab" id="tabbtn-view" aria-selected="false" aria-controls="tab-view">Weergave</button>
+      <button role="tab" id="tabbtn-info" aria-selected="true" aria-controls="tab-info" tabindex="0">Onderdeel</button>
+      <button role="tab" id="tabbtn-tree" aria-selected="false" aria-controls="tab-tree" tabindex="-1">Onderdelen</button>
+      <button role="tab" id="tabbtn-view" aria-selected="false" aria-controls="tab-view" tabindex="-1">Weergave</button>
     </div>
     <div class="tabpanels">
       <section id="tab-info" role="tabpanel" aria-labelledby="tabbtn-info">
@@ -543,7 +546,13 @@ input[type=range]{width:100%;accent-color:var(--ink)}
           <label class="row" for="tDim"><span>Rest dimmen bij duiken<small>De rest van de auto vervaagt, het onderdeel springt eruit</small></span><input class="switch" type="checkbox" role="switch" id="tDim" checked></label>
           <label class="row" for="tBatch"><span>Gesloten groepen samenvoegen<small>Minder tekenopdrachten, zelfde beeld</small></span><input class="switch" type="checkbox" role="switch" id="tBatch" checked></label>
           <label class="row" for="tQuality" id="qualityRow" hidden><span>Volle kwaliteit<small>Scherpte en lakglans</small></span><input class="switch" type="checkbox" role="switch" id="tQuality"></label>
-          <p class="qnote" id="qualityNote" hidden>Lichte weergave ingeschakeld voor vloeiende beweging.</p>
+          <p class="qnote" id="qualityNote" hidden>Lichte weergave ingeschakeld voor vloeiende beweging: minder scherpte en geen lakglans. Zet Volle kwaliteit aan om terug te schakelen; blijft het haperen, sluit dan andere tabbladen of zet hardwareversnelling aan in de browser.</p>
+          <div><p class="kids-title">Thema</p>
+            <div class="seg" id="themeSeg" role="radiogroup" aria-label="Thema: licht, donker of volg het systeem">
+              <button role="radio" aria-checked="false" tabindex="-1" data-theme="light">Licht</button>
+              <button role="radio" aria-checked="false" tabindex="-1" data-theme="dark">Donker</button>
+              <button role="radio" aria-checked="true" tabindex="0" data-theme="system">Systeem</button>
+            </div></div>
           <div><p class="kids-title">Camera</p>
             <div class="camgrid">
               <button class="btn" data-cam="front">Voor</button><button class="btn" data-cam="side">Zij</button><button class="btn" data-cam="rear">Achter</button>
@@ -614,7 +623,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
       <dt>Uitklappen · Openen</dt><dd>Bovenin: Uitklappen haalt groepen uit elkaar, Openen laat portieren, kap, klep en andere openers draaien of schuiven. Bij Openen opent een klik de buitenste dichte opener op het onderdeel, daarna de volgende naar binnen; zijn ze open, dan sluit de binnenste. Rechtsklik, Shift+klik of vasthouden sluit de binnenste open opener. Het dock heeft dan Alles open, Alles dicht en een lijst van alle openers.</dd>
       <dt>Klik: …</dt><dd>Onderdeel (standaard), Laag voor laag (van buiten naar binnen), Inklappen of alleen Info.</dd>
       <dt>Explosie</dt><dd>Schuif om de gekozen groep laag voor laag uit elkaar te halen; Demonteren en Monteren spelen dat af.</dd>
-      <dt>Presets</dt><dd>Zeven categorieën met kant-en-klare standen, ook de rondleiding.</dd>
+      <dt>Presets</dt><dd id="helpCats"></dd>
       <dt>Groter geheel</dt><dd>In het paneel: klapt de eerstvolgende dichte groep erboven uit.</dd>
       <dt>Stap terug</dt><dd>Maakt de laatste handeling ongedaan.</dd></dl>
     <h3>Toetsen</h3><dl>
@@ -623,7 +632,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
       <dt><kbd>&uarr;</kbd> <kbd>&darr;</kbd> <kbd>&larr;</kbd> <kbd>&rarr;</kbd></dt><dd>Door de onderdelen lopen: bovenliggende groep, eerste deel, vorige of volgende op hetzelfde niveau.</dd>
       <dt><kbd>O</kbd></dt><dd>Wisselt tussen Uitklappen en Openen. In Openen opent <kbd>Enter</kbd> de opener van de selectie en sluit <kbd>Shift</kbd>+<kbd>Enter</kbd> hem.</dd>
       <dt><kbd>Esc</kbd></dt><dd>Menu sluiten of de hele auto selecteren.</dd>
-      <dt><kbd>0</kbd> tot <kbd>9</kbd></dt><dd>Gemonteerd, Hoofdgroepen, Motor, Motor tot op de bout, Automaat, Onderstel, Carrosserie, Interieur, Röntgen, Alles uit elkaar.</dd>
+      <dt id="helpKeysT"></dt><dd id="helpKeys"></dd>
       <dt><kbd>/</kbd></dt><dd>Zoek een onderdeel in de onderdelenlijst.</dd>
       <dt><kbd>?</kbd></dt><dd>Deze uitleg.</dd></dl>
     <div class="btnrow"><button class="btn primary" id="helpClose">Sluiten</button></div>

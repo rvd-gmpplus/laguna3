@@ -22,6 +22,8 @@ for (const [k, c] of Object.entries(SYS_COLORS)) SYS_MATS[k] = new THREE.MeshSta
 const uiById = new Map();
 const uiNames = new Map();     // naam -> eerste knoop
 const uiNameCount = new Map(); // naam -> aantal
+// U10: zoeknormalisatie als functie (kleine letters, zonder diakrieten), voor namen én zoektermen
+const uiNorm = s => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 // telling, systeem, lokale middens
 ROOT.obj.updateMatrixWorld(true);
 const _box = new THREE.Box3(), _v = V3(0, 0, 0);
@@ -47,7 +49,7 @@ for (const n of ALL) {
   n.off = V3(0, 0, 0); n.off0 = V3(0, 0, 0); n.off1 = V3(0, 0, 0); n.pull = V3(0, 0, 0); n.liftV = V3(0, 0, 0);
   n.hasOff = false; n.ok = 1; n.odur = 0.5; n.odelay = 0; n.a0 = 0; n.k = 1; n.dur = 0.85; n.vis = true; n.ev = true;
   n.idx = n.parent ? n.parent.kids.indexOf(n) : 0;
-  n.norm = n.name.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  n.norm = uiNorm(n.name);
   uiById.set(n.id, n);
   if (!uiNames.has(n.name)) uiNames.set(n.name, n);
   uiNameCount.set(n.name, (uiNameCount.get(n.name) || 0) + 1);

@@ -1,5 +1,5 @@
 <title>Laguna III explosietekening</title>
-<meta name="laguna-version" content="7 (bron 99523b5)">
+<meta name="laguna-version" content="7 (bron 7ad478d)">
 <meta name="description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback (2011, 2.0 Turbo, automaat): 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
 <meta property="og:title" content="Laguna III explosietekening">
 <meta property="og:description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback: 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
@@ -22,6 +22,7 @@
   --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
   --r:12px; --shadow:0 12px 32px rgba(18,24,32,.14);
   --panel-w:clamp(312px,29vw,368px);
+  --switch-off:#6b7683; /* schakelaar in de stand uit: minstens 3:1 tegen het paneel (WCAG 1.4.11) */
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){
@@ -30,7 +31,7 @@
     --ink:#e6eaee; --ink-2:#9ba6b2; --line:rgba(230,234,238,.13); --chip:#212a33; --chip-ink:#e6eaee;
     --accent:#f2c230; --on-accent:#1b1500; --focus:#86bcff; --danger:#ff8a80; --hover:#6aa8ff;
     --grid:rgba(230,234,238,.12); --grid-strong:rgba(230,234,238,.24); --shade:rgba(0,0,0,.55); --leader:rgba(230,234,238,.6);
-    --shadow:0 12px 32px rgba(0,0,0,.5); color-scheme:dark;
+    --shadow:0 12px 32px rgba(0,0,0,.5); --switch-off:#8a95a2; color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
@@ -38,7 +39,7 @@
   --ink:#e6eaee; --ink-2:#9ba6b2; --line:rgba(230,234,238,.13); --chip:#212a33; --chip-ink:#e6eaee;
   --accent:#f2c230; --on-accent:#1b1500; --focus:#86bcff; --danger:#ff8a80; --hover:#6aa8ff;
   --grid:rgba(230,234,238,.12); --grid-strong:rgba(230,234,238,.24); --shade:rgba(0,0,0,.55); --leader:rgba(230,234,238,.6);
-  --shadow:0 12px 32px rgba(0,0,0,.5); color-scheme:dark;
+  --shadow:0 12px 32px rgba(0,0,0,.5); --switch-off:#8a95a2; color-scheme:dark;
 }
 [hidden]{display:none!important}
 html,body{height:100%}
@@ -49,7 +50,9 @@ button{cursor:pointer}
 kbd{font-family:var(--f-mono);font-size:10.5px;font-weight:500;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 5px;color:var(--ink-2);background:var(--chip)}
 #app{position:fixed;inset:0;overflow:hidden}
 #stage{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;outline:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
-#stage:focus,#stage:focus-visible{outline:none}
+/* toetsenbordfocus op het canvas is zichtbaar als rand langs het beeld (WCAG 2.4.7); na een klik of tik niet */
+#stage:focus{outline:none}
+#stage:focus-visible{outline:3px solid var(--focus);outline-offset:-3px}
 /* ---------- bovenbalk ---------- */
 #topbar{position:absolute;left:0;right:0;top:0;display:flex;align-items:flex-start;gap:12px;justify-content:space-between;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 10px;pointer-events:none}
 #topbar>*{pointer-events:auto}
@@ -149,7 +152,7 @@ dl.spec dd{margin:0;font-family:var(--f-mono);font-size:12.5px;font-variant-nume
 .ctl{display:grid;gap:14px}
 .ctl label.row{display:flex;align-items:center;justify-content:space-between;gap:12px;font-weight:700;font-size:14px}
 .ctl .row small{display:block;font-weight:400;color:var(--ink-2);font-size:12px}
-.switch{appearance:none;-webkit-appearance:none;width:44px;height:26px;border-radius:999px;background:var(--line);position:relative;flex:0 0 auto;margin:0;cursor:pointer;transition:background .2s}
+.switch{appearance:none;-webkit-appearance:none;width:44px;height:26px;border-radius:999px;background:var(--switch-off);position:relative;flex:0 0 auto;margin:0;cursor:pointer;transition:background .2s}
 .switch::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--surface-solid);box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .2s}
 .switch:checked{background:var(--ink)}
 .switch:checked::after{transform:translateX(18px)}
@@ -509,9 +512,9 @@ input[type=range]{width:100%;accent-color:var(--ink)}
       </div>
     </div>
     <div class="tabs" role="tablist">
-      <button role="tab" id="tabbtn-info" aria-selected="true" aria-controls="tab-info">Onderdeel</button>
-      <button role="tab" id="tabbtn-tree" aria-selected="false" aria-controls="tab-tree">Onderdelen</button>
-      <button role="tab" id="tabbtn-view" aria-selected="false" aria-controls="tab-view">Weergave</button>
+      <button role="tab" id="tabbtn-info" aria-selected="true" aria-controls="tab-info" tabindex="0">Onderdeel</button>
+      <button role="tab" id="tabbtn-tree" aria-selected="false" aria-controls="tab-tree" tabindex="-1">Onderdelen</button>
+      <button role="tab" id="tabbtn-view" aria-selected="false" aria-controls="tab-view" tabindex="-1">Weergave</button>
     </div>
     <div class="tabpanels">
       <section id="tab-info" role="tabpanel" aria-labelledby="tabbtn-info">
@@ -543,7 +546,13 @@ input[type=range]{width:100%;accent-color:var(--ink)}
           <label class="row" for="tDim"><span>Rest dimmen bij duiken<small>De rest van de auto vervaagt, het onderdeel springt eruit</small></span><input class="switch" type="checkbox" role="switch" id="tDim" checked></label>
           <label class="row" for="tBatch"><span>Gesloten groepen samenvoegen<small>Minder tekenopdrachten, zelfde beeld</small></span><input class="switch" type="checkbox" role="switch" id="tBatch" checked></label>
           <label class="row" for="tQuality" id="qualityRow" hidden><span>Volle kwaliteit<small>Scherpte en lakglans</small></span><input class="switch" type="checkbox" role="switch" id="tQuality"></label>
-          <p class="qnote" id="qualityNote" hidden>Lichte weergave ingeschakeld voor vloeiende beweging.</p>
+          <p class="qnote" id="qualityNote" hidden>Lichte weergave ingeschakeld voor vloeiende beweging: minder scherpte en geen lakglans. Zet Volle kwaliteit aan om terug te schakelen; blijft het haperen, sluit dan andere tabbladen of zet hardwareversnelling aan in de browser.</p>
+          <div><p class="kids-title">Thema</p>
+            <div class="seg" id="themeSeg" role="radiogroup" aria-label="Thema: licht, donker of volg het systeem">
+              <button role="radio" aria-checked="false" tabindex="-1" data-theme="light">Licht</button>
+              <button role="radio" aria-checked="false" tabindex="-1" data-theme="dark">Donker</button>
+              <button role="radio" aria-checked="true" tabindex="0" data-theme="system">Systeem</button>
+            </div></div>
           <div><p class="kids-title">Camera</p>
             <div class="camgrid">
               <button class="btn" data-cam="front">Voor</button><button class="btn" data-cam="side">Zij</button><button class="btn" data-cam="rear">Achter</button>
@@ -598,7 +607,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
   <div id="press" hidden><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="28"/></svg></div>
   <div id="helpDlg" hidden><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
     <h2 id="helpTitle">Bediening</h2>
-    <p class="ver">Laguna III explosietekening, versie 7 (bron 99523b5)</p>
+    <p class="ver">Laguna III explosietekening, versie 7 (bron 7ad478d)</p>
     <div id="helpMouse"><h3>Met de muis</h3><dl>
       <dt>Klik</dt><dd>De groep van het onderdeel klapt uit; de rest blijft staan. Staat die groep al open, dan wordt het onderdeel uitgelicht.</dd>
       <dt>Dubbelklik</dt><dd>Direct naar dit onderdeel: alle groepen erboven gaan laag voor laag open.</dd>
@@ -614,7 +623,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
       <dt>Uitklappen · Openen</dt><dd>Bovenin: Uitklappen haalt groepen uit elkaar, Openen laat portieren, kap, klep en andere openers draaien of schuiven. Bij Openen opent een klik de buitenste dichte opener op het onderdeel, daarna de volgende naar binnen; zijn ze open, dan sluit de binnenste. Rechtsklik, Shift+klik of vasthouden sluit de binnenste open opener. Het dock heeft dan Alles open, Alles dicht en een lijst van alle openers.</dd>
       <dt>Klik: …</dt><dd>Onderdeel (standaard), Laag voor laag (van buiten naar binnen), Inklappen of alleen Info.</dd>
       <dt>Explosie</dt><dd>Schuif om de gekozen groep laag voor laag uit elkaar te halen; Demonteren en Monteren spelen dat af.</dd>
-      <dt>Presets</dt><dd>Zeven categorieën met kant-en-klare standen, ook de rondleiding.</dd>
+      <dt>Presets</dt><dd id="helpCats"></dd>
       <dt>Groter geheel</dt><dd>In het paneel: klapt de eerstvolgende dichte groep erboven uit.</dd>
       <dt>Stap terug</dt><dd>Maakt de laatste handeling ongedaan.</dd></dl>
     <h3>Toetsen</h3><dl>
@@ -623,7 +632,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
       <dt><kbd>&uarr;</kbd> <kbd>&darr;</kbd> <kbd>&larr;</kbd> <kbd>&rarr;</kbd></dt><dd>Door de onderdelen lopen: bovenliggende groep, eerste deel, vorige of volgende op hetzelfde niveau.</dd>
       <dt><kbd>O</kbd></dt><dd>Wisselt tussen Uitklappen en Openen. In Openen opent <kbd>Enter</kbd> de opener van de selectie en sluit <kbd>Shift</kbd>+<kbd>Enter</kbd> hem.</dd>
       <dt><kbd>Esc</kbd></dt><dd>Menu sluiten of de hele auto selecteren.</dd>
-      <dt><kbd>0</kbd> tot <kbd>9</kbd></dt><dd>Gemonteerd, Hoofdgroepen, Motor, Motor tot op de bout, Automaat, Onderstel, Carrosserie, Interieur, Röntgen, Alles uit elkaar.</dd>
+      <dt id="helpKeysT"></dt><dd id="helpKeys"></dd>
       <dt><kbd>/</kbd></dt><dd>Zoek een onderdeel in de onderdelenlijst.</dd>
       <dt><kbd>?</kbd></dt><dd>Deze uitleg.</dd></dl>
     <div class="btnrow"><button class="btn primary" id="helpClose">Sluiten</button></div>
@@ -5356,6 +5365,8 @@ for (const [k, c] of Object.entries(SYS_COLORS)) SYS_MATS[k] = new THREE.MeshSta
 const uiById = new Map();
 const uiNames = new Map();     // naam -> eerste knoop
 const uiNameCount = new Map(); // naam -> aantal
+// U10: zoeknormalisatie als functie (kleine letters, zonder diakrieten), voor namen én zoektermen
+const uiNorm = s => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 // telling, systeem, lokale middens
 ROOT.obj.updateMatrixWorld(true);
 const _box = new THREE.Box3(), _v = V3(0, 0, 0);
@@ -5381,7 +5392,7 @@ for (const n of ALL) {
   n.off = V3(0, 0, 0); n.off0 = V3(0, 0, 0); n.off1 = V3(0, 0, 0); n.pull = V3(0, 0, 0); n.liftV = V3(0, 0, 0);
   n.hasOff = false; n.ok = 1; n.odur = 0.5; n.odelay = 0; n.a0 = 0; n.k = 1; n.dur = 0.85; n.vis = true; n.ev = true;
   n.idx = n.parent ? n.parent.kids.indexOf(n) : 0;
-  n.norm = n.name.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  n.norm = uiNorm(n.name);
   uiById.set(n.id, n);
   if (!uiNames.has(n.name)) uiNames.set(n.name, n);
   uiNameCount.set(n.name, (uiNameCount.get(n.name) || 0) + 1);
@@ -6549,6 +6560,8 @@ function uiClosedAbove(n) { for (let a = n.parent; a; a = a.parent) { if (!uiOpe
 function uiDeepestOpen(p) { let a = null; pathFrom(p).forEach(x => { if (x.asm && uiOpen(x)) a = x; }); return a; }
 
 /* ---------- selectie en paneel ---------- */
+// U7: de uitleg bij de hele auto in de modus Openen (de beschrijving in systems.js noemt het uitklappen)
+const uiOpenRootDesc = 'Renault Laguna III hatchback (fase 2, 2011) in Initiale Paris-uitvoering, zilvergrijs metallic (Gris Platine), met de 2.0 Turbo F4Rt-motor, zestraps automaat en elektrisch panoramadak. Openen: klik op de motorkap, een portier, een ruit, een spiegel, de achterklep, de tankklep of het panoramadak om het te openen; nog een klik sluit het weer. Rechtsklik, Shift+klik of vasthouden sluit de binnenste open opener.';
 function select(n, opts = {}) {
   n = n || uiScopeRoot();
   if (uiLifted && uiLifted !== n) uiDrop();
@@ -6568,16 +6581,19 @@ function renderPanel() {
     if (i) { const sp = document.createElement('span'); sp.textContent = '›'; els.crumbs.appendChild(sp); }
     const b = document.createElement('button'); b.textContent = a.name; b.onclick = () => { uiPush(); select(a, { focus: true }); uiAfterAction(); }; els.crumbs.appendChild(b);
   });
-  els.name.textContent = n.name;
+  // U6: de live regions (#selName, #selMeta) alleen beschrijven als er iets verandert; een schermlezer leest anders elke
+  // herhaalde opbouw van het paneel voor (bij elke handeling twee tot drie keer)
+  if (els.name.textContent !== n.name) els.name.textContent = n.name;
   let state;
   if (OPENMODE && n.opn && !n.opn.lead) state = n.ot > 0 ? '<span class="state open">Open</span>' : '<span class="state">Dicht</span>';
   else if (OPENMODE && n.asm) state = '<span class="state">Gemonteerd</span>';
   else if (n.asm) state = uiOpen(n) ? '<span class="state open">Uitgeklapt</span>' : (n.target > 0 ? '<span class="state">Deels uitgeklapt</span>' : '<span class="state">Ingeklapt</span>');
   else state = n === uiLifted ? '<span class="state open">Uitgelicht</span>' : '<span class="state">Onderdeel</span>';
   const isoTxt = ISO.includes(n) ? ' · geïsoleerd' : '';
-  els.meta.innerHTML = `${state}${n.asm ? fmtCount(n) : (n.parent ? 'in ' + esc(n.parent.name) : '')}${isoTxt}`;
-  // in Openen past de uitleg bij de wortel bij de modus (de beschrijving zelf noemt het uitklappen)
-  els.desc.textContent = (OPENMODE && n === ROOT) ? (n.d || '').replace(/ Klik op een onderdeel om het uit te klappen.*$/, '') + ' Openen: klik op de motorkap, een portier, een ruit, een spiegel, de achterklep, de tankklep of het panoramadak om het te openen; nog een klik sluit het weer.' : (n.d || '');
+  const meta = `${state}${n.asm ? fmtCount(n) : (n.parent ? 'in ' + esc(n.parent.name) : '')}${isoTxt}`;
+  if (els.meta._h !== meta) { els.meta._h = meta; els.meta.innerHTML = meta; }
+  // in Openen krijgt de wortel een eigen uitleg bij de modus (U7: een eigen tekst, geen knip uit de beschrijving in systems.js)
+  els.desc.textContent = (OPENMODE && n === ROOT) ? uiOpenRootDesc : (n.d || '');
   els.spec.innerHTML = (n.spec || []).map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('');
   els.spec.hidden = !n.spec;
   els.kids.innerHTML = '';
@@ -7033,9 +7049,24 @@ function treeRow(n, level) {
   if (n.asm && openRows.has(n.id)) { const ul = document.createElement('ul'); ul.setAttribute('role', 'group'); n.kids.forEach(k => ul.appendChild(treeRow(k, level + 1))); li.appendChild(ul); }
   return li;
 }
-const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+// U10: synoniemen. Een zoekterm die een woord uit een groep bevat, zoekt ook met de andere woorden van die groep
+// ("alternator" vindt de Dynamo, "remblok binnen" ook een remvoering). Vergelijken gebeurt op uiNorm (app1.js):
+// kleine letters zonder diakrieten, zodat "Röntgen", "rontgen" en "RONTGEN" hetzelfde zijn.
+const uiSynonyms = [
+  ['remvoering', 'remblok'], ['dynamo', 'alternator'], ['accu', 'batterij'], ['versnellingsbak', 'transmissie', 'automaat'],
+  ['uitlaat', 'demper'], ['koppeling', 'koppelomvormer'], ['bougie', 'ontstekingskaars'], ['schokdemper', 'demper'],
+  ['ruitenwisser', 'wisser'], ['stuurbekrachtiging', 'stuurpomp'],
+];
+// alle zoektermen voor q: q zelf en elke variant waarin een synoniem is ingevuld; terms[0] is q
+function uiSearchTerms(q) {
+  q = uiNorm(q).trim();
+  const terms = [q];
+  if (!q) return terms;
+  for (const group of uiSynonyms) for (const w of group) if (q.includes(w)) for (const o of group) { if (o === w) continue; const v = q.replace(w, o); if (!terms.includes(v)) terms.push(v); }
+  return terms;
+}
 function renderTree() {
-  const q = norm(els.search.value.trim());
+  const terms = uiSearchTerms(els.search.value), q = terms[0];
   els.tree.innerHTML = '';
   const ul = document.createElement('ul');
   if (q.length >= 2) {
@@ -7241,13 +7272,24 @@ function uiBuildCats() {
     if (!list.length) continue;
     const b = document.createElement('button');
     b.className = 'cat'; b.dataset.cat = cat; b.setAttribute('aria-haspopup', 'menu'); b.setAttribute('aria-expanded', 'false');
+    b.tabIndex = els.presets.children.length ? -1 : 0; // U6: één tabstop voor de werkbalk, pijlen lopen erdoorheen
     b.innerHTML = `<b>${esc(cat)}</b><small></small>`;
     b.onclick = () => (uiMenuCat === cat ? uiCloseMenu(true) : uiOpenMenu(cat, b));
     b.addEventListener('keydown', e => { if (e.key === 'ArrowUp' || e.key === 'ArrowDown') { e.preventDefault(); uiOpenMenu(cat, b); } });
+    b.addEventListener('focus', () => uiCatTabStop(b));
     els.presets.appendChild(b);
   }
   uiSyncCats();
 }
+function uiCatTabStop(b) { for (const c of els.presets.children) c.tabIndex = c === b ? 0 : -1; }
+// pijlen links en rechts, Home en End in de werkbalk met presetcategorieën (role="toolbar")
+els.presets.addEventListener('keydown', e => {
+  if (!/^(ArrowLeft|ArrowRight|Home|End)$/.test(e.key)) return;
+  const cats = [...els.presets.children], i = cats.indexOf(document.activeElement);
+  if (i < 0 || !cats.length) return;
+  const j = e.key === 'Home' ? 0 : e.key === 'End' ? cats.length - 1 : (i + (e.key === 'ArrowRight' ? 1 : cats.length - 1)) % cats.length;
+  e.preventDefault(); uiCatTabStop(cats[j]); cats[j].focus();
+});
 function uiSyncCats() {
   const p = ACTIVE_PRESET && appPresetById.get(ACTIVE_PRESET);
   for (const b of els.presets.children) {
@@ -7277,11 +7319,12 @@ function uiOpenMenu(cat, btn) {
   uiMenuCat = cat; uiMenuBtn = btn;
   const m = els.menu;
   m.innerHTML = '';
-  m.setAttribute('aria-label', 'Presets ' + cat);
+  // U6: de kop met de sluitknop staat buiten het element met role="menu"; dat bevat alleen menuitems
   const head = document.createElement('div'); head.className = 'mhead';
   head.innerHTML = `<span>${esc(cat)}</span>`;
   const close = document.createElement('button'); close.className = 'mclose'; close.setAttribute('aria-label', 'Menu sluiten'); close.textContent = '×'; close.onclick = () => uiCloseMenu(true);
   head.appendChild(close); m.appendChild(head);
+  const list = document.createElement('div'); list.setAttribute('role', 'menu'); list.setAttribute('aria-label', 'Presets ' + cat); m.appendChild(list);
   for (const p of PRESETS.filter(q => q.cat === cat && appPresetOk(q))) {
     const b = document.createElement('button');
     b.className = 'mi'; b.setAttribute('role', 'menuitem'); b.dataset.preset = p.id; b.tabIndex = -1;
@@ -7289,7 +7332,7 @@ function uiOpenMenu(cat, btn) {
     b.innerHTML = `<span class="mi-t">${esc(label)}${p.key ? `<kbd>${p.key}</kbd>` : ''}</span><span class="mi-n">${esc(p.note)}</span>`;
     if (p.id === ACTIVE_PRESET) b.setAttribute('aria-current', 'true');
     b.onclick = () => { uiCloseMenu(false); uiRunPreset(p.id); };
-    m.appendChild(b);
+    list.appendChild(b);
   }
   m.hidden = false;
   btn.setAttribute('aria-expanded', 'true');
@@ -7556,9 +7599,24 @@ function hideHint(instant) {
   try { window.localStorage.setItem(uiHintKey, '1'); } catch (_) { }
   setTimeout(() => { els.hint.hidden = true; uiUiChanged(); uiSyncLabels(); }, REDUCED ? 0 : 450);
 }
+// U7: het hulpvenster leest de categorieën en sneltoetsen uit appCats en PRESETS (niet met de hand bijhouden)
+function uiFillHelp() {
+  const keyed = PRESETS.filter(p => p.key && appPresetOk(p)).sort((a, b) => a.key.localeCompare(b.key));
+  $('helpCats').textContent = `${appCats.length} categorieën (${appCats.join(', ')}) met kant-en-klare standen, ook de rondleiding.`;
+  $('helpKeysT').innerHTML = keyed.length ? `<kbd>${esc(keyed[0].key)}</kbd> tot <kbd>${esc(keyed[keyed.length - 1].key)}</kbd>` : '';
+  $('helpKeys').textContent = keyed.map(p => p.label).join(', ') + '.';
+}
+// U6: zolang het hulpvenster open is, is de rest van de pagina inert (waar de browser dat kent) en blijft Tab in het venster
+function uiHelpInert(on) {
+  if (!('inert' in HTMLElement.prototype)) return;
+  for (const el of els.helpDlg.parentElement.children) if (el !== els.helpDlg) el.inert = on;
+}
+function uiHelpFocusables() { return [...els.helpDlg.querySelectorAll('button, a[href], input, [tabindex]:not([tabindex="-1"])')].filter(e => !e.disabled && e.offsetParent !== null); }
 function uiHelp(open) {
   els.helpDlg.hidden = !open;
+  uiHelpInert(open);
   if (open) {
+    uiFillHelp();
     const m = $('helpMouse'), t = $('helpTouch');
     if (uiTouch) m.before(t); else t.before(m);
     $('helpClose').focus({ preventScroll: true });
@@ -7586,12 +7644,23 @@ function uiEnter(shift) {
 if (!uiTouch) els.search.placeholder += ' (toets /)';
 window.addEventListener('keydown', e => {
   const t = e.target;
-  if (!els.helpDlg.hidden) { if (e.key === 'Escape') { e.preventDefault(); uiHelp(false); } return; }
+  if (!els.helpDlg.hidden) {
+    if (e.key === 'Escape') { e.preventDefault(); uiHelp(false); return; }
+    if (e.key === 'Tab') { // focusval: Tab en Shift+Tab lopen rond binnen het venster
+      const f = uiHelpFocusables(); if (!f.length) return;
+      const i = f.indexOf(document.activeElement);
+      if (e.shiftKey && (i <= 0)) { e.preventDefault(); f[f.length - 1].focus(); }
+      else if (!e.shiftKey && (i < 0 || i >= f.length - 1)) { e.preventDefault(); f[0].focus(); }
+    }
+    return;
+  }
   if (uiMenuCat && uiMenuKey(e)) return;
   const typing = t && ((t.tagName === 'INPUT' && !/^(range|checkbox|radio|button)$/.test(t.type)) || t.tagName === 'TEXTAREA' || t.isContentEditable);
   if (typing) { if (e.key === 'Escape') t.blur(); return; }
   if (e.ctrlKey || e.metaKey || e.altKey) return;
   const onCtl = !!(t && t.closest && t.closest('button, a, input, select, summary'));
+  // U6: Esc sluit eerst het mobiele paneel (de lade), daarna pas de rest
+  if (e.key === 'Escape' && uiSheetBottom() && els.sheet.dataset.state === 'open') { e.preventDefault(); setSheet('peek'); return; }
   if (e.key === 'Escape') { uiStopPlay(); uiStopTour(); hideHint(); uiBackground(); return; }
   if (e.key === 'Enter') { if (onCtl) return; e.preventDefault(); uiStopPlay(); uiStopTour(); hideHint(); uiEnter(e.shiftKey); return; }
   if (e.key === 'Backspace') { e.preventDefault(); uiStopPlay(); uiStopTour(); uiUndo(); return; }
