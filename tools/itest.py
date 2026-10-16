@@ -191,6 +191,8 @@ window.__T = {
       setTimeout(() => { one(); c.setPointerCapture = sp; c.releasePointerCapture = rp; res(1); }, gap);
     });
   },
+  // grootste afstand tussen een telescoop van een open opener en zijn anker (gasveren, koordjes); 0 als alles aan elkaar zit
+  strutErr() { const L = this.L(); let mx = 0; for (const n of L.ALL) { const s = n.strut; if (!s || !s.leadN || s.leadN.ou === 0) continue; n.obj.updateWorldMatrix(true, false); s.na.obj.updateWorldMatrix(true, false); mx = Math.max(mx, s.na.obj.localToWorld(s.pa.clone()).distanceTo(n.obj.getWorldPosition(new THREE.Vector3()))); } return mx; },
   baseDev() { const L = this.L(); let mx = 0; for (const n of L.ALL) { if (!n.parent) continue; mx = Math.max(mx, n.obj.position.distanceTo(n.base)); } return mx; },
   stateNoHist() { const s = this.L().state(); delete s.history; return JSON.stringify(s); },
   sliderCheck(v) {
@@ -578,15 +580,28 @@ def run_view(s, tag, w, h, touch):
     preset(pg, 'assembled')
     st = pg.evaluate('__laguna.state()')
     check(f'14 [{tag}] een andere preset zet Uitklappen terug en sluit de openers', not st['openMode'] and not st['openers'] and not T(pg, 'openOpeners()'), json.dumps(st['openers']))
-    # wisselen van modus: Openen aan haalt uitgeklapte groepen dicht en heft isolatie op; uit sluit alle openers
+    # wisselen van modus: Openen aan haalt uitgeklapte groepen dicht en heft isolatie op; de openstand blijft bij elke wissel staan
     pg.evaluate("(() => { const L = __laguna; L.preset('engine'); L.finishAll(); })()")
     pg.evaluate("__laguna.setOpenMode(true)"); settle(pg)
     st = pg.evaluate('__laguna.state()')
     check(f'14 [{tag}] Openen aan: alles dicht en geen isolatie', st['openMode'] and not st['open'] and not st['iso'], json.dumps(st['open'][:3]) + ' ' + json.dumps(st['iso']))
-    pg.evaluate("__laguna.openAll(1, true)"); settle(pg)
+    pg.evaluate("__laguna.setOpen('Motorkap', 1, true); __laguna.setOpen('Achterklep', 1, true)"); settle(pg)
     pg.evaluate("__laguna.setOpenMode(false)"); settle(pg)
     st = pg.evaluate('__laguna.state()')
-    check(f'14 [{tag}] Openen uit sluit alle openers', not st['openMode'] and not T(pg, 'openOpeners()') and T(pg, 'baseDev()') < 1e-6, json.dumps(T(pg, 'openOpeners()')))
+    check(f'14 [{tag}] Openen uit laat de openers staan (motorkap en achterklep open in Uitklappen)', not st['openMode'] and {'Motorkap', 'Achterklep'} <= set(T(pg, 'openOpeners()')), json.dumps(T(pg, 'openOpeners()')))
+    # uitklappen met open openers: de gasveren en koordjes blijven aan hun ankers (zonder herberekening na een uitklapstap
+    # hing de linker gasveer 62 cm naast zijn anker), ook halverwege de animatie en na inklappen
+    pg.evaluate("document.getElementById('btnExplodeAll').click()"); pg.wait_for_timeout(300)
+    e_mid = T(pg, 'strutErr()')
+    pg.evaluate("__laguna.finishAll()"); settle(pg)
+    e_out = T(pg, 'strutErr()')
+    pg.evaluate("document.getElementById('btnCollapseAll').click(); __laguna.finishAll()"); settle(pg)
+    e_in = T(pg, 'strutErr()')
+    check(f'14 [{tag}] uitklappen met open openers: telescopen aan hun ankers', max(e_mid, e_out, e_in) < 1e-4 and len(T(pg, 'openOpeners()')) >= 2, f'{e_mid:.2g} {e_out:.2g} {e_in:.2g}')
+    pg.evaluate("__laguna.setOpenMode(true)"); settle(pg)
+    st = pg.evaluate('__laguna.state()')
+    check(f'14 [{tag}] Openen weer aan: openers blijven open, explosie dicht', st['openMode'] and not st['open'] and {'Motorkap', 'Achterklep'} <= set(T(pg, 'openOpeners()')), json.dumps(st['open'][:3]))
+    pg.evaluate("__laguna.openAll(0, true); __laguna.setOpenMode(false)"); settle(pg)
     # dock: Alles open, Alles dicht en de openerlijst
     preset(pg, 'assembled'); pg.evaluate("__laguna.setOpenMode(true)"); settle(pg, 250)
     n_open = pg.evaluate('__laguna.openers().length')

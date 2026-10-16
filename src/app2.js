@@ -406,7 +406,7 @@ els.focus.onclick = () => { focusNodes([SEL], null, SEL.asm ? 1.08 : 1.6, { min:
 // Klikregel: neem de openers op het pad van het geraakte onderdeel, van buiten naar binnen (volgers tellen als hun leider).
 // De eerste dichte opener gaat open; zijn ze allemaal open, dan sluit de binnenste. Een klik op de ruit van een dicht
 // portier opent dus het portier, daarna de ruit; een tweede klik op de ruit sluit de ruit weer. Rechtsklik, Shift+klik en
-// lang drukken sluiten de binnenste open opener op het pad. Ingang: alles dicht (Gemonteerd); uitgang: alle openers dicht.
+// lang drukken sluiten de binnenste open opener op het pad. Ingang: alles ingeklapt (Gemonteerd), openers blijven; uitgang: openers blijven staan.
 const uiOpenLabel = n => (n.opn && n.opn.label) || n.name;
 function uiOpenPath(p) {
   const chain = []; for (let a = p; a; a = a.parent) chain.unshift(a);
@@ -465,12 +465,10 @@ function uiSetOpenMode(on) {
   if (on === OPENMODE) return;
   uiStopPlay(); uiStopTour();
   uiPush();
-  if (on) {
-    appApplyPreset(appPresetById.get('assembled'), { noHistory: true, openMode: true });
-  } else {
-    OPENMODE = false;
-    for (const n of OPENERS) uiSetOpen(n, 0);
-  }
+  // de openstand blijft bij elke wissel staan: een geopende motorkap blijft open in Uitklappen (en kan daar uitgeklapt
+  // worden), en terug in Openen gaat de explosie dicht maar blijven de openers zoals ze waren
+  if (on) appApplyPreset(appPresetById.get('assembled'), { noHistory: true, openMode: true, keepOpen: true });
+  else OPENMODE = false;
   clearPreset();
   uiUiChanged();
   uiAfterAction();
@@ -1743,7 +1741,7 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { fo
 function finishAll() {
   if (uiRefitTimer) uiRefitNow();
   for (const n of uiAnim) { n.delay = 0; n.k = 1; n.amt = n.target; n.u = n.amt; placeKids(n); }
-  uiAnim.clear();
+  if (uiAnim.size) { uiAnim.clear(); uiOpenResync(); }
   for (const n of uiOffAnim) { n.odelay = 0; n.ok = 1; n.off.copy(n.off1); if (n.off.lengthSq() === 0) n.hasOff = false; uiPlace(n); }
   uiOffAnim.clear();
   for (const n of uiOpenAnim) { n.opk = 1; n.ou = n.ot; uiOpenApply(n); }

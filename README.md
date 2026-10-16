@@ -65,7 +65,7 @@ Naast Uitklappen heeft de pagina een tweede modus. In Openen blijft de auto gemo
 
 | Onderdeel | Wat er gebeurt |
 |---|---|
-| Segmentknop `Uitklappen \| Openen` | Staat in de bovenbalk, op de telefoon over de volle breedte. Sneltoets O wisselt. Bij het ingaan van Openen staat alles gemonteerd en is de isolatie weg; bij het verlaten gaan alle openers dicht. |
+| Segmentknop `Uitklappen \| Openen` | Staat in de bovenbalk, op de telefoon over de volle breedte. Sneltoets O wisselt. Bij het ingaan van Openen staat alles gemonteerd en is de isolatie weg; de openers blijven bij elke wissel zoals ze stonden, dus met een geopende motorkap kun je in Uitklappen de motor uit elkaar halen. Een preset of Alles dicht zet ze weer dicht. |
 | Klik of tik | De klikregel kijkt naar de openers op het pad van het geraakte onderdeel, van buiten naar binnen. De eerste dichte opener gaat open. Zijn ze allemaal open, dan sluit de binnenste. Een klik op de ruit of spiegel van een dicht portier opent dus eerst het portier. |
 | Dubbelklik | Gelijk aan een enkele klik. |
 | Rechtsklik, Shift+klik, lang drukken | Sluit de binnenste open opener op het pad. |

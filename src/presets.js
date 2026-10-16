@@ -8,7 +8,7 @@
 //   frame: [namen] wat in beeld moet (standaard iso, anders de hele auto),
 //   opens: [openers] of 'all': de modus Openen met precies deze openers open (pad of unieke naam; een volger telt als zijn
 //   leider). Zonder frame is het kader de open.look.nodes van de eerste opener, met zijn look.dir als richting. Alle andere
-//   presets zetten de modus terug op Uitklappen en sluiten de openers.
+//   presets zetten de modus terug op Uitklappen en sluiten de openers (de modusknop niet: die laat ze staan).
 //   soon: true wacht op een opener van een andere eigenaar: oplossen de namen nog niet, dan verschijnt de preset niet in de
 //   menu's en geeft checkPresets() geen fout; checkPresets(true) toetst ook deze presets.
 // Alleen ankernamen uit contract §8 / tools/anchors.json. Een preset waarvan een naam niet oplost, verschijnt niet in de menu's.
@@ -143,9 +143,10 @@ function appApplyPreset(p, opt = {}) {
   if (!opt.noHistory) uiPush();
   uiSetDim(null); // U19: een preset begint zonder gedimde rest
   // modus en openers: alleen een preset met opens zet Openen aan; elke andere zet Uitklappen terug en sluit de openers
+  // (behalve met keepOpen, de wissel met de modusknop)
   OPENMODE = opt.openMode != null ? opt.openMode : !!p.opens;
   const wantOpen = appWantOpen(p);
-  for (const n of OPENERS) if (!wantOpen.has(n)) uiSetOpen(n, 0);   // eerst sluiten (needs sluit mee), dan openen
+  if (!opt.keepOpen) for (const n of OPENERS) if (!wantOpen.has(n)) uiSetOpen(n, 0);   // eerst sluiten (needs sluit mee), dan openen; keepOpen: de modusknop laat ze staan
   for (const n of wantOpen) uiSetOpen(n, 1);
   const want = new Set();
   for (const name of p.open || []) want.add(byName(name));

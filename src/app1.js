@@ -241,6 +241,13 @@ function stepOpen(dt) {
   return true;
 }
 const uiAnyOpen = () => OPENERS.some(n => n.ou > 0 || n.ot > 0);
+// Na een uitklapstap staan de onderdelen op base + exv; een open opener moet daarna zijn volgers, vaste delen en
+// telescopen opnieuw zetten (een open achterklep in Uitklappen: de gasveren blijven aan hun ankers)
+function uiOpenResync() {
+  let any = false;
+  for (const n of OPENERS) if (n.ou > 0) { uiOpenApply(n); any = true; }
+  if (any) uiStrutSync();
+}
 // telescopen: richten van a naar b zolang hun leider open is; daarna terug naar de gebouwde stand
 function uiStrutSync() {
   if (!STRUTS.length) return;
@@ -298,6 +305,7 @@ function uiSetNow(n, t) { // direct, zonder animatie (schuif en afspelen)
   const was = n.target;
   n.target = t; n.amt = t; n.u = t; n.delay = 0; n.k = 1; uiAnim.delete(n);
   placeKids(n);
+  uiOpenResync();
   if (n.innerKids && (was === 0) !== (t === 0)) uiVisDirty = true;
 }
 function stepExplode(dt) {
@@ -310,6 +318,7 @@ function stepExplode(dt) {
     placeKids(n);
     if (n.k >= 1) { uiAnim.delete(n); if (n.innerKids && n.target === 0) uiVisDirty = true; }
   }
+  uiOpenResync();
   return true;
 }
 /* verschuivingen: optillen (preset) en uitlichten (klik op een onderdeel in een open groep) */
@@ -381,7 +390,7 @@ function applyVisibility() {
   uiPickable.length = 0;
   (function walk(n, inside, pv) {
     const ins = inside || !ISO.length || ISO.includes(n);
-    const own = (ins || onPath.has(n)) && !uiInnerHidden(n) && !(OPENMODE && n.hideN && n.hideN.some(m => m.ot > 0));
+    const own = (ins || onPath.has(n)) && !uiInnerHidden(n) && !(n.hideN && n.hideN.some(m => m.ot > 0));
     n.obj.visible = own; n.vis = own; n.ev = pv && own;
     if (!n.asm) { if (n.ev && ins) uiPickable.push(n.obj); return; }
     for (const k of n.kids) walk(k, ins, n.ev);
@@ -749,6 +758,7 @@ function uiUndo() {
 function uiSetSpread(v, rerender) {
   SPREAD = v; uiSpreadEnd = v;
   for (const n of ASMS) if (n.amt > 0) placeKids(n);
+  uiOpenResync();
   if (rerender) updateGround();
 }
 

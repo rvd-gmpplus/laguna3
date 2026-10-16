@@ -1,5 +1,5 @@
 <title>Laguna III explosietekening</title>
-<meta name="laguna-version" content="8 (bron 58abc68)">
+<meta name="laguna-version" content="8 (bron 06d2261)">
 <meta name="description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback (2011, 2.0 Turbo, automaat): 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
 <meta property="og:title" content="Laguna III explosietekening">
 <meta property="og:description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback: 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
@@ -609,7 +609,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
   <div id="press" hidden><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="28"/></svg></div>
   <div id="helpDlg" hidden><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
     <h2 id="helpTitle">Bediening</h2>
-    <p class="ver">Laguna III explosietekening, versie 8 (bron 58abc68)</p>
+    <p class="ver">Laguna III explosietekening, versie 8 (bron 06d2261)</p>
     <div id="helpMouse"><h3>Met de muis</h3><dl>
       <dt>Klik</dt><dd>De groep van het onderdeel klapt uit; de rest blijft staan. Staat die groep al open, dan wordt het onderdeel uitgelicht.</dd>
       <dt>Dubbelklik</dt><dd>Direct naar dit onderdeel: alle groepen erboven gaan laag voor laag open.</dd>
@@ -622,7 +622,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
       <dt>Vasthouden</dt><dd>Klapt de groep in waar het onderdeel in zit (de ring loopt vol).</dd>
       <dt>Eén vinger · twee vingers</dt><dd>Draaien · knijpen om te zoomen en schuiven.</dd></dl></div>
     <h3>Bediening onderin</h3><dl>
-      <dt>Uitklappen · Openen</dt><dd>Bovenin: Uitklappen haalt groepen uit elkaar, Openen laat portieren, kap, klep en andere openers draaien of schuiven. Bij Openen opent een klik de buitenste dichte opener op het onderdeel, daarna de volgende naar binnen; zijn ze open, dan sluit de binnenste. Rechtsklik, Shift+klik of vasthouden sluit de binnenste open opener. Het dock heeft dan Alles open, Alles dicht en een lijst van alle openers.</dd>
+      <dt>Uitklappen · Openen</dt><dd>Bovenin: Uitklappen haalt groepen uit elkaar, Openen laat portieren, kap, klep en andere openers draaien of schuiven. Bij Openen opent een klik de buitenste dichte opener op het onderdeel, daarna de volgende naar binnen; zijn ze open, dan sluit de binnenste. Rechtsklik, Shift+klik of vasthouden sluit de binnenste open opener. Het dock heeft dan Alles open, Alles dicht en een lijst van alle openers. Wat open staat, blijft open als je naar Uitklappen wisselt: open de motorkap en klap daarna de motor uit.</dd>
       <dt>Klik: …</dt><dd>Onderdeel (standaard), Laag voor laag (van buiten naar binnen), Inklappen of alleen Info.</dd>
       <dt>Explosie</dt><dd>Schuif om de gekozen groep laag voor laag uit elkaar te halen; Demonteren en Monteren spelen dat af.</dd>
       <dt>Presets</dt><dd id="helpCats"></dd>
@@ -5618,6 +5618,13 @@ function stepOpen(dt) {
   return true;
 }
 const uiAnyOpen = () => OPENERS.some(n => n.ou > 0 || n.ot > 0);
+// Na een uitklapstap staan de onderdelen op base + exv; een open opener moet daarna zijn volgers, vaste delen en
+// telescopen opnieuw zetten (een open achterklep in Uitklappen: de gasveren blijven aan hun ankers)
+function uiOpenResync() {
+  let any = false;
+  for (const n of OPENERS) if (n.ou > 0) { uiOpenApply(n); any = true; }
+  if (any) uiStrutSync();
+}
 // telescopen: richten van a naar b zolang hun leider open is; daarna terug naar de gebouwde stand
 function uiStrutSync() {
   if (!STRUTS.length) return;
@@ -5675,6 +5682,7 @@ function uiSetNow(n, t) { // direct, zonder animatie (schuif en afspelen)
   const was = n.target;
   n.target = t; n.amt = t; n.u = t; n.delay = 0; n.k = 1; uiAnim.delete(n);
   placeKids(n);
+  uiOpenResync();
   if (n.innerKids && (was === 0) !== (t === 0)) uiVisDirty = true;
 }
 function stepExplode(dt) {
@@ -5687,6 +5695,7 @@ function stepExplode(dt) {
     placeKids(n);
     if (n.k >= 1) { uiAnim.delete(n); if (n.innerKids && n.target === 0) uiVisDirty = true; }
   }
+  uiOpenResync();
   return true;
 }
 /* verschuivingen: optillen (preset) en uitlichten (klik op een onderdeel in een open groep) */
@@ -5758,7 +5767,7 @@ function applyVisibility() {
   uiPickable.length = 0;
   (function walk(n, inside, pv) {
     const ins = inside || !ISO.length || ISO.includes(n);
-    const own = (ins || onPath.has(n)) && !uiInnerHidden(n) && !(OPENMODE && n.hideN && n.hideN.some(m => m.ot > 0));
+    const own = (ins || onPath.has(n)) && !uiInnerHidden(n) && !(n.hideN && n.hideN.some(m => m.ot > 0));
     n.obj.visible = own; n.vis = own; n.ev = pv && own;
     if (!n.asm) { if (n.ev && ins) uiPickable.push(n.obj); return; }
     for (const k of n.kids) walk(k, ins, n.ev);
@@ -6126,6 +6135,7 @@ function uiUndo() {
 function uiSetSpread(v, rerender) {
   SPREAD = v; uiSpreadEnd = v;
   for (const n of ASMS) if (n.amt > 0) placeKids(n);
+  uiOpenResync();
   if (rerender) updateGround();
 }
 
@@ -6308,7 +6318,7 @@ function uiBatchStats() {
 //   frame: [namen] wat in beeld moet (standaard iso, anders de hele auto),
 //   opens: [openers] of 'all': de modus Openen met precies deze openers open (pad of unieke naam; een volger telt als zijn
 //   leider). Zonder frame is het kader de open.look.nodes van de eerste opener, met zijn look.dir als richting. Alle andere
-//   presets zetten de modus terug op Uitklappen en sluiten de openers.
+//   presets zetten de modus terug op Uitklappen en sluiten de openers (de modusknop niet: die laat ze staan).
 //   soon: true wacht op een opener van een andere eigenaar: oplossen de namen nog niet, dan verschijnt de preset niet in de
 //   menu's en geeft checkPresets() geen fout; checkPresets(true) toetst ook deze presets.
 // Alleen ankernamen uit contract §8 / tools/anchors.json. Een preset waarvan een naam niet oplost, verschijnt niet in de menu's.
@@ -6443,9 +6453,10 @@ function appApplyPreset(p, opt = {}) {
   if (!opt.noHistory) uiPush();
   uiSetDim(null); // U19: een preset begint zonder gedimde rest
   // modus en openers: alleen een preset met opens zet Openen aan; elke andere zet Uitklappen terug en sluit de openers
+  // (behalve met keepOpen, de wissel met de modusknop)
   OPENMODE = opt.openMode != null ? opt.openMode : !!p.opens;
   const wantOpen = appWantOpen(p);
-  for (const n of OPENERS) if (!wantOpen.has(n)) uiSetOpen(n, 0);   // eerst sluiten (needs sluit mee), dan openen
+  if (!opt.keepOpen) for (const n of OPENERS) if (!wantOpen.has(n)) uiSetOpen(n, 0);   // eerst sluiten (needs sluit mee), dan openen; keepOpen: de modusknop laat ze staan
   for (const n of wantOpen) uiSetOpen(n, 1);
   const want = new Set();
   for (const name of p.open || []) want.add(byName(name));
@@ -6957,7 +6968,7 @@ els.focus.onclick = () => { focusNodes([SEL], null, SEL.asm ? 1.08 : 1.6, { min:
 // Klikregel: neem de openers op het pad van het geraakte onderdeel, van buiten naar binnen (volgers tellen als hun leider).
 // De eerste dichte opener gaat open; zijn ze allemaal open, dan sluit de binnenste. Een klik op de ruit van een dicht
 // portier opent dus het portier, daarna de ruit; een tweede klik op de ruit sluit de ruit weer. Rechtsklik, Shift+klik en
-// lang drukken sluiten de binnenste open opener op het pad. Ingang: alles dicht (Gemonteerd); uitgang: alle openers dicht.
+// lang drukken sluiten de binnenste open opener op het pad. Ingang: alles ingeklapt (Gemonteerd), openers blijven; uitgang: openers blijven staan.
 const uiOpenLabel = n => (n.opn && n.opn.label) || n.name;
 function uiOpenPath(p) {
   const chain = []; for (let a = p; a; a = a.parent) chain.unshift(a);
@@ -7016,12 +7027,10 @@ function uiSetOpenMode(on) {
   if (on === OPENMODE) return;
   uiStopPlay(); uiStopTour();
   uiPush();
-  if (on) {
-    appApplyPreset(appPresetById.get('assembled'), { noHistory: true, openMode: true });
-  } else {
-    OPENMODE = false;
-    for (const n of OPENERS) uiSetOpen(n, 0);
-  }
+  // de openstand blijft bij elke wissel staan: een geopende motorkap blijft open in Uitklappen (en kan daar uitgeklapt
+  // worden), en terug in Openen gaat de explosie dicht maar blijven de openers zoals ze waren
+  if (on) appApplyPreset(appPresetById.get('assembled'), { noHistory: true, openMode: true, keepOpen: true });
+  else OPENMODE = false;
   clearPreset();
   uiUiChanged();
   uiAfterAction();
@@ -8294,7 +8303,7 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { fo
 function finishAll() {
   if (uiRefitTimer) uiRefitNow();
   for (const n of uiAnim) { n.delay = 0; n.k = 1; n.amt = n.target; n.u = n.amt; placeKids(n); }
-  uiAnim.clear();
+  if (uiAnim.size) { uiAnim.clear(); uiOpenResync(); }
   for (const n of uiOffAnim) { n.odelay = 0; n.ok = 1; n.off.copy(n.off1); if (n.off.lengthSq() === 0) n.hasOff = false; uiPlace(n); }
   uiOffAnim.clear();
   for (const n of uiOpenAnim) { n.opk = 1; n.ou = n.ot; uiOpenApply(n); }
