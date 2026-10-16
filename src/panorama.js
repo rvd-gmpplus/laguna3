@@ -8,7 +8,15 @@
 // Alles ligt op of onder het dakvlak van het model (panQ, panP) en blijft tussen dakplaat en hemelbekleding (hoogstens 2,7 cm onder het dak).
 // sterk getint glas: bij de auto van de gebruiker van buiten zo goed als zwart (keuze van de gebruiker, 15 oktober 2026);
 // de zonneschermen zijn van buiten daardoor nauwelijks te zien, van binnen blijven glas en lucht zichtbaar
-phys('bodPanoGlass', { color: 0x030405, metalness: 0.05, roughness: 0.05, transparent: true, opacity: 0.92, depthWrite: false, envMapIntensity: 0.4 });
+// De plaat heeft boven- en onderzijde met dezelfde wikkeling (beide normalen omhoog): vanaf het dak zijn het voorzijden (gang FrontSide), vanaf de
+// cabine achterzijden (gang BackSide, FLIP_SIDED). Alleen in die tweede gang krijgt het glas een lichtere, blauwgrijze kleur: van binnen leest het
+// glas als een donkergrijs vlak met een zwakke weerspiegeling van de hemel, van buiten blijft het zo goed als zwart met dekking 0,92.
+function panGlassIn(m) {
+  m.onBeforeCompile = sh => { sh.fragmentShader = sh.fragmentShader.replace('#include <alphamap_fragment>', '#include <alphamap_fragment>\n#ifdef FLIP_SIDED\n\tdiffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.13, 0.15, 0.18), 0.9);\n#endif'); };
+  m.clone = function () { return panGlassIn(THREE.MeshPhysicalMaterial.prototype.clone.call(this)); };
+  return m;
+}
+panGlassIn(phys('bodPanoGlass', { color: 0x030405, metalness: 0.05, roughness: 0.05, transparent: true, opacity: 0.92, depthWrite: false, envMapIntensity: 0.4 }));
 std('bodPanoFrit', 0x040405, 0, 0.35);                  // zwarte keramische rand (frit) op het glas
 std('bodPanoBar', 0x15161a, 0.3, 0.5);                  // dwarsbalk: donkergrijs tot zwart gelakt
 const PAN_X = 0.47, PAN_XO = 0.50, PAN_XR = 0.52;       // glas, opening in de dakplaat, buitenrand van omlijsting en rails
@@ -76,16 +84,23 @@ function panFollow(zc, ze, lev) {
 }
 // scherm in lamellen: elke lamel schuift (draait om de dakkrommingsas) naar de cassette; zo verdwijnt het scherm in een stapel, zoals een
 // rolgordijn in zijn cassette. De laatste lamel (bij de cassette) staat vast; de lamellen verder weg liggen hoger zodat ze er overheen schuiven.
-function panScreen(z0, z1, n, level) {
+// hold: de stapel stopt zoveel meter voor de cassette, zodat de greep en de rand van de stapel aan de achterrand van de opening zichtbaar blijven (van binnen te zien dat het scherm open is).
+function panScreen(z0, z1, n, level, hold = 0) {
   const w = (z0 - z1) / n, out = [];
   for (let i = 0; i < n; i++) {
     const za = z0 - i * w, zb = za - w, steps = n - 1 - i, lev = level + 0.0012 * i, zc = (za + zb) / 2;
-    out.push({ i, za, zb, lev, steps, open: steps ? panFollow(zc, zc - steps * w, lev) : null });
+    out.push({ i, za, zb, lev, steps, open: steps ? panFollow(zc, zc - steps * w + hold, lev) : null });
   }
   return out;
 }
 // camera bij openen: ver weg, schuin van opzij en van boven, met het hele panoramadak en de dakrails als context (kader in de eindstand)
 const panLook = { dir: [0.6, 1, -0.3], nodes: ['Panoramadak', 'Dakrail links', 'Dakrail rechts'] };
+// camera van de zonneschermen: van binnen, op de middenlijn tussen de hoofdsteunen, omhoog naar het dak (het glas is van buiten zo goed als zwart, een open
+// scherm is er alleen van binnen te zien). De inpassing zet de camera op het kader van de genoemde onderdelen in de eindstand, op afstand dir vanaf het midden:
+// voor het voorste scherm de greep aan de achterrand van de opening en het lamphuis onder de voorrand (camera achter in de cabine, vanaf de achterbank),
+// voor het achterste scherm de lamellen en de greep (camera tussen de voorstoelen, kijkt naar achteren en omhoog)
+const panLookScrF = { dir: [0, -0.35, -0.94], nodes: ['Schermgreep voor', 'Lamphuis voor'] };
+const panLookScrR = { dir: [0, -0.3, 0.95], nodes: ['Schermdoek achter 1', 'Schermgreep achter'] };
 // bouwt het hele panoramadak als groep
 function buildPanorama() {
   /* ---- schuifglas voor: kantelen aan de achterrand (0,045 m), dan over de dakkromming 0,60 m naar achteren ---- */
@@ -104,6 +119,12 @@ function buildPanorama() {
     panSlab(z0, z0 + 0.02, -PAN_XR, PAN_XR, 0.0008, 0.003, 1, 14), panSlab(z1 - 0.02, z1, -PAN_XR, PAN_XR, 0.0008, 0.003, 1, 14)]);
   const trimF = P('Omlijsting opening voor', ring(PAN_OF[0], PAN_OF[1]), MAT.bodPillar, { d: 'Zwarte kunststof omlijsting (sierlijst) rond de voorste dakopening, zonder chroom (breedte geschat).', ex: [0, 0.18, 0.05] });
   const trimR = P('Omlijsting opening achter', ring(PAN_OR[0], PAN_OR[1]), MAT.bodPillar, { d: 'Zwarte kunststof omlijsting (sierlijst) rond de achterste dakopening.', ex: [0, 0.18, -0.05] });
+  // donkere binnenlijst: een smalle zwarte kunststof lijst die net binnen de afwerkring van de hemel (interior.js, rand van de hemelopening op |x| 0,45) rondom
+  // de opening ligt, 3,3 cm onder het dakvlak en daarmee onder de zonneschermen; van binnen leest de opening zo rondom als een donkere omlijsting
+  const liner = (z0, z1) => merge([panBand(z0, z1, 0.446, 0.426, -0.033, 6, 1), panBand(z0, z1, -0.446, -0.426, -0.033, 6, 1),
+    panBand(z0 - 0.002, z0 - 0.014, -0.446, 0.446, -0.033, 1, 8), panBand(z1 + 0.014, z1 + 0.002, -0.446, 0.446, -0.033, 1, 8)]);
+  const linerF = P('Binnenlijst opening voor', liner(0.2, -0.48), MAT.bodPillar, { d: 'Zwarte kunststof lijst rondom de voorste dakopening aan de binnenkant, net binnen de afwerkring van de hemel; verbergt de rand van het zonnescherm en de rubbers (breedte geschat).', ex: [0, -0.1, 0.04] });
+  const linerR = P('Binnenlijst opening achter', liner(-0.6, -1.09), MAT.bodPillar, { d: 'Zwarte kunststof lijst rondom de achterste dakopening aan de binnenkant, net binnen de afwerkring van de hemel (breedte geschat).', ex: [0, -0.1, -0.04] });
   const sealF = P('Afdichting opening voor', tube(panLoop(PAN_OF[0] - 0.012, PAN_OF[1] + 0.012, PAN_X + 0.012, -0.001, 8), 0.0045, 80, 6, true), MAT.rubber, { d: 'Rubber afdichting rond de voorste opening waarop het schuifglas dichtligt.', ex: [0, 0.1, 0.04] });
   const sealR = P('Afdichting opening achter', tube(panLoop(PAN_OR[0] - 0.012, PAN_OR[1] + 0.012, PAN_X + 0.012, -0.001, 8), 0.0045, 80, 6, true), MAT.rubber, { d: 'Rubber afdichting rond de achterste opening waarop het vaste glas rust.', ex: [0, 0.1, -0.04] });
   const frame = P('Dakframe', merge([
@@ -122,14 +143,14 @@ function buildPanorama() {
   const deflector = A('Luchtgeleider', { d: 'Windgeleider aan de voorrand van de dakopening: een zwart lamellennet op twee veerarmpjes dat omhoog komt als het schuifdak opent, tegen windgeruis (vorm geschat).', ex: [0, 0.2, 0.08],
     open: { type: 'slide', move: [0, 0.04, 0], min: 0.03, follow: 'Glaspaneel voor' } }, [defBlade, defArms]);
   /* ---- zonneschermen: lamellen die naar de cassette schuiven ---- */
-  const screen = (nm, z0, z1, n, level, cassZ, grZ) => {
-    const lam = panScreen(z0, z1, n, level);
+  const screen = (nm, z0, z1, n, level, cassZ, hold, look) => {
+    const lam = panScreen(z0, z1, n, level, hold);
     const strip = l => panSlab(l.zb, l.za, -0.435, 0.435, l.lev - 0.001, l.lev, 1, 8);
         const lead = lam[0];
     const leader = A(`Zonnescherm ${nm}`, { d: `Handbediend rolgordijn onder het ${nm}e glaspaneel, in dit model een stapel lamellen die in de cassette schuift (schematisch). Met de zwarte greep open of dicht; het dak werkt alleen met geopend scherm.`, ex: [0, -0.12, nm === 'voor' ? 0.1 : -0.1],
-      open: { ...lead.open, label: `Zonnescherm ${nm}`, look: panLook } }, [
+      open: { ...lead.open, label: `Zonnescherm ${nm}`, look } }, [
       P(`Schermdoek ${nm} 1`, strip(lead), MAT.fabric, { d: 'Eerste lamel van het zonnescherm, met de greep.', ex: [0, -0.04, 0] }),
-      P(`Schermgreep ${nm}`, G.rbox(0.05, 0.005, 0.012, 0.002), MAT.bodPillar, { d: 'Kleine zwarte greep onder de voorrand van het zonnescherm om het te openen en te sluiten; blijft bij een geopend scherm net voor de dwarsrand van het dakframe.', p: panP(lead.za - 0.0045, 0, lead.lev - 0.0035), ex: [0, -0.06, 0] }),
+      P(`Schermgreep ${nm}`, G.rbox(0.05, 0.005, 0.012, 0.002), MAT.bodPillar, { d: 'Kleine zwarte greep onder de voorrand van het zonnescherm om het te openen en te sluiten; blijft bij een geopend scherm aan de achterrand van de opening zichtbaar, net voor de afwerkring.', p: panP(lead.za - 0.0045, 0, lead.lev - 0.0035), ex: [0, -0.06, 0] }),
     ]);
     const rest = lam.slice(1).map(l => P(`Schermdoek ${nm} ${l.i + 1}`, strip(l), MAT.fabric, { d: l.steps ? 'Lamel van het zonnescherm; schuift naar de cassette en stapelt zich daar.' : 'Laatste lamel van het zonnescherm, vast in de cassette (de rol).', ex: [0, -0.05, 0],
       open: l.steps ? { ...l.open, follow: `Zonnescherm ${nm}` } : undefined }));
@@ -137,8 +158,8 @@ function buildPanorama() {
     const cass = P(`Schermcassette ${nm}`, merge([panSlab(zc1, zc0, -0.49, 0.49, -0.0295, -0.027, 2, 10), panSlab(zc1, zc1 + 0.004, -0.49, 0.49, -0.027, -0.008, 1, 10), panSlab(zc1, zc0, 0.486, 0.49, -0.027, -0.008, 2, 1), panSlab(zc1, zc0, -0.49, -0.486, -0.027, -0.008, 2, 1)]), MAT.fabric, { d: `Cassette (rolhuis) van het ${nm}e zonnescherm, bekleed in de kleur van de hemel; het scherm schuift er onder in (vorm geschat).`, ex: [0, -0.1, 0] });
     return [leader, ...rest, cass];
   };
-  const scrF = screen('voor', 0.165, -0.58, 8, -0.0185, [-0.50, -0.60]);
-  const scrR = screen('achter', -0.61, -1.17, 6, -0.0185, [-1.11, -1.19]);
+  const scrF = screen('voor', 0.165, -0.58, 8, -0.0165, [-0.50, -0.60], 0.0465, panLookScrF);
+  const scrR = screen('achter', -0.61, -1.17, 6, -0.0185, [-1.11, -1.19], 0.03, panLookScrR);
   /* ---- motor, kabelboom, waterafvoer ---- */
   const motor = A('Dakmotor', { d: 'Elektromotor (aandrijving met wormwiel) van het schuifdak, naast de rail voorin (Webasto op een onderzocht exemplaar van fase 1; plaats geschat). Anti-klem: stopt en zet enkele centimeters terug als het glas weerstand voelt.', ex: [0.1, -0.1, 0.2] }, [
     P('Motorhuis dakmotor', merge([xf(G.rbox(0.06, 0.016, 0.04, 0.005), [0, 0, 0]), xf(G.cyl('x', 0.009, 0.009, 0.07, 14), [0.065, 0.0, 0])]), MAT.darkSteel, { d: 'Motor met overbrengingskast op de plaatstrook voor het schuifglas (plaats geschat).', p: panP(0.255, 0.3, -0.0145), ex: [0.06, -0.04, 0] }),
@@ -153,5 +174,5 @@ function buildPanorama() {
   const gutter = (z0, z1, nm) => P(`Afvoergoot ${nm}`, merge([panSlab(z1, z0, 0.545, 0.575, -0.0085, -0.0005, 14, 1), panSlab(z1, z0, -0.575, -0.545, -0.0085, -0.0005, 14, 1), panSlab(z0, z0 + 0.04, -0.575, 0.575, -0.0085, -0.0005, 1, 16), panSlab(z1 - 0.04, z1, -0.575, 0.575, -0.0085, -0.0005, 1, 16)]), MAT.plastic, { d: `Kunststof afvoergoot rond de ${nm}e opening; vangt water dat langs de afdichting komt en voert het naar de afvoerslangen op de vier hoeken.`, ex: [0, -0.1, nm === 'voor' ? 0.06 : -0.06] });
   const water = A('Waterafvoer', { d: 'Twee goten rond de dakopeningen en vier afvoerslangen door de stijlen. Verstopte afvoeren zijn een bekend probleem bij panoramadaken (schematisch weergegeven, verloop geschat).', ex: [0, -0.2, 0] }, [gutter(PAN_OF[0] + 0.01, PAN_OF[1], 'voor'), gutter(PAN_OR[0], PAN_OR[1] - 0.01, 'achter'), ...hoses]);
   return A('Panoramadak', { d: 'Elektrisch panoramadak (optie): twee glaspanelen in de dakplaat, een beweegbaar (kantelt en schuift over het vaste paneel) en een vast, met dwarsbalk, frame en rails, twee handbediende zonneschermen, luchtgeleider, motor, afdichtingen en waterafvoer. Maten en opbouw zijn geschat uit foto\'s en de catalogustekening (schematisch).', ex: [0, 0.4, 0] },
-    [glassF, glassR, bar, trimF, trimR, sealF, sealR, frame, rail(1), rail(-1), deflector, ...scrF, ...scrR, motor, harness, water]);
+    [glassF, glassR, bar, trimF, trimR, linerF, linerR, sealF, sealR, frame, rail(1), rail(-1), deflector, ...scrF, ...scrR, motor, harness, water]);
 }
