@@ -37,6 +37,7 @@ Wat de generieke laag van een auto verwacht, en niet meer dan dat:
 - `buildCar()` geeft de wortel met de naam `AUTO.wortel` en de acht hoofdgroepen; Onderstel heeft precies Vooras en stuurinrichting, Achteras, Wielen en Remsysteem; de motor is een kind van Aandrijflijn waarvan de naam met `Motor ` begint; de motorkap heet `Motorkap`.
 - `body.js` definieert `ZF`, `ZR` (lengte) en `BOD_WMAX`, `BOD_MIRW`, `BOD_H` (halve breedte zonder en met spiegels, hoogte); de huidfuncties `HW`, `YB`, `YT`, `surfX` zijn welkom (de tests gebruiken ze als ze bestaan).
 - `data/silhouet.json` met de meetpunten; `planY` en `beltY` (hoogtebereik van de zijstralen en van het zoeken naar de raamlijn) zijn optioneel en staan standaard op die van laguna3 (0,22 tot 1,05 en 0,80 tot 1,15 m). Een hogere auto zoals espace5 zet ze zelf.
+- `auto.json: docshots` is de lijst `[bestandsnaam, preset-id]` voor `docs/screenshots` (`tools/orkestratie/docshots.py`; `mobiel.png` komt er altijd bij).
 - `auto.json: pnToelichting` zegt of de notitie bij een verkoopeenheid (`note`) als Toelichting in het paneel staat (espace5 ja; in laguna3 zijn het onderzoeksaantekeningen, daar nee).
 - `presetdata.js` definieert `appCar`, `appCats`, `PRESETS` en `appTourSteps`.
 - `partnumbers.js` definieert `PN_DATA` (leeg mag).

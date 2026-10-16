@@ -17,5 +17,6 @@
   "pnType": "2.0 16V Turbo 170 pk; onderdelencatalogi noemen de reeks F4R 811, de motor van deze auto is waarschijnlijk een F4Rt 813",
   "hintVersie": "v2",
   "pnToelichting": false,
+  "docshots": [["gemonteerd", "assembled"], ["hoofdgroepen", "main"], ["alles-uit-elkaar", "everything"], ["motor-f4rt", "engine"], ["automaat", "gearbox"], ["rontgen", "xray"], ["openen-motorruimte", "openHood"], ["openen-instappen", "openDoors"], ["openen-bagageruimte", "openTrunk"], ["openen-panoramadak", "openRoof"], ["openen-alles", "openAll"]],
   "verboden": ["Laguna", "laguna", "LAGUNA", "F4R", "AJ0", "Initiale", "zilvergrijs"]
 }

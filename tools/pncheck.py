@@ -18,7 +18,7 @@ if '--tree' in sys.argv:
         live = pg.evaluate("() => window.__model.ALL.map(n => uiPathOf(n))")
         s.report()
     tf = os.path.join(REPO, 'data', 'tree.json')
-    old = json.load(open(tf, encoding='utf-8'))
+    old = json.load(open(tf, encoding='utf-8')) if os.path.exists(tf) else []   # een nieuwe auto heeft nog geen boom
     if '--update' in sys.argv:
         json.dump(live, open(tf, 'w', encoding='utf-8'), ensure_ascii=False, indent=0)
         print(f'data/tree.json bijgewerkt: {len(live)} paden (was {len(old)})')

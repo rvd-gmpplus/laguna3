@@ -1,4 +1,4 @@
-"""Screenshots voor docs/screenshots via de presets van de app (elf op 1280 x 800 en mobiel.png op 390 x 844), daarna
+"""Screenshots voor docs/screenshots via de presets van de app (de lijst docshots uit auto.json op 1280 x 800 en mobiel.png op 390 x 844), daarna
 teruggebracht tot 256 kleuren met Pillow (ongeveer 60 procent kleiner; zonder Pillow blijven ze in volle kleur, met een melding).
 
     python3 tools/orkestratie/docshots.py REPO UITVOERMAP    exitcode 1 bij consolefouten
@@ -8,8 +8,10 @@ if len(sys.argv) < 3: print(__doc__); sys.exit(2)
 repo, out = sys.argv[1], sys.argv[2]
 sys.path.insert(0, os.path.join(repo, 'tools'))
 from harness import session
-SHOTS = [('gemonteerd', 'assembled'), ('hoofdgroepen', 'main'), ('alles-uit-elkaar', 'everything'), ('motor-f4rt', 'engine'), ('automaat', 'gearbox'), ('rontgen', 'xray'),
-         ('openen-motorruimte', 'openHood'), ('openen-instappen', 'openDoors'), ('openen-bagageruimte', 'openTrunk'), ('openen-panoramadak', 'openRoof'), ('openen-alles', 'openAll')]
+import json
+# de beelden per auto: auto.json, veld docshots ([[bestandsnaam, preset-id], ...]); mobiel.png komt er altijd bij
+with open(os.path.join(repo, 'auto.json'), encoding='utf-8') as f:
+    SHOTS = [tuple(x) for x in json.load(f)['docshots']]
 os.makedirs(out, exist_ok=True)
 def klein(path):
     try:

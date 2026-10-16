@@ -170,7 +170,7 @@ def new(dst, cid, wortel, merk):
           'ogBeeld': '', 'canvasLabel': f'3D-explosietekening van een {wortel}. Klik op een onderdeel om het uit te klappen.',
           'notitie': 'Schematisch 3D-model: vormen, maten en posities zijn benaderd en niet geschikt als montagevoorschrift.',
           'openUitleg': f'{wortel}. Openen: klik op een deel dat opengaat; nog een klik sluit het weer.',
-          'pnType': 'type nog vast te stellen', 'hintVersie': 'v1', 'pnToelichting': False, 'verboden': [model]}
+          'pnType': 'type nog vast te stellen', 'hintVersie': 'v1', 'pnToelichting': False, 'docshots': [['gemonteerd', 'assembled'], ['hoofdgroepen', 'main'], ['alles-uit-elkaar', 'everything']], 'verboden': [model]}
     for k in wanted_fields():
         na.setdefault(k, '')
     with open(os.path.join(dst, 'auto.json'), 'w', encoding='utf-8') as f:
