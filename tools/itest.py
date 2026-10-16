@@ -22,7 +22,8 @@ Controles (zie de app-brief):
      van modus sluit alles, preset Motorruimte, kader van de open kap, pick in de motorruimte, geen batch om een open opener,
      aanwijstekst, dock en openerlijst, sneltoets O, paneelknop, portierklikken (alleen als het portier een opener is)
   15 onderdeelnummers: tijdelijke records in het paneel (status, nummers, tabel, bronnen, deel van, groepsaantal) en zoeken op nummer
-  16 deelbare stand: ?preset=id laadt die preset, ?open=naam,pad opent die openers, de adresbalk volgt de stand; ?debug=1 toont de
+  16 telefoon staand: presetcategorieen in een rij, vrij beeld, kader van een gekozen opener boven kaart en dock
+  17 deelbare stand: ?preset=id laadt die preset, ?open=naam,pad opent die openers, de adresbalk volgt de stand; ?debug=1 toont de
      overlay met tekenopdrachten en versie; __laguna.version is het versiestempel uit build.py (zou de fout vangen dat een gedeelde
      link op Gemonteerd opent, of dat de versie in de pagina niet meer bij de bron hoort)
 """
@@ -593,7 +594,42 @@ def run_view(s, tag, w, h, touch):
     o0 = pg.evaluate('__laguna.openers()[0].target')
     check(f'14 [{tag}] openerlijst: een knop per opener met aria-pressed, een klik opent', len(chips) == n_open and exp == 'true' and after == 'true' and o0 == 1, f'{len(chips)} knoppen, expanded {exp}, pressed na klik {after}')
     check(f'14 [{tag}] openerlijst past in het scherm', all(r), str(r))
-    press('#btnOpenList'); press('#btnCloseAll')
+    # op een smal scherm is de lijst een keuzemenu en gaat na een keuze dicht; op het bureaublad blijft hij naast het beeld open
+    exp2 = pg.evaluate('document.getElementById("btnOpenList").getAttribute("aria-expanded")')
+    if w < 920:
+        check(f'14 [{tag}] smal scherm: de openerlijst gaat dicht na een keuze', exp2 == 'false', f'expanded {exp2}')
+    elif exp2 == 'true':
+        press('#btnOpenList')
+    press('#btnCloseAll')
+    if touch:
+        # 16. telefoon staand: compact dock en een kader dat past in wat boven kaart en dock overblijft
+        pg.evaluate("__laguna.openAll(0, true); __laguna.select(__laguna.ROOT)"); settle(pg, 300)
+        d = pg.evaluate("""(() => { const box = id => document.getElementById(id).getBoundingClientRect(), c = box('presets'), cats = [...document.querySelectorAll('#presets .cat')];
+          const tops = new Set(cats.map(e => Math.round(e.getBoundingClientRect().top)));
+          const reach = [];
+          for (const e of cats) { e.scrollIntoView({ block: 'nearest', inline: 'nearest' }); const r = e.getBoundingClientRect(); reach.push(r.left >= -0.5 && r.right <= innerWidth + 0.5 && r.height >= 32); }
+          document.getElementById('presets').scrollLeft = 0;
+          return { rows: tops.size, h: c.height, n: cats.length, reach: reach.every(Boolean), dock: box('dock').height, hs: document.documentElement.scrollWidth > innerWidth }; })()""")
+        check(f'16 [{tag}] presetcategorieen in een rij (hoogte <= 60) en elke categorie bereikbaar', d['rows'] == 1 and d['h'] <= 60 and d['n'] >= 6 and d['reach'] and not d['hs'], json.dumps(d))
+        vf = pg.evaluate('__laguna.freeView()')
+        check(f'16 [{tag}] vrij beeld minstens 55 % van de schermhoogte (was 48 %)', vf['h'] >= 0.55 * h, f"{vf['h']:.0f} van {h}")
+        bad = []
+        for label in ['Motorkap', 'Achterklep', 'Portier linksvoor', 'Schuifdak', 'Tankklep', 'Bagageruimtevloer']:
+            pg.evaluate("__laguna.openAll(0, true); __laguna.select(__laguna.ROOT)"); settle(pg, 200)
+            press('#btnOpenList')
+            i = pg.evaluate(f'[...document.querySelectorAll("#openList button")].findIndex(b => b.textContent === {json.dumps(label)})')
+            press(f'#openList button:nth-child({i + 1})')
+            pg.wait_for_timeout(450); settle(pg, 300)
+            r = pg.evaluate("""(() => { const L = __laguna, o = L.sel(), lk = o.opn.look || {}, nodes = (lk.nodes || []).map(x => L.byPath(x) || L.byName(x)).filter(Boolean);
+              const f = L.frameOf(nodes.length ? nodes : [o]), rc = id => document.getElementById(id).getBoundingClientRect();
+              const top = Math.min(...['sheet', 'openCtl', 'presets', 'openList'].map(id => { const r = rc(id); return r.height > 0 ? r.top : 1e9; }));
+              const tb = Math.max(...['openSeg', 'help'].map(id => rc(id).bottom), document.querySelector('.title').getBoundingClientRect().bottom);
+              return { f, top, tb, sel: L.openers().find(q => q.name === o.name).label, list: !document.getElementById('openList').hidden }; })()""")
+            fb = r['f']['box']
+            if r['sel'] != label or r['list'] or not r['f']['inside'] or not fb or fb['y'] + fb['h'] > r['top'] + 1 or fb['y'] < r['tb'] - 1:
+                bad.append(f"{label}: gekozen {r['sel']}, lijst open {r['list']}, binnen {r['f']['inside']}, kader {fb and [round(fb['y']), round(fb['y'] + fb['h'])]}, boven kaart en dock {round(r['tb'])} tot {round(r['top'])}")
+        check(f'16 [{tag}] na een keuze past het kader van de opener boven kaart en dock (echte hoogtes)', not bad, '; '.join(bad[:3]))
+        pg.evaluate("__laguna.openAll(0, true); __laguna.select(__laguna.ROOT)"); settle(pg, 200)
     # sneltoets O (desktop)
     if not touch:
         pg.evaluate("document.activeElement && document.activeElement.blur()")
@@ -770,25 +806,25 @@ with session() as s:
         check('11 tekenopdrachten <= 1500', calls <= 1500, str(calls))
         check('11 frametijd p95 <= 8 ms', prof['p95'] <= 8, str(prof['p95']))
     pg.close()
-    # 16. deelbare stand in de URL en de debug-overlay
+    # 17. deelbare stand in de URL en de debug-overlay
     pq = s.page(1280, 800, query='?preset=engine&debug=1')
     st = pq.evaluate("__laguna.state()")
-    check('16 ?preset=engine laadt de preset Motor F4Rt', st['preset'] == 'engine' and not st['openMode'], json.dumps({'preset': st['preset'], 'openMode': st['openMode']}))
+    check('17 ?preset=engine laadt de preset Motor F4Rt', st['preset'] == 'engine' and not st['openMode'], json.dumps({'preset': st['preset'], 'openMode': st['openMode']}))
     pq.wait_for_timeout(900)
     dbg = pq.evaluate("(document.getElementById('debug') || {}).textContent || ''")
-    check('16 ?debug=1 toont de overlay met tekenopdrachten en versie', 'tekenopdrachten' in dbg and 'versie' in dbg, dbg[:120])
+    check('17 ?debug=1 toont de overlay met tekenopdrachten en versie', 'tekenopdrachten' in dbg and 'versie' in dbg, dbg[:120])
     ver = pq.evaluate("__laguna.version")
-    check('16 versiestempel uit build.py (nummer plus inhoudshash)', bool(ver) and 'bron' in ver, str(ver))
+    check('17 versiestempel uit build.py (nummer plus inhoudshash)', bool(ver) and 'bron' in ver, str(ver))
     pq.evaluate("__laguna.preset('turbo'); __laguna.finishAll()"); pq.wait_for_timeout(150)
-    check('16 de adresbalk volgt de preset', 'preset=turbo' in pq.evaluate('location.search') and 'debug=1' in pq.evaluate('location.search'), pq.evaluate('location.search'))
+    check('17 de adresbalk volgt de preset', 'preset=turbo' in pq.evaluate('location.search') and 'debug=1' in pq.evaluate('location.search'), pq.evaluate('location.search'))
     pq.evaluate("__laguna.setOpenMode(true); __laguna.openAll(0, true); __laguna.setOpen('Motorkap', 1, true); __laguna.setOpen('Renault Laguna III/Carrosserie/Portier linksvoor/Zijruit', 1, true); __laguna.finishAll()")
     pq.wait_for_timeout(150)
     q = pq.evaluate("decodeURIComponent(location.search).replace(/\\+/g, ' ')")
-    check('16 de adresbalk volgt de openstand (naam, of pad bij een dubbele naam)', 'open=Motorkap,Carrosserie/Portier linksvoor/Zijruit' in q, q)
+    check('17 de adresbalk volgt de openstand (naam, of pad bij een dubbele naam)', 'open=Motorkap,Carrosserie/Portier linksvoor/Zijruit' in q, q)
     pq.close()
     pq = s.page(1280, 800, query='?open=Motorkap,Carrosserie/Portier%20linksvoor/Zijruit')
     st = pq.evaluate("__laguna.state()")
-    check('16 ?open=... opent precies die openers in de modus Openen', st['openMode'] and sorted(st['openers']) == ['Motorkap', 'Zijruit'], json.dumps({'openMode': st['openMode'], 'openers': st['openers']}))
+    check('17 ?open=... opent precies die openers in de modus Openen', st['openMode'] and sorted(st['openers']) == ['Motorkap', 'Zijruit'], json.dumps({'openMode': st['openMode'], 'openers': st['openers']}))
     pq.close()
     errs = s.errors()  # fouten en waarschuwingen (harness.errors telt beide)
     check('10 geen console-fouten of -waarschuwingen', not s.logs, '; '.join(l[:200] for l in s.logs[:5]))

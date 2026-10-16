@@ -334,7 +334,8 @@ function mkNode(obj, name, o) {
     inner: !!o.inner,  // ingesloten: onzichtbaar zolang de bovenliggende groep dicht is (de app verbergt het dan)
     opn: o.open || null,    // openmodus: scharnier of schuif (zie docs/ontwerp-en-architectuur.md, "Openmodus")
     strut: o.strut || null, // telescoop (gasveer) die de app tussen twee punten richt
-    stay: !!o.stay          // blijft op zijn plek als de opener erboven draait (carrosseriezijde van een scharnier)
+    stay: !!o.stay,         // blijft op zijn plek als de opener erboven draait (carrosseriezijde van een scharnier)
+    hideWhen: o.hideWhen || null // openmodus: onzichtbaar zolang een van deze openers open is (uitgenomen, zoals de hoedenplank)
   };
   obj.userData.node = n;
   if (o.p) obj.position.set(...o.p);

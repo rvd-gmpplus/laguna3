@@ -188,9 +188,10 @@ Knoopopties in `A()` en `P()`:
 |---|---|
 | `open` | De opener. `type` is `hinge` of `slide`. Verder `pivot`, `axis`, `angle`, `min` (ondergrens), `label`, `dur`, `look: { dir, nodes }` (waar de camera heen kijkt), `follow` (volger van een leider) en `needs` (eerst die opener openen; sluiten sluit eerst de afhankelijke). Bij `slide` komen `move` (de slag), `arc` (draaien om een verre as, voor de dakkromming) en `tilt` (eerst kantelen over het eerste deel van de beweging) erbij. |
 | `stay` | `true` laat het deel staan als de opener draait: de carrosseriezijde van een scharnier. Een volger met `stay` beweegt in het frame van de rustende opener, zoals de motorkapsteun. |
+| `hideWhen` | Lijst van openers (naam of pad). De knoop is in de modus Openen uitgenomen (onzichtbaar, niet aanklikbaar) zolang een van die openers open staat, zoals een eigenaar de hoedenplank uitneemt voordat hij een rugleuning neerklapt. De app zet de knopen in `hideN`; een verwijzing die niet oplost is een consolefout. |
 | `strut` | Een telescoop: `{ a: { node, p }, b: { node, p }, rod, lead, restLen }`. De gasveren van de achterklep zijn 290 mm in en 495 mm uit. |
 
-In de knoop staan `opn` (de opties), `ou` (stand 0 tot 1), `ot` (doelstand), `stay` en `strut`. Verwijzingen in `follow`, `needs`, `look.nodes` en `strut.a.node` zijn een pad vanaf de wortel (de wortelnaam mag weg) of een naam die maar een keer voorkomt. Een niet-unieke naam geeft een consolefout.
+In de knoop staan `opn` (de opties), `ou` (stand 0 tot 1), `ot` (doelstand), `stay`, `strut` en `hideN` (de opgeloste `hideWhen`-lijst). Verwijzingen in `follow`, `needs`, `look.nodes` en `strut.a.node` zijn een pad vanaf de wortel (de wortelnaam mag weg) of een naam die maar een keer voorkomt. Een niet-unieke naam geeft een consolefout.
 
 De stand volgt uit: positie = pivot + R(u maal angle)(basis min pivot) + uitklapverschuiving + eigen verschuiving, en draaiing = R maal de basisdraaiing. Uitklappen en openen werken samen: in Openen staat alles gemonteerd. Vaste delen in een draaiende opener worden elk frame teruggezet met de inverse van de openerdraaiing. Telescopen worden elk frame van a naar b gericht, met alleen de betrokken wereldmatrices; de zuigerstang schuift mee met (afstand min rustafstand).
 
@@ -231,7 +232,7 @@ Hoeken in graden, slag in meter. De eindstand en de ondergrens komen uit `tools/
 | Portier linksachter, rechtsachter | scharnier op de B-stijl | 62 | 55 | |
 | Zijruit (vier) | schuif in het portier | voor 0,39, achter 0,30 | voor 0,35, achter 0,25 | achter blijft een strook staan |
 | Buitenspiegel links, rechts | scharnier | 80 naar achteren | 64 | |
-| Achterklep | scharnier dakrand | 66 | 60 | twee gasveren als telescoop; de hoedenplank volgt (24 graden) en hangt aan twee koordjes (telescopen) aan de klep, met de luidsprekers erop |
+| Achterklep | scharnier dakrand | 66 | 60 | twee gasveren als telescoop; de hoedenplank volgt (33 graden) en hangt aan twee koordjes (telescopen) aan de klep, met de luidsprekers erop; de plank met pennen, koordjes en luidsprekers is uitgenomen (`hideWhen`) zolang een rugleuning of de bagagevloer open is |
 | Tankklep | scharnier voorrand | 140 | 112 | tankkom in het rechter achterscherm, capless vulhals |
 | Glaspaneel voor (label Schuifdak) | kantelen en schuiven | 0,60 | 0,48 | needs Zonnescherm voor; luchtgeleider volgt |
 | Zonnescherm voor, achter | schuif naar de cassette | 0,65 en 0,47 | 0,54 en 0,39 (0,82 maal de rechte slag van de eerste lamel) | lamellen als volgers |
@@ -242,7 +243,7 @@ Hoeken in graden, slag in meter. De eindstand en de ondergrens komen uit `tools/
 | Zonneklep links, rechts | scharnier voorrand | 169 | 138 | ligt neergeklapt bijna tegen de voorruit |
 | Bagageruimtevloer | scharnier voorrand | 62 | 50 | needs Achterklep; opbergbak eronder |
 | Olievuldop | scharnier aan een lip op de rand van de vulhals | 103 | 83 | needs Motorkap; de dop blijft aan de hals zitten (golf 5) |
-| Expansiedop | schuif omhoog met kanteling | 0,17 | 0,14 | needs Motorkap |
+| Expansiedop | scharnier aan een lip op de achterrand van de hals | 103 | 83 | needs Motorkap; de dop blijft aan de hals zitten, met een zichtbare vulopening (golf 5, herstelronde) |
 
 ### Panoramadak
 

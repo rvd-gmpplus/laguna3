@@ -21,7 +21,8 @@ taal van code-commentaar, beschrijvingen, docs en commits. Geen em-dashes in tek
   `IGNORE` in `tools/harness.py`. Wijzigen gaat via de orkestrator, met een melding aan de eigenaren.
 - Knopen: `A(naam, opties, kinderen)` en `P(naam, geometrie, materiaal, opties)` met verplicht `d` (Nederlandse
   beschrijving), `spec` alleen voor geverifieerde feiten in Nederlandse notatie, `ex` als uitklapvector, `inner` alleen
-  voor wat van buiten nooit te zien is. Openers hebben altijd `open.min` van minstens 0,8 maal de volle hoek of slag.
+  voor wat van buiten nooit te zien is, `hideWhen` voor wat uitgenomen is zolang een opener open staat. Openers hebben
+  altijd `open.min` van minstens 0,8 maal de volle hoek of slag.
 - `src/partnumbers.js` en `docs/onderdeelnummers.csv` komen uit `data/pn/` via `tools/orkestratie/build_pn.py`; niet met de hand. `python3 tools/pncheck.py` bewaakt dat.
 - Het chassisnummer en het kenteken van de gebruiker komen nooit in de repo, de pagina of een commitbericht.
 - Nummers in de docs: één bron (`docs/cijfers.md`); elders ernaar verwijzen in plaats van getallen herhalen.

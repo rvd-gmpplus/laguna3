@@ -49,13 +49,13 @@ Op 15 oktober om 19:49 UTC werkt een andere sessie (Opus 5.5 met vijf subagents)
 - Elke analyse en elke golf begint met `git ls-remote --heads origin` en een compare per tak; dit plan miste eerst twee commits doordat de meting van vóór 19:18 UTC was.
 - Per golf worden start, samenvoeging en publicatie met tijd in `CHANGELOG.md` genoteerd, zodat de volgende premortem met echte duren werkt.
 
-## Voortgang (16 oktober 2026, 00:30 UTC)
+## Voortgang (16 oktober 2026, 01:30 UTC)
 
 | Golf | Stand |
 |---|---|
-| 5a-1 | Gedaan: A2 (testomgeving, rooktest in 41 s in een verse container), A3, A4, A5, A6 (deelbare URL, overlay, versie, laadmeldingen, meta, favicon), A7 (protocol in `docs/telefoontest.md`; de sessie van de gebruiker volgt na versie 7). Open: A1 (de zustertak kreeg om 00:12 UTC acht nieuwe commits, samenvoegen zodra zij stilvalt). |
+| 5a-1 | Gedaan: A2 (testomgeving, rooktest in 41 s in een verse container), A3, A4, A5, A6 (deelbare URL, overlay, versie, laadmeldingen, meta, favicon), A7 (protocol in `docs/telefoontest.md`; de sessie van de gebruiker volgt na versie 7). A1 gedaan om 01:20 UTC: de zustertak (29 commits, tip `b529ac1`, laatste commit 00:12 UTC, daarna 65 minuten stil) zit volledig in deze tak; vijf conflicten opgelost met haar geometrie en camera's en mijn ondergrenzen van 0,8 maal de hoek (spiegel 64 graden, rugleuningen en middenarmsteun 1,456 rad, armsteunkussen 0,92 rad, expansiedop 1,44 rad), `Rugframe` zonder `inner`, haar itest-controle 16 (telefoon staand) naast mijn controle 17 (deelbare stand). |
 | 5a-2 | Gedaan: A8 (budgetten en `tri --gate`), A9 (openers als pad en preset-id's in `anchors.json`, `labelOnly` als kind van de labelgroep), A10 (`data/pn/` canoniek, `build_pn.py` als serialisatie met controles, `pncheck.py`; byte voor byte gelijk), A11 (`ci.yml` en `nightly.yml`; de eerste run bewees de omgeving en de poort op een oude `index.html`), A12 deels (versiestempel, `CHANGELOG.md`; de tags `v1` tot `v6` staan lokaal, de proxy weigert ze te pushen, zie `handomdraai.md`), A13 deels (LICENSE, `CLAUDE.md`, `.gitattributes`, `.gitignore`, `mergecheck.py`; screenshots verkleinen wacht op de nieuwe screenshots van versie 7), A14 (`cijfers.py` en `docs/cijfers.md`, drift opgeruimd). |
-| 5b-1 | Gedaan door de parallelle sessie (zie hieronder); haar herstelronde loopt nog. |
+| 5b-1 | Gedaan door de parallelle sessie (zie hieronder), inclusief haar herstelronde van 22:50 tot 00:12 UTC (acht commits: achterklep met open glas, gasveren langs de zijwand, B-stijlafdekking, hemel onder het dakframe, Dekselvoering, zonneschermen van binnen zichtbaar, expansiedop als scharnier met vulopening, telefoon staand, `hideWhen` voor de hoedenplank). |
 | Poort | Strikte set op de samengevoegde stand: alles groen na vier `inner`-vlaggen minder; itest 157 van 157 op een rustige machine (controle 14 was een belastingsflake). |
 
 ## Golf 5a-1: vangnet-kern (eerst; 1 dag, met een stopregel)
@@ -105,7 +105,9 @@ Check-ronde van 23:10 UTC: de zustertak `ccr-bd755431-1qfniw` (21 commits, tip `
 
 Ook al gedaan uit andere golven: G2 langsliggers boven de aandrijfassen (`a8bdff9`, `bodFrontRail`), G3 opkant in de bodemplaat boven de torsiebalk en tank en koolstoffilter verplaatst (`a8bdff9`), U1 dimmen bij duiken (`5d56283`, `uiSetDim`), U3 deels: zijkolom voor telefoons in liggende stand (`5d56283`), N1 Vulopening en Vulklepring (`d01ea58`), N5 deels: 14 eenheden gekozen op RDW en chassisnummer (`d01ea58`, veld `kz`, blok "Gekozen voor deze auto"), F1 ATF volgens MR 415 (`b684bb8`, `00ed700`), F3 multiriem 1672 mm (`18fc094`), databankenrecht-analyse (`docs/onderzoek/databankenrecht.md`), motorcode F4Rt 813 waarschijnlijk (`b684bb8`), onderstel: remleidingen achter om langsarm en veer heen (`49eb183`).
 
-Niet gedaan door die sessie en dus nog open: de volledige testset op haar stand, `index.html` herbouwen, `handomdraai.md` en de docs sluitend maken (haar handomdraai is halverwege), screenshots, publicatie van versie 7, en de visuele poort met vóór/na-paren. Dat doet golf 5a-1 nu.
+Haar herstelronde (22:50 tot 00:12 UTC, `bc2e0c9` tot `b529ac1`) sloot ook B9 (achterklep: open glas met lijmrand, gasveren langs de zijwand, `d5656c8`) en ging verder dan het plan: zonneschermen van binnen zichtbaar met een stop voor de cassette (`7d48b2b`), expansiedop als scharnier met zichtbare vulopening (`7d48b2b`), Dekselvoering en nieuwe interieurcamera's (`bc2e0c9`), telefoon staand met itest 16 (`7443595`), `hideWhen` in de engine voor de hoedenplank (`b529ac1`).
+
+Niet gedaan door die sessie: de volledige testset op haar stand, `index.html` herbouwen, `handomdraai.md` en de docs sluitend maken, screenshots, publicatie van versie 7, en de visuele poort met vóór/na-paren. Dat doet deze sessie na de samenvoeging van 01:20 UTC.
 
 ## Golf 5b-2: geometrie en budget (1,5 tot 2 dagen; versie 9 of later; G2 en G3 zijn al gedaan, zie 5b-1)
 

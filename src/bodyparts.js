@@ -74,7 +74,8 @@ const bodBrY = z => 0.946 + (-0.223 - z) / bodBRK;                         // id
 function bodBand(s, zf, kf, zr, kr, out, qTop = bodQG + 0.03) {
   const yTop = 1.40, za = zr - (yTop - 0.946) * kr, zb = zf;
   return bodGhSide(s, za, zb, 12, z => {
-    const ylo = 0.946 + (zr - z) / kr, yhi = 0.946 + (zf - z) / kf, q0 = bodQy(z, ylo);
+    // onderkant op de bovenrand van de chroomband op de gordel (y van de gordel + 0,011): de zwarte afdekking en het naadrubber liepen eerst over de chroomband en de lak eronder heen
+    const ylo = 0.946 + (zr - z) / kr, yhi = 0.946 + (zf - z) / kf, q0 = Math.max(bodQy(z, ylo), bodQy(z, bodGh(z).yb + 0.011));
     return [q0, Math.max(q0, Math.min(qTop, bodQy(z, yhi)))];
   }, 6, bodDense(za, zb, 22), out);
 }
@@ -342,7 +343,7 @@ function buildMirror(s) {
   const n = sn(s), cx = 0.925, cy = 0.975, cz = 0.738, k = s > 0 ? 'L' : 'R';
   const M = (x, y, z) => [s * x, y, z];
   return A(`Buitenspiegel ${n}`, { d: 'Elektrisch verstelbare, verwarmde en elektrisch inklapbare buitenspiegel in carrosseriekleur (Initiale Paris met geheugen). Klapt ongeveer 80 graden naar achteren (hoek geschat).', ex: [s * 0.32, 0.12, 0.08],
-    open: { type: 'hinge', pivot: [s * 0.95, 0.94, 0.74], axis: [0, 1, 0], angle: s * 80 * PI / 180, min: 64 * PI / 180, label: `Buitenspiegel ${n}`, look: { dir: [s * 0.8, 0.3, 0.75], nodes: [`Buitenspiegel ${n}`, `Portier ${n}voor`] } } }, [
+    open: { type: 'hinge', pivot: [s * 0.95, 0.94, 0.74], axis: [0, 1, 0], angle: s * 80 * PI / 180, min: 64 * PI / 180, label: `Buitenspiegel ${n}`, look: { dir: [s * 0.8, 0.3, 0.75], nodes: [`Buitenspiegel ${n}`] } } }, [
     P('Spiegelvoet', G.rbox(0.09, 0.05, 0.07, 0.015), MAT.bodPillar, { d: 'Voet met bevestigingsplaat op de spiegeldriehoek van het portier; blijft staan als de spiegel inklapt.', p: M(0.845, 0.94, 0.862), stay: true, ex: [-s * 0.05, -0.05, 0] }),
     P('Spiegelkap', cache('bodMirCapT' + k, () => bodLoft(s, [[1, 0], [1, 0.03], [0.95, 0.07], [0.8, 0.11], [0.5, 0.135], [0.12, 0.145]], true)), MAT.paint, { d: 'Kap in carrosseriekleur aan de voorzijde van het spiegelhuis.', p: M(cx, cy, 0.668), ex: [0, 0.02, 0.1] }),
     P('Spiegelhuis', cache('bodMirRimT' + k, () => bodLoft(s, [[0.93, -0.004], [1.01, -0.004], [1.01, 0.012]], false)), MAT.paint, { d: 'Kunststof huis in carrosseriekleur met een rand rond het glas, dat glas, motoren en verwarming draagt.', p: M(cx, cy, 0.664), ex: [0, 0, -0.02] }),
@@ -548,7 +549,27 @@ const bodStRot = (() => {
 })();
 // Achterklep: draaias op de dakrand (y 1,362 bij z -1,174), 66 graden. Gasveren als telescoop: carrosseriepunt A op de C-stijl, klepunt B bij de
 // ruitrand; berekend zodat de afstand A-B in gesloten stand 0,290 m is en bij 66 graden 0,495 m (HB2/catalogus: 495 mm uit, slag 205 mm).
-const bodTgPv = [0, 1.362, -1.174], bodTgAng = 66 * PI / 180, bodGsA = [0.665, 1.22, -1.31], bodGsB = [0.60, 1.1838, -1.5903];
+const bodTgPv = [0, 1.362, -1.174], bodTgAng = 66 * PI / 180;
+// Beide kogels liggen aan de zijkant van de opening: A op de binnenkant van de C-stijl (de zijwand begint hier op |x| 0,70 tot 0,71), B op de zijrand van de klep,
+// 3 cm binnen A, zodat de veer langs de zijwand loopt en niet de bagageruimte in. Het punt A ligt vast (z -1,33, vlak achter de scharnierlijn, onder de rand van de sponning);
+// B volgt uit de glasrand (4,5 cm onder het glas) en de lengtes: 0,290 m gesloten en 0,495 m bij 66 graden (HB2/catalogus: 495 mm uit, slag 205 mm).
+// De hoogte van A en de plaats van B volgen daaruit; panP staat in panorama.js, dus dit draait pas bij het bouwen.
+const bodGsX = [0.684, 0.652], bodGsAz = -1.33;
+function bodGsSolve() {
+  const [ax, bx] = bodGsX, az = bodGsAz, c = Math.cos(bodTgAng), sg = Math.sin(bodTgAng);
+  const bAt = zb => [bx, panP(zb, bx, -0.045)[1], zb];
+  const opened = b => { const ry = b[1] - bodTgPv[1], rz = b[2] - bodTgPv[2]; return [b[0], bodTgPv[1] + ry * c - rz * sg, bodTgPv[2] + ry * sg + rz * c]; };
+  const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+  let best = null;
+  for (let i = 0; i <= 800; i++) {
+    const ay = 1.10 + 0.0005 * i, a = [ax, ay, az];
+    let lo = -1.9, hi = az - 0.02;
+    for (let k = 0; k < 48; k++) { const m = (lo + hi) / 2; if (dist(a, bAt(m)) > 0.29) lo = m; else hi = m; }
+    const b = bAt((lo + hi) / 2), e = Math.abs(dist(a, opened(b)) - 0.495);
+    if (!best || e < best.e) best = { e, a, b };
+  }
+  return best;
+}
 // Tankklep rechtsachter: opening in het rechter achterscherm (z -1,780 tot -1,664, y 0,808 tot 0,912), scharnier aan de voorrand (z -1,664).
 const bodTkZ = [-1.78, -1.664], bodTkY = [0.808, 0.912];
 // Opkant in de bodemplaat onder de torsiebalk van de achteras (balk bovenkant y 0,326, z -1,258 tot -1,085): plateau y 0,345 tussen
@@ -618,6 +639,7 @@ function buildBody() {
     P('Rubberlijn kwartsruit', merge([qTrim(s, 2 * bodTW - 0.0005, 2 * bodTW + bodTR, 0.0026, 0, 1), qBelt(s).rubber]), MAT.bodPillar, { d: 'Zwarte rubberlijnen langs de omlijsting en de gordellijst van de kwartsruit.', ex: [s * 0.05, 0.05, 0] }),
     P('Gordellijn kwartsruit', qBelt(s).chrome, MAT.bodChrome, { d: 'Chromen sierlijst op de gordellijn onder de kwartsruit, in het verlengde van die van het achterportier.', ex: [s * 0.06, -0.02, 0] }),
   ]);
+  const bodGsPt = bodGsSolve(), bodGsA = bodGsPt.a, bodGsB = bodGsPt.b;
   const sideRoof = A('Zijwanden en dak', { d: 'Stijlen, dakrails, dak met dakbogen, de vaste kwartsruiten en de dakantenne.', ex: [0, 0.32, 0] }, [
     P('Dakpaneel panoramadak', panRoofGeo(), MAT.paint, { d: 'Dakplaat van staal met twee openingen voor het panoramadak (optie), gelast op de dakrails. Tussen de openingen en rondom loopt een smalle plaatstrook.', ex: [0, 0.16, 0] }),
     A('Dakbogen', { d: 'Drie dwarsliggers onder het dakpaneel. Door de twee openingen van het panoramadak liggen ze onder de plaatstroken voor, tussen en achter de glaspanelen (onder de dwarsbalk en boven de hemelbekleding).', ex: [0, 0.1, 0] }, [[0.285, 'voor'], [-0.54, 'midden'], [-1.14, 'achter']].map(([z, nm]) => P(`Dakboog ${nm}`, (() => { const pts = []; for (let i = 0; i <= 12; i++) { const w = bodQR / 2 + (1 - bodQR) * i / 12; const p = ghPt(z, w); pts.push([p[0] * 0.97, p[1] - 0.005, z]); } return tube(pts, 0.0045, 24, 6); })(), MAT.paintIn, { d: 'Dwarsligger onder het dakpaneel.', ex: [0, -0.04, z * 0.05] }))),
@@ -629,7 +651,7 @@ function buildBody() {
     ...both(s => P(`Slotbeugel B-stijl ${sn(s)}`, merge([xf(G.rbox(0.05, 0.16, 0.01, 0.002), [-s * 0.002, -0.05, 0.055]), tube([[s * 0.018, -0.05, 0.05], [s * 0.018, -0.05, 0.115], [-s * 0.018, -0.05, 0.115], [-s * 0.018, -0.05, 0.05]], 0.009, 16, 6)]), MAT.darkSteel, { d: 'Sluitplaat met U-beugel op de B-stijl waar het slot van het voorportier in grijpt (plaats geschat). Zit op de voorkant van de stijl, dus alleen te zien bij open voorportier.', p: [s * 0.735, 0.66, -0.17], r: [-0.21, 0, 0], ex: [s * 0.09, 0, 0.05] })),
     ...both(s => P(`C-stijl ${sn(s)}`, bodGhSide(s, SP, -0.95, 34, z => [cPillarLo(z), z < RW0 ? qScr(z) : bodQR], 16, bodDense(-1.27, -1.15, 6)), MAT.paint, { d: 'Achterste dakstijl met de karakteristieke kromming boven de kwartsruit.', ex: [s * 0.1, 0.04, -0.04] })),
     ...both(quarter),
-    ...both(s => P(`Gasveerbevestiging ${sn(s)}`, merge([G.sphere(0.012, 10), xf(G.rbox(0.012, 0.03, 0.02, 0.004), [s * 0.03, 0.0, 0.0])]), MAT.darkSteel, { d: 'Kogelpen op de C-stijl waarop de gasveer van de achterklep draait (plaats geschat).', p: [s * bodGsA[0], bodGsA[1], bodGsA[2]], ex: [s * 0.04, 0, 0] })),
+    ...both(s => P(`Gasveerbevestiging ${sn(s)}`, merge([G.sphere(0.012, 10), xf(G.cyl('x', 0.004, 0.004, 0.012, 8), [s * 0.009, 0, 0]), xf(G.rbox(0.008, 0.05, 0.04, 0.003), [s * 0.018, 0, 0])]), MAT.darkSteel, { d: 'Kogelpen op een plaatje tegen de binnenkant van de C-stijl, aan de zijkant van de opening, waarop de gasveer van de achterklep draait (plaats geschat).', p: [s * bodGsA[0], bodGsA[1], bodGsA[2]], ex: [s * 0.04, 0, 0] })),
     A('Dakantenne', { d: 'Korte staafantenne achter op het dak, van de Laguna III fase 2: een lage kegelvormige voet op de plaatstrook achter het achterste glaspaneel, met een korte, licht naar achteren hellende mast.', ex: [0, 0.14, -0.04] }, (() => {
       const zB = -1.15, y0 = YR(zB), top = [0, y0 + 0.0125, zB], mid = [0, top[1] + 0.05, zB - 0.0052], tip = [0, top[1] + 0.105, zB - 0.011];
       return [
@@ -880,10 +902,17 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   const wPiv = [0.32, halfPt(SP + 0.06, bodSAtX(SP + 0.06, 0.32))[1] + 0.03, SP + 0.06];
   // punt op het glas bij (z, x) met lift meter erboven (het glas volgt hetzelfde profiel als het dak, zie panP in panorama.js); eerder lag het wisserblad 12 cm onder het glas, in de cabine
   const wTip = panP(-1.5, 0.5, 0.012);
+  // lijmrand rond de achterruit aan de binnenkant: vier stroken van 7 cm (zijkanten) en 5 tot 6 cm (boven en onder), 3 cm onder het glas; het midden blijft open
+  const tgInP = (z, w) => { const p = ghPt(z, w); return [p[0] * 0.97, p[1] - 0.03, z]; };
+  const tgWo = z => bodQScr(z) / 2 + 0.006;
+  const tgWi = z => { const x0 = Math.abs(ghPt(z, tgWo(z))[0]); let lo = tgWo(z), hi = 0.5; for (let k = 0; k < 26; k++) { const m = (lo + hi) / 2; if (Math.abs(ghPt(z, m)[0]) > x0 - 0.07) lo = m; else hi = m; } return (lo + hi) / 2; };
+  const tgZ0 = SP + 0.04, tgZ1 = RW0 - 0.06;
+  const tgRing = [patch(tgInP, tgZ0, tgZ1, 14, z => [tgWo(z), tgWi(z)], 2), patch(tgInP, tgZ0, tgZ1, 14, z => [1 - tgWi(z), 1 - tgWo(z)], 2),
+    patch(tgInP, tgZ0, tgZ0 + 0.06, 2, z => [tgWo(z), 1 - tgWo(z)], 8), patch(tgInP, tgZ1 - 0.05, tgZ1, 2, z => [tgWo(z), 1 - tgWo(z)], 8)];
   const tailgate = A('Achterklep', { d: 'Grote achterklep met de hele achterruit, typerend voor de vijfdeurs hatchback, met spoilerlip, derde remlicht en achterruitenwisser. Scharniert aan de dakrand en wordt door twee gasveren omhooggehouden.', ex: [0, 0.42, -0.5],
-    open: { type: 'hinge', pivot: bodTgPv, axis: [1, 0, 0], angle: bodTgAng, min: 60 * PI / 180, label: 'Achterklep', look: { dir: [0.3, 0.9, -1], nodes: ['Achterklep', 'Gasveer links', 'Gasveer rechts'] } } }, [
+    open: { type: 'hinge', pivot: bodTgPv, axis: [1, 0, 0], angle: bodTgAng, min: 60 * PI / 180, label: 'Achterklep', look: { dir: [0.4, 0.6, -1], nodes: ['Achterklep', 'Gasveer links', 'Gasveer rechts'] } } }, [
     P('Buitenpaneel achterklep', merge([tgOuter, bodSPweb(1, bodQScr(SP), 1, 0.003, 16), bodSPweb(-1, bodQScr(SP), 1, 0.003, 16)]), MAT.paint, { d: 'Plaatwerk van de achterklep onder en achter de ruit.', ex: [0, 0, -0.08] }),
-    P('Binnenpaneel achterklep', merge([bodTailGeo(-0.36, 0.36, 0.68, ydT - 0.02, -0.04, 4, 8), patch((z, w) => { const p = ghPt(z, w); return [p[0] * 0.92, p[1] - 0.03, z]; }, SP + 0.04, RW0 - 0.06, 10, () => [0.39, 0.61], 6)]), MAT.paintIn, { d: 'Binnenframe van de achterklep met scharnier- en slotversteviging.', ex: [0, 0, 0] }),
+    P('Binnenpaneel achterklep', merge([bodTailGeo(-0.36, 0.36, 0.68, ydT - 0.02, -0.04, 4, 8), ...tgRing]), MAT.paintIn, { d: 'Binnenframe van de achterklep met scharnier- en slotversteviging. Rond de achterruit loopt een smalle rand van 7 cm (de lijmrand), zodat de ruit van binnen als donker glas te zien is.', ex: [0, 0, 0] }),
     P('Achterruit', scr, MAT.glass, { d: 'Verwarmde achterruit van gehard glas, zeer vlak geplaatst (ca. 14 graden).', ex: [0, 0.14, 0.02] }),
     P('Spoilerlip', lip, MAT.paint, { d: 'Kleine spoilerlip (eendenstaartje) aan de onderrand van de achterruit: een dun, licht opkrullend blad van ca. 3,5 cm met een scherpe achterrand, zo breed als de ruit en aan de uiteinden in het plaatwerk weglopend.', ex: [0, 0.1, -0.06] }),
     // achter het glas, net onder de dakrand: steekt in zijaanzicht niet boven de daklijn uit en schemert door de getinte ruit
@@ -902,13 +931,13 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     // de app richt hem bij het openen opnieuw en schuift de zuigerstang uit (290 mm ingeschoven, 495 mm uitgeschoven)
     ...both(s => {
       const a = [s * bodGsA[0], bodGsA[1], bodGsA[2]], b = [s * bodGsB[0], bodGsB[1], bodGsB[2]], dir = V3(b[0] - a[0], b[1] - a[1], b[2] - a[2]);
-      return A(`Gasveer ${sn(s)}`, { d: 'Gasveer van 495 mm met 205 mm slag (catalogusmaat, 610 N) die de geopende achterklep omhoog houdt; onderaan bevestigd op de C-stijl, bovenaan op de klep. Plaats van de bevestigingspunten geschat.', p: a, q: quatFromTo(V3(0, 0, 1), dir), ex: [s * 0.14, 0, 0],
+      return A(`Gasveer ${sn(s)}`, { d: 'Gasveer van 495 mm met 205 mm slag (catalogusmaat, 610 N) die de geopende achterklep omhoog houdt; onderaan bevestigd tegen de zijwand van de opening (C-stijl), bovenaan op de zijrand van de klep, zodat hij langs de zijkant loopt. Plaats van de bevestigingspunten geschat.', p: a, q: quatFromTo(V3(0, 0, 1), dir), ex: [s * 0.14, 0, 0],
         strut: { a: { node: `Gasveerbevestiging ${sn(s)}`, p: [0, 0, 0] }, b: { node: 'Renault Laguna III/Carrosserie/Achterklep', p: b }, rod: 'Zuigerstang', lead: 'Renault Laguna III/Carrosserie/Achterklep', restLen: 0.29 } }, [
         P('Cilinder', merge([xf(G.cyl('z', 0.0135, 0.0135, 0.27, 14), [0, 0, 0.135]), G.sphere(0.0155, 10)]), MAT.blackGloss, { d: 'Gasgevulde cilinder van de gasveer met kogelkom aan de carrosseriezijde.', ex: [0, 0, -0.05] }),
         P('Zuigerstang', merge([xf(G.cyl('z', 0.0065, 0.0065, 0.27, 10), [0, 0, 0.155]), xf(G.sphere(0.0125, 10), [0, 0, 0.29])]), MAT.steel, { d: 'Verchroomde zuigerstang die uit de cilinder schuift; kogelkom aan de klepzijde.', ex: [0, 0.03, 0.05] }),
       ]);
     }),
-    ...both(s => P(`Gasveerbeugel ${sn(s)}`, merge([G.sphere(0.012, 10), xf(G.rbox(0.03, 0.02, 0.02, 0.004), [0, 0.016, 0])]), MAT.darkSteel, { d: 'Beugel met kogelpen aan de achterklep (onder de ruitrand) waarop de gasveer draait (plaats geschat).', p: [s * bodGsB[0], bodGsB[1], bodGsB[2]], ex: [s * 0.04, 0.05, 0] })),
+    ...both(s => P(`Gasveerbeugel ${sn(s)}`, merge([G.sphere(0.012, 10), xf(G.rbox(0.03, 0.02, 0.02, 0.004), [0, 0.016, 0])]), MAT.darkSteel, { d: 'Beugel met kogelpen aan de zijrand van de achterklep (onder de ruitrand) waarop de gasveer draait (plaats geschat).', p: [s * bodGsB[0], bodGsB[1], bodGsB[2]], ex: [s * 0.04, 0.05, 0] })),
     ...both(s => P(`Klepscharnier ${sn(s)}`, G.rbox(0.03, 0.03, 0.08, 0.006), MAT.darkSteel, { d: 'Scharnier tussen dak en achterklep, het deel aan de carrosseriezijde (geschroefd op de dakrand); blijft staan als de klep opent.', p: [s * 0.42, YR(RW0) - 0.04, RW0 - 0.01], stay: true, ex: [0, 0.04, 0.04] })),
     ...both(s => P(`Klepscharnierblad ${sn(s)}`, G.rbox(0.026, 0.007, 0.05, 0.003), MAT.bodPillar, { d: 'Plat zwart scharnierblad aan de achterklep, draait om de scharnierpen op de dakrand; ligt bijna in het oppervlak van de klep.', p: [s * 0.42, panP(RW0 - 0.035, 0.42)[1] + 0.0005, RW0 - 0.035], ex: [0, 0.05, -0.02] })),
     ...both(s => P(`Klepbuffer ${sn(s)}`, G.cyl('z', 0.012, 0.012, 0.02, 10), MAT.rubber, { d: 'Rubberen aanslag op de carrosserie die het rammelen van de klep voorkomt.', inner: true, stay: true, p: [s * 0.48, 0.68, bodZT + 0.035], ex: [s * 0.03, 0, 0.04] })),
