@@ -1,0 +1,20 @@
+{
+  "_uitleg": "Alles wat per auto verschilt in de generieke laag (build.py, core.js, app1.js, presets.js, app2.js, head.html). build.py zet head.html-velden in op {{naam}} en geeft de JavaScript een bevroren object AUTO. Zie docs/framework.md.",
+  "id": "laguna3",
+  "hook": "__laguna",
+  "merk": "Renault",
+  "wortel": "Renault Laguna III",
+  "titel": "Laguna III explosietekening",
+  "h1": "Laguna III",
+  "h1sub": "Initiale Paris",
+  "sub": "2011 · 5-deurs hatchback · zilvergrijs · <b>F4Rt 2.0 Turbo 170 pk</b><span class=\"long\"> · 6-traps automaat</span>",
+  "beschrijving": "Interactieve 3D-explosietekening van een Renault Laguna III hatchback (2011, 2.0 Turbo, automaat): 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.",
+  "ogBeschrijving": "Interactieve 3D-explosietekening van een Renault Laguna III hatchback: 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.",
+  "ogBeeld": "https://rvd-gmpplus.github.io/laguna3/docs/screenshots/gemonteerd.png",
+  "canvasLabel": "3D-explosietekening van een Renault Laguna III hatchback. Klik op een onderdeel om het uit te klappen.",
+  "notitie": "Schematisch 3D-model: vormen, maten en posities van onderdelen zijn benaderd en niet geschikt als montagevoorschrift. Technische gegevens komen uit openbare specificaties en werkplaatshandboeken van deze auto en, waar vermeld, van zustermotoren (F4R) of de zusterbak (Mitsubishi F6AJA); niet elk gegeven is voor deze uitvoering bevestigd.",
+  "openUitleg": "Renault Laguna III hatchback (fase 2, 2011) in Initiale Paris-uitvoering, zilvergrijs metallic (Gris Platine), met de 2.0 Turbo F4Rt-motor, zestraps automaat en elektrisch panoramadak. Openen: klik op de motorkap, een portier, een ruit, een spiegel, de achterklep, de tankklep of het panoramadak om het te openen; nog een klik sluit het weer. Rechtsklik, Shift+klik of vasthouden sluit de binnenste open opener.",
+  "pnType": "2.0 16V Turbo 170 pk; onderdelencatalogi noemen de reeks F4R 811, de motor van deze auto is waarschijnlijk een F4Rt 813",
+  "hintVersie": "v2",
+  "verboden": ["Laguna", "laguna", "LAGUNA", "F4R", "AJ0", "Initiale", "zilvergrijs"]
+}

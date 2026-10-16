@@ -21,11 +21,11 @@ def klein(path):
 with session() as s:
     pg = s.page(1280, 800)
     for name, pid in SHOTS:
-        pg.evaluate("(id) => { const L = __laguna; L.preset(id); L.finishAll(); if (L.batchFlush) L.batchFlush(); L.finishAll(); return 1; }", pid)
+        pg.evaluate("(id) => { const L = __model; L.preset(id); L.finishAll(); if (L.batchFlush) L.batchFlush(); L.finishAll(); return 1; }", pid)
         pg.wait_for_timeout(1200)
         pg.screenshot(path=os.path.join(out, name + '.png'), timeout=180000); klein(os.path.join(out, name + '.png')); print('beeld', name)
     pg2 = s.page(390, 844, scale=2, touch=True)
-    pg2.evaluate("() => { const L = __laguna; L.preset('main'); L.finishAll(); if (L.batchFlush) L.batchFlush(); L.finishAll(); return 1; }")
+    pg2.evaluate("() => { const L = __model; L.preset('main'); L.finishAll(); if (L.batchFlush) L.batchFlush(); L.finishAll(); return 1; }")
     pg2.wait_for_timeout(1200)
     pg2.screenshot(path=os.path.join(out, 'mobiel.png'), timeout=180000); klein(os.path.join(out, 'mobiel.png')); print('beeld mobiel')
     s.report()

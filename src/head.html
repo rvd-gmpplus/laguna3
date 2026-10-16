@@ -1,10 +1,10 @@
-<title>Laguna III explosietekening</title>
-<meta name="laguna-version" content="__LAGUNA_VERSION__">
-<meta name="description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback (2011, 2.0 Turbo, automaat): 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
-<meta property="og:title" content="Laguna III explosietekening">
-<meta property="og:description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback: 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
+<title>{{titel}}</title>
+<meta name="model-version" content="__MODEL_VERSION__">
+<meta name="description" content="{{beschrijving}}">
+<meta property="og:title" content="{{titel}}">
+<meta property="og:description" content="{{ogBeschrijving}}">
 <meta property="og:type" content="website">
-<meta property="og:image" content="https://rvd-gmpplus.github.io/laguna3/docs/screenshots/gemonteerd.png">
+<meta property="og:image" content="{{ogBeeld}}">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231b2228'/%3E%3Cpath d='M8 7v18h16v-4H13V7z' fill='%23f2c230'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -456,10 +456,10 @@ input[type=range]{width:100%;accent-color:var(--ink)}
    U5: een eerder gekozen thema staat al op <html> voordat de pagina tekent (geen flits). */
 (function () {
   function fail(msg, src) {
-    var el = document.getElementById('loading'), v = (document.querySelector('meta[name="laguna-version"]') || {}).content || '?';
+    var el = document.getElementById('loading'), v = (document.querySelector('meta[name="model-version"]') || {}).content || '?';
     var loading = !!(el && !el.classList.contains('gone'));
-    window.__lagunaLastError = { message: String(msg), source: src, loading: loading, when: Date.now() };
-    if (!loading) { console.error('laguna3 (versie ' + v + '): ' + msg); return; }
+    window.__modelLastError = { message: String(msg), source: src, loading: loading, when: Date.now() };
+    if (!loading) { console.error('{{id}} (versie ' + v + '): ' + msg); return; }
     var t = el.textContent || '', vt = 'Versie ' + v + '.';
     // een voortgangsmelding ("Model opbouwen…", met daarachter de noscript-tekst) wordt vervangen; een eigen foutmelding van
     // core.js of app1.js (zonder beletselteken) blijft staan en krijgt alleen de versie erbij
@@ -471,18 +471,18 @@ input[type=range]{width:100%;accent-color:var(--ink)}
     else fail(e.message || (e.error && e.error.message) || 'onbekende fout', 'error');
   }, true);
   window.addEventListener('unhandledrejection', function (e) { var r = e.reason; fail(r && r.message ? r.message : String(r), 'rejection'); });
-  try { var th = window.localStorage.getItem('laguna3-theme'); if (th === 'light' || th === 'dark') document.documentElement.setAttribute('data-theme', th); } catch (e) { }
+  try { var th = window.localStorage.getItem('{{id}}-theme'); if (th === 'light' || th === 'dark') document.documentElement.setAttribute('data-theme', th); } catch (e) { }
 })();
 </script>
 
 <div id="app">
-  <canvas id="stage" tabindex="0" role="application" aria-label="3D-explosietekening van een Renault Laguna III hatchback. Klik op een onderdeel om het uit te klappen."></canvas>
+  <canvas id="stage" tabindex="0" role="application" aria-label="{{canvasLabel}}"></canvas>
   <div id="labels"><svg id="leaders" aria-hidden="true"></svg></div>
   <header id="topbar">
     <div class="title">
       <p class="eyebrow">Explosietekening<span class="long"> · schematisch model</span></p>
-      <h1>Laguna III <span>Initiale Paris</span></h1>
-      <p class="sub">2011 · 5-deurs hatchback · zilvergrijs · <b>F4Rt 2.0 Turbo 170 pk</b><span class="long"> · 6-traps automaat</span></p>
+      <h1>{{h1}} <span>{{h1sub}}</span></h1>
+      <p class="sub">{{sub}}</p>
     </div>
     <div class="open-row"><div class="seg" id="openSeg" role="radiogroup" aria-label="Wat doet een klik: uitklappen of openen">
       <button role="radio" aria-checked="true" tabindex="0" data-omode="expand" title="Een klik klapt de groep van het onderdeel uit (sneltoets O wisselt)">Uitklappen</button>
@@ -498,7 +498,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
     <button class="grab" id="sheetToggle" aria-label="Paneel groter maken" aria-expanded="false"><span></span></button>
     <div class="sel-head">
       <div class="crumbs" id="crumbs"></div>
-      <h2 id="selName" aria-live="polite">Renault Laguna III</h2>
+      <h2 id="selName" aria-live="polite">{{wortel}}</h2>
       <p class="meta" id="selMeta" aria-live="polite"></p>
       <div class="sel-actions">
         <button class="btn primary" id="actOpen" hidden>Openen</button>
@@ -527,7 +527,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
           <p class="pn-warn" id="pnWarn">Controleer het nummer altijd op het chassisnummer (VIN) bij de dealer of webwinkel; catalogi verschillen per bouwdatum en uitvoering. Waar een blok Gekozen voor deze auto staat, is de uitvoering vastgesteld volgens de RDW en het chassisnummer van de gebruiker; bij alle andere varianten blijft die controle nodig.</p>
           <div id="pnBody"></div>
         </div>
-        <p class="note">Schematisch 3D-model: vormen, maten en posities van onderdelen zijn benaderd en niet geschikt als montagevoorschrift. Technische gegevens komen uit openbare specificaties en werkplaatshandboeken van deze auto en, waar vermeld, van zustermotoren (F4R) of de zusterbak (Mitsubishi F6AJA); niet elk gegeven is voor deze uitvoering bevestigd.</p>
+        <p class="note">{{notitie}}</p>
       </section>
       <section id="tab-tree" role="tabpanel" aria-labelledby="tabbtn-tree" hidden>
         <input id="treeSearch" type="search" placeholder="Zoek een onderdeel of nummer, bijv. klepveer" autocomplete="off" aria-describedby="treeInfo">
@@ -583,7 +583,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
         <button id="btnOpenList" aria-expanded="false" aria-controls="openList" title="Kies een opener uit de lijst">Openers <span id="openCount"></span></button>
       </div>
       <div class="xctl" id="xctl">
-        <label for="explode" class="xlbl"><span>Explosie</span><b id="explodeName">Renault Laguna III</b></label>
+        <label for="explode" class="xlbl"><span>Explosie</span><b id="explodeName">{{wortel}}</b></label>
         <div class="xrow">
           <input id="explode" type="range" min="0" max="1000" step="1" value="0" aria-valuetext="0 van 6 lagen">
           <output id="explodeOut" for="explode">0%</output>
@@ -609,7 +609,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
   <div id="press" hidden><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="28"/></svg></div>
   <div id="helpDlg" hidden><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
     <h2 id="helpTitle">Bediening</h2>
-    <p class="ver">Laguna III explosietekening, versie __LAGUNA_VERSION__</p>
+    <p class="ver">{{titel}}, versie __MODEL_VERSION__</p>
     <div id="helpMouse"><h3>Met de muis</h3><dl>
       <dt>Klik</dt><dd>De groep van het onderdeel klapt uit; de rest blijft staan. Staat die groep al open, dan wordt het onderdeel uitgelicht.</dd>
       <dt>Dubbelklik</dt><dd>Direct naar dit onderdeel: alle groepen erboven gaan laag voor laag open.</dd>

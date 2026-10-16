@@ -9,7 +9,7 @@ import os, sys, subprocess, fnmatch
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 OWN = {
-    'app': ['src/head.html', 'src/core.js', 'src/app1.js', 'src/presets.js', 'src/app2.js', 'tools/itest.py', 'tools/ui_*.py', 'tools/opentest.py'],
+    'app': ['src/head.html', 'src/core.js', 'src/app1.js', 'src/presetdata.js', 'src/presets.js', 'src/app2.js', 'tools/itest.py', 'tools/ui_*.py', 'tools/opentest.py'],
     'body': ['src/body.js', 'src/bodyparts.js', 'src/panorama.js'],
     'engine': ['src/engine1.js', 'src/engine2.js', 'src/engine3.js'],
     'drivetrain': ['src/drivetrain.js'],
@@ -22,7 +22,7 @@ OWN = {
     'orkestrator': ['*'],
 }
 # Alleen-lezen voor domeineigenaars: contracten, testscripts, poortbestanden en de gebouwde pagina. Wijzigen alleen door de orkestrator.
-READONLY = ['build.py', 'VERSION', 'requirements.txt', 'LICENSE', 'CLAUDE.md', '.claude/*', 'tools/setup.sh', 'tools/harness.py', 'tools/smoke.py',
+READONLY = ['build.py', 'auto.json', 'framework.json', 'tools/framework.py', 'VERSION', 'requirements.txt', 'LICENSE', 'CLAUDE.md', '.claude/*', 'tools/setup.sh', 'tools/harness.py', 'tools/smoke.py',
             'tools/integrity.py', 'tools/silhouette.py', 'tools/pubsmoke.py', 'tools/tri.py', 'tools/shot.py', 'tools/anchors.json',
             'tools/open_allow.json', 'tools/orkestratie/*', 'index.html', 'docs/*', 'README.md', 'CHANGELOG.md', 'src/core.js', 'src/body.js']
 

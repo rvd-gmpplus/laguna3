@@ -17,7 +17,7 @@ with session() as s:
     pg.evaluate(ns['APPLY'], views[VIEW])
     pg.wait_for_timeout(300)
     for (x, y) in PTS:
-        r = pg.evaluate("""([x,y]) => { const L = window.__laguna; const n = L.pickAt(x, y); if (!n) return null;
+        r = pg.evaluate("""([x,y]) => { const L = window.__model; const n = L.pickAt(x, y); if (!n) return null;
             const o = L.byName(n); const path = []; let p = o; while (p && path.length < 6) { path.push(p.name); p = p.parent && p.parent.userData && p.parent.userData.node ? p.parent : (L.parentOf ? L.parentOf(p) : null); }
             return n; }""", [x, y])
         print(f'{x},{y}: {r}')

@@ -7,7 +7,7 @@ Stand 16 oktober 2026, 10:20 UTC. Versie 8 is live: PR #3 is als `4e837c5` in `m
 - Repo `rvd-gmpplus/laguna3`. `main` staat op `4e837c5` (versie 8). PR #3 en PR #4 zijn samengevoegd. Werktak voor vervolgwerk: `ccr-63d946bb-ng8q5l`, opnieuw gestart vanaf `main`.
 - Live: https://rvd-gmpplus.github.io/laguna3/ en https://claude.ai/artifact/4qJq7YUk5nGSFmexY7WkZR, beide versie 8, op 16 oktober om 10:15 UTC teruggelezen (het artefact bevat `index.html` precies een keer, met 531 bytes hostskelet ervoor en 15 erna). GitHub Pages is het kanaal; het artefact is een spiegel met dezelfde bytes. In het artefact werkt Beeld opslaan niet: de viewer staat downloads vanuit de pagina niet toe; op Pages werkt het wel.
 - De tak `gh-pages` (versie 5) is overbodig. De proxy weigert hem te verwijderen (403 op `git push --delete` en op de API); de gebruiker verwijdert hem in GitHub.
-- Bouwen: `python3 build.py`. Versie: `VERSION` (nu 8) plus een inhoudshash van `src/`, zichtbaar in het hulpvenster (`?`), in `<meta name="laguna-version">` en in `__laguna.version`. Versie 7 had nog geen stempel.
+- Bouwen: `python3 build.py`. Versie: `VERSION` (nu 8) plus een inhoudshash van `src/`, zichtbaar in het hulpvenster (`?`), in `<meta name="model-version">` en in `__model.version`. Versie 7 had nog geen stempel.
 - Verse omgeving: `tools/setup.sh` (Playwright en Pillow uit `requirements.txt`, three.js 0.147.0 met npm-hashcontrole). In een Claude Code-sessie in de cloud doet de SessionStart-hook dat.
 - Kerncijfers: [docs/cijfers.md](docs/cijfers.md), gegenereerd uit `stats.json` en `tri.json`; andere documenten verwijzen ernaar in plaats van getallen te herhalen.
 

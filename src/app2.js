@@ -15,7 +15,7 @@ const UI_ISO_FADE_MS = 300;                  // U4: uitfaden van wat bij isolere
 const UI_TOAST_MS = 1800;                    // U8, U9: korte melding onderin (volledige labelnaam, beeld opgeslagen)
 const UI_HINT_MS = 9000;                     // hint bij de start, daarna (U8) de suggestie tot de eerste klik
 const UI_LABEL_MAX = 24, UI_LABEL_MAX_NARROW = 10; // U2: hoogstens zoveel labels; smal scherm (onder 600 px) minder
-const UI_THEME_KEY = 'laguna3-theme';        // U5: onthouden themakeuze (light, dark; systeem = niets bewaard)
+const UI_THEME_KEY = AUTO.id + '-theme';        // U5: onthouden themakeuze (light, dark; systeem = niets bewaard)
 const UI_PRESS_VIBRATE_MS = 10;              // U8: trilling als de ring bij lang drukken vol is
 let MODE = 'part', LABELS = true, CTX = null, ACTIVE_PRESET = 'assembled', needs = true;
 let uiLabelForce = false;
@@ -45,7 +45,7 @@ function uiDeepestOpen(p) { let a = null; pathFrom(p).forEach(x => { if (x.asm &
 
 /* ---------- selectie en paneel ---------- */
 // U7: de uitleg bij de hele auto in de modus Openen (de beschrijving in systems.js noemt het uitklappen)
-const uiOpenRootDesc = 'Renault Laguna III hatchback (fase 2, 2011) in Initiale Paris-uitvoering, zilvergrijs metallic (Gris Platine), met de 2.0 Turbo F4Rt-motor, zestraps automaat en elektrisch panoramadak. Openen: klik op de motorkap, een portier, een ruit, een spiegel, de achterklep, de tankklep of het panoramadak om het te openen; nog een klik sluit het weer. Rechtsklik, Shift+klik of vasthouden sluit de binnenste open opener.';
+const uiOpenRootDesc = AUTO.openUitleg;
 function select(n, opts = {}) {
   n = n || uiScopeRoot();
   if (uiLifted && uiLifted !== n) uiDrop();
@@ -194,7 +194,7 @@ function renderPn(n) {
   if (uiPnHasNum(r)) {
     const head = (txt) => box.appendChild(mk('h4', null, txt));
     if (u.oe && u.oe.length) {
-      head(r.kind === 'zelf' ? (u.oe.length > 1 ? 'Renault-nummers' : 'Renault-nummer') : 'Renault-nummer van ' + (u.n || r.id));
+      head(r.kind === 'zelf' ? (u.oe.length > 1 ? AUTO.merk + '-nummers' : AUTO.merk + '-nummer') : AUTO.merk + '-nummer van ' + (u.n || r.id));
       const ul = mk('ul', 'pn-nums');
       for (const [num, note, lvl] of u.oe) { const li = mk('li'); if (isKz(num)) li.className = 'pn-kz'; li.appendChild(mk('b', null, num)); if (isKz(num)) li.appendChild(mk('em', null, 'gekozen')); if (lvl) li.appendChild(uiPnLvl(mk, lvl)); if (note) li.appendChild(mk('span', null, note)); ul.appendChild(li); }
       box.appendChild(ul);
@@ -207,7 +207,7 @@ function renderPn(n) {
       for (const [merk, num, note, lvl] of u.am) { const tr = tb.insertRow(); if (isKz(null, [merk, num])) tr.className = 'pn-kz'; tr.appendChild(mk('td', null, merk)); tr.appendChild(mk('td', 'num', num)); const td = mk('td'); if (lvl) td.appendChild(uiPnLvl(mk, lvl)); tr.appendChild(td); const tn = mk('td', null, note || ''); if (tr.className === 'pn-kz') tn.appendChild(mk('em', null, (note ? ' ' : '') + 'gekozen')); tr.appendChild(tn); }
       box.appendChild(t);
     }
-    box.appendChild(mk('p', 'pn-txt', 'Bewijs: A staat in de catalogus voor dit type (2.0 16V Turbo 170 pk; onderdelencatalogi noemen de reeks F4R 811, de motor van deze auto is waarschijnlijk een F4Rt 813) op de juiste plaats; B is het Renault-nummer van zo\'n artikel; C is een kruisverwijzing van een A- of B-nummer; D komt alleen uit een advertentie voor een gebruikt onderdeel en is niet in een catalogus gecontroleerd.'));
+    box.appendChild(mk('p', 'pn-txt', 'Bewijs: A staat in de catalogus voor dit type (' + AUTO.pnType + ') op de juiste plaats; B is het ' + AUTO.merk + '-nummer van zo\'n artikel; C is een kruisverwijzing van een A- of B-nummer; D komt alleen uit een advertentie voor een gebruikt onderdeel en is niet in een catalogus gecontroleerd.'));
   }
   if (u && u.var) { box.appendChild(mk('h4', null, kz ? 'Varianten in de catalogus' : 'Variant')); box.appendChild(mk('p', 'pn-txt', u.var)); }
   if (u && u.per) { box.appendChild(mk('h4', null, 'Verpakking')); box.appendChild(mk('p', 'pn-txt', u.per)); }
@@ -240,7 +240,7 @@ function renderPn(n) {
 }
 function uiPnLvl(mk, lvl) {
   const e = mk('span', 'pn-lvl', lvl);
-  e.title = { A: 'In de catalogus voor dit type, op de juiste plaats', B: 'Renault-nummer van een artikel dat voor dit type in de catalogus staat', C: 'Kruisverwijzing van een A- of B-nummer', D: 'Alleen uit een advertentie voor een gebruikt onderdeel van dit model; niet in een catalogus gecontroleerd' }[lvl] || '';
+  e.title = { A: 'In de catalogus voor dit type, op de juiste plaats', B: AUTO.merk + '-nummer van een artikel dat voor dit type in de catalogus staat', C: 'Kruisverwijzing van een A- of B-nummer', D: 'Alleen uit een advertentie voor een gebruikt onderdeel van dit model; niet in een catalogus gecontroleerd' }[lvl] || '';
   return e;
 }
 
@@ -639,8 +639,8 @@ function uiSaveImage() {
   g.fillStyle = cs.color || '#151a21'; g.textBaseline = 'middle';
   g.font = `700 ${Math.round(15 * dpr)}px ${cs.fontFamily}`; g.fillText(n.name, Math.round(14 * dpr), h + bar / 2, w * 0.55);
   g.font = `${Math.round(12 * dpr)}px ${cs.fontFamily}`; g.textAlign = 'right';
-  g.fillText((nums.length ? 'Onderdeelnummer ' + nums.slice(0, 2).join(', ') + ' · ' : '') + 'Laguna III explosietekening, versie ' + uiVersion, w - Math.round(14 * dpr), h + bar / 2, w * 0.43);
-  const name = `laguna3-${uiSlug(n.name)}.png`;
+  g.fillText((nums.length ? 'Onderdeelnummer ' + nums.slice(0, 2).join(', ') + ' · ' : '') + AUTO.titel + ', versie ' + uiVersion, w - Math.round(14 * dpr), h + bar / 2, w * 0.43);
+  const name = `${AUTO.id}-${uiSlug(n.name)}.png`;
   return new Promise(res => c2.toBlob(blob => {
     if (!blob) { uiToast('Het beeld kon niet worden opgeslagen.'); res(null); return; }
     const a = document.createElement('a'), url = URL.createObjectURL(blob);
@@ -1065,7 +1065,7 @@ canvas.addEventListener('touchend', e => { if (e.cancelable) e.preventDefault();
 canvas.addEventListener('wheel', () => { uiStopPlay(); uiStopTour(); hideHint(); uiHideTip(); }, { passive: true });
 
 /* ---------- hint en hulp ---------- */
-const uiHintKey = 'laguna3-hint-v2';
+const uiHintKey = AUTO.id + '-hint-' + AUTO.hintVersie;
 let uiHintStage = 0; // 0 geen, 1 de uitleg, 2 de suggestie (U8); elke handeling sluit hem voorgoed
 function uiInitHint() {
   let seen = false;
@@ -1667,7 +1667,7 @@ function loop(now) {
 
 /* ---------- debug-overlay (?debug=1): tekensnelheid, tekenopdrachten, pixelratio, lichte weergave en versie, zodat een
    melding van een echt apparaat meetbaar is (docs/telefoontest.md) ---------- */
-const uiVersion = (document.querySelector('meta[name="laguna-version"]') || {}).content || '';
+const uiVersion = (document.querySelector('meta[name="model-version"]') || {}).content || '';
 const uiDebug = (() => { try { return new URLSearchParams(location.search).get('debug') === '1'; } catch (_) { return false; } })();
 const uiDbg = uiDebug ? { el: document.createElement('div'), t: 0, n: 0, acc: 0 } : null;
 if (uiDbg) { uiDbg.el.id = 'debug'; uiDbg.el.setAttribute('aria-hidden', 'true'); document.getElementById('app').appendChild(uiDbg.el); }
@@ -1804,7 +1804,7 @@ function uiFrameOf(names) {
 // Testkoppeling. Aanroepen die de stand veranderen tellen als interactie: de hint verdwijnt direct
 // en de presetmarkering vervalt (een preset die je daarna kiest, zet hem weer).
 const uiApi = (f, changes) => (...a) => { hideHint(true); const r = f(...a); if (changes) { clearPreset(); uiAfterAction(); } return r; };
-window.__laguna = {
+window.__model = {
   version: uiVersion || null,  // versiestempel uit build.py (VERSION plus inhoudshash)
   finishAll, ROOT, ALL, MESHES, PRESETS, byName,
   select: uiApi(select), tapNode: uiApi(tapNode), focusNodes: uiApi(focusNodes),
@@ -1859,7 +1859,7 @@ window.__laguna = {
   setOpen: (name, v, instant) => { const r = uiSetOpen(name, v, instant); uiSyncOpenUi(); renderPanel(); requestRender(); return r; },
   openAll: (v, instant) => { for (const n of OPENERS) uiSetOpen(n, v, instant); uiSyncOpenUi(); renderPanel(); requestRender(); return OPENERS.length; },
   // golf 5c-1: toetsbare toestand van de nieuwe functies
-  get lastError() { return window.__lagunaLastError || null; },           // R1b: laatste fout uit de globale handler
+  get lastError() { return window.__modelLastError || null; },           // R1b: laatste fout uit de globale handler
   get contextLost() { return uiContextLost; },                           // R2
   lastFit: () => !uiLastFit ? null : uiLastFit.preset ? { preset: uiLastFit.preset.id } : { nodes: uiLastFit.nodes.map(n => n.name), dir: uiLastFit.dir ? uiLastFit.dir.toArray() : null, pad: uiLastFit.pad }, // R3
   tourState: () => appTour ? { step: appTour.i, steps: appTourSteps.length, paused: !!appTour.paused, auto: !!appTour.auto, preset: appTourSteps[appTour.i] } : null, // R4
@@ -1874,3 +1874,5 @@ window.__laguna = {
   saveImage: uiSaveImage,                                               // U9
   toast: uiToast,                                                       // U8
 };
+// de testhaak heet in elk model __model; AUTO.hook geeft er per auto een tweede naam aan
+if (AUTO.hook && AUTO.hook !== '__model') window[AUTO.hook] = window.__model;

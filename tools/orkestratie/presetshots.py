@@ -11,9 +11,9 @@ with session() as s:
     pg = s.page(1280, 800)
     for i, pid in enumerate(ids):
         try:
-            pg.evaluate("(id) => { const L = window.__laguna; L.preset(id); L.finishAll(); return true; }", pid)
+            pg.evaluate("(id) => { const L = window.__model; L.preset(id); L.finishAll(); return true; }", pid)
             pg.wait_for_timeout(500)
-            pg.evaluate("() => { window.__laguna.finishAll(); }")
+            pg.evaluate("() => { window.__model.finishAll(); }")
             pg.wait_for_timeout(300)
             pg.screenshot(path=os.path.join(OUT, f'{i+1:02d}-{pid}.png'), timeout=180000)
             print('beeld', pid)

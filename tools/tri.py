@@ -19,7 +19,7 @@ budgets = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__))
 with session() as s:
     pg = s.page(400, 300)
     r = pg.evaluate("""(() => { const out = {}, byTop = {}, parts = {}; let tot = 0;
-      for (const m of window.__laguna.MESHES) { const g = m.geometry, t = (g.index ? g.index.count : g.attributes.position.count) / 3; tot += t;
+      for (const m of window.__model.MESHES) { const g = m.geometry, t = (g.index ? g.index.count : g.attributes.position.count) / 3; tot += t;
         const n = m.userData.node, k = (n.parent ? n.parent.name + ' / ' : '') + n.name; out[k] = (out[k] || 0) + t;
         let top = n; while (top.parent && top.parent.parent) top = top.parent; byTop[top.name] = (byTop[top.name] || 0) + t; parts[top.name] = (parts[top.name] || 0) + 1; }
       return { tot, arr: Object.entries(out).sort((a, b) => b[1] - a[1]).slice(0, 25), byTop, parts }; })()""")

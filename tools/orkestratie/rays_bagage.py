@@ -4,8 +4,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'
 from harness import session
 with session() as s:
     pg = s.page(1280, 800)
-    pg.wait_for_function('window.__laguna && window.__laguna.ready', timeout=180000)
-    r = pg.evaluate('''() => { const L = window.__laguna; L.batching(false); L.finishAll();
+    pg.wait_for_function('window.__model && window.__model.ready', timeout=180000)
+    r = pg.evaluate('''() => { const L = window.__model; L.batching(false); L.finishAll();
       const skip = new Set(['Hoedenplank', 'Achterplankluidspreker links', 'Achterplankluidspreker rechts']);
       const ms = L.MESHES.filter(m => { let k = m; while (k && !k.userData?.node) k = k.parent; const n = k && k.userData.node; return m.visible !== false && !(n && skip.has(n.name)); });
       scene.updateMatrixWorld(true);

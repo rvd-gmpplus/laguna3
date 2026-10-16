@@ -8,7 +8,7 @@ Wat hij doet:
    (een volledig document) op een telefoon en eist standaardmodus en een schermbreedte van 390 px.
 2. Laadt hem in Chromium. Verzoeken naar cdn.jsdelivr.net/npm/three@0.147.0/ worden beantwoord uit het lokale
    npm-pakket (de container heeft geen directe internettoegang voor Chromium); lettertypen krijgen een lege stylesheet.
-3. Controleert: geen console- of paginafouten, __laguna klaar binnen 20 s, THREE.REVISION = 147, het canvas heeft
+3. Controleert: geen console- of paginafouten, __model klaar binnen 20 s, THREE.REVISION = 147, het canvas heeft
    touch-action en user-select uit en de stylesheet schakelt -webkit-touch-callout uit (lang drukken op iOS).
 4. Controleert met curl via de proxy dat elk CDN-bestand bestaat en byte voor byte gelijk is aan het lokale pakket,
    en dat de lettertype-stylesheet van Google Fonts bereikbaar is.
@@ -69,7 +69,7 @@ def main():
         br = p.chromium.launch(executable_path=exe, args=ARGS) if exe else p.chromium.launch(args=ARGS)
         for (w, h, touch, kanaal) in ((1280, 800, False, 'artefact'), (390, 844, True, 'artefact'), (390, 844, True, 'pages')):
             ctx = br.new_context(viewport={'width': w, 'height': h}, device_scale_factor=2 if touch else 1, has_touch=touch, is_mobile=touch)
-            ctx.add_init_script('window.__LAGUNA_CACHECHECK = true;')
+            ctx.add_init_script('window.__MODEL_CACHECHECK = true;')
             pg = ctx.new_page()
             tag = f'{w}x{h}' + (' pages' if kanaal == 'pages' else '')
             pg.on('console', lambda m, tag=tag: logs.append(f'[{tag}] {m.type}: {m.text}') if m.type in ('error', 'warning') else None)
@@ -93,9 +93,9 @@ def main():
             # grens voor `ready`: 20 s (docs/testen.md); op een belaste machine of CI via PUBSMOKE_READY_MS hoger zetten
             ready_ms = int(os.environ.get('PUBSMOKE_READY_MS', '20000'))
             try:
-                pg.wait_for_function('window.__laguna && window.__laguna.ready !== false', timeout=ready_ms)
+                pg.wait_for_function('window.__model && window.__model.ready !== false', timeout=ready_ms)
             except Exception:
-                fails.append(f'[{tag}] __laguna niet klaar binnen {ready_ms / 1000:g} s')
+                fails.append(f'[{tag}] __model niet klaar binnen {ready_ms / 1000:g} s')
                 continue
             dt = time.time() - t0
             r = pg.evaluate("""(() => { const c = document.querySelector('canvas'); const cs = getComputedStyle(c);

@@ -15,7 +15,7 @@ afgeleide feiten (bouwperiode, bak, emissieniveau) met hun grond.
 | `units/<plak>.json` | Verkoopeenheden per onderzoeksplak van golf 4 (`pilot`, `S1-motor-service`, `S2-lucht-uitlaat-brandstof`, `S3a-vooras-aandrijving`, `S3b-achteras-remmen-wielen`, `S4-carrosserie-elektra-interieur`, `S5-panoramadak`). Sleutel `plak:ID`. Record: `n` (naam), `st` (`past`, `vin` of `nietgevonden`), `oe` (`[[Renault-nummer, opmerking, bewijs]]`), `am` (`[[merk, nummer, opmerking, bewijs]]`), `var` (variantentekst), `per` (verpakking), `note`, `src` (`[[url, host]]`), en `kz` bij een gekozen uitvoering voor de auto van de gebruiker (`o`, `a`, `v`, `b`, `z`, `g`, `s`). Bewijs A tot D zoals in het paneel. |
 | `map.json` | Pad zonder wortel naar `[eenheid, relatie, regel]`; relatie `zelf`, `deel` of `set`; `regel` is de toelichting bij de koppeling (vaak leeg). Een pad dat niet in `map.json` staat, is in de pagina "niet onderzocht". |
 | `info.json` | Pad naar onderhoudsregels `[[label, waarde, bron, zekerheid]]`: de kennisbasis uit het rapport van de gebruiker en het werkplaatshandboek MR 415. |
-| `../tree.json` | Alle paden van de boom, uit de pagina (`__laguna.ALL`). Ververs met `python3 tools/pncheck.py --tree --update` als de boom verandert, en bouw daarna opnieuw. |
+| `../tree.json` | Alle paden van de boom, uit de pagina (`__model.ALL`). Ververs met `python3 tools/pncheck.py --tree --update` als de boom verandert, en bouw daarna opnieuw. |
 
 ## Herkomst en de eenmalige migraties
 

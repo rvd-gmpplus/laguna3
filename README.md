@@ -91,7 +91,7 @@ Onderin staan de presets in zeven categorieën (op een staande telefoon in een r
 - Aantal presets: 43, de rondleiding meegeteld (in de eerste golf waren het er 31): Overzicht 6, Motor 11, Aandrijving 6, Onderstel 7, Carrosserie 4, Interieur 3, Openen 6. In de herstelronde van golf 2 kwamen er zes bij: Stuurpomp, Koeling en luchtinlaat, Uitlaatsysteem, Accu, Stuurinrichting en Parkeerrem. Golf 4 voegde de categorie Openen toe (zie hieronder).
 - Een preset in een andere categorie dan Openen zet de modus terug op Uitklappen.
 - `Rondleiding` in Overzicht speelt de belangrijkste presets na elkaar af met een bijschrift per stap, ongeveer vijf seconden per stap. De balk heeft knoppen voor vorige, pauze of hervat, volgende en stop; Esc breekt af. Een verborgen tabblad pauzeert de rondleiding vanzelf.
-- De lijst van presets staat in `src/presets.js`.
+- De lijst van presets staat in `src/presetdata.js`; de toepassingsmotor in `src/presets.js`.
 
 ### Het paneel
 
@@ -155,6 +155,7 @@ Haperen de eerste frames (gemiddeld meer dan 40 ms over 20 frames tijdens een an
 | Pad | Inhoud |
 |---|---|
 | `index.html` | De gebouwde pagina (identiek aan het gepubliceerde artefact). |
+| `auto.json`, `framework.json` | Wat per auto verschilt in de generieke laag (naam, teksten, merk, opslagsleutels, testhaak), en welk bestand generiek of autospecifiek is. Zie [docs/framework.md](docs/framework.md): hoe de modellering is opgezet en hoe je haar voor een andere auto herhaalt. |
 | `src/` | Broncode in delen: opmaak, geometrie, carrosserie, motor, aandrijflijn, onderstel, interieur, systemen, app-logica en presets. |
 | `src/panorama.js` | Het panoramadak: dakplaat met twee openingen, glaspanelen, dwarsbalk, zonneschermen met cassette, luchtgeleider en waterafvoer, met hun openers. De hemelbekleding met de afwerkring en de draaiknop in de hemelconsole staan in `src/interior.js`. |
 | `src/partnumbers.js` | De onderdeelnummers als gegevens. Gemaakt door `tools/orkestratie/build_pn.py` uit `data/pn/` (de canonieke gegevens, zie `data/pn/README.md`); niet met de hand bewerken. |

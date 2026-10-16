@@ -5,9 +5,9 @@ from harness import session
 out = sys.argv[1]
 with session() as s:
     pg = s.page(1280, 800)
-    pg.wait_for_function('window.__laguna && window.__laguna.ready', timeout=120000)
+    pg.wait_for_function('window.__model && window.__model.ready', timeout=120000)
     data = pg.evaluate('''() => {
-      const L = window.__laguna, res = [];
+      const L = window.__model, res = [];
       (function walk(n, path) {
         const p = path ? path + '/' + n.name : n.name;
         res.push({ path: p, name: n.name, asm: !!n.asm, d: n.d || '', spec: n.spec || null, kids: n.kids.length, depth: n.depth });
