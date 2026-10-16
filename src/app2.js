@@ -415,11 +415,12 @@ function uiOpenTo(n, open) {
   uiPush();
   uiSetOpen(n, open ? 1 : 0);
   clearPreset(); CTX = null; uiLabelForce = false;
+  select(n); // eerst het paneel: de kaart wordt bij een selectie hoger en het vrije beeld rekent met zijn werkelijke hoogte
   if (open) { // bij sluiten beweegt de camera niet
+    if (uiSheetBottom()) { syncSheetHeight(); layoutView(); }
     const lk = n.opn.look || {}, nodes = (lk.nodes || []).map(r => uiRef(r, n.name)).filter(Boolean);
     uiOpenFrame(nodes.length ? nodes : [n], lk.dir ? V3(...lk.dir) : null, 1.1);
   }
-  select(n);
   uiAfterAction();
 }
 function uiOpenAct(p) {
@@ -468,12 +469,22 @@ els.open.onclick = () => { const pl = uiPanelPlan(SEL); if (pl) uiOpenTo(pl.n, p
 const uiOpenChips = OPENERS.map(n => {
   const b = document.createElement('button');
   b.type = 'button'; b.textContent = uiOpenLabel(n); b.setAttribute('aria-pressed', 'false');
-  b.onclick = () => uiOpenTo(n, n.ot === 0);
+  b.onclick = () => { uiCloseOpenList(); uiOpenTo(n, n.ot === 0); };
   $('openList').appendChild(b);
   return [n, b];
 });
 let uiOpenListOn = false;
-$('btnOpenList').onclick = () => { uiOpenListOn = !uiOpenListOn; $('btnOpenList').setAttribute('aria-expanded', String(uiOpenListOn)); uiSyncOpenUi(); uiUiChanged(); layoutView(); };
+$('btnOpenList').onclick = () => {
+  uiOpenListOn = !uiOpenListOn; $('btnOpenList').setAttribute('aria-expanded', String(uiOpenListOn)); uiSyncOpenUi(); uiUiChanged(); layoutView();
+  if (window.innerWidth < 920) uiRefitSoon(); // de lijst neemt vrij beeld in of geeft het terug: de auto past in wat overblijft
+};
+// Op een smal scherm (telefoon staand en liggend, tablet) is de lijst een keuzemenu: na een keuze gaat hij dicht, zodat hij het
+// beeld niet afdekt en het vrije beeld weer de volle hoogte heeft voordat de camera de opener kadreert. Op het bureaublad
+// staat hij naast het beeld en blijft open.
+function uiCloseOpenList() {
+  if (!uiOpenListOn || window.innerWidth >= 920) return;
+  uiOpenListOn = false; $('btnOpenList').setAttribute('aria-expanded', 'false'); uiSyncOpenUi(); uiUiChanged(); layoutView();
+}
 function uiSyncOpenUi() {
   $('app').classList.toggle('omode', OPENMODE);
   uiOpenBtns.forEach(b => { const on = (b.dataset.omode === 'open') === OPENMODE; b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1; });
@@ -673,7 +684,19 @@ function uiSyncCats() {
     if (b.lastChild.textContent !== txt) { b.lastChild.textContent = txt; uiUiDirty = true; }
     b.setAttribute('aria-label', `${cat}${on ? ', actief: ' + p.label : ''}`);
   }
+  // In een zijwaarts schuivende rij (telefoon) schuift een nieuwe actieve categorie in beeld; handmatig schuiven blijft ongemoeid
+  const act = p ? p.cat : null;
+  if (act !== uiCatSeen) {
+    uiCatSeen = act;
+    const on = act && els.presets.querySelector('.cat.on'), row = els.presets;
+    if (on && row.scrollWidth > row.clientWidth + 1) {
+      const rr = row.getBoundingClientRect(), br = on.getBoundingClientRect();
+      if (br.left < rr.left + 16) row.scrollLeft += br.left - rr.left - 16;
+      else if (br.right > rr.right - 24) row.scrollLeft += br.right - rr.right + 24;
+    }
+  }
 }
+let uiCatSeen = null;
 function uiMenuItems() { return [...els.menu.querySelectorAll('.mi')]; }
 function uiOpenMenu(cat, btn) {
   uiCloseMenu(false);
