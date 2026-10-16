@@ -35,7 +35,8 @@ def main():
     files = subprocess.run(['git', '-C', REPO, 'diff', '--name-only', f'{base}..{commit}'], capture_output=True, text=True, check=True).stdout.split()
     bad = []
     for f in files:
-        owned = any(fnmatch.fnmatch(f, p) for p in OWN[dom])
+        # een alleen-lezen bestand is voor een domeineigenaar nooit eigen, ook als het in zijn domein ligt (core.js, body.js)
+        owned = any(fnmatch.fnmatch(f, p) for p in OWN[dom]) and (dom == 'orkestrator' or not any(fnmatch.fnmatch(f, p) for p in READONLY))
         ro = any(fnmatch.fnmatch(f, p) for p in READONLY)
         tag = 'eigen' if owned else ('ALLEEN-LEZEN' if ro else 'VAN EEN ANDER')
         if not owned:
