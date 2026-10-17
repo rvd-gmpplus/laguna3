@@ -34,7 +34,7 @@ Gegenereerd door `tools/orkestratie/cijfers.py` uit `stats.json` op 2026-10-17, 
 |---|---|
 | Met gebundeld renderen | 451 |
 | Zonder bundelen | 1.921 |
-| Batches | 46 groepen, 371 batchmeshes, 1.841 losse meshes vervangen, 25.7 MB van 46.4 MB |
+| Batches | 46 groepen, 371 batchmeshes, 1.841 losse meshes vervangen, 25,7 MB van 46,4 MB |
 
 ## Opstarttijdlijn (software-rendering van Chromium op de Mac die de cijfers meet, niet in de container; ms sinds het begin van de navigatie)
 

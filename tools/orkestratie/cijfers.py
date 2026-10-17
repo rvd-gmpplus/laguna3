@@ -35,7 +35,7 @@ out.append('\n## Tekenopdrachten (gemonteerd)\n\n| Stand | Waarde |\n|---|---|')
 out.append(f"| Met gebundeld renderen | {nl(st.get('drawCallsBatched', '?'))} |")
 out.append(f"| Zonder bundelen | {nl(st.get('drawCallsUnbatched', '?'))} |")
 if b:
-    out.append(f"| Batches | {nl(b.get('groups', 0))} groepen, {nl(b.get('batchMeshes', 0))} batchmeshes, {nl(b.get('replaced', 0))} losse meshes vervangen, {b.get('mb', '?')} MB van {b.get('capMb', '?')} MB |")
+    out.append(f"| Batches | {nl(b.get('groups', 0))} groepen, {nl(b.get('batchMeshes', 0))} batchmeshes, {nl(b.get('replaced', 0))} losse meshes vervangen, {str(b.get('mb', '?')).replace('.', ',')} MB van {str(b.get('capMb', '?')).replace('.', ',')} MB |")
 out.append('\n## Opstarttijdlijn (software-rendering van Chromium op de Mac die de cijfers meet, niet in de container; ms sinds het begin van de navigatie)\n\n| Moment | ms |\n|---|---|')
 for k in ['script', 'buildStart', 'buildCar', 'startUp', 'render0', 'firstFrame', 'interactive', 'ready', 'batches']:
     if k in t: out.append(f'| {k} | {nl(t[k])} |')
