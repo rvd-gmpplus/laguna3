@@ -783,7 +783,7 @@ const uiBatchWant = new Set();
 let uiBatchJob = null, uiBatchBytes = 0, uiBatchClock = 0, uiBatchKey = '';
 const uiBm = new THREE.Matrix4(), uiBl = new THREE.Matrix4(), uiBn = new THREE.Matrix3(), uiBv = V3(0, 0, 0);
 const uiGeoTris = g => (g.index ? g.index.count : g.attributes.position.count) / 3;
-const uiGeoBytes = g => g.attributes.position.count * 24 + (g.index ? g.index.count : g.attributes.position.count) * 4;
+const uiGeoBytes = g => g.attributes.position.count * (g.attributes.uv ? 32 : 24) + (g.index ? g.index.count : g.attributes.position.count) * 4;
 // geheugengrens: 1,25 x de geometrie van de gemonteerde auto (alle instanties één keer)
 const uiBatchCap = Math.round(1.25 * MESHES.reduce((a, m) => a + uiGeoBytes(m.geometry), 0));
 // inhoud van de batch van groep g: alle meshes in de deelboom, behalve onder een ingesloten knoop
@@ -852,18 +852,20 @@ function uiBatchAdd(job, m) {
   const flip = M.determinant() < 0;
   const base = m.userData.base || m.material;
   let acc = job.parts.get(base);
-  if (!acc) job.parts.set(base, (acc = { p: [], n: [], i: [], nv: 0, ni: 0 }));
+  if (!acc) job.parts.set(base, (acc = { p: [], n: [], u: [], uv: false, i: [], nv: 0, ni: 0 }));
   const P = new Float32Array(nv * 3), N = new Float32Array(nv * 3);
   for (let i = 0; i < nv; i++) {
     uiBv.set(pos.getX(i), pos.getY(i), pos.getZ(i)).applyMatrix4(M); P[i * 3] = uiBv.x; P[i * 3 + 1] = uiBv.y; P[i * 3 + 2] = uiBv.z;
     if (nor) { uiBv.set(nor.getX(i), nor.getY(i), nor.getZ(i)).applyMatrix3(uiBn).normalize(); N[i * 3] = uiBv.x; N[i * 3 + 1] = uiBv.y; N[i * 3 + 2] = uiBv.z; }
   }
+  const UV = new Float32Array(nv * 2), guv = g.attributes.uv;   // uv mee: anders leest elke textuur (grille, plaat, reflector) één en hetzelfde pixeltje
+  if (guv) { acc.uv = true; for (let i = 0; i < nv; i++) { UV[i * 2] = guv.getX(i); UV[i * 2 + 1] = guv.getY(i); } }
   const ix = g.index, ic = ix ? ix.count : nv, I = new Uint32Array(ic), o = acc.nv;
   for (let t = 0; t + 2 < ic; t += 3) {
     const a = ix ? ix.getX(t) : t, b = ix ? ix.getX(t + 1) : t + 1, c = ix ? ix.getX(t + 2) : t + 2;
     I[t] = a + o; I[t + 1] = (flip ? c : b) + o; I[t + 2] = (flip ? b : c) + o; // gespiegeld: wikkeling omdraaien (DoubleSide-belichting)
   }
-  acc.p.push(P); acc.n.push(N); acc.i.push(I); acc.nv += nv; acc.ni += ic;
+  acc.p.push(P); acc.n.push(N); acc.u.push(UV); acc.i.push(I); acc.nv += nv; acc.ni += ic;
 }
 function uiBatchFinish(job) {
   const obj = new THREE.Group(); obj.name = 'uiBatch'; obj.visible = false;
@@ -873,13 +875,14 @@ function uiBatchFinish(job) {
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(cat(a.p, a.nv * 3, Float32Array), 3));
     geo.setAttribute('normal', new THREE.BufferAttribute(cat(a.n, a.nv * 3, Float32Array), 3));
+    if (a.uv) geo.setAttribute('uv', new THREE.BufferAttribute(cat(a.u, a.nv * 2, Float32Array), 2));
     const idx = cat(a.i, a.ni, a.nv < 65536 ? Uint16Array : Uint32Array);
     geo.setIndex(new THREE.BufferAttribute(idx, 1));
     geo.computeBoundingSphere(); geo.computeBoundingBox();
     const bm = new THREE.Mesh(geo, uiBatchMat(base, job.g));
     bm.userData.base = base; bm.userData.uiBatch = true;
     obj.add(bm);
-    bytes += a.nv * 24 + a.ni * idx.BYTES_PER_ELEMENT;
+    bytes += a.nv * (a.uv ? 32 : 24) + a.ni * idx.BYTES_PER_ELEMENT;
   }
   job.g.obj.add(obj);
   job.g.bat = { obj, src: job.src, bytes, used: ++uiBatchClock, key: uiBatchKey };
