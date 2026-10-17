@@ -498,9 +498,8 @@ function drvMounts() {
       P('Rubber lagerbus subframe', G.cyl('x', 0.024, 0.024, 0.03, 18), MAT.rubber, { d: 'Rubberbus in het oog aan de subframezijde.', p: sub, ex: [-0.08, -0.04, 0] }),
       P('Beugel carterpan', G.rbox(0.07, 0.04, 0.02, 0.004), MAT.aluCast, { d: 'Beugel op de achterkant van de carterpan waaraan de koppelstang vastzit.', p: [rodA[0], -0.085, -0.1085], ex: [0.0, 0.1, 0.1] }),
       P('Doorgaande bout motorzijde', drvBolt(0.07, 0.012, 'x'), MAT.darkSteel, { d: 'Bout door de bus en de beugel.', p: [rodA[0] - 0.045, rodA[1], rodA[2]], ex: [-0.16, 0.04, 0] }),
-      // De Reactiestangbeugel (chassis.js) heeft dichte oren zonder gat (x t.o.v. het oog: -0,030 tot -0,017 en 0,017 tot 0,030). De bout bestaat daarom alleen buiten
-      // de oren (kop met 14,8 mm schacht, eindigt 0,2 mm voor het oor) en in de spleet tussen de oren (de bus); wat in de oren zou zitten is van buiten niet te zien.
-      P('Doorgaande bout subframe', cache('drvSubBout', () => merge([drvBolt(0.0148, 0.012, 'x'), xf(yTo(new THREE.CylinderGeometry(0.006, 0.006, 0.0336, 6), 'x'), [0.045, 0, 0])])), MAT.darkSteel, { d: 'Bout door de bus en het subframe.', p: [sub[0] - 0.045, sub[1], sub[2]], ex: [-0.2, -0.04, 0] }),
+      // de bout gaat door de boring Ø13 mm (RB_BORE) in beide oren van de Reactiestangbeugel (chassis.js)
+      P('Doorgaande bout subframe', drvBolt(0.07, 0.012, 'x'), MAT.darkSteel, { d: 'Bout door de bus en het subframe.', p: [sub[0] - 0.045, sub[1], sub[2]], ex: [-0.2, -0.04, 0] }),
     ]),
   ]);
 }
