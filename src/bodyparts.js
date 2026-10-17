@@ -33,6 +33,21 @@ const sn = s => sideName(s);
 // naden tussen linker- en rechterhelft gladtrekken (gedeelde normalen)
 // ook over naden tussen losse vlakken: weldAll in core.js (zelfde tolerantie 1e-4)
 function bodWeld(g) { const m = THREE.BufferGeometryUtils.mergeVertices(g, 1e-4); m.computeVertexNormals(); return m; }
+// driehoeken die na het lassen twee keer hetzelfde punt hebben (oppervlak 0) weghalen, en de punten die dan nergens meer
+// in voorkomen (die hadden een nulnormaal); volgorde en normalen van de overige punten blijven gelijk
+function bodDropDegen(g) {
+  const ix = g.index.array, keep = [], used = new Int32Array(g.attributes.position.count).fill(-1);
+  for (let i = 0; i < ix.length; i += 3) { const a = ix[i], b = ix[i + 1], c = ix[i + 2]; if (a !== b && b !== c && a !== c) keep.push(a, b, c); }
+  keep.forEach(k => { used[k] = 0; });
+  let n = 0; used.forEach((u, k) => { if (u === 0) used[k] = n++; });
+  const r = new THREE.BufferGeometry();
+  for (const [nm, at] of Object.entries(g.attributes)) {
+    const w = at.itemSize, arr = new at.array.constructor(n * w);
+    used.forEach((j, k) => { if (j >= 0) for (let c = 0; c < w; c++) arr[j * w + c] = at.array[k * w + c]; });
+    r.setAttribute(nm, new THREE.BufferAttribute(arr, w));
+  }
+  r.setIndex(keep.map(k => used[k])); return r;
+}
 // buitenwaartse normaal (linkerhelft) en pose op de huid; rechts wordt gespiegeld
 function bodNormalAt(z, y) { return bodN(z, sAtY(z, y)); }
 function bodPose(s, p, nLeft, extra = {}) {
@@ -866,7 +881,7 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   // stations naar doorbuiging (koorde hoogstens 1 mm, golf 5b-2): de stations voor de neus van de kap en de knikken van de bovenrand
   // (koplamp en kapvoorrand) blijven vast, de overige stations uit fbBr zijn kandidaten; was 56 x 30 gelijke stappen plus fbBr
   const shF = bodSagSide(1.752, ZF, z => [fbLo(z), fbHi(z)], 0.001, { keep: bodHoodTip.concat([bodHLZ0, bodHLZ1, bodHoodZ1]), extra: fbBr, nuF: 240, nvF: 128 });
-  const shellF = bodWeld(merge([shF.geo(L), shF.geo(R), bodCap(ZF - 1e-4, 1)].map(g => bodClipOut(g, inX, inY0, inY1, 2.1))));
+  const shellF = bodDropDegen(bodWeld(merge([shF.geo(L), shF.geo(R), bodCap(ZF - 1e-4, 1)].map(g => bodClipOut(g, inX, inY0, inY1, 2.1)))));
   // voorvlak-onderdelen: rooster over (x, y), z op het voorvlak
   const fNorm = (x, y) => { const z = frontZ(Math.abs(x), y), n = bodN(z, sAtY(z, y)); return [Math.sign(x || 1) * n[0], n[1], n[2]]; };
   const fPt = (x, y, out) => { const z = frontZ(Math.abs(x), y), n = fNorm(x, y); return [x + n[0] * out, y + n[1] * out, z + n[2] * out]; };
