@@ -67,7 +67,7 @@ function buildCooling() {
     P('Condensorblok', cache('sysCondCore', () => merge([G.box(0.58, 0.34, 0.014), ...[-0.12, -0.06, 0, 0.06, 0.12].map(y => xf(G.box(0.58, 0.004, 0.017), [0, y, 0]))])), MAT.darkSteel, { d: 'Aluminium parallelstroomblok waar het koudemiddel zijn warmte aan de lucht afgeeft.', p: [0, RY, 2.015], ex: [0, 0, 0.1] }),
     P('Droger', G.cyl('y', 0.021, 0.021, 0.2, 16), MAT.alu, { d: 'Droger-filtereenheid met vochtopname voor het koudemiddel.', p: [0.26, RY, 2.045], ex: [0.12, 0, 0.1] }),
     P('Dop droger', G.cyl('y', 0.024, 0.024, 0.02, 12), MAT.plastic, { d: 'Dop op de droger; verwisselbaar bij vervanging van het filter.', p: [0.26, RY + 0.11, 2.045], ex: [0, 0.14, 0] }),
-    P('Leidingblok', G.rbox(0.05, 0.04, 0.03, 0.006), MAT.steel, { d: 'Aansluitblok voor de hoge- en lagedrukleiding van de airconditioning, naast de rechterrand van het condensorblok (plaats schematisch).', p: [-0.315, RY - 0.01, 2.034], ex: [-0.1, 0, 0.1] }),
+    P('Leidingblok', G.rbox(0.05, 0.04, 0.03, 0.006), MAT.steel, { d: 'Aansluitblok voor de persleiding (hogedrukzijde) van de airconditioning, naast de rechterrand van het condensorblok. Alleen de persleiding sluit hier aan: de vloeistofleiding begint bij de droger en de zuigleiding loopt van het expansieventiel naar de compressor (plaats schematisch).', p: [-0.315, RY - 0.01, 2.034], ex: [-0.1, 0, 0.1] }),
     ...[1, -1].map(s => P(`Condensorclip ${sideName(s)}`, G.box(0.03, 0.016, 0.02), MAT.plastic, { d: 'Kunststof clip die de condensor aan de frontmodule bevestigt.', p: [s * 0.26, 0.655, 2.025], ex: [s * 0.04, 0.1, 0.04] })),
   ]);
   // ---------- intercooler ----------
