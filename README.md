@@ -2,7 +2,7 @@
 
 Interactieve 3D-explosietekening van een Renault Laguna III hatchback (fase 2, 2011) in de uitvoering Initiale Paris: zilvergrijs (Gris Platine D69), met de 2.0 Turbo F4Rt-motor (170 pk) en de zestraps automaat Jatco JF613E (Renault AJ0). Het model bestaat uit losse onderdelen in groepen die tot 8 lagen diep gaan; de aantallen (knopen, groepen, onderdelen, driehoeken per hoofdgroep) staan in [docs/cijfers.md](docs/cijfers.md). Elke groep klapt apart uit en in, tot op klepspie, zuigerveer en remzuiger. Een tweede modus, Openen, laat de motorkap, de portieren, de ruiten, de achterklep, het panoramadak en een reeks interieurdelen open gaan zoals bij de echte auto. Het paneel toont per onderdeel de bekende onderdeelnummers. Alle geometrie wordt in code opgebouwd; er zijn geen 3D-bestanden.
 
-Stand van 17 oktober 2026: versie 9 (golf 5b-2) staat live op https://rvd-gmpplus.github.io/laguna3/ (vanaf `main`, `3be230e`) en op het artefact https://claude.ai/artifact/4qJq7YUk5nGSFmexY7WkZR (privé). Versie 10 (golf 5b-3) is in voorbereiding op de tak `golf-5b3` en niet gepubliceerd; wat erin zit, staat onder "Nieuw in golf 5b-3" hieronder en in [CHANGELOG.md](CHANGELOG.md). De pagina toont zelf welke versie je ziet (`?`).
+Stand van 17 oktober 2026: versie 10 (golf 5b-3) staat live op https://rvd-gmpplus.github.io/laguna3/ (vanaf `main`, `d3fe58f`, stempel `10 (bron 361c5a2)`) en op het artefact https://claude.ai/artifact/4qJq7YUk5nGSFmexY7WkZR (privé). Wat erin zit, staat onder "Nieuw in golf 5b-3" hieronder en in [CHANGELOG.md](CHANGELOG.md). De pagina toont zelf welke versie je ziet (`?`).
 
 ![Gemonteerd](docs/screenshots/gemonteerd.png)
 
@@ -23,7 +23,7 @@ De eerste keer toont de pagina een korte hint. Die verdwijnt na de eerste handel
 - Onderdeelnummers: voor 13 verkoopeenheden staat de uitvoering voor deze auto vast (blok Gekozen voor deze auto, volgens de RDW en het chassisnummer van de gebruiker); 58 varianten blijven open.
 - Gegevens van de auto volgens de RDW (Euro 5 A, 125 kW, 8,7 l/100 km, 201 g/km, eerste toelating 18 februari 2011); de motor is waarschijnlijk een F4Rt 813.
 
-## Nieuw in golf 5b-3 (versie 10, in voorbereiding)
+## Nieuw in golf 5b-3 (versie 10)
 
 - Onderkant en motorruimte: airconditioningleidingen met expansieventiel en droger (de plek van die twee is schematisch), de vulpijp in twee delen onder de zijbekleding van de bagageruimte, de naven op het spoor voorin met een hogere klemarm en een kortere Demperbuis, de Doorgaande bout subframe weer als één bout door een boring in de Reactiestangbeugel, het Eindschild van de startmotor dicht en geen spleet meer naar de krukasneus.
 - Openen: de hoedenplank gaat 52 graden mee met de achterklep en heeft een uitsparing voor de middelste gordelrolautomaat; de gasveer van de achterklep is dikker, zit met een plaatje onder de lakhuid van de C-stijl en ligt gesloten buiten de afdichting; de B-stijl is een zwart vlak met een kort chromen eindstuk en leest bij een open portier als gelakte stijl; de achterste zijruit zakt schuin langs de stijl en de kwartsruit draait met het achterportier mee; de gordelband voor hangt in rust recht uit de geleider achter de stijlbalk; de scharnierpennen van de hoedenplank liggen in een sparing in de voorhoeken van de plank, en de cilinder van de gasveer is een gesloten schaal met een holte voor de kogel.
