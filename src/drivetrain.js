@@ -326,7 +326,7 @@ function drvStarter() {
       P('Borstelveren', cache('drvStBV', () => merge([0, 1, 2, 3].map(k => xf(G.box(0.008, 0.003, 0.003), [0.1425, 0.025 * Math.cos(k * HALF + 0.4), 0.025 * Math.sin(k * HALF + 0.4)], [k * HALF + 0.4, 0, 0])))), MAT.steel, { d: 'Veertjes die de borstels tegen de collector drukken.', ex: [0.06, 0, 0] }),
     ]),
     P('Lagerbus collectorzijde', annulus(0.0065, 0.0105, 0.012, 'x', 20), MAT.drvBrass, { d: 'Bronzen glijlager voor het uiteinde van de ankeras.', p: [0.162, 0, 0], ex: [0.45, 0, 0], inner: true }),
-    P('Eindschild', merge([G.lathe('x', [[0.0375, 0.155], [0.0375, 0.168], [0.012, 0.172], [0.012, 0.162]], 28, 'drvStEnd'), annulus(0.0345, 0.0385, 0.004, 'x', 28)]), MAT.aluCast, { d: 'Achterste lagerschild met de klemkap en het lager voor de ankeras.', ex: [0.5, 0, 0] }),
+    P('Eindschild', merge([G.lathe('x', [[0.0375, 0.155], [0.0375, 0.168], [0, 0.172]], 28, 'drvStEnd'), annulus(0.0345, 0.0385, 0.004, 'x', 28)]), MAT.aluCast, { d: 'Achterste lagerschild met de klemkap en het lager voor de ankeras.', ex: [0.5, 0, 0] }),
     P('Trekbout 1', drvBolt(0.125, 0.006, '-x'), MAT.darkSteel, { d: 'Doorgaande bout die de startmotor bij elkaar houdt.', p: [0.1725, 0.034 * Math.cos(1.2), 0.034 * Math.sin(1.2)], ex: [0.56, 0.0, 0.0] }),
     P('Trekbout 2', drvBolt(0.125, 0.006, '-x'), MAT.darkSteel, { d: 'Doorgaande bout die de startmotor bij elkaar houdt.', p: [0.1725, 0.034 * Math.cos(4.3), 0.034 * Math.sin(4.3)], ex: [0.56, 0.0, 0.0] }),
     P('Hitteschild startmotor', xf(yTo(new THREE.CylinderGeometry(0.0425, 0.0425, 0.09, 16, 1, true, 3.8, 2.6), 'x'), [0.1, 0, 0]), MAT.heat, { d: 'Hitteschild aan de kant van de uitlaat.', ex: [0.17, -0.06, -0.06] }),
