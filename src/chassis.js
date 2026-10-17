@@ -100,9 +100,9 @@ function frontCorner(s) {
   const phi = 0.35, rp = 0.124, CM = chsMat([xd, AY + rp * Math.sin(phi), z0 + rp * Math.cos(phi)], [HALF - phi, 0, 0]);
   const rcx = xm - 0.058;
   const knuckle = merge([
-    xf(G.cyl('x', 0.05, 0.05, 0.044, 28), [rcx, AY, z0]),
-    xf(G.cyl('x', 0.058, 0.058, 0.008, 24), [xm - 0.0775, AY, z0]),
-    rodBetween([rcx - 0.012, AY + 0.04, z0], [SP.x + 0.02, SP.y - 0.04, z0], 0.022),
+    xf(annulus(0.019, 0.05, 0.044, 'x', 28), [rcx, AY, z0]),                     // lagerzitting met boring r 19 mm voor de aandrijfas
+    xf(annulus(0.019, 0.058, 0.008, 'x', 24), [xm - 0.0775, AY, z0]),
+    rodBetween([rcx - 0.012, AY + 0.07, z0], [SP.x + 0.02, SP.y, z0], 0.022),     // klemarm: boven de homokineet langs naar de fuseeklem
     xf(chsRb(0.05, 0.12, 0.012, 0.004), [SP.x + 0.01, SP.y + 0.025, z0 + 0.034]), xf(chsRb(0.05, 0.12, 0.012, 0.004), [SP.x + 0.01, SP.y + 0.025, z0 - 0.034]),
     rodBetween([rcx - 0.012, AY - 0.04, z0], [bj[0], bj[1] - 0.012, bj[2]], 0.02),
     xf(G.cyl('y', 0.024, 0.024, 0.034, 18), [bj[0], bj[1] + 0.005, bj[2]]),
@@ -112,7 +112,7 @@ function frontCorner(s) {
     xf(chsRb(0.014, 0.05, 0.14, 0.004), [0.683, AY + 0.052, z0 + 0.095])]);
   const seat = (sg, key) => G.lathe('y', [[0.022, 0], [0.078, sg * 0.003], [0.08, sg * 0.01], [0.076, sg * 0.012], [0.022, sg * 0.006]], 32, key);
   const strut = A(`Veerpoot ${n}`, { d: 'McPherson-veerpoot: bitube-schokdemper (huis Ø50 mm, zuigerstang Ø22 mm) met schroefveer, tevens fuseedraaipunt; de top zit in de veerpoottoren, de voet in de fuseeklem.', spec: [['Demperhuis', 'Ø50 mm'], ['Zuigerstang', 'Ø22 mm']], p: SP.toArray(), q: quatFromTo(V3(0, 1, 0), SD), ex: [0.1, 0.34, 0] }, [
-    P('Demperbuis', merge([xf(G.cyl('y', 0.025, 0.025, 0.315, 22), [0, 0.1125, 0]), xf(chsRb(0.02, 0.02, 0.026, 0.003), [-0.006, 0.095, -0.038]), xf(G.cyl('y', 0.019, 0.019, 0.01, 18), [0, -0.05, 0])]), MAT.darkSteel, { d: 'Buis van de bitube-schokdemper (Ø50 mm) met aangelaste klemtong voor de koppelstang.', ex: [0, -0.2, 0] }),
+    P('Demperbuis', merge([xf(G.cyl('y', 0.025, 0.025, 0.27, 22), [0, 0.135, 0]), xf(chsRb(0.02, 0.02, 0.026, 0.003), [-0.006, 0.095, -0.038]), xf(G.cyl('y', 0.019, 0.019, 0.01, 18), [0, -0.005, 0])]), MAT.darkSteel, { d: 'Buis van de bitube-schokdemper (Ø50 mm) met aangelaste klemtong voor de koppelstang.', ex: [0, -0.2, 0] }),
     P('Zuigerstang', G.cyl('y', 0.011, 0.011, 0.19, 14), MAT.chrome, { d: 'Verchroomde zuigerstang Ø22 mm.', p: [0, 0.295, 0], ex: [0, 0.02, 0] }),
     P('Veerschotel onder', seat(1, 'chsSeatL'), MAT.darkSteel, { d: 'Onderste veerschotel, aan de demperbuis gelast.', p: [0, 0.105, 0], ex: [0, -0.06, 0] }),
     P('Veerrubber onder', annulus(0.052, 0.074, 0.004, 'y', 28), MAT.rubber, { d: 'Rubber tussenlaag tussen veer en onderste schotel.', p: [0, 0.114, 0], ex: [0, -0.03, 0] }),
