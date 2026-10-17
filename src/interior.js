@@ -402,6 +402,30 @@ function intPlankCords() {
 // reikt 4,5 cm achter de voorrand; de plank draait om het punt in de automaat, dus de diepte moet ook de hoek van de automaat
 // (5,4 cm van het draaipunt) in elke stand vrijhouden
 const intPlankNotch = { hw: 0.04, d: 0.06 };
+// roundPlate (core.js) met per hoek de keuze voor een kleine afronding (4 mm, ook in binnenhoeken); klein(i) waar voor die hoeken.
+// Verder gelijk aan roundPlate, zodat de omtrek buiten die hoeken dezelfde blijft.
+function intRoundPlate(poly, t, b, klein, ri = 0.025, seg = 4) {
+  b = Math.min(b, t / 2 - 0.0008);
+  const n = poly.length, unit = (a, c) => { const dx = c[0] - a[0], dy = c[1] - a[1], l = Math.hypot(dx, dy); return [dx / l, dy / l]; };
+  const ins = poly.map((P, i) => { const e1 = unit(poly[(i + n - 1) % n], P), e2 = unit(P, poly[(i + 1) % n]); return [P[0] - b * (e1[1] + e2[1]), P[1] + b * (e1[0] + e2[0])]; });
+  const pts = [];
+  ins.forEach((P, i) => {
+    const d1 = unit(P, ins[(i + n - 1) % n]), d2 = unit(P, ins[(i + 1) % n]), convex = d1[0] * d2[1] - d1[1] * d2[0] < 0, r = convex || klein(i) ? 0.004 : ri + b;
+    const cx = P[0] + (d1[0] + d2[0]) * r, cy = P[1] + (d1[1] + d2[1]) * r, a1 = Math.atan2(-d2[1], -d2[0]);
+    let da = Math.atan2(-d1[1], -d1[0]) - a1; while (da > PI) da -= 2 * PI; while (da < -PI) da += 2 * PI;
+    for (let k = 0; k <= 3; k++) pts.push(new THREE.Vector2(cx + r * Math.cos(a1 + da * k / 3), cy + r * Math.sin(a1 + da * k / 3)));
+  });
+  const g = new THREE.ExtrudeGeometry(new THREE.Shape(pts), { depth: t - 2 * b, bevelEnabled: true, bevelThickness: b, bevelSize: b, bevelSegments: seg, curveSegments: 1 });
+  g.translate(0, 0, -(t - 2 * b) / 2);
+  g.deleteAttribute('normal'); g.deleteAttribute('uv');
+  return creasedWeld(g, 0.52);
+}
+// sparing in elke voorhoek voor de scharnierpen (r 11 mm, x 0,61 tot 0,70) en de kraag aan het eind (r 17 mm, x 0,606 tot 0,614):
+// de pen ligt op de draaias van de plank, dus zonder sparing zat het midden van de voorrand in elke stand 10,6 mm diep in de pen
+// (de inradius van de twaalfhoek). Ondiep deel a over de pen, diep deel b over de kraag; 1,5 tot 4 mm speling rondom. De zijrand
+// eindigt voor op xv (4 mm binnen de volle halve breedte): zo ligt de voorhoek niet dieper op de afgeronde voorkant van de
+// hoedenplanksteun (carrosserie, x 0,635 tot 0,685, tot z -1,60) dan voorheen.
+const intPlankPen = { a: 0.0125, b: 0.021, xa: 0.6195, xc: 0.601, xv: 0.646 };
 function intPlankGeo() {
   const hw0 = 0.65, hw1 = 0.52, z0 = 0.275, z1 = -0.275, r = 0.05, n = 6, pts = [];
   const arc = (cx, cz, a0) => { for (let i = 0; i <= n; i++) { const a = a0 + i / n * HALF; pts.push([cx + r * Math.cos(a), cz + r * Math.sin(a)]); } };
@@ -409,8 +433,13 @@ function intPlankGeo() {
   arc(-hw1 + r, z1 + r, PI); arc(hw1 - r, z1 + r, PI * 1.5);
   // uitsparing in de voorrand voor de middelste gordelrolautomaat (6 cm breed, x 0,03 en z -1,54 tot -1,62): zonder uitsparing
   // sneed de plank daar door de automaat (B0 29,06 mm bij open klep; de plank draait om een punt in de automaat)
-  pts.push([hw0, z0 - 0.004], [hw0 - 0.004, z0], [intPlankNotch.hw, z0], [intPlankNotch.hw, z0 - intPlankNotch.d], [-intPlankNotch.hw, z0 - intPlankNotch.d], [-intPlankNotch.hw, z0], [-hw0 + 0.004, z0], [-hw0, z0 - 0.004]);
-  return roundPlate(pts, 0.012, 0.004).rotateX(HALF);
+  const { a, b, xa, xc, xv } = intPlankPen, n0 = pts.length;
+  pts.push([xv, z0 - a], [xa, z0 - a], [xa, z0 - b], [xc, z0 - b], [xc, z0], [intPlankNotch.hw, z0], [intPlankNotch.hw, z0 - intPlankNotch.d], [-intPlankNotch.hw, z0 - intPlankNotch.d], [-intPlankNotch.hw, z0],
+    [-xc, z0], [-xc, z0 - b], [-xa, z0 - b], [-xa, z0 - a], [-xv, z0 - a]);
+  // de hoeken van de pensparingen (eerste vijf en laatste vijf punten van de voorrand) met afronding 4 mm; de rest van de omtrek
+  // houdt de afronding van roundPlate
+  const klein = new Set([0, 1, 2, 3, 4, 9, 10, 11, 12, 13].map(i => n0 + i));
+  return intRoundPlate(pts, 0.012, 0.004, i => klein.has(i)).rotateX(HALF);
 }
 // De hemelbekleding hangt 3,4 cm onder het dakvlak. Het dakframe van het panoramadak (src/panorama.js) hangt tot 2,85 cm eronder; bij 2,8 cm
 // kwam de hemel op dezelfde hoogte als de onderkant van het frame en staken er donkere rechthoeken door. Nu zit er 5 mm tussen.
@@ -507,7 +536,7 @@ function intTrim() {
     sill(1, 0.2, 0.8, 'voor'), sill(-1, 0.2, 0.8, 'voor'), sill(1, -0.78, 0.44, 'achter'), sill(-1, -0.78, 0.44, 'achter'),
     ]),
     A('Bagageruimte', { d: 'Bekleding van de bagageruimte met hoedenplank, vloerplaat, zijbekleding over de wielkasten, de luidsprekers van de achterplank en de versterker.', ex: [0, 0.0, -0.3] }, [
-    intUit(intPart('Hoedenplank', intPlankGeo(), MAT.carpet, 'Afdekplaat achter de achterbank boven de bagageruimte; hangt met koordjes aan de achterklep en komt mee omhoog als die opent (geschat 52 graden), met twee scharnierpennen in de zijbekleding aan de voorrand en een uitsparing voor de middelste gordelrolautomaat.', Object.assign({ p: [0, 1.0, -1.85], ex: [0, 0.3, -0.2] }, intPlankOpen()))),
+    intUit(intPart('Hoedenplank', intPlankGeo(), MAT.carpet, 'Afdekplaat achter de achterbank boven de bagageruimte; hangt met koordjes aan de achterklep en komt mee omhoog als die opent (geschat 52 graden), met twee scharnierpennen in de zijbekleding aan de voorrand, die in een kleine sparing in de voorhoeken van de plank liggen, en een uitsparing voor de middelste gordelrolautomaat.', Object.assign({ p: [0, 1.0, -1.85], ex: [0, 0.3, -0.2] }, intPlankOpen()))),
     ...[1, -1].map(s => intPart(`Plankscharnierpen ${sideName(s)}`, merge([xf(G.cyl('x', 0.011, 0.011, 0.09, 12), [0, 0, 0]), xf(G.rbox(0.014, 0.08, 0.09, 0.004), [s * 0.04, 0, 0.0]), xf(G.cyl('x', 0.017, 0.017, 0.008, 14), [-s * 0.045, 0, 0])]), MAT.steel, 'Scharnierpen van de hoedenplank in de zijbekleding bij de voorhoek: de plank draait om deze twee pennen omhoog als de achterklep opent.', { p: [s * 0.655, 1.0, -1.575], ex: [s * 0.14, 0, 0] })).map(intUit),
     ...intPlankCords().map(intUit),
     ...[1, -1].map(s => intPart(`Achterplankluidspreker ${sideName(s)}`, merge([xf(G.cyl('y', 0.065, 0.065, 0.008, 24), [0, 0, 0]), xf(G.cyl('y', 0.04, 0.025, 0.02, 20), [0, -0.012, 0])]), MAT.darkSteel, 'Luidspreker in de achterplank (Bose, positie geschat).', Object.assign({ p: [s * 0.45, 1.01, -1.7], ex: [s * 0.1, 0.2, 0] }, intPlankOpen()))).map(intUit),
