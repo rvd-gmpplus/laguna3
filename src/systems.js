@@ -298,9 +298,11 @@ function buildFuel() {
     // De vulpijp loopt van de tank boven het achterwiel langs omhoog en verdwijnt in de verhoging van de zijbekleding van de
     // bagageruimte; achter de bekleding komt hij weer uit de zijwand en loopt naar de tankhals. Het stuk dat helemaal binnen
     // de bekleding ligt, is weggelaten: de onderste pijp eindigt 2 tot 3 cm in de verhoging (u 0,491), het bovenstuk begint
-    // waar de pijp vrij uit de zijwand komt (u 0,854). Beide stukken liggen precies op de oorspronkelijke route.
+    // waar de pijp vrij uit de zijwand komt (u 0,854). Beide stukken liggen precies op de oorspronkelijke route. Het bovenstuk eindigt op u 0,98:
+    // de laatste bocht van de route komt schuin op de hals aan, en een uiteinde op u 1 liet de buisrand 1,4 mm in de vulhals steken; op 0,98 ligt het
+    // uiteinde 3,9 mm voor de hals (op 0,985 steekt het er 2,1 mm in).
     ...[['Vulpijp', 0, 0.491, 'Kunststof vulpijp van de tank boven het achterwiel langs omhoog tot in de verhoging van de zijbekleding van de bagageruimte; verder loopt hij binnen de bekleding.'],
-      ['Vulpijp bovenstuk', 0.854, 1, 'Bovenste stuk van de kunststof vulpijp: komt achter de zijbekleding van de bagageruimte uit de zijwand en loopt naar de vulhals achter de tankklep.']].map(([n, u0, u1, d]) =>
+      ['Vulpijp bovenstuk', 0.854, 0.98, 'Bovenste stuk van de kunststof vulpijp: komt achter de zijbekleding van de bagageruimte uit de zijwand en loopt naar de vulhals achter de tankklep.']].map(([n, u0, u1, d]) =>
       P(n, sysTubePart(vulRoute, 0.0185, 64, 10, u0, u1), MAT.plastic, { d, ex: [-0.04, 0, 0] })),
     P('Vulhals', merge([annulus(0.0245, 0.029, tkMouth - tkNeck, 'x', 24), xf(G.torus('x', 0.0268, 0.0036, 24, 6), [-(tkMouth - tkNeck) / 2, 0, 0])]), MAT.plastic, { d: 'Capless vulhals achter de tankklep: een korte holle hals met een rand waarin het pistool past; de zwarte vulklep zit er een centimeter in.', p: [-(tkNeck + tkMouth) / 2, flapY, flapZ], ex: [-0.1, 0, 0] }),
     P('Vulklep', merge([G.cyl('x', 0.0235, 0.0235, 0.003, 20), xf(G.cyl('z', 0.0025, 0.0025, 0.03, 8), [0.002, 0.022, 0])]), MAT.blackGloss, { d: 'Capless vulklep (klep B in de vulpijp, HB2 1.73): geen dop en geen bandje. Een veer houdt de klep dicht; het pistool duwt hem open. Niet met de vingers indrukken. Op de benzineversie laat een restrictor alleen een loodvrij pistool toe (vorm schematisch).', p: [-(tkMouth - 0.012), flapY, flapZ], ex: [-0.2, 0.05, 0] }),
