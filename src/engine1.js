@@ -44,12 +44,13 @@ function portAt(port, d = 0) { return [port.p[0] + port.dir[0] * d, port.p[1] + 
 std('engFoam', 0x46484a, 0, 0.98);
 
 /* ---------- kleine hulpen (motor) ---------- */
-function engNut(d, h, ax = 'y') { return cache(`engNut${d}|${h}|${ax}`, () => yTo(new THREE.CylinderGeometry(d * 0.92, d * 0.92, h, 6), ax)); }
+// zeskantmoer met sleutelmaat-afmeting d (omgeschreven straal 0,92 d), dunne aanroep van hexNut uit core.js
+function engNut(d, h, ax = 'y') { return hexNut(ax, d * 0.92, h); }
 function engStud(len, d, ax = 'y') { return cache(`engStud${len}|${d}|${ax}`, () => yTo(new THREE.CylinderGeometry(d / 2, d / 2, len, 8), ax)); }
 // tapeind met moer: tapeind gecentreerd op de oorsprong, moer op +as (bij afstand 'at')
 function engStudNut(len, d, at, ax = 'y') {
   return cache(`engStudNut${len}|${d}|${at}|${ax}`, () => {
-    const s = new THREE.CylinderGeometry(d / 2, d / 2, len, 8), n = new THREE.CylinderGeometry(d * 0.92, d * 0.92, d * 0.8, 6); n.translate(0, at, 0);
+    const s = new THREE.CylinderGeometry(d / 2, d / 2, len, 8), n = hexNut('y', d * 0.92, d * 0.8).clone(); n.translate(0, at, 0);
     return yTo(merge([s, n]), ax);
   });
 }
@@ -70,18 +71,7 @@ function engHalfRing(rIn, rOut, t, key) {
   return cache('engHalf' + key, () => yTo(new THREE.LatheGeometry([[rIn, -t / 2], [rOut, -t / 2], [rOut, t / 2], [rIn, t / 2], [rIn, -t / 2]].map(p => new THREE.Vector2(...p)), 20, PI, PI), 'x'));
 }
 // convexe veelhoek begrenzen tot de band y0 <= y <= y1
-function engClip(poly, y0, y1) {
-  const cut = (pts, keep, y) => {
-    const out = [];
-    for (let i = 0; i < pts.length; i++) {
-      const a = pts[i], b = pts[(i + 1) % pts.length], ia = keep(a[1]), ib = keep(b[1]);
-      if (ia) out.push(a);
-      if (ia !== ib) { const t = (y - a[1]) / (b[1] - a[1]); out.push([a[0] + t * (b[0] - a[0]), y]); }
-    }
-    return out;
-  };
-  return cut(cut(poly, v => v >= y0, y0), v => v <= y1, y1);
-}
+function engClip(poly, y0, y1) { return clipPoly(clipPoly(poly, 0, -1, -y0), 0, 1, y1); }
 // Riem langs poelies in het (z,y)-vlak met de breedte langs x. pulleys: [z, y, r, s] in looprichting;
 // s = +1: poelie binnen de lus, s = -1: rol tegen de rug van de riem. Geeft { geo, len }.
 function engBelt(pulleys, w, t, step = 0.08) {
@@ -184,7 +174,7 @@ function buildBlock() {
   });
   const rsBolts = [[0.075, 0.038], [-0.075, 0.038], [0.083, -0.03], [-0.083, -0.03], [0.035, -0.05], [-0.035, -0.05]];
   return A('Motorblok', { d: 'Gietijzeren onderblok met de vijf hoofdlagers, oliespuiters, vorstpluggen, centreerbussen en het keerringhuis aan de vliegwielzijde.', ex: [0, 0, 0] }, [
-    P('Cilinderblok', blockGeo(), MAT.iron, { d: 'Gietijzeren cilinderblok met direct in het blok gehoonde boringen (de F van F4R staat voor fonte, gietijzer); diepe carterrok en vijf lagerstoelen.', spec: [['Materiaal', 'gietijzer'], ['Boring × slag', '82,7 × 93,0 mm'], ['Cilinderinhoud', '1998 cm³'], ['Compressie', '9,5 : 1 (één bron noemt 9,0 : 1)']], ex: [0, 0, 0] }),
+    P('Cilinderblok', blockGeo(), MAT.iron, { d: 'Gietijzeren cilinderblok met direct in het blok gehoonde boringen (de F van F4R staat voor fonte, gietijzer); diepe carterrok en vijf lagerstoelen.', spec: [['Materiaal', 'gietijzer'], ['Boring × slag', '82,7 × 93,0 mm'], ['Cilinderinhoud', '1.998 cm³'], ['Compressie', '9,5 : 1 (één bron noemt 9,0 : 1)']], ex: [0, 0, 0] }),
     ...XM.map((_, i) => engMainBearing(i)),
     A('Oliespuiters', { d: 'Vier oliespuiters voor de zuigerkoeling, één per cilinder.', ex: [0, -0.14, -0.1] }, jets),
     A('Vorstpluggen', { d: 'Ingeperste expansiepluggen in de watermantel aan voor- en achterzijde (aantal geschat).', ex: [0, 0.02, 0.0] }, [
@@ -434,7 +424,7 @@ function buildHead() {
       P('Kleppendekselpakking', coverGasket, MAT.rubber, { d: 'Rubber pakking onder het kleppendeksel.', ex: [0, -0.025, 0] }),
       A('Kleppendekselbouten', { d: 'Acht bouten van het kleppendeksel (aantal geschat).', ex: [0, 0.05, 0] }, coverBolts),
       P('Vulopening', xf(G.cyl('y', 0.021, 0.021, 0.002, 24), [-0.17, ENG_NECK_TOP + 0.001, -0.05]), MAT.blackGloss, { d: 'Open vulhals voor de motorolie in het kleppendeksel: een donkere opening in een opstaande ring; hier zit de dop in als hij dicht is.', ex: [0, 0.03, 0] }),
-      P('Olievuldop', merge([G.cyl('y', 0.0335, 0.0335, 0.016, 24), xf(G.box(0.04, 0.006, 0.01), [0, 0.011, 0])]), MAT.plateYellow, { d: 'Gele dop van de olievulopening; klapt om een scharnierlip aan de rand van de vulhals omhoog en blijft aan de hals vastzitten (opener, schematisch: in werkelijkheid draai je de dop los).', p: [-0.17, ENG_NECK_TOP + 0.008, -0.05], ex: [0, 0.09, 0], open: { type: 'hinge', pivot: [-0.17 + 0.0335, ENG_NECK_TOP, -0.05], axis: [0, 0, 1], angle: -1.8, min: 1.44, needs: 'Motorkap', label: 'Olievuldop', look: { dir: [-0.2, 0.5, 0.9], nodes: ['Olievuldop', 'Deksel'] } } }),
+      P('Olievuldop', merge([G.cyl('y', 0.0335, 0.0335, 0.016, 24), xf(G.box(0.04, 0.006, 0.01), [0, 0.011, 0])]), MAT.plateYellow, { d: 'Gele dop van de olievulopening; klapt om een scharnierlip aan de rand van de vulhals omhoog en blijft aan de hals vastzitten (opener, schematisch: in werkelijkheid draai je de dop los).', p: [-0.17, ENG_NECK_TOP + 0.008, -0.05], ex: [0, 0.09, 0], open: hinge([-0.17 + 0.0335, ENG_NECK_TOP, -0.05], [0, 0, 1], -1.8, { min: 1.44, needs: 'Motorkap', label: 'Olievuldop', look: { dir: [-0.2, 0.5, 0.9], nodes: ['Olievuldop', 'Deksel'] } }) }),
     ]),
     buildIgnition(),
   ]);
