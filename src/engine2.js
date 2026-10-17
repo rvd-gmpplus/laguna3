@@ -18,8 +18,9 @@ function engPolyV(r, w, key, seg = 32) {   // poelie met zeven groeven (multirie
 }
 // distributiekap in drie delen: band [y0, y1] van de omhullende rond de distributiewielen
 function engTimingCover(y0, y1, hole) {
-  const outer = engClip(circlesHull(TIM.map(([z, y, r]) => [z, y, r]), 0.017), y0, y1);
-  const inner = engClip(circlesHull(TIM.map(([z, y, r]) => [z, y, r]), 0.013), y0 + 0.003, y1 - 0.003);
+  const band = (poly, lo, hi) => clipPoly(clipPoly(poly, 0, -1, -lo), 0, 1, hi);   // convexe veelhoek tot de band lo <= y <= hi (generieke clipPoly uit core.js)
+  const outer = band(circlesHull(TIM.map(([z, y, r]) => [z, y, r]), 0.017), y0, y1);
+  const inner = band(circlesHull(TIM.map(([z, y, r]) => [z, y, r]), 0.013), y0 + 0.003, y1 - 0.003);
   const rim = shapeOf(outer); if (inner.length > 2) rim.holes.push(new THREE.Path(inner.map(p => new THREE.Vector2(p[0], p[1]))));
   const plate = shapeOf(outer); if (hole) plate.holes.push(circlePath(0, 0, 0.022));
   return merge([xf(side(rim, 0.058), [-0.2545, 0, 0]), xf(side(plate, 0.003), [-0.2845, 0, 0])]);

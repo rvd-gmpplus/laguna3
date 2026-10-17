@@ -70,8 +70,6 @@ function engORing(R, r, ax = 'y') { return G.torus(ax, R, r, 20, 5); }
 function engHalfRing(rIn, rOut, t, key) {
   return cache('engHalf' + key, () => yTo(new THREE.LatheGeometry([[rIn, -t / 2], [rOut, -t / 2], [rOut, t / 2], [rIn, t / 2], [rIn, -t / 2]].map(p => new THREE.Vector2(...p)), 20, PI, PI), 'x'));
 }
-// convexe veelhoek begrenzen tot de band y0 <= y <= y1
-function engClip(poly, y0, y1) { return clipPoly(clipPoly(poly, 0, -1, -y0), 0, 1, y1); }
 // Riem langs poelies in het (z,y)-vlak met de breedte langs x. pulleys: [z, y, r, s] in looprichting;
 // s = +1: poelie binnen de lus, s = -1: rol tegen de rug van de riem. Geeft { geo, len }.
 function engBelt(pulleys, w, t, step = 0.08) {

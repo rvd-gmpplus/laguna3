@@ -9,12 +9,10 @@ const sysP = e => ENG2CAR(e);                                  // punt in het mo
 const sysE = (port, d = 0) => ENG2CAR(portAt(port, d));         // punt op afstand d buiten een aansluiting (autoframe)
 function sysDir(a, b) { return V3(b[0] - a[0], b[1] - a[1], b[2] - a[2]).normalize(); }
 function sysAt(p, t, k) { return [p[0] + t.x * k, p[1] + t.y * k, p[2] + t.z * k]; }
-// klem met stelschroef om een slang of pijp met straal r: de band ligt 3,5 mm buiten de slang (generieke hoseClamp uit core.js)
-function sysClampGeo(r) { return hoseClamp('z', r + 0.0035, { screw: true }); }
-// slangklem om een slang of pijp met straal r; as langs t (eenheidsvector), schuift bij uitklappen langs out
+// slangklem met stelschroef om een slang of pijp met straal r (de band ligt 3,5 mm buiten de slang, generieke hoseClamp uit core.js); as langs t (eenheidsvector), schuift bij uitklappen langs out
 function sysClamp(name, at, t, r, out) {
   const o = out || t;
-  return P(name, sysClampGeo(r), MAT.steel, { d: 'Slangklem van verzinkt staal met een stelschroef; klemt de slang of pijp vast op de aansluiting.', p: at, q: quatFromTo(V3(0, 0, 1), t), ex: [o.x * 0.06, o.y * 0.06 + 0.02, o.z * 0.06] });
+  return P(name, hoseClamp('z', r + 0.0035, { screw: true }), MAT.steel, { d: 'Slangklem van verzinkt staal met een stelschroef; klemt de slang of pijp vast op de aansluiting.', p: at, q: quatFromTo(V3(0, 0, 1), t), ex: [o.x * 0.06, o.y * 0.06 + 0.02, o.z * 0.06] });
 }
 // stuk [u0, u1] (booglengte 0 tot 1) van de buis tube(pts, r, n, rad): de ringen ertussen liggen op k/n met de assenstelsels
 // van de hele buis, de uiteinden op u0 en u1 (assenstelsel meegedraaid vanaf de buurring zoals computeFrenetFrames doet).
