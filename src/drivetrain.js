@@ -206,7 +206,7 @@ function drvPark() {
   return A('Parkeerblokkering', { d: 'Parkeerblokkering: de parkeerpal grijpt in het parkeerrad als de keuzehendel in P staat; de nok op de parkeerstang drukt de pal omlaag, de retourveer trekt hem terug.', ex: [0.12, 0.3, 0.0], inner: true }, [
     P('Parkeerpal', cache('drvPal', () => side(shapeOf([[-0.035, 0], [0.0, 0], [0.012, -0.0085], [0.02, 0], [0.035, 0], [0.035, 0.012], [-0.035, 0.012]]), 0.008)), MAT.darkSteel, { d: 'Pal die in het parkeerrad grijpt en het uitgaande tandwiel blokkeert.', p: [x, 0.0585, 0], ex: [0, 0.06, 0] }),
     P('Palas', G.cyl('x', 0.004, 0.004, 0.016, 10), MAT.steel, { d: 'As waarom de parkeerpal draait.', p: [x, 0.0645, -0.03], ex: [0.04, 0.05, 0] }),
-    P('Retourveer parkeerpal', spring(0.0065, 0.0009, 0.012, 3, 'x'), MAT.darkSteel, { d: 'Torsieveer die de pal van het parkeerrad weg trekt.', p: [x + 0.0, 0.0645, -0.03], ex: [-0.04, 0.05, 0] }),
+    P('Retourveer parkeerpal', spring(0.0065, 0.0009, 0.012, 3, 'x', 8), MAT.darkSteel, { d: 'Torsieveer die de pal van het parkeerrad weg trekt.', p: [x + 0.0, 0.0645, -0.03], ex: [-0.04, 0.05, 0] }),
     P('Parkeerstang', G.cyl('z', 0.003, 0.003, 0.07, 8), MAT.steel, { d: 'Stang die door de keuzeas wordt bediend.', p: [x, 0.0765, 0.055], ex: [0, 0.07, 0.06] }),
     P('Parkeernok', G.cyl('z', 0.009, 0.0045, 0.022, 14), MAT.darkSteel, { d: 'Kegelvormige nok op de stang die de pal in het parkeerrad drukt.', p: [x, 0.0765, 0.016], ex: [0, 0.12, 0.0] }),
   ]);
@@ -276,7 +276,7 @@ function drvValve() {
       spool('Lock-up-regelklep', 'Regelt de druk op de overbruggingskoppeling (schematisch).', 0.28, 0.05, 0.045),
       spool('Omvormer-regelklep', 'Regelt de druk in de koppelomvormer (schematisch).', 0.32, 0.02, 0.045),
       spool('Handklep', 'Door de keuzeas bediende handklep voor P, R, N, D.', 0.26, -0.03, 0.09),
-      P('Detentveer', spring(0.005, 0.0007, 0.02, 2, 'x'), MAT.darkSteel, { d: 'Veer die de handklep in een stand houdt.', p: [0.32, yUp + 0.005, -0.03], ex: [0, 0.1, -0.06], inner: true }),
+      P('Detentveer', spring(0.005, 0.0007, 0.02, 2, 'x', 8), MAT.darkSteel, { d: 'Veer die de handklep in een stand houdt.', p: [0.32, yUp + 0.005, -0.03], ex: [0, 0.1, -0.06], inner: true }),
       P('Detentplaat', G.box(0.03, 0.002, 0.012), MAT.steel, { d: 'Plaat met inkepingen voor de handklepstanden.', p: [0.27, yTop + 0.001, -0.065], ex: [0, 0.14, -0.1], inner: true }),
       P('Terugslagkogeltjes', cache('drvBallen', () => merge(Array.from({ length: 13 }, (_, k) => xf(drvOcta(), [cx - 0.08 + (k % 7) * 0.027, ySep + 0.003, cz - 0.05 + Math.floor(k / 7) * 0.09])))), MAT.steel, { d: 'Dertien terugslagkogeltjes van 8 en 5,5 mm in de tussenplaat (aantal geschat).', ex: [0, 0.03, 0.0], inner: true }),
     ]),
@@ -335,7 +335,7 @@ function drvStarter() {
       P('Trekspoel', annulus(0.0075, 0.0138, 0.026, 'x', 24), MAT.copper, { d: 'Trekspoel: trekt de plunjer krachtig aan.', p: [0.092, sy, sz], ex: [-0.05, 0, 0], inner: true }),
       P('Houdspoel', annulus(0.0075, 0.0138, 0.026, 'x', 24), MAT.copper, { d: 'Houdspoel: houdt de plunjer vast als de trekspoel uitvalt.', p: [0.121, sy, sz], ex: [0.08, 0, 0], inner: true }),
       P('Plunjer', G.cyl('x', 0.0065, 0.0065, 0.052, 14), MAT.steel, { d: 'Plunjer die de schakelvork bedient.', p: [0.092, sy, sz], ex: [-0.09, 0, 0], inner: true }),
-      P('Terugstelveer', spring(0.0078, 0.0008, 0.018, 2.5, 'x'), MAT.darkSteel, { d: 'Veer die de plunjer terugdrukt.', p: [0.073, sy, sz], ex: [-0.13, 0, 0], inner: true }),
+      P('Terugstelveer', spring(0.0078, 0.0008, 0.018, 2.5, 'x', 8), MAT.darkSteel, { d: 'Veer die de plunjer terugdrukt.', p: [0.073, sy, sz], ex: [-0.13, 0, 0], inner: true }),
       P('Contactplaat', G.cyl('x', 0.0115, 0.0115, 0.003, 18), MAT.drvBrass, { d: 'Koperen plaat die de twee hoofdcontacten verbindt.', p: [0.1385, sy, sz], ex: [0.12, 0, 0], inner: true }),
       P('Solenoïdedeksel', G.cyl('x', 0.0165, 0.0165, 0.012, 20), MAT.plastic, { d: 'Kunststof deksel met de aansluitingen.', p: [0.146, sy, sz], ex: [0.18, 0, 0] }),
       P('Contactbout plus (B+)', drvBolt(0.012, 0.007, 'x'), MAT.drvBrass, { d: 'Hoofdaansluiting van de accukabel (B+).', p: [0.152, ...[sy + 0.0085, sz]], ex: [0.25, 0, 0] }),
