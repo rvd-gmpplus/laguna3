@@ -1135,11 +1135,14 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     ]),
     // gasveren: telescoop van het carrosseriepunt A naar het klepunt B. De groep staat in A met de lokale +z naar B (gebouwde stand);
     // de app richt hem bij het openen opnieuw en schuift de zuigerstang uit (290 mm ingeschoven, 495 mm uitgeschoven)
+    // De cilinder is een gesloten draaivorm: kogelkom als halve bol onder, buis van 32 mm, platte kop met 0,5 mm afschuining, en binnenin een
+    // holte van 13,5 mm straal waarin de kogel (12 mm) van de bevestiging zit. Was een buis met een bol erin: de bodem van die buis lag als
+    // schijf door het hart van de kogel (7 mm diep, gemeten bij h 1,5 mm; golf 5b-3, ronde 8). Buitenkant, maten en draaipunt zijn gelijk.
     ...both(s => {
       const a = [s * bodGsA[0], bodGsA[1], bodGsA[2]], b = [s * bodGsB[0], bodGsB[1], bodGsB[2]], dir = V3(b[0] - a[0], b[1] - a[1], b[2] - a[2]);
       return A(`Gasveer ${sn(s)}`, { d: 'Gasveer van 495 mm met 205 mm slag (catalogusmaat, 610 N) die de geopende achterklep omhoog houdt; onderaan bevestigd tegen de zijwand van de opening (C-stijl), bovenaan op de zijrand van de klep, zodat hij langs de zijkant loopt. Plaats van de bevestigingspunten geschat.', p: a, q: quatFromTo(V3(0, 0, 1), dir), ex: [s * 0.14, 0, 0],
         strut: { a: { node: `Gasveerbevestiging ${sn(s)}`, p: [0, 0, 0] }, b: { node: 'Renault Laguna III/Carrosserie/Achterklep', p: b }, rod: 'Zuigerstang', lead: 'Renault Laguna III/Carrosserie/Achterklep', restLen: 0.29 } }, [
-        P('Cilinder', merge([xf(G.cyl('z', 0.016, 0.016, 0.27, 16), [0, 0, 0.135]), G.sphere(0.016, 12)]), MAT.bodStrut, { d: 'Gasgevulde cilinder van de gasveer met kogelkom aan de carrosseriezijde.', ex: [0, 0, -0.05] }),
+        P('Cilinder', G.lathe('z', [[0, 0.0135], [0.0135 * Math.SQRT1_2, 0.0135 * Math.SQRT1_2], [0.0135, 0], [0.0135 * Math.SQRT1_2, -0.0135 * Math.SQRT1_2], [0, -0.0135], [0, -0.016], [0.008, -0.016 * Math.cos(PI / 6)], [0.016 * Math.cos(PI / 6), -0.008], [0.016, 0], [0.016, 0.2695], [0.0155, 0.27], [0, 0.27]], 16, 'bodGsCyl'), MAT.bodStrut, { d: 'Gasgevulde cilinder van de gasveer met kogelkom aan de carrosseriezijde.', ex: [0, 0, -0.05] }),
         P('Zuigerstang', merge([xf(G.cyl('z', 0.0065, 0.0065, 0.27, 10), [0, 0, 0.155]), xf(G.sphere(0.0125, 10), [0, 0, 0.29])]), MAT.steel, { d: 'Verchroomde zuigerstang die uit de cilinder schuift; kogelkom aan de klepzijde.', ex: [0, 0.03, 0.05] }),
       ]);
     }),
