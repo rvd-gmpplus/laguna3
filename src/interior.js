@@ -5,6 +5,7 @@ std('intBelt', 0x25272c, 0, 0.9);
 std('intTray', 0xb9bdc3, 0, 0.9);   // lichtgrijs schuim van de opbergbak onder de bagagevloer: leest tegen de donkere vloerbekleding
 std('intBoard', 0xe2ded4, 0, 0.9, { emissive: 0x55524b });    // onderzijde van de klapbare bagagevloer: lichte plaat, zodat de omhoog geklapte vloer leest tegen de donkere bekleding
 std('intFelt', 0x3a3835, 0, 1);       // donker vilt van de bagageruimtebekleding: iets lichter dan de vloerbekleding, zodat vloer en wand te onderscheiden zijn
+std('intSill', 0xd2d6db, 0.6, 0.3, { envMapIntensity: 1.2 });   // sierstrip op de instaplijst: lichter dan de lakdorpel en de vloer
 const intPart = (name, geo, mat, d, o) => P(name, geo, mat, Object.assign({ d }, o));
 // hoedenplank met pennen, koordjes en luidsprekers: uitgenomen zolang een opener in de bagageruimte open is (zoals een eigenaar doet)
 const intPlankHide = ['Rugleuning groot deel', 'Rugleuning klein deel', 'Bagageruimtevloer'];
@@ -460,7 +461,21 @@ function intTrim() {
     intPart('Zonneklepas', xf(G.cyl('x', 0.005, 0.005, 0.32, 8), [0, 0.0, 0.081]), MAT.steel, 'Draaias langs de dakrand.', { ex: [0, 0.04, 0.05] }),
   ]); };
   const mat = (s, n) => intPart(`Vloermat ${n}`, G.rbox(0.4, 0.012, 0.5, 0.005), MAT.rubber, 'Losse vloermat voor de voetruimte.', { p: [s * 0.37, 0.256, 0.55], ex: [0, 0.1, 0.1] });
-  const sill = (s, z, len, n) => intPart(`Instaplijst ${n} ${sideName(s)}`, G.rbox(0.05, 0.01, len, 0.004), MAT.plasticGrey, 'Kunststof dorpellijst bij het instappen.', { p: [s * (surfX(z, 0.26) - 0.05), 0.248, z], ex: [s * 0.1, 0.05, 0] });
+  // instaplijst bij elke portieropening (z0..z1): een vlakke loopplaat over de bovenkant van de dorpel tot net binnen de lakdorpel, met
+  // een lichte sierstrip erop, en aan de binnenzijde een opstaande rand over de rand van de vloerbedekking. Zo leest de onderrand van een
+  // open portieropening als afgewerkte instap: lakdorpel, zwarte loopplaat met lichte strip, opstaande rand, vloer.
+  // yT = bovenkant van de loopplaat: voor bijna gelijk met de lakdorpel (y 0,302); het rubber van het dichte achterportier begint al op
+  // y 0,302 (voor de portierrand pas op 0,309), daarom ligt de plaat achter lager. De opstaande rand (x 0,762 tot 0,778) blijft binnen de
+  // onderrand van het dichte portier (vanaf x 0,782) en onder het luidsprekerrooster (vanaf y 0,34) en loopt alleen langs de opening, tot
+  // voor de B-stijlvoet (z -0,038 tot -0,281). De sierstrip houdt 2,8 cm afstand tot de buitenrand, zodat hij bij een dicht portier niet
+  // door de naad boven de dorpel te zien is; daar blijft de naad donker.
+  const sillXI = 0.762, sillXU = 0.778, sillYB = 0.2515;
+  const sill = (s, z0, z1, n, yT, yU, u0, u1) => { const zc = (z0 + z1) / 2, len = z1 - z0, xo = surfX(zc, 0.29) - 0.007, xm = (sillXU + xo) / 2, w = xo - sillXU, nm = `${n} ${sideName(s)}`;
+    const ux = (sillXI + sillXU) / 2 - xm, uc = (u0 + u1) / 2 - zc;
+    return [
+      intPart(`Instaplijst ${nm}`, merge([xf(G.rbox(w, 0.01, len, 0.003), [0, -0.005, 0]), xf(G.rbox(sillXU - sillXI, yU - sillYB, u1 - u0, 0.004), [s * ux, (sillYB + yU) / 2 - yT, uc])]), MAT.plastic, 'Zwarte kunststof instaplijst over de bovenkant van de dorpel, met aan de binnenzijde een opstaande rand over de rand van de vloerbedekking (vorm en maten geschat).', { p: [s * xm, yT, zc], ex: [s * 0.1, 0.05, 0] }),
+      intPart(`Sierstrip instaplijst ${nm}`, G.rbox(w - 0.04, 0.003, len - 0.04, 0.0012), MAT.intSill, 'Lichte sierstrip in aluminiumlook op de loopplaat van de instaplijst (uitvoering geschat).', { p: [s * (xm - 0.008), yT + 0.0012, zc], ex: [s * 0.1, 0.08, 0] }),
+    ]; };
   const curtain = s => { const pts = []; for (let i = 0; i <= 12; i++) { const z = 0.2 - 1.35 * i / 12, p = ghPt(z, 0.235); pts.push([s * Math.abs(p[0]) * 0.958, p[1] - 0.022, z]); } return intPart(`Gordijnairbag ${sideName(s)}`, tube(pts, 0.007, 36, 6), MAT.fabric, 'Opgerolde gordijnairbag langs de dakrand, tegen de dakrail boven de rand van de hemel, van de A-stijl tot waar de hemel ophoudt; beschermt hoofd en schouders bij een zijdelingse botsing.', { ex: [s * 0.1, 0.1, 0] }); };
   // A-stijlbekleding: een smalle bekleding in de kleur van de hemel langs de A-stijl, over de afvoerslang van het dak heen (de slang volgt hetzelfde verloop)
   const pillarCover = s => {
@@ -533,7 +548,7 @@ function intTrim() {
     A('Vloerbekleding', { d: 'Vloerbedekking met losse matten en de dorpellijsten.', ex: [0, -0.1, 0] }, [
     intPart('Vloerbedekking', carpet, MAT.carpet, 'Getufte vloerbedekking als dunne laag op de vloer en over de tunnel; de uitlaat in de tunnel blijft eronder vrij.', { ex: [0, -0.22, 0] }),
     mat(1, 'bestuurder'), mat(-1, 'passagier'),
-    sill(1, 0.2, 0.8, 'voor'), sill(-1, 0.2, 0.8, 'voor'), sill(1, -0.78, 0.44, 'achter'), sill(-1, -0.78, 0.44, 'achter'),
+    ...[1, -1].flatMap(s => sill(s, -0.27, 0.83, 'voor', 0.3, 0.33, -0.03, 0.78)), ...[1, -1].flatMap(s => sill(s, -0.8, -0.29, 'achter', 0.294, 0.326, -0.78, -0.29)),
     ]),
     A('Bagageruimte', { d: 'Bekleding van de bagageruimte met hoedenplank, vloerplaat, zijbekleding over de wielkasten, de luidsprekers van de achterplank en de versterker.', ex: [0, 0.0, -0.3] }, [
     intUit(intPart('Hoedenplank', intPlankGeo(), MAT.carpet, 'Afdekplaat achter de achterbank boven de bagageruimte; hangt met koordjes aan de achterklep en komt mee omhoog als die opent (geschat 52 graden), met twee scharnierpennen in de zijbekleding aan de voorrand, die in een kleine sparing in de voorhoeken van de plank liggen, en een uitsparing voor de middelste gordelrolautomaat.', Object.assign({ p: [0, 1.0, -1.85], ex: [0, 0.3, -0.2] }, intPlankOpen()))),
