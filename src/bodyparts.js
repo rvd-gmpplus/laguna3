@@ -610,13 +610,15 @@ function bodClipOut(g, X0, Y0, Y1, zMin) {
 // de kuipboog. De wand heeft een sleuf waar de torsiebalk met de stabilisatorstaaf doorloopt en een uitsparing voor de
 // schroefveer (x 0,438 tot 0,582); achter die uitsparing zit een veerkoker naar binnen tot x 0,432, met de bovenkant op
 // y 0,572 vlak boven de veerschotel. Onder de as sluiten een voor- en een achterwand de kuip af. Wereldmaten.
-const bodWHR = ARCH + 0.02, bodWHX = 0.51, bodSprZ = [-1.545, -1.395], bodSprY = [0.322, 0.572], bodSprX = 0.432;
+// veerkoker uit REAR_SPR en sleuf voor de torsiebalk uit REAR_BEAM (body.js, golf 5b-3 G8d), zodat wielkast, chassis en interieur dezelfde maten lezen
+const bodWHR = ARCH + 0.02, bodWHX = 0.51, bodSprZ = REAR_SPR.sprZ, bodSprY = REAR_SPR.sprY, bodSprX = REAR_SPR.sprX;
+const bodBeamSlot = [REAR_BEAM.z - REAR_BEAM.hz - REAR_BEAM.slot, REAR_BEAM.z + REAR_BEAM.hz + REAR_BEAM.slot, REAR_BEAM.y - REAR_BEAM.hy - REAR_BEAM.slot, REAR_BEAM.y + REAR_BEAM.hy + REAR_BEAM.slot];
 function bodRearWHWall(s) {
   const pts = [];
   for (let i = 0; i <= 16; i++) { const z = AXR - bodWHR + 2 * bodWHR * i / 16; pts.push(new THREE.Vector2(z, YB(z) + 0.004)); }
   for (let k = 0; k <= 24; k++) { const a = PI * k / 24; pts.push(new THREE.Vector2(AXR + bodWHR * Math.cos(a), AY + bodWHR * Math.sin(a))); }
   const sh = new THREE.Shape(pts), hole = (z0, z1, y0, y1) => { const h = new THREE.Path(); h.moveTo(z0, y0); h.lineTo(z1, y0); h.lineTo(z1, y1); h.lineTo(z0, y1); h.closePath(); return h; };
-  sh.holes.push(hole(-1.203, -1.097, 0.251, 0.329), hole(bodSprZ[0], bodSprZ[1], bodSprY[0], bodSprY[1]));
+  sh.holes.push(hole(...bodBeamSlot), hole(bodSprZ[0], bodSprZ[1], bodSprY[0], bodSprY[1]));
   const wall = new THREE.ShapeGeometry(sh, 1); wall.rotateY(-HALF); wall.translate(s * bodWHX, 0, 0);
   // veerkoker: binnenvlak, voor- en achtervlak en bovenkant; onderaan open boven de langsarm
   const dx = bodWHX - bodSprX, dz = bodSprZ[1] - bodSprZ[0], dy = bodSprY[1] - bodSprY[0], xm = s * (bodWHX + bodSprX) / 2, ym = (bodSprY[0] + bodSprY[1]) / 2, zm = (bodSprZ[0] + bodSprZ[1]) / 2;
