@@ -220,7 +220,7 @@ Golf 5 bracht de hulpmiddelen van de visuele poort en van het nameten in de repo
 | `rays_bagage.py` | Stralen vanuit het midden van de bagageruimte naar links en rechts: vrije ruimte en het eerste onderdeel. |
 | `phone.py` | Twee telefoonbeelden (390 x 844) en de scrollbreedte. |
 | `dumptree.py` | De hele boom als JSON. |
-| `clash.py KNOOP... [--straal MM]` | Doordringing en kleinste afstand van knopen tegen het hele model, ook binnen dezelfde hoofdgroep (waar `integrity.py` niet kijkt); toegestane paren in `data/clash-toegestaan.json`. Gekalibreerd op het Leidingblok (-10,5 mm met de Koude laadluchtslang). Bemonstert op ongeveer 5 mm: een holte binnen een deel mist het. |
+| `clash.py KNOOP... [--straal MM]` | Doordringing en kleinste afstand van knopen tegen het hele model, ook binnen dezelfde hoofdgroep (waar `integrity.py` niet kijkt); toegestane paren in `data/clash-toegestaan.json`. Gekalibreerd op het Leidingblok (-10,5 mm met de Koude laadluchtslang). Bemonstert op ongeveer 5 mm: een holte binnen een deel mist het. Sinds `a000772` ververst de cache van `meetlib.js` per stand (geometrie, versie en `matrixWorld`); open metingen van daarvoor, binnen één sessie, gebruikten de dichte geometrie en gelden niet. Voor een regel over de hele beweging meet de orkestrator met de standenzwaai: de 26 openers in stappen van 0,05, plus dicht en alles open, met een ruisproef bij een bemonsteringsafstand van 1,5 mm; dat is een losse procedure en geen script in de repo. |
 | `huid.py --bewaar` en `--vergelijk` | Legt de huid van een knoop vast en meet later de afwijking (maximum en 95-percentiel, met de plek); poort van G1 was hoogstens 2 mm op zichtbare zones. |
 
 Bij `shots.py` en `gateshots.py`: onder software-rendering rondt een tekenopdracht pas na 5 tot 15 s af (onder belasting langer), en `Page.screenshot` wacht daarop. `shots.py` wacht daarom eerst twee animatieframes en neemt op met `MODEL_TIMEOUT_MS` (standaard 120 s) in plaats van de 30 s van Playwright.
@@ -248,9 +248,9 @@ De kolom "Na golf 1" is de tussenstand van 13 oktober 2026 rond 11:30 UTC, ongew
 | `ui_inner.py` | bestond nog niet | 0 eerste treffers op 256 ingesloten knopen (na golf 2 waren het er 52) | 0 eerste treffers op 256 ingesloten knopen | 0 eerste treffers op 253 ingesloten knopen (39.200 stralen op de hele auto, 20.000 per hoofdgroep). Op `ff42dbd` hetzelfde |
 | URL na publicatie gelijk aan `index.html` | niet van toepassing | Gelijk. Versie 2 van de URL, teruggelezen op 13 oktober om 17:00 UTC, bevat `index.html` van `8095a3e` (618.341 bytes, md5 `dc2bc3b0…`) precies één keer en aaneengesloten. Daaromheen staan alleen het vaste paginaskelet van de host (531 bytes: doctype, charset, viewport en basisstijl tot en met `<body>`) en de afsluiting `</body></html>` (15 bytes). | Gelijk. Versie 3 van de URL, teruggelezen op 13 oktober om 17:37 UTC, bevat `index.html` van `60909fe` (620.025 bytes, md5 `d92a8bb2…`) precies één keer en aaneengesloten, met hetzelfde paginaskelet ervoor (531 bytes) en dezelfde afsluiting erna (15 bytes). | Gelijk. Versie 4 van de URL bevat `index.html` uit `ec92a53` (commit `9c03015`, 663.654 bytes, md5 `70b2e62a426312ec788fc851086ab4c6`) precies één keer, met alleen het paginaskelet van de host eromheen (531 bytes ervoor, 15 erna). Versie 5, gepubliceerd op 14 oktober en teruggelezen om 00:02 UTC, bevat `index.html` uit `ff42dbd` (commit `5b6cefa`, 678.887 bytes, md5 `649cbf95397d877f6a361600c42a4afd`) precies één keer en byte voor byte gelijk, met hetzelfde skelet (531 bytes ervoor, 15 erna) |
 
-## Resultaten golf 5b-3 (17 oktober 2026), tak `golf-5b3`, tot en met fase 3 (versie 10 in voorbereiding)
+## Resultaten golf 5b-3 (17 oktober 2026), tak `golf-5b3`, tot en met ronde 6 (versie 10 in voorbereiding)
 
-De poort van 5b-3 (de strikte set in de VM en op de Mac, `visdiff`, `clash.py`, de K-panels en S7) is nog niet gedraaid; hieronder staat wat tot nu toe is gemeten. Kerncijfers en de opstarttijden (gemeten op de Mac, niet in de container): [cijfers.md](cijfers.md).
+De poort van 5b-3 (de strikte set in de VM en op de Mac, `visdiff`, `clash.py`, de K-panels en S7) is nog niet afgerond; hieronder staat wat tot nu toe is gemeten, na fase 3 en per ronde (rondes 2 tot en met 6, 17 oktober). Kerncijfers en de opstarttijden (gemeten op de Mac, niet in de container): [cijfers.md](cijfers.md).
 
 | Test | Uitslag |
 |---|---|
@@ -264,9 +264,16 @@ De poort van 5b-3 (de strikte set in de VM en op de Mac, `visdiff`, `clash.py`, 
 | `mergecheck.py` | `tools/itest.py`, `tools/ui_*.py` en `tools/opentest.py` staan niet meer bij de eigen bestanden van de app maar bij de alleen-lezen bestanden; ook `tools/visdiff.py`, `tools/anchorcheck.py`, `tools/lag3-vm.sh` en `tools/vm/*` zijn alleen-lezen. De wijziging van `itest.py` in de app-tak wordt nu gemeld als overtreding en moet door de orkestrator met de hand worden toegestaan |
 | `clash.py` per tak | geen nieuw doordringend paar; onder de strenge regel (geen paar dieper dan B0 plus 0,1 mm) zijn de gasveer, het krukaspoelie en de veren van het onderstel aangepast; de vulpijp heeft toelatingen met een maximale diepte (zie [onderzoek/beslissingen.md](onderzoek/beslissingen.md)) |
 | `ui_inner.py --open --strict` met `UI_INNER_DIRS=400` | per tak 0 voor de eigen groep; op een proefsamenvoeging van de zeven takken exit 0 (Mac); de samengevoegde stand moet de poort nog meten |
+| `anchorcheck.py` in de VM | ok op `d4d03a6` (platformgebonden getallen, zie hierboven) |
+| Rondes 2 tot en met 6: `clash.py` en de standenzwaai | Per ronde geen nieuw paar en geen paar dieper dan B0 plus 0,1 mm, over de 26 openers in stappen van 0,05, plus dicht en alles open. Uitzondering in ronde 4: Plankscharnierpen rechts (10,07 naar 10,19 mm bij 4 mm bemonstering; de pen ligt op de draai-as); dat is ronde 7. Ronde 6: de paren Zijruit voor met B-stijl zijn weg, en bij 1,5 mm bemonstering dringt geen ruit in de B-stijl |
+| Ronde 3: `finaltests.sh` | groen behalve `visdiff` tegen een eigen Mac-basis van `9cc4331`: alleen 38-openDoors en 42-openAll rood (portieren open, bedoeld); dichte stand tegen `9cc4331` op 3x: ext-zij en ext-34voor geen pixel boven 24, ext-34achter 22 |
+| Ronde 2: `tri.py --gate`, `smoke.py`, `integrity.py`, `silhouette.py`, `opentest.py --strikt-min`, `ui_inner.py` met 400 richtingen `--open --strict`, `pncheck.py --tree` | groen |
+| Ronde 3: `tri.py --gate`, `pncheck.py` en `pncheck.py --tree` | ok |
+| Ronde 4 (hoedenplank): `build.py --lint`, `tri.py --gate`, `opentest.py --strikt-min --only Hoedenplank,Achterklep` | ok, 0 fouten |
+| `index.html` | herbouwd in fase 3.5, ronde 2 en ronde 3; niet na ronde 4 tot en met 6 |
 | Visuele poort K1 tot K13 en S7 | nog niet gedraaid |
 
-## Resultaten golf 5b-2 (16 oktober 2026), tak `golf-5b2` (versie 9, gebouwd en niet gepubliceerd)
+## Resultaten golf 5b-2 (16 oktober 2026), tak `golf-5b2` (versie 9, gebouwd; gepubliceerd op 16 oktober om 21:30 UTC)
 
 Strikte set op de samengevoegde stand `0bdbef1` (golf A en golf B), op macOS; `index.html` en de kerncijfers in `225000f` ([cijfers.md](cijfers.md)). De functietests liepen daarnaast in de Linux-VM `lag3-vm` op `8ce45ba`.
 

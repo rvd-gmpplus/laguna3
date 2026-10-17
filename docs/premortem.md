@@ -219,7 +219,7 @@ Overleefbaar, mits vijf wijzigingen: (a) een mesh-tegen-mesh-meting en een huidm
 - S7 blijft 7 (stochastisch panel; meer runs maken het criterium waardeloos). Naar 5b-3 met een item voor kenmerk 8.
 - De echte plaats van de sproeiertank is onbekend; "schematisch geplaatst" begrenst de schade. Een meting aan de auto van de gebruiker (Meetlijst in `handomdraai.md`) sluit dit.
 - `clash.py` bemonstert op 5 mm en mist een holte binnen een deel; een gat valt dan alleen in de K-panels op.
-- Niet gepubliceerd: versie 9 is gebouwd maar wacht op de gebruiker, dus de byte-voor-byte controle van beide kanalen is nog niet gedaan.
+- Niet gepubliceerd: versie 9 was gebouwd maar wachtte op de gebruiker, dus de byte-voor-byte controle van beide kanalen was nog niet gedaan. Dat is daarna gedaan: gepubliceerd op 16 oktober om 21:30 UTC en om 21:35 UTC byte voor byte teruggelezen (zie [../CHANGELOG.md](../CHANGELOG.md)).
 
 ### Verwachting voor de volgende golf (5b-3)
 
@@ -227,20 +227,22 @@ Dezelfde vorm: eerst meten (`clash.py` en `huid.py` vooraf op de nieuwe delen, v
 
 ## Premortem golf 5b-3 (17 oktober 2026)
 
-Dezelfde vorm als bij 5b-2: gedacht vanaf de dood op 20 oktober 2026 (de poort rood of een fout in versie 10 die een gebruiker ziet), vijf stadia, zeven oorzaken. Het volledige verslag (`premortem-5b3-r1.md`) staat in het scratchpad van de sessie en is vluchtig; dit is de kern. De uitkomst van de golf staat in [masterplan.md](masterplan.md), sectie "Stand na fase 3".
+Dezelfde vorm als bij 5b-2: gedacht vanaf de dood op 20 oktober 2026 (de poort rood of een fout in versie 10 die een gebruiker ziet), vijf stadia, zeven oorzaken. Het volledige verslag (`premortem-5b3-r1.md`) staat in het scratchpad van de sessie en is vluchtig; dit is de kern. De uitkomst van de golf staat in [masterplan.md](masterplan.md), secties "Stand na fase 3" en "Rondes 2 tot en met 6".
 
 Het oordeel: de fatale fout zat in de poorttekst en niet in het werk. De poort eiste een groene run in de VM tegen een basislijn die pas na die groene run vernieuwd mocht worden, terwijl de ankercheck sinds fase 0 rood was, en de regel "per groep geen paar slechter dan B0" was al door drie geleverde takken gebroken. Het gevaarlijkste: een Stap terug-regressie van de herkadrering (tak G) die voor geen enkele test zichtbaar was en via `framework.py export` naar espace5 zou gaan.
 
 | Oorzaak | Wat er gebeurde |
 |---|---|
-| 1 Poort onhaalbaar (basislijn en ankercheck) | Nog open: de basislijn wordt na de poort vernieuwd, de ankercheck wordt vooraf apart beslist. Hoort bij de poort. |
+| 1 Poort onhaalbaar (basislijn en ankercheck) | Deels gesloten. De ankercheck is groen (VM: `anchor ok` bij `d4d03a6`). Nog open: de basislijn van `visdiff` wordt pas na een groene poort vernieuwd. Hoort bij de poort. |
 | 2 Clashregel gebroken door drie takken | Afgegaan. De gebruiker koos de strenge lezing (geen paar dieper dan B0 plus 0,1 mm, ook niet ONZEKER in gesloten stand, zie `docs/onderzoek/beslissingen.md`). De takken zijn aangepast (gasveer E8, krukaspoelie D3, veren B3 en B9) en de vulpijp kreeg toelatingen met `max_diepte_mm`. |
 | 3 Tak G maakt de VM-visdiff blind | G is als laatste van de takken samengevoegd, zodat het rood van de tien presets in de VM niet onder de andere takken wegvalt. De visdiff van de poort blijft per samenvoeging aan één tak toe te schrijven. |
 | 4 Stap terug-regressie | Gevangen vóór publicatie. Itest controle 5 meet nu de camera na Stap terug (vier gevallen, desktop en telefoon, binnen 0,05 m); zonder de correctie waren 6 van 8 gevallen fout, met de correctie groen. Een menselijke proef is niet gedaan: de proef was een script (aantal herkadreringen), geen mens heeft het beeld bekeken. |
 | 5 Paginagrootte boven de grens | Besloten door de gebruiker: de grens is 1,5 MB raw en 370 kB gzip. De pagina na fase 3 zit eronder (zie `docs/onderzoek/beslissingen.md`). Een automatische T4-meting in `finaltests.sh` is er niet; de poort meet hem met de hand. |
 | 6 Herstel over twee eigenaren, onware `d` | Afgegaan en gesloten: B8 (boring in de oren van de Reactiestangbeugel) en C7 (de Doorgaande bout subframe weer één bout), `d` van het Leidingblok volgt de nieuwe leidingen. |
-| 7 Staart van de sessie | Aanvaard, niet gesloten: de export naar espace5, de bouw van `index.html`, de poort en de publicatie moeten nog; de VM kent geen git in een worktree van de Mac. |
+| 7 Staart van de sessie | Deels gesloten. De export naar espace5 is gedaan (tak `golf-5b3-export`, niet samengevoegd) en `index.html` is gebouwd (fase 3.5, ronde 2 en 3; na ronde 6 opnieuw nodig). Nog open: de poort en de publicatie; de VM kent geen git in een worktree van de Mac. |
 
 Wat het plan niet zag: de diagnose van G8c uit 5b-2 was onjuist (een boring in de fusee alleen helpt niet); alleen de volgorde klemarm omhoog, Demperbuis korter, daarna de naaf op `TRACK_F` werkte, en daarvoor was een stap meer nodig (stompastip L plus 0,063 in plaats van 0,062, manchet buiten dieper in de klok) om onder de strenge regel te blijven. Lint-regels die als melding beginnen en pas aan het einde fout worden, kosten niets zolang de meting (0 treffers op `note` en `label`) vooraf is gedaan.
+
+Wat de rondes na fase 3 (17 oktober, rondes 2 tot en met 6) toevoegden: het meetmiddel zelf kan het gat zijn. De cache per mesh van `meetlib.js` gold voor de hele paginasessie, dus `clash.py`-metingen in een open stand gebruikten de geometrie van de eerste (dichte) stand; de proef Portier linksvoor dicht tegen open gaf 0 verschil, na de fix (`a000772`) 1,18 m. Dichte standen waren niet geraakt, maar open metingen binnen één sessie van voor die fix zijn onbetrouwbaar. Daarom meet de regel sindsdien over de hele beweging (de standenzwaai: de 26 openers in stappen van 0,05, plus dicht en alles open) en met een ruisproef bij een bemonsteringsafstand van 1,5 mm naast de gewone. Zo bleek in ronde 6 dat de gelakte B-stijlplaat van ronde 3 bij ruitstand 0,6 tot 0,8 tot 2,35 mm door de zakkende voorste zijruit stak; B0 had dat paar niet en een dichte meting kon het niet zien. Les voor een volgende golf: kalibreer het meetmiddel ook in een open stand, op een bekend verschil, voordat de regel erop gaat steunen.
 
 De poortuitkomst (itest, `visdiff`, `clash.py`, K-panels, S7) komt hier en in [../CHANGELOG.md](../CHANGELOG.md) nadat de poort is gedraaid.
