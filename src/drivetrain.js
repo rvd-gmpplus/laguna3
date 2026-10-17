@@ -39,11 +39,7 @@ function drvBolt(len, d, ax = 'y') {
 // tandwiel met nominale modulus m: kopcirkel (N/2+1)m, voetcirkel (N/2-1,25)m
 const drvOcta = () => cache('drvOcta', () => new THREE.OctahedronGeometry(0.0042));
 function drvG(N, m, w, hole = 0, ax = 'x') { return gear(N, +(m * (N / 2 + 1)).toFixed(5), +(m * (N / 2 - 1.25)).toFixed(5), w, hole, ax); }
-// n kopieen van fn() op een cirkel (y,z) om as x
-function drvRing(key, n, r, fn, phase = 0, c = [0, 0], x = 0) {
-  return cache(key, () => merge(Array.from({ length: n }, (_, k) => { const a = phase + k * PI * 2 / n; return xf(fn(), [x, c[0] + r * Math.cos(a), c[1] + r * Math.sin(a)]); })));
-}
-function drvBoltRing(key, n, r, len, d, ax, phase = 0, c = [0, 0], x = 0) { return drvRing(key, n, r, () => drvBolt(len, d, ax), phase, c, x); }
+function drvBoltRing(key, n, r, len, d, ax, phase = 0, c = [0, 0], x = 0) { return ringPattern(key, n, r, () => drvBolt(len, d, ax), phase, c, x); }
 function semicircle(rc, xc, rr, sgn, n = 14) { const pts = []; for (let k = 0; k <= n; k++) { const f = k / n * PI; pts.push([rc + rr * Math.cos(f), xc + sgn * rr * Math.sin(f)]); } return pts; }
 const drvL = (key, pts, seg = 32, ax = 'x') => G.lathe(ax, pts, seg, 'drv' + key);
 // platenpakket: afwisselend frictieplaat (buitenvertanding) en stalen plaat (binnenvertanding); geeft lijst onderdelen terug
@@ -65,7 +61,7 @@ function drvPack(name, d, spec, o) {
   kids.push(P(o.drumName, drvL('Drum' + name, [[o.hub, xw], [rD, xw], [rD, xe + 0.008], [rD - 0.003, xe + 0.008], [rD - 0.003, xw + 0.003], [o.hub, xw + 0.003]], 40), o.drumMat || MAT.aluCast, { d: o.drumD, ex: [-sp * 3, 0, 0]}));
   kids.push(P('Zuiger', annulus(o.hub + 0.004, rD - 0.004, 0.007, 'x', 40), MAT.aluCast, { d: 'Hydraulische zuiger; de olie uit het klepblok drukt hem tegen het platenpakket. Afdichting met kunststof ringen, schematisch weergegeven.', p: [o.x0 - 0.0125, 0, 0], ex: [-sp * 2, 0, 0], inner: true }));
   kids.push(P('Zuigerafdichtingen', cache('drvSeal' + name, () => merge([[o.hub + 0.004, 0.0013], [rD - 0.004, 0.0013]].map(([r, w]) => xf(G.torus('x', r, w, 20, 3), [o.x0 - 0.0125, 0, 0])))), MAT.rubber, { d: 'Twee afdichtringen (D-ringen, schematisch weergegeven) op de binnen- en buitenrand van de zuiger.', ex: [-sp * 2.5, 0, 0], inner: true }));
-  kids.push(P('Terugdrukveren', drvRing('drvTv' + name, 8, (o.hub + rD) / 2, () => G.cyl('x', 0.0035, 0.0035, 0.008, 6), 0.2, [0, 0], o.x0 - 0.0045), MAT.darkSteel, { d: 'Terugdrukveren (schematisch weergegeven als veerkolommen, aantal geschat) die de zuiger terugdrukken als de oliedruk wegvalt.', ex: [-sp * 1, 0, 0], inner: true }));
+  kids.push(P('Terugdrukveren', ringPattern('drvTv' + name, 8, (o.hub + rD) / 2, () => G.cyl('x', 0.0035, 0.0035, 0.008, 6), 0.2, [0, 0], o.x0 - 0.0045), MAT.darkSteel, { d: 'Terugdrukveren (schematisch weergegeven als veerkolommen, aantal geschat) die de zuiger terugdrukken als de oliedruk wegvalt.', ex: [-sp * 1, 0, 0], inner: true }));
   kids.push(...drvPlates(name, o, 0.0013, 0.0015));
   kids.push(P('Drukplaat', annulus(o.sri, o.sro, 0.004, 'x', 40), MAT.darkSteel, { d: 'Dikkere stalen plaat achter het pakket; de dikte stelt de speling van het pakket af.', p: [xe + 0.002, 0, 0], ex: [(n + 2) * sp, 0, 0]}));
   kids.push(P('Borgring', annulus(o.sro - 0.003, o.sro + 0.001, 0.0022, 'x', 40), MAT.steel, { d: 'Veerring die de drukplaat in de trommel vasthoudt.', p: [xe + 0.0055, 0, 0], ex: [(n + 3) * sp, 0, 0]}));
@@ -99,7 +95,7 @@ function drvConverter() {
     ex: [0, 0, 0.42],
   }, [
     P('Omvormerdeksel', merge([cover, G.cyl('x', 0.012, 0.012, 0.016, 12)]), MAT.steel, { d: 'Voorste schaal van de omvormer, aan het pompwiel gelast; met vier nokken naar de flexplaat van de motor.', ex: [-0.02, 0, 0] }),
-    P('Omvormernokken', drvRing('drvNokken', 4, 0.115, () => G.cyl('x', 0.006, 0.006, 0.02, 10), PI / 4, [0, 0], -0.0035), MAT.darkSteel, { d: 'Vier nokken op het deksel waarmee de omvormer aan de flexplaat wordt geschroefd.', ex: [-0.045, 0, 0] }),
+    P('Omvormernokken', ringPattern('drvNokken', 4, 0.115, () => G.cyl('x', 0.006, 0.006, 0.02, 10), PI / 4, [0, 0], -0.0035), MAT.darkSteel, { d: 'Vier nokken op het deksel waarmee de omvormer aan de flexplaat wordt geschroefd.', ex: [-0.045, 0, 0] }),
     P('Omvormerbouten', drvBoltRing('drvNokBouten', 4, 0.115, 0.014, 0.011, 'x', PI / 4, [0, 0], -0.0185), MAT.drvBlack || MAT.darkSteel, { d: 'Vier bouten die de omvormer door de flexplaat in de nokken vastzetten; schematisch weergegeven.', ex: [-0.07, 0, 0] }),
     A('Overbruggingskoppeling', { d: 'Lock-up-koppeling: een zuiger met frictievoering die tegen het deksel klemt en motor en bak direct koppelt.', ex: [sp * 1, 0, 0], inner: true }, [
       P('Overbruggingszuiger', annulus(0.05, 0.126, 0.005, 'x', 48), MAT.aluCast, { d: 'Zuiger die onder oliedruk tegen het deksel wordt gedrukt.', p: [0.0215, 0, 0], ex: [0.02, 0, 0] }),
@@ -107,7 +103,7 @@ function drvConverter() {
     ]),
     A('Torsiedemper', { d: 'Veerdemper tussen de overbruggingskoppeling en de turbine; dempt de trillingen van de motor als de koppeling vastklemt.', ex: [sp * 2, 0, 0], inner: true }, [
       P('Demperplaat', annulus(0.035, 0.097, 0.003, 'x', 40), MAT.steel, { d: 'Plaat met vensters voor de demperveren.', p: [0.0285, 0, 0], ex: [0.012, 0, 0] }),
-      P('Demperveren', drvRing('drvDemperV', 6, 0.085, () => G.cyl('z', 0.0055, 0.0055, 0.034, 6), 0.0, [0, 0], 0.0285), MAT.darkSteel, { d: 'Zes demperveren (schematisch weergegeven als veerkolommen) die het koppel van de zuiger naar de turbine overbrengen.', ex: [0.034, 0, 0] }),
+      P('Demperveren', ringPattern('drvDemperV', 6, 0.085, () => G.cyl('z', 0.0055, 0.0055, 0.034, 6), 0.0, [0, 0], 0.0285), MAT.darkSteel, { d: 'Zes demperveren (schematisch weergegeven als veerkolommen) die het koppel van de zuiger naar de turbine overbrengen.', ex: [0.034, 0, 0] }),
       P('Demperring', annulus(0.071, 0.099, 0.003, 'x', 40), MAT.darkSteel, { d: 'Tweede plaat die de veren in hun vensters houdt.', p: [0.0315, 0, 0], ex: [0.014, 0, 0] }),
     ]),
     A('Turbinewiel', { d: 'Turbinewiel met schoepen: wordt door de olie van het pompwiel aangedreven en geeft het koppel via de naaf aan de ingaande as.', ex: [sp * 3.2, 0, 0], inner: true }, [
@@ -117,7 +113,7 @@ function drvConverter() {
     A('Leidwiel met vrijloop', { d: 'Leidwiel (stator) dat de oliestroom omkeert en zo het koppel vergroot; draait dankzij de vrijloop alleen in één richting.', ex: [sp * 4.4, 0, 0], inner: true }, [
       P('Leidwiel (stator)', merge([annulus(0.04, 0.046, 0.013, 'x', 32), blades(13, 0.046, 0.074, 0.013, 0.002, 0.6, 'x')]), MAT.aluCast, { d: 'Leidwiel met gebogen schoepen op een vrijloop.', p: [0.0725, 0, 0], ex: [0, 0.0, 0.0001] }),
       P('Vrijloop buitenring', annulus(0.03, 0.04, 0.013, 'x', 32), MAT.steel, { d: 'Buitenring van de vrijloop (sprag) in het leidwiel.', p: [0.0725, 0, 0], ex: [0.035, 0, 0] }),
-      P('Vrijloop klemlichamen', drvRing('drvSprag', 12, 0.0345, () => G.box(0.011, 0.0035, 0.005), 0, [0, 0], 0.0725), MAT.darkSteel, { d: 'Klemlichamen die het leidwiel in één richting vastzetten (aantal schematisch).', ex: [0.07, 0, 0] }),
+      P('Vrijloop klemlichamen', ringPattern('drvSprag', 12, 0.0345, () => G.box(0.011, 0.0035, 0.005), 0, [0, 0], 0.0725), MAT.darkSteel, { d: 'Klemlichamen die het leidwiel in één richting vastzetten (aantal schematisch).', ex: [0.07, 0, 0] }),
       P('Vrijloop binnenring', annulus(0.02, 0.029, 0.013, 'x', 24), MAT.steel, { d: 'Binnenring van de vrijloop op de vaste stator-as in de oliepomp.', p: [0.0725, 0, 0], ex: [0.105, 0, 0] }),
       P('Axiaal lager voor', drvNeedle('a', 0.022, 0.044, 0.003), MAT.bearing, { d: 'Axiaal naaldlager tussen turbinewiel en leidwiel (schematisch weergegeven).', p: [0.0645, 0, 0], ex: [-0.045, 0, 0] }),
       P('Axiaal lager achter', drvNeedle('a', 0.022, 0.044, 0.003), MAT.bearing, { d: 'Axiaal naaldlager tussen leidwiel en pompwiel (schematisch weergegeven).', p: [0.0805, 0, 0], ex: [0.145, 0, 0] }),
@@ -159,7 +155,7 @@ function drvClutches() {
     drvPack('Lage/achteruitrem', 'Houdt de drager van de achterste set vast; actief in de achteruit en bij motorrem in de 1e versnelling. Zuiger Ø206,7 mm in het huis.', [['Frictieplaten', '4 × Ø205 mm'], ['Stalen platen', '4']], { x0: 0.3275, st, nF: 4, nS: 4, fri: 0.0815, fro: 0.1025, sri: 0.08, sro: 0.1, hub: 0.076, drumName: 'Zuigerhuis L/R-rem', drumD: 'Zuigerhuis in het transmissiehuis.', ex: [0.35, 0.2, 0.0], sp: 0.013 }),
     A('Vrijloop', { d: 'Vrijloop (sprag) die de drager van de achterste set in de 1e versnelling bij optrekken vasthoudt en bij motorrem vrijgeeft.', ex: [0.15, 0, 0.3], inner: true }, [
       P('Vrijloop binnenring', annulus(0.03, 0.039, 0.012, 'x', 24), MAT.steel, { d: 'Binnenring van de vrijloop, op de naaf.', p: [0.3265, 0, 0], ex: [0, 0.0, -0.001] }),
-      P('Vrijloop klemlichamen', drvRing('drvSprag2', 12, 0.0415, () => G.box(0.01, 0.0035, 0.005), 0.1, [0, 0], 0.3265), MAT.darkSteel, { d: 'Klemlichamen (aantal schematisch).', ex: [0.035, 0, 0] }),
+      P('Vrijloop klemlichamen', ringPattern('drvSprag2', 12, 0.0415, () => G.box(0.01, 0.0035, 0.005), 0.1, [0, 0], 0.3265), MAT.darkSteel, { d: 'Klemlichamen (aantal schematisch).', ex: [0.035, 0, 0] }),
       P('Vrijloop buitenring', annulus(0.044, 0.052, 0.012, 'x', 32), MAT.steel, { d: 'Buitenring van de vrijloop, vast in het huis.', p: [0.3265, 0, 0], ex: [0.07, 0, 0] }),
       P('Borgring vrijloop', annulus(0.036, 0.054, 0.0018, 'x', 32), MAT.steel, { d: 'Borgring die de vrijloop in axiale richting vasthoudt.', p: [0.3345, 0, 0], ex: [0.105, 0, 0] }),
     ]),
@@ -206,7 +202,7 @@ function drvPark() {
   return A('Parkeerblokkering', { d: 'Parkeerblokkering: de parkeerpal grijpt in het parkeerrad als de keuzehendel in P staat; de nok op de parkeerstang drukt de pal omlaag, de retourveer trekt hem terug.', ex: [0.12, 0.3, 0.0], inner: true }, [
     P('Parkeerpal', cache('drvPal', () => side(shapeOf([[-0.035, 0], [0.0, 0], [0.012, -0.0085], [0.02, 0], [0.035, 0], [0.035, 0.012], [-0.035, 0.012]]), 0.008)), MAT.darkSteel, { d: 'Pal die in het parkeerrad grijpt en het uitgaande tandwiel blokkeert.', p: [x, 0.0585, 0], ex: [0, 0.06, 0] }),
     P('Palas', G.cyl('x', 0.004, 0.004, 0.016, 10), MAT.steel, { d: 'As waarom de parkeerpal draait.', p: [x, 0.0645, -0.03], ex: [0.04, 0.05, 0] }),
-    P('Retourveer parkeerpal', spring(0.0065, 0.0009, 0.012, 3, 'x'), MAT.darkSteel, { d: 'Torsieveer die de pal van het parkeerrad weg trekt.', p: [x + 0.0, 0.0645, -0.03], ex: [-0.04, 0.05, 0] }),
+    P('Retourveer parkeerpal', spring(0.0065, 0.0009, 0.012, 3, 'x', 8), MAT.darkSteel, { d: 'Torsieveer die de pal van het parkeerrad weg trekt.', p: [x + 0.0, 0.0645, -0.03], ex: [-0.04, 0.05, 0] }),
     P('Parkeerstang', G.cyl('z', 0.003, 0.003, 0.07, 8), MAT.steel, { d: 'Stang die door de keuzeas wordt bediend.', p: [x, 0.0765, 0.055], ex: [0, 0.07, 0.06] }),
     P('Parkeernok', G.cyl('z', 0.009, 0.0045, 0.022, 14), MAT.darkSteel, { d: 'Kegelvormige nok op de stang die de pal in het parkeerrad drukt.', p: [x, 0.0765, 0.016], ex: [0, 0.12, 0.0] }),
   ]);
@@ -230,7 +226,7 @@ function drvDiff() {
     G.lathe('x', [[0.032, -0.072], [0.032, -0.052], [0.05, -0.046], [0.064, -0.028], [0.064, 0.028], [0.05, 0.046], [0.032, 0.052], [0.032, 0.072]], 36, 'drvDiffHousing'),
     annulus(0.05, 0.072, 0.01, 'x', 36)]));
   return A('Differentieel', { d: 'Verdeelt het koppel over beide voorwielen en laat ze in bochten verschillend snel draaien; het kroonwiel heeft 70 tanden. Het aantal planeetwielen van het differentieel is niet gevonden: schematisch weergegeven met twee satellietwielen. Het kroonwiel van 70 tanden is een getekend tandental (Mitsubishi F6AJA): met het rondsel van 21 tanden en de tussenas geeft dat 3,571, terwijl de eindoverbrenging van deze auto 3,804 is (Renault-persmap, zie de specificaties van de automaat); de Renault-tandentallen zijn niet gevonden.', p: DIFF, ex: [0.0, -0.1, -0.5], inner: true }, [
-    P('Kroonwiel', drvG(70, DRV_GM, 0.022, 0.07), MAT.steel, { d: 'Kroonwiel met 70 tanden, met tien bouten (144 N·m) aan het differentieelhuis; wordt door het rondsel van 21 tanden aangedreven.', p: [0.006, 0, 0], ex: [-0.09, 0, 0] }),
+    P('Kroonwiel', drvG(70, DRV_GM, 0.022, 0.07), MAT.steel, { d: 'Kroonwiel met 70 tanden, met tien bouten (144 Nm) aan het differentieelhuis; wordt door het rondsel van 21 tanden aangedreven.', p: [0.006, 0, 0], ex: [-0.09, 0, 0] }),
     P('Kroonwielbouten', drvBoltRing('drvKroonB', 10, 0.0775, 0.02, 0.008, '-x', 0.1, [0, 0], 0.017), MAT.darkSteel, { d: 'Tien bouten die het kroonwiel aan het differentieelhuis bevestigen.', ex: [-0.15, 0, 0] }),
     P('Differentieelhuis', hub, MAT.iron, { d: 'Gegoten huis dat met het kroonwiel meedraait; in het handboek niet te demonteren.', ex: [0.0, 0.0, 0.0001] }),
     P('Satellietas', G.cyl('y', 0.006, 0.006, 0.09, 10), MAT.steel, { d: 'As van de satellietwielen.', ex: [0, 0, 0.11], inner: true }),
@@ -257,7 +253,7 @@ function drvValve() {
   const onoff = (i) => P(`Aan/uit-solenoïde ${i + 1}`, G.cyl('y', 0.0085, 0.0085, 0.024, 12), MAT.drvBlack, { d: 'Aan/uit-solenoïde voor de schakelkleppen van de lage koppeling en de lage/achteruitrem.', p: [0.22 + i * 0.06, yTop + 0.012, 0.0], ex: [0, 0.1, -0.04 + i * 0.04] });
   const sw = (i) => P(`Drukschakelaar ${i + 1}`, G.cyl('y', 0.006, 0.006, 0.018, 10), MAT.plasticGrey, { d: 'Drukschakelaar die meldt of een schakelelement onder druk staat (vijf stuks bij de Renault-uitvoering).', p: [0.2 + i * 0.03, yTop + 0.009, -0.05], ex: [0, 0.06, -0.06 - i * 0.012] });
   const acc = (i) => P(`Accumulator ${i + 1}`, G.cyl('y', 0.011, 0.011, 0.03, 14), MAT.drvBrass, { d: 'Accumulatorzuiger met veer die de drukstoot bij het schakelen dempt (3-5-R, hoge koppeling, lage koppeling, 2-6).', p: [0.21 + i * 0.04, yLow - 0.0225, 0.0], ex: [0, -0.1, 0.03 * (i - 1.5)] });
-  const spool = (nm, d, x, z, l) => P(nm, drvRing('drvSpool' + nm, 1, 0, () => merge([G.cyl('x', 0.0045, 0.0045, l, 10), ...[-0.35, 0, 0.35].map(f => xf(G.cyl('x', 0.0065, 0.0065, 0.007, 12), [f * l, 0, 0]))]), 0, [0, 0], 0), MAT.steel, { d, p: [x, yUp + 0.005, z], ex: [0, 0.06, z * 1.5], inner: true });
+  const spool = (nm, d, x, z, l) => P(nm, ringPattern('drvSpool' + nm, 1, 0, () => merge([G.cyl('x', 0.0045, 0.0045, l, 10), ...[-0.35, 0, 0.35].map(f => xf(G.cyl('x', 0.0065, 0.0065, 0.007, 12), [f * l, 0, 0]))]), 0, [0, 0], 0), MAT.steel, { d, p: [x, yUp + 0.005, z], ex: [0, 0.06, z * 1.5], inner: true });
   return A('Klepblok', { d: 'Hydraulische besturing van de bak: het klepblok met acht solenoïdes (zes lineair, twee aan/uit) en vijf drukschakelaars regelt de oliedruk naar de koppelingen en remmen. Zit in het huis onder een afdekdeksel. Inwendige kleppen schematisch weergegeven.', ex: [0.0, -0.3, 0.0] }, [
     A('Kleplichaam', { d: 'Onderste en bovenste blok met kanalen, een tussenplaat met twee pakkingen en de bouten.', ex: [0, 0.05, 0.0] }, [
       P('Onderste klepblok', G.rbox(W, 0.014, D, 0.002), MAT.aluCast, { d: 'Onderste helft van het klepblok met kanalen.', p: [cx, yLow, cz], ex: [0, -0.12, 0] }),
@@ -276,7 +272,7 @@ function drvValve() {
       spool('Lock-up-regelklep', 'Regelt de druk op de overbruggingskoppeling (schematisch).', 0.28, 0.05, 0.045),
       spool('Omvormer-regelklep', 'Regelt de druk in de koppelomvormer (schematisch).', 0.32, 0.02, 0.045),
       spool('Handklep', 'Door de keuzeas bediende handklep voor P, R, N, D.', 0.26, -0.03, 0.09),
-      P('Detentveer', spring(0.005, 0.0007, 0.02, 2, 'x'), MAT.darkSteel, { d: 'Veer die de handklep in een stand houdt.', p: [0.32, yUp + 0.005, -0.03], ex: [0, 0.1, -0.06], inner: true }),
+      P('Detentveer', spring(0.005, 0.0007, 0.02, 2, 'x', 8), MAT.darkSteel, { d: 'Veer die de handklep in een stand houdt.', p: [0.32, yUp + 0.005, -0.03], ex: [0, 0.1, -0.06], inner: true }),
       P('Detentplaat', G.box(0.03, 0.002, 0.012), MAT.steel, { d: 'Plaat met inkepingen voor de handklepstanden.', p: [0.27, yTop + 0.001, -0.065], ex: [0, 0.14, -0.1], inner: true }),
       P('Terugslagkogeltjes', cache('drvBallen', () => merge(Array.from({ length: 13 }, (_, k) => xf(drvOcta(), [cx - 0.08 + (k % 7) * 0.027, ySep + 0.003, cz - 0.05 + Math.floor(k / 7) * 0.09])))), MAT.steel, { d: 'Dertien terugslagkogeltjes van 8 en 5,5 mm in de tussenplaat (aantal geschat).', ex: [0, 0.03, 0.0], inner: true }),
     ]),
@@ -306,7 +302,7 @@ function drvStarter() {
     A('Rondselas met vrijloop', { d: 'Aandrijfas met rondsel en vrijloopkoppeling; de vrijloop voorkomt dat de draaiende motor de startmotor meeneemt.', ex: [0.005, 0, 0], inner: true }, [
       P('Rondselas', drvL('StAs', [[0.0095, 0.007], [0.0095, 0.1], [0.006, 0.1], [0.006, 0.108]], 14), MAT.steel, { d: 'Gegroefde as waarover het rondsel met de vrijloop schuift.', ex: [0.0, 0.0, 0.0001] }),
       P('Vrijloopmantel', G.lathe('x', [[0.018, 0.008], [0.018, 0.04], [0.0125, 0.04], [0.0125, 0.008]], 24, 'drvStFw'), MAT.darkSteel, { d: 'Buitenmantel van de vrijloop (overrun-koppeling).', ex: [0.05, 0, 0] }),
-      P('Vrijlooprollen en veren', drvRing('drvStRol', 4, 0.0145, () => G.cyl('x', 0.0025, 0.0025, 0.022, 8), 0.3, [0, 0], 0.024), MAT.bearing, { d: 'Vier klemrollen met veertjes (schematisch weergegeven).', ex: [0.1, 0, 0] }),
+      P('Vrijlooprollen en veren', ringPattern('drvStRol', 4, 0.0145, () => G.cyl('x', 0.0025, 0.0025, 0.022, 8), 0.3, [0, 0], 0.024), MAT.bearing, { d: 'Vier klemrollen met veertjes (schematisch weergegeven).', ex: [0.1, 0, 0] }),
     ]),
     P('Aandrijfschild', nose, MAT.aluCast, { d: 'Voorste lagerschild met de montageflens (Ø66 mm) en drie oren voor de bevestigingsbouten.', ex: [-0.045, 0, 0] }),
     P('Montagebouten startmotor', cache('drvStMB2', () => merge([0.5, 2.6, 4.7].map(a => xf(drvBolt(0.032, 0.0085, '-x'), [0.0575, 0.041 * Math.cos(a), 0.041 * Math.sin(a)])))), MAT.darkSteel, { d: 'Drie bouten die de startmotor aan de omvormerklok vastzetten.', ex: [0.1, 0, 0] }),
@@ -326,7 +322,7 @@ function drvStarter() {
       P('Borstelveren', cache('drvStBV', () => merge([0, 1, 2, 3].map(k => xf(G.box(0.008, 0.003, 0.003), [0.1425, 0.025 * Math.cos(k * HALF + 0.4), 0.025 * Math.sin(k * HALF + 0.4)], [k * HALF + 0.4, 0, 0])))), MAT.steel, { d: 'Veertjes die de borstels tegen de collector drukken.', ex: [0.06, 0, 0] }),
     ]),
     P('Lagerbus collectorzijde', annulus(0.0065, 0.0105, 0.012, 'x', 20), MAT.drvBrass, { d: 'Bronzen glijlager voor het uiteinde van de ankeras.', p: [0.162, 0, 0], ex: [0.45, 0, 0], inner: true }),
-    P('Eindschild', merge([G.lathe('x', [[0.0375, 0.155], [0.0375, 0.168], [0.012, 0.172], [0.012, 0.162]], 28, 'drvStEnd'), annulus(0.0345, 0.0385, 0.004, 'x', 28)]), MAT.aluCast, { d: 'Achterste lagerschild met de klemkap en het lager voor de ankeras.', ex: [0.5, 0, 0] }),
+    P('Eindschild', merge([G.lathe('x', [[0.0375, 0.155], [0.0375, 0.168], [0, 0.172]], 28, 'drvStEnd'), annulus(0.0345, 0.0385, 0.004, 'x', 28)]), MAT.aluCast, { d: 'Achterste lagerschild met de klemkap en het lager voor de ankeras.', ex: [0.5, 0, 0] }),
     P('Trekbout 1', drvBolt(0.125, 0.006, '-x'), MAT.darkSteel, { d: 'Doorgaande bout die de startmotor bij elkaar houdt.', p: [0.1725, 0.034 * Math.cos(1.2), 0.034 * Math.sin(1.2)], ex: [0.56, 0.0, 0.0] }),
     P('Trekbout 2', drvBolt(0.125, 0.006, '-x'), MAT.darkSteel, { d: 'Doorgaande bout die de startmotor bij elkaar houdt.', p: [0.1725, 0.034 * Math.cos(4.3), 0.034 * Math.sin(4.3)], ex: [0.56, 0.0, 0.0] }),
     P('Hitteschild startmotor', xf(yTo(new THREE.CylinderGeometry(0.0425, 0.0425, 0.09, 16, 1, true, 3.8, 2.6), 'x'), [0.1, 0, 0]), MAT.heat, { d: 'Hitteschild aan de kant van de uitlaat.', ex: [0.17, -0.06, -0.06] }),
@@ -335,7 +331,7 @@ function drvStarter() {
       P('Trekspoel', annulus(0.0075, 0.0138, 0.026, 'x', 24), MAT.copper, { d: 'Trekspoel: trekt de plunjer krachtig aan.', p: [0.092, sy, sz], ex: [-0.05, 0, 0], inner: true }),
       P('Houdspoel', annulus(0.0075, 0.0138, 0.026, 'x', 24), MAT.copper, { d: 'Houdspoel: houdt de plunjer vast als de trekspoel uitvalt.', p: [0.121, sy, sz], ex: [0.08, 0, 0], inner: true }),
       P('Plunjer', G.cyl('x', 0.0065, 0.0065, 0.052, 14), MAT.steel, { d: 'Plunjer die de schakelvork bedient.', p: [0.092, sy, sz], ex: [-0.09, 0, 0], inner: true }),
-      P('Terugstelveer', spring(0.0078, 0.0008, 0.018, 2.5, 'x'), MAT.darkSteel, { d: 'Veer die de plunjer terugdrukt.', p: [0.073, sy, sz], ex: [-0.13, 0, 0], inner: true }),
+      P('Terugstelveer', spring(0.0078, 0.0008, 0.018, 2.5, 'x', 8), MAT.darkSteel, { d: 'Veer die de plunjer terugdrukt.', p: [0.073, sy, sz], ex: [-0.13, 0, 0], inner: true }),
       P('Contactplaat', G.cyl('x', 0.0115, 0.0115, 0.003, 18), MAT.drvBrass, { d: 'Koperen plaat die de twee hoofdcontacten verbindt.', p: [0.1385, sy, sz], ex: [0.12, 0, 0], inner: true }),
       P('Solenoïdedeksel', G.cyl('x', 0.0165, 0.0165, 0.012, 20), MAT.plastic, { d: 'Kunststof deksel met de aansluitingen.', p: [0.146, sy, sz], ex: [0.18, 0, 0] }),
       P('Contactbout plus (B+)', drvBolt(0.012, 0.007, 'x'), MAT.drvBrass, { d: 'Hoofdaansluiting van de accukabel (B+).', p: [0.152, ...[sy + 0.0085, sz]], ex: [0.25, 0, 0] }),
@@ -381,8 +377,8 @@ function drvHousing() {
     A('Transmissiehuis', { d: 'Spuitgietaluminium huis rond de planetaire sets en schakelelementen, met de lobben voor de tussenas en het differentieel en de vlakken voor het klepblok en de steunen. Bakbreedte circa 385 mm incl. omvormerhuis (Planète Renault); hier iets langer weergegeven. De hartafstand van de assen (197 mm) is een schatting.', spec: [['Materiaal', 'spuitgietaluminium']], ex: [0.1, 0.8, 0.0] }, [
       P('Transmissiehuis (carter)', caseGeo, MAT.aluCast, { d: 'Gegoten carter met ribben en bevestigingsoren.', ex: [0, 0.0, 0.0001] }),
       P('Bouten huisverbinding', rimBolts('drvBHuis', 12, 0.1285, 0.1295, 0.1), MAT.darkSteel, { d: 'Torx-bouten tussen omvormerhuis en transmissiehuis.', ex: [-0.12, 0.0, 0.0] }),
-      P('Vulplug', drvBolt(0.02, 0.012, 'z'), MAT.darkSteel, { d: 'Vulpunt van de ATF. Bij de AJ0 in de Laguna wordt gevuld via een vulkanaal met afdekplaat (6 N·m), bereikbaar vanuit de motorruimte. Na het vullen met 3,2 liter wordt het niveau gesteld met de niveauplug onder in het carter (8 N·m), bij 40 graden olietemperatuur met draaiende motor in stand P. Plaats in het model schematisch.', p: [0.345, 0.02, 0.133], r: [PI, 0, 0], ex: [0, 0.0, 0.14] }),
-      P('Aftapplug', drvBolt(0.02, 0.012, 'z'), MAT.darkSteel, { d: 'Peilbout onder in het huis (8 N·m) met daarachter een overloopbuisje (inbus 5 mm, 8 N·m). Bij aftappen komt eerst circa 1 l uit de peilbout en daarna ruim 1 l na het verwijderen van het buisje.', p: [0.325, -0.19, 0.133], r: [PI, 0, 0], ex: [0, -0.04, 0.14] }),
+      P('Vulplug', drvBolt(0.02, 0.012, 'z'), MAT.darkSteel, { d: 'Vulpunt van de ATF. Bij de AJ0 in de Laguna wordt gevuld via een vulkanaal met afdekplaat (6 Nm), bereikbaar vanuit de motorruimte. Na het vullen met 3,2 liter wordt het niveau gesteld met de niveauplug onder in het carter (8 Nm), bij 40 graden olietemperatuur met draaiende motor in stand P. Plaats in het model schematisch.', p: [0.345, 0.02, 0.133], r: [PI, 0, 0], ex: [0, 0.0, 0.14] }),
+      P('Aftapplug', drvBolt(0.02, 0.012, 'z'), MAT.darkSteel, { d: 'Peilbout onder in het huis (8 Nm) met daarachter een overloopbuisje (inbus 5 mm, 8 Nm). Bij aftappen komt eerst circa 1 l uit de peilbout en daarna ruim 1 l na het verwijderen van het buisje.', p: [0.325, -0.19, 0.133], r: [PI, 0, 0], ex: [0, -0.04, 0.14] }),
       P('Ontluchtingsnippel', G.cyl('y', 0.004, 0.004, 0.02, 10), MAT.drvBrass, { d: 'Nippel voor de ontluchtingsslang van de bak.', p: [0.16, 0.135, 0.0], ex: [0.0, 0.1, 0] }),
       P('Ontluchtingsslang', tube([[0.16, 0.145, 0.0], [0.16, 0.17, 0.0], [0.185, 0.18, 0.03]], 0.003, 16, 6), MAT.rubber, { d: 'Slangetje dat de bak ontlucht zonder dat er olie of water in komt.', ex: [0.0, 0.18, 0] }),
     ]),
@@ -417,7 +413,7 @@ function drvOutside() {
 function buildGearbox() {
   return A('Automaatversnellingsbak', {
     d: 'Zestraps automaat Jatco JF613E (Renault-code AJ0, gebaseerd op het Lepelletier-systeem) met koppelomvormer, drie planetaire sets, vijf schakelelementen plus vrijloop en ingebouwd differentieel; dwars links naast de motor. De interne koppeling van de sets en alle kleine onderdelen zijn schematisch weergegeven. Het droge gewicht is circa 93 kg en de lengte circa 385 mm.',
-    spec: [['Type', 'Jatco JF613E (Renault AJ0)'], ['Overbrengingen', '4,199 / 2,405 / 1,583 / 1,161 / 0,855 / 0,685, achteruit 3,457 (Mitsubishi F6AJA-handboek; de snelheden per 1000 tpm in de Renault-persmap kloppen hier binnen 0,2 % mee)'], ['Eindoverbrenging', '3,804 (Renault-persmap 2007)'], ['ATF', 'Elf Elfmatic J6 (het handboek van 2009 noemt in zijn tabel ELF MATIC S6); totaal 7,6 liter, na aftappen 3,5 liter']],
+    spec: [['Type', 'Jatco JF613E (Renault AJ0)'], ['Overbrengingen', '4,199 / 2,405 / 1,583 / 1,161 / 0,855 / 0,685, achteruit 3,457 (Mitsubishi F6AJA-handboek; de snelheden per 1.000 tpm in de Renault-persmap kloppen hier binnen 0,2 % mee)'], ['Eindoverbrenging', '3,804 (Renault-persmap 2007)'], ['ATF', 'Elf Elfmatic J6 (het handboek van 2009 noemt in zijn tabel ELF MATIC S6); totaal 7,6 liter, na aftappen 3,5 liter']],
     p: [GB_X, 0, 0], ex: [0.66, 0, 0],
   }, [
     ...drvHousing(),
@@ -476,7 +472,7 @@ function driveshaft(name, a, b, o) {
 
 /* ---------- motorsteunen ---------- */
 function drvMounts() {
-  const rodA = [0.12, -0.10, -0.115], sub = toPT([-0.01, 0.27, 1.2]).toArray();
+  const rodA = [0.12, -0.10, -0.115], sub = toPT(SUB_ROD.p).toArray();
   const bolt = (nm, d, p, ax, ex, r) => P(nm, drvBolt(0.025, 0.01, ax), MAT.darkSteel, { d, p, r, ex });
   const gx = GB_X + 0.335;
   return A('Motorsteunen', { d: 'Rubber-metalen steunen die motor en bak trillingsarm in de carrosserie ophangen: rechter pendelsteun aan de distributiezijde, linker bak-steun en een koppelstang onder de motor. Opbouw en afmetingen waar onbekend schematisch weergegeven.', ex: [0, 0.7, 0] }, [
@@ -502,7 +498,9 @@ function drvMounts() {
       P('Rubber lagerbus subframe', G.cyl('x', 0.024, 0.024, 0.03, 18), MAT.rubber, { d: 'Rubberbus in het oog aan de subframezijde.', p: sub, ex: [-0.08, -0.04, 0] }),
       P('Beugel carterpan', G.rbox(0.07, 0.04, 0.02, 0.004), MAT.aluCast, { d: 'Beugel op de achterkant van de carterpan waaraan de koppelstang vastzit.', p: [rodA[0], -0.085, -0.1085], ex: [0.0, 0.1, 0.1] }),
       P('Doorgaande bout motorzijde', drvBolt(0.07, 0.012, 'x'), MAT.darkSteel, { d: 'Bout door de bus en de beugel.', p: [rodA[0] - 0.045, rodA[1], rodA[2]], ex: [-0.16, 0.04, 0] }),
-      P('Doorgaande bout subframe', drvBolt(0.07, 0.012, 'x'), MAT.darkSteel, { d: 'Bout door de bus en het subframe.', p: [sub[0] - 0.045, sub[1], sub[2]], ex: [-0.2, -0.04, 0] }),
+      // De Reactiestangbeugel (chassis.js) heeft dichte oren zonder gat (x t.o.v. het oog: -0,030 tot -0,017 en 0,017 tot 0,030). De bout bestaat daarom alleen buiten
+      // de oren (kop met 14,8 mm schacht, eindigt 0,2 mm voor het oor) en in de spleet tussen de oren (de bus); wat in de oren zou zitten is van buiten niet te zien.
+      P('Doorgaande bout subframe', cache('drvSubBout', () => merge([drvBolt(0.0148, 0.012, 'x'), xf(yTo(new THREE.CylinderGeometry(0.006, 0.006, 0.0336, 6), 'x'), [0.045, 0, 0])])), MAT.darkSteel, { d: 'Bout door de bus en het subframe.', p: [sub[0] - 0.045, sub[1], sub[2]], ex: [-0.2, -0.04, 0] }),
     ]),
   ]);
 }
@@ -521,7 +519,7 @@ function buildPowertrain() {
   ]);
   return A('Aandrijflijn', {
     d: 'Dwarsgeplaatste motor en automaat met differentieel en aandrijfassen naar de voorwielen.',
-    spec: [['Motor', '2.0 Turbo F4Rt, 170 pk'], ['Transmissie', '6-traps automaat (Jatco JF613E, Renault AJ0)'], ['Aandrijving', 'voorwielen'], ['Topsnelheid', '220 km/h'], ['0–100 km/h', '9,2 s']],
+    spec: [['Motor', '2,0 Turbo F4Rt, 170 pk'], ['Transmissie', '6-traps automaat (Jatco JF613E, Renault AJ0)'], ['Aandrijving', 'voorwielen'], ['Topsnelheid', '220 km/h'], ['0–100 km/h', '9,2 s']],
     p: PT_POS.toArray(), r: [PT_TILT, 0, 0], ex: [0, 0.35, 1.9],
   }, [engine, gb, shafts, drvMounts()]);
 }
