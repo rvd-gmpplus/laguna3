@@ -700,10 +700,12 @@ function bodGsSolve() {
 }
 // Tankklep rechtsachter: opening in het rechter achterscherm (z -1,780 tot -1,664, y 0,808 tot 0,912), scharnier aan de voorrand (z -1,664).
 const bodTkZ = [-1.78, -1.664], bodTkY = [0.808, 0.912];
-// Opkant in de bodemplaat onder de torsiebalk van de achteras (balk bovenkant y 0,326 = REAR_BEAM.y + .hy, z -1,258 tot -1,085): plateau y 0,345
-// tussen z -1,258 en -1,08, hellende randen van 0,1 m; bij de opkant is de plaat smaller (tot |x| 0,44), zodat de vulpijp en de wand van de wielkast ernaast vrij blijven.
-// De achterkant -1,258 is die van de uiteinden van de stabilisatorstaaf (0,1 m achter het hart van de balk, plus de schuin afgesneden staafstraal; chassis.js),
-// dezelfde maat als de achterrand van de zijbekleding in interior.js (golf 5b-3, G8d; was -1,28).
+// Opkant in de bodemplaat onder de torsiebalk van de achteras (balk bovenkant y 0,326 = REAR_BEAM.y + .hy; de balk zelf loopt van z -1,20 tot -1,10):
+// plateau y 0,345 tussen z -1,258 en -1,08, met hellende randen (achter 0,122 m lang, van z -1,38 tot -1,258; voor 0,10 m, van z -1,08 tot -0,98; gemeten
+// aan de huid). Bij de opkant is de plaat smaller (tot |x| 0,44), zodat de vulpijp en de wand van de wielkast ernaast vrij blijven.
+// Het plateau begint dus 0,058 m achter de balk. De maat -1,258 is niet die van de balk: het is REAR_BEAM.z - 0,108, gelijk aan de achterrand van de kwartsruit
+// (intCPillar in interior.js, zs[0]) en aan de uiteinden van de stabilisatorstaaf (0,1 m achter het hart van de balk plus de schuin afgesneden staafstraal; chassis.js)
+// (golf 5b-3, G8d; was -1,28).
 const bodBeamZr = REAR_BEAM.z - 0.108;
 const bodHumpZ = [-1.38, bodBeamZr, -1.08, -0.98], bodHumpY = 0.345;
 const bodHumpT = z => z <= bodHumpZ[0] || z >= bodHumpZ[3] ? 0 : z < bodHumpZ[1] ? sstep((z - bodHumpZ[0]) / (bodHumpZ[1] - bodHumpZ[0])) : z <= bodHumpZ[2] ? 1 : sstep((bodHumpZ[3] - z) / (bodHumpZ[3] - bodHumpZ[2]));
@@ -722,7 +724,7 @@ function buildBody() {
   // tunnel van z -0,70 tot aan het schutbord (z 1,03), zodat de opening in de teenplaat in de tunnel uitkomt
   const tunnel = (() => { const sh = shapeOf([[-0.17, 0], [-0.12, 0.2], [0.12, 0.2], [0.17, 0], [0.16, -0.004], [0.115, 0.192], [-0.115, 0.192], [-0.16, -0.004]]); const g = extrude(sh, 1.73); g.rotateY(0); return g; })();
   const floorGrp = A('Vloer en dorpels', { d: 'Vloerplaat met middentunnel, dwarsbalken, langsliggers achter en de dorpels onder de portieren.', ex: [0, -0.32, 0] }, [
-    P('Bodemplaat', patch((z, p) => { const q = bodLow(z, p, 0.002); q[1] += bodHumpT(z) * (bodHumpY - q[1]); return q; }, -1.75, 1.03, 51, floorVR, 12, ARCH_BREAKS.concat(bodHumpBreaks)), MAT.underbody, { d: 'Gelaste vloerplaat van de ruwbouw met bevestigingspunten voor stoelen en onderstel. Onder de achterbank zit een opkant (y 0,345 tussen z -1,28 en -1,08, hellende randen van 0,1 m) waar de torsiebalk van de achteras onderdoor loopt.', ex: [0, -0.1, 0] }),
+    P('Bodemplaat', patch((z, p) => { const q = bodLow(z, p, 0.002); q[1] += bodHumpT(z) * (bodHumpY - q[1]); return q; }, -1.75, 1.03, 51, floorVR, 12, ARCH_BREAKS.concat(bodHumpBreaks)), MAT.underbody, { d: 'Gelaste vloerplaat van de ruwbouw met bevestigingspunten voor stoelen en onderstel. Onder de achterbank zit een opkant (y 0,345 tussen z -1,258 en -1,08; hellende randen van 0,122 m achter en 0,10 m voor) waar de torsiebalk van de achteras onderdoor loopt.', ex: [0, -0.1, 0] }),
     P('Middentunnel', tunnel, MAT.underbody, { d: 'Tunnel in de vloer voor uitlaat en leidingen.', p: [0, 0.2, 0.165], ex: [0, 0.08, 0] }),
     P('Kofferbakvloer', merge([bodBootPlate(0.65, -1.88, 0.36, 0.012, 0.004, 0.01), xf(G.cyl('y', 0.3, 0.27, 0.16, 28, true), [0, -0.08, 0]), xf(G.cyl('y', 0.27, 0.27, 0.006, 28), [0, -0.157, 0])]), MAT.underbody, { d: 'Vloer van de bagageruimte met de reservewielkuip (met bodem; de einddemper hangt eronder), tussen de achterwielkasten smaller.', p: [0, 0.4, -1.88], ex: [0, -0.06, -0.12] }),
     P('Dwarsbalk voorstoelen', G.box(1.34, 0.05, 0.08), MAT.paintIn, { d: 'Dwarsbalk onder de voorstoelen die vloer en dorpels verbindt.', p: [0, 0.225, 0.18], ex: [0, 0.06, 0.04] }),
