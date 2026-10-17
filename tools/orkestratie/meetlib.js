@@ -20,9 +20,16 @@
   function meshesOf(n) { const out = []; n.obj.traverse(o => { if (o.isMesh && MSET.has(o)) out.push(o); }); return out; }
   function prepare() { L.finishAll(); L.ROOT.obj.updateMatrixWorld(true); }
 
-  // wereldgeometrie van een mesh: positie (Float64), index (Uint32), kader
+  // wereldgeometrie van een mesh: positie (Float64), index (Uint32), kader. De cache geldt alleen zolang matrixWorld en
+  // geometrie gelijk zijn: na een opener of uitklapstand rekent hij opnieuw (een nieuw object, dus ook rooster, punten en
+  // geslotenheid worden dan opnieuw bepaald).
+  function sameStand(g, mesh) {
+    if (g.geo !== mesh.geometry || g.ver !== mesh.geometry.attributes.position.version) return false;
+    const e = mesh.matrixWorld.elements; for (let i = 0; i < 16; i++) if (e[i] !== g.mw[i]) return false;
+    return true;
+  }
   function worldGeo(mesh) {
-    let g = WG.get(mesh); if (g) return g;
+    let g = WG.get(mesh); if (g && sameStand(g, mesh)) return g;
     const a = mesh.geometry.attributes.position, nv = a.count, e = mesh.matrixWorld.elements, pos = new Float64Array(nv * 3);
     const lo = [Infinity, Infinity, Infinity], hi = [-Infinity, -Infinity, -Infinity];
     for (let i = 0; i < nv; i++) {
@@ -33,7 +40,7 @@
     }
     const ix = mesh.geometry.index, nt = ix ? Math.floor(ix.count / 3) : Math.floor(nv / 3), idx = new Uint32Array(nt * 3);
     for (let i = 0; i < nt * 3; i++) idx[i] = ix ? ix.getX(i) : i;
-    g = { mesh, pos, idx, nv, nt, lo, hi, pad: nodePath(mesh.userData.node) };
+    g = { mesh, pos, idx, nv, nt, lo, hi, pad: nodePath(mesh.userData.node), geo: mesh.geometry, ver: a.version, mw: Float64Array.from(e) };
     WG.set(mesh, g); return g;
   }
   // meerdere meshes als een geometrie (huid.py: een knoop is een verzameling meshes)
