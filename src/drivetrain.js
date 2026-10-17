@@ -472,7 +472,7 @@ function driveshaft(name, a, b, o) {
 
 /* ---------- motorsteunen ---------- */
 function drvMounts() {
-  const rodA = [0.12, -0.10, -0.115], sub = toPT([-0.01, 0.27, 1.2]).toArray();
+  const rodA = [0.12, -0.10, -0.115], sub = toPT(SUB_ROD.p).toArray();
   const bolt = (nm, d, p, ax, ex, r) => P(nm, drvBolt(0.025, 0.01, ax), MAT.darkSteel, { d, p, r, ex });
   const gx = GB_X + 0.335;
   return A('Motorsteunen', { d: 'Rubber-metalen steunen die motor en bak trillingsarm in de carrosserie ophangen: rechter pendelsteun aan de distributiezijde, linker bak-steun en een koppelstang onder de motor. Opbouw en afmetingen waar onbekend schematisch weergegeven.', ex: [0, 0.7, 0] }, [
@@ -498,7 +498,9 @@ function drvMounts() {
       P('Rubber lagerbus subframe', G.cyl('x', 0.024, 0.024, 0.03, 18), MAT.rubber, { d: 'Rubberbus in het oog aan de subframezijde.', p: sub, ex: [-0.08, -0.04, 0] }),
       P('Beugel carterpan', G.rbox(0.07, 0.04, 0.02, 0.004), MAT.aluCast, { d: 'Beugel op de achterkant van de carterpan waaraan de koppelstang vastzit.', p: [rodA[0], -0.085, -0.1085], ex: [0.0, 0.1, 0.1] }),
       P('Doorgaande bout motorzijde', drvBolt(0.07, 0.012, 'x'), MAT.darkSteel, { d: 'Bout door de bus en de beugel.', p: [rodA[0] - 0.045, rodA[1], rodA[2]], ex: [-0.16, 0.04, 0] }),
-      P('Doorgaande bout subframe', drvBolt(0.07, 0.012, 'x'), MAT.darkSteel, { d: 'Bout door de bus en het subframe.', p: [sub[0] - 0.045, sub[1], sub[2]], ex: [-0.2, -0.04, 0] }),
+      // De Reactiestangbeugel (chassis.js) heeft dichte oren zonder gat (x t.o.v. het oog: -0,030 tot -0,017 en 0,017 tot 0,030). De bout bestaat daarom alleen buiten
+      // de oren (kop met 14,8 mm schacht, eindigt 0,2 mm voor het oor) en in de spleet tussen de oren (de bus); wat in de oren zou zitten is van buiten niet te zien.
+      P('Doorgaande bout subframe', cache('drvSubBout', () => merge([drvBolt(0.0148, 0.012, 'x'), xf(yTo(new THREE.CylinderGeometry(0.006, 0.006, 0.0336, 6), 'x'), [0.045, 0, 0])])), MAT.darkSteel, { d: 'Bout door de bus en het subframe.', p: [sub[0] - 0.045, sub[1], sub[2]], ex: [-0.2, -0.04, 0] }),
     ]),
   ]);
 }
