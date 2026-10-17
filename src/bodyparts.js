@@ -390,10 +390,11 @@ function buildDoor(s, isFront) {
     P('Chroomlijst raamomlijsting', ringGeo, MAT.bodChrome, { d: isFront ? 'Zilverchromen band langs de bovenrand van de ruit en de voorrand bij de spiegeldriehoek (Initiale Paris: cerclage chromé).' : 'Zilverchromen band langs de bovenrand van de ruit (Initiale Paris: cerclage chromé).', ex: [s * 0.05, 0.12, 0] }),
     P('Raamrubber boven', topBand, MAT.bodPillar, { d: 'Zwart rubber en kader tussen de ruit en de dakrail, waarop de chroomlijst ligt.', ex: [s * 0.03, 0.08, 0] }),
     P('Rubberlijn raamomlijsting', ringRub, MAT.bodPillar, { d: 'Smalle zwarte rubberlijn tussen de chromen raamomlijsting en de lak van de dakrail.', ex: [s * 0.04, 0.1, 0] }),
-    !isFront && P('Chroomlijst raamstijl', merge([bodQdBand(s, 0.03, bodQV - bodTW + 0.001, -0.0215, -0.0135, 0.0025, 0.0015, 14, 4), bodQdBand(s, 0.03, bodQV - bodTW + 0.001, 0.0135, 0.0215, 0.0025, 0.0015, 14, 4)]), MAT.bodChrome, { d: 'Twee smalle chroomlijsten langs de randen van het schuine stijltje, zodat de chromen omlijsting rond de portierruit en rond de kwartsruit doorloopt.', ex: [s * 0.05, 0.1, -0.04] }),
-    // chroomlijst langs de ruitzijde van de zwarte B-stijl (8 mm, zoals de lijsten langs het stijltje), half op de afdekking en half op de ruit;
+    !isFront && P('Chroomlijst raamstijl', merge([bodQdBand(s, 0.03, bodQV - bodTW + 0.001, -0.0245, -0.0105, 0.0025, 0.0015, 14, 4), bodQdBand(s, 0.03, bodQV - bodTW + 0.001, 0.0105, 0.0245, 0.0025, 0.0015, 14, 4)]), MAT.bodChrome, { d: 'Twee smalle chroomlijsten langs de randen van het schuine stijltje, zodat de chromen omlijsting rond de portierruit en rond de kwartsruit doorloopt.', ex: [s * 0.05, 0.1, -0.04] }),
+    // chroomlijst langs de ruitzijde van de zwarte B-stijl (15 mm; de lijsten langs het stijltje 14 mm), half op de afdekking en half op de ruit;
+    // met 8 mm was de lijn in het zijaanzicht maar 1 pixel breed (S7 kenmerk 4, golf 5b-3 E3)
     // zo is de omlijsting om elke zijruit gesloten (brochure: cerclage chromé des vitres latérales) en leest de B-stijl als zwart vlak tussen twee chroomlijnen
-    P('Chroomlijst B-stijl', bodLineBand(s, isFront ? bodBf : bodBr, 0.03, bodQV - bodTW + 0.001, -0.004, 0.004, 0.0025, 0.0015, 14, 4), MAT.bodChrome, { d: `Smalle chroomlijst langs de ${isFront ? 'voorkant van de B-stijl, de achterrand van de voorste zijruit' : 'achterkant van de B-stijl, de voorrand van de achterste zijruit'}, als deel van de chromen raamomlijsting.`, ex: [s * 0.05, 0.1, isFront ? 0.04 : -0.04] }),
+    P('Chroomlijst B-stijl', bodLineBand(s, isFront ? bodBf : bodBr, 0.03, bodQV - bodTW + 0.001, -0.0075, 0.0075, 0.0025, 0.0015, 14, 4), MAT.bodChrome, { d: `Smalle chroomlijst langs de ${isFront ? 'voorkant van de B-stijl, de achterrand van de voorste zijruit' : 'achterkant van de B-stijl, de voorrand van de achterste zijruit'}, als deel van de chromen raamomlijsting.`, ex: [s * 0.05, 0.1, isFront ? 0.04 : -0.04] }),
     P('Gordelsierlijst', beltGeo, MAT.bodChrome, { d: 'Verchroomde sierlijst op de gordellijn, met het buitenste raamrubber.', ex: [s * 0.08, 0.05, 0] }),
     P('Gordelrubber buiten', beltRub, MAT.bodPillar, { d: 'Buitenste raamschachtrubber: een smalle zwarte lip tussen de gordelsierlijst en de ruit en een schaduwlijn onder de lijst.', ex: [s * 0.07, 0.03, 0] }),
     P('Gordelrubber binnen', tube(beltPts.map(p => [p[0] - s * 0.03, p[1] - 0.004, p[2]]), 0.006, 24, 5), MAT.rubber, { d: 'Binnenste raamschachtrubber dat de ruit afstrijkt.', ex: [-s * 0.06, 0.04, 0] }),
@@ -441,7 +442,7 @@ function buildDoor(s, isFront) {
     kids.push(buildMirror(s));
   } else {
     // schuin stijltje tussen zakbare ruit en kwartsruit (zijfoto fase 2: zwarte balk van ca. 3 cm met chroom langs beide ruiten): hoogglans zwart,
-    // 35 mm breed in z, waarvan ca. 27 mm tussen de chroomranden zichtbaar blijft; loopt van onder de gordellijst tot onder de bovenste chroomband
+    // 35 mm breed in z, waarvan ca. 21 mm tussen de chroomranden zichtbaar blijft; loopt van onder de gordellijst tot onder de bovenste chroomband
     kids.push(P('Raamstijl achter', bodQdBand(s, 0.004, bodQV - bodTW + 0.001, -0.0175, 0.0175, 0.0015, 0, 14, 2), MAT.bodPillarGloss, { d: 'Schuin hoogglans zwart stijltje in het raamkader tussen de zakbare ruit en de vaste kwartsruit.', ex: [s * 0.05, 0.08, 0] }));
   }
   return A(dName, { d: `Compleet ${pos}portier aan de ${n}kant: plaatwerk, ruit, raambediening, slot, greep, bekleding en scharnieren.`, ex: [s * 0.78, 0.02, isFront ? 0.16 : -0.16],
