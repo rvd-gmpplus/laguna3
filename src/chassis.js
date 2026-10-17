@@ -17,7 +17,7 @@ const chsFlip = g => xf(g, [0, 0, 0], [PI, 0, 0]);                     // bout m
 function chsClamp(ax, R) { return merge([G.torus(ax, R, 0.0018, 20, 4), xf(G.box(0.008, 0.008, 0.008), [R + 0.003, 0, 0])]); }
 
 function discGeo(rIn, rOut, vented, key, hatH) {
-  return cache('disc' + key, () => {
+  return cache('chsDisc' + key, () => {
     const top = vented ? 0.013 : 0.0055;
     const parts = [
       G.lathe('y', [[0.034, hatH], [0.073, hatH], [0.073, hatH - 0.006], [0.034, hatH - 0.006], [0.034, hatH]], 40),
@@ -246,7 +246,7 @@ function buildFrontAxle() {
     P('Ventielhuis', merge([G.cyl('y', 0.026, 0.026, 0.05, 18), xf(G.cyl('z', 0.009, 0.009, 0.04, 10), [0.012, 0.012, -0.035]), xf(G.cyl('z', 0.009, 0.009, 0.04, 10), [-0.012, 0.012, -0.035]), xf(G.cyl('x', 0.007, 0.007, 0.05, 10), [-0.02, -0.014, 0]), xf(G.cyl('x', 0.007, 0.007, 0.05, 10), [0.02, -0.02, 0])]), MAT.aluCast, { d: 'Ventielhuis boven op het rondsel met de aansluitingen aan de achterzijde voor de druk- en retourslang en de twee hulpcilinderleidingen aan de zijkanten.', p: [vh[0], vh[1], vh[2]], ex: [0, 0.14, 0] }),
     P('Cilinderleiding links', tube([[pinX + 0.02, rackY + 0.05, rackZ + 0.0], [0.26, rackY + 0.052, rackZ - 0.035], [0.29, rackY + 0.035, rackZ - 0.035], [0.29, rackY + 0.02, rackZ - 0.012]], 0.0035, 20, 6), MAT.steel, { d: 'Stalen leiding van het ventielhuis naar de linkerzijde van de hulpcilinder.', ex: [0.04, 0.1, -0.1] }),
     P('Cilinderleiding rechts', tube([[pinX - 0.02, rackY + 0.05, rackZ + 0.0], [0.15, rackY + 0.056, rackZ - 0.038], [-0.2, rackY + 0.056, rackZ - 0.038], [-0.29, rackY + 0.035, rackZ - 0.035], [-0.29, rackY + 0.02, rackZ - 0.012]], 0.0035, 28, 6), MAT.steel, { d: 'Stalen leiding van het ventielhuis naar de rechterzijde van de hulpcilinder.', ex: [-0.04, 0.12, -0.1] }),
-    ...[1, -1].map(sg => P(`Stuurhoes ${sideName(sg)}`, G.lathe('x', bellows(0.03, 0.02, 0.08, 4), 24, 'rboot'), MAT.rubber, { d: 'Balg over het tandheugeluiteinde en de binnenste kogel.', p: [sg > 0 ? 0.31 : -0.39, rackY, rackZ], ex: [sg * 0.16, 0, 0.0] })),
+    ...[1, -1].map(sg => P(`Stuurhoes ${sideName(sg)}`, G.lathe('x', bellows(0.03, 0.02, 0.08, 4), 24, 'chsRboot'), MAT.rubber, { d: 'Balg over het tandheugeluiteinde en de binnenste kogel.', p: [sg > 0 ? 0.31 : -0.39, rackY, rackZ], ex: [sg * 0.16, 0, 0.0] })),
     ...[[1, 0.314], [-1, -0.314]].map(([sg, x], i) => P(`Balgklem ${i + 1}`, chsClamp('x', 0.0315), MAT.steel, { d: 'Klemband van de stuurhoes.', p: [x, rackY, rackZ], ex: [sg * 0.2, 0.04, 0.0] })),
     ...[1, -1].map(sg => P(`Stuurhuissteun ${sideName(sg)}`, chsRb(0.07, 0.075, 0.07, 0.008), MAT.darkSteel, { d: 'Gegoten steun op de achterste dwarsbalk waarop het stuurhuis rust.', p: [sg * 0.2, rackY - 0.06, rackZ + 0.0], ex: [sg * 0.1, -0.12, 0.0] })),
     ...[1, -1].map(sg => P(`Stuurhuisklem ${sideName(sg)}`, merge([G.torus('x', 0.0292, 0.0035, 22, 4), xf(chsRb(0.03, 0.006, 0.07, 0.002), [0, -0.034, 0])]), MAT.steel, { d: 'Stalen beugel die het stuurhuis op de steun klemt.', p: [sg * 0.2, rackY, rackZ], ex: [sg * 0.1, 0.1, 0.0] })),
@@ -387,7 +387,7 @@ function buildBrakeSystem() {
     ...[0, 1].map(k => P(`Reservoirrubber ${k + 1}`, G.cyl('y', 0.011, 0.011, 0.02, 12), MAT.rubber, { d: 'Rubber doorvoer tussen reservoir en cilinderhuis.', p: [mp[0], mp[1] + 0.047, mp[2] + (k ? 0.04 : -0.01)], ex: [0, 0.07, k ? 0.04 : -0.04] })),
     ...[0, 1].map(k => P(`Leidingaansluiting ${k + 1}`, merge([chsNut('x', 0.0085, 0.012), xf(G.cyl('x', 0.0045, 0.0045, 0.03, 8), [0.02, 0, 0])]), MAT.steel, { d: 'Wartelaansluiting van een remleiding op de hoofdremcilinder.', p: [mp[0] + 0.0165, mp[1] - 0.006, mp[2] + (k ? 0.06 : 0.0)], ex: [0.14, -0.04, k ? 0.04 : -0.0] }))]);
   const boost = A('Rembekrachtiger', { d: 'Vacuümbekrachtiger die de pedaalkracht versterkt met onderdruk uit het inlaatspruitstuk (aannemelijk; opbouw gebruikelijk voor dit type).', ex: [0, 0.1, -0.12] }, [
-    P('Bekrachtigerhuis', G.lathe('z', [[0.03, -0.09], [0.12, -0.07], [0.125, -0.02], [0.125, 0.02], [0.12, 0.07], [0.03, 0.09]], 40, 'boost'), MAT.darkSteel, { d: 'Tweedelig stalen huis (voorste en achterste schaal) van de bekrachtiger.', p: bp, ex: [0, 0, 0] }),
+    P('Bekrachtigerhuis', G.lathe('z', [[0.03, -0.09], [0.12, -0.07], [0.125, -0.02], [0.125, 0.02], [0.12, 0.07], [0.03, 0.09]], 40, 'chsBoost'), MAT.darkSteel, { d: 'Tweedelig stalen huis (voorste en achterste schaal) van de bekrachtiger.', p: bp, ex: [0, 0, 0] }),
     P('Membraan', annulus(0.03, 0.118, 0.006, 'z', 32), MAT.rubber, { d: 'Rubber membraan met stalen plaat dat het huis in twee kamers verdeelt.', p: bp, ex: [0, 0, -0.1] }),
     P('Duwstang', G.cyl('z', 0.005, 0.005, 0.16, 8), MAT.steel, { d: 'Stang tussen pedaal (interieur) en membraan, en door naar de hoofdremcilinder.', p: [bp[0], bp[1], bp[2] + 0.02], ex: [0, 0, -0.2], inner: true }),
     P('Vacuumaansluiting', merge([G.cyl('x', 0.009, 0.009, 2 * NIP, 10), xf(G.cyl('y', 0.007, 0.007, 0.03, 10), [NIP, -0.01, 0])]), MAT.plastic, { d: 'Aansluiting van de vacuümslang met geïntegreerde terugslagklep.', p: vn, ex: [0.12, 0.12, 0.0] }),
