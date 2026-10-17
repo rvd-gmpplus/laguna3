@@ -16,6 +16,24 @@ function sysClamp(name, at, t, r, out) {
   const o = out || t;
   return P(name, sysClampGeo(r), MAT.steel, { d: 'Slangklem van verzinkt staal met een stelschroef; klemt de slang of pijp vast op de aansluiting.', p: at, q: quatFromTo(V3(0, 0, 1), t), ex: [o.x * 0.06, o.y * 0.06 + 0.02, o.z * 0.06] });
 }
+// stuk [u0, u1] (booglengte 0 tot 1) van de buis tube(pts, r, n, rad): de ringen ertussen liggen op k/n met de assenstelsels
+// van de hele buis, de uiteinden op u0 en u1 (assenstelsel meegedraaid vanaf de buurring zoals computeFrenetFrames doet).
+// Zo valt het stuk precies op de oorspronkelijke buis en blijven de afstanden tot de omgeving gelijk.
+function sysTubePart(pts, r, n, rad, u0, u1) {
+  const full = new THREE.CatmullRomCurve3(pts.map(p => V3(...p)), false, 'centripetal'), F = full.computeFrenetFrames(n, false);
+  const us = [u0]; for (let k = Math.ceil(u0 * n); k <= Math.floor(u1 * n); k++) if (k / n - u0 > 1e-6 && u1 - k / n > 1e-6) us.push(k); us.push(u1);
+  const fr = { tangents: [], normals: [], binormals: [] }, uOf = i => (i === 0 || i === us.length - 1) ? us[i] : us[i] / n;
+  us.forEach((v, i) => {
+    if (i > 0 && i < us.length - 1) { fr.tangents.push(F.tangents[v]); fr.normals.push(F.normals[v]); fr.binormals.push(F.binormals[v]); return; }
+    const k = i === 0 ? Math.ceil(u0 * n) : Math.floor(u1 * n), T = full.getTangentAt(v), N = F.normals[k].clone(), ax = new THREE.Vector3().crossVectors(F.tangents[k], T);
+    if (ax.length() > Number.EPSILON) N.applyMatrix4(new THREE.Matrix4().makeRotationAxis(ax.normalize(), Math.acos(THREE.MathUtils.clamp(F.tangents[k].dot(T), -1, 1))));
+    fr.tangents.push(T); fr.normals.push(N); fr.binormals.push(new THREE.Vector3().crossVectors(T, N));
+  });
+  const part = new THREE.Curve();
+  part.getPointAt = (t, o) => full.getPointAt(uOf(Math.round(t * (us.length - 1))), o);
+  part.computeFrenetFrames = () => fr;
+  return new THREE.TubeGeometry(part, us.length - 1, r, rad, false);
+}
 // slang als groep: slang plus twee klemmen. pts in het autoframe; de uiteinden liggen op de aansluitingen.
 function sysHose(name, d, pts, r, o = {}) {
   const n = pts.length, t0 = sysDir(pts[0], pts[1]), t1 = sysDir(pts[n - 1], pts[n - 2]);
@@ -258,8 +276,15 @@ function buildFuel() {
     ...bodTkY.map(yy => patch((z, t) => [-lerp(-tkSkin(z, yy, -0.004)[0], tkFloor, t), yy, z], bodTkZ[0], bodTkZ[1], 8, () => [0, 1], 4)),
     patch((z, t) => [-tkFloor, lerp(bodTkY[0], bodTkY[1], t), z], bodTkZ[0], bodTkZ[1], 6, () => [0, 1], 6),
   ]));
+  const vulRoute = [[-0.426, 0.30, -0.84], [-0.458, 0.304, -0.86], [-0.467, 0.32, -0.93], [-0.467, 0.34, -1.0], [-0.467, 0.3475, -1.07], [-0.467, 0.3475, -1.14], [-0.467, 0.3475, -1.2], [-0.455, 0.37, -1.26], [-0.447, 0.40, -1.32], [-0.40, 0.45, -1.43], [-0.40, 0.60, -1.52], [-0.44, 0.74, -1.58], [-0.62, 0.80, -1.62], [-0.76, 0.84, -1.66], [-tkNeck, flapY, flapZ]];   // route van de vulpijp, van de tank naar de tankhals
   const vul = A('Vulsysteem', { d: 'Vulpijp met capless vulhals en tankklep in het rechter achterscherm. De vulpijp loopt boven het achterwiel langs naar de tank. Een dop is er niet: in de vulhals zit een klep die het pistool opent.', ex: [-0.2, 0.1, -0.1] }, [
-    P('Vulpijp', tube([[-0.426, 0.30, -0.84], [-0.458, 0.304, -0.86], [-0.467, 0.32, -0.93], [-0.467, 0.34, -1.0], [-0.467, 0.3475, -1.07], [-0.467, 0.3475, -1.14], [-0.467, 0.3475, -1.2], [-0.455, 0.37, -1.26], [-0.447, 0.40, -1.32], [-0.40, 0.45, -1.43], [-0.40, 0.60, -1.52], [-0.44, 0.74, -1.58], [-0.62, 0.80, -1.62], [-0.76, 0.84, -1.66], [-tkNeck, flapY, flapZ]], 0.0185, 64, 10), MAT.plastic, { d: 'Kunststof vulpijp van de vulhals naar de tank.', ex: [-0.04, 0, 0] }),
+    // De vulpijp loopt van de tank boven het achterwiel langs omhoog en verdwijnt in de verhoging van de zijbekleding van de
+    // bagageruimte; achter de bekleding komt hij weer uit de zijwand en loopt naar de tankhals. Het stuk dat helemaal binnen
+    // de bekleding ligt, is weggelaten: de onderste pijp eindigt 2 tot 3 cm in de verhoging (u 0,491), het bovenstuk begint
+    // waar de pijp vrij uit de zijwand komt (u 0,854). Beide stukken liggen precies op de oorspronkelijke route.
+    ...[['Vulpijp', 0, 0.491, 'Kunststof vulpijp van de tank boven het achterwiel langs omhoog tot in de verhoging van de zijbekleding van de bagageruimte; verder loopt hij binnen de bekleding.'],
+      ['Vulpijp bovenstuk', 0.854, 1, 'Bovenste stuk van de kunststof vulpijp: komt achter de zijbekleding van de bagageruimte uit de zijwand en loopt naar de vulhals achter de tankklep.']].map(([n, u0, u1, d]) =>
+      P(n, sysTubePart(vulRoute, 0.0185, 64, 10, u0, u1), MAT.plastic, { d, ex: [-0.04, 0, 0] })),
     P('Vulhals', merge([annulus(0.0245, 0.029, tkMouth - tkNeck, 'x', 24), xf(G.torus('x', 0.0268, 0.0036, 24, 6), [-(tkMouth - tkNeck) / 2, 0, 0])]), MAT.plastic, { d: 'Capless vulhals achter de tankklep: een korte holle hals met een rand waarin het pistool past; de zwarte vulklep zit er een centimeter in.', p: [-(tkNeck + tkMouth) / 2, flapY, flapZ], ex: [-0.1, 0, 0] }),
     P('Vulklep', merge([G.cyl('x', 0.0235, 0.0235, 0.003, 20), xf(G.cyl('z', 0.0025, 0.0025, 0.03, 8), [0.002, 0.022, 0])]), MAT.blackGloss, { d: 'Capless vulklep (klep B in de vulpijp, HB2 1.73): geen dop en geen bandje. Een veer houdt de klep dicht; het pistool duwt hem open. Niet met de vingers indrukken. Op de benzineversie laat een restrictor alleen een loodvrij pistool toe (vorm schematisch).', p: [-(tkMouth - 0.012), flapY, flapZ], ex: [-0.2, 0.05, 0] }),
     P('Vulklepring', G.torus('x', 0.0238, 0.0032, 24, 6), MAT.steel, { d: 'Metalen ring om de zwarte vulklep: zo is de capless vulhals van buiten af te lezen (vorm schematisch).', p: [-(tkMouth - 0.0105), flapY, flapZ], ex: [-0.22, 0.05, 0] }),

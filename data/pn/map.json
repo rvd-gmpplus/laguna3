@@ -3576,8 +3576,13 @@
  ],
  "Brandstofsysteem/Vulsysteem/Vulpijp": [
   "S2-lucht-uitlaat-brandstof:U_FILLPIPE",
-  "zelf",
-  "Geen artikel gevonden"
+  "deel",
+  "Onderste stuk van de vulpijp, als geheel geleverd; geen artikel gevonden"
+ ],
+ "Brandstofsysteem/Vulsysteem/Vulpijp bovenstuk": [
+  "S2-lucht-uitlaat-brandstof:U_FILLPIPE",
+  "deel",
+  "Bovenste stuk van de vulpijp, als geheel geleverd; geen artikel gevonden"
  ],
  "Brandstofsysteem/Vulsysteem/Vulhals": [
   "S2-lucht-uitlaat-brandstof:U_FILLNECK",
