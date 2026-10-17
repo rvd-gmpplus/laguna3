@@ -221,12 +221,17 @@ function buildFrontAxle() {
   const vP = [vh[0] - 0.012, vh[1] + 0.012, vh[2] - 0.055], vR = [vh[0] + 0.012, vh[1] + 0.012, vh[2] - 0.055];   // aansluitingen achter op het ventielhuis (druk, retour)
   const R0 = V3(-0.585, 0.675, 1.69);                                          // oliereservoir stuurbekrachtiging
   const rb = SUB_ROD.p;                                                        // oog van de koppelstang (body.js): de reactiestangbeugel klemt het tussen twee oren
+  // Oren van de reactiestangbeugel (13 x 56 x 60 mm, hart op y = rb[1] - 0,006) met een boring voor de Doorgaande bout subframe (drivetrain.js, drvBolt Ø12 mm,
+  // zeskant met omgeschreven straal 0,006 m, as langs x door het oog rb): boring Ø13 mm (straal RB_BORE) met de as op y = rb[1], z = rb[2], dus 0,006 m boven het hart van het oor.
+  const RB_BORE = 0.0065;
+  const rbOor = dx => { const sh = shapeOf([[-0.03, -0.028], [0.03, -0.028], [0.03, 0.028], [-0.03, 0.028]]); sh.holes.push(circlePath(0, 0.006, RB_BORE));
+    const g = extrude(sh, 0.013, 8); g.rotateY(-HALF); return xf(g, [rb[0] + dx, rb[1] - 0.006, rb[2]]); };
   // ---- subframe ----
   const sub = A('Subframe', { d: 'Stalen hulpframe onder de motor: draagt de draagarmen, de stabilisatorstang en (via rubbers) het stuurhuis; vier rubberlagers met bouten op de carrosserie. Opbouw schematisch.', ex: [0, -0.18, 0] }, [
     ...[1, -1].map(sg => P(`Langsbalk ${sideName(sg)}`, merge([xf(chsRb(0.07, 0.06, 0.28, 0.01), [sg * 0.33, 0.21, 1.25]), xf(chsRb(0.075, 0.05, 0.03, 0.006), [sg * 0.4, 0.225, z0 + 0.01]), xf(chsRb(0.075, 0.05, 0.03, 0.006), [sg * 0.4, 0.225, z0 - 0.19]),
       xf(chsRb(0.2, 0.04, 0.05, 0.006), [sg * 0.45, 0.235, 1.15]), xf(chsRb(0.2, 0.04, 0.05, 0.006), [sg * 0.45, 0.235, 1.36])]), MAT.darkSteel, { d: 'Stalen langsbalk van het subframe met uitleggers naar de rubberlagers en oren voor de draagarm.', ex: [sg * 0.12, 0, 0] })),
     P('Dwarsbalk achter', chsRb(0.66, 0.06, 0.1, 0.01), MAT.darkSteel, { d: 'Achterste dwarsbalk van het subframe; hier steunt het stuurhuis op.', p: [0, 0.21, z0 - 0.2], ex: [0, 0, -0.14] }),
-    P('Reactiestangbeugel', merge([xf(chsRb(0.08, 0.006, 0.07, 0.002), [rb[0], rb[1] - 0.027, rb[2]]), xf(chsRb(0.013, 0.056, 0.06, 0.004), [rb[0] - 0.0235, rb[1] - 0.006, rb[2]]), xf(chsRb(0.013, 0.056, 0.06, 0.004), [rb[0] + 0.0235, rb[1] - 0.006, rb[2]])]), MAT.darkSteel, { d: 'Gelaste dubbele oog-beugel boven op de achterste dwarsbalk: hierin hangt de rubber lagerbus van de reactiestang (koppelstang) van de aandrijflijn, vastgezet met één bout.', ex: [0, 0.14, -0.04] }),
+    P('Reactiestangbeugel', merge([xf(chsRb(0.08, 0.006, 0.07, 0.002), [rb[0], rb[1] - 0.027, rb[2]]), rbOor(-0.0235), rbOor(0.0235)]), MAT.darkSteel, { d: 'Gelaste dubbele oog-beugel boven op de achterste dwarsbalk: hierin hangt de rubber lagerbus van de reactiestang (koppelstang) van de aandrijflijn, vastgezet met één bout.', ex: [0, 0.14, -0.04] }),
     P('Dwarsbalk voor', chsRb(0.66, 0.05, 0.06, 0.008), MAT.darkSteel, { d: 'Voorste dwarsbalk van het subframe.', p: [0, 0.2, 1.355], ex: [0, 0, 0.14] }),
     ...[[1, 1.15], [-1, 1.15], [1, 1.36], [-1, 1.36]].map(([sg, z], i) => P(`Subframelager ${i + 1}`, G.cyl('y', 0.028, 0.026, 0.05, 16), MAT.rubber, { d: 'Rubberlager tussen subframe en carrosserie.', p: [sg * 0.54, 0.255, z], ex: [sg * 0.1, 0.05, z > 1.3 ? 0.08 : -0.08] })),
     ...[[1, 1.15], [-1, 1.15], [1, 1.36], [-1, 1.36]].map(([sg, z], i) => P(`Subframebout ${i + 1}`, hexBolt(0.075, 0.014, 'y'), MAT.steel, { d: 'Bout die het subframe aan de carrosserie bevestigt.', p: [sg * 0.54, 0.185, z], ex: [sg * 0.1, -0.25, z > 1.3 ? 0.08 : -0.08] }))]);
