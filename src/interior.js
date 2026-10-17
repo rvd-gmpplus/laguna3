@@ -431,7 +431,7 @@ function intPlankGeo() {
   const arc = (cx, cz, a0) => { for (let i = 0; i <= n; i++) { const a = a0 + i / n * HALF; pts.push([cx + r * Math.cos(a), cz + r * Math.sin(a)]); } };
   // tegen de klok in in (x, z): rechtsachter (x min), linksachter (x plus), linksvoor, rechtsvoor
   arc(-hw1 + r, z1 + r, PI); arc(hw1 - r, z1 + r, PI * 1.5);
-  // uitsparing in de voorrand voor de middelste gordelrolautomaat (6 cm breed, x 0,03 en z -1,54 tot -1,62): zonder uitsparing
+  // uitsparing van 8 cm in de voorrand voor de middelste gordelrolautomaat (die is 6 cm breed, z -1,54 tot -1,62): zonder uitsparing
   // sneed de plank daar door de automaat (B0 29,06 mm bij open klep; de plank draait om een punt in de automaat)
   const { a, b, xa, xc, xv } = intPlankPen, n0 = pts.length;
   pts.push([xv, z0 - a], [xa, z0 - a], [xa, z0 - b], [xc, z0 - b], [xc, z0], [intPlankNotch.hw, z0], [intPlankNotch.hw, z0 - intPlankNotch.d], [-intPlankNotch.hw, z0 - intPlankNotch.d], [-intPlankNotch.hw, z0],
