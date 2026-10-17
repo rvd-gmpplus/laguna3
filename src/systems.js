@@ -9,13 +9,30 @@ const sysP = e => ENG2CAR(e);                                  // punt in het mo
 const sysE = (port, d = 0) => ENG2CAR(portAt(port, d));         // punt op afstand d buiten een aansluiting (autoframe)
 function sysDir(a, b) { return V3(b[0] - a[0], b[1] - a[1], b[2] - a[2]).normalize(); }
 function sysAt(p, t, k) { return [p[0] + t.x * k, p[1] + t.y * k, p[2] + t.z * k]; }
-function sysClampGeo(r) {
-  return cache('sysClamp' + r, () => merge([G.torus('z', r + 0.0035, 0.0022, 14, 5), xf(G.box(0.014, 0.006, 0.01), [0, r + 0.0075, 0]), xf(G.cyl('x', 0.0025, 0.0025, 0.016, 6), [0, r + 0.0105, 0])]));
-}
+// klem met stelschroef om een slang of pijp met straal r: de band ligt 3,5 mm buiten de slang (generieke hoseClamp uit core.js)
+function sysClampGeo(r) { return hoseClamp('z', r + 0.0035, { screw: true }); }
 // slangklem om een slang of pijp met straal r; as langs t (eenheidsvector), schuift bij uitklappen langs out
 function sysClamp(name, at, t, r, out) {
   const o = out || t;
   return P(name, sysClampGeo(r), MAT.steel, { d: 'Slangklem van verzinkt staal met een stelschroef; klemt de slang of pijp vast op de aansluiting.', p: at, q: quatFromTo(V3(0, 0, 1), t), ex: [o.x * 0.06, o.y * 0.06 + 0.02, o.z * 0.06] });
+}
+// stuk [u0, u1] (booglengte 0 tot 1) van de buis tube(pts, r, n, rad): de ringen ertussen liggen op k/n met de assenstelsels
+// van de hele buis, de uiteinden op u0 en u1 (assenstelsel meegedraaid vanaf de buurring zoals computeFrenetFrames doet).
+// Zo valt het stuk precies op de oorspronkelijke buis en blijven de afstanden tot de omgeving gelijk.
+function sysTubePart(pts, r, n, rad, u0, u1) {
+  const full = new THREE.CatmullRomCurve3(pts.map(p => V3(...p)), false, 'centripetal'), F = full.computeFrenetFrames(n, false);
+  const us = [u0]; for (let k = Math.ceil(u0 * n); k <= Math.floor(u1 * n); k++) if (k / n - u0 > 1e-6 && u1 - k / n > 1e-6) us.push(k); us.push(u1);
+  const fr = { tangents: [], normals: [], binormals: [] }, uOf = i => (i === 0 || i === us.length - 1) ? us[i] : us[i] / n;
+  us.forEach((v, i) => {
+    if (i > 0 && i < us.length - 1) { fr.tangents.push(F.tangents[v]); fr.normals.push(F.normals[v]); fr.binormals.push(F.binormals[v]); return; }
+    const k = i === 0 ? Math.ceil(u0 * n) : Math.floor(u1 * n), T = full.getTangentAt(v), N = F.normals[k].clone(), ax = new THREE.Vector3().crossVectors(F.tangents[k], T);
+    if (ax.length() > Number.EPSILON) N.applyMatrix4(new THREE.Matrix4().makeRotationAxis(ax.normalize(), Math.acos(THREE.MathUtils.clamp(F.tangents[k].dot(T), -1, 1))));
+    fr.tangents.push(T); fr.normals.push(N); fr.binormals.push(new THREE.Vector3().crossVectors(T, N));
+  });
+  const part = new THREE.Curve();
+  part.getPointAt = (t, o) => full.getPointAt(uOf(Math.round(t * (us.length - 1))), o);
+  part.computeFrenetFrames = () => fr;
+  return new THREE.TubeGeometry(part, us.length - 1, r, rad, false);
 }
 // slang als groep: slang plus twee klemmen. pts in het autoframe; de uiteinden liggen op de aansluitingen.
 function sysHose(name, d, pts, r, o = {}) {
@@ -45,11 +62,12 @@ function buildCooling() {
     ...[1, -1].map(s => P(`Steunblok onder ${sideName(s)}`, G.rbox(0.04, 0.02, 0.04, 0.005), MAT.rubber, { d: 'Rubber steunblok onder de radiateur in de frontmodule.', p: [s * 0.2, 0.29, RZ], ex: [0, -0.14, 0] })),
   ]);
   // ---------- condensor met droger ----------
+  // Condensorblok klapt recht naar voren uit: de automatische richting liet het blok schuin door de radiateur en de vloeistofleiding gaan.
   const condensor = A('Condensor', { d: 'Condensor van de airconditioning, vlak vóór de radiateur, met de droger-filtereenheid (receiver-drier) tegen de linkerkant van het blok.', ex: [0, 0, 0.16] }, [
-    P('Condensorblok', cache('sysCondCore', () => merge([G.box(0.58, 0.34, 0.014), ...[-0.12, -0.06, 0, 0.06, 0.12].map(y => xf(G.box(0.58, 0.004, 0.017), [0, y, 0]))])), MAT.darkSteel, { d: 'Aluminium parallelstroomblok waar het koudemiddel zijn warmte aan de lucht afgeeft.', p: [0, RY, 2.015] }),
+    P('Condensorblok', cache('sysCondCore', () => merge([G.box(0.58, 0.34, 0.014), ...[-0.12, -0.06, 0, 0.06, 0.12].map(y => xf(G.box(0.58, 0.004, 0.017), [0, y, 0]))])), MAT.darkSteel, { d: 'Aluminium parallelstroomblok waar het koudemiddel zijn warmte aan de lucht afgeeft.', p: [0, RY, 2.015], ex: [0, 0, 0.1] }),
     P('Droger', G.cyl('y', 0.021, 0.021, 0.2, 16), MAT.alu, { d: 'Droger-filtereenheid met vochtopname voor het koudemiddel.', p: [0.26, RY, 2.045], ex: [0.12, 0, 0.1] }),
     P('Dop droger', G.cyl('y', 0.024, 0.024, 0.02, 12), MAT.plastic, { d: 'Dop op de droger; verwisselbaar bij vervanging van het filter.', p: [0.26, RY + 0.11, 2.045], ex: [0, 0.14, 0] }),
-    P('Leidingblok', G.rbox(0.05, 0.04, 0.03, 0.006), MAT.steel, { d: 'Aansluitblok voor de hoge- en lagedrukleiding van de airconditioning, naast de rechterrand van het condensorblok (plaats schematisch).', p: [-0.315, RY - 0.01, 2.034], ex: [-0.1, 0, 0.1] }),
+    P('Leidingblok', G.rbox(0.05, 0.04, 0.03, 0.006), MAT.steel, { d: 'Aansluitblok voor de persleiding (hogedrukzijde) van de airconditioning, naast de rechterrand van het condensorblok. Alleen de persleiding sluit hier aan: de vloeistofleiding begint bij de droger en de zuigleiding loopt van het expansieventiel naar de compressor (plaats schematisch).', p: [-0.315, RY - 0.01, 2.034], ex: [-0.1, 0, 0.1] }),
     ...[1, -1].map(s => P(`Condensorclip ${sideName(s)}`, G.box(0.03, 0.016, 0.02), MAT.plastic, { d: 'Kunststof clip die de condensor aan de frontmodule bevestigt.', p: [s * 0.26, 0.655, 2.025], ex: [s * 0.04, 0.1, 0.04] })),
   ]);
   // ---------- intercooler ----------
@@ -80,7 +98,7 @@ function buildCooling() {
     P('Vat', merge([G.rbox(0.12, 0.13, 0.15, 0.018), xf(G.cyl('y', 0.03, 0.03, 0.02, 16), [0.02, 0.07, 0.0])]), MAT.tank, { d: 'Doorzichtig vat met de niveaumarkering voor koelvloeistof.', p: EV }),
     // vulhals met een donkere opening (de dop sluit hem af); de dop klapt om een scharnierlip aan de achterrand van de hals omhoog (zoals de olievuldop) en blijft eraan vast
     P('Vulopening expansievat', G.cyl('y', 0.022, 0.022, 0.002, 20), MAT.blackGloss, { d: 'Open vulhals van het expansievat: een donkere opening in de opstaande hals; de drukdop sluit hem af.', p: [EV[0] + 0.02, EV[1] + 0.0805, EV[2]], ex: [0, 0.03, 0] }),
-    P('Expansiedop', merge([G.cyl('y', 0.034, 0.034, 0.016, 16), xf(G.box(0.07, 0.01, 0.014), [0, 0.011, 0]), xf(G.box(0.018, 0.006, 0.016), [0, -0.005, -0.042]), xf(G.cyl('x', 0.0045, 0.0045, 0.024, 8), [0, -0.0045, -0.0485])]), MAT.plastic, { d: 'Drukdop met overdrukklep die bij ongeveer 1,4 bar opent (aannemelijk); klapt in dit model om een scharnierlip aan de achterrand van de hals omhoog en blijft eraan vast (opener, schematisch: in werkelijkheid draai je de dop los).', p: [EV[0] + 0.02, EV[1] + 0.088, EV[2]], ex: [0, 0.14, 0], open: { type: 'hinge', pivot: [EV[0] + 0.02, EV[1] + 0.0835, EV[2] - 0.0485], axis: [1, 0, 0], angle: -1.8, min: 1.44, needs: 'Motorkap', label: 'Dop expansievat', look: { dir: [0.4, 0.8, 0.9], nodes: ['Expansiedop', 'Koeling en luchtinlaat/Expansievat/Vat'] } } }),
+    P('Expansiedop', merge([G.cyl('y', 0.034, 0.034, 0.016, 16), xf(G.box(0.07, 0.01, 0.014), [0, 0.011, 0]), xf(G.box(0.018, 0.006, 0.016), [0, -0.005, -0.042]), xf(G.cyl('x', 0.0045, 0.0045, 0.024, 8), [0, -0.0045, -0.0485])]), MAT.plastic, { d: 'Drukdop met overdrukklep die bij ongeveer 1,4 bar opent (aannemelijk); klapt in dit model om een scharnierlip aan de achterrand van de hals omhoog en blijft eraan vast (opener, schematisch: in werkelijkheid draai je de dop los).', p: [EV[0] + 0.02, EV[1] + 0.088, EV[2]], ex: [0, 0.14, 0], open: hinge([EV[0] + 0.02, EV[1] + 0.0835, EV[2] - 0.0485], [1, 0, 0], -1.8, { min: 1.44, needs: 'Motorkap', label: 'Dop expansievat', look: { dir: [0.4, 0.8, 0.9], nodes: ['Expansiedop', 'Koeling en luchtinlaat/Expansievat/Vat'] } }) }),
     P('Niveauschakelaar', G.rbox(0.03, 0.026, 0.026, 0.005), MAT.plastic, { d: 'Schakelaar die het dashboard waarschuwt bij een te laag koelvloeistofpeil.', p: [EV[0] + 0.068, EV[1] - 0.02, EV[2]], ex: [0.1, 0, 0] }),
     P('Vathouder', merge([G.box(0.13, 0.012, 0.16), xf(G.box(0.012, 0.09, 0.16), [0.06, 0.05, 0])]), MAT.darkSteel, { d: 'Beugel die het expansievat aan de carrosserie vasthoudt.', p: [EV[0], EV[1] - 0.07, EV[2]], ex: [0, -0.12, 0] }),
   ]);
@@ -121,8 +139,26 @@ function buildCooling() {
   const hot = sysHose('Hete laadluchtslang', 'Voert de door de turbo samengeperste, hete lucht van de compressoruitlaat naar de linker eindkap van de intercooler. Aansluiting op de intercooler 57 mm (aannemelijk).', [sysP(cO.p), sysE(cO, 0.035), [0.0, 0.64, 1.16], [0.14, 0.62, 1.2], [0.17, 0.605, 1.45], [0.19, 0.6, 1.72], [0.31, 0.56, 1.86], [0.375, 0.46, 1.96], [0.35, 0.37, 2.02], [0.30, 0.31, 2.07]], 0.031, { n0: 'Klem turbo', n1: 'Klem intercooler', seg: 80, rad: 12, ex: [0.12, 0.2, 0] });
   const cold = sysHose('Koude laadluchtslang', 'Voert de gekoelde lucht van de rechter eindkap van de intercooler naar het gasklephuis. De slang buigt binnen enkele centimeters na het gasklephuis naar voren, vóór de multiriem, en loopt boven de stuurbekrachtigingspomp langs. Aansluiting op de intercooler 47 mm (aannemelijk).', [[-0.30, 0.31, 2.07], [-0.33, 0.33, 2.04], [-0.37, 0.40, 1.98], [-0.39, 0.50, 1.90], [-0.42, 0.57, 1.83], sysP([tI.p[0] - 0.03, tI.p[1] + 0.01, 0.30]), sysP([tI.p[0] - 0.029, tI.p[1], 0.245]), sysP([tI.p[0] - 0.021, tI.p[1], tI.p[2] + 0.005]), sysP(tI.p)], 0.027, { n0: 'Klem intercooler', n1: 'Klem gasklephuis', seg: 80, rad: 12, ex: [-0.12, 0.2, 0] });
   const laadlucht = A('Laadluchtleidingen', { d: 'De twee slangen die de aangezogen lucht van de turbo naar de intercooler en van de intercooler naar het gasklephuis brengen.', ex: [0, 0.22, 0.1] }, [hot, cold]);
+  // ---------- airconditioningleidingen (schematisch) ----------
+  // Uitklappen: de groep gaat mee met de condensor (zelfde z) en iets omlaag, zodat de pers- en vloeistofleiding bij het
+  // uitklappen van Koeling en luchtinlaat aan de condensor blijven en nergens door een ander deel lopen (gemeten in drie standen).
+  // Route uit een A*-zoektocht door de vrije ruimte (8 mm-rooster, daarna met de hand gladgetrokken en gemeten met clash.py):
+  // persleiding van de dunne nippel van de compressor omhoog en naar voren, van de zijkant in het Leidingblok; zuigleiding van het
+  // expansieventiel langs de rechterflank van de motor naar de dikke nippel; vloeistofleiding van de onderkant van de droger om de
+  // linkerrand van de radiateur heen naar het expansieventiel. De uiteinden liggen 0,1 mm voor het aansluitvlak.
+  const cDis = ENG_PORTS.acDis, cSuc = ENG_PORTS.acSuc;
+  const TXV = [0.025, 0.52, 1.0525], txvF = TXV[2] + 0.025 + 0.0001;   // expansieventiel tegen het schutbord (voorkant schutbord z 1,026); voorvlak
+  const pers = [sysE(cDis, 0.0001), sysE(cDis, 0.008), sysE(cDis, 0.02), [-0.348, 0.40, 1.8167], [-0.338, 0.466, 1.97], [-0.375, 0.47, 2.034], [-0.352, 0.47, 2.034], [-0.3401, 0.47, 2.034]];
+  const zuig = [[0.016, 0.515, txvF], [0.016, 0.515, txvF + 0.008], [0.016, 0.515, txvF + 0.02], [-0.064, 0.478, 1.106], [-0.16, 0.414, 1.178], [-0.36, 0.382, 1.394], [-0.384, 0.334, 1.49], sysE(cSuc, 0.025), sysE(cSuc, 0.01), sysE(cSuc, 0.0001)];
+  const vloei = [[0.26, 0.3799, 2.045], [0.26, 0.372, 2.045], [0.26, 0.36, 2.045], [0.296, 0.374, 2.042], [0.376, 0.486, 2.002], [0.395, 0.537, 1.95], [0.352, 0.545, 1.794], [0.24, 0.545, 1.46], [0.152, 0.542, 1.218], [0.034, 0.528, txvF + 0.02], [0.034, 0.528, txvF + 0.008], [0.034, 0.528, txvF]];
+  const airco = A('Airconditioningleidingen', { d: 'Leidingen van het koudemiddelcircuit van de airconditioning: de persleiding van de compressor naar de condensor, de vloeistofleiding van de droger naar het expansieventiel op het schutbord en de zuigleiding van het expansieventiel terug naar de compressor. Route, diameters en de plaats van het expansieventiel zijn schematisch; de echte plaats is voor deze auto niet gevonden.', ex: [0.02, -0.04, 0.16] }, [
+    P('Persleiding', tube(pers, 0.0055, 30, 6), MAT.alu, { d: 'Aluminium persleiding (Ø11 mm, schematisch): voert het hete gasvormige koudemiddel onder hoge druk van de compressor naar het Leidingblok van de condensor.', ex: [0, -0.03, 0.06] }),
+    P('Vloeistofleiding', tube(vloei, 0.0045, 87, 6), MAT.alu, { d: 'Dunne aluminium vloeistofleiding (Ø9 mm, schematisch): voert het vloeibare koudemiddel van de droger om de linkerrand van de radiateur heen naar het expansieventiel.', ex: [0.06, 0, 0.06] }),
+    P('Zuigleiding', tube(zuig, 0.008, 58, 6), MAT.sysHose, { d: 'Dikke zuigleiding (Ø16 mm, schematisch): voert het koude, gasvormige koudemiddel van het expansieventiel langs de rechterkant van de motor terug naar de compressor.', ex: [-0.06, 0.02, 0] }),
+    P('Expansieventiel', G.rbox(0.04, 0.04, 0.05, 0.004), MAT.alu, { d: 'Expansieventiel (blokventiel) tegen het schutbord: laat het koudemiddel uitzetten voordat het de verdamper achter het schutbord in gaat. Plaats en maat schematisch.', p: TXV, ex: [0, 0, -0.06] }),
+  ]);
 
-  return A('Koeling en luchtinlaat', { d: 'Koelpakket (intercooler, condensor, radiateur en koelventilator), expansievat, koelslangen en het luchtinlaattraject naar de turbo.', ex: [0, 0.3, 2.0] }, [radiateur, condensor, intercooler, ventilator, expansie, slangen, inlaat, laadlucht]);
+  return A('Koeling en luchtinlaat', { d: 'Koelpakket (intercooler, condensor, radiateur en koelventilator), expansievat, koelslangen, de leidingen van de airconditioning en het luchtinlaattraject naar de turbo.', ex: [0, 0.3, 2.0] }, [radiateur, condensor, intercooler, ventilator, expansie, slangen, inlaat, laadlucht, airco]);
 }
 
 /* ============================ uitlaatsysteem ============================ */
@@ -137,7 +173,7 @@ function buildExhaust() {
   const voorkat = A('Voorkatalysator', { d: 'Driewegkatalysator direct op de turbine-uitgang (voorkat): zet CO, koolwaterstoffen en NOx om. De lambdasonde ervoor regelt het mengsel, de sonde erna controleert de katalysator. Opbouw schematisch.', p: PT_POS.toArray(), r: [PT_TILT, 0, 0], ex: [-0.1, 0.06, 0] }, [
     P('Pakking voorkat', gasketShape, MAT.heat, { d: 'Metalen pakking tussen de turbineflens en de voorkatalysator.', p: [xE - 0.0008, ty, tz], ex: [-0.02, 0, 0] }),
     P('Flens voorkat', flangeShape, MAT.steel, { d: 'Driegatsflens van de voorkatalysator, met drie moeren op de tapeinden van de turbine.', p: [xE - 0.0056, ty, tz], ex: [-0.045, 0, 0] }),
-    ...bolts.map(([dz, dy], i) => P(`Moer voorkat ${i + 1}`, G.cyl('x', 0.0075, 0.0075, 0.008, 6), MAT.steel, { d: 'Zeskantmoer op een tapeind van de turbine; houdt de voorkatalysator vast.', p: [xE - 0.0135, ty + dy, tz + dz], ex: [-0.09, dy * 2, dz * 2] })),
+    ...bolts.map(([dz, dy], i) => P(`Moer voorkat ${i + 1}`, hexNut('x', 0.0075, 0.008), MAT.steel, { d: 'Zeskantmoer op een tapeind van de turbine; houdt de voorkatalysator vast.', p: [xE - 0.0135, ty + dy, tz + dz], ex: [-0.09, dy * 2, dz * 2] })),
     P('Inlaatconus voorkat', G.lathe('-x', [[0.026, 0], [0.034, 0.014], [0.0415, 0.034], [0.0405, 0.036]], 24, 'sysCatIn'), MAT.steel, { d: 'Conus die de turbine-uitgang verwijdt naar de katalysatorbehuizing.', p: [xE - 0.0096, ty, tz], ex: [-0.05, 0, 0] }),
     P('Katalysatorhuis', G.cyl('-x', 0.0415, 0.0415, canL, 24), MAT.steel, { d: 'Roestvrijstalen behuizing om de keramische monoliet.', p: [canX0 - canL / 2, ty, tz], ex: [-0.06, 0, 0] }),
     P('Monoliet voorkat', G.cyl('-x', 0.036, 0.036, canL - 0.01, 18), MAT.ceramic, { d: 'Keramische honingraat met edelmetaalcoating waar de uitlaatgassen overheen stromen.', p: [canX0 - canL / 2, ty, tz], ex: [-0.12, 0.05, 0], inner: true }),
@@ -259,14 +295,21 @@ function buildFuel() {
     ...bodTkY.map(yy => patch((z, t) => [-lerp(-tkSkin(z, yy, -0.004)[0], tkFloor, t), yy, z], bodTkZ[0], bodTkZ[1], 8, () => [0, 1], 4)),
     patch((z, t) => [-tkFloor, lerp(bodTkY[0], bodTkY[1], t), z], bodTkZ[0], bodTkZ[1], 6, () => [0, 1], 6),
   ]));
+  const vulRoute = [[-0.426, 0.30, -0.84], [-0.458, 0.304, -0.86], [-0.467, 0.32, -0.93], [-0.467, 0.34, -1.0], [-0.467, 0.3475, -1.07], [-0.467, 0.3475, -1.14], [-0.467, 0.3475, -1.2], [-0.455, 0.37, -1.26], [-0.447, 0.40, -1.32], [-0.40, 0.45, -1.43], [-0.40, 0.60, -1.52], [-0.44, 0.74, -1.58], [-0.62, 0.80, -1.62], [-0.76, 0.84, -1.66], [-tkNeck, flapY, flapZ]];   // route van de vulpijp, van de tank naar de tankhals
   const vul = A('Vulsysteem', { d: 'Vulpijp met capless vulhals en tankklep in het rechter achterscherm. De vulpijp loopt boven het achterwiel langs naar de tank. Een dop is er niet: in de vulhals zit een klep die het pistool opent.', ex: [-0.2, 0.1, -0.1] }, [
-    P('Vulpijp', tube([[-0.426, 0.30, -0.84], [-0.458, 0.304, -0.86], [-0.467, 0.32, -0.93], [-0.467, 0.34, -1.0], [-0.467, 0.3475, -1.07], [-0.467, 0.3475, -1.14], [-0.467, 0.3475, -1.2], [-0.455, 0.37, -1.26], [-0.447, 0.40, -1.32], [-0.40, 0.45, -1.43], [-0.40, 0.60, -1.52], [-0.44, 0.74, -1.58], [-0.62, 0.80, -1.62], [-0.76, 0.84, -1.66], [-tkNeck, flapY, flapZ]], 0.0185, 64, 10), MAT.plastic, { d: 'Kunststof vulpijp van de vulhals naar de tank.', ex: [-0.04, 0, 0] }),
+    // De vulpijp loopt van de tank boven het achterwiel langs omhoog en verdwijnt in de verhoging van de zijbekleding van de
+    // bagageruimte; achter de bekleding komt hij weer uit de zijwand en loopt naar de tankhals. Het stuk dat helemaal binnen
+    // de bekleding ligt, is weggelaten: de onderste pijp eindigt 2 tot 3 cm in de verhoging (u 0,491), het bovenstuk begint
+    // waar de pijp vrij uit de zijwand komt (u 0,854). Beide stukken liggen precies op de oorspronkelijke route.
+    ...[['Vulpijp', 0, 0.491, 'Kunststof vulpijp van de tank boven het achterwiel langs omhoog tot in de verhoging van de zijbekleding van de bagageruimte; verder loopt hij binnen de bekleding.'],
+      ['Vulpijp bovenstuk', 0.854, 1, 'Bovenste stuk van de kunststof vulpijp: komt achter de zijbekleding van de bagageruimte uit de zijwand en loopt naar de vulhals achter de tankklep.']].map(([n, u0, u1, d]) =>
+      P(n, sysTubePart(vulRoute, 0.0185, 64, 10, u0, u1), MAT.plastic, { d, ex: [-0.04, 0, 0] })),
     P('Vulhals', merge([annulus(0.0245, 0.029, tkMouth - tkNeck, 'x', 24), xf(G.torus('x', 0.0268, 0.0036, 24, 6), [-(tkMouth - tkNeck) / 2, 0, 0])]), MAT.plastic, { d: 'Capless vulhals achter de tankklep: een korte holle hals met een rand waarin het pistool past; de zwarte vulklep zit er een centimeter in.', p: [-(tkNeck + tkMouth) / 2, flapY, flapZ], ex: [-0.1, 0, 0] }),
     P('Vulklep', merge([G.cyl('x', 0.0235, 0.0235, 0.003, 20), xf(G.cyl('z', 0.0025, 0.0025, 0.03, 8), [0.002, 0.022, 0])]), MAT.blackGloss, { d: 'Capless vulklep (klep B in de vulpijp, HB2 1.73): geen dop en geen bandje. Een veer houdt de klep dicht; het pistool duwt hem open. Niet met de vingers indrukken. Op de benzineversie laat een restrictor alleen een loodvrij pistool toe (vorm schematisch).', p: [-(tkMouth - 0.012), flapY, flapZ], ex: [-0.2, 0.05, 0] }),
     P('Vulklepring', G.torus('x', 0.0238, 0.0032, 24, 6), MAT.steel, { d: 'Metalen ring om de zwarte vulklep: zo is de capless vulhals van buiten af te lezen (vorm schematisch).', p: [-(tkMouth - 0.0105), flapY, flapZ], ex: [-0.22, 0.05, 0] }),
     P('Tankkom', tkBowl, MAT.sysTkNis, { d: 'Kom in het rechter achterscherm achter de tankklep, met de hals van de vulpijp op de bodem (vorm schematisch).', ex: [-0.12, 0.02, 0] }),
     A('Tankklep', { d: 'Tankklep in het rechter achterscherm, in lak uitgevoerd. Opent na ontgrendelen door op de achterrand te drukken en draait dan ongeveer 140 graden om de scharnierrand aan de voorkant (hoek geschat).', ex: [-0.34, 0.05, 0],
-      open: { type: 'hinge', pivot: tkSkin(bodTkZ[1] + 0.004, flapY, 0.004), axis: [0, 1, 0], angle: 140 * PI / 180, min: 112 * PI / 180, label: 'Tankklep', look: { dir: [-1, 0.3, -0.45], nodes: ['Tankklep', 'Tankkom'] } } }, [
+      open: hinge(tkSkin(bodTkZ[1] + 0.004, flapY, 0.004), [0, 1, 0], 140 * PI / 180, { min: 112 * PI / 180, label: 'Tankklep', look: { dir: [-1, 0.3, -0.45], nodes: ['Tankklep', 'Tankkom'] } }) }, [
       P('Tankklep buitenkant', flapOut, MAT.paint, { d: 'Buitenkant van de tankklep in carrosseriekleur, licht bol zoals het scherm, met de randen.', ex: [-0.04, 0.01, 0] }),
       P('Tankklep binnenzijde', flapIn, MAT.plasticGrey, { d: 'Grijze kunststof binnenzijde van de tankklep, zichtbaar als de klep openstaat.', ex: [0.04, 0, 0] }),
     ]),
@@ -382,8 +425,8 @@ function buildCar() {
   const chassis = A('Onderstel', { d: 'Vooras met stuurinrichting, achteras, de vier wielen (225/45 R18; 18 inch is de maat van de UK Initiale Lux, voor een Nederlandse Initiale Paris van 2011 is 17 inch even goed mogelijk) en het remsysteem.', ex: [0, -0.4, 0] },
     [buildFrontAxle(), buildRearAxle(), wheels, buildBrakeSystem()]);
   const car = A('Renault Laguna III', {
-    d: 'Renault Laguna III hatchback (fase 2, 2011) in Initiale Paris-uitvoering, zilvergrijs metallic (Gris Platine), met de 2.0 Turbo F4Rt-motor, zestraps automaat en elektrisch panoramadak. Klik op een onderdeel om het uit te klappen, dubbelklik om er direct naartoe te gaan, rechtsklik of houd vast om weer in te klappen.',
-    spec: [['Uitvoering', 'Initiale Paris (fase 2)'], ['Carrosserie', '5-deurs hatchback'], ['Motor', '2.0 Turbo F4Rt, 125 kW (170 pk)'], ['Koppel', '270 Nm bij 3250 tpm'], ['Transmissie', '6-traps automaat'], ['Topsnelheid', '220 km/h'], ['0–100 km/h', '9,2 s'], ['Verbruik (gecomb.)', '8,7 l/100 km'], ['CO₂', '201 g/km'], ['Emissienorm', 'Euro 5'], ['Tankinhoud', '66 l'], ['L × B × H', '4695 × 1811 × 1445 mm'], ['Wielbasis', '2756 mm']],
+    d: 'Renault Laguna III hatchback (fase 2, 2011) in Initiale Paris-uitvoering, zilvergrijs metallic (Gris Platine), met de 2,0 Turbo F4Rt-motor, zestraps automaat en elektrisch panoramadak. Klik op een onderdeel om het uit te klappen, dubbelklik om er direct naartoe te gaan, rechtsklik of houd vast om weer in te klappen.',
+    spec: [['Uitvoering', 'Initiale Paris (fase 2)'], ['Carrosserie', '5-deurs hatchback'], ['Motor', '2,0 Turbo F4Rt, 125 kW (170 pk)'], ['Koppel', '270 Nm bij 3.250 tpm'], ['Transmissie', '6-traps automaat'], ['Topsnelheid', '220 km/h'], ['0–100 km/h', '9,2 s'], ['Verbruik (gecomb.)', '8,7 l/100 km'], ['CO₂', '201 g/km'], ['Emissienorm', 'Euro 5'], ['Tankinhoud', '66 l'], ['L × B × H', '4.695 × 1.811 × 1.445 mm'], ['Wielbasis', '2.756 mm']],
   }, [buildBody(), buildInterior(), buildPowertrain(), chassis, buildCooling(), buildExhaust(), buildFuel(), buildElectrical()]);
   // keuzes voor de eerste twee uitklapniveaus (vectoren in het autoframe, in meters bij 100 %)
   const set = (name, v) => { const n = car.kids.find(k => k.name === name) || chassis.kids.find(k => k.name === name); if (n) n.ex = V3(...v); };
