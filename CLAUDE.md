@@ -28,6 +28,15 @@ taal van code-commentaar, beschrijvingen, docs en commits. Geen em-dashes in tek
 - Het chassisnummer en het kenteken van de gebruiker komen nooit in de repo, de pagina of een commitbericht.
 - Nummers in de docs: één bron (`docs/cijfers.md`); elders ernaar verwijzen in plaats van getallen herhalen.
 
+## Klaar en bekende ruis
+
+- Klaar is: volledige set groen op macOS én op Linux (VM `lag3-vm` via `tools/lag3-vm.sh test`), visuele poort (visdiff) groen op Linux, open-stand-
+  botsingsmeting zonder nieuwe doordringingen, advisor-oordeel pass. Een groene macOS-run alleen is geen oordeel over visdiff.
+- Golf 5b-3 bleef hangen op botsingsrondes 4 en 5 en een beslissing die pas aan het eind boven kwam. Daarom vooraf de
+  beslislijst en de verwachte rondes geven (zie `~/.claude/CLAUDE.md`, Lange orkestraties); max 6 reparatierondes per golf,
+  daarna een beslisnotitie aan de gebruiker in plaats van nog een ronde.
+- Ruis op macOS: GPU-prestatiehints van ANGLE (zoals `GPU stall due to ReadPixels`) in de lokale smoketest. Melden, niet blokkeren.
+
 ## Werkwijze
 
 - Golven per domein in eigen worktrees; `tools/orkestratie/mergecheck.py` vóór samenvoegen; na samenvoegen de volledige
