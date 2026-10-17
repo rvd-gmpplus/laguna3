@@ -10,7 +10,7 @@ Gebruik:
 Controles (de bouw stopt bij een fout):
   - dubbele functienamen op het hoogste niveau over alle bestanden (die zouden elkaar stil overschrijven)
   - dubbele materiaalnamen in std()/phys()
-  - teksten in `d:` en `spec:` (R1, R2 fouten; R4, R5 meldingen) en cachesleutels zonder voorvoegsel van het bestand (R7, melding): zie lint_texts()
+  - teksten in `d:`, `spec:`, `note:` en `label:` (R1, R2, R4, R5 fouten) en cachesleutels zonder voorvoegsel van het bestand (R7, fout): zie lint_texts()
   - syntaxis van het samengevoegde script via `node --check` (vangt ook dubbele const/let), en van elk inline script in head.html
 
 De scripttags van three.js krijgen integrity (sha384) en crossorigin="anonymous"; de hash komt uit het lokale npm-pakket
@@ -52,16 +52,16 @@ def read(name):
 
 # ---------------------------------------------------------------------------------------------------------------------
 # Tekstcontrole en sleutelvoorvoegsels (golf 5b-3, besluit G9e: Nederlandse notatie).
-# lint_texts() leest alleen de stringwaarden van `d:` en `spec:` in de bronbestanden; commentaar en ${...} in sjablonen worden
+# lint_texts() leest alleen de stringwaarden van `d:`, `spec:`, `note:` en `label:` in de bronbestanden; commentaar en ${...} in sjablonen worden
 # overgeslagen. Regels:
 #   R1 (fout)     in `spec` geen schatwoorden: spec is alleen voor geverifieerde feiten
 #   R2 (fout)     geen decimale punt bij een eenheid (komma decimaal: 114,3 mm)
-#   R4 (melding)  een getal vanaf 1.000 vóór een eenheid heeft een punt als duizendtal (3.250 tpm); jaartallen zonder
+#   R4 (fout)     een getal vanaf 1.000 vóór een eenheid heeft een punt als duizendtal (3.250 tpm); jaartallen zonder
 #                 eenheid en productcodes (7PK1795) vallen er niet onder
-#   R5 (melding)  Ø staat zonder spatie vóór de maat (Ø57)
-#   R7 (melding)  een cachesleutel begint met het voorvoegsel van het bestand (tabel `_voorvoegsels` in auto.json: dat is per
+#   R5 (fout)     Ø staat zonder spatie vóór de maat (Ø57)
+#   R7 (fout)     een cachesleutel begint met het voorvoegsel van het bestand (tabel `_voorvoegsels` in auto.json: dat is per
 #                 auto, dus niet in dit generieke bestand; een bestand zonder regel in de tabel, zoals core.js, wordt niet getoetst)
-# R4, R5 en R7 zijn meldingen tot de laatste fase van de golf; dan gaan ze naar fouten.
+# R4, R5 en R7 waren tot de laatste fase van golf 5b-3 meldingen; sinds stap 3.1 zijn het fouten (de bouw stopt).
 # ---------------------------------------------------------------------------------------------------------------------
 TEXT_SKIP = {'partnumbers.js'}   # bronnamen en citaten van derden: letterlijk laten staan
 
@@ -78,7 +78,7 @@ _S2 = re.compile(r'"(?:\\.|[^"\\\n])*"')
 _RELIT = re.compile(r'/(?:\\.|\[(?:\\.|[^\]\\\n])*\]|[^/\\\n\[])+/[a-z]*')
 _SCAN = re.compile(r"""
     (?P<lc>//[^\n]*) | (?P<bc>/\*.*?\*/) | (?P<s1>'(?:\\.|[^'\\\n])*') | (?P<s2>"(?:\\.|[^"\\\n])*") | (?P<tpl>`)
-  | (?P<key>(?<![\w$.])(?P<kn>d|spec)[ \t]*:(?!:)) | (?P<call>(?<![\w$])(?P<cn>cache|lathe)\s*\()
+  | (?P<key>(?<![\w$.])(?P<kn>d|spec|note|label)[ \t]*:(?!:)) | (?P<call>(?<![\w$])(?P<cn>cache|lathe)\s*\()
   | (?P<div>/) | (?P<word>[\w$]+) | (?P<other>[^\w$'"`/]+)""", re.X | re.S)
 _ARGS = re.compile(r"""(?P<s>'(?:\\.|[^'\\\n])*'|"(?:\\.|[^"\\\n])*")|(?P<t>`)|(?P<c>//[^\n]*|/\*.*?\*/)|(?P<p>[()\[\]{},])""", re.S)
 _ESC = re.compile(r'\\(u[0-9a-fA-F]{4}|x[0-9a-fA-F]{2}|.)', re.S)
@@ -272,9 +272,9 @@ def _resolve(sources, name, pos, lead, ident):
 
 
 def lint_texts(sources, prefixes=None):
-    """Geeft (fouten, meldingen): lijsten regels 'bestand:regel: ... (Rn)'. sources = [(naam, tekst)];
+    """Geeft de fouten: een lijst regels 'bestand:regel: ... (Rn)'. sources = [(naam, tekst)];
     prefixes = {bestand: [voorvoegsels]} (leeg of None: geen R7)."""
-    errors, notes = [], []
+    errors = []
     prefixes = prefixes or {}
     texts_of = dict(sources)
 
@@ -298,9 +298,9 @@ def lint_texts(sources, prefixes=None):
                 errors.append(f'{where}: decimale punt bij eenheid "{m.group(0).strip()}", schrijf een komma (R2)')
             for m in _R4.finditer(t):
                 for num in re.findall(r'(?<![\d.,])\d{4,}(?!\d|[.,]\d)', m.group(0)):   # elk getal van een maat apart
-                    notes.append(f'{where}: duizendtal zonder punt "{num}" in "{m.group(0).strip()}", schrijf een punt (R4)')
+                    errors.append(f'{where}: duizendtal zonder punt "{num}" in "{m.group(0).strip()}", schrijf een punt (R4)')
             for m in _R5.finditer(t):
-                notes.append(f'{where}: Ø met spatie in "{short(t[max(0, m.start() - 12):m.end() + 12])}" (R5)')
+                errors.append(f'{where}: Ø met spatie in "{short(t[max(0, m.start() - 12):m.end() + 12])}" (R5)')
         pre = prefixes.get(name)
         if not pre:
             continue
@@ -310,15 +310,13 @@ def lint_texts(sources, prefixes=None):
             for key in names:
                 if key and not key.startswith(tuple(pre)) and (key, pos) not in seen:
                     seen.add((key, pos))
-                    notes.append(f'{name}:{line(name, pos)}: cachesleutel "{key}" begint niet met {"/".join(pre)} (R7)')
-    return errors, notes
+                    errors.append(f'{name}:{line(name, pos)}: cachesleutel "{key}" begint niet met {"/".join(pre)} (R7)')
+    return errors
 
 
-def lint(sources, notes=None, prefixes=None):
-    """Geeft de fouten. Meldingen (R4, R5, R7) komen in de lijst `notes` als die is meegegeven."""
-    errors, found = lint_texts(sources, prefixes)
-    if notes is not None:
-        notes.extend(found)
+def lint(sources, prefixes=None):
+    """Geeft de fouten (tekstregels R1 tot en met R7 en de dubbele namen)."""
+    errors = lint_texts(sources, prefixes)
     seen_fn, seen_mat = {}, {}
     for name, text in sources:
         for i, line in enumerate(text.split('\n'), 1):
@@ -436,12 +434,7 @@ def main(argv):
         argv = argv[:i] + argv[i + 2:]
     args = [a for a in argv if not a.startswith('--')]
     sources = [(f, read(f)) for f in ORDER]
-    notes = []
-    errors = lint(sources, notes, auto().get('_voorvoegsels')) + lint_head(read('head.html'))
-    if notes:
-        print(f'{len(notes)} meldingen (tot de laatste fase van de golf geen fout):', file=sys.stderr)
-        for n_ in notes:
-            print('  ' + n_, file=sys.stderr)
+    errors = lint(sources, auto().get('_voorvoegsels')) + lint_head(read('head.html'))
     if errors:
         print('BOUW GESTOPT:', file=sys.stderr)
         for e in errors:
