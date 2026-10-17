@@ -610,12 +610,15 @@ const intLinU = z => z > -1.475 ? 0.472 : z > -1.485 ? lerp(0.472, 0.49, (-1.475
 const intLinCirc = z => { const d = Math.max(0, -1.485 - z); return d >= 0.305 ? 0.46 : 0.46 + Math.sqrt(0.305 * 0.305 - d * d); };
 const intKuipY = z => 0.33 + Math.sqrt(Math.max(0, 0.405 * 0.405 - (z + 1.391) * (z + 1.391)));   // bovenkant wielkuip (carrosserie)
 const intSeatBackZ = y => -1.267 - (y - 0.472) * 0.255;   // achterkant van de rechtopstaande rugleuning achter op hoogte y
+// maten bij de veerkoker achter, afgeleid van REAR_SPR (body.js): de binnenwand van de bekleding ligt 3 mm binnen de koker en is
+// 2,5 mm dik (buitenkant 0,5 mm binnen de koker); de uitsparing eronder komt 10 mm boven de koker en loopt tot 5 mm achter de koker
+const intKokerX = REAR_SPR.sprX - 0.003, intKokerXo = intKokerX + 0.0025, intKokerY = REAR_SPR.sprY[1] + 0.010, intKokerZ = REAR_SPR.sprZ[0] - 0.005;
 function intLining(s) {
   const yb = intLinB, yT = 0.98, xo = 0.635, xw = 0.615, xP = 0.37, podTop = 0.78, podWall = 0.84, zPod = -1.616;
   const sec = z => {
     // achter zPod trekt de verhoging terug naar de binnenwand; de schouder loopt nog 1 cm door tot de vulpijp in de zijwand verdwijnt
     // (het brede deel van de vloer komt hier nog niet boven de wielkastbult), daarna begint de wielkastbult
-    const wallOnly = z <= -1.79, hump = z < zPod - 0.012, xL = wallOnly ? 0.605 : 0.429, xK = wallOnly ? 0.625 : 0.50;
+    const wallOnly = z <= -1.79, hump = z < zPod - 0.012, xL = wallOnly ? 0.605 : intKokerX, xK = wallOnly ? 0.625 : 0.50;
     const yk = wallOnly ? yb + 0.006 : Math.max(yb + 0.006, intKuipY(z) + 0.008);
     let pts;
     if (!hump) {
@@ -635,7 +638,7 @@ function intLining(s) {
     }
     // buitenkant onder: uitsparing boven de wielkuip en, bij de veerkoker, een tweede uitsparing tot net boven de koker (y 0,572), zodat
     // de veer met schotel en aanslagrubber in de koker vrij blijft; de binnenwand is daar 2,5 mm dik (vilt op de binnenwand van de koker)
-    const koker = !wallOnly && z > -1.55, xK1 = koker ? 0.4315 : xK - 0.002, yk1 = koker ? 0.582 : yk - 0.003;
+    const koker = !wallOnly && z > intKokerZ, xK1 = koker ? intKokerXo : xK - 0.002, yk1 = koker ? intKokerY : yk - 0.003;
     pts.push([xw, yT - 0.008], [xw + 0.002, yT - 0.002], [xw + 0.008, yT], [xo - 0.008, yT], [xo, yT - 0.008], [xo, yk], [xK, yk], [xK, yk1], [xK1, yk1], [xK1, yb]);
     return pts;
   };
