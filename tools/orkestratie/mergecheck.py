@@ -5,10 +5,9 @@
 Meldt welke bestanden de tak wijzigt, of ze binnen het eigendom van het domein vallen, en of alleen-lezen
 bestanden (testbestanden van de orkestrator, index.html, docs) zijn aangeraakt. Exitcode 1 bij een overtreding.
 
-index.html is voor elke tak een overtreding, ook voor het domein `orkestrator`: hij hoort bij src/ en de orkestrator bouwt
-hem. De tests overschrijven hem niet meer (de harness bouwt naar een tijdelijke map, zie build_test in tools/harness.py),
-maar een index.html die niet bij de src/ van de tak past, blijft een fout. Alleen de bewuste herbouw na de samenvoegingen
-(golf 5b-3: fase 3.5, ronde 2, 3 en 8) en de publicatie gaan met --met-index, en dan alleen voor `orkestrator`.
+index.html is voor elke tak een overtreding, ook voor het domein `orkestrator`: de harness overschrijft de pagina bij elke
+paginalading, dus een gewijzigde index.html in een tak is bijna altijd een bijwerking van de metingen. Alleen de bewuste
+herbouw na de samenvoegingen (golf 5b-3: fase 3.5) en de publicatie gaan met --met-index, en dan alleen voor `orkestrator`.
 """
 import os, sys, subprocess, fnmatch
 
