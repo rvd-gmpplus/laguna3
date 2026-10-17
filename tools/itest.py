@@ -411,6 +411,19 @@ def run_view(s, tag, w, h, touch):
     pg.evaluate("document.activeElement && document.activeElement.blur()")
     pg.keyboard.press('Backspace'); settle(pg)
     check(f'5 [{tag}] Backspace is stap terug', T(pg, 'stateNoHist()') == s0)
+    # camera na Stap terug (golf 5b-3, G1): de herkadrering na een layoutwijziging van het dock trok de camera na een Stap terug naar
+    # het kader van de preset waaruit je terugging (uiRestore liet uiLastFit en uiFitRef staan). state() bevat geen camera, dus de
+    # controle hierboven ving dat niet. Wachttijden zoals een gebruiker ze heeft: de preset loopt uit, de herkadrering komt na ~160 ms.
+    def cam_now():
+        return pg.evaluate("(() => { const c = camera.position, t = controls.target; return [c.x, c.y, c.z, t.x, t.y, t.z]; })()")
+    for a, b in [('assembled', 'engineAll'), ('engine', 'engineAll'), ('assembled', 'engine'), ('assembled', 'cooling')]:
+        pg.evaluate("(id) => { __model.preset(id); __model.finishAll(); }", a); pg.wait_for_timeout(1200); settle(pg, 60)
+        c0 = cam_now()
+        pg.evaluate("(id) => { __model.preset(id); }", b); pg.wait_for_timeout(4000); settle(pg, 400)
+        pg.evaluate('__model.undo()'); settle(pg, 300); pg.wait_for_timeout(1500)
+        c2 = cam_now()
+        dc = max(abs(x - y) for x, y in zip(c0, c2))
+        check(f'5 [{tag}] camera na stap terug ({a}, {b}, terug) binnen 0,05 m van de stand voor de preset', dc <= 0.05, f'grootste verschil {dc:.3f} m; voor {[round(x, 2) for x in c0]} na {[round(x, 2) for x in c2]}')
 
     # 6. schuif op de werkgroep
     for wg in ['Renault Laguna III', 'Motor F4Rt']:

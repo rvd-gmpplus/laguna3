@@ -12,7 +12,7 @@ const PRESETS = [
   { id: 'everything', cat: 'Overzicht', label: 'Alles uit elkaar', key: '9', note: 'Elke groep uitgeklapt tot op het kleinste onderdeel, gekleurd per hoofdgroep.', deep: [appCar], sys: true, labels: appCar, cam: { dir: [1, 0.6, 1.0], pad: 1.0 } },
   { id: 'tour', cat: 'Overzicht', label: 'Rondleiding', note: 'Speelt de belangrijkste presets na elkaar af, met uitleg bij elke stap.', tour: true },
   // Motor
-  { id: 'engine', cat: 'Motor', label: 'Motor F4Rt', key: '2', note: '2.0 16V turbobenzinemotor: 1998 cm³, 125 kW (170 pk), 270 Nm. Eerste laag uit elkaar.', iso: ['Motor F4Rt'], open: ['Motor F4Rt'], cam: { dir: [0.3, 0.42, 1], pad: 1.08 } },
+  { id: 'engine', cat: 'Motor', label: 'Motor F4Rt', key: '2', note: '2,0 16V turbobenzinemotor: 1.998 cm³, 125 kW (170 pk), 270 Nm. Eerste laag uit elkaar.', iso: ['Motor F4Rt'], open: ['Motor F4Rt'], cam: { dir: [0.3, 0.42, 1], pad: 1.08 } },
   { id: 'engineAll', cat: 'Motor', label: 'Motor tot op de bout', key: '3', note: 'Alle groepen van de motor uitgeklapt, tot op de kleinste onderdelen.', iso: ['Motor F4Rt'], deep: ['Motor F4Rt'], cam: { dir: [0.3, 0.45, 1], pad: 1.02 } },
   { id: 'head', cat: 'Motor', label: 'Cilinderkop en kleppen', note: 'Aluminium cilinderkop met twee nokkenassen en zestien kleppen, helemaal uit elkaar.', iso: ['Cilinderkop'], deep: ['Cilinderkop'], cam: { dir: [0.7, 0.5, 1], pad: 1.04 } },
   { id: 'crank', cat: 'Motor', label: 'Krukmechanisme', note: 'Krukas met de vier zuigers en drijfstangen; boring × slag 82,7 × 93,0 mm.', iso: ['Krukmechanisme'], deep: ['Krukmechanisme'], cam: { dir: [0.35, 0.4, 1], pad: 1.04 } },
