@@ -7,8 +7,15 @@
     python3 tools/framework.py nieuw DOEL --id ID --wortel "Merk Model" [--merk Merk]
                                                      zet een nieuwe auto op: generiek, sjablonen en een minimale beginauto die
                                                      bouwt en de rooktest haalt (DOEL moet leeg zijn of niet bestaan)
+    python3 tools/framework.py extra-namen           namen van de extra tests uit auto.json (extraTests), op een regel,
+                                                     gescheiden door spaties; niets als het veld ontbreekt; exit 1 bij een
+                                                     ongeldig veld (finaltests.sh gebruikt dit)
+    python3 tools/framework.py extra NAAM UITMAP     voert de extra test NAAM uit vanuit de repowortel, met {uit} = UITMAP
+                                                     (absoluut) en {root} = de repowortel in het commando; geeft de exitcode
+                                                     van het commando ongewijzigd door, 2 bij een onbekende naam
 
 Exitcode 1 bij een fout. De lijsten staan in framework.json; deze repo is de bron.
+Extra tests: optioneel veld extraTests in auto.json, een lijst {"naam": ..., "cmd": [...], "uitleg": ...} (docs/framework.md).
 """
 import sys, os, re, json, shutil, subprocess, filecmp
 
@@ -42,9 +49,100 @@ def wanted_fields():
     return sorted(out)
 
 
+EXTRA_NAAM = re.compile(r'^[a-z][a-z0-9_-]*$')
+
+
+def vaste_tests():
+    """De vaste testnamen uit de TESTS-regel van finaltests.sh (de enige bron; CI bewaakt die regel)."""
+    txt = open(os.path.join(HERE, 'tools', 'orkestratie', 'finaltests.sh'), encoding='utf-8').read()
+    m = re.search(r'^TESTS="([^"]*)"', txt, re.M)
+    return m.group(1).split() if m else []
+
+
+def extra_tests():
+    """(lijst extraTests uit auto.json, fouten); zonder het veld een lege lijst. Controleert de vorm, niet of bestanden bestaan."""
+    try:
+        a = load(os.path.join(HERE, 'auto.json'))
+    except (OSError, ValueError) as e:
+        return [], [f'auto.json is niet te lezen: {e}']
+    if 'extraTests' not in a:
+        return [], []
+    et, fails = a['extraTests'], []
+    if not isinstance(et, list):
+        return [], ['auto.json: extraTests moet een lijst zijn']
+    vast, gezien, ok = vaste_tests(), set(), []
+    for i, t in enumerate(et):
+        wie = f'auto.json: extraTests[{i}]'
+        if not isinstance(t, dict):
+            fails.append(f'{wie} moet een object zijn'); continue
+        naam, cmd = t.get('naam'), t.get('cmd')
+        if isinstance(naam, str):
+            wie = f'auto.json: extra test "{naam}"'
+        for k in t:
+            if k not in ('naam', 'cmd', 'uitleg'):
+                fails.append(f'{wie} heeft een onbekend veld "{k}" (toegestaan: naam, cmd, uitleg)')
+        if 'uitleg' in t and not isinstance(t['uitleg'], str):
+            fails.append(f'{wie}: uitleg moet tekst zijn')
+        good = True
+        if not isinstance(naam, str) or not EXTRA_NAAM.match(naam):
+            fails.append(f'{wie}: naam moet passen op ^[a-z][a-z0-9_-]*$'); good = False
+        elif naam in gezien:
+            fails.append(f'{wie}: naam komt dubbel voor'); good = False
+        elif naam in vast:
+            fails.append(f'{wie}: naam botst met een vaste test van finaltests.sh ({" ".join(vast)})'); good = False
+        if isinstance(naam, str):
+            gezien.add(naam)
+        if not isinstance(cmd, list) or not cmd or not all(isinstance(c, str) and c for c in cmd):
+            fails.append(f'{wie}: cmd moet een niet-lege lijst van teksten zijn'); good = False
+        if good:
+            ok.append(t)
+    return ok if not fails else [], fails
+
+
+def extra_paden(cmd):
+    """tools/...-paden in een extra commando (ook als {root}/tools/...)."""
+    return [c for c in cmd if re.match(r'^(\{root\}/|\./)?tools/', c)]
+
+
+def extra_namen():
+    et, fails = extra_tests()
+    if fails:
+        print('extra tests ongeldig:\n  ' + '\n  '.join(fails), file=sys.stderr)
+        return 1
+    print(' '.join(t['naam'] for t in et), end='\n' if et else '')
+    return 0
+
+
+def extra(naam, uit):
+    et, fails = extra_tests()
+    if fails:
+        print('extra tests ongeldig:\n  ' + '\n  '.join(fails), file=sys.stderr)
+        return 1
+    t = next((t for t in et if t['naam'] == naam), None)
+    if t is None:
+        print(f'onbekende extra test "{naam}"; bekend: {" ".join(x["naam"] for x in et) or "(geen)"}', file=sys.stderr)
+        return 2
+    uit = os.path.abspath(uit)
+    cmd = [c.replace('{uit}', uit).replace('{root}', HERE) for c in t['cmd']]
+    os.chdir(HERE)
+    sys.stdout.flush(); sys.stderr.flush()
+    try:
+        os.execvp(cmd[0], cmd)
+    except OSError as e:
+        print(f'extra test "{naam}": kan {cmd[0]} niet starten: {e}', file=sys.stderr)
+        return 127
+
+
 def check():
     fails = []
     a = load(os.path.join(HERE, 'auto.json'))
+    et, efails = extra_tests()
+    fails += efails
+    if not efails:
+        for t in et:
+            for c in extra_paden(t['cmd']):
+                if not os.path.exists(os.path.join(HERE, c.replace('{root}/', '', 1))):
+                    fails.append(f'auto.json: extra test "{t["naam"]}" noemt {c}, dat bestaat niet')
     for k in wanted_fields():
         if k not in a:
             fails.append(f'auto.json mist het veld {k}')
@@ -67,7 +165,8 @@ def check():
     for name in re.findall(r"'([^']+)'", order):
         if 'src/' + name not in known:
             fails.append(f'src/{name} staat in ORDER maar niet in framework.json')
-    print(f'framework {MAN["versie"]}: {len(files("generiek"))} generieke bestanden, {len(wanted_fields())} velden uit auto.json')
+    print(f'framework {MAN["versie"]}: {len(files("generiek"))} generieke bestanden, {len(wanted_fields())} velden uit auto.json'
+          + (f', {len(et)} extra tests ({" ".join(t["naam"] for t in et)})' if et and not efails else ''))
     print('framework: ok' if not fails else 'framework: FOUT\n  ' + '\n  '.join(fails[:60]))
     return 1 if fails else 0
 
@@ -223,6 +322,12 @@ def main(argv):
     cmd, rest = argv[0], argv[1:]
     if cmd == 'check':
         return check()
+    if cmd == 'extra-namen':
+        return extra_namen()
+    if cmd == 'extra':
+        if len(rest) != 2:
+            print('extra vraagt NAAM en UITMAP'); return 2
+        return extra(rest[0], rest[1])
     if cmd == 'vergelijk' and rest:
         return compare(os.path.abspath(rest[0]))
     if cmd == 'export' and rest:

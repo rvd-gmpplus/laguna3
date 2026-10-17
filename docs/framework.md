@@ -51,6 +51,25 @@ Eerlijk benoemd, zodat het de volgende stap is en geen verrassing:
 - De poortcamera's (`gallery.py`, `gateshots.py`, `poort.js`) en `rays_bagage.py` zijn per auto.
 - Het ontwerpdocument en `testen.md` mengen generieke uitleg met Laguna-feiten; ze staan onder sjabloon.
 
+## Extra tests per auto (`extraTests`)
+
+De vaste testlijst van `finaltests.sh` is generiek en blijft letterlijk gelijk (CI bewaakt de `TESTS`-regel). Wil een auto er eigen tests bij, zoals een meetscript of een poort die alleen voor haar model zin heeft, dan meldt ze die aan in `auto.json`; de generieke laag blijft autoneutraal. Het veld is optioneel en ontbreekt bij een auto zonder extra tests (dan is de uitvoer, `tests.txt` en de exitcode precies als zonder de haak).
+
+```json
+"extraTests": [
+  {"naam": "meet", "cmd": ["python3", "tools/meet.py", "--uit", "{uit}/meet"], "uitleg": "meetpoort van deze auto"}
+]
+```
+
+- `naam`: past op `^[a-z][a-z0-9_-]*$`, is uniek en botst niet met een vaste testnaam uit de `TESTS`-regel. De naam wordt de bestandsnaam `NAAM.txt` in de uitvoermap.
+- `cmd`: een niet-lege lijst van teksten, het commando met argumenten (geen shell). `{uit}` wordt de absolute uitvoermap van de run en `{root}` de repowortel; het commando draait vanuit de repowortel. Een pad dat met `tools/` begint (ook als `{root}/tools/`) moet bestaan.
+- `uitleg`: vrije tekst voor wie het leest; geen invloed op de run.
+- Andere velden zijn een fout, zodat een typefout niet stil een test laat vervallen.
+
+Hoe het werkt: `python3 tools/framework.py check` valideert het veld (rood bij een fout). `framework.py extra-namen` drukt de namen op één regel af (niets als het veld ontbreekt) en geeft exit 1 bij een ongeldig veld; `finaltests.sh` stopt dan meteen met een melding. Anders start `finaltests.sh` de extra tests als derde parallelle reeks naast de twee vaste, elk via `framework.py extra NAAM UITMAP`, dat de exitcode van het commando ongewijzigd doorgeeft (onbekende naam: 2). Elke extra test schrijft `NAAM.txt` met als laatste regel `exit N (Ns)`, telt in de eindlus mee (een ontbrekend `NAAM.txt` is FOUT) en staat na de vaste lijst in `tests.txt`.
+
+Eigen scripts van de auto horen in het manifest onder `auto` (niet onder `generiek`), want ze verschillen per auto.
+
 ## Een nieuwe auto in stappen
 
 Elke stap eindigt met een poort; pas als die groen is, begint de volgende.
