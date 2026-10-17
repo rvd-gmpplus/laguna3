@@ -156,8 +156,8 @@ function intBelts() {
   const bandGeo = (pts, w) => merge(pts.slice(1).map((p, i) => intStrip(pts[i], p, w, 0.0015)));
   for (const s of [1, -1]) {
     const n = sideName(s), zB = -0.28, xr = s * (surfX(zB, 0.55) - 0.087), xg = s * (surfX(zB, 1.1) - 0.05);
-    // rusttand: de band hangt van de bovenste geleider langs de stijl omlaag, de tong zit onderaan bij het onderste ankerpunt (het slot naast de stoel blijft zoals het was)
-    const xpil = y => s * (surfX(zB, y) - 0.052), restPts = [[xg, 1.1, zB + 0.012], [xpil(0.86), 0.86, zB + 0.016], [xpil(0.62), 0.62, zB + 0.018]], tong = [xpil(0.585), 0.585, zB + 0.02];
+    // rusttand: de band hangt van de bovenste geleider vrijwel recht omlaag, de tong zit onderaan bij het onderste ankerpunt (het slot naast de stoel blijft zoals het was); de knikken liggen zo dat de band in elke stand van de achterste zijruit vrij blijft: x binnen 0,75, tussen y 0,98 en 0,87 net achter de balk van de B-stijl (z 0,5 cm achter de stijl)
+    const restPts = [[xg, 1.1, zB + 0.012], [xg - s * 0.005, 0.98, zB - 0.005], [xg + s * 0.01, 0.87, zB - 0.005], [xg + s * 0.02, 0.62, zB + 0.018]], tong = [xg + s * 0.025, 0.585, zB + 0.02];
     const grp = [];
     grp.push(
       intPart(`Gordelrolautomaat voor ${n}`, G.rbox(0.06, 0.1, 0.06, 0.01), MAT.plastic, 'Oprolautomaat met gordelspanner en krachtbegrenzer onderin de B-stijl, achter de stijlbekleding verborgen; de bestuurder heeft een dubbele spanner.', { p: [xr, 0.55, zB], ex: [s * 0.1, 0, 0] }),
