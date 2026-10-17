@@ -184,7 +184,7 @@ function buildBlock() {
   });
   const rsBolts = [[0.075, 0.038], [-0.075, 0.038], [0.083, -0.03], [-0.083, -0.03], [0.035, -0.05], [-0.035, -0.05]];
   return A('Motorblok', { d: 'Gietijzeren onderblok met de vijf hoofdlagers, oliespuiters, vorstpluggen, centreerbussen en het keerringhuis aan de vliegwielzijde.', ex: [0, 0, 0] }, [
-    P('Cilinderblok', blockGeo(), MAT.iron, { d: 'Gietijzeren cilinderblok met direct in het blok gehoonde boringen (de F van F4R staat voor fonte, gietijzer); diepe carterrok en vijf lagerstoelen.', spec: [['Materiaal', 'gietijzer'], ['Boring × slag', '82,7 × 93,0 mm'], ['Cilinderinhoud', '1998 cm³'], ['Compressie', '9,5 : 1 (één bron noemt 9,0 : 1)']], ex: [0, 0, 0] }),
+    P('Cilinderblok', blockGeo(), MAT.iron, { d: 'Gietijzeren cilinderblok met direct in het blok gehoonde boringen (de F van F4R staat voor fonte, gietijzer); diepe carterrok en vijf lagerstoelen.', spec: [['Materiaal', 'gietijzer'], ['Boring × slag', '82,7 × 93,0 mm'], ['Cilinderinhoud', '1.998 cm³'], ['Compressie', '9,5 : 1 (één bron noemt 9,0 : 1)']], ex: [0, 0, 0] }),
     ...XM.map((_, i) => engMainBearing(i)),
     A('Oliespuiters', { d: 'Vier oliespuiters voor de zuigerkoeling, één per cilinder.', ex: [0, -0.14, -0.1] }, jets),
     A('Vorstpluggen', { d: 'Ingeperste expansiepluggen in de watermantel aan voor- en achterzijde (aantal geschat).', ex: [0, 0.02, 0.0] }, [

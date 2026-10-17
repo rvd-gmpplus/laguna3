@@ -3,6 +3,8 @@
 const TIM = [[0, 0, 0.0281, 1], [0.099, 0.093, 0.0255, 1], [CAMZ, CAMY, 0.0569, 1], [-CAMZ, CAMY, 0.0569, 1], [-0.11, 0.249, 0.028, 1], [-0.086, 0.089, 0.03, 1]];
 // hulpaandrijvingsvlak (z, y) bij x = XA, in looprichting: krukaspoelie, aircocompressor, stuurpomp, dynamo, geleiderol, spanner (tegen de rug)
 const ACC = [[0, 0, 0.07, 1], [0.15, -0.195, 0.0595, 1], [ENG_PS[2], ENG_PS[1], ENG_PS_R, 1], [0.205, 0.365, 0.0245, 1], [0.127, 0.23, 0.03, 1], [0.096, 0.11, 0.03, -1]];
+// afgeronde mm-waarde in Nederlandse notatie (punt als duizendtalscheiding vanaf 1.000), voor getallen die uit de geometrie komen
+function engMmNl(v) { return String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
 function pulley(r, w, key) {
   return G.lathe('x', [[0.008, -w / 2], [r, -w / 2], [r, -w / 2 + 0.003], [r - 0.004, -w / 2 + 0.006], [r - 0.004, w / 2 - 0.006], [r, w / 2 - 0.003], [r, w / 2], [0.008, w / 2]], 28, key);
 }
@@ -24,8 +26,8 @@ function engTimingCover(y0, y1, hole) {
 }
 function buildTiming() {
   const belt = engBelt(TIM, 0.027, 0.004);
-  return A('Distributie', { d: 'Getande distributieriem (126 tanden, 27 mm breed) die beide nokkenassen en de waterpomp synchroon met de krukas aandrijft; spanrol met excentriek en een geleiderol.', ex: [-0.38, 0.1, 0], spec: [['Riem', '126 tanden, 27 mm breed, 1200 mm'], ['Spoed', '9,525 mm'], ['Overbrenging', '2 : 1']] }, [
-    P('Distributieriem', xf(belt.geo, [XT, 0, 0]), MAT.belt, { d: `HNBR-riem met glasvezelkoord en afgeronde tanden; riemlengte in het model ${Math.round(belt.len * 1000)} mm (opgave 1200 mm).`, ex: [-0.09, 0, 0] }),
+  return A('Distributie', { d: 'Getande distributieriem (126 tanden, 27 mm breed) die beide nokkenassen en de waterpomp synchroon met de krukas aandrijft; spanrol met excentriek en een geleiderol.', ex: [-0.38, 0.1, 0], spec: [['Riem', '126 tanden, 27 mm breed, 1.200 mm'], ['Spoed', '9,525 mm'], ['Overbrenging', '2 : 1']] }, [
+    P('Distributieriem', xf(belt.geo, [XT, 0, 0]), MAT.belt, { d: `HNBR-riem met glasvezelkoord en afgeronde tanden; riemlengte in het model ${engMmNl(belt.len * 1000)} mm (opgave 1.200 mm).`, ex: [-0.09, 0, 0] }),
     P('Krukastandwiel', gear(19, 0.0281, 0.0258, 0.03, 0.019, 'x'), MAT.steel, { d: 'Tandwiel op de krukasneus dat de distributieriem aandrijft: 19 tanden, afgeleid uit de 2 : 1-overbrenging (tandental geschat).', p: [XT, 0, 0], ex: [-0.045, -0.02, 0], inner: true }),
     P('Spie krukastandwiel', G.box(0.024, 0.004, 0.005), MAT.darkSteel, { d: 'Spie (clavette) die het krukastandwiel op de krukas vastzet.', p: [XT, 0.0205, 0], ex: [-0.03, 0.04, 0] }),
     P('Nokkenaswiel inlaat', merge([gear(38, 0.0569, 0.0545, 0.027, 0.012, 'x'), xf(G.cyl('x', 0.022, 0.022, 0.012, 20), [0.016, 0, 0])]), MAT.steel, { d: 'Distributiewiel van de inlaatnokkenas, 38 tanden (afgeleid, tandental geschat). Volgens de Renault-persmap van 2007 heeft de F4Rt 811 vaste kleptiming en geen faseversteller; voor de 813 is dat niet apart bevestigd.', p: [XT, CAMY, CAMZ], ex: [-0.045, 0.02, 0.03], spec: [['Kleptiming', 'vast']] }),
@@ -39,7 +41,7 @@ function buildTiming() {
     ]),
     A('Geleiderol', { d: 'Vaste geleiderol (galet enrouleur) in het riemverloop.', p: [XT, TIM[4][1], TIM[4][0]], ex: [-0.07, 0.03, -0.05] }, [
       P('Rol met lager', pulley(0.028, 0.028, 'engIdl'), MAT.alu, { d: 'Gladde rol met kogellager.', ex: [0, 0, 0] }),
-      P('Bout geleiderol', hexBolt(0.04, 0.01, 'x'), MAT.darkSteel, { d: 'Bout van de geleiderol, aanhaalmoment 4,5 daN·m.', p: [-0.02, 0, 0], ex: [-0.07, 0, 0] }),
+      P('Bout geleiderol', hexBolt(0.04, 0.01, 'x'), MAT.darkSteel, { d: 'Bout van de geleiderol, aanhaalmoment 45 Nm.', p: [-0.02, 0, 0], ex: [-0.07, 0, 0] }),
     ]),
     A('Distributiekappen', { d: 'Drie kunststof kappen: boven-, tussen- en onderkap.', ex: [-0.12, 0, 0] }, [
       P('Distributiekap boven', engTimingCover(0.27, 0.6, false), MAT.plastic, { d: 'Bovenste kap over de nokkenaswielen.', ex: [-0.03, 0.17, 0] }),
@@ -55,8 +57,8 @@ function buildAccessory() {
     xf(G.cyl('z', 0.012, 0.012, 0.035, 12), [-0.205, 0.27, 0.142]), xf(G.cyl('z', 0.012, 0.012, 0.04, 12), [-0.205, -0.115, 0.145]), xf(G.cyl('z', 0.014, 0.014, 0.03, 12), [-0.2, 0.07, 0.14]),
   ]));
   const tp = ACC[5], piv = [0.045, 0.1];
-  return A('Hulpaandrijving', { d: `Multiriem 7PK1795 die de aircocompressor, de stuurpomp en de dynamo aandrijft, met een automatische spanner op de rug en een vaste geleiderol. De riemloop in het model is korter (${Math.round(belt.len * 1000)} mm) dan de opgegeven 1795 mm, omdat de poelies in dit model dichter bij elkaar staan dan op de echte motor (plaats en diameters zijn geschat). Verder uit elkaar kan niet: de dynamo zit onder de motorkap, de aircocompressor tegen de stuurbekrachtigingsslangen en de bumper, de stuurpomp vast aan zijn slangaansluitingen, en de spanrol en de geleiderol tegen de veerpoot en de motorsteun. Dat de riem ook de stuurpomp aandrijft is aannemelijk voor deze motor, niet bevestigd.`, ex: [-0.42, -0.1, 0.26], spec: [['Riem', '7PK1795 (7 ribben, 1795 mm)'], ['Verbruikers', 'aircocompressor, dynamo']] }, [
-    P('Multiriem', xf(belt.geo, [XA, 0, 0]), MAT.belt, { d: `Poly-V-riem met zeven ribben; de spanner drukt op de rug. Riemlengte in het model ${Math.round(belt.len * 1000)} mm, ${Math.round(1795 - belt.len * 1000)} mm korter dan de opgegeven 1795 mm (compacte poeliestand); de exacte riemloop is niet gevonden.`, ex: [-0.1, 0, 0] }),
+  return A('Hulpaandrijving', { d: `Multiriem 7PK1795 die de aircocompressor, de stuurpomp en de dynamo aandrijft, met een automatische spanner op de rug en een vaste geleiderol. De riemloop in het model is korter (${engMmNl(belt.len * 1000)} mm) dan de opgegeven 1.795 mm, omdat de poelies in dit model dichter bij elkaar staan dan op de echte motor (plaats en diameters zijn geschat). Verder uit elkaar kan niet: de dynamo zit onder de motorkap, de aircocompressor tegen de stuurbekrachtigingsslangen en de bumper, de stuurpomp vast aan zijn slangaansluitingen, en de spanrol en de geleiderol tegen de veerpoot en de motorsteun. Dat de riem ook de stuurpomp aandrijft is aannemelijk voor deze motor, niet bevestigd.`, ex: [-0.42, -0.1, 0.26], spec: [['Riem', '7PK1795 (7 ribben, 1.795 mm)'], ['Verbruikers', 'aircocompressor, dynamo']] }, [
+    P('Multiriem', xf(belt.geo, [XA, 0, 0]), MAT.belt, { d: `Poly-V-riem met zeven ribben; de spanner drukt op de rug. Riemlengte in het model ${engMmNl(belt.len * 1000)} mm, ${Math.round(1795 - belt.len * 1000)} mm korter dan de opgegeven 1.795 mm (compacte poeliestand); de exacte riemloop is niet gevonden.`, ex: [-0.1, 0, 0] }),
     P('Krukaspoelie', merge([engPolyV(0.07, 0.026, 'Crank'), xf(G.cyl('x', 0.021, 0.021, 0.055, 20), [0.03, 0, 0]), xf(G.cyl('x', 0.05, 0.05, 0.004, 32), [0.012, 0, 0])]), MAT.darkSteel, { d: 'Krukaspoelie met zeven groeven (Ø140 mm geschat); of hij een trillingsdemper heeft is niet gevonden.', p: [XA, 0, 0], ex: [-0.06, -0.03, 0] }),
     P('Poeliebout krukas', hexBolt(0.06, 0.012, 'x'), MAT.darkSteel, { d: 'Krukaspoeliebout: aanhalen plus 115° ± 15°; herbruikbaar zolang de lengte onder de kop ≤ 49,1 mm is.', p: [XA - 0.015, 0, 0], ex: [-0.12, -0.03, 0] }),
     A('Automatische riemspanner', { d: 'Veerbelaste spanner die de multiriem op spanning houdt; te ontspannen met een 16 mm sleutel. Binnenwerk schematisch.', ex: [-0.07, 0.02, 0.06] }, [
@@ -66,7 +68,7 @@ function buildAccessory() {
     ]),
     A('Geleiderol multiriem', { d: 'Vaste geleiderol in de multiriemloop.', p: [XA, ACC[4][1], ACC[4][0]], ex: [-0.06, 0.04, 0] }, [
       P('Rol met lager', pulley(0.03, 0.027, 'engAccI'), MAT.alu, { d: 'Gladde geleiderol met lager die de multiriem langs de poelies leidt.', ex: [0, 0, 0] }),
-      P('Bout geleiderol', hexBolt(0.1, 0.01, 'x'), MAT.darkSteel, { d: 'Bout van de geleiderol, aanhaalmoment 5,8 daN·m.', p: [-0.018, 0, 0], ex: [-0.07, 0, 0] }),
+      P('Bout geleiderol', hexBolt(0.1, 0.01, 'x'), MAT.darkSteel, { d: 'Bout van de geleiderol, aanhaalmoment 58 Nm.', p: [-0.018, 0, 0], ex: [-0.07, 0, 0] }),
     ]),
     P('Accessoiresteun', bracket, MAT.aluCast, { d: 'Multifunctionele steun op het blok waaraan dynamo, aircocompressor en spanner vastzitten; de stuurpomp zit via de pompsteun op dezelfde steun.', ex: [0.0, 0.0, 0.08] }),
     buildAlternator([-0.27, ACC[3][1], ACC[3][0]]),
@@ -318,7 +320,7 @@ function buildEngineCooling() {
 function buildEngine() {
   return A('Motor F4Rt', {
     d: 'Renault F4Rt 813 (waarschijnlijk, zie beslissingen; de RDW toont Euro 5 en onderdelencatalogi noemen de reeks F4R 811): 2,0-liter viercilinder-turbomotor met gietijzeren blok, aluminium kop, 16 kleppen met rolzwenkarmen (zoals bij de F4R-familie), vaste kleptiming zonder faseversteller (de persmap van 2007 noemt de 811; voor de 813 niet apart bevestigd), distributieriem en meerpuntsinjectie. Dwars voorin; inlaatzijde naar voren en turbo achter (aannemelijk). Ontsteekvolgorde 1-3-4-2 (aannemelijk, niet bevestigd).',
-    spec: [['Motorcode', 'F4Rt 813 (waarschijnlijk, zie beslissingen)'], ['Opbouw', '4 in lijn, 16V DOHC'], ['Cilinderinhoud', '1998 cm³'], ['Boring × slag', '82,7 × 93,0 mm'], ['Compressie', '9,5 : 1 (Renault-persmap 2007, bij de 811; L\'argus noemt 9,0 : 1)'], ['Kleptiming', 'vast, geen faseversteller'], ['Toerenbegrenzer', '6250 tpm'], ['Brandstofsysteem', 'meerpuntsinjectie'], ['Inductie', 'Mitsubishi TD04 + intercooler'], ['Vermogen', '125 kW (170 pk) bij 5000 tpm'], ['Koppel', '270 Nm bij 3250 tpm'], ['Nokkenasaandrijving', 'distributieriem']],
+    spec: [['Motorcode', 'F4Rt 813 (waarschijnlijk, zie beslissingen)'], ['Opbouw', '4 in lijn, 16V DOHC'], ['Cilinderinhoud', '1.998 cm³'], ['Boring × slag', '82,7 × 93,0 mm'], ['Compressie', '9,5 : 1 (Renault-persmap 2007, bij de 811; L\'argus noemt 9,0 : 1)'], ['Kleptiming', 'vast, geen faseversteller'], ['Toerenbegrenzer', '6.250 tpm'], ['Brandstofsysteem', 'meerpuntsinjectie'], ['Inductie', 'Mitsubishi TD04 + intercooler'], ['Vermogen', '125 kW (170 pk) bij 5.000 tpm'], ['Koppel', '270 Nm bij 3.250 tpm'], ['Nokkenasaandrijving', 'distributieriem']],
     ex: [0, 0.25, 0],
   }, [
     buildBlock(), buildCrank(), buildHead(), buildTiming(), buildAccessory(), buildIntake(), buildTurbo(), buildLube(), buildEngineCooling(),
