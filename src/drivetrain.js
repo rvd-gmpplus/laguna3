@@ -454,14 +454,16 @@ function driveshaft(name, a, b, o) {
     P('Kleine klem', G.torus('x', 0.0236, 0.0016, 24, 6), MAT.steel, { d: 'Klem die het smalle uiteinde van de manchet op de as spant, zodat er geen vet weglekt.', p: [j0 + 0.215, 0, 0], ex: [0.04, 0.05, 0] }),
   ]));
   kids.push(P('Aandrijfas (schacht)', drvL('Sch' + name, [[0.0125, j0 + 0.09], [0.0125, outerX - 0.01]], 16), MAT.steel, { d: 'Stalen schacht (diameter geschat 24 tot 28 mm). Een trillingsdemper is voor dit motortype niet gevonden.', ex: [0, 0.18, 0] }));
+  // G8c: de buitenste manchet en zijn kleine klem staan 3,5 mm dieper in de klok, zodat ze op de korte linker as op dezelfde plek blijven en de
+  // kleine klem van de binnenste manchet niet raken; de stompas eindigt op L + 0,063 (in de asmoer, 2,9 mm voor de naafdop)
   kids.push(A('Manchet buiten', { d: 'Rubber stofhoes (manchet) met twee klemmen op de buitenste kogelkoppeling.', ex: [0.02, 0.12, 0] }, [
-    P('Manchet', bel, MAT.rubber, { d: 'Balgvormige rubber stofhoes die het vet in de kogelkoppeling houdt en vuil en water buiten sluit.', p: [outerX + 0.01, 0, 0], s: [-1, 1, 1], ex: [0, 0.0, 0.0001] }),
+    P('Manchet', bel, MAT.rubber, { d: 'Balgvormige rubber stofhoes die het vet in de kogelkoppeling houdt en vuil en water buiten sluit.', p: [outerX + 0.0065, 0, 0], s: [-1, 1, 1], ex: [0, 0.0, 0.0001] }),
     P('Grote klem', G.torus('x', 0.0465, 0.0016, 28, 6), MAT.steel, { d: 'Klem op de kogelkoppeling.', p: [outerX + 0.0, 0, 0], ex: [0.04, 0.05, 0] }),
-    P('Kleine klem', G.torus('x', 0.0236, 0.0016, 24, 6), MAT.steel, { d: 'Klem die het smalle uiteinde van de buitenste manchet op de as spant, zodat er geen vet weglekt.', p: [outerX - 0.105, 0, 0], ex: [-0.04, 0.05, 0] }),
+    P('Kleine klem', G.torus('x', 0.0236, 0.0016, 24, 6), MAT.steel, { d: 'Klem die het smalle uiteinde van de buitenste manchet op de as spant, zodat er geen vet weglekt.', p: [outerX - 0.1085, 0, 0], ex: [-0.04, 0.05, 0] }),
   ]));
   const balls = Array.from({ length: 8 }, (_, k) => P(`Kogel ${k + 1}`, G.sphere(0.0072, 10), MAT.chrome, { d: 'Stalen kogel die het koppel tussen binnenste naaf en klok overbrengt.', p: [outerX + 0.036, 0.0335 * Math.cos(k * PI / 4), 0.0335 * Math.sin(k * PI / 4)], ex: [0, 0.07 * Math.cos(k * PI / 4), 0.07 * Math.sin(k * PI / 4)], inner: true }));
   kids.push(A('Buitenste homokineet (kogelkoppeling)', { d: 'Vaste kogelkoppeling aan de wielzijde (Rzeppa, 8 kogels, buitendiameter circa 90 mm): laat sturen en veren toe. Maten en opbouw volgens catalogus, schematisch weergegeven.', ex: [0.06, 0, 0] }, [
-    P('Koppelingsklok', drvL('CvB' + name, [[0.031, outerX], [0.0455, outerX + 0.006], [0.0455, outerX + 0.05], [0.036, outerX + 0.066], [0.0165, outerX + 0.074], [0.0165, L + 0.03], [0.011, L + 0.032], [0.011, L + 0.066]], 32), MAT.steel, { d: 'Klok met de uitwendige loopbanen voor de kogels en de gegroefde stompas voor de naaf (27 spiebanen) met schroefdraad M22 × 1,5 aan het uiteinde; de asmoer onder de naafdop (onderstel) klemt de as in de naaf.', ex: [0.12, 0, 0] }),
+    P('Koppelingsklok', drvL('CvB' + name, [[0.031, outerX], [0.0455, outerX + 0.006], [0.0455, outerX + 0.05], [0.036, outerX + 0.066], [0.0165, outerX + 0.074], [0.0165, L + 0.03], [0.011, L + 0.032], [0.011, L + 0.063]], 32), MAT.steel, { d: 'Klok met de uitwendige loopbanen voor de kogels en de gegroefde stompas voor de naaf (27 spiebanen) met schroefdraad M22 × 1,5 aan het uiteinde; de asmoer onder de naafdop (onderstel) klemt de as in de naaf.', ex: [0.12, 0, 0] }),
     P('Kogelkooi', G.lathe('x', [[0.026, outerX + 0.012], [0.04, outerX + 0.026], [0.04, outerX + 0.046], [0.026, outerX + 0.06]], 24, 'drvCage' + name), MAT.drvBrass, { d: 'Kooi die de acht kogels op hun plaats houdt.', ex: [0.04, 0, 0], inner: true }),
     ...balls,
     P('Binnenring kogelkoppeling', G.lathe('x', [[0.0125, outerX + 0.014], [0.0255, outerX + 0.016], [0.0255, outerX + 0.056], [0.0125, outerX + 0.058]], 24, 'drvInRace' + name), MAT.darkSteel, { d: 'Binnenste naaf met loopbanen, op de schacht gespied.', ex: [-0.04, 0, 0], inner: true }),
@@ -498,9 +500,8 @@ function drvMounts() {
       P('Rubber lagerbus subframe', G.cyl('x', 0.024, 0.024, 0.03, 18), MAT.rubber, { d: 'Rubberbus in het oog aan de subframezijde.', p: sub, ex: [-0.08, -0.04, 0] }),
       P('Beugel carterpan', G.rbox(0.07, 0.04, 0.02, 0.004), MAT.aluCast, { d: 'Beugel op de achterkant van de carterpan waaraan de koppelstang vastzit.', p: [rodA[0], -0.085, -0.1085], ex: [0.0, 0.1, 0.1] }),
       P('Doorgaande bout motorzijde', drvBolt(0.07, 0.012, 'x'), MAT.darkSteel, { d: 'Bout door de bus en de beugel.', p: [rodA[0] - 0.045, rodA[1], rodA[2]], ex: [-0.16, 0.04, 0] }),
-      // De Reactiestangbeugel (chassis.js) heeft dichte oren zonder gat (x t.o.v. het oog: -0,030 tot -0,017 en 0,017 tot 0,030). De bout bestaat daarom alleen buiten
-      // de oren (kop met 14,8 mm schacht, eindigt 0,2 mm voor het oor) en in de spleet tussen de oren (de bus); wat in de oren zou zitten is van buiten niet te zien.
-      P('Doorgaande bout subframe', cache('drvSubBout', () => merge([drvBolt(0.0148, 0.012, 'x'), xf(yTo(new THREE.CylinderGeometry(0.006, 0.006, 0.0336, 6), 'x'), [0.045, 0, 0])])), MAT.darkSteel, { d: 'Bout door de bus en het subframe.', p: [sub[0] - 0.045, sub[1], sub[2]], ex: [-0.2, -0.04, 0] }),
+      // de bout gaat door de boring Ø13 mm (RB_BORE) in beide oren van de Reactiestangbeugel (chassis.js)
+      P('Doorgaande bout subframe', drvBolt(0.07, 0.012, 'x'), MAT.darkSteel, { d: 'Bout door de bus en het subframe.', p: [sub[0] - 0.045, sub[1], sub[2]], ex: [-0.2, -0.04, 0] }),
     ]),
   ]);
 }
@@ -511,8 +512,8 @@ function buildPowertrain() {
   const gb = buildGearbox();
   // uitgangen van het differentieel (bakframe -> motorframe) en naven (autoframe -> motorframe)
   const dOutL = [GB_X + DIFF[0] + 0.082, DIFF[1], DIFF[2]], dOutR = [GB_X + DIFF[0] - 0.082, DIFF[1], DIFF[2]];
-  // naafpunt 0,775: TRACK_F (0,7785) zet de buitenste koppeling 3,5 mm naar buiten en geeft acht nieuwe doordringingen met fusee en demper (golf 5b-2); G8c wacht op een boring in de fusee
-  const hubL = toPT([0.775, AY, AXF]).toArray(), hubR = toPT([-0.775, AY, AXF]).toArray();
+  // naafpunt op de halve spoorbreedte TRACK_F (G8c): kan sinds de hogere klemarm en de kortere Demperbuis (chassis.js, golf 5b-3 B1)
+  const hubL = toPT([TRACK_F, AY, AXF]).toArray(), hubR = toPT([-TRACK_F, AY, AXF]).toArray();
   const shafts = A('Aandrijfassen', { d: 'Linker (kort) en rechter (lang, met tussenas en tussenaslager) aandrijfas van het differentieel naar de voorwielen, elk met een tripode-koppeling aan de bakzijde en een kogelkoppeling aan de wielzijde. Lengten volgens catalogus: links circa 640 mm, rechts circa 962 mm.', ex: [0, -0.5, -0.3] }, [
     driveshaft('Aandrijfas links', dOutL, hubL, { sign: 1, d: 'Korte linker aandrijfas (catalogus circa 640 mm, 30 spiebanen bakzijde, 27 wielzijde).', spec: [['Binnenste koppeling', 'tripode, Ø87 mm'], ['Buitenste koppeling', 'kogelkoppeling, 8 kogels']], ex: [0.12, 0, 0.28] }),
     driveshaft('Aandrijfas rechts', dOutR, hubR, { sign: -1, mid: 0.35, d: 'Lange rechter aandrijfas (catalogus circa 962 mm) met tussenas (circa 350 mm) en kogellager 35 × 62 × 14 mm; loopt achter het motorblok langs.', spec: [['Tussenlager', 'kogellager 35 × 62 × 14 mm'], ['Buitenste koppeling', 'kogelkoppeling, 8 kogels']], ex: [-0.12, 0, -0.28] }),
