@@ -313,7 +313,8 @@ function buildRearAxle() {
     P('Draaipuntmoer', hexNut('x', 0.0125, 0.014), MAT.steel, { d: 'Zelfborgende moer van de draaipuntbout.', p: [sg * 0.685, 0.32, zp], ex: [sg * 0.25, 0, 0.1] })]);
   const spr = sg => A(`Veer achter ${sideName(sg)}`, { d: 'Schroefveer met rubber ondersteuning, bovenschotel, aanslagrubber en stofhoes; aparte veer en demper (Renault: aparte schroefveren en dempers).', ex: [0, 0.3, 0] }, [
     P('Veerrubber onder', annulus(0.045, 0.07, 0.006, 'y', 24), MAT.rubber, { d: 'Rubber tussenlaag op het veerpad.', p: [sg * REAR_SPR.x, 0.348, REAR_SPR.z], ex: [0, -0.04, 0] }),
-    P('Schroefveer achter', spring(0.062, 0.0105, 0.2, 5, 'y', 16), MAT.chsSpring, { d: 'Draagt het achtergewicht van de auto.', p: [sg * REAR_SPR.x, 0.455, REAR_SPR.z], ex: [0, 0.0, 0] }),
+    // standaard 14 punten per winding: bij 16 liggen de buitenste windingen 0,7 mm dichter bij de Arm (paar dieper dan in B0)
+    P('Schroefveer achter', spring(0.062, 0.0105, 0.2, 5, 'y'), MAT.chsSpring, { d: 'Draagt het achtergewicht van de auto.', p: [sg * REAR_SPR.x, 0.455, REAR_SPR.z], ex: [0, 0.0, 0] }),
     P('Veerschotel boven', G.lathe('y', [[0.02, 0], [0.068, 0.002], [0.07, -0.008], [0.062, -0.01], [0.02, -0.004]], 22, 'chsSeatR'), MAT.rubber, { d: 'Rubber bovenschotel in de carrosserie (de veer drukt tegen de bovenkant van de veerkoker in de binnenwielkast).', p: [sg * REAR_SPR.x, 0.566, REAR_SPR.z], ex: [0, 0.14, 0] }),
     P('Aanslagrubber', G.cyl('y', 0.03, 0.026, 0.05, 16), MAT.rubber, { d: 'Vangt het inveren aan het einde van de slag op.', p: [sg * REAR_SPR.x, 0.535, REAR_SPR.z], ex: [0, 0.2, 0] }),
     P('Stofhoes veer', G.lathe('y', bellows(0.034, 0.028, 0.07, 3), 18, 'chsRdb'), MAT.rubber, { d: 'Balg om de aanslagrubber.', p: [sg * REAR_SPR.x, 0.462, REAR_SPR.z], ex: [0, 0.1, 0] })]);
