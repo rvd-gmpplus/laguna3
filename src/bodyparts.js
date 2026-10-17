@@ -700,9 +700,12 @@ function bodGsSolve() {
 }
 // Tankklep rechtsachter: opening in het rechter achterscherm (z -1,780 tot -1,664, y 0,808 tot 0,912), scharnier aan de voorrand (z -1,664).
 const bodTkZ = [-1.78, -1.664], bodTkY = [0.808, 0.912];
-// Opkant in de bodemplaat onder de torsiebalk van de achteras (balk bovenkant y 0,326, z -1,258 tot -1,085): plateau y 0,345 tussen
-// z -1,28 en -1,08, hellende randen van 0,1 m; bij de opkant is de plaat smaller (tot |x| 0,44), zodat de vulpijp en de wand van de wielkast ernaast vrij blijven.
-const bodHumpZ = [-1.38, -1.28, -1.08, -0.98], bodHumpY = 0.345;
+// Opkant in de bodemplaat onder de torsiebalk van de achteras (balk bovenkant y 0,326 = REAR_BEAM.y + .hy, z -1,258 tot -1,085): plateau y 0,345
+// tussen z -1,258 en -1,08, hellende randen van 0,1 m; bij de opkant is de plaat smaller (tot |x| 0,44), zodat de vulpijp en de wand van de wielkast ernaast vrij blijven.
+// De achterkant -1,258 is die van de uiteinden van de stabilisatorstaaf (0,1 m achter het hart van de balk, plus de schuin afgesneden staafstraal; chassis.js),
+// dezelfde maat als de achterrand van de zijbekleding in interior.js (golf 5b-3, G8d; was -1,28).
+const bodBeamZr = REAR_BEAM.z - 0.108;
+const bodHumpZ = [-1.38, bodBeamZr, -1.08, -0.98], bodHumpY = 0.345;
 const bodHumpT = z => z <= bodHumpZ[0] || z >= bodHumpZ[3] ? 0 : z < bodHumpZ[1] ? sstep((z - bodHumpZ[0]) / (bodHumpZ[1] - bodHumpZ[0])) : z <= bodHumpZ[2] ? 1 : sstep((bodHumpZ[3] - z) / (bodHumpZ[3] - bodHumpZ[2]));
 const bodHumpW = z => z <= bodHumpZ[0] - 0.1 || z >= bodHumpZ[3] + 0.1 ? 0 : z < bodHumpZ[0] ? sstep((z - bodHumpZ[0] + 0.1) / 0.1) : z <= bodHumpZ[3] ? 1 : sstep((bodHumpZ[3] + 0.1 - z) / 0.1);
 const bodHumpBreaks = (() => { const b = []; for (let i = 0; i <= 8; i++) b.push(bodHumpZ[0] + (bodHumpZ[1] - bodHumpZ[0]) * i / 8, bodHumpZ[2] + (bodHumpZ[3] - bodHumpZ[2]) * i / 8); for (let i = 0; i < 4; i++) b.push(bodHumpZ[0] - 0.1 + 0.025 * i, bodHumpZ[3] + 0.025 * (i + 1)); return b; })();
