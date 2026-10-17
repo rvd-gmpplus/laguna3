@@ -179,8 +179,9 @@ function bodTrim(s, zu, a, b, out = 0.003, crown = 0, nv = 1, P = bodPGh) {
   const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals(); return g;
 }
 // raamomlijsting (Initiale Paris, cerclage chromé): de bovenband ligt op het vrijwel staande buitenvlak van de dakrail (q 0,542 tot 0,570, ca. 15 mm),
-// met een rubberlijn van 4 mm tussen chroom en lak; daaronder het zwarte raamkader tot de ruit
-const bodQV = 0.557, bodTW = 0.0085, bodTR = 0.004;
+// met een donkere lijn van 9 mm tussen chroom en lak (rubber en de naad tussen raamkader en dak); daaronder het zwarte raamkader tot de ruit.
+// Met 4 mm was die lijn in het zijaanzicht minder dan een pixel en las de chroomband tegen de lichte dakrail niet als lijst (S7 kenmerk 4, ronde 2)
+const bodQV = 0.557, bodTW = 0.0085, bodTR = 0.009;
 // gordellijst onderaan de ruit langs een pad op q = 0: schaduwlijn (3 mm) naar de lak, bolle chroomband (15 mm) en rubberlip (4 mm) naar het
 // glas; samen 21 mm langs de ruit, zodat de zichtbare ruitlijn binnen de silhouetmaat blijft (ca. 2 cm boven de gordel)
 function bodBeltTrim(s, path) {
@@ -279,12 +280,15 @@ function buildDoor(s, isFront) {
   const gb = z => bodYG(z) - 0.002;
   let glass, gz0, gz1;
   if (isFront) {
+    // aan de B-stijl 4 mm onder de zwarte afdekking door (zie de achterruit hieronder); gz0 en daarmee de kolommen bij de spiegel blijven gelijk
     gz0 = bodBf(1.33) + 0.004; gz1 = bodSail - 0.004;
-    glass = bodGhSide(s, gz0, gz1, 30, z => { const yl = z < bodBf(0.946) ? bodBfY(z) : 0; return [Math.max(0.006, bodQy(z, yl)), bodQG]; }, 10, bodDense(gz0, -0.14, 5));
+    glass = bodGhSide(s, gz0, gz1, 30, z => { const yl = z < bodBf(0.946) - 0.004 ? bodBfY(z + 0.004) : 0; return [Math.max(0.006, bodQy(z, yl)), bodQG]; }, 10, bodDense(gz0, -0.14, 5));
   } else {
-    gz0 = bodQd(1.30) + 0.016; gz1 = bodBr(0.95) - 0.004;
+    // aan de B-stijl loopt de ruit 4 mm onder de zwarte afdekking door: met een spleet van 4 mm (eerst afgedekt door een chroomlijst over de hele
+    // hoogte) was de lichte B-stijlbekleding binnen als witte lijn langs de stijl te zien
+    gz0 = bodQd(1.30) + 0.016; gz1 = bodBr(0.95) + 0.004;
     glass = bodGhSide(s, gz0, gz1, 30, z => {
-      const yHi = z > bodBr(1.376) - 0.004 ? bodBrY(z + 0.004) : 9, yLo = z < -0.93 ? 0.97 + (-0.93 + 0.016 - z) * 0.33 / 0.06 : 0;
+      const yHi = z > bodBr(1.376) + 0.004 ? bodBrY(z - 0.004) : 9, yLo = z < -0.93 ? 0.97 + (-0.93 + 0.016 - z) * 0.33 / 0.06 : 0;
       return [Math.max(0.006, bodQy(z, yLo)), Math.min(bodQG, bodQy(z, yHi))];
     }, 10, bodDense(gz0, -0.9, 4).concat(bodDense(-0.34, gz1, 4)));
   }
@@ -299,7 +303,7 @@ function buildDoor(s, isFront) {
   // bovenband bol (hooglicht boven, donkere onderhelft) op het staande vlak; voorportier ook langs de voorrand bij de spiegeldriehoek
   const topPath = bodLinZ(zT0, zT1, 36, bodQV), sailPath = [0.04, 0.12, 0.22, 0.32, 0.42, 0.5, 0.53, bodQV].map(q => [gz1 + 0.006, q]);
   const ringGeo = merge([bodTrim(s, topPath, -bodTW, bodTW, 0.0035, 0.003, 8)].concat(isFront ? [bodTrim(s, sailPath, -bodTW, bodTW, 0.0035, 0.003, 6)] : []));
-  const ringRub = merge([bodTrim(s, topPath, -bodTW - bodTR, -bodTW + 0.0005, 0.0026, 0, 1)].concat(isFront ? [bodTrim(s, sailPath, bodTW - 0.0005, bodTW + bodTR, 0.0026, 0, 1)] : []));
+  const ringRub = merge([bodTrim(s, topPath, -bodTW - bodTR, -bodTW + 0.0005, 0.0026, 0, 1)].concat(isFront ? [bodTrim(s, sailPath, bodTW - 0.0005, bodTW + 0.004, 0.0026, 0, 1)] : []));   // langs de spiegeldriehoek (zwart) blijft 4 mm genoeg
   // gordellijst onderaan de ruit: bolle chroomband van 15 mm met een donkere rubberlijn naar het glas en een schaduwlijn naar de lak
   const beltPath = bodLinZ(zB0, zB1, 30, 0);
   const { chrome: beltGeo, rubber: beltRub } = bodBeltTrim(s, beltPath);
@@ -391,10 +395,12 @@ function buildDoor(s, isFront) {
     P('Raamrubber boven', topBand, MAT.bodPillar, { d: 'Zwart rubber en kader tussen de ruit en de dakrail, waarop de chroomlijst ligt.', ex: [s * 0.03, 0.08, 0] }),
     P('Rubberlijn raamomlijsting', ringRub, MAT.bodPillar, { d: 'Smalle zwarte rubberlijn tussen de chromen raamomlijsting en de lak van de dakrail.', ex: [s * 0.04, 0.1, 0] }),
     !isFront && P('Chroomlijst raamstijl', merge([bodQdBand(s, 0.03, bodQV - bodTW + 0.001, -0.0245, -0.0105, 0.0025, 0.0015, 14, 4), bodQdBand(s, 0.03, bodQV - bodTW + 0.001, 0.0105, 0.0245, 0.0025, 0.0015, 14, 4)]), MAT.bodChrome, { d: 'Twee smalle chroomlijsten langs de randen van het schuine stijltje, zodat de chromen omlijsting rond de portierruit en rond de kwartsruit doorloopt.', ex: [s * 0.05, 0.1, -0.04] }),
-    // chroomlijst langs de ruitzijde van de zwarte B-stijl (15 mm; de lijsten langs het stijltje 14 mm), half op de afdekking en half op de ruit;
-    // met 8 mm was de lijn in het zijaanzicht maar 1 pixel breed (S7 kenmerk 4, golf 5b-3 E3)
-    // zo is de omlijsting om elke zijruit gesloten (brochure: cerclage chromé des vitres latérales) en leest de B-stijl als zwart vlak tussen twee chroomlijnen
-    P('Chroomlijst B-stijl', bodLineBand(s, isFront ? bodBf : bodBr, 0.03, bodQV - bodTW + 0.001, -0.0075, 0.0075, 0.0025, 0.0015, 14, 4), MAT.bodChrome, { d: `Smalle chroomlijst langs de ${isFront ? 'voorkant van de B-stijl, de achterrand van de voorste zijruit' : 'achterkant van de B-stijl, de voorrand van de achterste zijruit'}, als deel van de chromen raamomlijsting.`, ex: [s * 0.05, 0.1, isFront ? 0.04 : -0.04] }),
+    // eindstuk van de chroomomlijsting in de bovenhoek van de ruit aan de B-stijl: loopt van het hart van de bovenband (eronder weg) langs de rand
+    // van de stijl omlaag over het zwarte raamrubber tot net onder de bovenrand van de ruit (ca. 4 cm, lengte geschat); 0,0034 boven de kas, net boven
+    // het raamrubber (0,003), zodat het als hoek van de lijst aansluit.
+    // De B-stijl zelf blijft zwart zonder chroomlijst: met een chroomlijst over de hele hoogte aan beide kanten (golf 5b-3 E3) las de stijl als
+    // dubbele witte lijn in plaats van als zwart vlak (S7 kenmerk 4, ronde 2); de omlijsting loopt om de hele raampartij (bovenrand, gordel, spiegeldriehoek, kwartsruit)
+    P('Chroomlijst B-stijl', bodLineBand(s, isFront ? bodBf : bodBr, bodQG - 0.012, bodQV, -0.005, 0.005, 0.0034, 0.0015, 8, 4), MAT.bodChrome, { d: `Kort chromen eindstuk van de raamomlijsting in de bovenhoek ${isFront ? 'aan de achterrand van de voorste zijruit' : 'aan de voorrand van de achterste zijruit'}, dat een paar centimeter langs de zwarte B-stijl omlaag buigt (lengte geschat).`, ex: [s * 0.05, 0.1, isFront ? 0.04 : -0.04] }),
     P('Gordelsierlijst', beltGeo, MAT.bodChrome, { d: 'Verchroomde sierlijst op de gordellijn, met het buitenste raamrubber.', ex: [s * 0.08, 0.05, 0] }),
     P('Gordelrubber buiten', beltRub, MAT.bodPillar, { d: 'Buitenste raamschachtrubber: een smalle zwarte lip tussen de gordelsierlijst en de ruit en een schaduwlijn onder de lijst.', ex: [s * 0.07, 0.03, 0] }),
     P('Gordelrubber binnen', tube(beltPts.map(p => [p[0] - s * 0.03, p[1] - 0.004, p[2]]), 0.006, 24, 5), MAT.rubber, { d: 'Binnenste raamschachtrubber dat de ruit afstrijkt.', ex: [-s * 0.06, 0.04, 0] }),
