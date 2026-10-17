@@ -670,11 +670,14 @@ const bodStRot = (() => {
 // Achterklep: draaias op de dakrand (y 1,362 bij z -1,174), 66 graden. Gasveren als telescoop: carrosseriepunt A op de C-stijl, klepunt B bij de
 // ruitrand; berekend zodat de afstand A-B in gesloten stand 0,290 m is en bij 66 graden 0,495 m (HB2/catalogus: 495 mm uit, slag 205 mm).
 const bodTgPv = [0, 1.362, -1.174], bodTgAng = 66 * PI / 180;
-// Beide kogels liggen aan de zijkant van de opening: A op de binnenkant van de C-stijl (de zijwand begint hier op |x| 0,70 tot 0,71), B op de zijrand van de klep,
-// 3 cm binnen A, zodat de veer langs de zijwand loopt en niet de bagageruimte in. Het punt A ligt vast (z -1,33, vlak achter de scharnierlijn, onder de rand van de sponning);
+// Beide kogels liggen aan de zijkant van de opening: A op de binnenkant van de C-stijl (de zijwand loopt hier van |x| 0,70 bij y 1,21 naar 0,68 bij y 1,26), B op de zijrand
+// van de klep, 1,2 cm binnen A, zodat de veer langs de zijwand loopt en niet de bagageruimte in. A ligt op |x| 0,664 (golf 5b-3, E1; was 0,684): zo blijft het
+// gekantelde plaatje 3 mm onder de lakhuid en steken kogel en kogelkom er niet meer doorheen (gemeten met clash.py). Het punt A ligt vast (z -1,33, vlak achter de scharnierlijn, onder de rand van de sponning);
 // B volgt uit de glasrand (4,5 cm onder het glas) en de lengtes: 0,290 m gesloten en 0,495 m bij 66 graden (HB2/catalogus: 495 mm uit, slag 205 mm).
 // De hoogte van A en de plaats van B volgen daaruit; panP staat in panorama.js, dus dit draait pas bij het bouwen.
-const bodGsX = [0.684, 0.652], bodGsAz = -1.33;
+const bodGsX = [0.664, 0.652], bodGsAz = -1.33;
+// het plaatje van A volgt de helling van de C-stijl ter plaatse (x neemt 0,45 m per m af naar boven tussen y 1,21 en 1,25, gemeten): 24 graden om z
+const bodGsTilt = Math.atan(0.45);
 function bodGsSolve() {
   const [ax, bx] = bodGsX, az = bodGsAz, c = Math.cos(bodTgAng), sg = Math.sin(bodTgAng);
   const bAt = zb => [bx, panP(zb, bx, -0.045)[1], zb];
@@ -771,7 +774,7 @@ function buildBody() {
     ...both(s => P(`Slotbeugel B-stijl ${sn(s)}`, merge([xf(G.rbox(0.05, 0.16, 0.01, 0.002), [-s * 0.002, -0.05, 0.055]), tube([[s * 0.018, -0.05, 0.05], [s * 0.018, -0.05, 0.115], [-s * 0.018, -0.05, 0.115], [-s * 0.018, -0.05, 0.05]], 0.009, 16, 6)]), MAT.darkSteel, { d: 'Sluitplaat met U-beugel op de B-stijl waar het slot van het voorportier in grijpt (plaats geschat). Zit op de voorkant van de stijl, dus alleen te zien bij open voorportier.', p: [s * 0.735, 0.66, -0.17], r: [-0.21, 0, 0], ex: [s * 0.09, 0, 0.05] })),
     ...both(s => P(`C-stijl ${sn(s)}`, bodGhSide(s, SP, -0.95, 34, z => [cPillarLo(z), z < RW0 ? qScr(z) : bodQR], 16, bodDense(-1.27, -1.15, 6)), MAT.paint, { d: 'Achterste dakstijl met de karakteristieke kromming boven de kwartsruit.', ex: [s * 0.1, 0.04, -0.04] })),
     ...both(quarter),
-    ...both(s => P(`Gasveerbevestiging ${sn(s)}`, merge([G.sphere(0.012, 10), xf(G.cyl('x', 0.004, 0.004, 0.012, 8), [s * 0.009, 0, 0]), xf(G.rbox(0.008, 0.05, 0.04, 0.003), [s * 0.018, 0, 0])]), MAT.darkSteel, { d: 'Kogelpen op een plaatje tegen de binnenkant van de C-stijl, aan de zijkant van de opening, waarop de gasveer van de achterklep draait (plaats geschat).', p: [s * bodGsA[0], bodGsA[1], bodGsA[2]], ex: [s * 0.04, 0, 0] })),
+    ...both(s => P(`Gasveerbevestiging ${sn(s)}`, merge([G.sphere(0.012, 10), xf(G.cyl('x', 0.004, 0.004, 0.012, 8), [s * 0.009, 0, 0]), xf(G.rbox(0.006, 0.05, 0.04, 0.0025), [s * 0.017, 0, 0])]), MAT.darkSteel, { d: 'Kogelpen op een plaatje tegen de binnenkant van de C-stijl, aan de zijkant van de opening, waarop de gasveer van de achterklep draait (plaats geschat).', p: [s * bodGsA[0], bodGsA[1], bodGsA[2]], r: [0, 0, s * bodGsTilt], ex: [s * 0.04, 0, 0] })),
     A('Dakantenne', { d: 'Korte staafantenne achter op het dak, van de Laguna III fase 2: een lage kegelvormige voet op de plaatstrook achter het achterste glaspaneel, met een korte, licht naar achteren hellende mast.', ex: [0, 0.14, -0.04] }, (() => {
       const zB = -1.15, y0 = YR(zB), top = [0, y0 + 0.0125, zB], mid = [0, top[1] + 0.05, zB - 0.0052], tip = [0, top[1] + 0.105, zB - 0.011];
       return [
