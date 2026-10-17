@@ -62,8 +62,9 @@ function buildCooling() {
     ...[1, -1].map(s => P(`Steunblok onder ${sideName(s)}`, G.rbox(0.04, 0.02, 0.04, 0.005), MAT.rubber, { d: 'Rubber steunblok onder de radiateur in de frontmodule.', p: [s * 0.2, 0.29, RZ], ex: [0, -0.14, 0] })),
   ]);
   // ---------- condensor met droger ----------
+  // Condensorblok klapt recht naar voren uit: de automatische richting liet het blok schuin door de radiateur en de vloeistofleiding gaan.
   const condensor = A('Condensor', { d: 'Condensor van de airconditioning, vlak vóór de radiateur, met de droger-filtereenheid (receiver-drier) tegen de linkerkant van het blok.', ex: [0, 0, 0.16] }, [
-    P('Condensorblok', cache('sysCondCore', () => merge([G.box(0.58, 0.34, 0.014), ...[-0.12, -0.06, 0, 0.06, 0.12].map(y => xf(G.box(0.58, 0.004, 0.017), [0, y, 0]))])), MAT.darkSteel, { d: 'Aluminium parallelstroomblok waar het koudemiddel zijn warmte aan de lucht afgeeft.', p: [0, RY, 2.015] }),
+    P('Condensorblok', cache('sysCondCore', () => merge([G.box(0.58, 0.34, 0.014), ...[-0.12, -0.06, 0, 0.06, 0.12].map(y => xf(G.box(0.58, 0.004, 0.017), [0, y, 0]))])), MAT.darkSteel, { d: 'Aluminium parallelstroomblok waar het koudemiddel zijn warmte aan de lucht afgeeft.', p: [0, RY, 2.015], ex: [0, 0, 0.1] }),
     P('Droger', G.cyl('y', 0.021, 0.021, 0.2, 16), MAT.alu, { d: 'Droger-filtereenheid met vochtopname voor het koudemiddel.', p: [0.26, RY, 2.045], ex: [0.12, 0, 0.1] }),
     P('Dop droger', G.cyl('y', 0.024, 0.024, 0.02, 12), MAT.plastic, { d: 'Dop op de droger; verwisselbaar bij vervanging van het filter.', p: [0.26, RY + 0.11, 2.045], ex: [0, 0.14, 0] }),
     P('Leidingblok', G.rbox(0.05, 0.04, 0.03, 0.006), MAT.steel, { d: 'Aansluitblok voor de hoge- en lagedrukleiding van de airconditioning, naast de rechterrand van het condensorblok (plaats schematisch).', p: [-0.315, RY - 0.01, 2.034], ex: [-0.1, 0, 0.1] }),
@@ -138,8 +139,26 @@ function buildCooling() {
   const hot = sysHose('Hete laadluchtslang', 'Voert de door de turbo samengeperste, hete lucht van de compressoruitlaat naar de linker eindkap van de intercooler. Aansluiting op de intercooler 57 mm (aannemelijk).', [sysP(cO.p), sysE(cO, 0.035), [0.0, 0.64, 1.16], [0.14, 0.62, 1.2], [0.17, 0.605, 1.45], [0.19, 0.6, 1.72], [0.31, 0.56, 1.86], [0.375, 0.46, 1.96], [0.35, 0.37, 2.02], [0.30, 0.31, 2.07]], 0.031, { n0: 'Klem turbo', n1: 'Klem intercooler', seg: 80, rad: 12, ex: [0.12, 0.2, 0] });
   const cold = sysHose('Koude laadluchtslang', 'Voert de gekoelde lucht van de rechter eindkap van de intercooler naar het gasklephuis. De slang buigt binnen enkele centimeters na het gasklephuis naar voren, vóór de multiriem, en loopt boven de stuurbekrachtigingspomp langs. Aansluiting op de intercooler 47 mm (aannemelijk).', [[-0.30, 0.31, 2.07], [-0.33, 0.33, 2.04], [-0.37, 0.40, 1.98], [-0.39, 0.50, 1.90], [-0.42, 0.57, 1.83], sysP([tI.p[0] - 0.03, tI.p[1] + 0.01, 0.30]), sysP([tI.p[0] - 0.029, tI.p[1], 0.245]), sysP([tI.p[0] - 0.021, tI.p[1], tI.p[2] + 0.005]), sysP(tI.p)], 0.027, { n0: 'Klem intercooler', n1: 'Klem gasklephuis', seg: 80, rad: 12, ex: [-0.12, 0.2, 0] });
   const laadlucht = A('Laadluchtleidingen', { d: 'De twee slangen die de aangezogen lucht van de turbo naar de intercooler en van de intercooler naar het gasklephuis brengen.', ex: [0, 0.22, 0.1] }, [hot, cold]);
+  // ---------- airconditioningleidingen (schematisch) ----------
+  // Uitklappen: de groep gaat mee met de condensor (zelfde z) en iets omlaag, zodat de pers- en vloeistofleiding bij het
+  // uitklappen van Koeling en luchtinlaat aan de condensor blijven en nergens door een ander deel lopen (gemeten in drie standen).
+  // Route uit een A*-zoektocht door de vrije ruimte (8 mm-rooster, daarna met de hand gladgetrokken en gemeten met clash.py):
+  // persleiding van de dunne nippel van de compressor omhoog en naar voren, van de zijkant in het Leidingblok; zuigleiding van het
+  // expansieventiel langs de rechterflank van de motor naar de dikke nippel; vloeistofleiding van de onderkant van de droger om de
+  // linkerrand van de radiateur heen naar het expansieventiel. De uiteinden liggen 0,1 mm voor het aansluitvlak.
+  const cDis = ENG_PORTS.acDis, cSuc = ENG_PORTS.acSuc;
+  const TXV = [0.025, 0.52, 1.0525], txvF = TXV[2] + 0.025 + 0.0001;   // expansieventiel tegen het schutbord (voorkant schutbord z 1,026); voorvlak
+  const pers = [sysE(cDis, 0.0001), sysE(cDis, 0.008), sysE(cDis, 0.02), [-0.348, 0.40, 1.8167], [-0.338, 0.466, 1.97], [-0.375, 0.47, 2.034], [-0.352, 0.47, 2.034], [-0.3401, 0.47, 2.034]];
+  const zuig = [[0.016, 0.515, txvF], [0.016, 0.515, txvF + 0.008], [0.016, 0.515, txvF + 0.02], [-0.064, 0.478, 1.106], [-0.16, 0.414, 1.178], [-0.36, 0.382, 1.394], [-0.384, 0.334, 1.49], sysE(cSuc, 0.025), sysE(cSuc, 0.01), sysE(cSuc, 0.0001)];
+  const vloei = [[0.26, 0.3799, 2.045], [0.26, 0.372, 2.045], [0.26, 0.36, 2.045], [0.296, 0.374, 2.042], [0.376, 0.486, 2.002], [0.395, 0.537, 1.95], [0.352, 0.545, 1.794], [0.24, 0.545, 1.46], [0.152, 0.542, 1.218], [0.034, 0.528, txvF + 0.02], [0.034, 0.528, txvF + 0.008], [0.034, 0.528, txvF]];
+  const airco = A('Airconditioningleidingen', { d: 'Leidingen van het koudemiddelcircuit van de airconditioning: de persleiding van de compressor naar de condensor, de vloeistofleiding van de droger naar het expansieventiel op het schutbord en de zuigleiding van het expansieventiel terug naar de compressor. Route, diameters en de plaats van het expansieventiel zijn schematisch; de echte plaats is voor deze auto niet gevonden.', ex: [0.02, -0.04, 0.16] }, [
+    P('Persleiding', tube(pers, 0.0055, 30, 6), MAT.alu, { d: 'Aluminium persleiding (Ø11 mm, schematisch): voert het hete gasvormige koudemiddel onder hoge druk van de compressor naar het Leidingblok van de condensor.', ex: [0, -0.03, 0.06] }),
+    P('Vloeistofleiding', tube(vloei, 0.0045, 87, 6), MAT.alu, { d: 'Dunne aluminium vloeistofleiding (Ø9 mm, schematisch): voert het vloeibare koudemiddel van de droger om de linkerrand van de radiateur heen naar het expansieventiel.', ex: [0.06, 0, 0.06] }),
+    P('Zuigleiding', tube(zuig, 0.008, 58, 6), MAT.sysHose, { d: 'Dikke zuigleiding (Ø16 mm, schematisch): voert het koude, gasvormige koudemiddel van het expansieventiel langs de rechterkant van de motor terug naar de compressor.', ex: [-0.06, 0.02, 0] }),
+    P('Expansieventiel', G.rbox(0.04, 0.04, 0.05, 0.004), MAT.alu, { d: 'Expansieventiel (blokventiel) tegen het schutbord: laat het koudemiddel uitzetten voordat het de verdamper achter het schutbord in gaat. Plaats en maat schematisch.', p: TXV, ex: [0, 0, -0.06] }),
+  ]);
 
-  return A('Koeling en luchtinlaat', { d: 'Koelpakket (intercooler, condensor, radiateur en koelventilator), expansievat, koelslangen en het luchtinlaattraject naar de turbo.', ex: [0, 0.3, 2.0] }, [radiateur, condensor, intercooler, ventilator, expansie, slangen, inlaat, laadlucht]);
+  return A('Koeling en luchtinlaat', { d: 'Koelpakket (intercooler, condensor, radiateur en koelventilator), expansievat, koelslangen, de leidingen van de airconditioning en het luchtinlaattraject naar de turbo.', ex: [0, 0.3, 2.0] }, [radiateur, condensor, intercooler, ventilator, expansie, slangen, inlaat, laadlucht, airco]);
 }
 
 /* ============================ uitlaatsysteem ============================ */
