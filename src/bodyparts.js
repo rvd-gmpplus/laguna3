@@ -27,6 +27,8 @@ std('bodValance', 0x2b2d31, 0, 0.66);                                     // don
 // de omgeving met contrast spiegelt (heldere lichtvlakken naast donkere vloer) in plaats van vlak wit te lezen
 std('bodChrome', 0xa9b0b7, 1, 0.06, { envMapIntensity: 2.1 });
 std('bodGrille', 0x1d1f23, 0.35, 0.24, { envMapIntensity: 1.1 });             // glanzend zwart kunststof van de inlaatlamellen
+// middengrijs gelakt staal van de gasveercilinders: lichter dan het zwart van de zijrand en de bekleding, zodat de veer in het achterklepbeeld leest
+std('bodStrut', 0x62676e, 0.55, 0.35, { envMapIntensity: 0.9 });
 const bodSY = (z, y) => sAtY(z, y);
 const bodSAtXLow = (z, x) => { const c = bodSec(z); return x / Math.max(1e-6, c.hw - c.bul - c.rb) * S1; };   // s op de onderkant bij |x|
 const sn = s => sideName(s);
@@ -1049,7 +1051,7 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   const tgRing = [patch(tgInP, tgZ0, tgZ1, 14, z => [tgWo(z), tgWi(z)], 2), patch(tgInP, tgZ0, tgZ1, 14, z => [1 - tgWi(z), 1 - tgWo(z)], 2),
     patch(tgInP, tgZ0, tgZ0 + 0.06, 2, z => [tgWo(z), 1 - tgWo(z)], 8), patch(tgInP, tgZ1 - 0.05, tgZ1, 2, z => [tgWo(z), 1 - tgWo(z)], 8)];
   const tailgate = A('Achterklep', { d: 'Grote achterklep met de hele achterruit, typerend voor de vijfdeurs hatchback, met spoilerlip, derde remlicht en achterruitenwisser. Scharniert aan de dakrand en wordt door twee gasveren omhooggehouden.', ex: [0, 0.42, -0.5],
-    open: hinge(bodTgPv, [1, 0, 0], bodTgAng, { min: 60 * PI / 180, label: 'Achterklep', look: { dir: [0.4, 0.6, -1], nodes: ['Achterklep', 'Gasveer links', 'Gasveer rechts'] } }) }, [
+    open: hinge(bodTgPv, [1, 0, 0], bodTgAng, { min: 60 * PI / 180, label: 'Achterklep', look: { dir: [0.6, 0.6, -1], nodes: ['Achterklep', 'Gasveer links', 'Gasveer rechts'] } }) }, [
     P('Buitenpaneel achterklep', merge([tgOuter, bodSPweb(1, bodQScr(SP), 1, 0.003, 16), bodSPweb(-1, bodQScr(SP), 1, 0.003, 16)]), MAT.paint, { d: 'Plaatwerk van de achterklep onder en achter de ruit.', ex: [0, 0, -0.08] }),
     P('Binnenpaneel achterklep', merge([bodTailGeo(-0.36, 0.36, 0.68, ydT - 0.02, -0.04, 4, 8), ...tgRing]), MAT.paintIn, { d: 'Binnenframe van de achterklep met scharnier- en slotversteviging. Rond de achterruit loopt een smalle rand van 7 cm (de lijmrand), zodat de ruit van binnen als donker glas te zien is.', ex: [0, 0, 0] }),
     P('Achterruit', scr, MAT.glass, { d: 'Verwarmde achterruit van gehard glas, zeer vlak geplaatst (ca. 14 graden).', ex: [0, 0.14, 0.02] }),
@@ -1072,7 +1074,7 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
       const a = [s * bodGsA[0], bodGsA[1], bodGsA[2]], b = [s * bodGsB[0], bodGsB[1], bodGsB[2]], dir = V3(b[0] - a[0], b[1] - a[1], b[2] - a[2]);
       return A(`Gasveer ${sn(s)}`, { d: 'Gasveer van 495 mm met 205 mm slag (catalogusmaat, 610 N) die de geopende achterklep omhoog houdt; onderaan bevestigd tegen de zijwand van de opening (C-stijl), bovenaan op de zijrand van de klep, zodat hij langs de zijkant loopt. Plaats van de bevestigingspunten geschat.', p: a, q: quatFromTo(V3(0, 0, 1), dir), ex: [s * 0.14, 0, 0],
         strut: { a: { node: `Gasveerbevestiging ${sn(s)}`, p: [0, 0, 0] }, b: { node: 'Renault Laguna III/Carrosserie/Achterklep', p: b }, rod: 'Zuigerstang', lead: 'Renault Laguna III/Carrosserie/Achterklep', restLen: 0.29 } }, [
-        P('Cilinder', merge([xf(G.cyl('z', 0.0135, 0.0135, 0.27, 14), [0, 0, 0.135]), G.sphere(0.0155, 10)]), MAT.blackGloss, { d: 'Gasgevulde cilinder van de gasveer met kogelkom aan de carrosseriezijde.', ex: [0, 0, -0.05] }),
+        P('Cilinder', merge([xf(G.cyl('z', 0.016, 0.016, 0.27, 16), [0, 0, 0.135]), G.sphere(0.016, 12)]), MAT.bodStrut, { d: 'Gasgevulde cilinder van de gasveer met kogelkom aan de carrosseriezijde.', ex: [0, 0, -0.05] }),
         P('Zuigerstang', merge([xf(G.cyl('z', 0.0065, 0.0065, 0.27, 10), [0, 0, 0.155]), xf(G.sphere(0.0125, 10), [0, 0, 0.29])]), MAT.steel, { d: 'Verchroomde zuigerstang die uit de cilinder schuift; kogelkom aan de klepzijde.', ex: [0, 0.03, 0.05] }),
       ]);
     }),
