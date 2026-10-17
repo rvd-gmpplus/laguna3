@@ -115,7 +115,7 @@ function frontCorner(s) {
     P('Demperbuis', merge([xf(G.cyl('y', 0.025, 0.025, 0.315, 22), [0, 0.1125, 0]), xf(chsRb(0.02, 0.02, 0.026, 0.003), [-0.006, 0.095, -0.038]), xf(G.cyl('y', 0.019, 0.019, 0.01, 18), [0, -0.05, 0])]), MAT.darkSteel, { d: 'Buis van de bitube-schokdemper (Ø50 mm) met aangelaste klemtong voor de koppelstang.', ex: [0, -0.2, 0] }),
     P('Zuigerstang', G.cyl('y', 0.011, 0.011, 0.19, 14), MAT.chrome, { d: 'Verchroomde zuigerstang Ø22 mm.', p: [0, 0.295, 0], ex: [0, 0.02, 0] }),
     P('Veerschotel onder', seat(1, 'chsSeatL'), MAT.darkSteel, { d: 'Onderste veerschotel, aan de demperbuis gelast.', p: [0, 0.105, 0], ex: [0, -0.06, 0] }),
-    P('Veerrubber onder', annulus(0.052, 0.074, 0.004, 'y', 28), MAT.rubber, { d: 'Rubber tussenlaag tussen veer en onderste schotel.', p: [0, 0.114, 0], ex: [0, -0.03, 0], inner: true }),
+    P('Veerrubber onder', annulus(0.052, 0.074, 0.004, 'y', 28), MAT.rubber, { d: 'Rubber tussenlaag tussen veer en onderste schotel.', p: [0, 0.114, 0], ex: [0, -0.03, 0] }),
     P('Schroefveer voor', spring(0.066, 0.0068, 0.2, 5.5), MAT.chsSpring, { d: 'Draagt het voorgewicht van de auto.', p: [0, 0.21, 0] }),
     P('Stofhoes veerpoot', G.lathe('y', bellows(0.032, 0.026, 0.115, 5), 22, 'chsDb'), MAT.rubber, { d: 'Balg over de zuigerstang die vuil uit de demper houdt.', p: [0, 0.165, 0], ex: [0.16, 0.02, 0] }),
     P('Aanslagrubber', G.cyl('y', 0.024, 0.021, 0.04, 16), MAT.rubber, { d: 'Vangt het inveren aan het einde van de slag op.', p: [0, 0.285, 0], ex: [0.2, 0.06, 0] }),
@@ -312,7 +312,7 @@ function buildRearAxle() {
     P('Draaipuntbout', hexBolt(0.15, 0.014, sg > 0 ? 'x' : '-x'), MAT.steel, { d: 'Scharnierbout door de draaipuntbus.', p: [sg * 0.53, 0.32, zp], ex: [sg * -0.2, 0, 0.1] }),
     P('Draaipuntmoer', hexNut('x', 0.0125, 0.014), MAT.steel, { d: 'Zelfborgende moer van de draaipuntbout.', p: [sg * 0.685, 0.32, zp], ex: [sg * 0.25, 0, 0.1] })]);
   const spr = sg => A(`Veer achter ${sideName(sg)}`, { d: 'Schroefveer met rubber ondersteuning, bovenschotel, aanslagrubber en stofhoes; aparte veer en demper (Renault: aparte schroefveren en dempers).', ex: [0, 0.3, 0] }, [
-    P('Veerrubber onder', annulus(0.045, 0.07, 0.006, 'y', 24), MAT.rubber, { d: 'Rubber tussenlaag op het veerpad.', p: [sg * REAR_SPR.x, 0.348, REAR_SPR.z], ex: [0, -0.04, 0], inner: true }),
+    P('Veerrubber onder', annulus(0.045, 0.07, 0.006, 'y', 24), MAT.rubber, { d: 'Rubber tussenlaag op het veerpad.', p: [sg * REAR_SPR.x, 0.348, REAR_SPR.z], ex: [0, -0.04, 0] }),
     P('Schroefveer achter', spring(0.062, 0.0105, 0.2, 5), MAT.chsSpring, { d: 'Draagt het achtergewicht van de auto.', p: [sg * REAR_SPR.x, 0.455, REAR_SPR.z], ex: [0, 0.0, 0] }),
     P('Veerschotel boven', G.lathe('y', [[0.02, 0], [0.068, 0.002], [0.07, -0.008], [0.062, -0.01], [0.02, -0.004]], 22, 'chsSeatR'), MAT.rubber, { d: 'Rubber bovenschotel in de carrosserie (de veer drukt tegen de bovenkant van de veerkoker in de binnenwielkast).', p: [sg * REAR_SPR.x, 0.566, REAR_SPR.z], ex: [0, 0.14, 0] }),
     P('Aanslagrubber', G.cyl('y', 0.03, 0.026, 0.05, 16), MAT.rubber, { d: 'Vangt het inveren aan het einde van de slag op.', p: [sg * REAR_SPR.x, 0.535, REAR_SPR.z], ex: [0, 0.2, 0] }),
