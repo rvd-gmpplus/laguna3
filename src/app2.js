@@ -384,8 +384,12 @@ function isolate(list) {
 }
 function uiSyncIso() {
   const on = ISO.length > 0, txt = ISO.map(n => n.name).join(' en ');
-  if (els.isoBadge.hidden !== !on) { els.isoBadge.hidden = !on; uiUiChanged(); layoutView(); }
-  if (on && els.isoName.textContent !== txt) { els.isoName.textContent = txt; uiUiDirty = true; }
+  // Eerst de tekst, dan de badge en de maat: een andere naam kan de badge laten omslaan, en het dock verandert dan meteen
+  // (niet pas bij de ResizeObserver, die op een trage machine na het kadreren komt).
+  let relayout = false;
+  if (on && els.isoName.textContent !== txt) { els.isoName.textContent = txt; uiUiDirty = true; relayout = true; }
+  if (els.isoBadge.hidden !== !on) { els.isoBadge.hidden = !on; uiUiChanged(); relayout = true; }
+  if (relayout) layoutView();
 }
 $('isoShowAll').onclick = () => $('btnShowAll').click();
 
@@ -777,14 +781,19 @@ els.presets.addEventListener('keydown', e => {
 });
 function uiSyncCats() {
   const p = ACTIVE_PRESET && appPresetById.get(ACTIVE_PRESET);
+  let textChanged = false;
   for (const b of els.presets.children) {
     const cat = b.dataset.cat, n = PRESETS.filter(q => q.cat === cat && appPresetOk(q)).length;
     const on = !!p && p.cat === cat;
     b.classList.toggle('on', on);
     const txt = cat === 'Overzicht' && appTour ? 'Rondleiding loopt' : (on ? p.label : `${n} presets`);
-    if (b.lastChild.textContent !== txt) { b.lastChild.textContent = txt; uiUiDirty = true; }
+    if (b.lastChild.textContent !== txt) { b.lastChild.textContent = txt; uiUiDirty = true; textChanged = true; }
     b.setAttribute('aria-label', `${cat}${on ? ', actief: ' + p.label : ''}`);
   }
+  // De naam van de actieve preset kan de presetbalk laten omslaan naar een tweede rij en zo het vrije beeld verkleinen.
+  // Direct opnieuw meten: layoutView ziet dan de nieuwe hoogte en laat de camera opnieuw inpassen (G1), nog voor de
+  // ResizeObserver van het dock aan de beurt is.
+  if (textChanged && uiReady) layoutView();
   // In een zijwaarts schuivende rij (telefoon) schuift een nieuwe actieve categorie in beeld; handmatig schuiven blijft ongemoeid
   const act = p ? p.cat : null;
   if (act !== uiCatSeen) {
@@ -1470,6 +1479,9 @@ function uiLabelRects() { return uiSpots.slice(0, uiNPlaced).map(p => ({ name: p
 
 /* ---------- formaat en vrij beeld ---------- */
 let uiRefitTimer = 0;
+// G1: uiFitRef is het kader (uiLastFit) waarop de camera is ingepast, uiFitFree de hoogte van het vrije beeld op dat moment;
+// uiRefitCheck: de wachtende herkadrering komt alleen van een layoutwijziging en vervalt als de camera al past.
+let uiFitRef = null, uiFitFree = -1, uiRefitCheck = false;
 const uiViewPrev = { l: -99, r: -99, t: -99, b: -99 };
 let uiViewW = 0, uiViewH = 0;
 function layoutView() {
@@ -1500,8 +1512,14 @@ function layoutView() {
   }
   // Kleine verschuivingen van de bediening (een focusrand, een paar pixels in het dock) verschuiven het beeld niet:
   // anders springt de scène onder de vinger weg tussen aanwijzen en tikken.
+  const prevFree = uiViewPrev.t > -99 && uiViewW === W && uiViewH === H ? H - uiViewPrev.t - uiViewPrev.b : -1;
   for (const k of ['l', 'r', 't', 'b']) { if (Math.abs(VIEW[k] - uiViewPrev[k]) < 6 && uiViewW === W && uiViewH === H) VIEW[k] = uiViewPrev[k]; uiViewPrev[k] = VIEW[k]; }
   uiViewW = W; uiViewH = H;
+  // Een layoutwijziging van het dock (de isoleerbadge verschijnt, de presetbalk breekt om) die het vrije beeld meer dan 24 px
+  // in hoogte verandert nadat de camera was ingepast: opnieuw inpassen, anders valt het onderwerp buiten het beeld.
+  // Een kader dat sinds de vorige meting is ingepast, is ingepast op het vrije beeld van die vorige meting (prevFree).
+  if (uiLastFit !== uiFitRef) { uiFitRef = uiLastFit; uiFitFree = prevFree; }
+  if (uiFitFree >= 0 && Math.abs((H - VIEW.t - VIEW.b) - uiFitFree) > 24) uiRefitSoon(true);
   camera.setViewOffset(W, H, (VIEW.r - VIEW.l) / 2, (VIEW.b - VIEW.t) / 2, W, H);
   camera.updateProjectionMatrix();
   uiPlaceMenu();
@@ -1509,14 +1527,21 @@ function layoutView() {
   uiSyncLabels();
 }
 // Na een wijziging van het vrije beeld opnieuw inpassen, tenzij de gebruiker de camera zelf heeft verplaatst.
+// Een kader dat na de laatste meting is ingepast, hoort bij het huidige vrije beeld; anders telt het verschil met het vrije beeld bij het inpassen.
+function uiFitStale() { return uiLastFit === uiFitRef && uiFitFree >= 0 && Math.abs((H - VIEW.t - VIEW.b) - uiFitFree) > 24; }
 function uiRefitNow() {
-  clearTimeout(uiRefitTimer); uiRefitTimer = 0;
+  const check = uiRefitCheck;
+  clearTimeout(uiRefitTimer); uiRefitTimer = 0; uiRefitCheck = false;
   if (uiUserCam || !uiLastFit) return;
+  if (check && !uiFitStale()) return; // alleen een layoutwijziging als aanleiding: niet herkadreren als de camera al op dit vrije beeld past
   const f = uiLastFit;
   if (f.preset) { const c = f.preset.cam || {}; focusNodes(appSubject(f.preset), appPresetDir(f.preset), c.pad || 1.06, { dur: 0.4 }); uiLastFit = f; }
   else focusNodes(f.nodes, f.dir, f.pad, Object.assign({}, f.opt || {}, { dur: 0.4, delay: 0 }));
+  uiFitRef = uiLastFit; uiFitFree = H - VIEW.t - VIEW.b;
 }
-function uiRefitSoon() {
+// check: de aanleiding is alleen een layoutwijziging van het dock (layoutView); een formaatwissel of paneelwissel herkadreert altijd.
+function uiRefitSoon(check) {
+  uiRefitCheck = !!check && (!uiRefitTimer || uiRefitCheck);
   clearTimeout(uiRefitTimer);
   uiRefitTimer = setTimeout(uiRefitNow, 160);
 }
