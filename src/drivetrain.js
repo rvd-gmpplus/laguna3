@@ -230,7 +230,7 @@ function drvDiff() {
     G.lathe('x', [[0.032, -0.072], [0.032, -0.052], [0.05, -0.046], [0.064, -0.028], [0.064, 0.028], [0.05, 0.046], [0.032, 0.052], [0.032, 0.072]], 36, 'drvDiffHousing'),
     annulus(0.05, 0.072, 0.01, 'x', 36)]));
   return A('Differentieel', { d: 'Verdeelt het koppel over beide voorwielen en laat ze in bochten verschillend snel draaien; het kroonwiel heeft 70 tanden. Het aantal planeetwielen van het differentieel is niet gevonden: schematisch weergegeven met twee satellietwielen. Het kroonwiel van 70 tanden is een getekend tandental (Mitsubishi F6AJA): met het rondsel van 21 tanden en de tussenas geeft dat 3,571, terwijl de eindoverbrenging van deze auto 3,804 is (Renault-persmap, zie de specificaties van de automaat); de Renault-tandentallen zijn niet gevonden.', p: DIFF, ex: [0.0, -0.1, -0.5], inner: true }, [
-    P('Kroonwiel', drvG(70, DRV_GM, 0.022, 0.07), MAT.steel, { d: 'Kroonwiel met 70 tanden, met tien bouten (144 N·m) aan het differentieelhuis; wordt door het rondsel van 21 tanden aangedreven.', p: [0.006, 0, 0], ex: [-0.09, 0, 0] }),
+    P('Kroonwiel', drvG(70, DRV_GM, 0.022, 0.07), MAT.steel, { d: 'Kroonwiel met 70 tanden, met tien bouten (144 Nm) aan het differentieelhuis; wordt door het rondsel van 21 tanden aangedreven.', p: [0.006, 0, 0], ex: [-0.09, 0, 0] }),
     P('Kroonwielbouten', drvBoltRing('drvKroonB', 10, 0.0775, 0.02, 0.008, '-x', 0.1, [0, 0], 0.017), MAT.darkSteel, { d: 'Tien bouten die het kroonwiel aan het differentieelhuis bevestigen.', ex: [-0.15, 0, 0] }),
     P('Differentieelhuis', hub, MAT.iron, { d: 'Gegoten huis dat met het kroonwiel meedraait; in het handboek niet te demonteren.', ex: [0.0, 0.0, 0.0001] }),
     P('Satellietas', G.cyl('y', 0.006, 0.006, 0.09, 10), MAT.steel, { d: 'As van de satellietwielen.', ex: [0, 0, 0.11], inner: true }),
@@ -381,8 +381,8 @@ function drvHousing() {
     A('Transmissiehuis', { d: 'Spuitgietaluminium huis rond de planetaire sets en schakelelementen, met de lobben voor de tussenas en het differentieel en de vlakken voor het klepblok en de steunen. Bakbreedte circa 385 mm incl. omvormerhuis (Planète Renault); hier iets langer weergegeven. De hartafstand van de assen (197 mm) is een schatting.', spec: [['Materiaal', 'spuitgietaluminium']], ex: [0.1, 0.8, 0.0] }, [
       P('Transmissiehuis (carter)', caseGeo, MAT.aluCast, { d: 'Gegoten carter met ribben en bevestigingsoren.', ex: [0, 0.0, 0.0001] }),
       P('Bouten huisverbinding', rimBolts('drvBHuis', 12, 0.1285, 0.1295, 0.1), MAT.darkSteel, { d: 'Torx-bouten tussen omvormerhuis en transmissiehuis.', ex: [-0.12, 0.0, 0.0] }),
-      P('Vulplug', drvBolt(0.02, 0.012, 'z'), MAT.darkSteel, { d: 'Vulpunt van de ATF. Bij de AJ0 in de Laguna wordt gevuld via een vulkanaal met afdekplaat (6 N·m), bereikbaar vanuit de motorruimte. Na het vullen met 3,2 liter wordt het niveau gesteld met de niveauplug onder in het carter (8 N·m), bij 40 graden olietemperatuur met draaiende motor in stand P. Plaats in het model schematisch.', p: [0.345, 0.02, 0.133], r: [PI, 0, 0], ex: [0, 0.0, 0.14] }),
-      P('Aftapplug', drvBolt(0.02, 0.012, 'z'), MAT.darkSteel, { d: 'Peilbout onder in het huis (8 N·m) met daarachter een overloopbuisje (inbus 5 mm, 8 N·m). Bij aftappen komt eerst circa 1 l uit de peilbout en daarna ruim 1 l na het verwijderen van het buisje.', p: [0.325, -0.19, 0.133], r: [PI, 0, 0], ex: [0, -0.04, 0.14] }),
+      P('Vulplug', drvBolt(0.02, 0.012, 'z'), MAT.darkSteel, { d: 'Vulpunt van de ATF. Bij de AJ0 in de Laguna wordt gevuld via een vulkanaal met afdekplaat (6 Nm), bereikbaar vanuit de motorruimte. Na het vullen met 3,2 liter wordt het niveau gesteld met de niveauplug onder in het carter (8 Nm), bij 40 graden olietemperatuur met draaiende motor in stand P. Plaats in het model schematisch.', p: [0.345, 0.02, 0.133], r: [PI, 0, 0], ex: [0, 0.0, 0.14] }),
+      P('Aftapplug', drvBolt(0.02, 0.012, 'z'), MAT.darkSteel, { d: 'Peilbout onder in het huis (8 Nm) met daarachter een overloopbuisje (inbus 5 mm, 8 Nm). Bij aftappen komt eerst circa 1 l uit de peilbout en daarna ruim 1 l na het verwijderen van het buisje.', p: [0.325, -0.19, 0.133], r: [PI, 0, 0], ex: [0, -0.04, 0.14] }),
       P('Ontluchtingsnippel', G.cyl('y', 0.004, 0.004, 0.02, 10), MAT.drvBrass, { d: 'Nippel voor de ontluchtingsslang van de bak.', p: [0.16, 0.135, 0.0], ex: [0.0, 0.1, 0] }),
       P('Ontluchtingsslang', tube([[0.16, 0.145, 0.0], [0.16, 0.17, 0.0], [0.185, 0.18, 0.03]], 0.003, 16, 6), MAT.rubber, { d: 'Slangetje dat de bak ontlucht zonder dat er olie of water in komt.', ex: [0.0, 0.18, 0] }),
     ]),
@@ -417,7 +417,7 @@ function drvOutside() {
 function buildGearbox() {
   return A('Automaatversnellingsbak', {
     d: 'Zestraps automaat Jatco JF613E (Renault-code AJ0, gebaseerd op het Lepelletier-systeem) met koppelomvormer, drie planetaire sets, vijf schakelelementen plus vrijloop en ingebouwd differentieel; dwars links naast de motor. De interne koppeling van de sets en alle kleine onderdelen zijn schematisch weergegeven. Het droge gewicht is circa 93 kg en de lengte circa 385 mm.',
-    spec: [['Type', 'Jatco JF613E (Renault AJ0)'], ['Overbrengingen', '4,199 / 2,405 / 1,583 / 1,161 / 0,855 / 0,685, achteruit 3,457 (Mitsubishi F6AJA-handboek; de snelheden per 1000 tpm in de Renault-persmap kloppen hier binnen 0,2 % mee)'], ['Eindoverbrenging', '3,804 (Renault-persmap 2007)'], ['ATF', 'Elf Elfmatic J6 (het handboek van 2009 noemt in zijn tabel ELF MATIC S6); totaal 7,6 liter, na aftappen 3,5 liter']],
+    spec: [['Type', 'Jatco JF613E (Renault AJ0)'], ['Overbrengingen', '4,199 / 2,405 / 1,583 / 1,161 / 0,855 / 0,685, achteruit 3,457 (Mitsubishi F6AJA-handboek; de snelheden per 1.000 tpm in de Renault-persmap kloppen hier binnen 0,2 % mee)'], ['Eindoverbrenging', '3,804 (Renault-persmap 2007)'], ['ATF', 'Elf Elfmatic J6 (het handboek van 2009 noemt in zijn tabel ELF MATIC S6); totaal 7,6 liter, na aftappen 3,5 liter']],
     p: [GB_X, 0, 0], ex: [0.66, 0, 0],
   }, [
     ...drvHousing(),
@@ -521,7 +521,7 @@ function buildPowertrain() {
   ]);
   return A('Aandrijflijn', {
     d: 'Dwarsgeplaatste motor en automaat met differentieel en aandrijfassen naar de voorwielen.',
-    spec: [['Motor', '2.0 Turbo F4Rt, 170 pk'], ['Transmissie', '6-traps automaat (Jatco JF613E, Renault AJ0)'], ['Aandrijving', 'voorwielen'], ['Topsnelheid', '220 km/h'], ['0–100 km/h', '9,2 s']],
+    spec: [['Motor', '2,0 Turbo F4Rt, 170 pk'], ['Transmissie', '6-traps automaat (Jatco JF613E, Renault AJ0)'], ['Aandrijving', 'voorwielen'], ['Topsnelheid', '220 km/h'], ['0–100 km/h', '9,2 s']],
     p: PT_POS.toArray(), r: [PT_TILT, 0, 0], ex: [0, 0.35, 1.9],
   }, [engine, gb, shafts, drvMounts()]);
 }
