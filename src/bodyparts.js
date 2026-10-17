@@ -676,16 +676,19 @@ const bodStRot = (() => {
 // ruitrand; berekend zodat de afstand A-B in gesloten stand 0,290 m is en bij 66 graden 0,495 m (HB2/catalogus: 495 mm uit, slag 205 mm).
 const bodTgPv = [0, 1.362, -1.174], bodTgAng = 66 * PI / 180;
 // Beide kogels liggen aan de zijkant van de opening: A op de binnenkant van de C-stijl (de zijwand loopt hier van |x| 0,70 bij y 1,21 naar 0,68 bij y 1,26), B op de zijrand
-// van de klep, 1,2 cm binnen A, zodat de veer langs de zijwand loopt en niet de bagageruimte in. A ligt op |x| 0,664 (golf 5b-3, E1; was 0,684): zo blijft het
+// van de klep, 1,4 cm buiten A, zodat de veer langs de zijwand loopt en niet de bagageruimte in. A ligt op |x| 0,664 (golf 5b-3, E1; was 0,684): zo blijft het
 // gekantelde plaatje 3 mm onder de lakhuid en steken kogel en kogelkom er niet meer doorheen (gemeten met clash.py). Het punt A ligt vast (z -1,33, vlak achter de scharnierlijn, onder de rand van de sponning);
-// B volgt uit de glasrand (4,5 cm onder het glas) en de lengtes: 0,290 m gesloten en 0,495 m bij 66 graden (HB2/catalogus: 495 mm uit, slag 205 mm).
+// B volgt uit de glasrand (5 cm onder het glas) en de lengtes: 0,290 m gesloten en 0,495 m bij 66 graden (HB2/catalogus: 495 mm uit, slag 205 mm).
+// B ligt op |x| 0,678 (golf 5b-3; was 0,652 en 4,5 cm onder het glas): met A op 0,664 liep de as anders door de flens van de sponning en langs de
+// klepafdichting. Nu ligt de gesloten veer buiten de afdichting, onder de ruitrand en binnen de C-stijl, en zit de beugel nog op het binnenpaneel
+// (gemeten met clash.py: geen paar dieper dan voor E1, sponning en C-stijl vrij).
 // De hoogte van A en de plaats van B volgen daaruit; panP staat in panorama.js, dus dit draait pas bij het bouwen.
-const bodGsX = [0.664, 0.652], bodGsAz = -1.33;
+const bodGsX = [0.664, 0.678], bodGsAz = -1.33, bodGsLift = -0.05;
 // het plaatje van A volgt de helling van de C-stijl ter plaatse (x neemt 0,45 m per m af naar boven tussen y 1,21 en 1,25, gemeten): 24 graden om z
 const bodGsTilt = Math.atan(0.45);
 function bodGsSolve() {
   const [ax, bx] = bodGsX, az = bodGsAz, c = Math.cos(bodTgAng), sg = Math.sin(bodTgAng);
-  const bAt = zb => [bx, panP(zb, bx, -0.045)[1], zb];
+  const bAt = zb => [bx, panP(zb, bx, bodGsLift)[1], zb];
   const opened = b => { const ry = b[1] - bodTgPv[1], rz = b[2] - bodTgPv[2]; return [b[0], bodTgPv[1] + ry * c - rz * sg, bodTgPv[2] + ry * sg + rz * c]; };
   const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
   let best = null;
