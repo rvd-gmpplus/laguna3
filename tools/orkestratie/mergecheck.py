@@ -32,6 +32,15 @@ READONLY = ['build.py', 'auto.json', 'framework.json', 'tools/framework.py', 'VE
             'tools/integrity.py', 'tools/silhouette.py', 'tools/pubsmoke.py', 'tools/tri.py', 'tools/shot.py', 'tools/anchors.json',
             'tools/itest.py', 'tools/ui_*.py', 'tools/opentest.py', 'tools/visdiff.py', 'tools/anchorcheck.py', 'tools/lag3-vm.sh', 'tools/vm/*',
             'tools/open_allow.json', 'tools/orkestratie/*', 'index.html', 'docs/*', 'README.md', 'CHANGELOG.md', 'src/core.js', 'src/body.js']
+# de docs zijn alleen-lezen voor de andere domeinen, niet voor het domein docs zelf; docs/cijfers.md blijft van de orkestrator
+# (tools/orkestratie/cijfers.py maakt hem)
+DOCS_EIGEN = ['docs/*', 'README.md', 'CHANGELOG.md']
+
+
+def readonly(dom, f):
+    if dom == 'docs' and f != 'docs/cijfers.md' and any(fnmatch.fnmatch(f, p) for p in DOCS_EIGEN):
+        return False
+    return any(fnmatch.fnmatch(f, p) for p in READONLY)
 
 
 def main():
@@ -45,8 +54,8 @@ def main():
     bad = []
     for f in files:
         # een alleen-lezen bestand is voor een domeineigenaar nooit eigen, ook als het in zijn domein ligt (core.js, body.js)
-        owned = any(fnmatch.fnmatch(f, p) for p in OWN[dom]) and (dom == 'orkestrator' or not any(fnmatch.fnmatch(f, p) for p in READONLY))
-        ro = any(fnmatch.fnmatch(f, p) for p in READONLY)
+        ro = readonly(dom, f)
+        owned = any(fnmatch.fnmatch(f, p) for p in OWN[dom]) and (dom == 'orkestrator' or not ro)
         if f == INDEX:
             owned, ro = met_index and dom == 'orkestrator', True
         tag = 'eigen' if owned else ('ALLEEN-LEZEN' if ro else 'VAN EEN ANDER')
