@@ -722,6 +722,8 @@ function uiSnap() {
     iso: ISO.map(n => n.id), dim: DIM ? DIM.id : null, xray: XRAY, sys: SYSCOL, spread: SPREAD, om: OPENMODE,
     sel: (SEL || ROOT).id, ctx: CTX ? CTX.id : null, force: uiLabelForce, preset: ACTIVE_PRESET,
     cam: [camera.position.clone(), controls.target.clone()],
+    // G1: het kader waarop deze camera is ingepast, het vrije beeld daarvan en of de gebruiker de camera zelf had verplaatst
+    fit: uiLastFit, ffree: uiLastFit === uiFitRef ? uiFitFree : H - VIEW.t - VIEW.b, user: uiUserCam,
   };
 }
 function uiPush() {
@@ -744,6 +746,8 @@ function uiRestore(s, instant) {
   uiVisDirty = true; applyVisibility();
   SEL = uiById.get(s.sel) || ROOT;
   animCam(s.cam[0], s.cam[1], 0.8);
+  // G1: de camera is terug op het oude kader; kader, vrij beeld en gebruikerscamera horen daarbij (anders trekt layoutView hem naar het kader van de preset waaruit je terugging)
+  uiLastFit = s.fit; uiFitRef = s.fit; uiFitFree = s.ffree; uiUserCam = s.user;
   updateGround();
   if (instant) finishAll();
   ACTIVE_PRESET = s.preset || null;

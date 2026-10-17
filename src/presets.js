@@ -132,6 +132,7 @@ function appApplyPreset(p, opt = {}) {
   CTX = p.labels ? byName(p.labels) : (p.select ? byName(p.select) : ((p.open || p.deep || []).length ? byName((p.open || p.deep)[0]) : null));
   uiLabelForce = !!p.labels;
   ACTIVE_PRESET = p.id;
+  uiSyncCats(); uiSyncOpenUi(); // G1: de presetnaam en de openmodus veranderen het dock; eerst meten, dan pas kadreren (geen herkadrering midden in de animatie)
   const sel = p.select ? byName(p.select) : (ISO.length === 1 ? ISO[0] : ROOT);
   select(sel, { keepPreset: true });
   const openSpan = opening.length ? oDur + oStag * (o1 - o0) : 0;
