@@ -9,9 +9,8 @@ const sysP = e => ENG2CAR(e);                                  // punt in het mo
 const sysE = (port, d = 0) => ENG2CAR(portAt(port, d));         // punt op afstand d buiten een aansluiting (autoframe)
 function sysDir(a, b) { return V3(b[0] - a[0], b[1] - a[1], b[2] - a[2]).normalize(); }
 function sysAt(p, t, k) { return [p[0] + t.x * k, p[1] + t.y * k, p[2] + t.z * k]; }
-function sysClampGeo(r) {
-  return cache('sysClamp' + r, () => merge([G.torus('z', r + 0.0035, 0.0022, 14, 5), xf(G.box(0.014, 0.006, 0.01), [0, r + 0.0075, 0]), xf(G.cyl('x', 0.0025, 0.0025, 0.016, 6), [0, r + 0.0105, 0])]));
-}
+// klem met stelschroef om een slang of pijp met straal r: de band ligt 3,5 mm buiten de slang (generieke hoseClamp uit core.js)
+function sysClampGeo(r) { return hoseClamp('z', r + 0.0035, { screw: true }); }
 // slangklem om een slang of pijp met straal r; as langs t (eenheidsvector), schuift bij uitklappen langs out
 function sysClamp(name, at, t, r, out) {
   const o = out || t;
@@ -80,7 +79,7 @@ function buildCooling() {
     P('Vat', merge([G.rbox(0.12, 0.13, 0.15, 0.018), xf(G.cyl('y', 0.03, 0.03, 0.02, 16), [0.02, 0.07, 0.0])]), MAT.tank, { d: 'Doorzichtig vat met de niveaumarkering voor koelvloeistof.', p: EV }),
     // vulhals met een donkere opening (de dop sluit hem af); de dop klapt om een scharnierlip aan de achterrand van de hals omhoog (zoals de olievuldop) en blijft eraan vast
     P('Vulopening expansievat', G.cyl('y', 0.022, 0.022, 0.002, 20), MAT.blackGloss, { d: 'Open vulhals van het expansievat: een donkere opening in de opstaande hals; de drukdop sluit hem af.', p: [EV[0] + 0.02, EV[1] + 0.0805, EV[2]], ex: [0, 0.03, 0] }),
-    P('Expansiedop', merge([G.cyl('y', 0.034, 0.034, 0.016, 16), xf(G.box(0.07, 0.01, 0.014), [0, 0.011, 0]), xf(G.box(0.018, 0.006, 0.016), [0, -0.005, -0.042]), xf(G.cyl('x', 0.0045, 0.0045, 0.024, 8), [0, -0.0045, -0.0485])]), MAT.plastic, { d: 'Drukdop met overdrukklep die bij ongeveer 1,4 bar opent (aannemelijk); klapt in dit model om een scharnierlip aan de achterrand van de hals omhoog en blijft eraan vast (opener, schematisch: in werkelijkheid draai je de dop los).', p: [EV[0] + 0.02, EV[1] + 0.088, EV[2]], ex: [0, 0.14, 0], open: { type: 'hinge', pivot: [EV[0] + 0.02, EV[1] + 0.0835, EV[2] - 0.0485], axis: [1, 0, 0], angle: -1.8, min: 1.44, needs: 'Motorkap', label: 'Dop expansievat', look: { dir: [0.4, 0.8, 0.9], nodes: ['Expansiedop', 'Koeling en luchtinlaat/Expansievat/Vat'] } } }),
+    P('Expansiedop', merge([G.cyl('y', 0.034, 0.034, 0.016, 16), xf(G.box(0.07, 0.01, 0.014), [0, 0.011, 0]), xf(G.box(0.018, 0.006, 0.016), [0, -0.005, -0.042]), xf(G.cyl('x', 0.0045, 0.0045, 0.024, 8), [0, -0.0045, -0.0485])]), MAT.plastic, { d: 'Drukdop met overdrukklep die bij ongeveer 1,4 bar opent (aannemelijk); klapt in dit model om een scharnierlip aan de achterrand van de hals omhoog en blijft eraan vast (opener, schematisch: in werkelijkheid draai je de dop los).', p: [EV[0] + 0.02, EV[1] + 0.088, EV[2]], ex: [0, 0.14, 0], open: hinge([EV[0] + 0.02, EV[1] + 0.0835, EV[2] - 0.0485], [1, 0, 0], -1.8, { min: 1.44, needs: 'Motorkap', label: 'Dop expansievat', look: { dir: [0.4, 0.8, 0.9], nodes: ['Expansiedop', 'Koeling en luchtinlaat/Expansievat/Vat'] } }) }),
     P('Niveauschakelaar', G.rbox(0.03, 0.026, 0.026, 0.005), MAT.plastic, { d: 'Schakelaar die het dashboard waarschuwt bij een te laag koelvloeistofpeil.', p: [EV[0] + 0.068, EV[1] - 0.02, EV[2]], ex: [0.1, 0, 0] }),
     P('Vathouder', merge([G.box(0.13, 0.012, 0.16), xf(G.box(0.012, 0.09, 0.16), [0.06, 0.05, 0])]), MAT.darkSteel, { d: 'Beugel die het expansievat aan de carrosserie vasthoudt.', p: [EV[0], EV[1] - 0.07, EV[2]], ex: [0, -0.12, 0] }),
   ]);
@@ -137,7 +136,7 @@ function buildExhaust() {
   const voorkat = A('Voorkatalysator', { d: 'Driewegkatalysator direct op de turbine-uitgang (voorkat): zet CO, koolwaterstoffen en NOx om. De lambdasonde ervoor regelt het mengsel, de sonde erna controleert de katalysator. Opbouw schematisch.', p: PT_POS.toArray(), r: [PT_TILT, 0, 0], ex: [-0.1, 0.06, 0] }, [
     P('Pakking voorkat', gasketShape, MAT.heat, { d: 'Metalen pakking tussen de turbineflens en de voorkatalysator.', p: [xE - 0.0008, ty, tz], ex: [-0.02, 0, 0] }),
     P('Flens voorkat', flangeShape, MAT.steel, { d: 'Driegatsflens van de voorkatalysator, met drie moeren op de tapeinden van de turbine.', p: [xE - 0.0056, ty, tz], ex: [-0.045, 0, 0] }),
-    ...bolts.map(([dz, dy], i) => P(`Moer voorkat ${i + 1}`, G.cyl('x', 0.0075, 0.0075, 0.008, 6), MAT.steel, { d: 'Zeskantmoer op een tapeind van de turbine; houdt de voorkatalysator vast.', p: [xE - 0.0135, ty + dy, tz + dz], ex: [-0.09, dy * 2, dz * 2] })),
+    ...bolts.map(([dz, dy], i) => P(`Moer voorkat ${i + 1}`, hexNut('x', 0.0075, 0.008), MAT.steel, { d: 'Zeskantmoer op een tapeind van de turbine; houdt de voorkatalysator vast.', p: [xE - 0.0135, ty + dy, tz + dz], ex: [-0.09, dy * 2, dz * 2] })),
     P('Inlaatconus voorkat', G.lathe('-x', [[0.026, 0], [0.034, 0.014], [0.0415, 0.034], [0.0405, 0.036]], 24, 'sysCatIn'), MAT.steel, { d: 'Conus die de turbine-uitgang verwijdt naar de katalysatorbehuizing.', p: [xE - 0.0096, ty, tz], ex: [-0.05, 0, 0] }),
     P('Katalysatorhuis', G.cyl('-x', 0.0415, 0.0415, canL, 24), MAT.steel, { d: 'Roestvrijstalen behuizing om de keramische monoliet.', p: [canX0 - canL / 2, ty, tz], ex: [-0.06, 0, 0] }),
     P('Monoliet voorkat', G.cyl('-x', 0.036, 0.036, canL - 0.01, 18), MAT.ceramic, { d: 'Keramische honingraat met edelmetaalcoating waar de uitlaatgassen overheen stromen.', p: [canX0 - canL / 2, ty, tz], ex: [-0.12, 0.05, 0], inner: true }),
@@ -266,7 +265,7 @@ function buildFuel() {
     P('Vulklepring', G.torus('x', 0.0238, 0.0032, 24, 6), MAT.steel, { d: 'Metalen ring om de zwarte vulklep: zo is de capless vulhals van buiten af te lezen (vorm schematisch).', p: [-(tkMouth - 0.0105), flapY, flapZ], ex: [-0.22, 0.05, 0] }),
     P('Tankkom', tkBowl, MAT.sysTkNis, { d: 'Kom in het rechter achterscherm achter de tankklep, met de hals van de vulpijp op de bodem (vorm schematisch).', ex: [-0.12, 0.02, 0] }),
     A('Tankklep', { d: 'Tankklep in het rechter achterscherm, in lak uitgevoerd. Opent na ontgrendelen door op de achterrand te drukken en draait dan ongeveer 140 graden om de scharnierrand aan de voorkant (hoek geschat).', ex: [-0.34, 0.05, 0],
-      open: { type: 'hinge', pivot: tkSkin(bodTkZ[1] + 0.004, flapY, 0.004), axis: [0, 1, 0], angle: 140 * PI / 180, min: 112 * PI / 180, label: 'Tankklep', look: { dir: [-1, 0.3, -0.45], nodes: ['Tankklep', 'Tankkom'] } } }, [
+      open: hinge(tkSkin(bodTkZ[1] + 0.004, flapY, 0.004), [0, 1, 0], 140 * PI / 180, { min: 112 * PI / 180, label: 'Tankklep', look: { dir: [-1, 0.3, -0.45], nodes: ['Tankklep', 'Tankkom'] } }) }, [
       P('Tankklep buitenkant', flapOut, MAT.paint, { d: 'Buitenkant van de tankklep in carrosseriekleur, licht bol zoals het scherm, met de randen.', ex: [-0.04, 0.01, 0] }),
       P('Tankklep binnenzijde', flapIn, MAT.plasticGrey, { d: 'Grijze kunststof binnenzijde van de tankklep, zichtbaar als de klep openstaat.', ex: [0.04, 0, 0] }),
     ]),
