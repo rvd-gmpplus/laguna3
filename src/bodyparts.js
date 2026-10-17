@@ -99,15 +99,20 @@ function bodBand(s, zf, kf, zr, kr, out, qTop = bodQG + 0.03) {
 // aan beide kanten m = 16 mm binnen de rand, van ca. 2,4 cm boven de gordel (q 0,03, boven het onderste eind van het naadrubber) tot net boven
 // de bovenrand van de ruiten. Een dichte plaat van 4 tot 9 mm binnen de kas (zes vlakken), zodat het mesh van de B-stijl gesloten blijft en
 // clash er binnen-in kan meten. Door de ruit naast de stijl is de plaat pas te zien bij een kijkhoek met tan < 9 / 16 (ca. 29 graden met de zijkant);
-// de vaste driekwartbeelden kijken onder ca. 41 graden. t loopt van de achterlijn (0) naar de voorlijn (1) op de hoogte van het punt
+// de vaste driekwartbeelden kijken onder ca. 41 graden. t loopt van de achterlijn (0) naar de voorlijn (1) op de hoogte van het punt.
+// Onderste 10 cm: de zakkende voorste zijruit kantelt eerst en schuift dan schuin naar buiten omlaag; zijn bovenrand loopt daarbij vrijwel
+// verticaal (x 0,768 op 0,97 m tot 0,761 op 1,075 m, straalproef over alle standen) door het voetspoor van de plaat en sneed de plaat
+// bij ruitstand 0,6 tot 0,8 (tot 2,4 mm). Daar ligt de plaat nu 2,5 mm binnen die omhullende (bodBPEnv; tot ca. 4 cm binnen de kas,
+// recht boven het profiel), daarboven zoals voorheen 4 mm binnen de kas.
+const bodBPEnv = y => 0.7653 - 0.065 * (y - 0.97);
 function bodBPillarFace(s, m = 0.016, o0 = -0.004, o1 = -0.009, qa = 0.03, qTop = bodQG + 0.02) {
   const zf = y => -0.073 - m - (y - 0.946) * bodBFK, zr = y => -0.223 + m - (y - 0.946) * bodBRK;
   const pt = (t, q, o) => {
     let z = lerp(zr(1.1), zf(1.1), t);
     for (let i = 0; i < 4; i++) { const y = bodGhHalf(z, q)[1]; z = lerp(zr(y), zf(y), t); }
-    const [x, y] = bodGhHalf(z, q); return [s * (x + o * (q <= bodQS ? 1 : 0.7)), y + (q > bodQS ? o * 0.7 : 0), z];
+    const [x, y] = bodGhHalf(z, q); return [s * Math.min(x + o * (q <= bodQS ? 1 : 0.7), bodBPEnv(y) + o - o0), y + (q > bodQS ? o * 0.7 : 0), z];
   };
-  const L = k => lerp(o0, o1, k), nt = 6, nq = 8;
+  const L = k => lerp(o0, o1, k), nt = 6, nq = 14;
   return merge([
     patch((t, q) => pt(t, q, o0), 0, 1, nt, () => [qa, qTop], nq), patch((t, q) => pt(t, q, o1), 0, 1, nt, () => [qa, qTop], nq),
     patch((q, k) => pt(0, q, L(k)), qa, qTop, nq, () => [0, 1], 1), patch((q, k) => pt(1, q, L(k)), qa, qTop, nq, () => [0, 1], 1),
@@ -824,7 +829,7 @@ function buildBody() {
     ...both(s => P(`Dakrail ${sn(s)}`, bodGhSide(s, -0.95, WS1, 30, () => [bodQG + 0.03, bodQR], 10), MAT.paint, { d: 'Zijdelingse dakligger boven de portieren.', ex: [s * 0.08, 0.04, 0] })),
     ...both(s => P(`A-stijl ${sn(s)}`, bodGhSide(s, WS1, WS0, 24, z => [aPillarLo(z), bodQR], 5, bodDense(0.78, 0.95, 6)), MAT.paint, { d: 'Voorste dakstijl langs de voorruit.', ex: [s * 0.08, 0.04, 0.04] })),
     // B-stijl: profiel onder (tot 1,06 m) en boven de gordel het gelakte buitenvlak van de stijl tot de bovenrand van de ruiten, 4 mm onder de
-    // twee zwarte afdekkingen van de portierkaders. Dicht blijft het vlak achter die afdekkingen (16 mm van de glasranden, zodat het niet
+    // twee zwarte afdekkingen van de portierkaders (de onderste 10 cm dieper, binnen de zakkende voorste zijruit; zie bodBPillarFace). Dicht blijft het vlak achter die afdekkingen (16 mm van de glasranden, zodat het niet
     // door de ruiten te zien is); bij een open portier leest de stijl zo als stijl. Zonder dit vlak keek je daar langs de afdekking van het
     // andere portier recht op de crème stoelrug (poort ronde 2, beelden 06 en 09)
     // Het profiel eindigt op de gordel (0,70 m lang langs zijn eigen as, onderkant en voorvlak met de sluitplaat op dezelfde plaats): tot 1,06 m stak
