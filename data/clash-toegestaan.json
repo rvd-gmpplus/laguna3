@@ -1,3 +1,5 @@
 [
-  {"a": "Interieur/Bekleding/Bagageruimte/Zijbekleding bagageruimte rechts", "b": "Brandstofsysteem/Vulsysteem/Vulpijp", "reden": "De verhoging en de richel van de zijbekleding omsluiten het onderste stuk van de vulpijp tot hij in de zijwand verdwijnt; dat is hun functie. Het stuk binnen de bekleding is weggelaten (golf 5b-3, G4c); de onderste pijp eindigt 2 tot 3 cm in de verhoging.", "max_diepte_mm": 25}
+  {"a": "Interieur/Bekleding/Bagageruimte/Zijbekleding bagageruimte rechts", "b": "Brandstofsysteem/Vulsysteem/Vulpijp", "reden": "De verhoging en de richel van de zijbekleding omsluiten het onderste stuk van de vulpijp tot hij in de zijwand verdwijnt; dat is hun functie. Het stuk binnen de bekleding is weggelaten (golf 5b-3, G4c); de onderste pijp eindigt 2 tot 3 cm in de verhoging.", "max_diepte_mm": 25},
+  {"a": "Brandstofsysteem/Vulsysteem/Vulpijp", "b": "Brandstofsysteem/Brandstoftank/Tank", "reden": "De vulpijp gaat de tankinlaat in; het stuk binnen de tank is niet apart gemodelleerd (golf 5b-3, B0-stand 13,4 mm).", "max_diepte_mm": 13.5},
+  {"a": "Brandstofsysteem/Vulsysteem/Vulpijp", "b": "Interieur/Bekleding/Bagageruimte/Laadvloer voorstuk", "reden": "De bekleding van het laadvloer voorstuk zit om de vulpijp heen; de pijp loopt er door (golf 5b-3, B0-stand 7,5 mm).", "max_diepte_mm": 7.6}
 ]
