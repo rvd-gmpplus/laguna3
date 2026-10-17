@@ -37,7 +37,9 @@ Het gebruikte bestand is de testversie (`python3 build.py --test-only MAP`): die
 
 Sinds golf 5c-1 gaat ook elk inline script in `src/head.html` (de foutafhandeling vóór de scripttags) apart door `node --check`.
 
-Controleert zonder iets te schrijven: dubbele functienamen op het hoogste niveau over alle bestanden in `ORDER`, dubbele materiaalnamen in `std()` en `phys()`, en de syntaxis van het samengevoegde script met `node --check`. Een fout wordt teruggerekend naar bestand en regel. Exitcode 1 bij een fout, anders `lint ok`. Cache-sleutels met een voorvoegsel worden hier niet gecontroleerd en de lint is daarvoor niet uitgebreid; botsingen vangt de testmodus van `cache()`.
+Controleert zonder iets te schrijven: dubbele functienamen op het hoogste niveau over alle bestanden in `ORDER`, dubbele materiaalnamen in `std()` en `phys()`, de tekstregels hieronder en de syntaxis van het samengevoegde script met `node --check`. Een fout wordt teruggerekend naar bestand en regel. Exitcode 1 bij een fout, anders `lint ok`.
+
+Tekstregels (`lint_texts`), op de stringwaarden van `d`, `spec`, `note` en `label` (sinds golf 5b-3 ook `note` en `label`; `partnumbers.js` is uitgezonderd): R1 geen schatwoorden in `spec`, R2 geen decimale punt bij een eenheid, R4 een getal vanaf 1.000 vóór een eenheid heeft een punt als duizendtal, R5 Ø zonder spatie vóór de maat, en R7 een cachesleutel begint met het voorvoegsel van het bestand (tabel `_voorvoegsels` in `auto.json`; een bestand zonder regel in de tabel, zoals `core.js`, wordt niet getoetst). Alle vijf zijn fouten en stoppen de bouw. R4, R5 en R7 waren tot stap 3.1 van golf 5b-3 meldingen die de bouw niet stopten; ze zijn pas fout geworden nadat de meting op 0 treffers stond. Een proefbron met `Ø 57` en `1998 cm³` geeft R5 en R4 als fout. Botsingen tussen cachesleutels vangt daarnaast de testmodus van `cache()`.
 
 ### `python3 tools/smoke.py`
 
@@ -74,9 +76,9 @@ Interactietest op desktop (muis) en telefoon (touch). Per controle een regel `ok
 | 2 | Dubbelklik op het diepste aanklikbare onderdeel opent al zijn voorouders en selecteert het. Zoeken naar "klepspie" in de boom ook. |
 | 3 | Inklappen met rechtsklik, Shift+klik en lang drukken (touch) sluit de diepste open groep met zijn deelboom. |
 | 4 | Gemonteerd zet elke knoop terug op zijn basispositie (afwijking onder 1e-6 m). |
-| 5 | Stap terug na uitklappen, inklappen, preset en schuif herstelt de vorige `state()`. |
+| 5 | Stap terug na uitklappen, inklappen, preset en schuif herstelt de vorige `state()`. Sinds golf 5b-3 ook de camera: `state()` bevat geen camera, dus een Stap terug die de camera naar het kader van de preset trok, werd niet gezien. Per weergave (desktop en telefoon) vier gevallen (assembled naar engineAll, engine naar engineAll, assembled naar engine, assembled naar cooling): na de preset en Stap terug ligt de camera (positie en doel) binnen 0,05 m van de stand vóór de preset. Zonder de herkadreringscorrectie van tak G waren 6 van 8 gevallen fout (tot 9,5 m op de telefoon); met de correctie groen. |
 | 6 | De explosieschuif op 0, 1 en 0,5 voor de werkgroep. |
-| 7 | Elke preset: `checkPresets()` is leeg, het onderwerp ligt binnen het vrije beeld en beslaat minstens 12 % ervan. |
+| 7 | Elke preset: `checkPresets()` is leeg, het onderwerp ligt binnen het vrije beeld en beslaat minstens 12 % ervan. Sinds golf 5b-3 meet de test ook 1,5 s na elke preset opnieuw of het onderwerp binnen het vrije beeld staat (een kader dat pas na de eerste meting buiten beeld valt, werd eerder niet gezien). In de Linux-VM was dit rood voor engineAll, cooling, gearsets en frontAxle vóór de herkadrering van tak G; daarna staan alle presets binnen het beeld. |
 | 8 | Labels overlappen niet, niet over de bediening en niet buiten het canvas, in zes standen. |
 | 9 | Elke preset is bereikbaar met categorie plus item; de sneltoetsen 0 tot 9 werken. |
 | 10 | Geen console-fouten of -waarschuwingen; geen horizontale scroll op de telefoon; de donkere modus geeft de verwachte achtergrond. |
@@ -245,6 +247,24 @@ De kolom "Na golf 1" is de tussenstand van 13 oktober 2026 rond 11:30 UTC, ongew
 | `pubsmoke.py` | OK | OK: `ready` na 14,8 s (1280 x 800) en 7,2 s (390 x 844), grens 20 s; three r147; geen horizontale scroll | OK: `ready` na 7,5 s (1280 x 800) en 7,7 s (390 x 844), grens 20 s; three r147; geen horizontale scroll | OK: `ready` na 5,2 s (1280 x 800) en 8,0 s (390 x 844), grens 20 s; three r147; geen horizontale scroll. Op `ff42dbd` opnieuw OK: `ready` na 12,2 s en 9,9 s onder belasting |
 | `ui_inner.py` | bestond nog niet | 0 eerste treffers op 256 ingesloten knopen (na golf 2 waren het er 52) | 0 eerste treffers op 256 ingesloten knopen | 0 eerste treffers op 253 ingesloten knopen (39.200 stralen op de hele auto, 20.000 per hoofdgroep). Op `ff42dbd` hetzelfde |
 | URL na publicatie gelijk aan `index.html` | niet van toepassing | Gelijk. Versie 2 van de URL, teruggelezen op 13 oktober om 17:00 UTC, bevat `index.html` van `8095a3e` (618.341 bytes, md5 `dc2bc3b0…`) precies één keer en aaneengesloten. Daaromheen staan alleen het vaste paginaskelet van de host (531 bytes: doctype, charset, viewport en basisstijl tot en met `<body>`) en de afsluiting `</body></html>` (15 bytes). | Gelijk. Versie 3 van de URL, teruggelezen op 13 oktober om 17:37 UTC, bevat `index.html` van `60909fe` (620.025 bytes, md5 `d92a8bb2…`) precies één keer en aaneengesloten, met hetzelfde paginaskelet ervoor (531 bytes) en dezelfde afsluiting erna (15 bytes). | Gelijk. Versie 4 van de URL bevat `index.html` uit `ec92a53` (commit `9c03015`, 663.654 bytes, md5 `70b2e62a426312ec788fc851086ab4c6`) precies één keer, met alleen het paginaskelet van de host eromheen (531 bytes ervoor, 15 erna). Versie 5, gepubliceerd op 14 oktober en teruggelezen om 00:02 UTC, bevat `index.html` uit `ff42dbd` (commit `5b6cefa`, 678.887 bytes, md5 `649cbf95397d877f6a361600c42a4afd`) precies één keer en byte voor byte gelijk, met hetzelfde skelet (531 bytes ervoor, 15 erna) |
+
+## Resultaten golf 5b-3 (17 oktober 2026), tak `golf-5b3`, tot en met fase 3 (versie 10 in voorbereiding)
+
+De poort van 5b-3 (de strikte set in de VM en op de Mac, `visdiff`, `clash.py`, de K-panels en S7) is nog niet gedraaid; hieronder staat wat tot nu toe is gemeten. Kerncijfers en de opstarttijden (gemeten op de Mac, niet in de container): [cijfers.md](cijfers.md).
+
+| Test | Uitslag |
+|---|---|
+| `build.py --lint` | ok, 0 meldingen, ook na het fout worden van R4, R5 en R7 en na het meetellen van `note` en `label` (0 nieuwe treffers) |
+| `framework.py check` | ok, 45 generieke bestanden |
+| Geometrie-hash (hele model, vóór en na het weghalen van `engClip` en `sysClampGeo`) | gelijk: dezelfde meshes, wereldmatrices en openers, 0 verschillen |
+| `smoke.py` | geen console-fouten of -waarschuwingen |
+| `pncheck.py` | ok |
+| `tri.py --gate` | budgetpoort ok; de aantallen staan in [cijfers.md](cijfers.md) |
+| `itest.py` met poorten (Mac) | 232 van 232 met de nieuwe camerabepaling van controle 5 (de herkadreringscorrectie van tak G aanwezig) |
+| `mergecheck.py` | `tools/itest.py`, `tools/ui_*.py` en `tools/opentest.py` staan niet meer bij de eigen bestanden van de app maar bij de alleen-lezen bestanden; ook `tools/visdiff.py`, `tools/anchorcheck.py`, `tools/lag3-vm.sh` en `tools/vm/*` zijn alleen-lezen. De wijziging van `itest.py` in de app-tak wordt nu gemeld als overtreding en moet door de orkestrator met de hand worden toegestaan |
+| `clash.py` per tak | geen nieuw doordringend paar; onder de strenge regel (geen paar dieper dan B0 plus 0,1 mm) zijn de gasveer, het krukaspoelie en de veren van het onderstel aangepast; de vulpijp heeft toelatingen met een maximale diepte (zie [onderzoek/beslissingen.md](onderzoek/beslissingen.md)) |
+| `ui_inner.py --open --strict` met `UI_INNER_DIRS=400` | per tak 0 voor de eigen groep; op een proefsamenvoeging van de zeven takken exit 0 (Mac); de samengevoegde stand moet de poort nog meten |
+| Visuele poort K1 tot K13 en S7 | nog niet gedraaid |
 
 ## Resultaten golf 5b-2 (16 oktober 2026), tak `golf-5b2` (versie 9, gebouwd en niet gepubliceerd)
 

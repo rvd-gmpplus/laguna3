@@ -16,7 +16,7 @@ De eerste keer toont de pagina een korte hint. Die verdwijnt na de eerste handel
 
 ## Nieuw in golf 5
 
-- Openen: nieuwe camera's voor de achterklep, de motorkap, de voorportieren, de spiegels, de zonneschermen en de interieuropeners. De hoedenplank gaat 40 graden mee met de klep aan dunne koordjes en is uitgenomen zolang een rugleuning of de bagageruimtevloer open is (optie `hideWhen` in de engine). De olievuldop en de expansiedop scharnieren aan de hals. Zijbekleding in de bagageruimte over de wielkasten en de vulpijp.
+- Openen: nieuwe camera's voor de achterklep, de motorkap, de voorportieren, de spiegels, de zonneschermen en de interieuropeners. De hoedenplank gaat 52 graden mee met de klep aan dunne koordjes en is uitgenomen zolang een rugleuning of de bagageruimtevloer open is (optie `hideWhen` in de engine). De olievuldop en de expansiedop scharnieren aan de hals. Zijbekleding in de bagageruimte over de wielkasten en de vulpijp.
 - Panoramadak: glas van buiten zo goed als zwart (dekking 0,92), van binnen blauwgrijs met een lichte weerspiegeling, zwarte binnenlijsten rond de openingen.
 - Onderkant: voorste langsliggers boven de aandrijfassen, achterste langsliggers naar binnen, bodemplaat met opkant boven de torsiebalk, tank en koolstoffilter voor de balk, ATF-koeler lager, multiriem 1.672 mm.
 - Telefoon: staand een schuivende presetrij en een compacte kaart, de openerlijst sluit na een keuze, het kader volgt de echte hoogte van kaart en dock; liggend een zijkolom. Op alle schermen dimt de rest van de auto bij het duiken naar een onderdeel (U19).
@@ -74,7 +74,7 @@ Naast Uitklappen heeft de pagina een tweede modus. In Openen blijft de auto gemo
 | Dock | `Alles open`, `Alles dicht`, `Openers n/26` en Stap terug. `Openers` opent een lijst met een knop per opener, ook voor wat een klik niet bereikt (een spiegel bij een dicht portier). Onder 920 px breed sluit de lijst na een keuze. |
 | Paneel | Een badge Open of Dicht bij een opener en Gemonteerd bij een groep. De knop Openen of Sluiten werkt op de geselecteerde opener zelf, ook als het portier eromheen dicht is; bij een ander onderdeel volgt hij de klikregel. Enter doet hetzelfde en Shift+Enter sluit de binnenste open opener. |
 | Presets Openen | Motorruimte, Instappen, Bagageruimte, Tanken, Panoramadak en Alles open. |
-| Hoedenplank | Gaat 40 graden mee met de achterklep en is onzichtbaar zolang een rugleuning of de bagageruimtevloer open is. |
+| Hoedenplank | Gaat 52 graden mee met de achterklep en is onzichtbaar zolang een rugleuning of de bagageruimtevloer open is. |
 
 Groter geheel, de klikmodi en de explosieschuif zijn in Openen verborgen. Stap terug onthoudt de openstand en de modus.
 
@@ -176,7 +176,7 @@ Haperen de eerste frames (gemiddeld meer dan 40 ms over 20 frames tijdens een an
 ```bash
 python3 build.py                 # schrijft index.html (three.js via CDN)
 python3 build.py /pad/naar/test  # maakt ook test/index.html die three.js uit ./three/ laadt
-python3 build.py --lint          # controleert alleen (dubbele namen, syntaxis)
+python3 build.py --lint          # controleert alleen (dubbele namen, syntaxis, tekstregels R1, R2, R4, R5 en R7)
 python3 build.py --test-only MAP # alleen de testversie, laat index.html ongemoeid
 ```
 
