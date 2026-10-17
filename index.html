@@ -1,6 +1,6 @@
 <!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"></head><body>
 <title>Laguna III explosietekening</title>
-<meta name="model-version" content="10 (bron c8fc892)">
+<meta name="model-version" content="10 (bron 4cf8cc3)">
 <meta name="description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback (2011, 2,0 Turbo, automaat): 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
 <meta property="og:title" content="Laguna III explosietekening">
 <meta property="og:description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback: 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
@@ -610,7 +610,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
   <div id="press" hidden><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="28"/></svg></div>
   <div id="helpDlg" hidden><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
     <h2 id="helpTitle">Bediening</h2>
-    <p class="ver">Laguna III explosietekening, versie 10 (bron c8fc892)</p>
+    <p class="ver">Laguna III explosietekening, versie 10 (bron 4cf8cc3)</p>
     <div id="helpMouse"><h3>Met de muis</h3><dl>
       <dt>Klik</dt><dd>De groep van het onderdeel klapt uit; de rest blijft staan. Staat die groep al open, dan wordt het onderdeel uitgelicht.</dd>
       <dt>Dubbelklik</dt><dd>Direct naar dit onderdeel: alle groepen erboven gaan laag voor laag open.</dd>
@@ -1465,15 +1465,20 @@ function bodBand(s, zf, kf, zr, kr, out, qTop = bodQG + 0.03) {
 // aan beide kanten m = 16 mm binnen de rand, van ca. 2,4 cm boven de gordel (q 0,03, boven het onderste eind van het naadrubber) tot net boven
 // de bovenrand van de ruiten. Een dichte plaat van 4 tot 9 mm binnen de kas (zes vlakken), zodat het mesh van de B-stijl gesloten blijft en
 // clash er binnen-in kan meten. Door de ruit naast de stijl is de plaat pas te zien bij een kijkhoek met tan < 9 / 16 (ca. 29 graden met de zijkant);
-// de vaste driekwartbeelden kijken onder ca. 41 graden. t loopt van de achterlijn (0) naar de voorlijn (1) op de hoogte van het punt
+// de vaste driekwartbeelden kijken onder ca. 41 graden. t loopt van de achterlijn (0) naar de voorlijn (1) op de hoogte van het punt.
+// Onderste 10 cm: de zakkende voorste zijruit kantelt eerst en schuift dan schuin naar buiten omlaag; zijn bovenrand loopt daarbij vrijwel
+// verticaal (x 0,768 op 0,97 m tot 0,761 op 1,075 m, straalproef over alle standen) door het voetspoor van de plaat en sneed de plaat
+// bij ruitstand 0,6 tot 0,8 (tot 2,4 mm). Daar ligt de plaat nu 2,5 mm binnen die omhullende (bodBPEnv; tot ca. 4 cm binnen de kas,
+// recht boven het profiel), daarboven zoals voorheen 4 mm binnen de kas.
+const bodBPEnv = y => 0.7653 - 0.065 * (y - 0.97);
 function bodBPillarFace(s, m = 0.016, o0 = -0.004, o1 = -0.009, qa = 0.03, qTop = bodQG + 0.02) {
   const zf = y => -0.073 - m - (y - 0.946) * bodBFK, zr = y => -0.223 + m - (y - 0.946) * bodBRK;
   const pt = (t, q, o) => {
     let z = lerp(zr(1.1), zf(1.1), t);
     for (let i = 0; i < 4; i++) { const y = bodGhHalf(z, q)[1]; z = lerp(zr(y), zf(y), t); }
-    const [x, y] = bodGhHalf(z, q); return [s * (x + o * (q <= bodQS ? 1 : 0.7)), y + (q > bodQS ? o * 0.7 : 0), z];
+    const [x, y] = bodGhHalf(z, q); return [s * Math.min(x + o * (q <= bodQS ? 1 : 0.7), bodBPEnv(y) + o - o0), y + (q > bodQS ? o * 0.7 : 0), z];
   };
-  const L = k => lerp(o0, o1, k), nt = 6, nq = 8;
+  const L = k => lerp(o0, o1, k), nt = 6, nq = 14;
   return merge([
     patch((t, q) => pt(t, q, o0), 0, 1, nt, () => [qa, qTop], nq), patch((t, q) => pt(t, q, o1), 0, 1, nt, () => [qa, qTop], nq),
     patch((q, k) => pt(0, q, L(k)), qa, qTop, nq, () => [0, 1], 1), patch((q, k) => pt(1, q, L(k)), qa, qTop, nq, () => [0, 1], 1),
@@ -2190,7 +2195,7 @@ function buildBody() {
     ...both(s => P(`Dakrail ${sn(s)}`, bodGhSide(s, -0.95, WS1, 30, () => [bodQG + 0.03, bodQR], 10), MAT.paint, { d: 'Zijdelingse dakligger boven de portieren.', ex: [s * 0.08, 0.04, 0] })),
     ...both(s => P(`A-stijl ${sn(s)}`, bodGhSide(s, WS1, WS0, 24, z => [aPillarLo(z), bodQR], 5, bodDense(0.78, 0.95, 6)), MAT.paint, { d: 'Voorste dakstijl langs de voorruit.', ex: [s * 0.08, 0.04, 0.04] })),
     // B-stijl: profiel onder (tot 1,06 m) en boven de gordel het gelakte buitenvlak van de stijl tot de bovenrand van de ruiten, 4 mm onder de
-    // twee zwarte afdekkingen van de portierkaders. Dicht blijft het vlak achter die afdekkingen (16 mm van de glasranden, zodat het niet
+    // twee zwarte afdekkingen van de portierkaders (de onderste 10 cm dieper, binnen de zakkende voorste zijruit; zie bodBPillarFace). Dicht blijft het vlak achter die afdekkingen (16 mm van de glasranden, zodat het niet
     // door de ruiten te zien is); bij een open portier leest de stijl zo als stijl. Zonder dit vlak keek je daar langs de afdekking van het
     // andere portier recht op de crème stoelrug (poort ronde 2, beelden 06 en 09)
     // Het profiel eindigt op de gordel (0,70 m lang langs zijn eigen as, onderkant en voorvlak met de sluitplaat op dezelfde plaats): tot 1,06 m stak
@@ -2200,7 +2205,9 @@ function buildBody() {
     ...both(s => P(`Slotbeugel B-stijl ${sn(s)}`, merge([xf(G.rbox(0.05, 0.16, 0.01, 0.002), [-s * 0.002, -0.05, 0.055]), tube([[s * 0.018, -0.05, 0.05], [s * 0.018, -0.05, 0.115], [-s * 0.018, -0.05, 0.115], [-s * 0.018, -0.05, 0.05]], 0.009, 16, 6)]), MAT.darkSteel, { d: 'Sluitplaat met U-beugel op de B-stijl waar het slot van het voorportier in grijpt (plaats geschat). Zit op de voorkant van de stijl, dus alleen te zien bij open voorportier.', p: [s * 0.735, 0.66, -0.17], r: [-0.21, 0, 0], ex: [s * 0.09, 0, 0.05] })),
     ...both(s => P(`C-stijl ${sn(s)}`, bodGhSide(s, SP, -0.95, 34, z => [cPillarLo(z), z < RW0 ? qScr(z) : bodQR], 16, bodDense(-1.27, -1.15, 6)), MAT.paint, { d: 'Achterste dakstijl met de karakteristieke kromming boven de kwartsruit.', ex: [s * 0.1, 0.04, -0.04] })),
     ...both(quarter),
-    ...both(s => P(`Gasveerbevestiging ${sn(s)}`, merge([G.sphere(0.012, 10), xf(G.cyl('x', 0.004, 0.004, 0.012, 8), [s * 0.009, 0, 0]), xf(G.rbox(0.006, 0.05, 0.04, 0.0025), [s * 0.017, 0, 0])]), MAT.darkSteel, { d: 'Kogelpen op een plaatje tegen de binnenkant van de C-stijl, aan de zijkant van de opening, waarop de gasveer van de achterklep draait (plaats geschat).', p: [s * bodGsA[0], bodGsA[1], bodGsA[2]], r: [0, 0, s * bodGsTilt], ex: [s * 0.04, 0, 0] })),
+    // het plaatje reikt tot 5 mm boven de kogelpen en 25 mm eronder (was 25 mm erboven): bij een open klep wijst de veer omhoog en
+    // liep de cilinder (32 mm) door de bovenhelft van het plaatje (golf 5b-3, ronde 4; onderrand en afstand tot de lakhuid ongewijzigd)
+    ...both(s => P(`Gasveerbevestiging ${sn(s)}`, merge([G.sphere(0.012, 10), xf(G.cyl('x', 0.004, 0.004, 0.012, 8), [s * 0.009, 0, 0]), xf(G.rbox(0.006, 0.03, 0.04, 0.0025), [s * 0.017, -0.01, 0])]), MAT.darkSteel, { d: 'Kogelpen op een plaatje tegen de binnenkant van de C-stijl, aan de zijkant van de opening, waarop de gasveer van de achterklep draait (plaats geschat).', p: [s * bodGsA[0], bodGsA[1], bodGsA[2]], r: [0, 0, s * bodGsTilt], ex: [s * 0.04, 0, 0] })),
     A('Dakantenne', { d: 'Korte staafantenne achter op het dak, van de Laguna III fase 2: een lage kegelvormige voet op de plaatstrook achter het achterste glaspaneel, met een korte, licht naar achteren hellende mast.', ex: [0, 0.14, -0.04] }, (() => {
       const zB = -1.15, y0 = YR(zB), top = [0, y0 + 0.0125, zB], mid = [0, top[1] + 0.05, zB - 0.0052], tip = [0, top[1] + 0.105, zB - 0.011];
       return [
@@ -2494,11 +2501,14 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     ]),
     // gasveren: telescoop van het carrosseriepunt A naar het klepunt B. De groep staat in A met de lokale +z naar B (gebouwde stand);
     // de app richt hem bij het openen opnieuw en schuift de zuigerstang uit (290 mm ingeschoven, 495 mm uitgeschoven)
+    // De cilinder is een gesloten draaivorm: kogelkom als halve bol onder, buis van 32 mm, platte kop met 0,5 mm afschuining, en binnenin een
+    // holte van 13,5 mm straal waarin de kogel (12 mm) van de bevestiging zit. Was een buis met een bol erin: de bodem van die buis lag als
+    // schijf door het hart van de kogel (7 mm diep, gemeten bij h 1,5 mm; golf 5b-3, ronde 8). Buitenkant, maten en draaipunt zijn gelijk.
     ...both(s => {
       const a = [s * bodGsA[0], bodGsA[1], bodGsA[2]], b = [s * bodGsB[0], bodGsB[1], bodGsB[2]], dir = V3(b[0] - a[0], b[1] - a[1], b[2] - a[2]);
       return A(`Gasveer ${sn(s)}`, { d: 'Gasveer van 495 mm met 205 mm slag (catalogusmaat, 610 N) die de geopende achterklep omhoog houdt; onderaan bevestigd tegen de zijwand van de opening (C-stijl), bovenaan op de zijrand van de klep, zodat hij langs de zijkant loopt. Plaats van de bevestigingspunten geschat.', p: a, q: quatFromTo(V3(0, 0, 1), dir), ex: [s * 0.14, 0, 0],
         strut: { a: { node: `Gasveerbevestiging ${sn(s)}`, p: [0, 0, 0] }, b: { node: 'Renault Laguna III/Carrosserie/Achterklep', p: b }, rod: 'Zuigerstang', lead: 'Renault Laguna III/Carrosserie/Achterklep', restLen: 0.29 } }, [
-        P('Cilinder', merge([xf(G.cyl('z', 0.016, 0.016, 0.27, 16), [0, 0, 0.135]), G.sphere(0.016, 12)]), MAT.bodStrut, { d: 'Gasgevulde cilinder van de gasveer met kogelkom aan de carrosseriezijde.', ex: [0, 0, -0.05] }),
+        P('Cilinder', G.lathe('z', [[0, 0.0135], [0.0135 * Math.SQRT1_2, 0.0135 * Math.SQRT1_2], [0.0135, 0], [0.0135 * Math.SQRT1_2, -0.0135 * Math.SQRT1_2], [0, -0.0135], [0, -0.016], [0.008, -0.016 * Math.cos(PI / 6)], [0.016 * Math.cos(PI / 6), -0.008], [0.016, 0], [0.016, 0.2695], [0.0155, 0.27], [0, 0.27]], 16, 'bodGsCyl'), MAT.bodStrut, { d: 'Gasgevulde cilinder van de gasveer met kogelkom aan de carrosseriezijde.', ex: [0, 0, -0.05] }),
         P('Zuigerstang', merge([xf(G.cyl('z', 0.0065, 0.0065, 0.27, 10), [0, 0, 0.155]), xf(G.sphere(0.0125, 10), [0, 0, 0.29])]), MAT.steel, { d: 'Verchroomde zuigerstang die uit de cilinder schuift; kogelkom aan de klepzijde.', ex: [0, 0.03, 0.05] }),
       ]);
     }),
@@ -4825,14 +4835,14 @@ function intBelts() {
   const bandGeo = (pts, w) => merge(pts.slice(1).map((p, i) => intStrip(pts[i], p, w, 0.0015)));
   for (const s of [1, -1]) {
     const n = sideName(s), zB = -0.28, xr = s * (surfX(zB, 0.55) - 0.087), xg = s * (surfX(zB, 1.1) - 0.05);
-    // rusttand: de band hangt van de bovenste geleider langs de stijl omlaag, de tong zit onderaan bij het onderste ankerpunt (het slot naast de stoel blijft zoals het was)
-    const xpil = y => s * (surfX(zB, y) - 0.052), restPts = [[xg, 1.1, zB + 0.012], [xpil(0.86), 0.86, zB + 0.016], [xpil(0.62), 0.62, zB + 0.018]], tong = [xpil(0.585), 0.585, zB + 0.02];
+    // rusttand: de band hangt van de bovenste geleider vrijwel recht omlaag, de tong zit onderaan bij het onderste ankerpunt (het slot naast de stoel blijft zoals het was); de knikken liggen zo dat de band in elke stand van de achterste zijruit vrij blijft: x binnen 0,75, tussen y 0,98 en 0,87 net achter de balk van de B-stijl (z 0,5 cm achter de stijl)
+    const restPts = [[xg, 1.1, zB + 0.012], [xg - s * 0.005, 0.98, zB - 0.005], [xg + s * 0.01, 0.87, zB - 0.005], [xg + s * 0.02, 0.62, zB + 0.018]], tong = [xg + s * 0.025, 0.585, zB + 0.02];
     const grp = [];
     grp.push(
       intPart(`Gordelrolautomaat voor ${n}`, G.rbox(0.06, 0.1, 0.06, 0.01), MAT.plastic, 'Oprolautomaat met gordelspanner en krachtbegrenzer onderin de B-stijl, achter de stijlbekleding verborgen; de bestuurder heeft een dubbele spanner.', { p: [xr, 0.55, zB], ex: [s * 0.1, 0, 0] }),
       intPart(`Hoogteversteller voor ${n}`, G.rbox(0.03, 0.2, 0.012, 0.004), MAT.plasticGrey, 'Geleiderail op de B-stijl waarmee de bovenste gordelgeleider in hoogte wordt versteld.', { p: [xg, 1.04, zB - 0.02], ex: [s * 0.1, 0.1, 0] }),
       intPart(`Gordelgeleider voor ${n}`, G.torus('z', 0.018, 0.004, 16, 6), MAT.steel, 'Geleideoog waar de gordelband doorheen loopt.', { p: [xg, 1.1, zB], ex: [s * 0.1, 0.16, 0] }),
-      intPart(`Gordelband voor ${n}`, bandGeo(restPts, 0.046), MAT.intBelt, 'Gordelband in de rusttand van een geparkeerde auto: opgerold, van de bovenste geleider langs de B-stijl omlaag naar het onderste ankerpunt, met de gordeltong onderaan.', { ex: [s * 0.1, 0.1, 0.06] }),
+      intPart(`Gordelband voor ${n}`, bandGeo(restPts, 0.046), MAT.intBelt, 'Gordelband in de rusttand van een geparkeerde auto: opgerold, hangt vanuit de bovenste geleider vrijwel recht omlaag, net achter de stijlbalk van de B-stijl, naar het onderste ankerpunt, met de gordeltong onderaan.', { ex: [s * 0.1, 0.1, 0.06] }),
       intPart(`Gordeltong voor ${n}`, G.rbox(0.03, 0.05, 0.008, 0.003), MAT.steel, 'Metalen tong op de gordelband die in het gordelslot klikt; in de rusttand hangt hij onderaan de stijl.', { p: tong, ex: [0, 0.14, 0.04] }),
       intPart(`Gordelverankering voor ${n}`, hexBolt(0.02, 0.014, 'x'), MAT.steel, 'Bout waarmee de heupband aan de buitenkant van de stoel in de drempel is verankerd.', { p: [s * 0.7, 0.33, -0.22], r: [0, s > 0 ? 0 : PI, 0], ex: [s * 0.1, 0, 0] }));
     out.push(A(`Gordel voor ${n}`, { d: 'Driepuntsgordel van de voorstoel: rolautomaat in de B-stijl, hoogteversteller, geleider, band, tong en onderste verankering.', ex: [s * 0.05, 0.12, 0] }, grp));
@@ -5067,13 +5077,48 @@ function intPlankCords() {
   });
 }
 // hoedenplank: voor 1,3 m breed, achter smaller (de C-stijlen komen naar elkaar toe), afgeronde achterhoeken
+// halve breedte en diepte (vanaf de voorrand) van de uitsparing voor de middelste gordelrolautomaat; de automaat is 0,06 breed en
+// reikt 4,5 cm achter de voorrand; de plank draait om het punt in de automaat, dus de diepte moet ook de hoek van de automaat
+// (5,4 cm van het draaipunt) in elke stand vrijhouden
+const intPlankNotch = { hw: 0.04, d: 0.06 };
+// roundPlate (core.js) met per hoek de keuze voor een kleine afronding (4 mm, ook in binnenhoeken); klein(i) waar voor die hoeken.
+// Verder gelijk aan roundPlate, zodat de omtrek buiten die hoeken dezelfde blijft.
+function intRoundPlate(poly, t, b, klein, ri = 0.025, seg = 4) {
+  b = Math.min(b, t / 2 - 0.0008);
+  const n = poly.length, unit = (a, c) => { const dx = c[0] - a[0], dy = c[1] - a[1], l = Math.hypot(dx, dy); return [dx / l, dy / l]; };
+  const ins = poly.map((P, i) => { const e1 = unit(poly[(i + n - 1) % n], P), e2 = unit(P, poly[(i + 1) % n]); return [P[0] - b * (e1[1] + e2[1]), P[1] + b * (e1[0] + e2[0])]; });
+  const pts = [];
+  ins.forEach((P, i) => {
+    const d1 = unit(P, ins[(i + n - 1) % n]), d2 = unit(P, ins[(i + 1) % n]), convex = d1[0] * d2[1] - d1[1] * d2[0] < 0, r = convex || klein(i) ? 0.004 : ri + b;
+    const cx = P[0] + (d1[0] + d2[0]) * r, cy = P[1] + (d1[1] + d2[1]) * r, a1 = Math.atan2(-d2[1], -d2[0]);
+    let da = Math.atan2(-d1[1], -d1[0]) - a1; while (da > PI) da -= 2 * PI; while (da < -PI) da += 2 * PI;
+    for (let k = 0; k <= 3; k++) pts.push(new THREE.Vector2(cx + r * Math.cos(a1 + da * k / 3), cy + r * Math.sin(a1 + da * k / 3)));
+  });
+  const g = new THREE.ExtrudeGeometry(new THREE.Shape(pts), { depth: t - 2 * b, bevelEnabled: true, bevelThickness: b, bevelSize: b, bevelSegments: seg, curveSegments: 1 });
+  g.translate(0, 0, -(t - 2 * b) / 2);
+  g.deleteAttribute('normal'); g.deleteAttribute('uv');
+  return creasedWeld(g, 0.52);
+}
+// sparing in elke voorhoek voor de scharnierpen (r 11 mm, x 0,61 tot 0,70) en de kraag aan het eind (r 17 mm, x 0,606 tot 0,614):
+// de pen ligt op de draaias van de plank, dus zonder sparing zat het midden van de voorrand in elke stand 10,6 mm diep in de pen
+// (de inradius van de twaalfhoek). Ondiep deel a over de pen, diep deel b over de kraag; 1,5 tot 4 mm speling rondom. De zijrand
+// eindigt voor op xv (4 mm binnen de volle halve breedte): zo ligt de voorhoek niet dieper op de afgeronde voorkant van de
+// hoedenplanksteun (carrosserie, x 0,635 tot 0,685, tot z -1,60) dan voorheen.
+const intPlankPen = { a: 0.0125, b: 0.021, xa: 0.6195, xc: 0.601, xv: 0.646 };
 function intPlankGeo() {
   const hw0 = 0.65, hw1 = 0.52, z0 = 0.275, z1 = -0.275, r = 0.05, n = 6, pts = [];
   const arc = (cx, cz, a0) => { for (let i = 0; i <= n; i++) { const a = a0 + i / n * HALF; pts.push([cx + r * Math.cos(a), cz + r * Math.sin(a)]); } };
   // tegen de klok in in (x, z): rechtsachter (x min), linksachter (x plus), linksvoor, rechtsvoor
   arc(-hw1 + r, z1 + r, PI); arc(hw1 - r, z1 + r, PI * 1.5);
-  pts.push([hw0, z0 - 0.004], [hw0 - 0.004, z0], [-hw0 + 0.004, z0], [-hw0, z0 - 0.004]);
-  return roundPlate(pts, 0.012, 0.004).rotateX(HALF);
+  // uitsparing van 8 cm in de voorrand voor de middelste gordelrolautomaat (die is 6 cm breed, z -1,54 tot -1,62): zonder uitsparing
+  // sneed de plank daar door de automaat (B0 29,06 mm bij open klep; de plank draait om een punt in de automaat)
+  const { a, b, xa, xc, xv } = intPlankPen, n0 = pts.length;
+  pts.push([xv, z0 - a], [xa, z0 - a], [xa, z0 - b], [xc, z0 - b], [xc, z0], [intPlankNotch.hw, z0], [intPlankNotch.hw, z0 - intPlankNotch.d], [-intPlankNotch.hw, z0 - intPlankNotch.d], [-intPlankNotch.hw, z0],
+    [-xc, z0], [-xc, z0 - b], [-xa, z0 - b], [-xa, z0 - a], [-xv, z0 - a]);
+  // de hoeken van de pensparingen (eerste vijf en laatste vijf punten van de voorrand) met afronding 4 mm; de rest van de omtrek
+  // houdt de afronding van roundPlate
+  const klein = new Set([0, 1, 2, 3, 4, 9, 10, 11, 12, 13].map(i => n0 + i));
+  return intRoundPlate(pts, 0.012, 0.004, i => klein.has(i)).rotateX(HALF);
 }
 // De hemelbekleding hangt 3,4 cm onder het dakvlak. Het dakframe van het panoramadak (src/panorama.js) hangt tot 2,85 cm eronder; bij 2,8 cm
 // kwam de hemel op dezelfde hoogte als de onderkant van het frame en staken er donkere rechthoeken door. Nu zit er 5 mm tussen.
@@ -5170,7 +5215,7 @@ function intTrim() {
     sill(1, 0.2, 0.8, 'voor'), sill(-1, 0.2, 0.8, 'voor'), sill(1, -0.78, 0.44, 'achter'), sill(-1, -0.78, 0.44, 'achter'),
     ]),
     A('Bagageruimte', { d: 'Bekleding van de bagageruimte met hoedenplank, vloerplaat, zijbekleding over de wielkasten, de luidsprekers van de achterplank en de versterker.', ex: [0, 0.0, -0.3] }, [
-    intUit(intPart('Hoedenplank', intPlankGeo(), MAT.carpet, 'Afdekplaat achter de achterbank boven de bagageruimte; hangt met koordjes aan de achterklep en komt mee omhoog als die opent (geschat 52 graden), met twee scharnierpennen in de zijbekleding aan de voorrand.', Object.assign({ p: [0, 1.0, -1.85], ex: [0, 0.3, -0.2] }, intPlankOpen()))),
+    intUit(intPart('Hoedenplank', intPlankGeo(), MAT.carpet, 'Afdekplaat achter de achterbank boven de bagageruimte; hangt met koordjes aan de achterklep en komt mee omhoog als die opent (geschat 52 graden), met twee scharnierpennen in de zijbekleding aan de voorrand, die in een kleine sparing in de voorhoeken van de plank liggen, en een uitsparing voor de middelste gordelrolautomaat.', Object.assign({ p: [0, 1.0, -1.85], ex: [0, 0.3, -0.2] }, intPlankOpen()))),
     ...[1, -1].map(s => intPart(`Plankscharnierpen ${sideName(s)}`, merge([xf(G.cyl('x', 0.011, 0.011, 0.09, 12), [0, 0, 0]), xf(G.rbox(0.014, 0.08, 0.09, 0.004), [s * 0.04, 0, 0.0]), xf(G.cyl('x', 0.017, 0.017, 0.008, 14), [-s * 0.045, 0, 0])]), MAT.steel, 'Scharnierpen van de hoedenplank in de zijbekleding bij de voorhoek: de plank draait om deze twee pennen omhoog als de achterklep opent.', { p: [s * 0.655, 1.0, -1.575], ex: [s * 0.14, 0, 0] })).map(intUit),
     ...intPlankCords().map(intUit),
     ...[1, -1].map(s => intPart(`Achterplankluidspreker ${sideName(s)}`, merge([xf(G.cyl('y', 0.065, 0.065, 0.008, 24), [0, 0, 0]), xf(G.cyl('y', 0.04, 0.025, 0.02, 20), [0, -0.012, 0])]), MAT.darkSteel, 'Luidspreker in de achterplank (Bose, positie geschat).', Object.assign({ p: [s * 0.45, 1.01, -1.7], ex: [s * 0.1, 0.2, 0] }, intPlankOpen()))).map(intUit),
@@ -6590,7 +6635,7 @@ const uiBatchWant = new Set();
 let uiBatchJob = null, uiBatchBytes = 0, uiBatchClock = 0, uiBatchKey = '';
 const uiBm = new THREE.Matrix4(), uiBl = new THREE.Matrix4(), uiBn = new THREE.Matrix3(), uiBv = V3(0, 0, 0);
 const uiGeoTris = g => (g.index ? g.index.count : g.attributes.position.count) / 3;
-const uiGeoBytes = g => g.attributes.position.count * 24 + (g.index ? g.index.count : g.attributes.position.count) * 4;
+const uiGeoBytes = g => g.attributes.position.count * (g.attributes.uv ? 32 : 24) + (g.index ? g.index.count : g.attributes.position.count) * 4;
 // geheugengrens: 1,25 x de geometrie van de gemonteerde auto (alle instanties één keer)
 const uiBatchCap = Math.round(1.25 * MESHES.reduce((a, m) => a + uiGeoBytes(m.geometry), 0));
 // inhoud van de batch van groep g: alle meshes in de deelboom, behalve onder een ingesloten knoop
@@ -6659,18 +6704,20 @@ function uiBatchAdd(job, m) {
   const flip = M.determinant() < 0;
   const base = m.userData.base || m.material;
   let acc = job.parts.get(base);
-  if (!acc) job.parts.set(base, (acc = { p: [], n: [], i: [], nv: 0, ni: 0 }));
+  if (!acc) job.parts.set(base, (acc = { p: [], n: [], u: [], uv: false, i: [], nv: 0, ni: 0 }));
   const P = new Float32Array(nv * 3), N = new Float32Array(nv * 3);
   for (let i = 0; i < nv; i++) {
     uiBv.set(pos.getX(i), pos.getY(i), pos.getZ(i)).applyMatrix4(M); P[i * 3] = uiBv.x; P[i * 3 + 1] = uiBv.y; P[i * 3 + 2] = uiBv.z;
     if (nor) { uiBv.set(nor.getX(i), nor.getY(i), nor.getZ(i)).applyMatrix3(uiBn).normalize(); N[i * 3] = uiBv.x; N[i * 3 + 1] = uiBv.y; N[i * 3 + 2] = uiBv.z; }
   }
+  const UV = new Float32Array(nv * 2), guv = g.attributes.uv;   // uv mee: anders leest elke textuur (grille, plaat, reflector) één en hetzelfde pixeltje
+  if (guv) { acc.uv = true; for (let i = 0; i < nv; i++) { UV[i * 2] = guv.getX(i); UV[i * 2 + 1] = guv.getY(i); } }
   const ix = g.index, ic = ix ? ix.count : nv, I = new Uint32Array(ic), o = acc.nv;
   for (let t = 0; t + 2 < ic; t += 3) {
     const a = ix ? ix.getX(t) : t, b = ix ? ix.getX(t + 1) : t + 1, c = ix ? ix.getX(t + 2) : t + 2;
     I[t] = a + o; I[t + 1] = (flip ? c : b) + o; I[t + 2] = (flip ? b : c) + o; // gespiegeld: wikkeling omdraaien (DoubleSide-belichting)
   }
-  acc.p.push(P); acc.n.push(N); acc.i.push(I); acc.nv += nv; acc.ni += ic;
+  acc.p.push(P); acc.n.push(N); acc.u.push(UV); acc.i.push(I); acc.nv += nv; acc.ni += ic;
 }
 function uiBatchFinish(job) {
   const obj = new THREE.Group(); obj.name = 'uiBatch'; obj.visible = false;
@@ -6680,13 +6727,14 @@ function uiBatchFinish(job) {
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(cat(a.p, a.nv * 3, Float32Array), 3));
     geo.setAttribute('normal', new THREE.BufferAttribute(cat(a.n, a.nv * 3, Float32Array), 3));
+    if (a.uv) geo.setAttribute('uv', new THREE.BufferAttribute(cat(a.u, a.nv * 2, Float32Array), 2));
     const idx = cat(a.i, a.ni, a.nv < 65536 ? Uint16Array : Uint32Array);
     geo.setIndex(new THREE.BufferAttribute(idx, 1));
     geo.computeBoundingSphere(); geo.computeBoundingBox();
     const bm = new THREE.Mesh(geo, uiBatchMat(base, job.g));
     bm.userData.base = base; bm.userData.uiBatch = true;
     obj.add(bm);
-    bytes += a.nv * 24 + a.ni * idx.BYTES_PER_ELEMENT;
+    bytes += a.nv * (a.uv ? 32 : 24) + a.ni * idx.BYTES_PER_ELEMENT;
   }
   job.g.obj.add(obj);
   job.g.bat = { obj, src: job.src, bytes, used: ++uiBatchClock, key: uiBatchKey };
