@@ -49,7 +49,7 @@ Op 15 oktober om 19:49 UTC werkt een andere sessie (Opus 5.5 met vijf subagents)
 - Elke analyse en elke golf begint met `git ls-remote --heads origin` en een compare per tak; dit plan miste eerst twee commits doordat de meting van vóór 19:18 UTC was.
 - Per golf worden start, samenvoeging en publicatie met tijd in `CHANGELOG.md` genoteerd, zodat de volgende premortem met echte duren werkt.
 
-## Voortgang (17 oktober 2026; bijgewerkt na fase 3 van golf 5b-3)
+## Voortgang (17 oktober 2026; bijgewerkt na ronde 6 van golf 5b-3)
 
 | Golf | Stand |
 |---|---|
@@ -60,10 +60,10 @@ Op 15 oktober om 19:49 UTC werkt een andere sessie (Opus 5.5 met vijf subagents)
 | 5d | Structureel deel gedaan (N3, attributen, N4 beoordeeld; N6 open zonder ophaalroute); N2 en N5 open: de ophaalroutes (Jina 402, Firecrawl zonder tegoed, autodoc achter Cloudflare) zijn dicht, dus die plakken wachten op tegoed of op een lijst van de dealer. |
 | Versie 7 live | De parallelle sessie zette na het samenvoegpunt van PR #3 (`b529ac1`) nog drie commits op haar tak (zijbekleding bagageruimte in vilt, onderzijde van de bagagevloer, dakcamera's en schermcassette, nieuwe interieurcamera's) en publiceerde die stand als versie 7: artefact om 02:02 UTC, `main` via PR #4 (`edab342`), Pages vanaf 09:31 UTC. Daarmee is G4 deels gedaan (zijbekleding over wielkast en vulpijp; leest nog trapvormig, punt 3 in `handomdraai.md`). `main` is op 16 oktober in deze tak samengevoegd (conflicten: ondergrens 1,456 rad van de middenarmsteun met haar nieuwe camera, docs); het werk van deze tak heet nu versie 8. |
 | Versie 8 live | PR #3 samengevoegd als `4e837c5` op 16 oktober om 10:15 UTC; Pages en artefact byte voor byte teruggelezen. |
-| Golf 5b-2 | Gedaan op 16 oktober 2026 (16:18 tot 20:21 UTC), tak `golf-5b2`, versie 9 gebouwd (`225000f`) en niet gepubliceerd: publicatie, push en PR wachten op de gebruiker. Per punt zie "Stand na de golf" bij Golf 5b-2. Poort: `finaltests.sh` groen behalve `visdiff` (eigen basis B0 van de machine, 11 rode beelden, alle in de vooraf opgegeven lijsten); itest 222 van 222, opentest 0 fouten, integrity 0 fouten, silhouet ok, ankers 352/319/265, budgetpoort ok, pubsmoke ok; K1 tot K13 in twee panels beide 10 ja, 3 deels, 0 nee, geen kenmerk lager; S7 7 van 9, doel 8 niet gehaald. Premortem: `docs/premortem.md`. |
+| Golf 5b-2 | Gedaan op 16 oktober 2026 (16:18 tot 20:21 UTC), tak `golf-5b2`, versie 9 gebouwd (`225000f`) en later gepubliceerd (zie de rij "Versie 9 live"). Per punt zie "Stand na de golf" bij Golf 5b-2. Poort: `finaltests.sh` groen behalve `visdiff` (eigen basis B0 van de machine, 11 rode beelden, alle in de vooraf opgegeven lijsten); itest 222 van 222, opentest 0 fouten, integrity 0 fouten, silhouet ok, ankers 352/319/265, budgetpoort ok, pubsmoke ok; K1 tot K13 in twee panels beide 10 ja, 3 deels, 0 nee, geen kenmerk lager; S7 7 van 9, doel 8 niet gehaald. Premortem: `docs/premortem.md`. |
 | Versie 9 live | Op 16 oktober om 21:30 UTC in `main` (`3be230e`), Pages en artefact om 21:35 UTC byte voor byte teruggelezen (`CHANGELOG.md`). |
-| Golf 5b-3 | Op 17 oktober 2026 gebouwd tot en met fase 3 op de tak `golf-5b3` (versie 10 in voorbereiding, niet gepubliceerd, niet gepusht): de zeven takken en golf 2 zijn samengevoegd, de lint-regels R4, R5 en R7 zijn fouten, de oude helpernamen zijn weg. De poort, de export naar espace5 (3.3) en de bouw van `index.html` (3.5) moeten nog. Per punt: "Stand na fase 3" bij Golf 5b-3. |
-| Volgende | De poort van 5b-3 en de publicatie van versie 10 na akkoord van de gebruiker; daarna golf 5c-2 (P1 lui parsen, K-punten). |
+| Golf 5b-3 | Op 17 oktober 2026 gebouwd tot en met ronde 6 op de tak `golf-5b3` (versie 10 in voorbereiding, niet gepubliceerd, niet gepusht): de zeven takken en golf 2 zijn samengevoegd, de lint-regels R4, R5 en R7 zijn fouten, de oude helpernamen zijn weg, en de rondes 2 tot en met 6 (B-stijl, achterruit, gasveerplaatje, hoedenplank, gordelband) zijn samengevoegd. De export naar espace5 (3.3) is gedaan op de espace5-tak `golf-5b3-export` (niet samengevoegd). `index.html` is herbouwd in fase 3.5 en in de rondes 2 en 3, niet na ronde 4 tot en met 6. De poort is nog niet afgerond; de ankerpoort in de VM was ok op `d4d03a6`. Per punt: "Stand na fase 3" en "Rondes 2 tot en met 6" bij Golf 5b-3. |
+| Volgende | Ronde 7 (scharnierpennen van de hoedenplank binnen de B0-diepte), de poort van 5b-3 en de publicatie van versie 10 na akkoord van de gebruiker; daarna golf 5c-2 (P1 lui parsen, K-punten). |
 | Poort | Strikte set op de samengevoegde stand van 01:20 UTC (uitvoer `g5merge`, 01:21 tot 01:52 UTC): alle tien tests groen, itest 161 van 161, opentest strikt zonder fouten, `ui_inner --open --strict` zonder treffers, budgetpoort ok (Carrosserie 189.446 van 190.000: nog 554 over, zie G1). Eerder op de stand van 00:01 UTC: alles groen na vier `inner`-vlaggen minder, itest 157 van 157 op een rustige machine. |
 
 ## Golf 5a-1: vangnet-kern (eerst; 1 dag, met een stopregel)
@@ -117,7 +117,7 @@ Haar herstelronde (22:50 tot 00:12 UTC, `bc2e0c9` tot `b529ac1`) sloot ook B9 (a
 
 Niet gedaan door die sessie: de volledige testset op haar stand, `index.html` herbouwen, `handomdraai.md` en de docs sluitend maken, screenshots, publicatie van versie 7, en de visuele poort met vóór/na-paren. Dat doet deze sessie na de samenvoeging van 01:20 UTC.
 
-## Golf 5b-2: geometrie en budget (GEDAAN op 16 oktober 2026, versie 9 gebouwd en niet gepubliceerd; G2 en G3 waren al gedaan, zie 5b-1)
+## Golf 5b-2: geometrie en budget (GEDAAN op 16 oktober 2026, versie 9 gebouwd en op dezelfde dag gepubliceerd; G2 en G3 waren al gedaan, zie 5b-1)
 
 Doel: de vier zichtbare modelfouten dicht, ontbrekende delen erbij, binnen budget. Hoger risico (nieuwe vormen, vier eigenaren bij de vloer), daarom na 5c-1 en 5d.
 
@@ -160,7 +160,7 @@ Poort, uitkomst:
 - S7: 7 van 9 vóór en na (kenmerk 4 en 8 deels). Doel 8 niet gehaald; niet herhaald (vooraf vastgelegd: hoogstens twee runs, de lagere telt).
 - `docs/baseline` is in deze golf niet vernieuwd; een Linux-basis die B0 vervangt volgt alleen als de gebruiker dat wil (zie 5b-3).
 
-## Golf 5b-3: restpunten van 5b-2 (versie 10; fase 3 gedaan, poort nog niet gedraaid)
+## Golf 5b-3: restpunten van 5b-2 (versie 10; rondes 2 tot en met 6 gedaan, poort nog niet afgerond)
 
 Vorm zoals 5b-2: eerst een premortem, dan meten met `clash.py` en `huid.py` vóór de nieuwe delen, een presetlijst per item vooraf en samenvoegen per tak. Contractwijzigingen in `core.js` en `body.js` doet de orkestrator vóór de takken. De tak `golf-5b2` en `main` zijn vóór de golf samengevoegd (versie 9 staat live).
 
@@ -185,18 +185,18 @@ Vorm zoals 5b-2: eerst een premortem, dan meten met `clash.py` en `huid.py` vó�
 
 ### Besluiten van de gebruiker voor 5b-3
 
-B2 tot en met B6 staan op "voorlopig, wacht op de gebruiker": de standaard geldt zolang er geen antwoord is, en elk besluit kan nog wijzigen. B1 is besloten (17 oktober 2026), net als de clashregel hieronder.
+B1, B4 en B5 zijn besloten door de gebruiker (17 oktober 2026), net als de clashregel hieronder; B4 en B5 staan met hun reden in `docs/onderzoek/beslissingen.md`. B2 en B3 zijn in de uitvoering van G9e vastgelegd (Nederlandse notatie, koppel in `Nm`, zie `docs/onderzoek/beslissingen.md` en `handomdraai.md`). Alleen B6 staat nog op de standaard, zonder antwoord van de gebruiker; die kan nog wijzigen.
 
-| Nr | Vraag | Standaard (voorlopig, wacht op de gebruiker) |
+| Nr | Vraag | Besluit of standaard |
 |---|---|---|
 | B1 | T4: definitie (MB = 10^6 bytes, gzip -6) en grens | Besloten door de gebruiker op 17 oktober 2026: definitie vastgelegd, grens 1,5 MB raw en 370 kB gzip (`docs/onderzoek/beslissingen.md`). Nummergegevens apart laden naar 5c-2. |
-| B2 | Koppel: `Nm` of `N·m` | `Nm` (zoals `spec` en `data/pn`); de plekken met `N·m` omzetten. |
-| B3 | G9e ook voor `auto.json`, `presetdata.js`, `partnumbers.js` | Ja voor `auto.json` en `presetdata.js` (zichtbaar in de pagina); nee voor `data/pn` en `partnumbers.js` (bronnamen en citaten blijven letterlijk). |
-| B4 | S7 kenmerk 8 (bovenaanzicht zonder heupen) | Criterium herformuleren naar "evenwijdig tussen de assen, taps naar neus en staart" (meting: 1,3 procent spreiding, binnen de referentie). Geen geometrie. |
-| B5 | G8f (portiergeometrie delen, geen driehoekwinst) | Niet in 5b-3; laten vervallen tenzij geheugen een doel wordt. |
-| B6 | Actieve categorieknop afkappen (ellipsis) tegen de tweede rij van de presetbalk | Niet doen; alleen de herkadrering oplossen. |
+| B2 | Koppel: `Nm` of `N·m` | `Nm` (zoals `spec` en `data/pn`); de plekken met `N·m` zijn omgezet (G9e, gedaan). |
+| B3 | G9e ook voor `auto.json`, `presetdata.js`, `partnumbers.js` | Ja voor `auto.json` en `presetdata.js` (zichtbaar in de pagina); nee voor `data/pn` en `partnumbers.js` (bronnamen en citaten blijven letterlijk). Gedaan. |
+| B4 | S7 kenmerk 8 (bovenaanzicht zonder heupen) | Besloten: het criterium luidt "evenwijdig tussen de assen, taps naar neus en staart" (meting: 1,3 procent spreiding, binnen de referentie). Geen geometrie. |
+| B5 | G8f (portiergeometrie delen, geen driehoekwinst) | Besloten: vervalt; alleen weer oppakken als geheugen een doel wordt. |
+| B6 | Actieve categorieknop afkappen (ellipsis) tegen de tweede rij van de presetbalk | Standaard (nog geen antwoord): niet doen; alleen de herkadrering oplossen. |
 
-Besluit van de gebruiker tijdens de golf (17 oktober 2026): de clashregel is streng. Geen paar mag dieper doordringen dan in B0 plus 0,1 mm (bemonsteringsmarge), ook niet een ONZEKER paar (een deel dat geen gesloten mesh is) in gesloten stand. Een uitzondering krijgt alleen een toelating in `data/clash-toegestaan.json`, met reden en `max_diepte_mm`. Tak E (gasveer) en tak B (veren) zijn onder deze regel aangepast (E8, B3 nazorg, B9).
+Besluit van de gebruiker tijdens de golf (17 oktober 2026): de clashregel is streng. Geen paar mag dieper doordringen dan in B0 plus 0,1 mm (bemonsteringsmarge), ook niet een ONZEKER paar (een deel dat geen gesloten mesh is) in gesloten stand. Een uitzondering krijgt alleen een toelating in `data/clash-toegestaan.json`, met reden en `max_diepte_mm`. Tak E (gasveer) en tak B (veren) zijn onder deze regel aangepast (E8, B3 nazorg, B9). De regel geldt ook open, over de hele beweging (besluit van de gebruiker, zie `docs/onderzoek/beslissingen.md`): gemeten met de standenzwaai (de 26 openers in stappen van 0,05, plus dicht en alles open) en een ruisproef bij een bemonsteringsafstand van 1,5 mm naast de gewone.
 
 Poort 5b-3: `finaltests.sh` strikt groen, `visdiff` tegen een basis van hetzelfde platform met alleen bedoelde verschillen, `clash.py` 0 op de nieuwe delen, K1 tot K13 niet lager, S7 hoogstens twee runs.
 
@@ -216,16 +216,29 @@ Volgorde: fase 0 (contracten en meetmiddelen in `core.js`, `body.js`, `build.py`
 | G9h | Gedaan | `lint_texts` in `build.py` controleert `d`, `spec`, `note` en `label`; R1, R2, R4, R5 en R7 zijn fouten (R4, R5 en R7 waren tot 3.1 meldingen). |
 | `spring()` | Gedaan | Parameter `per` (punten per winding, standaard 14, sleutel ongewijzigd). Schroefveer voor 16; Schroefveer achter, Terugtrekveer en Zuigerveer weer 14 (strenge clashregel), Wormas 8; drie veren in de aandrijving 8. |
 | Inner-treffers (400 richtingen) | Gedaan | Veerrubber onder, Lagerbus aan de collectorzijde (Eindschild startmotor dicht als kegel) en het Krukmechanisme zijn weg. Bij 800 richtingen blijven treffers over (Pakking waterkast, Sproeierkop koplamp, Klepbuffer, Rondsel, Duwstang, Differentieel); die zijn de basis voor een volgende golf, geen poort. |
-| Hoedenplank (punt 1) | Gedaan | De plank gaat 0,9 rad (52 graden) mee met de achterklep (was 0,7). In de presets zie je het niet, omdat de plank daar door `hideWhen` is uitgenomen; wel via de knop Achterklep. |
-| Gasveer (punt 2) | Gedaan | Dikkere veer, bevestiging onder de lakhuid van de C-stijl en het klepuiteinde verlegd zodat de gesloten veer buiten de afdichting ligt (E1, E2, E8). Onder de strenge clashregel geen paar dieper dan B0 plus 0,1 mm. Of de veer in het achterklepbeeld nu leest, is een oordeel van de poort. |
+| Hoedenplank (punt 1) | Gedaan | De plank gaat 0,9 rad (52 graden) mee met de achterklep (was 0,7); sinds ronde 4 heeft de voorrand een uitsparing voor de middelste gordelrolautomaat. In de presets zie je het niet, omdat de plank daar door `hideWhen` is uitgenomen; wel via de knop Achterklep. |
+| Gasveer (punt 2) | Gedaan | Dikkere veer, bevestiging onder de lakhuid van de C-stijl en het klepuiteinde verlegd zodat de gesloten veer buiten de afdichting ligt (E1, E2, E8). Sinds ronde 4 reikt het plaatje van de Gasveerbevestiging 5 mm boven en 25 mm onder de kogelpen, zodat de cilinder in geen stand van de achterklep dieper in het plaatje ligt dan in B0. Onder de strenge clashregel geen paar dieper dan B0 plus 0,1 mm. Of de veer in het achterklepbeeld nu leest, is een oordeel van de poort. |
 | Scharnierblad | Open | Geen wijziging in deze golf. |
-| S7 kenmerk 4 en 8 | Deels | Chroomlijst langs de B-stijl 15 mm (E3). Kenmerk 8 krijgt volgens de standaard van B4 een herformulering en geen geometrie. De S7-run hoort bij de poort. |
+| S7 kenmerk 4 en 8 | Deels | Chroomlijst langs de B-stijl 15 mm (E3), in ronde 2 teruggebracht tot een kort eindstuk in de bovenhoek (de lijst over de hele hoogte las als dubbele witte lijn), met een donkere lijn van 9 mm boven de chromen bovenband en zijruiten die 4 mm onder de afdekking doorlopen; zie "Rondes 2 tot en met 6". Kenmerk 8 krijgt volgens de standaard van B4 een herformulering en geen geometrie. De S7-run hoort bij de poort. |
 | Meldingen van beoordelaars | Deels | Bumperschaal voor zonder gedegenereerde driehoeken en nulnormalen (E4). Het onrustige achterpaneel en de spikkels zijn niet gedaan. |
 | App (tak G) | Gedaan | G1: herkadrering als de layout van het dock verandert, Stap terug herstelt kader en vrij beeld; G2: Nederlandse notatie in `presetdata.js`. De orkestrator voegde itest controle 5 toe (camera na Stap terug), omdat `state()` geen camera bevat. |
 | T4 | Besloten | Zie B1. |
-| Nieuwe `docs/baseline` | Wacht op de poort | De basislijn wordt pas na een groene poort vernieuwd, in een eigen commit met voor/na-galerij. |
+| Nieuwe `docs/baseline` | Wacht op de poort | De basislijn wordt pas na een groene poort vernieuwd, in een eigen commit met voor/na-galerij. De ankerpoort in de VM is ok (`d4d03a6`). |
 
-Niet gedaan en bewust: het samenvoegen van de espace5-tak `golf-5b3-export`, de bouw van `index.html` (3.5) en de poort. De uitgestelde punten staan bij de poort hierboven; de lijst "Uitgesteld" in het plan blijft staan voor 5c-2 (nummergegevens apart laden, T4) en een volgende carrosseriegolf (achterpaneel, spikkels, echte plek van expansieventiel en droger).
+### Rondes 2 tot en met 6 (17 oktober 2026, 08:08 tot 13:56 UTC)
+
+Na fase 3 kwamen vijf rondes op de samengevoegde stand, elk gemeten met de strenge clashregel (geen paar dieper dan B0 plus 0,1 mm, ook open). De meetmethode hoort bij de rondes: de standenzwaai over de 26 openers in stappen van 0,05, plus dicht en alles open, met een ruisproef bij een bemonsteringsafstand van 1,5 mm. Sinds `a000772` ververst de cache van `meetlib.js` per stand; metingen in open stand van voor ronde 3 binnen één sessie gebruikten de dichte geometrie en gelden niet.
+
+| Ronde | Wat | Uitkomst |
+|---|---|---|
+| 2 | S7 kenmerk 4: B-stijl als zwart vlak, chroomlijst als kort eindstuk, zijruiten 4 mm onder de afdekking, donkere lijn 9 mm boven de chromen bovenband. Vulpijp bovenstuk tot u 0,98 (3,9 mm voor de vulhals, was 1,4 mm erin). Besluiten B4 en B5. | Geen nieuw doordringend paar; de toelatingen van de vulpijp op B0 plus 0,1 mm staan in `data/clash-toegestaan.json`. |
+| 3 | De B-stijl leest bij een open portier als stijl (gelakte plaat boven de gordel, dicht verborgen achter de afdekkingen), de achterruit zakt schuin langs de helling van de B-stijl, de kwartsruit draait mee met het achterportier. Meetlib-cachefix. | Geen nieuw paar, geen paar dieper dan B0; B-stijl tegen hoogteversteller gordel weg. `index.html` herbouwd. |
+| 4 | Hoedenplank met uitsparing voor de middelste gordelrolautomaat; plaatje van de Gasveerbevestiging 5 mm boven en 25 mm onder de kogelpen. | Plank tegen Gordelrolautomaat achter midden weg; de cilinder van de gasveer in elke klepstand niet dieper in het plaatje dan B0. Open uitzondering: Plankscharnierpen rechts (zie ronde 7). |
+| 5 | Gordelband voor in rust vrijwel recht uit de bovenste geleider, net achter de stijlbalk; de tong volgt. | De achterste zijruit snijdt de band in geen stand meer; geen paar binnen 2 mm van band en tong. |
+| 6 | B-stijlplaat in de onderste 10 cm 2,5 mm binnen de omhullende van de zakkende voorste zijruit; beschrijving gordelband voor volgt de rusttand. | De paren Zijruit voor met B-stijl zijn weg; bij 1,5 mm bemonstering dringt geen ruit in de B-stijl. |
+| 7 | Scharnierpennen van de hoedenplank binnen de B0-diepte (zie commit). | Open; de orkestrator vult de uitkomst aan. |
+
+Niet gedaan en bewust: het samenvoegen van de espace5-tak `golf-5b3-export`, de bouw van `index.html` na ronde 6 en de poort. De uitgestelde punten staan bij de poort hierboven; de lijst "Uitgesteld" in het plan blijft staan voor 5c-2 (nummergegevens apart laden, T4) en een volgende carrosseriegolf (achterpaneel, spikkels, echte plek van expansieventiel en droger).
 
 ## Golf 5c-1: robuustheid, bediening, toegankelijkheid en tests (1 dag; versie 8)
 
@@ -331,7 +344,7 @@ Poort: `pncheck` groen (reproduceerbaar, bronnen per nummer niet gedaald); dekki
 | 2 | 5b-1 camera's en materialen, naast 5a-2 | 4 domeinagents (carrosserie, interieur, motor, orkestrator voor `core.js:70`); 1 tooling-agent voor 5a-2 | 1 dag | volledige set strikt; vóór/na-poort per punt; 3 paren tegen v6 | ja, versie 7 (met A6) |
 | 3 | 5c-1 robuustheid, bediening, tests | 1 app-agent plus 1 test-agent | 1 dag | itest circa 190; eerste-beeld-poort; 3 paren tegen v7 | ja, versie 8 |
 | 4 | 5d nummers | 1 gegevensagent plus 1 verifieerder | 1 dag in plakken | `pncheck`, dekking, lokvogels | ja, versie 9 |
-| 5 | 5b-2 geometrie en budget | 6 domeinagents (gedaan op 16 oktober, 16:18 tot 20:21 UTC) | 1,5 tot 2 dagen | set strikt, budgetten, `visdiff` (eigen basis), poort niet lager, S7 8 van 9 (niet gehaald) | versie 9 gebouwd, nog niet gepubliceerd |
+| 5 | 5b-2 geometrie en budget | 6 domeinagents (gedaan op 16 oktober, 16:18 tot 20:21 UTC) | 1,5 tot 2 dagen | set strikt, budgetten, `visdiff` (eigen basis), poort niet lager, S7 8 van 9 (niet gehaald) | ja, versie 9 (gepubliceerd op 16 oktober, 21:30 UTC) |
 | 5b | 5b-3 restpunten van 5b-2 | orkestrator plus domeinagents | 1 tot 1,5 dag | zoals 5b-2, met `clash.py` 0 | ja, versie 10 |
 | 6 | 5c-2 prestaties en codegezondheid | 1 app-agent | 1 tot 1,5 dag, K5 apart | volledige set; `timing()` 25 procent korter | ja, versie 11 |
 | 7 | 5e feiten | orkestrator plus gebruiker | doorlopend | besluit in `beslissingen.md` | mee met de volgende versie |
