@@ -9,8 +9,6 @@
 //   opens: [openers] of 'all': de modus Openen met precies deze openers open (pad of unieke naam; een volger telt als zijn
 //   leider). Zonder frame is het kader de open.look.nodes van de eerste opener, met zijn look.dir als richting. Alle andere
 //   presets zetten de modus terug op Uitklappen en sluiten de openers (de modusknop niet: die laat ze staan).
-//   soon: true wacht op een opener van een andere eigenaar: oplossen de namen nog niet, dan verschijnt de preset niet in de
-//   menu's en geeft checkPresets() geen fout; checkPresets(true) toetst ook deze presets.
 // Alleen ankernamen uit contract §8 / tools/anchors.json. Een preset waarvan een naam niet oplost, verschijnt niet in de menu's.
 const appPresetById = new Map(PRESETS.map(p => [p.id, p]));
 
@@ -44,13 +42,13 @@ function appPresetErrors(p) {
   }
   return err;
 }
-function appCheckPresets(strict) {
+function appCheckPresets() {
   const err = [], ids = new Set(), keys = new Set();
   for (const p of PRESETS) {
     if (ids.has(p.id)) err.push(`preset-id "${p.id}" komt twee keer voor`); ids.add(p.id);
     if (p.key) { if (keys.has(p.key)) err.push(`sneltoets ${p.key} komt twee keer voor`); keys.add(p.key); }
     if (!appCats.includes(p.cat)) err.push(`preset "${p.label}": onbekende categorie ${p.cat}`);
-    if (!p.soon || strict || !appPresetErrors(p).length) err.push(...appPresetErrors(p));
+    err.push(...appPresetErrors(p));
   }
   for (const id of appTourSteps) if (!appPresetById.has(id)) err.push(`rondleiding: preset "${id}" bestaat niet`);
   return err;
@@ -134,7 +132,7 @@ function appApplyPreset(p, opt = {}) {
   ACTIVE_PRESET = p.id;
   uiSyncCats(); uiSyncOpenUi(); // G1: de presetnaam en de openmodus veranderen het dock; eerst meten, dan pas kadreren (geen herkadrering midden in de animatie)
   const sel = p.select ? byName(p.select) : (ISO.length === 1 ? ISO[0] : ROOT);
-  select(sel, { keepPreset: true });
+  select(sel);
   const openSpan = opening.length ? oDur + oStag * (o1 - o0) : 0;
   const camDelay = closing.length ? closeT * 0.6 : 0;
   const camDur = clamp(Math.max(0.9, openSpan + closeT - camDelay), 0.9, 2.5 - camDelay);

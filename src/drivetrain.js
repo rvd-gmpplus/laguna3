@@ -292,7 +292,6 @@ function drvStarter() {
   const red = drvPlanets('st', 'Planetaire reductie', 'Planetaire reductie tussen anker en rondselas (schematisch weergegeven): zonnewiel op de ankeras, drie planeetwielen, holwiel in het huis en een drager die de rondselas aandrijft.', { m: 0.0011, w: 0.012, Ns: 10, Np: 12, Nr: 34, n: 3, x: 0.063, ph: 0.3, ex: [0.04, 0, 0], inner: true });
   [['Zonnewiel', -0.03, 0, 0], ['Naaldlagers planeetwielen', 0.015, 0, 0], ['Planeetdrager', 0.03, 0, 0], ['Holwiel', 0.06, 0, 0]].forEach(([nm, x]) => { red.kids.find(k => k.name === nm).ex.set(x, 0, 0); });
   red.kids.filter(k => /^Planeetwiel/.test(k.name)).forEach(k => k.ex.multiplyScalar(0.5));
-  const mount = (nm, d, g, mat, p, ex, inner) => P(nm, g, mat, { d, p, ex, inner });
   const cap = 0.152, bx = (k) => [cap, sy + 0.0085 * (k ? 1 : -1), sz];
   const st = A('Startmotor', {
     d: 'Elektrische startmotor (vermogen circa 1 kW geschat, type schematisch) met voorgeschakelde planetaire reductie en solenoïde; het rondsel grijpt in de startkrans van de flexplaat. Zit met drie bouten (flens Ø66 mm) op de koppelomvormerklok.',

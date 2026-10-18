@@ -23,7 +23,6 @@ const ALL = [], ASMS = [];
 (function walk(n, d) { n.depth = d; ALL.push(n); if (n.asm) ASMS.push(n); n.kids.forEach(k => walk(k, d + 1)); })(ROOT, 0);
 const MESHES = [];
 ROOT.obj.traverse(o => { if (o.isMesh) MESHES.push(o); });
-const MAXDEPTH = Math.max(...ALL.map(n => n.depth));
 const SYS_COLORS = { 'Carrosserie': 0x7d93b4, 'Interieur': 0xcaa77a, 'Aandrijflijn': 0xe0782f, 'Onderstel': 0x8a64c8, 'Koeling en luchtinlaat': 0x2fa6a0, 'Uitlaatsysteem': 0x9a6b4b, 'Brandstofsysteem': 0x58a24d, 'Elektrisch systeem': 0xe5c23a };
 const SYS_MATS = {};
 for (const [k, c] of Object.entries(SYS_COLORS)) SYS_MATS[k] = new THREE.MeshStandardMaterial({ color: c, metalness: 0.15, roughness: 0.55, side: THREE.DoubleSide });
@@ -248,7 +247,6 @@ function stepOpen(dt) {
   uiStrutSync();
   return true;
 }
-const uiAnyOpen = () => OPENERS.some(n => n.ou > 0 || n.ot > 0);
 // Na een uitklapstap staan de onderdelen op base + exv; een open opener moet daarna zijn volgers, vaste delen en
 // telescopen opnieuw zetten (een open achterklep in Uitklappen: de gasveren blijven aan hun ankers)
 function uiOpenResync() {
@@ -311,7 +309,7 @@ function uiSetNow(n, t) { // direct, zonder animatie (schuif en afspelen)
   t = clamp(t, 0, 1);
   if (n.target === t && n.amt === t && !uiAnim.has(n)) return;
   const was = n.target;
-  n.target = t; n.amt = t; n.u = t; n.delay = 0; n.k = 1; uiAnim.delete(n);
+  n.target = t; n.amt = t; n.delay = 0; n.k = 1; uiAnim.delete(n);
   placeKids(n);
   uiOpenResync(); uiWake();
   if (n.innerKids && (was === 0) !== (t === 0)) uiVisDirty = true;
@@ -322,7 +320,6 @@ function stepExplode(dt) {
     if (n.delay > 0) { n.delay -= dt; if (n.delay > 0) continue; }
     n.k = Math.min(1, n.k + dt / n.dur);
     n.amt = n.k >= 1 ? n.target : n.a0 + (n.target - n.a0) * ease(n.k);
-    n.u = n.amt;
     placeKids(n);
     if (n.k >= 1) { uiAnim.delete(n); if (n.innerKids && n.target === 0) uiVisDirty = true; }
   }
@@ -512,7 +509,7 @@ function uiSetHover(n) {
 /* ---------- camera ---------- */
 const VIEW = { l: 0, r: 0, t: 0, b: 0 };
 let W = 1, H = 1;
-const DIRS = { iso: V3(1, 0.42, 1.08), front: V3(0.12, 0.22, 1), rear: V3(-0.15, 0.3, -1), side: V3(1, 0.1, 0.02), top: V3(0.0001, 1, 0.12), under: V3(0.25, -1, 0.15), isoRear: V3(-1, 0.45, -1) };
+const DIRS = { iso: V3(1, 0.42, 1.08), front: V3(0.12, 0.22, 1), rear: V3(-0.15, 0.3, -1), side: V3(1, 0.1, 0.02), top: V3(0.0001, 1, 0.12), isoRear: V3(-1, 0.45, -1) };
 let uiSpreadEnd = 1;
 // Eindstand voorspellen: posities na afloop van alle lopende animaties, met de zichtbaarheid van de eindstand.
 function uiPredHidden(n) { const p = n.parent; return !!(n.inner && p && p.target === 0 && uiInScope(p) && !uiOpenNear(p, true)); }
@@ -606,13 +603,6 @@ function uiFitPoints(pts, dir, pad = 1.08, opt = {}) {
   if (opt.min) d = Math.max(d, opt.min * 0.5 / Math.min(th, tv) * pad);
   d = clamp(d, controls.minDistance * 1.2, controls.maxDistance * 0.95);
   return { pos: c.clone().add(back.multiplyScalar(d)), target: c };
-}
-function fitBox(box, dir, pad = 1.06, opt = {}) {
-  if (!box || box.isEmpty()) return;
-  const pts = [];
-  for (let i = 0; i < 8; i++) pts.push(i & 1 ? box.max.x : box.min.x, i & 2 ? box.max.y : box.min.y, i & 4 ? box.max.z : box.min.z);
-  const f = uiFitPoints(pts, dir, pad, opt);
-  if (f) animCam(f.pos, f.target, opt.dur, opt.delay);
 }
 const uiSph0 = new THREE.Spherical(), uiSph1 = new THREE.Spherical();
 function animCam(pos, target, dur, delay = 0) {

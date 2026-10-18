@@ -123,18 +123,6 @@ std('screen', 0x0b1118, 0.2, 0.1);
 std('filter', 0xdcc8a0, 0, 0.9);
 std('heater', 0xa86a3d, 0.6, 0.45);
 
-const HL = new Map();
-function hlMat(base) {
-  let m = HL.get(base);
-  if (!m) {
-    m = base.clone();
-    m.emissive = new THREE.Color(0xf2c230);
-    m.emissiveIntensity = 0.42;
-    if (m.transparent) m.opacity = Math.max(m.opacity, 0.55);
-    HL.set(base, m);
-  }
-  return m;
-}
 const GHOST = new THREE.MeshStandardMaterial({ color: 0xc4ccd5, metalness: 0, roughness: 0.4, transparent: true, opacity: 0.09, depthWrite: false, side: THREE.DoubleSide });
 const GHOST_HL = new THREE.MeshStandardMaterial({ color: 0xf2c230, emissive: 0xf2c230, emissiveIntensity: 0.25, transparent: true, opacity: 0.35, depthWrite: false, side: THREE.DoubleSide });
 
@@ -381,8 +369,8 @@ let NID = 0;
 function mkNode(obj, name, o) {
   const n = {
     id: NID++, name, d: o.d || '', spec: o.spec || null, obj, kids: [], parent: null, asm: false,
-    ex: o.ex ? V3(...o.ex) : null, exs: o.exs != null ? o.exs : 1, mode: o.mode || null, axis: o.axis ? V3(...o.axis) : null, step: o.step || 0,
-    u: 0, amt: 0, target: 0, delay: 0, base: null, exv: V3(0, 0, 0), sys: null, depth: 0, count: 0, lc: null, rad: 0, tag: o.tag || null,
+    ex: o.ex ? V3(...o.ex) : null, exs: o.exs != null ? o.exs : 1,
+    amt: 0, target: 0, delay: 0, base: null, exv: V3(0, 0, 0), sys: null, depth: 0, count: 0, lc: null, rad: 0,
     inner: !!o.inner,  // ingesloten: onzichtbaar zolang de bovenliggende groep dicht is (de app verbergt het dan)
     opn: o.open || null,    // openmodus: scharnier of schuif (zie docs/ontwerp-en-architectuur.md, "Openmodus")
     strut: o.strut || null, // telescoop (gasveer) die de app tussen twee punten richt

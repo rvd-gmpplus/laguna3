@@ -263,12 +263,6 @@ function renderPn(n) {
     for (const [url, label] of links) { const a = mk('a', null, label || url); a.href = url; a.target = '_blank'; a.rel = UI_LINK_REL; d.appendChild(a); }
     box.appendChild(d);
   }
-  if (u && u.info && u.info.length) {
-    box.appendChild(mk('h4', null, 'Onderhoud'));
-    const dl = mk('dl', 'pn-info');
-    for (const [label, waarde, bron] of u.info) { dl.appendChild(mk('dt', null, label)); const dd = mk('dd', null, waarde); if (bron) dd.appendChild(mk('small', null, bron)); dl.appendChild(dd); }
-    box.appendChild(dl);
-  }
   const inf = PN_DATA.info && PN_DATA.info[uiPathOf(n).replace(/^[^/]+\//, '')];
   if (inf && inf.length) {
     box.appendChild(mk('h4', null, 'Onderhoud en bekende problemen'));
@@ -1052,7 +1046,7 @@ function uiDoHover() {
 function uiHoverTarget(x, y) { const p = pick(x, y); const t = uiActTarget(p); return t ? t.name : null; }
 
 const uiPtrs = new Map();
-let down = null, pointers = 0, uiLastTap = null, uiPressS = null;
+let down = null, uiLastTap = null, uiPressS = null;
 function uiCancelPress() {
   if (!uiPressS) return;
   clearTimeout(uiPressS.show); clearTimeout(uiPressS.fire); clearTimeout(uiPressS.zero); cancelAnimationFrame(uiPressS.raf);
@@ -1093,7 +1087,6 @@ function uiStartPress(d) {
 canvas.addEventListener('pointerdown', e => {
   for (const l of labelPool) l._pd = false; // elk gebaar begint schoon: geen label houdt een oude druk vast
   uiPtrs.set(e.pointerId, e.pointerType);
-  pointers = uiPtrs.size;
   try { canvas.focus({ preventScroll: true }); } catch (_) { }
   uiHideTip();
   if (uiPtrs.size === 1) {
@@ -1111,7 +1104,7 @@ canvas.addEventListener('pointermove', e => {
 });
 canvas.addEventListener('pointerleave', () => { uiHoverPos = null; clearTimeout(uiHoverTimer); uiHoverTimer = 0; uiHideTip(); });
 canvas.addEventListener('pointerup', e => {
-  uiPtrs.delete(e.pointerId); pointers = uiPtrs.size;
+  uiPtrs.delete(e.pointerId);
   if (!down || down.id !== e.pointerId) return;
   const d = down; down = null;
   d.ended = true;
@@ -1135,9 +1128,9 @@ canvas.addEventListener('pointerup', e => {
   if (d.shift) { d.pick ? uiCollapseAt(d.pick) : uiBackground(); return; }
   uiAct(d.pick);
 });
-const uiPtrReset = () => { uiPtrs.clear(); pointers = 0; if (down) down.ended = true; down = null; uiCancelPress(); };
-canvas.addEventListener('pointercancel', e => { uiPtrs.delete(e.pointerId); pointers = uiPtrs.size; if (down && down.id === e.pointerId) { down.ended = true; down = null; } uiCancelPress(); });
-canvas.addEventListener('lostpointercapture', e => { if (uiPtrs.has(e.pointerId) && down && down.id === e.pointerId && down.type !== 'mouse') { uiPtrs.delete(e.pointerId); pointers = uiPtrs.size; } });
+const uiPtrReset = () => { uiPtrs.clear(); if (down) down.ended = true; down = null; uiCancelPress(); };
+canvas.addEventListener('pointercancel', e => { uiPtrs.delete(e.pointerId); if (down && down.id === e.pointerId) { down.ended = true; down = null; } uiCancelPress(); });
+canvas.addEventListener('lostpointercapture', e => { if (uiPtrs.has(e.pointerId) && down && down.id === e.pointerId && down.type !== 'mouse') uiPtrs.delete(e.pointerId); });
 window.addEventListener('blur', uiPtrReset);
 document.addEventListener('visibilitychange', () => { if (document.hidden) uiPtrReset(); });
 canvas.addEventListener('contextmenu', e => e.preventDefault()); // rechtsklik zelf wordt in pointerup afgehandeld (niet na slepen)
@@ -1333,11 +1326,6 @@ function uiRankAnchors(k) {
   const rank = x => (x.size >= 0.5 * big ? 0 : 2) + (x.inner ? 1 : 0);
   info.sort((x, y) => rank(x) - rank(y) || x.d - y.d);
   return info.slice(0, 6).map(x => ({ m: x.m, node: x.m.userData.node }));
-}
-function uiMakeAnchors(k) {
-  const a = uiRankAnchors(k);
-  for (const x of a) x.p = uiGeoPoint(x.m.geometry);
-  return a;
 }
 // De ankers van een groep worden niet in één frame gebouwd (bij Carrosserie 17 ms, bij de hoofdgroepen ~19 ms in het
 // midden van het uitklappen): knopen komen in een rij en uiAnchorStep bouwt ze binnen een tijdsbudget per frame, per
@@ -1864,7 +1852,7 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { fo
 
 function finishAll() {
   if (uiRefitTimer) uiRefitNow();
-  for (const n of uiAnim) { n.delay = 0; n.k = 1; n.amt = n.target; n.u = n.amt; placeKids(n); }
+  for (const n of uiAnim) { n.delay = 0; n.k = 1; n.amt = n.target; placeKids(n); }
   if (uiAnim.size) { uiAnim.clear(); uiOpenResync(); }
   for (const n of uiOffAnim) { n.odelay = 0; n.ok = 1; n.off.copy(n.off1); if (n.off.lengthSq() === 0) n.hasOff = false; uiPlace(n); }
   uiOffAnim.clear();

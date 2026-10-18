@@ -64,8 +64,6 @@ function bodPose(s, p, nLeft, extra = {}) {
 function bodAt(z, y, out = 0) { const sv = sAtY(z, y), [x, yy] = halfPt(z, sv), n = bodN(z, sv); return [x + n[0] * out, yy + n[1] * out, z + n[2] * out]; }
 // gelijkmatig plus extra stations rond schuine naden
 function bodDense(a, b, n) { const out = []; for (let i = 1; i < n; i++) out.push(a + (b - a) * i / n); return out; }
-// buis langs punten op de huid (sierlijsten, rubbers)
-function bodSkinTube(s, pts, r, out, seg = 48, rad = 6) { return tube(pts.map(([z, y]) => { const p = bodAt(z, y, out); return [s * p[0], p[1], p[2]]; }), r, seg, rad); }
 // kaspunt (linkerhelft) bij (z, q) met verschuiving naar buiten
 function bodGhAt(z, q, out = 0) { const [x, y] = bodGhHalf(z, q); return [x + out, y + (q > bodQS ? out * 0.6 : 0), z]; }
 const bodYG = z => { const g = bodGh(z); return g.yb + (g.ye - g.yb) * (bodQG / bodQS); };   // bovenrand zijruit
