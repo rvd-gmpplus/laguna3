@@ -19,7 +19,7 @@ const UI_THEME_KEY = AUTO.id + '-theme';        // U5: onthouden themakeuze (lig
 const UI_PRESS_VIBRATE_MS = 10;              // U8: trilling als de ring bij lang drukken vol is
 let MODE = 'part', LABELS = true, CTX = null, ACTIVE_PRESET = 'assembled', needs = true;
 let uiLabelForce = false;
-const requestRender = () => { needs = true; };
+const requestRender = () => { needs = true; uiWake(); }; // P4: de lus kan stilstaan (uiWake in app1.js)
 const fmtCount = n => (n.count === 1 ? '1 onderdeel' : `${n.count} onderdelen`);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const uiTouch = !!(window.matchMedia && matchMedia('(hover: none), (pointer: coarse)').matches);
@@ -58,13 +58,14 @@ function select(n, opts = {}) {
   uiSyncExplode();
   requestRender();
 }
+// Golf 5c-2, P2: select() en uiAfterAction() bouwen allebei het paneel. De vaste inhoud (kruimelpad, beschrijving,
+// specificaties, onderdelenlijst en nummers) hangt alleen af van de knoop, de modus Openen en de nummergegevens en wordt
+// daarom één keer per knoop gebouwd (uiPanelFixed); de stand en de knoppen volgen elke keer.
+let uiPanelKey = '';
 function renderPanel() {
   const n = SEL || ROOT;
-  els.crumbs.innerHTML = '';
-  ancestors(n).forEach((a, i) => {
-    if (i) { const sp = document.createElement('span'); sp.textContent = '›'; els.crumbs.appendChild(sp); }
-    const b = document.createElement('button'); b.textContent = a.name; b.onclick = () => { uiPush(); select(a, { focus: true }); uiAfterAction(); }; els.crumbs.appendChild(b);
-  });
+  const key = n.id + '|' + (OPENMODE ? 1 : 0) + '|' + uiPnGen;
+  if (key !== uiPanelKey) { uiPanelKey = key; uiPanelFixed(n); }
   // U6: de live regions (#selName, #selMeta) alleen beschrijven als er iets verandert; een schermlezer leest anders elke
   // herhaalde opbouw van het paneel voor (bij elke handeling twee tot drie keer)
   if (els.name.textContent !== n.name) els.name.textContent = n.name;
@@ -76,6 +77,31 @@ function renderPanel() {
   const isoTxt = ISO.includes(n) ? ' · geïsoleerd' : '';
   const meta = `${state}${n.asm ? fmtCount(n) : (n.parent ? 'in ' + esc(n.parent.name) : '')}${isoTxt}`;
   if (els.meta._h !== meta) { els.meta._h = meta; els.meta.innerHTML = meta; }
+  const plan = OPENMODE ? uiPanelPlan(n) : null;
+  els.open.hidden = !plan;
+  if (plan) { els.open.textContent = plan.open ? 'Openen' : 'Sluiten'; els.open.setAttribute('aria-label', (plan.open ? 'Openen: ' : 'Sluiten: ') + uiOpenLabel(plan.n)); els.open.title = (plan.open ? 'Opent ' : 'Sluit ') + uiOpenLabel(plan.n) + ' (Enter)'; }
+  // in Openen is er niets uit te klappen of te isoleren: alleen de opener en In beeld blijven
+  els.toggle.hidden = !n.asm || OPENMODE;
+  els.toggle.textContent = n.asm && uiOpen(n) ? 'Inklappen' : 'Uitklappen';
+  els.all.hidden = !n.asm || OPENMODE;
+  els.dive.hidden = n.asm || OPENMODE;
+  els.dim.hidden = !DIM || OPENMODE;
+  if (DIM) els.dim.title = 'De gedimde rest van de auto weer volledig tonen (buiten ' + DIM.name + ')';
+  els.up.hidden = OPENMODE; els.iso.hidden = OPENMODE;
+  els.up.disabled = !uiClosedAbove(n);
+  els.up.title = els.up.disabled ? 'Alles boven deze selectie is al uitgeklapt' : 'De dichte groep boven de selectie uitklappen (Enter)';
+  const isoOn = ISO.length === 1 && ISO[0] === n;
+  els.iso.textContent = isoOn || (ISO.length && n === ROOT) ? 'Alles tonen' : 'Isoleren';
+  els.iso.disabled = n === ROOT && !ISO.length;
+  syncSheetHeight();
+  uiUiDirty = true;
+}
+function uiPanelFixed(n) {
+  els.crumbs.innerHTML = '';
+  ancestors(n).forEach((a, i) => {
+    if (i) { const sp = document.createElement('span'); sp.textContent = '›'; els.crumbs.appendChild(sp); }
+    const b = document.createElement('button'); b.textContent = a.name; b.onclick = () => { uiPush(); select(a, { focus: true }); uiAfterAction(); }; els.crumbs.appendChild(b);
+  });
   // in Openen krijgt de wortel een eigen uitleg bij de modus (U7: een eigen tekst, geen knip uit de beschrijving in systems.js)
   els.desc.textContent = (OPENMODE && n === ROOT) ? uiOpenRootDesc : (n.d || '');
   els.spec.innerHTML = (n.spec || []).map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('');
@@ -98,24 +124,6 @@ function renderPanel() {
       els.kids.appendChild(b);
     }
   }
-  const plan = OPENMODE ? uiPanelPlan(n) : null;
-  els.open.hidden = !plan;
-  if (plan) { els.open.textContent = plan.open ? 'Openen' : 'Sluiten'; els.open.setAttribute('aria-label', (plan.open ? 'Openen: ' : 'Sluiten: ') + uiOpenLabel(plan.n)); els.open.title = (plan.open ? 'Opent ' : 'Sluit ') + uiOpenLabel(plan.n) + ' (Enter)'; }
-  // in Openen is er niets uit te klappen of te isoleren: alleen de opener en In beeld blijven
-  els.toggle.hidden = !n.asm || OPENMODE;
-  els.toggle.textContent = n.asm && uiOpen(n) ? 'Inklappen' : 'Uitklappen';
-  els.all.hidden = !n.asm || OPENMODE;
-  els.dive.hidden = n.asm || OPENMODE;
-  els.dim.hidden = !DIM || OPENMODE;
-  if (DIM) els.dim.title = 'De gedimde rest van de auto weer volledig tonen (buiten ' + DIM.name + ')';
-  els.up.hidden = OPENMODE; els.iso.hidden = OPENMODE;
-  els.up.disabled = !uiClosedAbove(n);
-  els.up.title = els.up.disabled ? 'Alles boven deze selectie is al uitgeklapt' : 'De dichte groep boven de selectie uitklappen (Enter)';
-  const isoOn = ISO.length === 1 && ISO[0] === n;
-  els.iso.textContent = isoOn || (ISO.length && n === ROOT) ? 'Alles tonen' : 'Isoleren';
-  els.iso.disabled = n === ROOT && !ISO.length;
-  syncSheetHeight();
-  uiUiDirty = true;
 }
 /* ---------- onderdeelnummers ---------- */
 // Gegevens uit PN_DATA (src/partnumbers.js). map: pad zonder wortel -> [eenheid, 'zelf' | 'deel' | 'set', regel].
@@ -592,14 +600,30 @@ function uiSearchTerms(q) {
   for (const group of uiSynonyms) for (const w of group) if (q.includes(w)) for (const o of group) { if (o === w) continue; const v = q.replace(w, o); if (!terms.includes(v)) terms.push(v); }
   return terms;
 }
+// Golf 5c-2, P2: de boom alleen opnieuw opbouwen als wat hij toont is veranderd: de zoekterm en de treffers, de selectie, de
+// open rijen en de stand (uitgeklapt of niet) van elke getoonde groep. select() en uiAfterAction() vragen er allebei om.
+let uiTreeKey = '';
+function uiTreeSig(list) {
+  let s = (SEL ? SEL.id : -1) + ':';
+  const row = n => { s += n.id + (uiOpen(n) ? '+' : '-'); if (n.asm && openRows.has(n.id)) { s += '['; n.kids.forEach(row); s += ']'; } };
+  list.forEach(row);
+  return s;
+}
 function renderTree() {
   const terms = uiSearchTerms(els.search.value), q = terms[0];
-  els.tree.innerHTML = '';
-  const ul = document.createElement('ul');
+  let all = null;
   if (q.length >= 2) {
     const qn = uiPnCompact(q), byNum = qn.length >= 3 && /\d/.test(qn);   // een zoekterm met cijfers zoekt ook in de nummers
     if (byNum) uiPnReady();
-    const all = ALL.filter(n => terms.some(t => n.norm.includes(t)) || (byNum && (uiPnIdx.get(n) || { q: '' }).q.includes(qn))), hits = all.slice(0, 80);
+    all = ALL.filter(n => terms.some(t => n.norm.includes(t)) || (byNum && (uiPnIdx.get(n) || { q: '' }).q.includes(qn)));
+  }
+  const key = els.search.value + '|' + uiPnGen + '|' + (all ? all.length + '|' + uiTreeSig(all.slice(0, 80)) : uiTreeSig([ROOT]));
+  if (key === uiTreeKey) return;
+  uiTreeKey = key;
+  els.tree.innerHTML = '';
+  const ul = document.createElement('ul');
+  if (all) {
+    const hits = all.slice(0, 80);
     const syn = terms.length > 1 ? ` (ook gezocht op ${terms.slice(1).join(', ')})` : '';
     els.treeInfo.textContent = all.length ? (all.length === 1 ? '1 treffer' : `${all.length} treffers`) + syn + (all.length > hits.length ? `, de eerste ${hits.length} staan hieronder` : '') : 'Geen onderdeel gevonden met die naam' + syn + '.';
     hits.forEach(n => { const li = treeRow(n, 1); const small = document.createElement('div'); small.className = 'tpath'; small.textContent = ancestors(n).slice(1).map(a => a.name).join(' › ') || 'hele auto'; li.appendChild(small); ul.appendChild(li); });
@@ -675,7 +699,7 @@ uiSyncTheme();
 function uiSlug(s) { return uiNorm(s).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'beeld'; }
 function uiSaveImage() {
   const n = SEL || ROOT, r = uiPnRec(n), nums = r && r.kind === 'zelf' && r.u ? [...(r.u.oe || []).map(x => x[0]), ...(r.u.am || []).map(x => x[0] + ' ' + x[1])] : [];
-  renderer.render(scene, camera); // op verzoek tekenen: de buffer wordt na het tonen niet bewaard
+  uiBatchSync(); renderer.render(scene, camera); // op verzoek tekenen: de buffer wordt na het tonen niet bewaard
   const dpr = renderer.getPixelRatio(), w = canvas.width, h = canvas.height, bar = Math.round(44 * dpr);
   const c2 = document.createElement('canvas'); c2.width = w; c2.height = h + bar;
   const g = c2.getContext('2d');
@@ -739,16 +763,21 @@ function uiApplyX(w, x, now) {
 }
 const uiFmt = (v, d = 1) => v.toFixed(d).replace('.', ',');
 let uiDrag = false, uiPlayS = null;
+// Golf 5c-2, P3: tijdens afspelen draait dit elk frame; de DOM (waarde, tekst, aria-* en het pictogram) alleen schrijven als
+// er iets verandert.
 function uiSyncExplode(fromSlider) {
   const w = uiWorking(), L = uiLevels(w).length, x = uiExplodeX(w), v = L ? x / L : 0;
-  if (!fromSlider && !uiDrag) els.explode.value = String(Math.round(v * 1000));
-  els.explodeOut.textContent = Math.round(v * 100) + '%';
-  els.explode.setAttribute('aria-valuetext', `${uiFmt(x)} van ${L} ${L === 1 ? 'laag' : 'lagen'}`);
+  const val = String(Math.round(v * 1000)), pct = Math.round(v * 100) + '%', vt = `${uiFmt(x)} van ${L} ${L === 1 ? 'laag' : 'lagen'}`;
+  if (!fromSlider && !uiDrag && els.explode.value !== val) els.explode.value = val;
+  if (els.explodeOut.textContent !== pct) els.explodeOut.textContent = pct;
+  if (els.explode.getAttribute('aria-valuetext') !== vt) els.explode.setAttribute('aria-valuetext', vt);
   if (els.explodeName.textContent !== w.name) { els.explodeName.textContent = w.name; uiUiDirty = true; }
   const lbl = uiPlayS ? 'Stop' : (v >= 0.999 ? 'Monteren' : 'Demonteren');
   if (els.play.lastChild.textContent !== lbl) { els.play.lastChild.textContent = lbl; els.play.setAttribute('aria-label', lbl); uiUiDirty = true; }
-  els.play.setAttribute('aria-pressed', String(!!uiPlayS));
-  els.play.firstChild.innerHTML = uiPlayS ? '<path d="M7 6h3v12H7zM14 6h3v12h-3z"/>' : (v >= 0.999 ? '<path d="M16 5L5 12l11 7z"/>' : '<path d="M8 5l11 7-11 7z"/>');
+  const pressed = String(!!uiPlayS);
+  if (els.play.getAttribute('aria-pressed') !== pressed) els.play.setAttribute('aria-pressed', pressed);
+  const icon = uiPlayS ? '<path d="M7 6h3v12H7zM14 6h3v12h-3z"/>' : (v >= 0.999 ? '<path d="M16 5L5 12l11 7z"/>' : '<path d="M8 5l11 7-11 7z"/>');
+  if (els.play._icon !== icon) { els.play._icon = icon; els.play.firstChild.innerHTML = icon; }
 }
 els.explode.addEventListener('input', () => {
   if (!uiDrag) { uiDrag = true; uiStopPlay(); uiStopTour(); hideHint(); uiPush(); uiSetDim(null); applyMats(); }
@@ -954,10 +983,14 @@ function uiPickList() {
   if (uiPickXrayKey !== uiPickVer) { uiPickXray = uiPickable.filter(m => !m.userData.node.isBody); uiPickXrayKey = uiPickVer; }
   return uiPickXray;
 }
-function pick(cx, cy, loose) {
+// hover: aanwijzen met de muis. Golf 5c-2, P3: renderer.render werkt de wereldmatrices van de hele scène bij; staat er
+// sindsdien niets te tekenen (needs) en beweegt er niets (uiWasActive), dan zijn ze nog geldig en blijft de volledige
+// updateMatrixWorld over 2.400 meshes achterwege. Tikken, klikken en de testhaken rekenen altijd alles opnieuw.
+function pick(cx, cy, loose, hover) {
   const r = canvas.getBoundingClientRect();
   ndc.set(((cx - r.left) / r.width) * 2 - 1, -((cy - r.top) / r.height) * 2 + 1);
-  camera.updateMatrixWorld(); ROOT.obj.updateMatrixWorld();
+  camera.updateMatrixWorld();
+  if (!hover || needs || uiWasActive) ROOT.obj.updateMatrixWorld();
   ray.setFromCamera(ndc, camera);
   const list = uiPickList();
   const hits = ray.intersectObjects(list, false);
@@ -1009,7 +1042,7 @@ function uiDoHover() {
   uiHoverTimer = 0;
   if (!uiHoverPos) return;
   uiHoverT = performance.now();
-  const p = pick(uiHoverPos.x, uiHoverPos.y);
+  const p = pick(uiHoverPos.x, uiHoverPos.y, false, true);
   if (!p) { uiHideTip(); return; }
   const t = uiActTarget(p);
   if (uiSetHover(t)) requestRender();
@@ -1594,6 +1627,7 @@ function resize() {
   camera.updateProjectionMatrix();
   syncSheetHeight();
   layoutView();
+  requestRender(); // P4: de lus kan stilstaan; een nieuwe buffermaat is leeg tot de volgende weergave
 }
 window.addEventListener('resize', () => { resize(); uiRefitSoon(); });
 if (window.ResizeObserver) {
@@ -1687,7 +1721,7 @@ canvas.addEventListener('webglcontextrestored', () => {
 
 /* ---------- render-lus ---------- */
 controls.addEventListener('change', requestRender);
-controls.addEventListener('start', () => { camAnim = null; uiUserCam = true; hideHint(); uiStopTour(); });
+controls.addEventListener('start', () => { camAnim = null; uiUserCam = true; hideHint(); uiStopTour(); uiWake(); });
 function uiTick(dt) {
   let active = stepExplode(dt);
   if (uiStepOff(dt)) active = true;
@@ -1705,22 +1739,40 @@ function uiAfterAnim() {
   uiSyncExplode();
   if (uiHoverPos && !down) uiDoHover();
 }
+// Golf 5c-2, P4: één frame is drie stappen: tick (animaties en de camera), render (alleen als er iets te tekenen is) en
+// achtergrondwerk (labelankers en batches, binnen een tijdsbudget). Is er na een frame niets meer te doen, dan vraagt de lus
+// geen volgend frame aan; uiWake() (app1.js) start hem weer bij invoer, animatie, rondleiding, formaatwissel,
+// contextherstel en thema (via requestRender en de animatiefuncties). Een fout midden in een frame houdt de lus draaiende.
 let last = performance.now(), uiWasActive = false, uiBatchDrawT = 0;
 function loop(now) {
-  requestAnimationFrame(loop);
+  let more = true;
+  try { more = uiFrame(now); } finally { if (more) requestAnimationFrame(loop); else { uiLoopOn = false; uiDebugIdle(); } }
+}
+function uiFrame(now) {
+  // na stilstand rekent het eerste frame met één normale frameduur, niet met de hele rustperiode; en tekent het (uiWake)
+  if (uiLoopWoke) { uiLoopWoke = false; last = now - 1000 / 60; needs = true; }
   const dt = Math.min(0.1, Math.max(0, (now - last) / 1000)); last = now;
   const active = uiTick(dt);
-  controls.update();
-  let drew = false;
-  if (active || needs || controls.autoRotate) {
-    uiSetDpr(uiPickDpr(active));
-    uiNearFar();
-    renderer.render(scene, camera);
-    updateLabels();
-    needs = false; drew = true;
-    uiMeasure(now, active);
-  }
+  const moved = controls.update(); // demping: de camera loopt na het loslaten nog even uit
+  const drew = active || needs || controls.autoRotate ? uiRenderFrame(now, active) : false;
   uiDebugFrame(now, dt, drew);
+  const busy = uiBackgroundWork(now, active);
+  if (uiWasActive && !active) { needs = true; uiAfterAnim(); }
+  uiWasActive = active;
+  return active || needs || moved || controls.autoRotate || busy;
+}
+function uiRenderFrame(now, active) {
+  uiSetDpr(uiPickDpr(active));
+  uiNearFar();
+  uiBatchSync(); // eerst de batchkeuze (was een omhulsel om renderer.render in app1.js)
+  renderer.render(scene, camera);
+  updateLabels();
+  needs = false;
+  uiMeasure(now, active);
+  return true;
+}
+// achtergrondwerk; true zolang er nog werk in de rij staat
+function uiBackgroundWork(now, active) {
   // labelankers van de groep die opent in kleine porties vooruit bouwen (zie uiAnchorStep)
   if (uiAnchorFrame(active)) needs = true;
   // batches bouwen in de vrije tijd van het frame; opnieuw tekenen als de rij leeg is of hoogstens elke 300 ms
@@ -1729,8 +1781,7 @@ function loop(now) {
   const uiStart = now - uiReadyT < 8000;
   if (uiBatchOn && (uiBatchQ.size || uiBatchJob) && uiBatchStep(active ? 3 : (uiStart ? 25 : 10)) && (!uiBatchQ.size && !uiBatchJob || now - uiBatchDrawT > (uiStart ? 1500 : 300))) { needs = true; uiBatchDrawT = now; }
   if (uiTiming.batches === undefined && !uiBatchQ.size && !uiBatchJob) uiTiming.batches = Math.round(now);
-  if (uiWasActive && !active) { needs = true; uiAfterAnim(); }
-  uiWasActive = active;
+  return !!(uiAnchorQ.size || uiAnchorJob || (uiBatchOn && (uiBatchQ.size || uiBatchJob)));
 }
 
 /* ---------- debug-overlay (?debug=1): tekensnelheid, tekenopdrachten, pixelratio, lichte weergave en versie, zodat een
@@ -1739,6 +1790,7 @@ const uiVersion = (document.querySelector('meta[name="model-version"]') || {}).c
 const uiDebug = (() => { try { return new URLSearchParams(location.search).get('debug') === '1'; } catch (_) { return false; } })();
 const uiDbg = uiDebug ? { el: document.createElement('div'), t: 0, n: 0, acc: 0 } : null;
 if (uiDbg) { uiDbg.el.id = 'debug'; uiDbg.el.setAttribute('aria-hidden', 'true'); document.getElementById('app').appendChild(uiDbg.el); }
+function uiDebugIdle() { if (uiDbg) { uiDbg.n = 0; uiDbg.acc = 0; uiDbg.t = 0; uiDebugFrame(performance.now(), 0, false); } }
 function uiDebugFrame(now, dt, drew) {
   if (!uiDbg) return;
   if (drew) uiDbg.n++;
@@ -1794,13 +1846,15 @@ updateGround();
 controls.update();
 uiTiming.render0 = Math.round(performance.now());
 LOADING.textContent = 'Eerste weergave…';
+uiBatchSync();
 renderer.render(scene, camera);
 LOADING.classList.add('gone');
 uiTiming.firstFrame = Math.round(performance.now());
 uiInitHint();
 uiUrlApply();
 requestAnimationFrame(t => {
-  last = t; uiReady = true; uiReadyT = performance.now(); uiTiming.interactive = Math.round(uiReadyT); loop(t);
+  last = t; uiReady = true; uiReadyT = performance.now(); uiTiming.interactive = Math.round(uiReadyT);
+  uiLoopLive = true; uiLoopOn = true; loop(t);
   setTimeout(uiPnFill, 0); // P1: de nummers in het paneel pas na de eerste weergave
 });
 uiWarmMaterials();
@@ -1825,6 +1879,7 @@ function finishAll() {
   ROOT.obj.updateMatrixWorld(true); camera.updateMatrixWorld();
   uiAnchorPrefetch(); uiAnchorFlush();
   uiAfterAnim(); uiSyncCats(); uiSyncLabels();
+  uiBatchSync(); // de eindstand direct in de batchkeuze (testgereedschap tekent soms zelf met renderer.render)
   requestRender();
 }
 // Frametijd zonder finishAll(): klapt de groep uit en draait de echte animatiestap N keer
@@ -1919,8 +1974,8 @@ window.__model = {
   batchStats: uiBatchStats,
   batchedGroups: () => [...uiBatched].map(g => g.name),
   // tekentijd (software-rendering, alleen om standen te vergelijken): gemiddelde ms per render, met gl.finish aan beide kanten
-  renderMs: (k = 5) => { const gl = renderer.getContext(); gl.finish(); const t = performance.now(); for (let i = 0; i < k; i++) renderer.render(scene, camera); gl.finish(); return +((performance.now() - t) / k).toFixed(2); },
-  drawCalls: () => { renderer.info.reset(); renderer.render(scene, camera); return renderer.info.render.calls; },
+  renderMs: (k = 5) => { const gl = renderer.getContext(); uiBatchSync(); gl.finish(); const t = performance.now(); for (let i = 0; i < k; i++) renderer.render(scene, camera); gl.finish(); return +((performance.now() - t) / k).toFixed(2); },
+  drawCalls: () => { uiBatchSync(); renderer.info.reset(); renderer.render(scene, camera); return renderer.info.render.calls; },
   // openmodus (kern): leiders met hun stand; setOpen(naam, 0..1, direct); openAll(0..1, direct)
   openers: () => OPENERS.map(n => ({ name: n.name, label: n.opn.label || n.name, type: n.opn.type, open: +n.ou.toFixed(4), target: n.ot, followers: n.opn.followers.map(f => f.name) })),
   setOpenMode: on => { hideHint(true); uiSetOpenMode(on); return OPENMODE; },

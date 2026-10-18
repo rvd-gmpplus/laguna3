@@ -1,6 +1,14 @@
 /* ===================== opbouw en explosielogica ===================== */
 // Model-laag van de app: boom doorlopen, uitklaprichtingen, animatie (uitklappen, uitlichten, optillen),
 // zichtbaarheid (isolatie en ingesloten onderdelen), materialen, camera-inpassing, vloer en de stap-terug-geschiedenis.
+// Golf 5c-2, P4: de render-lus (loop in app2.js) stopt in rust. uiWake() start hem weer; alles wat een animatie begint of de
+// scène verandert, roept hem aan (requestRender in app2.js doet dat ook). Pas na het opstarten (uiLoopLive) doet hij iets.
+let uiLoopLive = false, uiLoopOn = false, uiLoopWoke = false;
+function uiWake() {
+  if (!uiLoopLive || uiLoopOn) return;
+  uiLoopOn = true; uiLoopWoke = true;
+  requestAnimationFrame(loop);
+}
 const ROOT = (() => {
   const t0 = performance.now();
   uiTiming.buildStart = Math.round(t0);
@@ -220,11 +228,11 @@ function uiSetOpen(n, v, instant) {
   if (v > 0 && n.opn.needN && n.opn.needN.ot === 0) uiSetOpen(n.opn.needN, 1, instant);
   if (v === 0) for (const d of n.opn.needBy) if (d.ot > 0) uiSetOpen(d, 0, instant);
   if (n.opn.vis && ((n.ot > 0) !== (v > 0) || (n.ou > 0) !== (v > 0))) uiVisDirty = true;
-  if (instant || REDUCED) { n.ot = v; n.ou = v; n.opk = 1; uiOpenAnim.delete(n); uiOpenApply(n); uiStrutSync(); return true; }
+  if (instant || REDUCED) { n.ot = v; n.ou = v; n.opk = 1; uiOpenAnim.delete(n); uiOpenApply(n); uiStrutSync(); uiWake(); return true; }
   if (n.ot === v && (uiOpenAnim.has(n) || n.ou === v)) return true;
   n.ot = v; n.opa0 = n.ou; n.opk = 0;
   n.opd = Math.max(0.05, n.opn.dur * Math.max(0.45, Math.abs(v - n.ou)));
-  uiOpenAnim.add(n);
+  uiOpenAnim.add(n); uiWake();
   return true;
 }
 function stepOpen(dt) {
@@ -295,7 +303,7 @@ function setTarget(n, t, delay = 0, dur = DUR) {
   const was = n.target;
   n.target = t; n.a0 = n.amt; n.k = 0; n.delay = REDUCED ? 0 : Math.max(0, delay);
   n.dur = REDUCED ? 0.01 : Math.max(0.05, dur * Math.max(0.45, Math.abs(t - n.amt)));
-  uiAnim.add(n);
+  uiAnim.add(n); uiWake();
   if (n.innerKids && (was === 0) !== (t === 0)) uiVisDirty = true;
 }
 function uiSetNow(n, t) { // direct, zonder animatie (schuif en afspelen)
@@ -305,7 +313,7 @@ function uiSetNow(n, t) { // direct, zonder animatie (schuif en afspelen)
   const was = n.target;
   n.target = t; n.amt = t; n.u = t; n.delay = 0; n.k = 1; uiAnim.delete(n);
   placeKids(n);
-  uiOpenResync();
+  uiOpenResync(); uiWake();
   if (n.innerKids && (was === 0) !== (t === 0)) uiVisDirty = true;
 }
 function stepExplode(dt) {
@@ -326,7 +334,7 @@ function uiOffTo(n, dur = 0.55, delay = 0) {
   n.off1.copy(n.pull).add(n.liftV);
   if (n.off1.distanceToSquared(n.off) < 1e-14 && !uiOffAnim.has(n)) return;
   n.off0.copy(n.off); n.ok = 0; n.odur = REDUCED ? 0.01 : dur; n.odelay = REDUCED ? 0 : delay; n.hasOff = true;
-  uiOffAnim.add(n);
+  uiOffAnim.add(n); uiWake();
 }
 function uiStepOff(dt) {
   if (!uiOffAnim.size) return false;
@@ -415,7 +423,7 @@ function uiFadeFrom(before) {
   const out = new Set();
   for (const m of before) if (!m.userData.node.ev) out.add(m);
   if (!out.size) return false;
-  uiFade = { t: 0, out };
+  uiFade = { t: 0, out }; uiWake();
   uiFadeMat.opacity = 0.5;
   uiFadeShow();
   for (const m of out) m.material = uiFadeMat;
@@ -475,9 +483,16 @@ function uiMatFor(m) {
   if (uiHovSet.has(m)) return ghost || dim ? uiGhostHv : uiHvMat(mat);
   return dim && !ghost ? uiDimMat : mat;
 }
+// Golf 5c-2, P2: select() en uiAfterAction() roepen dit allebei aan; de lus over alle meshes loopt alleen als een invoer van
+// uiMatFor sindsdien is veranderd. De sets en de fade worden bij elke wijziging vervangen, dus vergelijken op identiteit
+// volstaat (uiSetHover en uiFadeFrom schrijven zelf materialen en vervangen daarbij hun set: de volgende keer loopt de lus).
+let uiMatKey = null;
 function applyMats() {
   // een gekozen opener (portier, kap) krijgt geen gele tint: hij is het doel van de klik en zou anders geel blijven
   const showHl = SEL && SEL !== ROOT && !ISO.includes(SEL) && (!SEL.asm || SEL.target <= 0.5) && !(OPENMODE && SEL.opn);
+  const key = [showHl ? SEL : null, SYSCOL, XRAY, uiDimSet, uiFade, uiHovSet];
+  if (uiMatKey && key.every((v, i) => v === uiMatKey[i])) return;
+  uiMatKey = key;
   uiSelSet = showHl ? new Set(SEL.meshes) : new Set();
   for (const m of MESHES) m.material = uiMatFor(m);
 }
@@ -603,7 +618,7 @@ const uiSph0 = new THREE.Spherical(), uiSph1 = new THREE.Spherical();
 function animCam(pos, target, dur, delay = 0) {
   dur = REDUCED ? 0.01 : (dur || 0.95);
   camAnim = { p0: camera.position.clone(), t0: controls.target.clone(), p1: pos.clone(), t1: target.clone(), t: 0, dur, delay: REDUCED ? 0 : delay, started: false };
-  uiUserCam = false;
+  uiUserCam = false; uiWake();
 }
 function stepCam(dt) {
   if (!camAnim) return false;
@@ -699,6 +714,7 @@ function updateGround() {
   // gemonteerd staat de auto op de vloer (y = 0); alleen als iets onder de vloer uitklapt zakt de vloer mee
   const b = predictedBox([ROOT]);
   groundTarget = b.isEmpty() || b.min.y > -0.004 ? 0 : b.min.y - 0.03;
+  if (Math.abs(ground.position.y - groundTarget) >= 1e-4) uiWake(); // de vloer zakt of komt terug (stepGround)
 }
 function stepGround(dt) {
   const y = ground.position.y;
@@ -932,8 +948,5 @@ function uiBatchStats() {
   let hidden = 0; for (const g of uiBatched) hidden += g.bat.src.length;
   return { on: uiBatchOn, groups: uiBatched.size, built: ASMS.filter(a => a.bat).length, queued: uiBatchQ.size + (uiBatchJob ? 1 : 0), batchMeshes: meshes, replaced: hidden, mb: +(uiBatchBytes / 1048576).toFixed(1), capMb: +(uiBatchCap / 1048576).toFixed(1) };
 }
-// Elke weergave van de scène (ook vanuit testgereedschap) gaat eerst langs de batchkeuze.
-{
-  const raw = renderer.render.bind(renderer);
-  renderer.render = (s, c) => { if (s === scene) uiBatchSync(); return raw(s, c); };
-}
+// Golf 5c-2, P4: elke weergave van de scène roept eerst zelf uiBatchSync() aan (de lus, de eerste weergave, beeld opslaan en
+// de testhaken drawCalls en renderMs; finishAll synchroniseert ook). Er is geen omhulsel meer om renderer.render.
