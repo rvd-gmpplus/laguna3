@@ -31,39 +31,69 @@ const uiNames = new Map();     // naam -> eerste knoop
 const uiNameCount = new Map(); // naam -> aantal
 // U10: zoeknormalisatie als functie (kleine letters, zonder diakrieten), voor namen én zoektermen
 const uiNorm = s => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-// telling, systeem, lokale middens
+// Knoopschema van de app (golf 5c-2, K5). mkNode (core.js) maakt de knoop met de velden van de boom: id, name, d, spec,
+// obj, kids, parent, asm, ex, exs, inner, opn, strut, stay, hideWhen, uitsteek, plus de lege plaatsen amt, target, delay,
+// base, exv, sys, depth, count, lc en rad die de app vult. initAppFields zet alle velden die de app bij het opstarten
+// toevoegt of vult, op één plek. Zet de velden van een knoop alleen hier; wat elders lui of later komt, staat hieronder.
+// De lus loopt achterwaarts door ALL (kinderen vóór hun ouder), want count en bySize lezen de kinderen.
+// Later gezet, buiten initAppFields:
+//   depth           diepte in de boom (de wandeling die ALL vult, hierboven)
+//   exv             uitklapvector in het frame van de ouder (lus na initAppFields: hij leest het midden en de maat van de ouder)
+//   stayO, hideN    openmodus: de opener boven een vast deel, de openers die een knoop uitnemen (lussen bij de openmodus)
+//   _p, _q, _s, _u  bewaarde stand tijdens uiWithFinal (eindstand voorspellen)
+//   _bc, bat, bInfo samenvoegmodus: groep kan gebundeld worden, de bundel en zijn gegevens (uiBatchSync en verder)
+//   _la, _lf, _lw, _lh, _lo   labels: ankerlijst, gekozen anker, maat van het label en zijn verschuiving (app2-labels.js)
 ROOT.obj.updateMatrixWorld(true);
 const _box = new THREE.Box3(), _v = V3(0, 0, 0);
-for (let i = ALL.length - 1; i >= 0; i--) {
-  const n = ALL[i];
-  n.count = n.asm ? n.kids.reduce((a, k) => a + k.count, 0) : 1;
-  n.base = n.obj.position.clone();
-}
-for (const n of ALL) {
+function initAppFields(n) {
+  // telling en rust
+  n.count = n.asm ? n.kids.reduce((a, k) => a + k.count, 0) : 1;   // aantal onderdelen (bladeren) in de deelboom
+  n.base = n.obj.position.clone();                                   // rustpositie in het frame van de ouder
+  // hoofdgroep
   let top = n; while (top.parent && top.parent !== ROOT) top = top.parent;
-  n.sys = top === ROOT ? null : top.name;
-  n.isBody = top.name === 'Carrosserie';
-  n.meshes = [];
+  n.sys = top === ROOT ? null : top.name;                            // naam van de hoofdgroep (null voor de wortel)
+  n.isBody = top.name === 'Carrosserie';                             // hoort bij de carrosserie (röntgen, aanwijzen)
+  // meshes en maat, in de rustpositie
+  n.meshes = [];                                                     // alle meshes in de deelboom
   n.obj.traverse(o => { if (o.isMesh) n.meshes.push(o); });
   _box.makeEmpty();
   for (const m of n.meshes) _box.expandByObject(m);
   if (_box.isEmpty()) _box.setFromCenterAndSize(n.obj.getWorldPosition(V3(0, 0, 0)), V3(0.01, 0.01, 0.01));
   const c = _box.getCenter(V3(0, 0, 0));
-  n.rad = Math.max(0.01, _box.getSize(_v).length() / 2);
-  n.wc = c.clone();
-  n.lc = n.obj.worldToLocal(c.clone());
-  // app-velden
-  n.off = V3(0, 0, 0); n.off0 = V3(0, 0, 0); n.off1 = V3(0, 0, 0); n.pull = V3(0, 0, 0); n.liftV = V3(0, 0, 0);
-  n.hasOff = false; n.ok = 1; n.odur = 0.5; n.odelay = 0; n.a0 = 0; n.k = 1; n.dur = 0.85; n.vis = true; n.ev = true;
-  n.idx = n.parent ? n.parent.kids.indexOf(n) : 0;
-  n.norm = uiNorm(n.name);
+  n.rad = Math.max(0.01, _box.getSize(_v).length() / 2);            // halve diagonaal van de omhullende doos (minstens 1 cm)
+  n.wc = c.clone();                                                  // midden in wereldcoördinaten
+  n.lc = n.obj.worldToLocal(c.clone());                              // midden in het eigen frame (labels, uitlichten, aanwijstip)
+  // kinderen
+  n.innerKids = n.asm && n.kids.some(k => k.inner);                  // minstens één kind is ingesloten (zichtbaarheid)
+  n.bySize = n.asm ? n.kids.slice().sort((a, b) => b.rad - a.rad) : null; // kinderen van groot naar klein (labels)
+  n.idx = n.parent ? n.parent.kids.indexOf(n) : 0;                   // plaats onder de ouder (labelnummer idx + 1)
+  n.norm = uiNorm(n.name);                                           // naam voor het zoeken (kleine letters, zonder accenten)
+  // verschuiving: positie = ... + off, met off naar pull + liftV (uiOffTo, uiStepOff)
+  n.off = V3(0, 0, 0);                                               // huidige verschuiving
+  n.off0 = V3(0, 0, 0); n.off1 = V3(0, 0, 0);                        // begin en doel van de lopende verschuiving
+  n.pull = V3(0, 0, 0);                                              // weggetrokken door een preset
+  n.liftV = V3(0, 0, 0);                                             // opgetild (uitlichten, uiLift)
+  n.hasOff = false;                                                  // off is niet nul of animeert
+  n.ok = 1; n.odur = 0.5; n.odelay = 0;                              // voortgang (0 tot 1), duur en wachttijd in s van de verschuiving
+  // uitklappen: amt animeert van a0 naar target (setTarget, stepExplode)
+  n.a0 = 0; n.k = 1; n.dur = 0.85;                                   // beginstand, voortgang (0 tot 1) en duur in s
+  // zichtbaarheid (applyVisibility)
+  n.vis = true;                                                      // zelf zichtbaar
+  n.ev = true;                                                       // zichtbaar met alle ouders (aanwijzen, labels)
+  // openmodus: ou animeert van opa0 naar ot (uiSetOpen, stepOpen)
+  n.ou = 0; n.ot = 0;                                                // huidige en gevraagde openstand (0 dicht, 1 open)
+  n.opk = 1; n.opa0 = 0; n.opd = 0.9;                                // voortgang (0 tot 1), beginstand en duur in s
+  n.q0 = n.obj.quaternion.clone(); n.s0 = n.obj.scale.clone();       // rustoriëntatie en -schaal
+}
+for (let i = ALL.length - 1; i >= 0; i--) initAppFields(ALL[i]);
+// opzoektabellen, in boomvolgorde (uiNames houdt de eerste knoop met een naam)
+for (const n of ALL) {
   uiById.set(n.id, n);
   if (!uiNames.has(n.name)) uiNames.set(n.name, n);
   uiNameCount.set(n.name, (uiNameCount.get(n.name) || 0) + 1);
 }
+// uitklapvector: weg van het midden van de ouder, of de vaste `ex` van de knoop
 for (const n of ALL) {
-  n.innerKids = n.asm && n.kids.some(k => k.inner);
-  n.bySize = n.asm ? n.kids.slice().sort((a, b) => b.rad - a.rad) : null;
   if (!n.parent) continue;
   const p = n.parent;
   if (n.ex) { n.exv.copy(n.ex); continue; }
@@ -135,8 +165,6 @@ const uiPathOf = n => { const a = []; for (let k = n; k; k = k.parent) a.unshift
 const uiRelPath = n => uiPathOf(n).replace(/^[^/]+\//, ''); // pad zonder wortel (sleutel van de nummergegevens en van ?open=)
 const uiOpenAnc = n => { for (let p = n.parent; p; p = p.parent) if (p.opn) return p; return null; };
 for (const n of ALL) {
-  n.ou = 0; n.ot = 0; n.opk = 1; n.opa0 = 0; n.opd = 0.9;
-  n.q0 = n.obj.quaternion.clone(); n.s0 = n.obj.scale.clone();
   const o = n.opn;
   if (o) {
     o.type = o.type || 'hinge';
