@@ -1,8 +1,8 @@
 /* ===================== opbouw en explosielogica ===================== */
 // Model-laag van de app: boom doorlopen, uitklaprichtingen, animatie (uitklappen, uitlichten, optillen),
 // zichtbaarheid (isolatie en ingesloten onderdelen), materialen, camera-inpassing, vloer en de stap-terug-geschiedenis.
-// Golf 5c-2, P4: de render-lus (loop in app2.js) stopt in rust. uiWake() start hem weer; alles wat een animatie begint of de
-// scène verandert, roept hem aan (requestRender in app2.js doet dat ook). Pas na het opstarten (uiLoopLive) doet hij iets.
+// Golf 5c-2, P4: de render-lus (loop in app2-loop.js) stopt in rust. uiWake() start hem weer; alles wat een animatie begint of de
+// scène verandert, roept hem aan (requestRender doet dat ook). Pas na het opstarten (uiLoopLive) doet hij iets.
 let uiLoopLive = false, uiLoopOn = false, uiLoopWoke = false;
 function uiWake() {
   if (!uiLoopLive || uiLoopOn) return;
@@ -413,7 +413,7 @@ function isUnder(n, a) { for (let p = n; p; p = p.parent) if (p === a) return tr
 /* ---------- zichtbaarheid en materialen ---------- */
 let ISO = [];
 let XRAY = false, SYSCOL = false, SEL = null;
-let OPENMODE = false;   // klikmodus Openen (bediening in app2.js): een klik opent of sluit openers in plaats van uit te klappen
+let OPENMODE = false;   // klikmodus Openen (bediening in app2-controls.js): een klik opent of sluit openers in plaats van uit te klappen
 const uiPickable = [];
 let uiPickVer = 0;
 function uiInScope(a) { return !ISO.length || ISO.some(r => isUnder(a, r)); }
@@ -484,7 +484,7 @@ function uiTint(base, hex, k) {
 }
 // U19: bij duiken naar een onderdeel wordt de rest van de auto gedimd (een doorschijnend spookmateriaal), zodat het
 // onderdeel eruit springt en niets ervoor staat. DIM is de focusknoop: alles erbuiten is gedimd. Aanwijzen en klikken
-// blijft werken, maar een klik raakt liever iets in de focus dan een gedimd deel ervoor (zie pick in app2.js).
+// blijft werken, maar een klik raakt liever iets in de focus dan een gedimd deel ervoor (zie pick in app2-input.js).
 let DIM = null, uiDimSet = null, uiDimOn = true;
 // Vlak en eenzijdig getekend: een doorschijnend, dubbelzijdig PBR-materiaal kostte op 2.500 meshes zes keer zoveel tekentijd
 // (twee doorgangen per mesh en de volledige belichting); voor een spook doet een vlakke kleur hetzelfde.
@@ -660,7 +660,7 @@ function stepCam(dt) {
   if (camAnim.t >= 1) { camera.position.copy(camAnim.p1); controls.target.copy(camAnim.t1); camAnim = null; }
   return true;
 }
-// R3: het laatste echte kaderdoel, voor het herkadreren na een formaatwissel (uiRefitNow in app2.js). focusNodes zet het
+// R3: het laatste echte kaderdoel, voor het herkadreren na een formaatwissel (uiRefitNow in app2-loop.js). focusNodes zet het
 // zelf, zodat duiken, Alles uitklappen, afspelen, kruimelklik en rondleiding nooit op een ouder doel terugvallen; een preset
 // zet daarna { preset } (appApplyPreset), zodat het kader met het onderwerp van de preset meegaat.
 let uiLastFit = null;

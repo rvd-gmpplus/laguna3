@@ -20,7 +20,7 @@ import os, re, sys, json, shutil, subprocess, tempfile, hashlib, base64
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, 'src')
-ORDER = ['core.js', 'body.js', 'bodyparts.js', 'panorama.js', 'engine1.js', 'engine2.js', 'engine3.js', 'drivetrain.js', 'chassis.js', 'interior.js', 'systems.js', 'partnumbers.js', 'app1.js', 'presetdata.js', 'presets.js', 'app2.js']
+ORDER = ['core.js', 'body.js', 'bodyparts.js', 'panorama.js', 'engine1.js', 'engine2.js', 'engine3.js', 'drivetrain.js', 'chassis.js', 'interior.js', 'systems.js', 'partnumbers.js', 'app1.js', 'presetdata.js', 'presets.js', 'app2-panel.js', 'app2-controls.js', 'app2-labels.js', 'app2-input.js', 'app2-loop.js']
 LIBS = ['build/three.min.js', 'examples/js/controls/OrbitControls.js', 'examples/js/environments/RoomEnvironment.js', 'examples/js/geometries/RoundedBoxGeometry.js', 'examples/js/utils/BufferGeometryUtils.js']
 THREE_VERSION = '0.147.0'  # r147: de laatste three.js met de niet-module examples/js (OrbitControls enz.)
 CDN = f'https://cdn.jsdelivr.net/npm/three@{THREE_VERSION}/'
@@ -413,7 +413,7 @@ def fill(head, a):
 
 
 # Nummergegevens (golf 5c-2, P1): de regel `const PN_DATA = {...};` uit partnumbers.js gaat als JSON in een eigen
-# <script type="application/json" id="pn"> en het script krijgt `const PN_DATA = uiPnLazy();` (app2.js), dat de JSON pas
+# <script type="application/json" id="pn"> en het script krijgt `const PN_DATA = uiPnLazy();` (app2-panel.js), dat de JSON pas
 # leest als het paneel of het zoeken op nummer erom vraagt. Een JSON-blok is voor de browser inert: het hoeft niet als
 # JavaScript geparsed te worden en overleeft het geraamte van de artefacthost (de kale pagina staat daar in een ander
 # document). Elke < wordt \u003c, zodat </script> of <!-- in een tekst het blok niet kan sluiten. Geen geldige JSON (de lege

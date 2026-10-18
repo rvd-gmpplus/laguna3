@@ -36,13 +36,13 @@ SEP = '|'  # scheidingsteken binnen de kolommen bronnen en bronnen_keuze
 HEADER = ("/* ===================== onderdeelnummers ===================== */\n"
           "// Gegevens, geen code. Gemaakt door de orkestrator uit de geverifieerde onderzoeksbestanden (build_pn.py); niet met de hand bewerken.\n"
           "// build.py zet het object als JSON in een eigen <script type=\"application/json\" id=\"pn\">; de pagina leest het pas als het\n"
-          "// paneel of het zoeken op nummer het nodig heeft (uiPnLazy in app2.js). In het geheugen heeft PN_DATA de vorm hieronder.\n"
+          "// paneel of het zoeken op nummer het nodig heeft (uiPnLazy in app2-panel.js). In het geheugen heeft PN_DATA de vorm hieronder.\n"
           "// units: id -> { n, st: 'past' | 'vin' | 'nietgevonden', oe: [[nummer, opmerking, bewijs]], am: [[merk, nummer, opmerking, bewijs]],\n"
           "//                var, per, note (alleen met pnToelichting in auto.json), src: [[url, label]], kz }; bewijs A, B, C of D (zie het paneel).\n"
           "// kz (alleen bij een gekozen uitvoering voor de auto van de gebruiker): { o: [gekozen Renault-nummers], a: [[merk, nummer]], v: uitvoering, b: bewijs, z: zekerheid, g: grond, s: [bronnen] }.\n"
           "// map: pad zonder wortel -> [unit-id, 'zelf' | 'deel' | 'set', regel]. Een pad dat niet in map staat, is 'niet onderzocht'.\n"
           "//      In dit bestand staat map voorgecodeerd als lijst [p, rest, unit-id, relatie, regel?] in de volgorde van data/pn/map.json:\n"
-          "//      het pad is de eerste p tekens van het vorige pad plus rest; een lege regel valt weg (uiPnDecode in app2.js).\n"
+          "//      het pad is de eerste p tekens van het vorige pad plus rest; een lege regel valt weg (uiPnDecode in app2-panel.js).\n"
           "// info: pad zonder wortel -> [[label, waarde, bron, zekerheid]] (onderhoud en bekende problemen).\n")
 
 
