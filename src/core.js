@@ -90,7 +90,7 @@ const TXT = Object.freeze({
   pnBewijs: (type, merk) => 'Bewijs: A staat in de catalogus voor dit type (' + type + ') op de juiste plaats; B is het ' + merk + '-nummer van zo\'n artikel; C is een kruisverwijzing van een A- of B-nummer; D komt alleen uit een advertentie voor een gebruikt onderdeel en is niet in een catalogus gecontroleerd.',
   pnNiveau: (niveau, merk) => ({ A: 'In de catalogus voor dit type, op de juiste plaats', B: merk + '-nummer van een artikel dat voor dit type in de catalogus staat', C: 'Kruisverwijzing van een A- of B-nummer', D: 'Alleen uit een advertentie voor een gebruikt onderdeel van dit model; niet in een catalogus gecontroleerd' }[niveau] || ''),
   pnVarianten: 'Varianten in de catalogus', pnVariant: 'Variant', pnToelichting: 'Toelichting', pnVerpakking: 'Verpakking', pnBronnen: 'Bronnen',
-  pnOnderhoud: 'Onderhoud en bekende problemen', pnBron: 'bron',
+  pnOnderhoudEenheid: 'Onderhoud', pnOnderhoud: 'Onderhoud en bekende problemen', pnBron: 'bron',
   pnGecontroleerd: datum => 'Gegevens gecontroleerd op ' + datum + '.',
   // tip bij aanwijzen (de code geeft namen en tellingen; <i> is opmaak van de tip)
   tipUitklappen: (naam, telling) => `${naam} · ${telling} · klik om uit te klappen`,

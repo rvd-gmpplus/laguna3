@@ -259,6 +259,13 @@ function renderPn(n) {
     for (const [url, label] of links) { const a = mk('a', null, label || url); a.href = url; a.target = '_blank'; a.rel = UI_LINK_REL; d.appendChild(a); }
     box.appendChild(d);
   }
+  // onderhoud bij een eenheid: de echte gegevens hebben het (nog) niet, itest controle 15 toetst het met eigen gegevens
+  if (u && u.info && u.info.length) {
+    box.appendChild(mk('h4', null, TXT.pnOnderhoudEenheid));
+    const dl = mk('dl', 'pn-info');
+    for (const [label, waarde, bron] of u.info) { dl.appendChild(mk('dt', null, label)); const dd = mk('dd', null, waarde); if (bron) dd.appendChild(mk('small', null, bron)); dl.appendChild(dd); }
+    box.appendChild(dl);
+  }
   const inf = PN_DATA.info && PN_DATA.info[uiRelPath(n)];
   if (inf && inf.length) {
     box.appendChild(mk('h4', null, TXT.pnOnderhoud));
