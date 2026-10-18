@@ -30,7 +30,7 @@ DATA = os.path.join(REPO, 'data', 'pn')
 AUTO = json.load(open(os.path.join(REPO, 'auto.json'), encoding='utf-8'))
 ROOT = AUTO['wortel'] + '/'  # de wortel van de boom (auto.json)
 # De notitie bij een eenheid (note) toont het paneel alleen als auto.json pnToelichting aanzet; anders blijft hij in data/pn
-# en gaat hij niet mee naar de pagina (golf 5c-2, P1: scheelt bij laguna3 circa 69 kB).
+# en gaat hij niet mee naar de pagina (golf 5c-2, P1: scheelt bij de referentieauto circa 69 kB).
 TOELICHTING = bool(AUTO.get('pnToelichting'))
 SEP = '|'  # scheidingsteken binnen de kolommen bronnen en bronnen_keuze
 HEADER = ("/* ===================== onderdeelnummers ===================== */\n"
