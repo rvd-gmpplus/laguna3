@@ -121,12 +121,45 @@ function renderPanel() {
 // Gegevens uit PN_DATA (src/partnumbers.js). map: pad zonder wortel -> [eenheid, 'zelf' | 'deel' | 'set', regel].
 // 'zelf': het onderdeel is zelf de verkoopeenheid; 'deel' of 'set': het zit in de eenheid en wordt daarmee besteld.
 // Een knoop zonder regel is niet onderzocht. De pagina toont alleen wat er staat en voegt zelf geen nummers toe.
-let uiPnIdx = new Map(), uiPnUnitNode = new Map(), uiPnBad = [], uiPnCov = new Map();
+// Golf 5c-2, P1: build.py zet de gegevens als JSON in <script type="application/json" id="pn"> en maakt van PN_DATA een
+// object waarvan meta, units, map en info pas bij het eerste gebruik worden gelezen (uiPnLazy). De index (uiPnBuild) wordt
+// pas gebouwd als het paneel, het zoeken op nummer of een testhaak hem nodig heeft (uiPnReady); bij het opstarten vult het
+// paneel de nummers na de eerste weergave. In het geheugen heeft PN_DATA dezelfde vorm als vroeger (testcontract).
+let uiPnIdx = new Map(), uiPnUnitNode = new Map(), uiPnBad = [], uiPnCov = new Map(), uiPnGen = 0, uiPnLater = false;
 const UI_LINK_REL = 'noopener noreferrer'; // R5: cataloguslinks zonder opener en zonder verwijzende pagina (Referer)
 const uiPnCompact = t => String(t).toLowerCase().replace(/[\s.\-\/]/g, '');
 const uiPnHasNum = r => !!r && ((r.u.oe && r.u.oe.length > 0) || (r.u.am && r.u.am.length > 0));
+// map uit partnumbers.js: een lijst [p, rest, eenheid, relatie, regel?] met voorvoegselcodering (build_pn.py, front_code)
+// terug naar pad -> [eenheid, relatie, regel]; een object (oudere of lege gegevens) blijft zoals het is
+function uiPnDecode(d) {
+  const out = { meta: d.meta || {}, units: d.units || {}, map: d.map || {}, info: d.info || {} };
+  if (Array.isArray(d.map)) {
+    const m = {}; let prev = '';
+    for (const [p, rest, id, how, rule] of d.map) { prev = prev.slice(0, p) + rest; m[prev] = [id, how, rule || '']; }
+    out.map = m;
+  }
+  return out;
+}
+// Wordt aangeroepen op de plaats van partnumbers.js (build.py); functiedeclaraties zijn in het hele script al bekend.
+function uiPnLazy() {
+  let data = null;
+  const load = () => {
+    if (data) return data;
+    const t0 = performance.now(), el = document.getElementById('pn');
+    try { data = uiPnDecode(el ? JSON.parse(el.textContent) : {}); } catch (e) {
+      console.error('onderdeelnummers: de gegevens in #pn zijn onleesbaar (' + (e && e.message) + ')');
+      data = uiPnDecode({});
+    }
+    uiTiming.pn = Math.round(performance.now()); uiTiming.pnMs = Math.round(performance.now() - t0);
+    return data;
+  };
+  const o = {};
+  for (const k of ['meta', 'units', 'map', 'info']) Object.defineProperty(o, k, { enumerable: true, get: () => load()[k], set: v => { load()[k] = v; } });
+  return o;
+}
+function uiPnReady() { if (!uiPnGen) uiPnBuild(); }
 function uiPnBuild() {
-  uiPnIdx = new Map(); uiPnUnitNode = new Map(); uiPnBad = []; uiPnCov = new Map();
+  uiPnIdx = new Map(); uiPnUnitNode = new Map(); uiPnBad = []; uiPnCov = new Map(); uiPnGen++;
   // paden opzoeken in een vaste tabel: een naam kan zelf een schuine streep bevatten (ABS/ESP-unit)
   const full = new Map(ALL.map(k => [uiPathOf(k).replace(/^[^/]+\//, ''), k]));
   for (const [path, e] of Object.entries(PN_DATA.map || {})) {
@@ -139,8 +172,8 @@ function uiPnBuild() {
     if (kind === 'zelf' && !uiPnUnitNode.has(id)) uiPnUnitNode.set(id, n);
   }
 }
-function uiPnCheck() { return uiPnBad.slice(); }
-function uiPnRec(n) { return uiPnIdx.get(n) || null; }
+function uiPnCheck() { uiPnReady(); return uiPnBad.slice(); }
+function uiPnRec(n) { uiPnReady(); return uiPnIdx.get(n) || null; }
 // aantal onderdelen onder n waarvoor een nummer bekend is (een eenheid met nummer telt voor al haar onderdelen)
 function uiPnCover(n) {
   let c = uiPnCov.get(n);
@@ -153,6 +186,8 @@ function uiPnCover(n) {
 function renderPn(n) {
   const box = $('pnBody'), mk = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
   box.textContent = '';
+  // bij het opstarten de gegevens niet vóór de eerste weergave lezen: uiPnFill vult het paneel daarna
+  if (!uiPnGen && !uiReady) { uiPnLater = true; return; }
   const r = uiPnRec(n), u = r && r.u, st = mk('p', 'pn-status');
   let badge, ok = false;
   if (r && r.kind === 'zelf' && u.st === 'past') { badge = 'Past volgens catalogus'; ok = true; }
@@ -239,6 +274,10 @@ function renderPn(n) {
     box.appendChild(dl);
   }
   if (PN_DATA.meta && PN_DATA.meta.checked && (r || n.asm)) box.appendChild(mk('p', 'pn-txt', 'Gegevens gecontroleerd op ' + PN_DATA.meta.checked + '.'));
+}
+function uiPnFill() {
+  if (!uiPnLater) return;
+  uiPnLater = false; uiPnReady(); renderPn(SEL || ROOT); syncSheetHeight(); uiUiChanged();
 }
 function uiPnLvl(mk, lvl) {
   const e = mk('span', 'pn-lvl', lvl);
@@ -559,6 +598,7 @@ function renderTree() {
   const ul = document.createElement('ul');
   if (q.length >= 2) {
     const qn = uiPnCompact(q), byNum = qn.length >= 3 && /\d/.test(qn);   // een zoekterm met cijfers zoekt ook in de nummers
+    if (byNum) uiPnReady();
     const all = ALL.filter(n => terms.some(t => n.norm.includes(t)) || (byNum && (uiPnIdx.get(n) || { q: '' }).q.includes(qn))), hits = all.slice(0, 80);
     const syn = terms.length > 1 ? ` (ook gezocht op ${terms.slice(1).join(', ')})` : '';
     els.treeInfo.textContent = all.length ? (all.length === 1 ? '1 treffer' : `${all.length} treffers`) + syn + (all.length > hits.length ? `, de eerste ${hits.length} staan hieronder` : '') : 'Geen onderdeel gevonden met die naam' + syn + '.';
@@ -1746,7 +1786,6 @@ uiTiming.startUp = Math.round(performance.now());
 applyVisibility();
 if (uiSide()) els.sheet.dataset.state = 'open';
 resize();
-uiPnBuild();
 select(ROOT);
 uiBuildCats();
 uiSyncUndo();
@@ -1760,7 +1799,10 @@ LOADING.classList.add('gone');
 uiTiming.firstFrame = Math.round(performance.now());
 uiInitHint();
 uiUrlApply();
-requestAnimationFrame(t => { last = t; uiReady = true; uiReadyT = performance.now(); uiTiming.interactive = Math.round(uiReadyT); loop(t); });
+requestAnimationFrame(t => {
+  last = t; uiReady = true; uiReadyT = performance.now(); uiTiming.interactive = Math.round(uiReadyT); loop(t);
+  setTimeout(uiPnFill, 0); // P1: de nummers in het paneel pas na de eerste weergave
+});
 uiWarmMaterials();
 { const errs = appCheckPresets(); if (errs.length) console.warn('presets: ' + errs.join('; ')); }
 // labelbreedtes opnieuw meten zodra de lettertypen er zijn

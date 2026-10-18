@@ -27,15 +27,40 @@ import json, os, sys, csv, io, re, glob
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
 DATA = os.path.join(REPO, 'data', 'pn')
-ROOT = json.load(open(os.path.join(REPO, 'auto.json'), encoding='utf-8'))['wortel'] + '/'  # de wortel van de boom (auto.json)
+AUTO = json.load(open(os.path.join(REPO, 'auto.json'), encoding='utf-8'))
+ROOT = AUTO['wortel'] + '/'  # de wortel van de boom (auto.json)
+# De notitie bij een eenheid (note) toont het paneel alleen als auto.json pnToelichting aanzet; anders blijft hij in data/pn
+# en gaat hij niet mee naar de pagina (golf 5c-2, P1: scheelt bij laguna3 circa 69 kB).
+TOELICHTING = bool(AUTO.get('pnToelichting'))
 SEP = '|'  # scheidingsteken binnen de kolommen bronnen en bronnen_keuze
 HEADER = ("/* ===================== onderdeelnummers ===================== */\n"
           "// Gegevens, geen code. Gemaakt door de orkestrator uit de geverifieerde onderzoeksbestanden (build_pn.py); niet met de hand bewerken.\n"
+          "// build.py zet het object als JSON in een eigen <script type=\"application/json\" id=\"pn\">; de pagina leest het pas als het\n"
+          "// paneel of het zoeken op nummer het nodig heeft (uiPnLazy in app2.js). In het geheugen heeft PN_DATA de vorm hieronder.\n"
           "// units: id -> { n, st: 'past' | 'vin' | 'nietgevonden', oe: [[nummer, opmerking, bewijs]], am: [[merk, nummer, opmerking, bewijs]],\n"
-          "//                var, per, note, src: [[url, label]], kz }; bewijs A, B, C of D (zie het paneel).\n"
+          "//                var, per, note (alleen met pnToelichting in auto.json), src: [[url, label]], kz }; bewijs A, B, C of D (zie het paneel).\n"
           "// kz (alleen bij een gekozen uitvoering voor de auto van de gebruiker): { o: [gekozen Renault-nummers], a: [[merk, nummer]], v: uitvoering, b: bewijs, z: zekerheid, g: grond, s: [bronnen] }.\n"
           "// map: pad zonder wortel -> [unit-id, 'zelf' | 'deel' | 'set', regel]. Een pad dat niet in map staat, is 'niet onderzocht'.\n"
+          "//      In dit bestand staat map voorgecodeerd als lijst [p, rest, unit-id, relatie, regel?] in de volgorde van data/pn/map.json:\n"
+          "//      het pad is de eerste p tekens van het vorige pad plus rest; een lege regel valt weg (uiPnDecode in app2.js).\n"
           "// info: pad zonder wortel -> [[label, waarde, bron, zekerheid]] (onderhoud en bekende problemen).\n")
+
+
+def front_code(pmap):
+    """map als lijst met voorvoegselcodering: [gedeeld met het vorige pad, rest, eenheid, relatie, regel?]. Verliesloos en
+    onafhankelijk van de volgorde van de boom (geen knoop-id's, die verschuiven bij elke nieuwe knoop); de volgorde blijft die
+    van map.json, zodat de eerste 'zelf'-knoop per eenheid dezelfde blijft."""
+    out, prev = [], ''
+    for p, (uid, how, rule) in pmap.items():
+        n, m = 0, min(len(p), len(prev))
+        while n < m and p[n] == prev[n]:
+            n += 1
+        # p telt in UTF-16-eenheden, zoals String.slice in de pagina (een teken buiten het BMP telt dan voor twee)
+        out.append([len(p[:n].encode('utf-16-le')) // 2, p[n:], uid, how] + ([rule] if rule else []))
+        prev = p
+    return out
+
+
 # kolommen van docs/onderdeelnummers.csv; betekenis in docs/onderdeelnummers-schema.md
 COLS = ['pad', 'naam', 'diepte', 'knoop', 'unit_id', 'verkoopeenheid', 'relatie', 'regel', 'status', 'soort', 'merk', 'nummer',
         'bewijs', 'opmerking', 'var', 'per', 'bronnen', 'gekozen', 'uitvoering_keuze', 'zekerheid_keuze', 'grond_keuze',
@@ -104,7 +129,8 @@ def build():
     if errs:
         for e in errs[:40]: print('FOUT ' + e, file=sys.stderr)
         sys.exit(f'{len(errs)} fouten in data/pn')
-    data = {'meta': meta, 'units': units, 'map': pmap, 'info': info}
+    page_units = units if TOELICHTING else {uid: {k: v for k, v in u.items() if k != 'note'} for uid, u in units.items()}
+    data = {'meta': meta, 'units': page_units, 'map': front_code(pmap), 'info': info}
     js = HEADER + 'const PN_DATA = ' + json.dumps(data, ensure_ascii=False, separators=(',', ':')) + ';\n'
     # CSV: alle paden van de boom, gesorteerd; per pad één rij per nummer, of één rij zonder nummer
     nodes = tree_names(paths)
