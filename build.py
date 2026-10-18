@@ -412,13 +412,37 @@ def fill(head, a):
     return re.sub(r'\{\{(\w+)\}\}', sub, head)
 
 
+# Nummergegevens (golf 5c-2, P1): de regel `const PN_DATA = {...};` uit partnumbers.js gaat als JSON in een eigen
+# <script type="application/json" id="pn"> en het script krijgt `const PN_DATA = uiPnLazy();` (app2.js), dat de JSON pas
+# leest als het paneel of het zoeken op nummer erom vraagt. Een JSON-blok is voor de browser inert: het hoeft niet als
+# JavaScript geparsed te worden en overleeft het geraamte van de artefacthost (de kale pagina staat daar in een ander
+# document). Elke < wordt \u003c, zodat </script> of <!-- in een tekst het blok niet kan sluiten. Geen geldige JSON (de lege
+# stub van tools/framework.py heeft sleutels zonder aanhalingstekens): dan blijft de regel gewoon JavaScript.
+_PN_LINE = re.compile(r'^const PN_DATA = (\{.*\});[ \t]*$', re.M)
+
+
+def pn_split(js):
+    """Geeft (js, json-blok): het script zonder de gegevens en het HTML-blok met de gegevens, of (js, '') als er niets te
+    verplaatsen is."""
+    m = _PN_LINE.search(js)
+    if not m:
+        return js, ''
+    try:
+        json.loads(m.group(1))
+    except ValueError:
+        return js, ''
+    data = m.group(1).replace('<', '\\u003c')
+    return js[:m.start()] + 'const PN_DATA = uiPnLazy();' + js[m.end():], f'<script type="application/json" id="pn">{data}</script>\n'
+
+
 def page(head, js, prefix, test=False):
     a = auto()
     head = fill(head, a)
     js = 'const AUTO = Object.freeze(' + json.dumps({k: v for k, v in a.items() if not k.startswith('_')}, ensure_ascii=False) + ');\n' + js
     tags = '\n'.join(f'<script src="{prefix}{l}" integrity="{integrity(l)}" crossorigin="anonymous"></script>' for l in LIBS)
-    head = head.replace('__MODEL_VERSION__', version(head, js, test))
-    return f"{head}\n{tags}\n<script>\n{js}\n</script>\n"
+    head = head.replace('__MODEL_VERSION__', version(head, js, test))  # de hash dekt ook de gegevens (vóór het splitsen)
+    js, pn = pn_split(js)
+    return f"{head}\n{tags}\n{pn}<script>\n{js}\n</script>\n"
 
 
 def main(argv):

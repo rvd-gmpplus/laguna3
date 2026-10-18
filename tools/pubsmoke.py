@@ -9,7 +9,9 @@ Wat hij doet:
 2. Laadt hem in Chromium. Verzoeken naar cdn.jsdelivr.net/npm/three@0.147.0/ worden beantwoord uit het lokale
    npm-pakket (de container heeft geen directe internettoegang voor Chromium); lettertypen krijgen een lege stylesheet.
 3. Controleert: geen console- of paginafouten, __model klaar binnen 20 s, THREE.REVISION = 147, het canvas heeft
-   touch-action en user-select uit en de stylesheet schakelt -webkit-touch-callout uit (lang drukken op iOS).
+   touch-action en user-select uit en de stylesheet schakelt -webkit-touch-callout uit (lang drukken op iOS). Staan de
+   nummergegevens als JSON-blok #pn in de pagina (build.py, golf 5c-2 P1), dan moet dat blok het geraamte van de host
+   overleven en leesbaar zijn: PN_DATA.map heeft dan minstens één pad.
 4. Controleert met curl via de proxy dat elk CDN-bestand bestaat en byte voor byte gelijk is aan het lokale pakket,
    en dat de lettertype-stylesheet van Google Fonts bereikbaar is.
 """
@@ -101,8 +103,9 @@ def main():
             r = pg.evaluate("""(() => { const c = document.querySelector('canvas'); const cs = getComputedStyle(c);
                 const css = [...document.styleSheets].map(s => { try { return [...s.cssRules].map(r => r.cssText).join('\\n'); } catch (e) { return ''; } }).join('\\n');
                 return { rev: THREE.REVISION, touch: cs.touchAction, select: cs.userSelect || cs.webkitUserSelect, callout: /-webkit-touch-callout\\s*:\\s*none/.test(css) || /touch-callout/.test(document.documentElement.innerHTML),
-                         hscroll: document.documentElement.scrollWidth > innerWidth, mode: document.compatMode, iw: innerWidth }; })()""")
-            print(f'[{tag}] klaar in {dt:.1f} s, three r{r["rev"]}, touch-action {r["touch"]}, user-select {r["select"]}, touch-callout uit: {r["callout"]}, horizontale scroll: {r["hscroll"]}')
+                         hscroll: document.documentElement.scrollWidth > innerWidth, mode: document.compatMode, iw: innerWidth,
+                         pn: document.getElementById('pn') ? (() => { try { return Object.keys(PN_DATA.map).length; } catch (e) { return -1; } })() : null }; })()""")
+            print(f'[{tag}] klaar in {dt:.1f} s, three r{r["rev"]}, touch-action {r["touch"]}, user-select {r["select"]}, touch-callout uit: {r["callout"]}, horizontale scroll: {r["hscroll"]}, nummerpaden: {r["pn"]}')
             if r['rev'] != '147': fails.append(f'[{tag}] THREE.REVISION is {r["rev"]}')
             if r['touch'] != 'none': fails.append(f'[{tag}] canvas touch-action is {r["touch"]}, moet none')
             if r['select'] != 'none': fails.append(f'[{tag}] canvas user-select is {r["select"]}, moet none')
@@ -110,6 +113,7 @@ def main():
             if r['hscroll']: fails.append(f'[{tag}] horizontale scroll')
             # zonder doctype staat de pagina in quirks-modus, zonder viewport-regel rekent een telefoon met 980 px breedte
             if r['mode'] != 'CSS1Compat': fails.append(f'[{tag}] documentmodus {r["mode"]}, moet CSS1Compat (doctype ontbreekt)')
+            if r['pn'] is not None and r['pn'] < 1: fails.append(f'[{tag}] nummergegevens in #pn onleesbaar of leeg ({r["pn"]})')
             if touch and r['iw'] != w: fails.append(f'[{tag}] schermbreedte {r["iw"]} px in plaats van {w} (viewport-regel ontbreekt)')
             ctx.close()
         br.close()
