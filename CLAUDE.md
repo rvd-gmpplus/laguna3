@@ -17,7 +17,8 @@ taal van code-commentaar, beschrijvingen, docs en commits. Geen em-dashes in tek
 
 - Eén bestand per domein: carrosserie (`body.js`, `bodyparts.js`, `panorama.js`), motor (`engine1-3.js`), aandrijving
   (`drivetrain.js`), onderstel (`chassis.js`), interieur (`interior.js`), systemen (`systems.js`), app (`core.js`,
-  `app1.js`, `presetdata.js`, `presets.js`, `app2.js`, `head.html`). Voorvoegsels per eigenaar voor functies, materialen en cachesleutels.
+  `app1.js`, `presetdata.js`, `presets.js`, `app2-panel.js`, `app2-controls.js`, `app2-labels.js`, `app2-input.js`,
+  `app2-loop.js`, `head.html`). Voorvoegsels per eigenaar voor functies, materialen en cachesleutels.
 - Alleen-lezen voor domeineigenaars: `core.js`, `body.js`, `tools/anchors.json`, `tools/open_allow.json`, de testscripts,
   `IGNORE` in `tools/harness.py`. Wijzigen gaat via de orkestrator, met een melding aan de eigenaren.
 - Knopen: `A(naam, opties, kinderen)` en `P(naam, geometrie, materiaal, opties)` met verplicht `d` (Nederlandse

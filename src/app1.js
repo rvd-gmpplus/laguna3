@@ -1,14 +1,17 @@
 /* ===================== opbouw en explosielogica ===================== */
 // Model-laag van de app: boom doorlopen, uitklaprichtingen, animatie (uitklappen, uitlichten, optillen),
 // zichtbaarheid (isolatie en ingesloten onderdelen), materialen, camera-inpassing, vloer en de stap-terug-geschiedenis.
-// Golf 5c-2, P4: de render-lus (loop in app2.js) stopt in rust. uiWake() start hem weer; alles wat een animatie begint of de
-// scène verandert, roept hem aan (requestRender in app2.js doet dat ook). Pas na het opstarten (uiLoopLive) doet hij iets.
+// Golf 5c-2, P4: de render-lus (loop in app2-loop.js) stopt in rust. uiWake() start hem weer; alles wat een animatie begint of de
+// scène verandert, roept hem aan (requestRender doet dat ook). Pas na het opstarten (uiLoopLive) doet hij iets.
 let uiLoopLive = false, uiLoopOn = false, uiLoopWoke = false;
+let needs = true;          // er is iets te tekenen: de lus tekent bij het volgende frame
+let uiWasActive = false;   // in het vorige frame bewoog er iets (uiFrame in app2-loop.js; pick in app2-input.js)
 function uiWake() {
   if (!uiLoopLive || uiLoopOn) return;
   uiLoopOn = true; uiLoopWoke = true;
   requestAnimationFrame(loop);
 }
+const requestRender = () => { needs = true; uiWake(); }; // P4: de lus kan stilstaan
 const ROOT = (() => {
   const t0 = performance.now();
   uiTiming.buildStart = Math.round(t0);
@@ -31,39 +34,69 @@ const uiNames = new Map();     // naam -> eerste knoop
 const uiNameCount = new Map(); // naam -> aantal
 // U10: zoeknormalisatie als functie (kleine letters, zonder diakrieten), voor namen én zoektermen
 const uiNorm = s => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-// telling, systeem, lokale middens
+// Knoopschema van de app (golf 5c-2, K5). mkNode (core.js) maakt de knoop met de velden van de boom: id, name, d, spec,
+// obj, kids, parent, asm, ex, exs, inner, opn, strut, stay, hideWhen, uitsteek, plus de lege plaatsen amt, target, delay,
+// base, exv, sys, depth, count, lc en rad die de app vult. initAppFields zet alle velden die de app bij het opstarten
+// toevoegt of vult, op één plek. Zet de velden van een knoop alleen hier; wat elders lui of later komt, staat hieronder.
+// De lus loopt achterwaarts door ALL (kinderen vóór hun ouder), want count en bySize lezen de kinderen.
+// Later gezet, buiten initAppFields:
+//   depth           diepte in de boom (de wandeling die ALL vult, hierboven)
+//   exv             uitklapvector in het frame van de ouder (lus na initAppFields: hij leest het midden en de maat van de ouder)
+//   stayO, hideN    openmodus: de opener boven een vast deel, de openers die een knoop uitnemen (lussen bij de openmodus)
+//   _p, _q, _s, _u  bewaarde stand tijdens uiWithFinal (eindstand voorspellen)
+//   _bc, bat, bInfo samenvoegmodus: groep kan gebundeld worden, de bundel en zijn gegevens (uiBatchSync en verder)
+//   _la, _lf, _lw, _lh, _lo   labels: ankerlijst, gekozen anker, maat van het label en zijn verschuiving (app2-labels.js)
 ROOT.obj.updateMatrixWorld(true);
 const _box = new THREE.Box3(), _v = V3(0, 0, 0);
-for (let i = ALL.length - 1; i >= 0; i--) {
-  const n = ALL[i];
-  n.count = n.asm ? n.kids.reduce((a, k) => a + k.count, 0) : 1;
-  n.base = n.obj.position.clone();
-}
-for (const n of ALL) {
+function initAppFields(n) {
+  // telling en rust
+  n.count = n.asm ? n.kids.reduce((a, k) => a + k.count, 0) : 1;   // aantal onderdelen (bladeren) in de deelboom
+  n.base = n.obj.position.clone();                                   // rustpositie in het frame van de ouder
+  // hoofdgroep
   let top = n; while (top.parent && top.parent !== ROOT) top = top.parent;
-  n.sys = top === ROOT ? null : top.name;
-  n.isBody = top.name === 'Carrosserie';
-  n.meshes = [];
+  n.sys = top === ROOT ? null : top.name;                            // naam van de hoofdgroep (null voor de wortel)
+  n.isBody = top.name === 'Carrosserie';                             // hoort bij de carrosserie (röntgen, aanwijzen)
+  // meshes en maat, in de rustpositie
+  n.meshes = [];                                                     // alle meshes in de deelboom
   n.obj.traverse(o => { if (o.isMesh) n.meshes.push(o); });
   _box.makeEmpty();
   for (const m of n.meshes) _box.expandByObject(m);
   if (_box.isEmpty()) _box.setFromCenterAndSize(n.obj.getWorldPosition(V3(0, 0, 0)), V3(0.01, 0.01, 0.01));
   const c = _box.getCenter(V3(0, 0, 0));
-  n.rad = Math.max(0.01, _box.getSize(_v).length() / 2);
-  n.wc = c.clone();
-  n.lc = n.obj.worldToLocal(c.clone());
-  // app-velden
-  n.off = V3(0, 0, 0); n.off0 = V3(0, 0, 0); n.off1 = V3(0, 0, 0); n.pull = V3(0, 0, 0); n.liftV = V3(0, 0, 0);
-  n.hasOff = false; n.ok = 1; n.odur = 0.5; n.odelay = 0; n.a0 = 0; n.k = 1; n.dur = 0.85; n.vis = true; n.ev = true;
-  n.idx = n.parent ? n.parent.kids.indexOf(n) : 0;
-  n.norm = uiNorm(n.name);
+  n.rad = Math.max(0.01, _box.getSize(_v).length() / 2);            // halve diagonaal van de omhullende doos (minstens 1 cm)
+  n.wc = c.clone();                                                  // midden in wereldcoördinaten
+  n.lc = n.obj.worldToLocal(c.clone());                              // midden in het eigen frame (labels, uitlichten, aanwijstip)
+  // kinderen
+  n.innerKids = n.asm && n.kids.some(k => k.inner);                  // minstens één kind is ingesloten (zichtbaarheid)
+  n.bySize = n.asm ? n.kids.slice().sort((a, b) => b.rad - a.rad) : null; // kinderen van groot naar klein (labels)
+  n.idx = n.parent ? n.parent.kids.indexOf(n) : 0;                   // plaats onder de ouder (labelnummer idx + 1)
+  n.norm = uiNorm(n.name);                                           // naam voor het zoeken (kleine letters, zonder accenten)
+  // verschuiving: positie = ... + off, met off naar pull + liftV (uiOffTo, uiStepOff)
+  n.off = V3(0, 0, 0);                                               // huidige verschuiving
+  n.off0 = V3(0, 0, 0); n.off1 = V3(0, 0, 0);                        // begin en doel van de lopende verschuiving
+  n.pull = V3(0, 0, 0);                                              // weggetrokken door een preset
+  n.liftV = V3(0, 0, 0);                                             // opgetild (uitlichten, uiLift)
+  n.hasOff = false;                                                  // off is niet nul of animeert
+  n.ok = 1; n.odur = 0.5; n.odelay = 0;                              // voortgang (0 tot 1), duur en wachttijd in s van de verschuiving
+  // uitklappen: amt animeert van a0 naar target (setTarget, stepExplode)
+  n.a0 = 0; n.k = 1; n.dur = 0.85;                                   // beginstand, voortgang (0 tot 1) en duur in s
+  // zichtbaarheid (applyVisibility)
+  n.vis = true;                                                      // zelf zichtbaar
+  n.ev = true;                                                       // zichtbaar met alle ouders (aanwijzen, labels)
+  // openmodus: ou animeert van opa0 naar ot (uiSetOpen, stepOpen)
+  n.ou = 0; n.ot = 0;                                                // huidige en gevraagde openstand (0 dicht, 1 open)
+  n.opk = 1; n.opa0 = 0; n.opd = 0.9;                                // voortgang (0 tot 1), beginstand en duur in s
+  n.q0 = n.obj.quaternion.clone(); n.s0 = n.obj.scale.clone();       // rustoriëntatie en -schaal
+}
+for (let i = ALL.length - 1; i >= 0; i--) initAppFields(ALL[i]);
+// opzoektabellen, in boomvolgorde (uiNames houdt de eerste knoop met een naam)
+for (const n of ALL) {
   uiById.set(n.id, n);
   if (!uiNames.has(n.name)) uiNames.set(n.name, n);
   uiNameCount.set(n.name, (uiNameCount.get(n.name) || 0) + 1);
 }
+// uitklapvector: weg van het midden van de ouder, of de vaste `ex` van de knoop
 for (const n of ALL) {
-  n.innerKids = n.asm && n.kids.some(k => k.inner);
-  n.bySize = n.asm ? n.kids.slice().sort((a, b) => b.rad - a.rad) : null;
   if (!n.parent) continue;
   const p = n.parent;
   if (n.ex) { n.exv.copy(n.ex); continue; }
@@ -84,6 +117,7 @@ function uiByPath(path) {
 
 /* ---------- uitklappen ---------- */
 let SPREAD = 1;
+let uiSpreadEnd = 1;   // spreiding aan het eind van de lopende animatie (uiExFin)
 const DUR = REDUCED ? 0.01 : CFG.tijd.uitklapS;
 const ease = t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 const uiAnim = new Set();     // groepen die animeren
@@ -135,8 +169,6 @@ const uiPathOf = n => { const a = []; for (let k = n; k; k = k.parent) a.unshift
 const uiRelPath = n => uiPathOf(n).replace(/^[^/]+\//, ''); // pad zonder wortel (sleutel van de nummergegevens en van ?open=)
 const uiOpenAnc = n => { for (let p = n.parent; p; p = p.parent) if (p.opn) return p; return null; };
 for (const n of ALL) {
-  n.ou = 0; n.ot = 0; n.opk = 1; n.opa0 = 0; n.opd = 0.9;
-  n.q0 = n.obj.quaternion.clone(); n.s0 = n.obj.scale.clone();
   const o = n.opn;
   if (o) {
     o.type = o.type || 'hinge';
@@ -385,9 +417,13 @@ function isUnder(n, a) { for (let p = n; p; p = p.parent) if (p === a) return tr
 /* ---------- zichtbaarheid en materialen ---------- */
 let ISO = [];
 let XRAY = false, SYSCOL = false, SEL = null;
-let OPENMODE = false;   // klikmodus Openen (bediening in app2.js): een klik opent of sluit openers in plaats van uit te klappen
+let OPENMODE = false;   // klikmodus Openen (bediening in app2-controls.js): een klik opent of sluit openers in plaats van uit te klappen
+let MODE = 'part', LABELS = true;   // klikmodus van het dock (UI_MODES in app2-panel.js) en de schakelaar Labels
+let CTX = null, ACTIVE_PRESET = 'assembled'; // groep die de labels krijgt na de laatste handeling; actieve preset (null: geen)
+let uiLabelForce = false;          // de labels van CTX gaan voor (preset met `labels`, uiLabelGroup in app2-labels.js)
 const uiPickable = [];
 let uiPickVer = 0;
+let uiFade = null; // U4: lopende fade bij isoleren, { t: verstreken s, out: Set<mesh> }
 function uiInScope(a) { return !ISO.length || ISO.some(r => isUnder(a, r)); }
 // Ingesloten onderdelen (inner) zijn niet te zien zolang hun oudergroep dicht is; dan tekenen we ze niet.
 // Staat de ouder zelf buiten de isolatie (je isoleert het ingesloten deel), dan is er niets dat het verbergt.
@@ -414,7 +450,6 @@ function applyVisibility() {
 // op de nieuwe stand; alleen obj.visible van de vervagende meshes en hun groepen wordt zolang overschreven.
 const uiFadeMat = new THREE.MeshBasicMaterial({ color: 0xaab5c2, transparent: true, opacity: 0.5, depthWrite: false, toneMapped: false });
 uiFadeMat.name = 'uiFade';
-let uiFade = null; // { t: verstreken s, out: Set<mesh> }
 function uiVisibleMeshes() { const s = new Set(); for (const m of MESHES) if (m.userData.node.ev) s.add(m); return s; }
 function uiFadeShow() {
   for (const m of uiFade.out) for (let o = m; o && o !== scene; o = o.parent) o.visible = true;
@@ -456,7 +491,7 @@ function uiTint(base, hex, k) {
 }
 // U19: bij duiken naar een onderdeel wordt de rest van de auto gedimd (een doorschijnend spookmateriaal), zodat het
 // onderdeel eruit springt en niets ervoor staat. DIM is de focusknoop: alles erbuiten is gedimd. Aanwijzen en klikken
-// blijft werken, maar een klik raakt liever iets in de focus dan een gedimd deel ervoor (zie pick in app2.js).
+// blijft werken, maar een klik raakt liever iets in de focus dan een gedimd deel ervoor (zie pick in app2-input.js).
 let DIM = null, uiDimSet = null, uiDimOn = true;
 // Vlak en eenzijdig getekend: een doorschijnend, dubbelzijdig PBR-materiaal kostte op 2.500 meshes zes keer zoveel tekentijd
 // (twee doorgangen per mesh en de volledige belichting); voor een spook doet een vlakke kleur hetzelfde.
@@ -492,6 +527,7 @@ function uiMatFor(m) {
 let uiMatKey = null;
 function applyMats() {
   // een gekozen opener (portier, kap) krijgt geen gele tint: hij is het doel van de klik en zou anders geel blijven
+  // uiMode staat later in het script (app2-panel.js); hij wordt pas gelezen met een selectie, en SEL is null tot de start
   const showHl = SEL && SEL !== ROOT && !ISO.includes(SEL) && (!SEL.asm || SEL.target <= 0.5) && uiMode().tint(SEL);
   const key = [showHl ? SEL : null, SYSCOL, XRAY, uiDimSet, uiFade, uiHovSet];
   if (uiMatKey && key.every((v, i) => v === uiMatKey[i])) return;
@@ -516,7 +552,6 @@ function uiSetHover(n) {
 const VIEW = { l: 0, r: 0, t: 0, b: 0 };
 let W = 1, H = 1;
 const DIRS = { iso: V3(1, 0.42, 1.08), front: V3(0.12, 0.22, 1), rear: V3(-0.15, 0.3, -1), side: V3(1, 0.1, 0.02), top: V3(0.0001, 1, 0.12), isoRear: V3(-1, 0.45, -1) };
-let uiSpreadEnd = 1;
 // Eindstand voorspellen: posities na afloop van alle lopende animaties, met de zichtbaarheid van de eindstand (uiInnerHidden(n, true)).
 function uiWithFinal(fn) {
   const moved = uiOpenFinalNodes();
@@ -562,6 +597,7 @@ function predictedBox(nodes) {
   return box;
 }
 let camAnim = null;
+let uiUserCam = false; // de gebruiker heeft de camera zelf verplaatst sinds de laatste inpassing
 // Camera inpassen op een puntenwolk zodat alles binnen het vrije beeld valt (tussen paneel, dock en titel).
 function uiFitPoints(pts, dir, pad = 1.08, opt = {}) {
   if (!pts.length) return null;
@@ -632,10 +668,13 @@ function stepCam(dt) {
   if (camAnim.t >= 1) { camera.position.copy(camAnim.p1); controls.target.copy(camAnim.t1); camAnim = null; }
   return true;
 }
-// R3: het laatste echte kaderdoel, voor het herkadreren na een formaatwissel (uiRefitNow in app2.js). focusNodes zet het
+// R3: het laatste echte kaderdoel, voor het herkadreren na een formaatwissel (uiRefitNow in app2-loop.js). focusNodes zet het
 // zelf, zodat duiken, Alles uitklappen, afspelen, kruimelklik en rondleiding nooit op een ouder doel terugvallen; een preset
 // zet daarna { preset } (appApplyPreset), zodat het kader met het onderwerp van de preset meegaat.
 let uiLastFit = null;
+// G1: uiFitRef is het kader (uiLastFit) waarop de camera is ingepast, uiFitFree de hoogte van het vrije beeld op dat moment
+// (layoutView en uiRefitNow in app2-loop.js zetten ze; uiSnap en uiRestore bewaren ze)
+let uiFitRef = null, uiFitFree = -1;
 function focusNodes(nodes, dir, pad, opt = {}) {
   const pts = uiCollect(nodes, true);
   if (!pts.length) uiCollect(nodes.map(() => ROOT), true, pts);
@@ -645,7 +684,6 @@ function focusNodes(nodes, dir, pad, opt = {}) {
   updateGround();
 }
 function contextNodes() { return ISO.length ? ISO : [ROOT]; }
-let uiUserCam = false; // de gebruiker heeft de camera zelf verplaatst sinds de laatste inpassing
 
 /* ---------- vloer ---------- */
 // Vloer en schaduw als DataTexture uit JavaScript (geen 2D-canvas: dat tekenen kostte in software-WebGL bij het

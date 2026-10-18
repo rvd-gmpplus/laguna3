@@ -25,7 +25,7 @@ Het framework maakt de scheiding hard: wat generiek is, is per auto byte voor by
 
 | Laag | Wat | Per auto |
 |---|---|---|
-| Generiek | `build.py`; `src/core.js`, `app1.js`, `presets.js` (de motor van presets en rondleiding), `app2.js`, `head.html` (sjabloon met `{{velden}}`); de tests en de orkestratie in `tools/`; CI, de sessiehook, `framework.json`, dit document en het contractsjabloon | byte voor byte gelijk, uit laguna3 |
+| Generiek | `build.py`; `src/core.js`, `app1.js`, `presets.js` (de motor van presets en rondleiding), de bediening in `app2-panel.js`, `app2-controls.js`, `app2-labels.js`, `app2-input.js` en `app2-loop.js` (tot golf 5c-2 één `app2.js`), `head.html` (sjabloon met `{{velden}}`); de tests en de orkestratie in `tools/`; CI, de sessiehook, `framework.json`, dit document en het contractsjabloon | byte voor byte gelijk, uit laguna3 |
 | Auto | `auto.json`; de domeinbestanden (`body.js` tot `systems.js`, `buildCar()` in `systems.js`); `presetdata.js` (categorieën, presets, rondleiding); `partnumbers.js` en `data/pn/`; `data/silhouet.json`; `tools/anchors.json` en `open_allow.json`; het onderzoek, het contract, de screenshots en de basislijn | eigen werk |
 | Sjabloon | `CLAUDE.md`, het ontwerpdocument, `testen.md`, `telefoontest.md`, `.gitignore`, `LICENSE` | gekopieerd en aangepast |
 

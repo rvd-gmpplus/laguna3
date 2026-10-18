@@ -1,5 +1,5 @@
 {
-  "_uitleg": "Alles wat per auto verschilt in de generieke laag (build.py, core.js, app1.js, presets.js, app2.js, head.html). build.py zet head.html-velden in op {{naam}} en geeft de JavaScript een bevroren object AUTO. Zie docs/framework.md.",
+  "_uitleg": "Alles wat per auto verschilt in de generieke laag (build.py, core.js, app1.js, presets.js, app2-*.js, head.html). build.py zet head.html-velden in op {{naam}} en geeft de JavaScript een bevroren object AUTO. Zie docs/framework.md.",
   "_voorvoegsels": {
     "body.js": ["bod"],
     "bodyparts.js": ["bod"],
@@ -14,7 +14,11 @@
     "app1.js": ["ui", "app"],
     "presetdata.js": ["ui", "app"],
     "presets.js": ["ui", "app"],
-    "app2.js": ["ui", "app"]
+    "app2-panel.js": ["ui", "app"],
+    "app2-controls.js": ["ui", "app"],
+    "app2-labels.js": ["ui", "app"],
+    "app2-input.js": ["ui", "app"],
+    "app2-loop.js": ["ui", "app"]
   },
   "id": "laguna3",
   "hook": "__laguna",

@@ -14,7 +14,7 @@ import os, sys, subprocess, fnmatch
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 OWN = {
-    'app': ['src/head.html', 'src/core.js', 'src/app1.js', 'src/presetdata.js', 'src/presets.js', 'src/app2.js'],   # de testscripts (itest, ui_*, opentest) zijn alleen-lezen: zie READONLY
+    'app': ['src/head.html', 'src/core.js', 'src/app1.js', 'src/presetdata.js', 'src/presets.js', 'src/app2-panel.js', 'src/app2-controls.js', 'src/app2-labels.js', 'src/app2-input.js', 'src/app2-loop.js'],   # de testscripts (itest, ui_*, opentest) zijn alleen-lezen: zie READONLY
     'body': ['src/body.js', 'src/bodyparts.js', 'src/panorama.js'],
     'engine': ['src/engine1.js', 'src/engine2.js', 'src/engine3.js'],
     'drivetrain': ['src/drivetrain.js'],
