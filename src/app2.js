@@ -378,7 +378,7 @@ const UI_MODES = {
     uitklap: false, dubbel: false, dim: false, tint: n => !n.opn,
   },
 };
-const uiMode = () => (OPENMODE ? UI_MODES.open : UI_MODES[MODE]);
+const uiMode = () => (OPENMODE ? UI_MODES.open : UI_MODES[MODE] || UI_MODES.part); // een onbekende klikmodus (testhaak setMode) werkt als Onderdeel
 
 /* ---------- handelingen ---------- */
 function uiAct(p) {
