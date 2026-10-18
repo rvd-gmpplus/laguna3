@@ -1,5 +1,5 @@
 /* ===================== interactie, paneel, presetmenu's, labels, render-lus ===================== */
-document.documentElement.lang = 'nl';
+document.documentElement.lang = TXT.taal;
 const $ = id => document.getElementById(id);
 const els = {
   sheet: $('sheet'), crumbs: $('crumbs'), name: $('selName'), meta: $('selMeta'), desc: $('selDesc'), spec: $('selSpec'), kids: $('selKids'), kidsTitle: $('kidsTitle'),
@@ -10,25 +10,25 @@ const els = {
   quality: $('tQuality'), qualityRow: $('qualityRow'), qualityNote: $('qualityNote'),
   notice: $('notice'), toast: $('toast'), isoBadge: $('isoBadge'), isoName: $('isoName'),
 };
-// Tijden en afstanden van golf 5c-1 bij elkaar (er is nog geen CFG; oudere constanten staan bij hun gebruik).
-const UI_ISO_FADE_MS = 300;                  // U4: uitfaden van wat bij isoleren uit beeld gaat
-const UI_TOAST_MS = 1800;                    // U8, U9: korte melding onderin (volledige labelnaam, beeld opgeslagen)
-const UI_HINT_MS = 9000;                     // hint bij de start, daarna (U8) de suggestie tot de eerste klik
-const UI_LABEL_MAX = 24, UI_LABEL_MAX_NARROW = 10; // U2: hoogstens zoveel labels; smal scherm (onder 600 px) minder
+// Getallen van de bediening staan in CFG (core.js, golf 5c-2, K1).
 const UI_THEME_KEY = AUTO.id + '-theme';        // U5: onthouden themakeuze (light, dark; systeem = niets bewaard)
-const UI_PRESS_VIBRATE_MS = 10;              // U8: trilling als de ring bij lang drukken vol is
 let MODE = 'part', LABELS = true, CTX = null, ACTIVE_PRESET = 'assembled', needs = true;
 let uiLabelForce = false;
 const requestRender = () => { needs = true; uiWake(); }; // P4: de lus kan stilstaan (uiWake in app1.js)
-const fmtCount = n => (n.count === 1 ? '1 onderdeel' : `${n.count} onderdelen`);
+const fmtCount = n => TXT.onderdelen(n.count);
+// standbadge in het paneel; on: gemarkeerd (open, uitgeklapt, uitgelicht)
+const uiBadge = (txt, on) => `<span class="state${on ? ' open' : ''}">${txt}</span>`;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const uiTouch = !!(window.matchMedia && matchMedia('(hover: none), (pointer: coarse)').matches);
 if (uiTouch) document.body.classList.add('touch');
 // Indeling van het paneel: onder als lade (telefoon staand), als kolom rechts (bureaublad en telefoon liggend).
-// Dezelfde voorwaarde staat in de mediaquery van head.html (blok 'telefoon liggend: zijkolom').
-const uiMqSide = window.matchMedia ? matchMedia('(max-width: 919.98px) and (max-height: 520px) and (orientation: landscape)') : null;
+// Eén mediaquery per breekpunt uit CFG.indeling; dezelfde voorwaarden staan in de mediaqueries van head.html.
+const uiMqText = `(max-width: ${CFG.indeling.breekpunt - 0.02}px)`; // 919,98 px: precies als in de CSS (smaller dan het breekpunt)
+const uiMqNarrow = window.matchMedia ? matchMedia(uiMqText) : null;
+const uiMqSide = window.matchMedia ? matchMedia(`${uiMqText} and (max-height: ${CFG.indeling.liggendMaxH}px) and (orientation: landscape)`) : null;
+const uiNarrow = () => (uiMqNarrow ? uiMqNarrow.matches : window.innerWidth < CFG.indeling.breekpunt); // smaller dan het breekpunt
 const uiSide = () => !!(uiMqSide && uiMqSide.matches);
-const uiSheetBottom = () => window.innerWidth < 920 && !uiSide();
+const uiSheetBottom = () => uiNarrow() && !uiSide();
 controls.minDistance = 0.05;
 let uiUiDirty = true;            // schermvlakken van de bediening opnieuw meten
 let uiSyncPending = false;
@@ -69,29 +69,25 @@ function renderPanel() {
   // U6: de live regions (#selName, #selMeta) alleen beschrijven als er iets verandert; een schermlezer leest anders elke
   // herhaalde opbouw van het paneel voor (bij elke handeling twee tot drie keer)
   if (els.name.textContent !== n.name) els.name.textContent = n.name;
-  let state;
-  if (OPENMODE && n.opn && !n.opn.lead) state = n.ot > 0 ? '<span class="state open">Open</span>' : '<span class="state">Dicht</span>';
-  else if (OPENMODE && n.asm) state = '<span class="state">Gemonteerd</span>';
-  else if (n.asm) state = uiOpen(n) ? '<span class="state open">Uitgeklapt</span>' : (n.target > 0 ? '<span class="state">Deels uitgeklapt</span>' : '<span class="state">Ingeklapt</span>');
-  else state = n === uiLifted ? '<span class="state open">Uitgelicht</span>' : '<span class="state">Onderdeel</span>';
-  const isoTxt = ISO.includes(n) ? ' · geïsoleerd' : '';
-  const meta = `${state}${n.asm ? fmtCount(n) : (n.parent ? 'in ' + esc(n.parent.name) : '')}${isoTxt}`;
+  const m = uiMode(), state = m.state(n);
+  const isoTxt = ISO.includes(n) ? TXT.geisoleerd : '';
+  const meta = `${state}${n.asm ? fmtCount(n) : (n.parent ? TXT.inGroep(esc(n.parent.name)) : '')}${isoTxt}`;
   if (els.meta._h !== meta) { els.meta._h = meta; els.meta.innerHTML = meta; }
-  const plan = OPENMODE ? uiPanelPlan(n) : null;
+  const plan = m.plan(n);
   els.open.hidden = !plan;
-  if (plan) { els.open.textContent = plan.open ? 'Openen' : 'Sluiten'; els.open.setAttribute('aria-label', (plan.open ? 'Openen: ' : 'Sluiten: ') + uiOpenLabel(plan.n)); els.open.title = (plan.open ? 'Opent ' : 'Sluit ') + uiOpenLabel(plan.n) + ' (Enter)'; }
+  if (plan) { els.open.textContent = TXT.openKnop(plan.open); els.open.setAttribute('aria-label', TXT.openKnopAria(plan.open, uiOpenLabel(plan.n))); els.open.title = TXT.openKnopTitel(plan.open, uiOpenLabel(plan.n)); }
   // in Openen is er niets uit te klappen of te isoleren: alleen de opener en In beeld blijven
-  els.toggle.hidden = !n.asm || OPENMODE;
-  els.toggle.textContent = n.asm && uiOpen(n) ? 'Inklappen' : 'Uitklappen';
-  els.all.hidden = !n.asm || OPENMODE;
-  els.dive.hidden = n.asm || OPENMODE;
-  els.dim.hidden = !DIM || OPENMODE;
-  if (DIM) els.dim.title = 'De gedimde rest van de auto weer volledig tonen (buiten ' + DIM.name + ')';
-  els.up.hidden = OPENMODE; els.iso.hidden = OPENMODE;
+  els.toggle.hidden = !n.asm || !m.uitklap;
+  els.toggle.textContent = n.asm && uiOpen(n) ? TXT.inklappen : TXT.uitklappen;
+  els.all.hidden = !n.asm || !m.uitklap;
+  els.dive.hidden = n.asm || !m.uitklap;
+  els.dim.hidden = !DIM || !m.uitklap;
+  if (DIM) els.dim.title = TXT.dimTitel(DIM.name);
+  els.up.hidden = !m.uitklap; els.iso.hidden = !m.uitklap;
   els.up.disabled = !uiClosedAbove(n);
-  els.up.title = els.up.disabled ? 'Alles boven deze selectie is al uitgeklapt' : 'De dichte groep boven de selectie uitklappen (Enter)';
+  els.up.title = els.up.disabled ? TXT.omhoogVol : TXT.omhoogTitel;
   const isoOn = ISO.length === 1 && ISO[0] === n;
-  els.iso.textContent = isoOn || (ISO.length && n === ROOT) ? 'Alles tonen' : 'Isoleren';
+  els.iso.textContent = isoOn || (ISO.length && n === ROOT) ? TXT.allesTonen : TXT.isoleren;
   els.iso.disabled = n === ROOT && !ISO.length;
   syncSheetHeight();
   uiUiDirty = true;
@@ -103,15 +99,15 @@ function uiPanelFixed(n) {
     const b = document.createElement('button'); b.textContent = a.name; b.onclick = () => { uiPush(); select(a, { focus: true }); uiAfterAction(); }; els.crumbs.appendChild(b);
   });
   // in Openen krijgt de wortel een eigen uitleg bij de modus (U7: een eigen tekst, geen knip uit de beschrijving in systems.js)
-  els.desc.textContent = (OPENMODE && n === ROOT) ? uiOpenRootDesc : (n.d || '');
+  els.desc.textContent = uiMode().desc(n);
   els.spec.innerHTML = (n.spec || []).map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('');
   els.spec.hidden = !n.spec;
   els.kids.innerHTML = '';
   els.kidsTitle.hidden = !n.asm;
   renderPn(n);
   if (n.asm) {
-    els.kidsTitle.textContent = `Bestaat uit (${n.kids.length})`;
-    const MAXK = 80;
+    els.kidsTitle.textContent = TXT.bestaatUit(n.kids.length);
+    const MAXK = CFG.indeling.kinderen;
     n.kids.slice(0, MAXK).forEach((k, i) => {
       const b = document.createElement('button');
       b.innerHTML = `<b>${i + 1}</b>${esc(k.name)}`;
@@ -119,7 +115,7 @@ function uiPanelFixed(n) {
       els.kids.appendChild(b);
     });
     if (n.kids.length > MAXK) {
-      const b = document.createElement('button'); b.textContent = `… en nog ${n.kids.length - MAXK} (zie Onderdelen)`;
+      const b = document.createElement('button'); b.textContent = TXT.enNog(n.kids.length - MAXK);
       b.onclick = () => { showTab('tree'); if (uiSheetBottom()) setSheet('open'); };
       els.kids.appendChild(b);
     }
@@ -135,7 +131,7 @@ function uiPanelFixed(n) {
 // paneel de nummers na de eerste weergave. In het geheugen heeft PN_DATA dezelfde vorm als vroeger (testcontract).
 let uiPnIdx = new Map(), uiPnUnitNode = new Map(), uiPnBad = [], uiPnCov = new Map(), uiPnGen = 0, uiPnLater = false;
 const UI_LINK_REL = 'noopener noreferrer'; // R5: cataloguslinks zonder opener en zonder verwijzende pagina (Referer)
-const uiPnCompact = t => String(t).toLowerCase().replace(/[\s.\-\/]/g, '');
+const uiPnCompact = t => uiNorm(t).replace(/[\s.\-\/]/g, ''); // een nummer zonder spaties, punten, streepjes en schuine strepen (K3: op uiNorm)
 const uiPnHasNum = r => !!r && ((r.u.oe && r.u.oe.length > 0) || (r.u.am && r.u.am.length > 0));
 // map uit partnumbers.js: een lijst [p, rest, eenheid, relatie, regel?] met voorvoegselcodering (build_pn.py, front_code)
 // terug naar pad -> [eenheid, relatie, regel]; een object (oudere of lege gegevens) blijft zoals het is
@@ -169,7 +165,7 @@ function uiPnReady() { if (!uiPnGen) uiPnBuild(); }
 function uiPnBuild() {
   uiPnIdx = new Map(); uiPnUnitNode = new Map(); uiPnBad = []; uiPnCov = new Map(); uiPnGen++;
   // paden opzoeken in een vaste tabel: een naam kan zelf een schuine streep bevatten (ABS/ESP-unit)
-  const full = new Map(ALL.map(k => [uiPathOf(k).replace(/^[^/]+\//, ''), k]));
+  const full = new Map(ALL.map(k => [uiRelPath(k), k]));
   for (const [path, e] of Object.entries(PN_DATA.map || {})) {
     const n = full.get(path) || uiByPath(path), id = Array.isArray(e) ? e[0] : null, u = id != null && PN_DATA.units ? PN_DATA.units[id] : null;
     if (!n) { uiPnBad.push(path + ': pad bestaat niet'); continue; }
@@ -198,11 +194,11 @@ function renderPn(n) {
   if (!uiPnGen && !uiReady) { uiPnLater = true; return; }
   const r = uiPnRec(n), u = r && r.u, st = mk('p', 'pn-status');
   let badge, ok = false;
-  if (r && r.kind === 'zelf' && u.st === 'past') { badge = 'Past volgens catalogus'; ok = true; }
-  else if (r && r.kind === 'zelf' && u.st === 'vin') badge = u.kz ? 'Gekozen voor deze auto' : 'Variant: kies op VIN';
-  else if (r && r.kind === 'zelf' && u.st === 'nietgevonden') badge = 'Niet gevonden';
-  else if (r && r.kind !== 'zelf') badge = r.kind === 'set' ? 'Deel van set' : 'Deel van';
-  else if (!n.asm || uiPnCover(n) === 0) badge = 'Niet onderzocht';
+  if (r && r.kind === 'zelf' && u.st === 'past') { badge = TXT.pnPast; ok = true; }
+  else if (r && r.kind === 'zelf' && u.st === 'vin') badge = u.kz ? TXT.pnGekozen : TXT.pnVin;
+  else if (r && r.kind === 'zelf' && u.st === 'nietgevonden') badge = TXT.pnNietGevonden;
+  else if (r && r.kind !== 'zelf') badge = r.kind === 'set' ? TXT.pnDeelSet : TXT.pnDeel;
+  else if (!n.asm || uiPnCover(n) === 0) badge = TXT.pnNietOnderzocht;
   if (badge) st.appendChild(mk('span', 'state' + (ok ? ' ok' : ''), badge));
   if (r && r.kind !== 'zelf') {
     const un = uiPnUnitNode.get(r.id);
@@ -212,17 +208,17 @@ function renderPn(n) {
   } else if (r && u.n && u.n !== n.name) st.appendChild(mk('small', null, u.n));
   if (n.asm) {
     const sub = n.kids.reduce((a, k) => a + uiPnCover(k), 0);
-    if (sub > 0) st.appendChild(mk('small', null, `Hieronder hebben ${sub} van ${n.count} onderdelen een nummer.`));
+    if (sub > 0) st.appendChild(mk('small', null, TXT.pnHieronder(sub, n.count)));
   }
   box.appendChild(st);
   const kz = r && r.kind === 'zelf' && u.kz;
   if (kz) {
     // De uitvoering voor de auto van de gebruiker, volgens de RDW en het chassisnummer van de gebruiker (zie build_pn.py, VIN_KEUZE).
-    box.appendChild(mk('h4', null, 'Gekozen voor deze auto'));
+    box.appendChild(mk('h4', null, TXT.pnGekozen));
     const k = mk('div', 'pn-kzbox');
     k.appendChild(mk('p', 'pn-txt', kz.v));
     const gek = [...(kz.o || []), ...(kz.a || []).map(x => x[0] + ' ' + x[1])];
-    if (gek.length) k.appendChild(mk('p', 'pn-txt', 'Nummer: ' + gek.join(', ') + '. Bewijs ' + kz.b + ', zekerheid van de keuze ' + kz.z + '.'));
+    if (gek.length) k.appendChild(mk('p', 'pn-txt', TXT.pnKeuze(gek.join(', '), kz.b, kz.z)));
     k.appendChild(mk('p', 'pn-txt', kz.g));
     const bronnen = (kz.s || []).filter(x => /^https:\/\//i.test(x));
     if (bronnen.length) {
@@ -237,51 +233,52 @@ function renderPn(n) {
   if (uiPnHasNum(r)) {
     const head = (txt) => box.appendChild(mk('h4', null, txt));
     if (u.oe && u.oe.length) {
-      head(r.kind === 'zelf' ? (u.oe.length > 1 ? AUTO.merk + '-nummers' : AUTO.merk + '-nummer') : AUTO.merk + '-nummer van ' + (u.n || r.id));
+      head(r.kind === 'zelf' ? TXT.pnMerkNummer(AUTO.merk, u.oe.length > 1) : TXT.pnMerkNummerVan(AUTO.merk, u.n || r.id));
       const ul = mk('ul', 'pn-nums');
-      for (const [num, note, lvl] of u.oe) { const li = mk('li'); if (isKz(num)) li.className = 'pn-kz'; li.appendChild(mk('b', null, num)); if (isKz(num)) li.appendChild(mk('em', null, 'gekozen')); if (lvl) li.appendChild(uiPnLvl(mk, lvl)); if (note) li.appendChild(mk('span', null, note)); ul.appendChild(li); }
+      for (const [num, note, lvl] of u.oe) { const li = mk('li'); if (isKz(num)) li.className = 'pn-kz'; li.appendChild(mk('b', null, num)); if (isKz(num)) li.appendChild(mk('em', null, TXT.pnGekozenKort)); if (lvl) li.appendChild(uiPnLvl(mk, lvl)); if (note) li.appendChild(mk('span', null, note)); ul.appendChild(li); }
       box.appendChild(ul);
     }
     if (u.am && u.am.length) {
-      head('Andere fabrikanten');
+      head(TXT.pnAndere);
       const t = mk('table', 'pn-tab'), hr = t.createTHead().insertRow();
-      for (const h of ['Merk', 'Nummer', 'Bewijs', 'Opmerking']) hr.appendChild(mk('th', null, h));
+      for (const h of TXT.pnKolommen) hr.appendChild(mk('th', null, h));
       const tb = t.createTBody();
-      for (const [merk, num, note, lvl] of u.am) { const tr = tb.insertRow(); if (isKz(null, [merk, num])) tr.className = 'pn-kz'; tr.appendChild(mk('td', null, merk)); tr.appendChild(mk('td', 'num', num)); const td = mk('td'); if (lvl) td.appendChild(uiPnLvl(mk, lvl)); tr.appendChild(td); const tn = mk('td', null, note || ''); if (tr.className === 'pn-kz') tn.appendChild(mk('em', null, (note ? ' ' : '') + 'gekozen')); tr.appendChild(tn); }
+      for (const [merk, num, note, lvl] of u.am) { const tr = tb.insertRow(); if (isKz(null, [merk, num])) tr.className = 'pn-kz'; tr.appendChild(mk('td', null, merk)); tr.appendChild(mk('td', 'num', num)); const td = mk('td'); if (lvl) td.appendChild(uiPnLvl(mk, lvl)); tr.appendChild(td); const tn = mk('td', null, note || ''); if (tr.className === 'pn-kz') tn.appendChild(mk('em', null, (note ? ' ' : '') + TXT.pnGekozenKort)); tr.appendChild(tn); }
       box.appendChild(t);
     }
-    box.appendChild(mk('p', 'pn-txt', 'Bewijs: A staat in de catalogus voor dit type (' + AUTO.pnType + ') op de juiste plaats; B is het ' + AUTO.merk + '-nummer van zo\'n artikel; C is een kruisverwijzing van een A- of B-nummer; D komt alleen uit een advertentie voor een gebruikt onderdeel en is niet in een catalogus gecontroleerd.'));
+    box.appendChild(mk('p', 'pn-txt', TXT.pnBewijs(AUTO.pnType, AUTO.merk)));
   }
-  if (u && u.var) { box.appendChild(mk('h4', null, kz ? 'Varianten in de catalogus' : 'Variant')); box.appendChild(mk('p', 'pn-txt', u.var)); }
+  if (u && u.var) { box.appendChild(mk('h4', null, kz ? TXT.pnVarianten : TXT.pnVariant)); box.appendChild(mk('p', 'pn-txt', u.var)); }
   // de notitie bij een eenheid is per auto een onderzoeksaantekening of een toelichting voor de lezer (auto.json: pnToelichting)
-  if (AUTO.pnToelichting && u && u.note) { box.appendChild(mk('h4', null, 'Toelichting')); box.appendChild(mk('p', 'pn-txt', u.note)); }
-  if (u && u.per) { box.appendChild(mk('h4', null, 'Verpakking')); box.appendChild(mk('p', 'pn-txt', u.per)); }
+  if (AUTO.pnToelichting && u && u.note) { box.appendChild(mk('h4', null, TXT.pnToelichting)); box.appendChild(mk('p', 'pn-txt', u.note)); }
+  if (u && u.per) { box.appendChild(mk('h4', null, TXT.pnVerpakking)); box.appendChild(mk('p', 'pn-txt', u.per)); }
   const links = u && (u.src || []).filter(x => x && /^https?:\/\//i.test(x[0]));
   if (links && links.length) {
-    box.appendChild(mk('h4', null, 'Bronnen'));
+    box.appendChild(mk('h4', null, TXT.pnBronnen));
     const d = mk('div', 'pn-src');
     for (const [url, label] of links) { const a = mk('a', null, label || url); a.href = url; a.target = '_blank'; a.rel = UI_LINK_REL; d.appendChild(a); }
     box.appendChild(d);
   }
+  // onderhoud bij een eenheid: de echte gegevens hebben het (nog) niet, itest controle 15 toetst het met eigen gegevens
   if (u && u.info && u.info.length) {
-    box.appendChild(mk('h4', null, 'Onderhoud'));
+    box.appendChild(mk('h4', null, TXT.pnOnderhoudEenheid));
     const dl = mk('dl', 'pn-info');
     for (const [label, waarde, bron] of u.info) { dl.appendChild(mk('dt', null, label)); const dd = mk('dd', null, waarde); if (bron) dd.appendChild(mk('small', null, bron)); dl.appendChild(dd); }
     box.appendChild(dl);
   }
-  const inf = PN_DATA.info && PN_DATA.info[uiPathOf(n).replace(/^[^/]+\//, '')];
+  const inf = PN_DATA.info && PN_DATA.info[uiRelPath(n)];
   if (inf && inf.length) {
-    box.appendChild(mk('h4', null, 'Onderhoud en bekende problemen'));
+    box.appendChild(mk('h4', null, TXT.pnOnderhoud));
     const dl = mk('dl', 'pn-info');
     for (const [label, waarde, bron, zeker] of inf) {
       dl.appendChild(mk('dt', null, label));
       const dd = mk('dd', null, waarde);
-      if (bron || zeker) { const sm = mk('small', null, (zeker ? zeker + (bron ? ', ' : '') : '')); if (bron && /^https?:\/\//i.test(bron)) { const a = mk('a', null, 'bron'); a.href = bron; a.target = '_blank'; a.rel = UI_LINK_REL; sm.appendChild(a); } else if (bron) sm.appendChild(document.createTextNode(bron)); dd.appendChild(sm); }
+      if (bron || zeker) { const sm = mk('small', null, (zeker ? zeker + (bron ? ', ' : '') : '')); if (bron && /^https?:\/\//i.test(bron)) { const a = mk('a', null, TXT.pnBron); a.href = bron; a.target = '_blank'; a.rel = UI_LINK_REL; sm.appendChild(a); } else if (bron) sm.appendChild(document.createTextNode(bron)); dd.appendChild(sm); }
       dl.appendChild(dd);
     }
     box.appendChild(dl);
   }
-  if (PN_DATA.meta && PN_DATA.meta.checked && (r || n.asm)) box.appendChild(mk('p', 'pn-txt', 'Gegevens gecontroleerd op ' + PN_DATA.meta.checked + '.'));
+  if (PN_DATA.meta && PN_DATA.meta.checked && (r || n.asm)) box.appendChild(mk('p', 'pn-txt', TXT.pnGecontroleerd(PN_DATA.meta.checked)));
 }
 function uiPnFill() {
   if (!uiPnLater) return;
@@ -289,7 +286,7 @@ function uiPnFill() {
 }
 function uiPnLvl(mk, lvl) {
   const e = mk('span', 'pn-lvl', lvl);
-  e.title = { A: 'In de catalogus voor dit type, op de juiste plaats', B: AUTO.merk + '-nummer van een artikel dat voor dit type in de catalogus staat', C: 'Kruisverwijzing van een A- of B-nummer', D: 'Alleen uit een advertentie voor een gebruikt onderdeel van dit model; niet in een catalogus gecontroleerd' }[lvl] || '';
+  e.title = TXT.pnNiveau(lvl, AUTO.merk);
   return e;
 }
 
@@ -297,7 +294,7 @@ function uiPnLvl(mk, lvl) {
 // I5/I6: schakelaars en spreidingsschuif volgen de stand ook na presets, stap terug en de rondleiding
 function uiSyncToggles() {
   $('tXray').checked = XRAY; $('tSys').checked = SYSCOL; els.legend.hidden = !SYSCOL;
-  const sp = Math.round(SPREAD * 100); $('spread').value = String(sp); $('spreadOut').textContent = sp + '%';
+  const sp = Math.round(SPREAD * 100); $('spread').value = String(sp); $('spreadOut').textContent = TXT.procent(sp);
 }
 function uiAfterAction() {
   renderPanel();
@@ -318,22 +315,82 @@ function uiSyncLabels() {
 function uiAfterUndo() { applyMats(); uiAfterAction(); }
 function clearPreset() { if (ACTIVE_PRESET) { ACTIVE_PRESET = null; uiSyncCats(); } }
 
-/* ---------- handelingen ---------- */
+/* ---------- klikmodi: één strategie per modus (golf 5c-2, K4) ---------- */
+// In Uitklappen bepaalt de klikmodus van het dock (MODE: part, layers, collapse, select) wat een klik doet; in Openen
+// (OPENMODE) geldt altijd de strategie open, en blijft MODE bewaard voor de terugkeer. uiMode() geeft de geldende strategie.
+// Alle verschillen tussen de modi staan hier, de rest van de code vraagt het aan de strategie:
+//   act(p)          klik of tik op p (een onderdeel, of het label of de lijstregel van een groep)
+//   target(p)       wat een klik op onderdeel p zou raken (aanwijzen, tip, testhaak hoverNode)
+//   tip(p, t)       tiptekst bij aanwijzen, met t = target(p)
+//   cursor(p)       handje bij aanwijzen
+//   collapse(p)     rechtsklik, Shift+klik en lang drukken
+//   enter(n, shift) Enter en Shift+Enter op de selectie
+//   reveal(n)       n kiezen in de lijst, het paneel of de nummers
+//   state(n)        de standbadge in het paneel; plan(n) de openknop in het paneel (null: geen knop); desc(n) de beschrijving
+//   uitklap         het paneel toont de knoppen voor uitklappen, duiken, dimmen en isoleren
+//   dubbel          een dubbelklik duikt naar het onderdeel (in Openen heeft de eerste klik al gedaan wat er te doen was)
+//   dim             duiken dimt de rest (U19)
+//   tint(n)         de geselecteerde knoop krijgt de gele tint (in Openen niet op een opener: die is het doel van de klik)
+function uiSelectAct(p) { uiPush(); select(p); uiAfterAction(); }
 // Klik op onderdeel P (modus Onderdeel): is de eigen groep G dicht, dan klapt alleen G ter plekke uit;
 // staat G al open, dan wordt P geselecteerd en uitgelicht. Een klik klapt nooit een groep boven G uit.
-function uiAct(p) {
-  if (!p) { uiBackground(); return; }
-  if (OPENMODE) { uiOpenAct(p); return; }
-  if (p.asm) { // label of lijst van een groep
-    if (MODE === 'collapse') { if (uiOpen(p)) doCollapse(p); else { uiPush(); select(p); uiAfterAction(); } return; }
-    if (MODE === 'select' || uiOpen(p)) { uiPush(); select(p); uiAfterAction(); return; }
-    doExplode(p); return;
-  }
-  if (MODE === 'collapse') { uiCollapseAt(p); return; }
-  if (MODE === 'select') { uiPush(); select(p); uiAfterAction(); return; }
-  const g = MODE === 'layers' ? pathFrom(p).find(x => x.asm && !uiOpen(x)) : (uiOpen(p.parent) ? null : p.parent);
+// Laag voor laag: G is de buitenste dichte groep op het pad. groupOf(p) geeft G of niets.
+const uiExplodeAct = groupOf => p => {
+  if (p.asm) { if (uiOpen(p)) uiSelectAct(p); else doExplode(p); return; } // label of lijst van een groep
+  const g = groupOf(p);
   if (g) { doExplode(g); return; }
   uiPush(); select(p); uiLift(p); uiAfterAction();
+};
+const uiOuterClosed = p => pathFrom(p).find(x => x.asm && !uiOpen(x));
+function uiCollapseDeepest(p) { const a = uiDeepestOpen(p); if (a) doCollapse(a); else uiSelectAct(p); }
+function uiEnterExplode(n, shift) {
+  if (shift) { if (n.asm && uiOpen(n)) doCollapse(n); else if (!n.asm) uiCollapseAt(n); return; }
+  if (n.asm && !uiOpen(n)) { doExplode(n); return; }
+  const a = uiClosedAbove(n);
+  if (a) { doExplode(a); return; }
+  if (n.asm) doCollapse(n); else { uiPush(); uiLift(n); uiAfterAction(); }
+}
+function uiStateExplode(n) {
+  if (n.asm) return uiOpen(n) ? uiBadge(TXT.stand.uitgeklapt, true) : uiBadge(n.target > 0 ? TXT.stand.deels : TXT.stand.ingeklapt);
+  return n === uiLifted ? uiBadge(TXT.stand.uitgelicht, true) : uiBadge(TXT.stand.onderdeel);
+}
+const uiTipExplode = (p, t) => (t.asm ? TXT.tipUitklappen(t.name, fmtCount(t)) : TXT.tipUitlichten(t.name));
+// gemeenschappelijk voor de vier klikmodi van Uitklappen
+const uiModeExplode = {
+  tip: uiTipExplode, cursor: () => true, collapse: uiCollapseDeepest, enter: uiEnterExplode, reveal: uiRevealExplode,
+  state: uiStateExplode, plan: () => null, desc: n => n.d || '', uitklap: true, dubbel: true, dim: true, tint: () => true,
+};
+const UI_MODES = {
+  part: Object.assign({}, uiModeExplode, { act: uiExplodeAct(p => (uiOpen(p.parent) ? null : p.parent)), target: p => (uiOpen(p.parent) ? p : p.parent) }),
+  layers: Object.assign({}, uiModeExplode, { act: uiExplodeAct(uiOuterClosed), target: p => uiOuterClosed(p) || p }),
+  collapse: Object.assign({}, uiModeExplode, {
+    act: p => { if (!p.asm) uiCollapseAt(p); else if (uiOpen(p)) doCollapse(p); else uiSelectAct(p); },
+    target: p => uiDeepestOpen(p) || p,
+    tip: (p, t) => (t.asm ? TXT.tipInklappen(t.name, fmtCount(t)) : TXT.tipNietsIn(p.name)),
+  }),
+  select: Object.assign({}, uiModeExplode, { act: uiSelectAct, target: p => p, tip: p => TXT.tipInfo(p.name) }),
+  open: {
+    act: p => uiOpenAct(p),
+    target: p => { const pl = uiOpenPlan(p); return pl ? pl.n : p; },
+    tip: p => { const pl = uiOpenPlan(p); return pl ? TXT.tipOpen(uiOpenLabel(pl.n), pl.open) : TXT.tipNietsOpen(p.name); },
+    cursor: p => !!uiOpenPlan(p),
+    collapse: p => uiOpenClose(p),
+    // Enter opent of sluit de opener van de selectie, Shift+Enter sluit de binnenste open opener
+    enter: (n, shift) => { if (shift) uiOpenClose(n); else { const pl = uiPanelPlan(n); if (pl) uiOpenTo(pl.n, pl.open); } },
+    reveal: uiRevealOpen,
+    state: n => (n.opn && !n.opn.lead ? (n.ot > 0 ? uiBadge(TXT.stand.open, true) : uiBadge(TXT.stand.dicht)) : n.asm ? uiBadge(TXT.stand.gemonteerd) : uiStateExplode(n)),
+    plan: n => uiPanelPlan(n),
+    // de wortel krijgt een eigen uitleg bij de modus (U7: een eigen tekst, geen knip uit de beschrijving in systems.js)
+    desc: n => (n === ROOT ? uiOpenRootDesc : (n.d || '')),
+    uitklap: false, dubbel: false, dim: false, tint: n => !n.opn,
+  },
+};
+const uiMode = () => (OPENMODE ? UI_MODES.open : UI_MODES[MODE] || UI_MODES.part); // een onbekende klikmodus (testhaak setMode) werkt als Onderdeel
+
+/* ---------- handelingen ---------- */
+function uiAct(p) {
+  if (!p) { uiBackground(); return; }
+  uiMode().act(p);
 }
 function tapNode(n) { uiAct(n); }
 function doExplode(g) {
@@ -351,12 +408,7 @@ function doCollapse(a) {
   select(a);
   uiAfterAction();
 }
-function uiCollapseAt(p) {
-  if (OPENMODE) { uiOpenClose(p); return; }
-  const a = uiDeepestOpen(p);
-  if (a) { doCollapse(a); return; }
-  uiPush(); select(p); uiAfterAction();
-}
+function uiCollapseAt(p) { uiMode().collapse(p); }
 function uiBackground() {
   const r = uiScopeRoot();
   if (SEL === r && !uiLifted) return;
@@ -369,20 +421,21 @@ function uiDive(p) {
   let i = 0;
   for (const a of pathFrom(p)) if (a.asm && a !== p && !uiOpen(a)) setTarget(a, 1, (i++) * (REDUCED ? 0 : 0.22));
   CTX = p.parent || p; uiLabelForce = false; clearPreset();
-  if (!OPENMODE) uiSetDim(p); // U19
+  if (uiMode().dim) uiSetDim(p); // U19
   select(p);
   focusNodes([p], null, p.asm ? 1.15 : 1.7, { min: 0.3, dur: Math.max(0.95, i * 0.22 + 0.55) });
   uiAfterAction();
 }
-function reveal(n) {
-  if (OPENMODE) { // in Openen klapt niets uit: alleen selecteren en in beeld brengen
-    uiPush();
-    if (uiSheetBottom() && els.sheet.dataset.state === 'open') setSheet('peek');
-    select(n);
-    focusNodes([n], null, n.asm ? 1.12 : 1.6, { min: 0.3 });
-    uiAfterAction();
-    return;
-  }
+function reveal(n) { uiMode().reveal(n); }
+// in Openen klapt niets uit: alleen selecteren en in beeld brengen
+function uiRevealOpen(n) {
+  uiPush();
+  if (uiSheetBottom() && els.sheet.dataset.state === 'open') setSheet('peek');
+  select(n);
+  focusNodes([n], null, n.asm ? 1.12 : 1.6, { min: 0.3 });
+  uiAfterAction();
+}
+function uiRevealExplode(n) {
   uiPush();
   if (ISO.length && !uiInScope(n)) { ISO = []; applyVisibility(); updateGround(); }
   let i = 0;
@@ -411,13 +464,16 @@ function uiSoftFrame(nodes) {
   if (f) { animCam(f.pos, f.target, 0.9); uiLastFit = { nodes, dir: null, pad: 1.3, opt: { min: 0.45 } }; }
 }
 const uiPv = V3(0, 0, 0);
+// Een wereldpunt naar schermpixels in een vlak van w bij h (linksboven 0,0). v wordt ter plekke omgezet; z blijft de diepte
+// van project() (boven 1 ligt het punt achter de camera). Golf 5c-2, K3: was vier keer uitgeschreven.
+function uiToScreen(v, w = W, h = H) { v.project(camera); v.x = (v.x * 0.5 + 0.5) * w; v.y = (-v.y * 0.5 + 0.5) * h; return v; }
 function uiProject(pts) {
   camera.updateMatrixWorld();
   let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
   for (let i = 0; i < pts.length; i += 3) {
-    uiPv.set(pts[i], pts[i + 1], pts[i + 2]).project(camera);
+    uiToScreen(uiPv.set(pts[i], pts[i + 1], pts[i + 2]));
     if (uiPv.z > 1) return null;
-    const x = (uiPv.x * 0.5 + 0.5) * W, y = (-uiPv.y * 0.5 + 0.5) * H;
+    const x = uiPv.x, y = uiPv.y;
     if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
   }
   return Number.isFinite(x0) ? { x0, y0, x1, y1 } : null;
@@ -430,7 +486,7 @@ function isolate(list) {
   ISO = list.slice(); applyVisibility(); uiFadeFrom(before); applyMats(); updateGround(); uiSyncIso(); requestRender();
 }
 function uiSyncIso() {
-  const on = ISO.length > 0, txt = ISO.map(n => n.name).join(' en ');
+  const on = ISO.length > 0, txt = TXT.namenEn(ISO.map(n => n.name));
   // Eerst de tekst, dan de badge en de maat: een andere naam kan de badge laten omslaan, en het dock verandert dan meteen
   // (niet pas bij de ResizeObserver, die op een trage machine na het kadreren komt).
   let relayout = false;
@@ -545,13 +601,13 @@ const uiOpenChips = OPENERS.map(n => {
 let uiOpenListOn = false;
 $('btnOpenList').onclick = () => {
   uiOpenListOn = !uiOpenListOn; $('btnOpenList').setAttribute('aria-expanded', String(uiOpenListOn)); uiSyncOpenUi(); uiUiChanged(); layoutView();
-  if (window.innerWidth < 920) uiRefitSoon(); // de lijst neemt vrij beeld in of geeft het terug: de auto past in wat overblijft
+  if (uiNarrow()) uiRefitSoon(); // de lijst neemt vrij beeld in of geeft het terug: de auto past in wat overblijft
 };
 // Op een smal scherm (telefoon staand en liggend, tablet) is de lijst een keuzemenu: na een keuze gaat hij dicht, zodat hij het
 // beeld niet afdekt en het vrije beeld weer de volle hoogte heeft voordat de camera de opener kadreert. Op het bureaublad
 // staat hij naast het beeld en blijft open.
 function uiCloseOpenList() {
-  if (!uiOpenListOn || window.innerWidth >= 920) return;
+  if (!uiOpenListOn || !uiNarrow()) return;
   uiOpenListOn = false; $('btnOpenList').setAttribute('aria-expanded', 'false'); uiSyncOpenUi(); uiUiChanged(); layoutView();
 }
 function uiSyncOpenUi() {
@@ -575,9 +631,9 @@ function treeRow(n, level) {
   const li = document.createElement('li'); li.setAttribute('role', 'none');
   const row = document.createElement('div'); row.className = 'trow' + (n === SEL ? ' sel' : ''); row.setAttribute('role', 'treeitem'); row.setAttribute('aria-level', String(level)); row.setAttribute('aria-selected', String(n === SEL));
   const tw = document.createElement('button'); tw.className = 'tw';
-  if (n.asm) { const op = openRows.has(n.id); row.setAttribute('aria-expanded', String(op)); tw.textContent = op ? '▾' : '▸'; tw.setAttribute('aria-label', op ? 'Inklappen in lijst' : 'Uitklappen in lijst'); tw.onclick = () => { op ? openRows.delete(n.id) : openRows.add(n.id); renderTree(); }; } else { tw.tabIndex = -1; tw.setAttribute('aria-hidden', 'true'); }
+  if (n.asm) { const op = openRows.has(n.id); row.setAttribute('aria-expanded', String(op)); tw.textContent = op ? '▾' : '▸'; tw.setAttribute('aria-label', op ? TXT.lijstIn : TXT.lijstUit); tw.onclick = () => { op ? openRows.delete(n.id) : openRows.add(n.id); renderTree(); }; } else { tw.tabIndex = -1; tw.setAttribute('aria-hidden', 'true'); }
   const dot = document.createElement('span'); dot.className = 'dot' + (uiOpen(n) ? ' open' : ''); if (!n.asm) dot.style.visibility = 'hidden';
-  dot.title = uiOpen(n) ? 'uitgeklapt' : 'ingeklapt';
+  dot.title = uiOpen(n) ? TXT.bolOpen : TXT.bolDicht;
   const nm = document.createElement('button'); nm.className = 'tn'; nm.textContent = n.name; nm.onclick = () => reveal(n);
   const c = document.createElement('span'); c.className = 'tc'; c.textContent = n.asm ? n.count : '';
   row.append(tw, dot, nm, c); li.appendChild(row);
@@ -617,18 +673,18 @@ function renderTree() {
     if (byNum) uiPnReady();
     all = ALL.filter(n => terms.some(t => n.norm.includes(t)) || (byNum && (uiPnIdx.get(n) || { q: '' }).q.includes(qn)));
   }
-  const key = els.search.value + '|' + uiPnGen + '|' + (all ? all.length + '|' + uiTreeSig(all.slice(0, 80)) : uiTreeSig([ROOT]));
+  const key = els.search.value + '|' + uiPnGen + '|' + (all ? all.length + '|' + uiTreeSig(all.slice(0, CFG.indeling.treffers)) : uiTreeSig([ROOT]));
   if (key === uiTreeKey) return;
   uiTreeKey = key;
   els.tree.innerHTML = '';
   const ul = document.createElement('ul');
   if (all) {
-    const hits = all.slice(0, 80);
-    const syn = terms.length > 1 ? ` (ook gezocht op ${terms.slice(1).join(', ')})` : '';
-    els.treeInfo.textContent = all.length ? (all.length === 1 ? '1 treffer' : `${all.length} treffers`) + syn + (all.length > hits.length ? `, de eerste ${hits.length} staan hieronder` : '') : 'Geen onderdeel gevonden met die naam' + syn + '.';
-    hits.forEach(n => { const li = treeRow(n, 1); const small = document.createElement('div'); small.className = 'tpath'; small.textContent = ancestors(n).slice(1).map(a => a.name).join(' › ') || 'hele auto'; li.appendChild(small); ul.appendChild(li); });
+    const hits = all.slice(0, CFG.indeling.treffers);
+    const syn = terms.length > 1 ? TXT.zoekOok(terms.slice(1)) : '';
+    els.treeInfo.textContent = all.length ? TXT.treffers(all.length) + syn + (all.length > hits.length ? TXT.eersteN(hits.length) : '') : TXT.geenTreffer(syn);
+    hits.forEach(n => { const li = treeRow(n, 1); const small = document.createElement('div'); small.className = 'tpath'; small.textContent = ancestors(n).slice(1).map(a => a.name).join(' › ') || TXT.heleAuto; li.appendChild(small); ul.appendChild(li); });
   } else {
-    els.treeInfo.textContent = q.length === 1 ? 'Typ minstens twee letters.' : '';
+    els.treeInfo.textContent = q.length === 1 ? TXT.tweeLetters : '';
     ul.appendChild(treeRow(ROOT, 1));
   }
   els.tree.appendChild(ul);
@@ -649,7 +705,7 @@ function setSheet(state) {
   if (uiSide()) state = 'open'; // zijkolom: altijd de volle inhoud, geen peek en geen lade
   els.sheet.dataset.state = state;
   $('sheetToggle').setAttribute('aria-expanded', String(state === 'open'));
-  $('sheetToggle').setAttribute('aria-label', state === 'open' ? 'Paneel kleiner maken' : 'Paneel groter maken');
+  $('sheetToggle').setAttribute('aria-label', state === 'open' ? TXT.paneelKleiner : TXT.paneelGroter);
   $('btnParts').setAttribute('aria-pressed', String(state === 'open' && !$('tab-tree').hidden));
   $('btnView').setAttribute('aria-pressed', String(state === 'open' && !$('tab-view').hidden));
   syncSheetHeight(); layoutView(); uiRefitSoon();
@@ -665,7 +721,7 @@ function syncSheetHeight() {
 }
 
 /* ---------- weergave-bediening ---------- */
-$('spread').addEventListener('input', e => { uiSetSpread(e.target.value / 100, false); $('spreadOut').textContent = e.target.value + '%'; requestRender(); });
+$('spread').addEventListener('input', e => { uiSetSpread(e.target.value / 100, false); $('spreadOut').textContent = TXT.procent(e.target.value); requestRender(); });
 $('spread').addEventListener('change', () => { updateGround(); focusNodes(contextNodes()); });
 $('tLabels').addEventListener('change', e => { LABELS = e.target.checked; requestRender(); });
 $('tXray').addEventListener('change', e => { uiPush(); XRAY = e.target.checked; clearPreset(); applyMats(); uiAfterAction(); });
@@ -696,7 +752,7 @@ uiThemeBtns.forEach((b, i) => {
 });
 uiSyncTheme();
 // U9: beeld opslaan en de kaart afdrukken
-function uiSlug(s) { return uiNorm(s).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'beeld'; }
+function uiSlug(s) { return uiNorm(s).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || TXT.beeldNaam; }
 function uiSaveImage() {
   const n = SEL || ROOT, r = uiPnRec(n), nums = r && r.kind === 'zelf' && r.u ? [...(r.u.oe || []).map(x => x[0]), ...(r.u.am || []).map(x => x[0] + ' ' + x[1])] : [];
   uiBatchSync(); renderer.render(scene, camera); // op verzoek tekenen: de buffer wordt na het tonen niet bewaard
@@ -709,14 +765,14 @@ function uiSaveImage() {
   g.fillStyle = cs.color || '#151a21'; g.textBaseline = 'middle';
   g.font = `700 ${Math.round(15 * dpr)}px ${cs.fontFamily}`; g.fillText(n.name, Math.round(14 * dpr), h + bar / 2, w * 0.55);
   g.font = `${Math.round(12 * dpr)}px ${cs.fontFamily}`; g.textAlign = 'right';
-  g.fillText((nums.length ? 'Onderdeelnummer ' + nums.slice(0, 2).join(', ') + ' · ' : '') + AUTO.titel + ', versie ' + uiVersion, w - Math.round(14 * dpr), h + bar / 2, w * 0.43);
+  g.fillText((nums.length ? TXT.beeldNummer(nums.slice(0, 2).join(', ')) : '') + TXT.beeldVoet(AUTO.titel, uiVersion), w - Math.round(14 * dpr), h + bar / 2, w * 0.43);
   const name = `${AUTO.id}-${uiSlug(n.name)}.png`;
   return new Promise(res => c2.toBlob(blob => {
-    if (!blob) { uiToast('Het beeld kon niet worden opgeslagen.'); res(null); return; }
+    if (!blob) { uiToast(TXT.beeldMislukt); res(null); return; }
     const a = document.createElement('a'), url = URL.createObjectURL(blob);
     a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 2000);
-    uiToast('Beeld opgeslagen als ' + name);
+    uiToast(TXT.beeldOpgeslagen(name));
     res({ name, w: c2.width, h: c2.height, numbers: nums });
   }, 'image/png'));
 }
@@ -727,7 +783,7 @@ let uiToastTimer = 0;
 function uiToast(txt) {
   els.toast.textContent = txt; els.toast.hidden = false; els.toast.classList.remove('gone');
   clearTimeout(uiToastTimer);
-  uiToastTimer = setTimeout(() => { els.toast.classList.add('gone'); setTimeout(() => { if (els.toast.classList.contains('gone')) els.toast.hidden = true; }, REDUCED ? 0 : 300); }, UI_TOAST_MS);
+  uiToastTimer = setTimeout(() => { els.toast.classList.add('gone'); setTimeout(() => { if (els.toast.classList.contains('gone')) els.toast.hidden = true; }, REDUCED ? 0 : 300); }, CFG.tijd.toastMs);
 }
 // R2: melding die blijft staan tot ze wordt weggehaald (contextverlies)
 function uiNotice(txt) { els.notice.hidden = !txt; els.notice.textContent = txt || ''; }
@@ -761,18 +817,17 @@ function uiApplyX(w, x, now) {
   // Een opgetild onderdeel gaat terug zodra zijn groep dichtgaat, anders zweeft het buiten de gesloten auto.
   if (uiLifted && !uiOpen(uiLifted.parent)) uiDrop();
 }
-const uiFmt = (v, d = 1) => v.toFixed(d).replace('.', ',');
 let uiDrag = false, uiPlayS = null;
 // Golf 5c-2, P3: tijdens afspelen draait dit elk frame; de DOM (waarde, tekst, aria-* en het pictogram) alleen schrijven als
 // er iets verandert.
 function uiSyncExplode(fromSlider) {
   const w = uiWorking(), L = uiLevels(w).length, x = uiExplodeX(w), v = L ? x / L : 0;
-  const val = String(Math.round(v * 1000)), pct = Math.round(v * 100) + '%', vt = `${uiFmt(x)} van ${L} ${L === 1 ? 'laag' : 'lagen'}`;
+  const val = String(Math.round(v * 1000)), pct = TXT.procent(Math.round(v * 100)), vt = TXT.lagen(x, L);
   if (!fromSlider && !uiDrag && els.explode.value !== val) els.explode.value = val;
   if (els.explodeOut.textContent !== pct) els.explodeOut.textContent = pct;
   if (els.explode.getAttribute('aria-valuetext') !== vt) els.explode.setAttribute('aria-valuetext', vt);
   if (els.explodeName.textContent !== w.name) { els.explodeName.textContent = w.name; uiUiDirty = true; }
-  const lbl = uiPlayS ? 'Stop' : (v >= 0.999 ? 'Monteren' : 'Demonteren');
+  const lbl = uiPlayS ? TXT.stop : (v >= 0.999 ? TXT.monteren : TXT.demonteren);
   if (els.play.lastChild.textContent !== lbl) { els.play.lastChild.textContent = lbl; els.play.setAttribute('aria-label', lbl); uiUiDirty = true; }
   const pressed = String(!!uiPlayS);
   if (els.play.getAttribute('aria-pressed') !== pressed) els.play.setAttribute('aria-pressed', pressed);
@@ -855,9 +910,9 @@ function uiSyncCats() {
     const cat = b.dataset.cat, n = PRESETS.filter(q => q.cat === cat && appPresetOk(q)).length;
     const on = !!p && p.cat === cat;
     b.classList.toggle('on', on);
-    const txt = cat === 'Overzicht' && appTour ? 'Rondleiding loopt' : (on ? p.label : `${n} presets`);
+    const txt = cat === 'Overzicht' && appTour ? TXT.tourLoopt : (on ? p.label : TXT.presetsAantal(n));
     if (b.lastChild.textContent !== txt) { b.lastChild.textContent = txt; uiUiDirty = true; textChanged = true; }
-    b.setAttribute('aria-label', `${cat}${on ? ', actief: ' + p.label : ''}`);
+    b.setAttribute('aria-label', TXT.catAria(cat, on ? p.label : ''));
   }
   // De naam van de actieve preset kan de presetbalk laten omslaan naar een tweede rij en zo het vrije beeld verkleinen.
   // Direct opnieuw meten: layoutView ziet dan de nieuwe hoogte en laat de camera opnieuw inpassen (G1), nog voor de
@@ -885,13 +940,13 @@ function uiOpenMenu(cat, btn) {
   // U6: de kop met de sluitknop staat buiten het element met role="menu"; dat bevat alleen menuitems
   const head = document.createElement('div'); head.className = 'mhead';
   head.innerHTML = `<span>${esc(cat)}</span>`;
-  const close = document.createElement('button'); close.className = 'mclose'; close.setAttribute('aria-label', 'Menu sluiten'); close.textContent = '×'; close.onclick = () => uiCloseMenu(true);
+  const close = document.createElement('button'); close.className = 'mclose'; close.setAttribute('aria-label', TXT.menuSluiten); close.textContent = '×'; close.onclick = () => uiCloseMenu(true);
   head.appendChild(close); m.appendChild(head);
-  const list = document.createElement('div'); list.setAttribute('role', 'menu'); list.setAttribute('aria-label', 'Presets ' + cat); m.appendChild(list);
+  const list = document.createElement('div'); list.setAttribute('role', 'menu'); list.setAttribute('aria-label', TXT.menuAria(cat)); m.appendChild(list);
   for (const p of PRESETS.filter(q => q.cat === cat && appPresetOk(q))) {
     const b = document.createElement('button');
     b.className = 'mi'; b.setAttribute('role', 'menuitem'); b.dataset.preset = p.id; b.tabIndex = -1;
-    const label = p.tour && appTour ? 'Stop rondleiding' : p.label;
+    const label = p.tour && appTour ? TXT.tourStoppen : p.label;
     b.innerHTML = `<span class="mi-t">${esc(label)}${p.key ? `<kbd>${p.key}</kbd>` : ''}</span><span class="mi-n">${esc(p.note)}</span>`;
     if (p.id === ACTIVE_PRESET) b.setAttribute('aria-current', 'true');
     b.onclick = () => { uiCloseMenu(false); uiRunPreset(p.id); };
@@ -908,7 +963,7 @@ function uiOpenMenu(cat, btn) {
 function uiPlaceMenu() {
   const m = els.menu, btn = uiMenuBtn;
   if (!btn || m.hidden) return;
-  if (window.innerWidth <= 600) { m.style.left = ''; m.style.top = ''; m.style.bottom = ''; m.style.maxHeight = ''; return; }
+  if (window.innerWidth <= CFG.indeling.smal) { m.style.left = ''; m.style.top = ''; m.style.bottom = ''; m.style.maxHeight = ''; return; }
   const r = btn.getBoundingClientRect();
   const w = m.offsetWidth;
   m.style.left = clamp(r.left, 8, window.innerWidth - w - 8) + 'px';
@@ -947,10 +1002,10 @@ function uiRunPreset(id) {
   return appApplyPreset(p);
 }
 function uiTourCaption(p, i, n) {
-  if (!p) { els.tourBar.hidden = true; if (window.innerWidth < 920) layoutView(); uiUiChanged(); return; }
-  els.tourText.innerHTML = `<b>Rondleiding ${i + 1} van ${n} · ${esc(p.label)}</b>${esc(p.note)}`;
+  if (!p) { els.tourBar.hidden = true; if (uiNarrow()) layoutView(); uiUiChanged(); return; }
+  els.tourText.innerHTML = `<b>${TXT.tourKop(i + 1, n, esc(p.label))}</b>${esc(p.note)}`;
   els.tourBar.hidden = false;
-  if (window.innerWidth < 920) layoutView();
+  if (uiNarrow()) layoutView();
   uiUiChanged();
 }
 // R4: de knoppen in de rondleidingsbalk volgen de stand (pauze of hervat, vorige uit bij de eerste stap)
@@ -958,7 +1013,7 @@ function uiSyncTour() {
   uiSyncCats();
   const t = appTour, paused = !!(t && t.paused), pb = $('tourPause');
   pb.setAttribute('aria-pressed', String(paused));
-  pb.setAttribute('aria-label', paused ? 'Hervatten' : 'Pauze'); pb.title = paused ? 'Rondleiding hervatten' : 'Rondleiding pauzeren';
+  pb.setAttribute('aria-label', paused ? TXT.hervatten : TXT.pauze); pb.title = paused ? TXT.tourHervatten : TXT.tourPauzeren;
   pb.firstElementChild.innerHTML = paused ? '<path d="M8 5l11 7-11 7z"/>' : '<path d="M7 5h4v14H7zM13 5h4v14h-4z"/>';
   $('tourPrev').disabled = !t || t.i <= 0;
   $('tourNext').disabled = !t;
@@ -999,33 +1054,19 @@ function pick(cx, cy, loose, hover) {
   if (hit && uiDimSet && uiDimmed(hit.object)) { const f = hits.find(h => !uiDimmed(h.object)); if (f) hit = f; }
   if (hit) return hit.object.userData.node;
   if (!loose) return null;
-  // vinger naast een klein onderdeel: het dichtstbijzijnde onderdeel binnen 22 px
-  let best = null, bd = 22 * 22;
+  // vinger naast een klein onderdeel: het dichtstbijzijnde onderdeel binnen CFG.gebaar.naastPx
+  let best = null, bd = CFG.gebaar.naastPx * CFG.gebaar.naastPx;
   for (const m of list) {
     const n = m.userData.node;
-    uiPv.copy(n.lc).applyMatrix4(m.matrixWorld).project(camera);
+    uiToScreen(uiPv.copy(n.lc).applyMatrix4(m.matrixWorld), r.width, r.height);
     if (uiPv.z > 1) continue;
-    const dx = (uiPv.x * 0.5 + 0.5) * r.width + r.left - cx, dy = (-uiPv.y * 0.5 + 0.5) * r.height + r.top - cy, d = dx * dx + dy * dy;
+    const dx = uiPv.x + r.left - cx, dy = uiPv.y + r.top - cy, d = dx * dx + dy * dy;
     if (d < bd) { bd = d; best = n; }
   }
   return best;
 }
 // Wat een klik in de huidige modus zou raken.
-function uiActTarget(p) {
-  if (!p) return null;
-  if (OPENMODE) { const pl = uiOpenPlan(p); return pl ? pl.n : p; }
-  if (MODE === 'part') return uiOpen(p.parent) ? p : p.parent;
-  if (MODE === 'layers') return pathFrom(p).find(x => x.asm && !uiOpen(x)) || p;
-  if (MODE === 'collapse') return uiDeepestOpen(p) || p;
-  return p;
-}
-function uiTipText(p, t) {
-  if (OPENMODE) { const pl = uiOpenPlan(p); return pl ? `${uiOpenLabel(pl.n)} · <i>klik om te ${pl.open ? 'openen' : 'sluiten'}</i>` : `${p.name} · <i>niets te openen</i>`; }
-  if (MODE === 'collapse') return t.asm ? `${t.name} · ${fmtCount(t)} · klik om in te klappen` : `${p.name} · <i>niets uitgeklapt om in te klappen</i>`;
-  if (MODE === 'select') return `${p.name} · <i>klik voor gegevens</i>`;
-  if (t.asm) return `${t.name} · ${fmtCount(t)} · klik om uit te klappen`;
-  return `${t.name} · <i>klik om uit te lichten</i>`;
-}
+function uiActTarget(p) { return p ? uiMode().target(p) : null; }
 function uiShowTip(html, x, y) {
   const tip = els.tip;
   if (tip._h !== html) { tip.innerHTML = html.replace(/<(?!\/?i>)/g, '&lt;'); tip._h = html; }
@@ -1044,15 +1085,15 @@ function uiDoHover() {
   uiHoverT = performance.now();
   const p = pick(uiHoverPos.x, uiHoverPos.y, false, true);
   if (!p) { uiHideTip(); return; }
-  const t = uiActTarget(p);
+  const m = uiMode(), t = m.target(p);
   if (uiSetHover(t)) requestRender();
-  uiShowTip(uiTipText(p, t), uiHoverPos.x, uiHoverPos.y);
-  canvas.style.cursor = OPENMODE && !uiOpenPlan(p) ? '' : 'pointer';
+  uiShowTip(m.tip(p, t), uiHoverPos.x, uiHoverPos.y);
+  canvas.style.cursor = m.cursor(p) ? 'pointer' : '';
 }
 function uiHoverTarget(x, y) { const p = pick(x, y); const t = uiActTarget(p); return t ? t.name : null; }
 
 const uiPtrs = new Map();
-let down = null, pointers = 0, uiLastTap = null, uiPressS = null;
+let down = null, uiLastTap = null, uiPressS = null;
 function uiCancelPress() {
   if (!uiPressS) return;
   clearTimeout(uiPressS.show); clearTimeout(uiPressS.fire); clearTimeout(uiPressS.zero); cancelAnimationFrame(uiPressS.raf);
@@ -1063,18 +1104,17 @@ function uiCancelPress() {
 // niet op het moment waarop een handler toevallig draait. De timer toont de ring en wapent het lang drukken;
 // vóór het doorvoeren laat hij wachtende invoer eerst afhandelen (een animatieframe en daarna een nul-timeout).
 // Komt er in die tijd een pointerup of pointercancel binnen, dan beslist die (op zijn eigen tijdstempel).
-const UI_PRESS_MS = 500;
 function uiCommitPress(d, fromUp) {
   if (d.consumed || (d.ended && !fromUp)) return;
   d.consumed = true;
   if (uiPressS && uiPressS.d === d) uiCancelPress();
-  try { navigator.vibrate && navigator.vibrate(UI_PRESS_VIBRATE_MS); } catch (_) { } // U8: de ring is vol (alleen waar vibrate bestaat)
+  try { navigator.vibrate && navigator.vibrate(CFG.gebaar.trilMs); } catch (_) { } // U8: de ring is vol (alleen waar vibrate bestaat)
   if (d.pick) uiCollapseAt(d.pick);
 }
 function uiStartPress(d) {
   uiCancelPress();
   const s = uiPressS = { d, raf: 0, zero: 0 };
-  s.show = setTimeout(() => { els.press.style.transform = `translate(${d.x}px, ${d.y}px)`; els.press.hidden = false; void els.press.offsetWidth; els.press.classList.add('run'); }, 150);
+  s.show = setTimeout(() => { els.press.style.transform = `translate(${d.x}px, ${d.y}px)`; els.press.hidden = false; void els.press.offsetWidth; els.press.classList.add('run'); }, CFG.gebaar.ringMs);
   // gewapend: eerst wachtende invoer laten afhandelen, dan pas doorvoeren als de vinger er nog ligt. Kwam een timer
   // te laat (de hoofddraad was bezig, er kan invoer in de rij staan), dan opnieuw kijken tot de draad weer vrij is.
   s.tries = 0;
@@ -1088,12 +1128,11 @@ function uiStartPress(d) {
       uiCommitPress(d);
     }));
   };
-  later(UI_PRESS_MS, check);
+  later(CFG.gebaar.drukMs, check);
 }
 canvas.addEventListener('pointerdown', e => {
   for (const l of labelPool) l._pd = false; // elk gebaar begint schoon: geen label houdt een oude druk vast
   uiPtrs.set(e.pointerId, e.pointerType);
-  pointers = uiPtrs.size;
   try { canvas.focus({ preventScroll: true }); } catch (_) { }
   uiHideTip();
   if (uiPtrs.size === 1) {
@@ -1103,31 +1142,31 @@ canvas.addEventListener('pointerdown', e => {
   } else { if (down) down.ended = true; down = null; uiCancelPress(); }
 });
 canvas.addEventListener('pointermove', e => {
-  if (down && down.id === e.pointerId && Math.hypot(e.clientX - down.x, e.clientY - down.y) >= 7) uiCancelPress();
+  if (down && down.id === e.pointerId && Math.hypot(e.clientX - down.x, e.clientY - down.y) >= CFG.gebaar.sleepPx) uiCancelPress();
   if (e.pointerType !== 'mouse' || e.buttons) { if (!els.tip.hidden) uiHideTip(); return; }
   uiHoverPos = { x: e.clientX, y: e.clientY };
-  const wait = 60 - (performance.now() - uiHoverT);
+  const wait = CFG.gebaar.aanwijsMs - (performance.now() - uiHoverT);
   if (wait <= 0) uiDoHover(); else if (!uiHoverTimer) uiHoverTimer = setTimeout(uiDoHover, wait);
 });
 canvas.addEventListener('pointerleave', () => { uiHoverPos = null; clearTimeout(uiHoverTimer); uiHoverTimer = 0; uiHideTip(); });
 canvas.addEventListener('pointerup', e => {
-  uiPtrs.delete(e.pointerId); pointers = uiPtrs.size;
+  uiPtrs.delete(e.pointerId);
   if (!down || down.id !== e.pointerId) return;
   const d = down; down = null;
   d.ended = true;
   uiCancelPress();
   if (d.consumed) return;
   const moved = Math.hypot(e.clientX - d.x, e.clientY - d.y), dt = e.timeStamp - d.t;
-  if (moved >= 7) return; // slepen is nooit een klik
+  if (moved >= CFG.gebaar.sleepPx) return; // slepen is nooit een klik
   // lang drukken op touch: beslist door de duur van het gebaar zelf, ook als de timer nog niet aan de beurt was
-  if (d.type !== 'mouse' && d.button === 0 && dt >= UI_PRESS_MS) { uiCommitPress(d, true); return; }
-  if (dt >= 600) return;
+  if (d.type !== 'mouse' && d.button === 0 && dt >= CFG.gebaar.drukMs) { uiCommitPress(d, true); return; }
+  if (dt >= CFG.gebaar.tikMaxMs) return;
   if (d.button === 2) { if (d.type === 'mouse') { d.pick ? uiCollapseAt(d.pick) : uiBackground(); } return; }
   if (d.button !== 0) return;
   const now = e.timeStamp, L = uiLastTap;
-  if (L && now - L.t < 420 && now - L.t >= 0 && Math.hypot(e.clientX - L.x, e.clientY - L.y) < 26 && L.type === d.type) {
+  if (L && now - L.t < CFG.gebaar.dubbelMs && now - L.t >= 0 && Math.hypot(e.clientX - L.x, e.clientY - L.y) < CFG.gebaar.dubbelPx && L.type === d.type) {
     uiLastTap = null;
-    if (OPENMODE) return; // in Openen is dubbelklik gelijk aan een enkele klik: de eerste klik heeft al gedaan wat er te doen was
+    if (!uiMode().dubbel) return; // in Openen is dubbelklik gelijk aan een enkele klik
     if (L.pick) uiDive(L.pick); // altijd het onderdeel van de eerste tik
     return;
   }
@@ -1135,9 +1174,9 @@ canvas.addEventListener('pointerup', e => {
   if (d.shift) { d.pick ? uiCollapseAt(d.pick) : uiBackground(); return; }
   uiAct(d.pick);
 });
-const uiPtrReset = () => { uiPtrs.clear(); pointers = 0; if (down) down.ended = true; down = null; uiCancelPress(); };
-canvas.addEventListener('pointercancel', e => { uiPtrs.delete(e.pointerId); pointers = uiPtrs.size; if (down && down.id === e.pointerId) { down.ended = true; down = null; } uiCancelPress(); });
-canvas.addEventListener('lostpointercapture', e => { if (uiPtrs.has(e.pointerId) && down && down.id === e.pointerId && down.type !== 'mouse') { uiPtrs.delete(e.pointerId); pointers = uiPtrs.size; } });
+const uiPtrReset = () => { uiPtrs.clear(); if (down) down.ended = true; down = null; uiCancelPress(); };
+canvas.addEventListener('pointercancel', e => { uiPtrs.delete(e.pointerId); if (down && down.id === e.pointerId) { down.ended = true; down = null; } uiCancelPress(); });
+canvas.addEventListener('lostpointercapture', e => { if (uiPtrs.has(e.pointerId) && down && down.id === e.pointerId && down.type !== 'mouse') uiPtrs.delete(e.pointerId); });
 window.addEventListener('blur', uiPtrReset);
 document.addEventListener('visibilitychange', () => { if (document.hidden) uiPtrReset(); });
 canvas.addEventListener('contextmenu', e => e.preventDefault()); // rechtsklik zelf wordt in pointerup afgehandeld (niet na slepen)
@@ -1156,16 +1195,14 @@ function uiInitHint() {
   try { seen = window.localStorage.getItem(uiHintKey) === '1'; } catch (_) { seen = false; }
   if (seen) { els.hint.hidden = true; return; }
   uiHintStage = 1;
-  els.hint.textContent = uiTouch
-    ? 'Tik op een onderdeel om het uit te klappen · dubbeltik om er direct heen te gaan · houd vast om in te klappen'
-    : 'Klik op een onderdeel om het uit te klappen · dubbelklik om er direct naartoe te gaan · rechtsklik om in te klappen';
-  setTimeout(uiHintNext, UI_HINT_MS);
+  els.hint.textContent = uiTouch ? TXT.hintTik : TXT.hintKlik;
+  setTimeout(uiHintNext, CFG.tijd.hintMs);
 }
 // U8: na de uitleg één concrete suggestie, tot de eerste klik of tik (daarna nooit meer: de hint telt als gezien)
 function uiHintNext() {
   if (uiHintStage !== 1 || els.hint.hidden || els.hint.classList.contains('gone')) return;
   uiHintStage = 2;
-  els.hint.textContent = uiTouch ? 'Probeer: tik op de motorkap' : 'Probeer: klik op de motorkap';
+  els.hint.textContent = uiTouch ? TXT.probeerTik : TXT.probeerKlik;
   uiUiChanged();
 }
 function hideHint(instant) {
@@ -1179,8 +1216,8 @@ function hideHint(instant) {
 // U7: het hulpvenster leest de categorieën en sneltoetsen uit appCats en PRESETS (niet met de hand bijhouden)
 function uiFillHelp() {
   const keyed = PRESETS.filter(p => p.key && appPresetOk(p)).sort((a, b) => a.key.localeCompare(b.key));
-  $('helpCats').textContent = `${appCats.length} categorieën (${appCats.join(', ')}) met kant-en-klare standen, ook de rondleiding.`;
-  $('helpKeysT').innerHTML = keyed.length ? `<kbd>${esc(keyed[0].key)}</kbd> tot <kbd>${esc(keyed[keyed.length - 1].key)}</kbd>` : '';
+  $('helpCats').textContent = TXT.hulpCats(appCats);
+  $('helpKeysT').innerHTML = keyed.length ? TXT.hulpToetsen(esc(keyed[0].key), esc(keyed[keyed.length - 1].key)) : '';
   $('helpKeys').textContent = keyed.map(p => p.label).join(', ') + '.';
 }
 // U6: zolang het hulpvenster open is, is de rest van de pagina inert (waar de browser dat kent) en blijft Tab in het venster
@@ -1206,19 +1243,8 @@ $('helpClose').onclick = () => uiHelp(false);
 els.helpDlg.addEventListener('click', e => { if (e.target === els.helpDlg) uiHelp(false); });
 
 /* ---------- toetsenbord (werkt zodra de pagina de focus heeft; het canvas krijgt die bij de eerste aanraking) ---------- */
-function uiEnter(shift) {
-  const n = SEL || ROOT;
-  if (OPENMODE) { // Enter opent of sluit de opener van de selectie, Shift+Enter sluit de binnenste open opener
-    if (shift) uiOpenClose(n); else { const pl = uiPanelPlan(n); if (pl) uiOpenTo(pl.n, pl.open); }
-    return;
-  }
-  if (shift) { if (n.asm && uiOpen(n)) doCollapse(n); else if (!n.asm) uiCollapseAt(n); return; }
-  if (n.asm && !uiOpen(n)) { doExplode(n); return; }
-  const a = uiClosedAbove(n);
-  if (a) { doExplode(a); return; }
-  if (n.asm) doCollapse(n); else { uiPush(); uiLift(n); uiAfterAction(); }
-}
-if (!uiTouch) els.search.placeholder += ' (toets /)';
+function uiEnter(shift) { uiMode().enter(SEL || ROOT, shift); }
+if (!uiTouch) els.search.placeholder += TXT.zoekToets;
 window.addEventListener('keydown', e => {
   const t = e.target;
   if (!els.helpDlg.hidden) {
@@ -1268,12 +1294,15 @@ const uiSvgNs = 'http://www.w3.org/2000/svg';
 let uiRectCache = [], uiNPlaced = 0, uiVx0 = 0, uiVy0 = 0, uiVx1 = 0, uiVy1 = 0;
 const uiCands = [], uiSpots = [];
 const uiAnchor = V3(0, 0, 0), uiGc = V3(0, 0, 0);
-function uiLabelGroup() {
+// De groep waarvan de kinderen een label krijgen: de open selectie, anders de open context (CTX), en pas als die ver genoeg
+// uitgeklapt is. vooruit (uiAnchorPrefetch): al zodra de groep opengaat, en zonder de vaste labelgroep van een preset.
+// Golf 5c-2, K3: de ankerrij had een eigen kopie van deze keuze.
+function uiLabelGroup(vooruit = false) {
   if (!LABELS) return null;
-  if (uiLabelForce && CTX) return CTX;
-  if (SEL && SEL.asm && uiOpen(SEL) && SEL.amt > 0.6) return SEL;
-  if (CTX && uiOpen(CTX) && CTX.amt > 0.6) return CTX;
-  return null;
+  if (!vooruit && uiLabelForce && CTX) return CTX;
+  const ok = g => g && uiOpen(g) && (vooruit || g.amt > 0.6);
+  if (SEL && SEL.asm && ok(SEL)) return SEL;
+  return ok(CTX) ? CTX : null;
 }
 // Labelanker op de gelabelde knoop zelf. Het midden van het kader (n.lc) ligt bij een groep vaak op een ander deel of
 // in de lucht, zeker als de groep zelf is uitgeklapt (Stuurpomp: Pomphuis en Stroomregelklep). Daarom ankert elk
@@ -1334,11 +1363,6 @@ function uiRankAnchors(k) {
   info.sort((x, y) => rank(x) - rank(y) || x.d - y.d);
   return info.slice(0, 6).map(x => ({ m: x.m, node: x.m.userData.node }));
 }
-function uiMakeAnchors(k) {
-  const a = uiRankAnchors(k);
-  for (const x of a) x.p = uiGeoPoint(x.m.geometry);
-  return a;
-}
 // De ankers van een groep worden niet in één frame gebouwd (bij Carrosserie 17 ms, bij de hoofdgroepen ~19 ms in het
 // midden van het uitklappen): knopen komen in een rij en uiAnchorStep bouwt ze binnen een tijdsbudget per frame, per
 // stap één rangschikking of één geometrie. Tot een knoop klaar is, ankert zijn label op het midden van het kader.
@@ -1368,11 +1392,11 @@ function uiAnchorFlush() { // voor tests en voor finishAll: alles in de rij dire
 // per frame: vooruit inplannen en binnen het budget bouwen; true als er ankers klaar zijn gekomen (labels opnieuw leggen)
 function uiAnchorFrame(active) {
   uiAnchorPrefetch();
-  return (uiAnchorQ.size || uiAnchorJob) ? uiAnchorStep(active ? 2 : 8) : false;
+  return (uiAnchorQ.size || uiAnchorJob) ? uiAnchorStep(active ? CFG.budget.ankerActief : CFG.budget.ankerRust) : false;
 }
 function uiAnchorPrefetch() {
-  const g = LABELS ? (SEL && SEL.asm && uiOpen(SEL) ? SEL : (CTX && uiOpen(CTX) ? CTX : null)) : null;
-  const max = W < 600 ? 10 : 24;
+  const g = uiLabelGroup(true);
+  const max = W < CFG.indeling.smal ? CFG.indeling.labelsSmal : CFG.indeling.labels;
   if (g === uiPfGroup && max === uiPfMax) return;
   uiPfGroup = g; uiPfMax = max;
   if (!g) return;
@@ -1439,7 +1463,7 @@ const uiRadii = [30, 52, 78, 110, 150];
 function updateLabels() {
   if (uiUiDirty) { uiRectCache = uiMeasureUi(); uiUiDirty = false; }
   const g = uiLabelGroup();
-  const max = W < 600 ? UI_LABEL_MAX_NARROW : UI_LABEL_MAX;
+  const max = W < CFG.indeling.smal ? CFG.indeling.labelsSmal : CFG.indeling.labels;
   uiCands.length = 0;
   if (SEL && !SEL.asm && SEL.ev && LABELS) uiCands.push(SEL);
   const lp = uiLabelForce && ACTIVE_PRESET ? appPresetById.get(ACTIVE_PRESET) : null;
@@ -1450,7 +1474,7 @@ function updateLabels() {
   while (labelPool.length < uiCands.length) uiNewLabel();
   for (let i = 0; i < uiCands.length; i++) {
     const k = uiCands[i], el = labelPool[i];
-    if (el._t !== k) { el.firstChild.textContent = String(k.idx + 1); el.lastChild.textContent = k.name; el.title = k.name; el._t = k; el.setAttribute('aria-label', `${k.idx + 1}. ${k.name}`); }
+    if (el._t !== k) { el.firstChild.textContent = String(k.idx + 1); el.lastChild.textContent = k.name; el.title = k.name; el._t = k; el.setAttribute('aria-label', TXT.labelAria(k.idx + 1, k.name)); }
   }
   for (let i = 0; i < uiCands.length; i++) {
     const k = uiCands[i];
@@ -1460,12 +1484,12 @@ function updateLabels() {
   uiVx0 = v.x0 + M; uiVy0 = v.y0 + M; uiVx1 = v.x1 - M; uiVy1 = v.y1 - M;
   uiNPlaced = 0;
   let gx = 0, gy = 0;
-  if (g) { uiGc.copy(g.lc).applyMatrix4(g.obj.matrixWorld).project(camera); gx = (uiGc.x * 0.5 + 0.5) * W; gy = (-uiGc.y * 0.5 + 0.5) * H; }
+  if (g) { uiToScreen(uiGc.copy(g.lc).applyMatrix4(g.obj.matrixWorld)); gx = uiGc.x; gy = uiGc.y; }
   let shown = 0;
   for (let i = 0; i < uiCands.length; i++) {
     const k = uiCands[i], el = labelPool[i];
-    uiLabelAnchor(k, uiAnchor).project(camera);
-    const ax = (uiAnchor.x * 0.5 + 0.5) * W, ay = (-uiAnchor.y * 0.5 + 0.5) * H;
+    uiToScreen(uiLabelAnchor(k, uiAnchor));
+    const ax = uiAnchor.x, ay = uiAnchor.y;
     const w = k._lw || 100, h = k._lh || 22;
     let found = false, dx = 0, dy = 0;
     if (uiAnchor.z <= 1 && ax >= uiVx0 && ax <= uiVx1 && ay >= uiVy0 && ay <= uiVy1) {
@@ -1515,15 +1539,15 @@ let uiLabelsMore = 0, uiMoreEl = null;
 function uiPlaceMore(g) {
   if (!uiMoreEl) {
     uiMoreEl = document.createElement('button'); uiMoreEl.className = 'lmore'; uiMoreEl.hidden = true; uiMoreEl.tabIndex = -1;
-    uiMoreEl.title = 'Alle onderdelen van deze groep in de lijst';
+    uiMoreEl.title = TXT.meerTitel;
     uiMoreEl.onclick = () => { showTab('tree'); if (uiSheetBottom()) setSheet('open'); if (uiMoreEl._g) { openRows.add(uiMoreEl._g.id); renderTree(); } };
     els.labels.appendChild(uiMoreEl);
   }
   const el = uiMoreEl;
   // bij verbergen ook de onthouden plek wissen, anders blijft een chip die op dezelfde plek terugkomt op -9999 staan
   if (!uiLabelsMore) { if (!el.hidden) { el.hidden = true; el.style.transform = 'translate(-9999px,-9999px)'; el._x = el._y = null; } return; }
-  const txt = `+${uiLabelsMore} meer`;
-  if (el.textContent !== txt) { el.textContent = txt; el.setAttribute('aria-label', `${uiLabelsMore} onderdelen meer zonder label; open de lijst`); el._w = 0; }
+  const txt = TXT.meer(uiLabelsMore);
+  if (el.textContent !== txt) { el.textContent = txt; el.setAttribute('aria-label', TXT.meerAria(uiLabelsMore)); el._w = 0; }
   el._g = g;
   if (el.hidden) el.hidden = false;
   if (!el._w) { el._w = el.offsetWidth; el._h = el.offsetHeight; }
@@ -1592,7 +1616,7 @@ function layoutView() {
   // in hoogte verandert nadat de camera was ingepast: opnieuw inpassen, anders valt het onderwerp buiten het beeld.
   // Een kader dat sinds de vorige meting is ingepast, is ingepast op het vrije beeld van die vorige meting (prevFree).
   if (uiLastFit !== uiFitRef) { uiFitRef = uiLastFit; uiFitFree = prevFree; }
-  if (uiFitFree >= 0 && Math.abs((H - VIEW.t - VIEW.b) - uiFitFree) > 24) uiRefitSoon(true);
+  if (uiFitFree >= 0 && Math.abs((H - VIEW.t - VIEW.b) - uiFitFree) > CFG.indeling.herkaderPx) uiRefitSoon(true);
   camera.setViewOffset(W, H, (VIEW.r - VIEW.l) / 2, (VIEW.b - VIEW.t) / 2, W, H);
   camera.updateProjectionMatrix();
   uiPlaceMenu();
@@ -1601,7 +1625,7 @@ function layoutView() {
 }
 // Na een wijziging van het vrije beeld opnieuw inpassen, tenzij de gebruiker de camera zelf heeft verplaatst.
 // Een kader dat na de laatste meting is ingepast, hoort bij het huidige vrije beeld; anders telt het verschil met het vrije beeld bij het inpassen.
-function uiFitStale() { return uiLastFit === uiFitRef && uiFitFree >= 0 && Math.abs((H - VIEW.t - VIEW.b) - uiFitFree) > 24; }
+function uiFitStale() { return uiLastFit === uiFitRef && uiFitFree >= 0 && Math.abs((H - VIEW.t - VIEW.b) - uiFitFree) > CFG.indeling.herkaderPx; }
 function uiRefitNow() {
   const check = uiRefitCheck;
   clearTimeout(uiRefitTimer); uiRefitTimer = 0; uiRefitCheck = false;
@@ -1616,7 +1640,7 @@ function uiRefitNow() {
 function uiRefitSoon(check) {
   uiRefitCheck = !!check && (!uiRefitTimer || uiRefitCheck);
   clearTimeout(uiRefitTimer);
-  uiRefitTimer = setTimeout(uiRefitNow, 160);
+  uiRefitTimer = setTimeout(uiRefitNow, CFG.tijd.herkaderMs);
 }
 let uiDprCap = Math.min(window.devicePixelRatio || 1, 2), uiDpr = uiDprCap;
 function resize() {
@@ -1632,7 +1656,7 @@ function resize() {
 window.addEventListener('resize', () => { resize(); uiRefitSoon(); });
 if (window.ResizeObserver) {
   let lastH = 0;
-  new ResizeObserver(() => { syncSheetHeight(); layoutView(); const h = els.sheet.offsetHeight; if (uiSheetBottom() && Math.abs(h - lastH) > 24) uiRefitSoon(); lastH = h; }).observe(els.sheet);
+  new ResizeObserver(() => { syncSheetHeight(); layoutView(); const h = els.sheet.offsetHeight; if (uiSheetBottom() && Math.abs(h - lastH) > CFG.indeling.herkaderPx) uiRefitSoon(); lastH = h; }).observe(els.sheet);
   new ResizeObserver(() => layoutView()).observe(els.dock);
 }
 
@@ -1710,7 +1734,7 @@ function uiWarmMaterials() {
 let uiContextLost = false;
 canvas.addEventListener('webglcontextlost', e => {
   e.preventDefault(); uiContextLost = true;
-  uiNotice('De 3D-weergave is onderbroken (de grafische context is verloren). De pagina herstelt dit meestal zelf; zo niet, laad haar dan opnieuw.');
+  uiNotice(TXT.contextWeg);
 });
 canvas.addEventListener('webglcontextrestored', () => {
   uiContextLost = false;
@@ -1778,8 +1802,8 @@ function uiBackgroundWork(now, active) {
   // batches bouwen in de vrije tijd van het frame; opnieuw tekenen als de rij leeg is of hoogstens elke 300 ms
   // (een weergave per batch zou in software-WebGL de opbouw zelf vertragen); bij het opstarten hoogstens elke 1,5 s,
   // zodat de eerste batches niet op een rij volle weergaven van de losse auto hoeven te wachten
-  const uiStart = now - uiReadyT < 8000;
-  if (uiBatchOn && (uiBatchQ.size || uiBatchJob) && uiBatchStep(active ? 3 : (uiStart ? 25 : 10)) && (!uiBatchQ.size && !uiBatchJob || now - uiBatchDrawT > (uiStart ? 1500 : 300))) { needs = true; uiBatchDrawT = now; }
+  const uiStart = now - uiReadyT < CFG.tijd.startMs;
+  if (uiBatchOn && (uiBatchQ.size || uiBatchJob) && uiBatchStep(active ? CFG.budget.batchActief : (uiStart ? CFG.budget.batchStart : CFG.budget.batchRust)) && (!uiBatchQ.size && !uiBatchJob || now - uiBatchDrawT > (uiStart ? CFG.budget.batchTekenStartMs : CFG.budget.batchTekenMs))) { needs = true; uiBatchDrawT = now; }
   if (uiTiming.batches === undefined && !uiBatchQ.size && !uiBatchJob) uiTiming.batches = Math.round(now);
   return !!(uiAnchorQ.size || uiAnchorJob || (uiBatchOn && (uiBatchQ.size || uiBatchJob)));
 }
@@ -1797,7 +1821,7 @@ function uiDebugFrame(now, dt, drew) {
   uiDbg.acc += dt;
   if (now - uiDbg.t < 500) return;
   const i = renderer.info.render, fps = uiDbg.acc > 0 ? uiDbg.n / uiDbg.acc : 0;
-  uiDbg.el.textContent = (uiDbg.n ? fps.toFixed(0) + ' fps' : 'rust') + ' · ' + i.calls + ' tekenopdrachten · ' + Math.round(i.triangles / 1000) + 'k driehoeken · dpr ' + renderer.getPixelRatio().toFixed(2) + (uiLite ? ' · lichte weergave' : '') + ' · versie ' + uiVersion;
+  uiDbg.el.textContent = TXT.debug(uiDbg.n ? fps : null, i.calls, Math.round(i.triangles / 1000), renderer.getPixelRatio(), uiLite, uiVersion);
   uiDbg.t = now; uiDbg.n = 0; uiDbg.acc = 0;
 }
 
@@ -1810,7 +1834,7 @@ function uiUrlSync() {
   const q = u.searchParams; q.delete('preset'); q.delete('open');
   if (ACTIVE_PRESET && appPresetById.has(ACTIVE_PRESET) && ACTIVE_PRESET !== 'assembled') q.set('preset', ACTIVE_PRESET);
   else if (OPENMODE) {
-    const open = OPENERS.filter(n => n.ot > 0).map(n => uiNameCount.get(n.name) === 1 ? n.name : uiPathOf(n).replace(/^[^/]+\//, ''));
+    const open = OPENERS.filter(n => n.ot > 0).map(n => uiNameCount.get(n.name) === 1 ? n.name : uiRelPath(n));
     if (open.length) q.set('open', open.join(','));
   }
   const s = q.toString(), next = u.pathname + (s ? '?' + s : '') + u.hash;
@@ -1827,7 +1851,7 @@ function uiUrlApply() {
   }
   if (open) {
     const refs = open.split(',').map(x => x.trim()).filter(Boolean);
-    const p = { id: 'url', cat: 'Openen', label: 'Gedeelde stand', note: 'De stand uit de gedeelde link.', opens: refs };
+    const p = { id: 'url', cat: 'Openen', label: TXT.gedeeldeStand, note: TXT.gedeeldeStandUitleg, opens: refs };
     if (refs.length && appPresetOk(p)) { appApplyPreset(p, { noHistory: true }); finishAll(); }
   }
 }
@@ -1845,7 +1869,7 @@ updateGround();
 { const f = uiFitPoints(uiCollect([ROOT], true), DIRS.iso, 1.04); if (f) { camera.position.copy(f.pos); controls.target.copy(f.target); } uiLastFit = { preset: appPresetById.get('assembled') }; }
 controls.update();
 uiTiming.render0 = Math.round(performance.now());
-LOADING.textContent = 'Eerste weergave…';
+LOADING.textContent = TXT.laadEerste;
 uiBatchSync();
 renderer.render(scene, camera);
 LOADING.classList.add('gone');
@@ -1864,7 +1888,7 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { fo
 
 function finishAll() {
   if (uiRefitTimer) uiRefitNow();
-  for (const n of uiAnim) { n.delay = 0; n.k = 1; n.amt = n.target; n.u = n.amt; placeKids(n); }
+  for (const n of uiAnim) { n.delay = 0; n.k = 1; n.amt = n.target; placeKids(n); }
   if (uiAnim.size) { uiAnim.clear(); uiOpenResync(); }
   for (const n of uiOffAnim) { n.odelay = 0; n.ok = 1; n.off.copy(n.off1); if (n.off.lengthSq() === 0) n.hasOff = false; uiPlace(n); }
   uiOffAnim.clear();
@@ -1937,7 +1961,7 @@ window.__model = {
   // klaar: gebouwd, eerste keer getekend en bedienbaar; op de batches van de beginstand wordt hoogstens 2 s gewacht
   // (tests die gebundelde aantallen meten roepen eerst batchFlush() aan)
   get ready() {
-    const ok = uiReady && (!uiBatchOn || (!uiBatchQ.size && !uiBatchJob) || performance.now() - uiReadyT > 2000);
+    const ok = uiReady && (!uiBatchOn || (!uiBatchQ.size && !uiBatchJob) || performance.now() - uiReadyT > CFG.tijd.klaarMs);
     if (ok && uiTiming.ready === undefined) uiTiming.ready = Math.round(performance.now());
     return ok;
   },

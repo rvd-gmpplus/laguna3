@@ -46,7 +46,6 @@ std('engFoam', 0x46484a, 0, 0.98);
 /* ---------- kleine hulpen (motor) ---------- */
 // zeskantmoer met sleutelmaat-afmeting d (omgeschreven straal 0,92 d), dunne aanroep van hexNut uit core.js
 function engNut(d, h, ax = 'y') { return hexNut(ax, d * 0.92, h); }
-function engStud(len, d, ax = 'y') { return cache(`engStud${len}|${d}|${ax}`, () => yTo(new THREE.CylinderGeometry(d / 2, d / 2, len, 8), ax)); }
 // tapeind met moer: tapeind gecentreerd op de oorsprong, moer op +as (bij afstand 'at')
 function engStudNut(len, d, at, ax = 'y') {
   return cache(`engStudNut${len}|${d}|${at}|${ax}`, () => {

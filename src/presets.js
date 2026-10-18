@@ -9,8 +9,6 @@
 //   opens: [openers] of 'all': de modus Openen met precies deze openers open (pad of unieke naam; een volger telt als zijn
 //   leider). Zonder frame is het kader de open.look.nodes van de eerste opener, met zijn look.dir als richting. Alle andere
 //   presets zetten de modus terug op Uitklappen en sluiten de openers (de modusknop niet: die laat ze staan).
-//   soon: true wacht op een opener van een andere eigenaar: oplossen de namen nog niet, dan verschijnt de preset niet in de
-//   menu's en geeft checkPresets() geen fout; checkPresets(true) toetst ook deze presets.
 // Alleen ankernamen uit contract §8 / tools/anchors.json. Een preset waarvan een naam niet oplost, verschijnt niet in de menu's.
 const appPresetById = new Map(PRESETS.map(p => [p.id, p]));
 
@@ -19,7 +17,7 @@ function appPresetNames(p) {
 }
 // verwijzing naar een opener (pad of unieke naam) zonder consolefout; geeft de leider van de opener, anders null
 function appOpenRef(ref) {
-  const n = !ref ? null : ref.includes('/') ? uiByPath(ref) : (uiNameCount.get(ref) === 1 ? uiNames.get(ref) : null);
+  const n = uiResolve(ref);
   return n && n.opn ? (n.opn.lead || n) : null;
 }
 function appPresetErrors(p) {
@@ -44,13 +42,13 @@ function appPresetErrors(p) {
   }
   return err;
 }
-function appCheckPresets(strict) {
+function appCheckPresets() {
   const err = [], ids = new Set(), keys = new Set();
   for (const p of PRESETS) {
     if (ids.has(p.id)) err.push(`preset-id "${p.id}" komt twee keer voor`); ids.add(p.id);
     if (p.key) { if (keys.has(p.key)) err.push(`sneltoets ${p.key} komt twee keer voor`); keys.add(p.key); }
     if (!appCats.includes(p.cat)) err.push(`preset "${p.label}": onbekende categorie ${p.cat}`);
-    if (!p.soon || strict || !appPresetErrors(p).length) err.push(...appPresetErrors(p));
+    err.push(...appPresetErrors(p));
   }
   for (const id of appTourSteps) if (!appPresetById.has(id)) err.push(`rondleiding: preset "${id}" bestaat niet`);
   return err;
@@ -59,7 +57,7 @@ const appPresetOk = p => p.tour || appPresetErrors(p).length === 0;
 function appSubject(p) {
   if (p.opens && p.opens !== 'all' && !p.frame) { // het kader van de eerste opener (open.look.nodes), anders de opener zelf
     const l = appOpenRef(p.opens[0]), lk = l && l.opn.look, out = [];
-    for (const r of lk && lk.nodes ? lk.nodes : [l]) { const m = typeof r === 'string' ? (r.includes('/') ? uiByPath(r) : uiNames.get(r)) : r; if (m && !out.includes(m)) out.push(m); }
+    for (const r of lk && lk.nodes ? lk.nodes : [l]) { const m = typeof r === 'string' ? uiResolve(r) : r; if (m && !out.includes(m)) out.push(m); }
     if (out.length) return out;
   }
   const names = p.frame || (p.iso && p.iso.length ? p.iso : [appCar]);
@@ -134,7 +132,7 @@ function appApplyPreset(p, opt = {}) {
   ACTIVE_PRESET = p.id;
   uiSyncCats(); uiSyncOpenUi(); // G1: de presetnaam en de openmodus veranderen het dock; eerst meten, dan pas kadreren (geen herkadrering midden in de animatie)
   const sel = p.select ? byName(p.select) : (ISO.length === 1 ? ISO[0] : ROOT);
-  select(sel, { keepPreset: true });
+  select(sel);
   const openSpan = opening.length ? oDur + oStag * (o1 - o0) : 0;
   const camDelay = closing.length ? closeT * 0.6 : 0;
   const camDur = clamp(Math.max(0.9, openSpan + closeT - camDelay), 0.9, 2.5 - camDelay);
@@ -150,7 +148,6 @@ function appApplyPreset(p, opt = {}) {
 /* ---------- rondleiding ---------- */
 // R4: de rondleiding kent pauze en hervat (knop, of vanzelf als het tabblad verborgen is), vorige en volgende.
 // appTour: { i: huidige stap, timer, due: tijdstip van de volgende stap, left: resttijd bij pauze, paused, auto }
-const APP_TOUR_STEP_MS = 5000, APP_TOUR_STEP_REDUCED_MS = 4500;
 let appTour = null;
 function uiStartTour() {
   uiStopPlay();
@@ -177,7 +174,7 @@ function uiTourStep(dir) {
 }
 function uiTourArm() {
   if (!appTour || appTour.paused) return;
-  const ms = REDUCED ? APP_TOUR_STEP_REDUCED_MS : APP_TOUR_STEP_MS;
+  const ms = REDUCED ? CFG.tijd.tourStapRustigMs : CFG.tijd.tourStapMs;
   appTour.due = performance.now() + ms;
   appTour.timer = setTimeout(uiTourStep, ms);
 }

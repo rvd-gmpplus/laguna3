@@ -1,10 +1,153 @@
 'use strict';
 /* ===================== basis: renderer, scène, materialen, geometrie-hulpen ===================== */
+/* ---------- instellingen van de app (golf 5c-2, K1) ---------- */
+// Alle vaste getallen van de bediening op één plek: gebaren, tijden, rekenbudgetten per frame en indeling. Tijden in ms,
+// tenzij de naam op S eindigt (seconden); afstanden in CSS-pixels. De mediaqueries in head.html gebruiken dezelfde
+// breekpunten met het getal zelf (CSS kent geen variabele in een mediaquery); elk van die regels verwijst naar CFG.indeling.
+const CFG = Object.freeze({
+  gebaar: Object.freeze({
+    sleepPx: 7,          // vanaf zoveel beweging is een gebaar slepen (geen tik, geen lang drukken)
+    tikMaxMs: 600,       // langer ingedrukt (muis) is geen klik
+    dubbelMs: 420,       // tweede tik binnen deze tijd ...
+    dubbelPx: 26,        // ... en binnen deze afstand is een dubbeltik
+    drukMs: 500,         // lang drukken op een aanraakscherm
+    ringMs: 150,         // de ring van lang drukken verschijnt na deze tijd
+    trilMs: 10,          // U8: trilling als de ring vol is
+    naastPx: 22,         // een vinger naast een klein onderdeel: het dichtstbijzijnde binnen deze straal
+    aanwijsMs: 60,       // aanwijzen met de muis hoogstens zo vaak
+  }),
+  tijd: Object.freeze({
+    hintMs: 9000,        // hint bij de start, daarna (U8) de suggestie tot de eerste klik
+    toastMs: 1800,       // U8, U9: korte melding onderin
+    isoFadeMs: 300,      // U4: uitfaden van wat bij isoleren uit beeld gaat
+    tourStapMs: 5000, tourStapRustigMs: 4500, // R4: duur van een stap van de rondleiding (normaal, minder beweging)
+    herkaderMs: 160,     // R3: herkadreren na een formaatwissel of een andere indeling, zoveel later
+    uitklapS: 0.85,      // standaardduur van uitklappen (een volle stap)
+    openS: 0.9,          // standaardduur van openen (open.dur van een opener gaat voor)
+    startMs: 8000,       // zolang na het opstarten krijgen de batches meer rekentijd
+    klaarMs: 2000,       // __model.ready wacht hoogstens zolang op de batches van de beginstand
+  }),
+  budget: Object.freeze({ // rekentijd per frame (ms) voor werk op de achtergrond
+    batchActief: 3, batchRust: 10, batchStart: 25, // samengevoegde groepen bouwen: tijdens beweging, in rust, bij het opstarten
+    batchTekenMs: 300, batchTekenStartMs: 1500,  // na een klare batch hoogstens zo vaak opnieuw tekenen (in rust, bij het opstarten)
+    ankerActief: 2, ankerRust: 8,                // labelankers vooruit bouwen
+  }),
+  indeling: Object.freeze({
+    breekpunt: 920,      // vanaf deze breedte staat het paneel als kolom rechts; smaller is het een lade onderin
+    liggendMaxH: 520,    // smaller dan het breekpunt en hoogstens zo hoog in liggende stand: zijkolom (telefoon liggend)
+    smal: 600,           // smal scherm: minder labels, het presetmenu als lade onderin
+    labels: 24, labelsSmal: 10, // U2: hoogstens zoveel labels
+    historie: 50,        // stappen terug
+    kinderen: 80,        // knoppen in de lijst Bestaat uit
+    treffers: 80,        // zoektreffers in de onderdelenlijst
+    herkaderPx: 24,      // het vrije beeld verandert meer dan dit in hoogte: opnieuw inpassen
+  }),
+});
+/* ---------- teksten van de app (golf 5c-2, K6) ---------- */
+// Elke tekst die de code zelf op de pagina zet, staat in deze tabel; een vertaling vervangt alleen de tabel. Een functie is
+// een sjabloon: de code geeft de waarden, de tabel de zinsbouw (meervoud en volgorde). Niet in deze tabel: wat per auto
+// verschilt (auto.json, in de code AUTO), de vaste teksten van de HTML (head.html), de meldingen voor ontwikkelaars in de
+// console en die van de presetcontrole. HTML-opmaak (<i>, <b>, <kbd>) die in een sjabloon staat, hoort bij de tekst.
+// TXT.num is de opmaakhulp voor getallen in Nederlandse notatie: decimale komma, geen duizendtalpunt (de pagina toont geen
+// getallen van vier cijfers met een eenheid; een telling als 2564 onderdelen blijft zoals hij was).
+const TXT = Object.freeze({
+  taal: 'nl',
+  num: (v, d = 1) => v.toFixed(d).replace('.', ','),
+  procent: p => p + '%',
+  // opstarten en fouten
+  laadDrie: 'De 3D-bibliotheek kon niet worden geladen. Controleer de verbinding en laad de pagina opnieuw.',
+  laadWebgl: 'Deze browser kan geen 3D tekenen (WebGL is niet beschikbaar of uitgeschakeld). Probeer een andere browser of zet hardwareversnelling aan.',
+  laadBouwen: 'Onderdelen bouwen…',
+  laadModelFout: fout => 'Het model kon niet worden opgebouwd (' + fout + '). Laad de pagina opnieuw.',
+  laadEerste: 'Eerste weergave…',
+  contextWeg: 'De 3D-weergave is onderbroken (de grafische context is verloren). De pagina herstelt dit meestal zelf; zo niet, laad haar dan opnieuw.',
+  // paneel: stand en knoppen
+  onderdelen: n => (n === 1 ? '1 onderdeel' : `${n} onderdelen`),
+  stand: Object.freeze({ open: 'Open', dicht: 'Dicht', gemonteerd: 'Gemonteerd', uitgeklapt: 'Uitgeklapt', deels: 'Deels uitgeklapt', ingeklapt: 'Ingeklapt', uitgelicht: 'Uitgelicht', onderdeel: 'Onderdeel' }),
+  inGroep: naam => 'in ' + naam,
+  geisoleerd: ' · geïsoleerd',
+  openKnop: open => (open ? 'Openen' : 'Sluiten'),
+  openKnopAria: (open, opener) => (open ? 'Openen: ' : 'Sluiten: ') + opener,
+  openKnopTitel: (open, opener) => (open ? 'Opent ' : 'Sluit ') + opener + ' (Enter)',
+  uitklappen: 'Uitklappen', inklappen: 'Inklappen',
+  dimTitel: groep => 'De gedimde rest van de auto weer volledig tonen (buiten ' + groep + ')',
+  omhoogVol: 'Alles boven deze selectie is al uitgeklapt',
+  omhoogTitel: 'De dichte groep boven de selectie uitklappen (Enter)',
+  allesTonen: 'Alles tonen', isoleren: 'Isoleren',
+  bestaatUit: n => `Bestaat uit (${n})`,
+  enNog: n => `… en nog ${n} (zie Onderdelen)`,
+  namenEn: namen => namen.join(' en '),
+  // paneel: onderdeelnummers (merk en type komen uit auto.json)
+  pnPast: 'Past volgens catalogus', pnGekozen: 'Gekozen voor deze auto', pnVin: 'Variant: kies op VIN', pnNietGevonden: 'Niet gevonden',
+  pnDeelSet: 'Deel van set', pnDeel: 'Deel van', pnNietOnderzocht: 'Niet onderzocht',
+  pnHieronder: (n, van) => `Hieronder hebben ${n} van ${van} onderdelen een nummer.`,
+  pnKeuze: (nummers, bewijs, zeker) => 'Nummer: ' + nummers + '. Bewijs ' + bewijs + ', zekerheid van de keuze ' + zeker + '.',
+  pnMerkNummer: (merk, meer) => merk + (meer ? '-nummers' : '-nummer'),
+  pnMerkNummerVan: (merk, eenheid) => merk + '-nummer van ' + eenheid,
+  pnAndere: 'Andere fabrikanten',
+  pnKolommen: Object.freeze(['Merk', 'Nummer', 'Bewijs', 'Opmerking']),
+  pnGekozenKort: 'gekozen',
+  pnBewijs: (type, merk) => 'Bewijs: A staat in de catalogus voor dit type (' + type + ') op de juiste plaats; B is het ' + merk + '-nummer van zo\'n artikel; C is een kruisverwijzing van een A- of B-nummer; D komt alleen uit een advertentie voor een gebruikt onderdeel en is niet in een catalogus gecontroleerd.',
+  pnNiveau: (niveau, merk) => ({ A: 'In de catalogus voor dit type, op de juiste plaats', B: merk + '-nummer van een artikel dat voor dit type in de catalogus staat', C: 'Kruisverwijzing van een A- of B-nummer', D: 'Alleen uit een advertentie voor een gebruikt onderdeel van dit model; niet in een catalogus gecontroleerd' }[niveau] || ''),
+  pnVarianten: 'Varianten in de catalogus', pnVariant: 'Variant', pnToelichting: 'Toelichting', pnVerpakking: 'Verpakking', pnBronnen: 'Bronnen',
+  pnOnderhoudEenheid: 'Onderhoud', pnOnderhoud: 'Onderhoud en bekende problemen', pnBron: 'bron',
+  pnGecontroleerd: datum => 'Gegevens gecontroleerd op ' + datum + '.',
+  // tip bij aanwijzen (de code geeft namen en tellingen; <i> is opmaak van de tip)
+  tipUitklappen: (naam, telling) => `${naam} · ${telling} · klik om uit te klappen`,
+  tipUitlichten: naam => `${naam} · <i>klik om uit te lichten</i>`,
+  tipInklappen: (naam, telling) => `${naam} · ${telling} · klik om in te klappen`,
+  tipNietsIn: naam => `${naam} · <i>niets uitgeklapt om in te klappen</i>`,
+  tipInfo: naam => `${naam} · <i>klik voor gegevens</i>`,
+  tipOpen: (opener, open) => `${opener} · <i>klik om te ${open ? 'openen' : 'sluiten'}</i>`,
+  tipNietsOpen: naam => `${naam} · <i>niets te openen</i>`,
+  // onderdelenlijst en zoeken
+  lijstIn: 'Inklappen in lijst', lijstUit: 'Uitklappen in lijst', bolOpen: 'uitgeklapt', bolDicht: 'ingeklapt',
+  zoekOok: termen => ` (ook gezocht op ${termen.join(', ')})`,
+  treffers: n => (n === 1 ? '1 treffer' : `${n} treffers`),
+  eersteN: n => `, de eerste ${n} staan hieronder`,
+  geenTreffer: ook => 'Geen onderdeel gevonden met die naam' + ook + '.',
+  heleAuto: 'hele auto',
+  tweeLetters: 'Typ minstens twee letters.',
+  zoekToets: ' (toets /)',
+  paneelKleiner: 'Paneel kleiner maken', paneelGroter: 'Paneel groter maken',
+  // beeld opslaan en meldingen
+  beeldNummer: nummers => 'Onderdeelnummer ' + nummers + ' · ',
+  beeldVoet: (titel, versie) => titel + ', versie ' + versie,
+  beeldNaam: 'beeld',
+  beeldMislukt: 'Het beeld kon niet worden opgeslagen.',
+  beeldOpgeslagen: naam => 'Beeld opgeslagen als ' + naam,
+  // explosieschuif en afspelen
+  lagen: (x, n) => `${TXT.num(x)} van ${n} ${n === 1 ? 'laag' : 'lagen'}`,
+  stop: 'Stop', monteren: 'Monteren', demonteren: 'Demonteren',
+  // presets, menu en rondleiding
+  tourLoopt: 'Rondleiding loopt',
+  presetsAantal: n => `${n} presets`,
+  catAria: (cat, actief) => cat + (actief ? ', actief: ' + actief : ''),
+  menuSluiten: 'Menu sluiten',
+  menuAria: cat => 'Presets ' + cat,
+  tourStoppen: 'Stop rondleiding',
+  tourKop: (i, n, titel) => `Rondleiding ${i} van ${n} · ${titel}`,
+  hervatten: 'Hervatten', pauze: 'Pauze', tourHervatten: 'Rondleiding hervatten', tourPauzeren: 'Rondleiding pauzeren',
+  gedeeldeStand: 'Gedeelde stand', gedeeldeStandUitleg: 'De stand uit de gedeelde link.',
+  // hint en hulp
+  hintTik: 'Tik op een onderdeel om het uit te klappen · dubbeltik om er direct heen te gaan · houd vast om in te klappen',
+  hintKlik: 'Klik op een onderdeel om het uit te klappen · dubbelklik om er direct naartoe te gaan · rechtsklik om in te klappen',
+  probeerTik: 'Probeer: tik op de motorkap', probeerKlik: 'Probeer: klik op de motorkap',
+  hulpCats: cats => `${cats.length} categorieën (${cats.join(', ')}) met kant-en-klare standen, ook de rondleiding.`,
+  hulpToetsen: (van, tot) => `<kbd>${van}</kbd> tot <kbd>${tot}</kbd>`,
+  // labels
+  labelAria: (nr, naam) => `${nr}. ${naam}`,
+  meer: n => `+${n} meer`,
+  meerAria: n => `${n} onderdelen meer zonder label; open de lijst`,
+  meerTitel: 'Alle onderdelen van deze groep in de lijst',
+  // debug-overlay (?debug=1); fps en dpr in de notatie van het meetgereedschap
+  debug: (fps, calls, ktri, dpr, lite, versie) => (fps != null ? fps.toFixed(0) + ' fps' : 'rust') + ' · ' + calls + ' tekenopdrachten · ' + ktri + 'k driehoeken · dpr ' + dpr.toFixed(2) + (lite ? ' · lichte weergave' : '') + ' · versie ' + versie,
+});
 const LOADING = document.getElementById('loading');
 // tijdlijn van het opstarten (ms sinds het begin van de navigatie), uit te lezen via __model.timing
 const uiTiming = { script: Math.round(performance.now()) };
 if (!window.THREE || !THREE.OrbitControls || !THREE.BufferGeometryUtils || !THREE.RoomEnvironment || !THREE.RoundedBoxGeometry) {
-  LOADING.textContent = 'De 3D-bibliotheek kon niet worden geladen. Controleer de verbinding en laad de pagina opnieuw.';
+  LOADING.textContent = TXT.laadDrie;
   throw new Error('three.js ontbreekt');
 }
 THREE.ColorManagement.legacyMode = false;
@@ -18,7 +161,7 @@ const canvas = document.getElementById('stage');
 // zonder WebGL (of met een geblokkeerde GPU) blijft de laadmelding anders eeuwig op "Model opbouwen" staan
 const renderer = (() => {
   try { return new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' }); } catch (e) {
-    LOADING.textContent = 'Deze browser kan geen 3D tekenen (WebGL is niet beschikbaar of uitgeschakeld). Probeer een andere browser of zet hardwareversnelling aan.';
+    LOADING.textContent = TXT.laadWebgl;
     throw e;
   }
 })();
@@ -123,18 +266,6 @@ std('screen', 0x0b1118, 0.2, 0.1);
 std('filter', 0xdcc8a0, 0, 0.9);
 std('heater', 0xa86a3d, 0.6, 0.45);
 
-const HL = new Map();
-function hlMat(base) {
-  let m = HL.get(base);
-  if (!m) {
-    m = base.clone();
-    m.emissive = new THREE.Color(0xf2c230);
-    m.emissiveIntensity = 0.42;
-    if (m.transparent) m.opacity = Math.max(m.opacity, 0.55);
-    HL.set(base, m);
-  }
-  return m;
-}
 const GHOST = new THREE.MeshStandardMaterial({ color: 0xc4ccd5, metalness: 0, roughness: 0.4, transparent: true, opacity: 0.09, depthWrite: false, side: THREE.DoubleSide });
 const GHOST_HL = new THREE.MeshStandardMaterial({ color: 0xf2c230, emissive: 0xf2c230, emissiveIntensity: 0.25, transparent: true, opacity: 0.35, depthWrite: false, side: THREE.DoubleSide });
 
@@ -381,8 +512,8 @@ let NID = 0;
 function mkNode(obj, name, o) {
   const n = {
     id: NID++, name, d: o.d || '', spec: o.spec || null, obj, kids: [], parent: null, asm: false,
-    ex: o.ex ? V3(...o.ex) : null, exs: o.exs != null ? o.exs : 1, mode: o.mode || null, axis: o.axis ? V3(...o.axis) : null, step: o.step || 0,
-    u: 0, amt: 0, target: 0, delay: 0, base: null, exv: V3(0, 0, 0), sys: null, depth: 0, count: 0, lc: null, rad: 0, tag: o.tag || null,
+    ex: o.ex ? V3(...o.ex) : null, exs: o.exs != null ? o.exs : 1,
+    amt: 0, target: 0, delay: 0, base: null, exv: V3(0, 0, 0), sys: null, depth: 0, count: 0, lc: null, rad: 0,
     inner: !!o.inner,  // ingesloten: onzichtbaar zolang de bovenliggende groep dicht is (de app verbergt het dan)
     opn: o.open || null,    // openmodus: scharnier of schuif (zie docs/ontwerp-en-architectuur.md, "Openmodus")
     strut: o.strut || null, // telescoop (gasveer) die de app tussen twee punten richt

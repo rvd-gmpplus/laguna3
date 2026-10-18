@@ -5,7 +5,7 @@
 const ZF = 2.345, ZR = -2.35;                       // lengte 4695 mm (uiterste punten van de bumpers)
 const BOD_WMAX = 0.915, BOD_MIRW = 1.035, BOD_H = 1.445; // framework: halve breedte zonder en met spiegels, hoogte; integrity.py leest ze
 const AXF = 1.365, AXR = -1.391, AY = 0.33;         // wielbasis 2756 mm, bandstraal 225/45 R18
-const ARCH = 0.385, TRACK = 0.775;                  // wielbooguitsparing (straal om de wielas), oude gemiddelde halve spoorbreedte
+const ARCH = 0.385;                                 // wielbooguitsparing (straal om de wielas)
 const TRACK_F = 0.7785, TRACK_R = 0.756;            // halve spoorbreedte voor en achter (1557 en 1512 mm, brochure april 2011)
 const WS0 = 1.06, WS1 = 0.30, RW0 = -1.17, SP = -2.11; // voorruitbasis, voorruitkop, knik dak/achterruit, onderkant achterruit (lip)
 const bodZT = -2.268, bodYLEDGE = 0.635;            // staartvlak boven de bumper; bovenkant van de achterbumperrichel
@@ -102,12 +102,6 @@ function bodCrease(z, x) {
   return 0.007 * f * (1 - sstep((Math.abs(x) - xc) / 0.05 + 0.5));
 }
 function halfPt(z, s) { return bodHalf(z, s, bodSec(z)); }
-function radii(z) { const c = bodSec(z); return [c.rb, c.rs]; }
-function lowPt(z, p) {
-  const q = ((p % 2) + 2) % 2;
-  if (q <= 1) { const [x, y] = halfPt(z, q); return [x, y, z]; }
-  const [x, y] = halfPt(z, 2 - q); return [-x, y, z];
-}
 // parameter s van de doorsnede bij hoogte y (flank, schouder en dek)
 function sAtY(z, y) {
   const c = bodSec(z), y0 = c.yb + c.rb, y1 = c.cy;
@@ -181,8 +175,6 @@ function surfX(z, y) {
   if (y >= g.yc) return 0;
   const u = clamp((y - g.yre) / g.cr, 0, 1), t = 1 - Math.sqrt(1 - u); return g.xr * (1 - t);
 }
-// punt op de buitenhuid (voor onderdelen die erop zitten)
-function skin(z, y, s, out = 0) { const x = surfX(z, y); return [s * (x + out), y, z]; }
 /* ---------- vlakken bouwen ---------- */
 function patch(fn, u0, u1, nu, vr, nv, breaks = []) {
   const us = [];
@@ -223,10 +215,6 @@ function lowSide(s, z0, z1, nu, vr, nv, breaks, off) {
 // dekpaneel over beide helften: vr(z) geeft de s-ondergrens; het paneel loopt over de hartlijn
 function bodDeck(z0, z1, nu, sLo, nv, breaks, off) {
   return patch((z, p) => bodLow(z, p, off || 0), z0, z1, nu, z => { const a = sLo(z); return [a, 2 - a]; }, nv, breaks);
-}
-function ghSide(s, z0, z1, nu, w0, w1, nv, off) {
-  const fn = off ? offsetFn(ghPt, s, off) : ghPt;
-  return patch(fn, z0, z1, nu, () => sideW(s, w0, w1), nv);
 }
 // kaspaneel aan zijde s met q-bereik per z (linkerhelft, q in [0,1])
 function bodGhSide(s, z0, z1, nu, vr, nv, breaks, out = 0) {
