@@ -67,25 +67,21 @@ function renderPanel() {
   // U6: de live regions (#selName, #selMeta) alleen beschrijven als er iets verandert; een schermlezer leest anders elke
   // herhaalde opbouw van het paneel voor (bij elke handeling twee tot drie keer)
   if (els.name.textContent !== n.name) els.name.textContent = n.name;
-  let state;
-  if (OPENMODE && n.opn && !n.opn.lead) state = n.ot > 0 ? '<span class="state open">Open</span>' : '<span class="state">Dicht</span>';
-  else if (OPENMODE && n.asm) state = '<span class="state">Gemonteerd</span>';
-  else if (n.asm) state = uiOpen(n) ? '<span class="state open">Uitgeklapt</span>' : (n.target > 0 ? '<span class="state">Deels uitgeklapt</span>' : '<span class="state">Ingeklapt</span>');
-  else state = n === uiLifted ? '<span class="state open">Uitgelicht</span>' : '<span class="state">Onderdeel</span>';
+  const m = uiMode(), state = m.state(n);
   const isoTxt = ISO.includes(n) ? ' · geïsoleerd' : '';
   const meta = `${state}${n.asm ? fmtCount(n) : (n.parent ? 'in ' + esc(n.parent.name) : '')}${isoTxt}`;
   if (els.meta._h !== meta) { els.meta._h = meta; els.meta.innerHTML = meta; }
-  const plan = OPENMODE ? uiPanelPlan(n) : null;
+  const plan = m.plan(n);
   els.open.hidden = !plan;
   if (plan) { els.open.textContent = plan.open ? 'Openen' : 'Sluiten'; els.open.setAttribute('aria-label', (plan.open ? 'Openen: ' : 'Sluiten: ') + uiOpenLabel(plan.n)); els.open.title = (plan.open ? 'Opent ' : 'Sluit ') + uiOpenLabel(plan.n) + ' (Enter)'; }
   // in Openen is er niets uit te klappen of te isoleren: alleen de opener en In beeld blijven
-  els.toggle.hidden = !n.asm || OPENMODE;
+  els.toggle.hidden = !n.asm || !m.uitklap;
   els.toggle.textContent = n.asm && uiOpen(n) ? 'Inklappen' : 'Uitklappen';
-  els.all.hidden = !n.asm || OPENMODE;
-  els.dive.hidden = n.asm || OPENMODE;
-  els.dim.hidden = !DIM || OPENMODE;
+  els.all.hidden = !n.asm || !m.uitklap;
+  els.dive.hidden = n.asm || !m.uitklap;
+  els.dim.hidden = !DIM || !m.uitklap;
   if (DIM) els.dim.title = 'De gedimde rest van de auto weer volledig tonen (buiten ' + DIM.name + ')';
-  els.up.hidden = OPENMODE; els.iso.hidden = OPENMODE;
+  els.up.hidden = !m.uitklap; els.iso.hidden = !m.uitklap;
   els.up.disabled = !uiClosedAbove(n);
   els.up.title = els.up.disabled ? 'Alles boven deze selectie is al uitgeklapt' : 'De dichte groep boven de selectie uitklappen (Enter)';
   const isoOn = ISO.length === 1 && ISO[0] === n;
@@ -101,7 +97,7 @@ function uiPanelFixed(n) {
     const b = document.createElement('button'); b.textContent = a.name; b.onclick = () => { uiPush(); select(a, { focus: true }); uiAfterAction(); }; els.crumbs.appendChild(b);
   });
   // in Openen krijgt de wortel een eigen uitleg bij de modus (U7: een eigen tekst, geen knip uit de beschrijving in systems.js)
-  els.desc.textContent = (OPENMODE && n === ROOT) ? uiOpenRootDesc : (n.d || '');
+  els.desc.textContent = uiMode().desc(n);
   els.spec.innerHTML = (n.spec || []).map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('');
   els.spec.hidden = !n.spec;
   els.kids.innerHTML = '';
@@ -310,22 +306,82 @@ function uiSyncLabels() {
 function uiAfterUndo() { applyMats(); uiAfterAction(); }
 function clearPreset() { if (ACTIVE_PRESET) { ACTIVE_PRESET = null; uiSyncCats(); } }
 
-/* ---------- handelingen ---------- */
+/* ---------- klikmodi: één strategie per modus (golf 5c-2, K4) ---------- */
+// In Uitklappen bepaalt de klikmodus van het dock (MODE: part, layers, collapse, select) wat een klik doet; in Openen
+// (OPENMODE) geldt altijd de strategie open, en blijft MODE bewaard voor de terugkeer. uiMode() geeft de geldende strategie.
+// Alle verschillen tussen de modi staan hier, de rest van de code vraagt het aan de strategie:
+//   act(p)          klik of tik op p (een onderdeel, of het label of de lijstregel van een groep)
+//   target(p)       wat een klik op onderdeel p zou raken (aanwijzen, tip, testhaak hoverNode)
+//   tip(p, t)       tiptekst bij aanwijzen, met t = target(p)
+//   cursor(p)       handje bij aanwijzen
+//   collapse(p)     rechtsklik, Shift+klik en lang drukken
+//   enter(n, shift) Enter en Shift+Enter op de selectie
+//   reveal(n)       n kiezen in de lijst, het paneel of de nummers
+//   state(n)        de standbadge in het paneel; plan(n) de openknop in het paneel (null: geen knop); desc(n) de beschrijving
+//   uitklap         het paneel toont de knoppen voor uitklappen, duiken, dimmen en isoleren
+//   dubbel          een dubbelklik duikt naar het onderdeel (in Openen heeft de eerste klik al gedaan wat er te doen was)
+//   dim             duiken dimt de rest (U19)
+//   tint(n)         de geselecteerde knoop krijgt de gele tint (in Openen niet op een opener: die is het doel van de klik)
+function uiSelectAct(p) { uiPush(); select(p); uiAfterAction(); }
 // Klik op onderdeel P (modus Onderdeel): is de eigen groep G dicht, dan klapt alleen G ter plekke uit;
 // staat G al open, dan wordt P geselecteerd en uitgelicht. Een klik klapt nooit een groep boven G uit.
-function uiAct(p) {
-  if (!p) { uiBackground(); return; }
-  if (OPENMODE) { uiOpenAct(p); return; }
-  if (p.asm) { // label of lijst van een groep
-    if (MODE === 'collapse') { if (uiOpen(p)) doCollapse(p); else { uiPush(); select(p); uiAfterAction(); } return; }
-    if (MODE === 'select' || uiOpen(p)) { uiPush(); select(p); uiAfterAction(); return; }
-    doExplode(p); return;
-  }
-  if (MODE === 'collapse') { uiCollapseAt(p); return; }
-  if (MODE === 'select') { uiPush(); select(p); uiAfterAction(); return; }
-  const g = MODE === 'layers' ? pathFrom(p).find(x => x.asm && !uiOpen(x)) : (uiOpen(p.parent) ? null : p.parent);
+// Laag voor laag: G is de buitenste dichte groep op het pad. groupOf(p) geeft G of niets.
+const uiExplodeAct = groupOf => p => {
+  if (p.asm) { if (uiOpen(p)) uiSelectAct(p); else doExplode(p); return; } // label of lijst van een groep
+  const g = groupOf(p);
   if (g) { doExplode(g); return; }
   uiPush(); select(p); uiLift(p); uiAfterAction();
+};
+const uiOuterClosed = p => pathFrom(p).find(x => x.asm && !uiOpen(x));
+function uiCollapseDeepest(p) { const a = uiDeepestOpen(p); if (a) doCollapse(a); else uiSelectAct(p); }
+function uiEnterExplode(n, shift) {
+  if (shift) { if (n.asm && uiOpen(n)) doCollapse(n); else if (!n.asm) uiCollapseAt(n); return; }
+  if (n.asm && !uiOpen(n)) { doExplode(n); return; }
+  const a = uiClosedAbove(n);
+  if (a) { doExplode(a); return; }
+  if (n.asm) doCollapse(n); else { uiPush(); uiLift(n); uiAfterAction(); }
+}
+function uiStateExplode(n) {
+  if (n.asm) return uiOpen(n) ? '<span class="state open">Uitgeklapt</span>' : (n.target > 0 ? '<span class="state">Deels uitgeklapt</span>' : '<span class="state">Ingeklapt</span>');
+  return n === uiLifted ? '<span class="state open">Uitgelicht</span>' : '<span class="state">Onderdeel</span>';
+}
+const uiTipExplode = (p, t) => t.asm ? `${t.name} · ${fmtCount(t)} · klik om uit te klappen` : `${t.name} · <i>klik om uit te lichten</i>`;
+// gemeenschappelijk voor de vier klikmodi van Uitklappen
+const uiModeExplode = {
+  tip: uiTipExplode, cursor: () => true, collapse: uiCollapseDeepest, enter: uiEnterExplode, reveal: uiRevealExplode,
+  state: uiStateExplode, plan: () => null, desc: n => n.d || '', uitklap: true, dubbel: true, dim: true, tint: () => true,
+};
+const UI_MODES = {
+  part: Object.assign({}, uiModeExplode, { act: uiExplodeAct(p => (uiOpen(p.parent) ? null : p.parent)), target: p => (uiOpen(p.parent) ? p : p.parent) }),
+  layers: Object.assign({}, uiModeExplode, { act: uiExplodeAct(uiOuterClosed), target: p => uiOuterClosed(p) || p }),
+  collapse: Object.assign({}, uiModeExplode, {
+    act: p => { if (!p.asm) uiCollapseAt(p); else if (uiOpen(p)) doCollapse(p); else uiSelectAct(p); },
+    target: p => uiDeepestOpen(p) || p,
+    tip: (p, t) => t.asm ? `${t.name} · ${fmtCount(t)} · klik om in te klappen` : `${p.name} · <i>niets uitgeklapt om in te klappen</i>`,
+  }),
+  select: Object.assign({}, uiModeExplode, { act: uiSelectAct, target: p => p, tip: p => `${p.name} · <i>klik voor gegevens</i>` }),
+  open: {
+    act: p => uiOpenAct(p),
+    target: p => { const pl = uiOpenPlan(p); return pl ? pl.n : p; },
+    tip: p => { const pl = uiOpenPlan(p); return pl ? `${uiOpenLabel(pl.n)} · <i>klik om te ${pl.open ? 'openen' : 'sluiten'}</i>` : `${p.name} · <i>niets te openen</i>`; },
+    cursor: p => !!uiOpenPlan(p),
+    collapse: p => uiOpenClose(p),
+    // Enter opent of sluit de opener van de selectie, Shift+Enter sluit de binnenste open opener
+    enter: (n, shift) => { if (shift) uiOpenClose(n); else { const pl = uiPanelPlan(n); if (pl) uiOpenTo(pl.n, pl.open); } },
+    reveal: uiRevealOpen,
+    state: n => (n.opn && !n.opn.lead ? (n.ot > 0 ? '<span class="state open">Open</span>' : '<span class="state">Dicht</span>') : n.asm ? '<span class="state">Gemonteerd</span>' : uiStateExplode(n)),
+    plan: n => uiPanelPlan(n),
+    // de wortel krijgt een eigen uitleg bij de modus (U7: een eigen tekst, geen knip uit de beschrijving in systems.js)
+    desc: n => (n === ROOT ? uiOpenRootDesc : (n.d || '')),
+    uitklap: false, dubbel: false, dim: false, tint: n => !n.opn,
+  },
+};
+const uiMode = () => (OPENMODE ? UI_MODES.open : UI_MODES[MODE]);
+
+/* ---------- handelingen ---------- */
+function uiAct(p) {
+  if (!p) { uiBackground(); return; }
+  uiMode().act(p);
 }
 function tapNode(n) { uiAct(n); }
 function doExplode(g) {
@@ -343,12 +399,7 @@ function doCollapse(a) {
   select(a);
   uiAfterAction();
 }
-function uiCollapseAt(p) {
-  if (OPENMODE) { uiOpenClose(p); return; }
-  const a = uiDeepestOpen(p);
-  if (a) { doCollapse(a); return; }
-  uiPush(); select(p); uiAfterAction();
-}
+function uiCollapseAt(p) { uiMode().collapse(p); }
 function uiBackground() {
   const r = uiScopeRoot();
   if (SEL === r && !uiLifted) return;
@@ -361,20 +412,21 @@ function uiDive(p) {
   let i = 0;
   for (const a of pathFrom(p)) if (a.asm && a !== p && !uiOpen(a)) setTarget(a, 1, (i++) * (REDUCED ? 0 : 0.22));
   CTX = p.parent || p; uiLabelForce = false; clearPreset();
-  if (!OPENMODE) uiSetDim(p); // U19
+  if (uiMode().dim) uiSetDim(p); // U19
   select(p);
   focusNodes([p], null, p.asm ? 1.15 : 1.7, { min: 0.3, dur: Math.max(0.95, i * 0.22 + 0.55) });
   uiAfterAction();
 }
-function reveal(n) {
-  if (OPENMODE) { // in Openen klapt niets uit: alleen selecteren en in beeld brengen
-    uiPush();
-    if (uiSheetBottom() && els.sheet.dataset.state === 'open') setSheet('peek');
-    select(n);
-    focusNodes([n], null, n.asm ? 1.12 : 1.6, { min: 0.3 });
-    uiAfterAction();
-    return;
-  }
+function reveal(n) { uiMode().reveal(n); }
+// in Openen klapt niets uit: alleen selecteren en in beeld brengen
+function uiRevealOpen(n) {
+  uiPush();
+  if (uiSheetBottom() && els.sheet.dataset.state === 'open') setSheet('peek');
+  select(n);
+  focusNodes([n], null, n.asm ? 1.12 : 1.6, { min: 0.3 });
+  uiAfterAction();
+}
+function uiRevealExplode(n) {
   uiPush();
   if (ISO.length && !uiInScope(n)) { ISO = []; applyVisibility(); updateGround(); }
   let i = 0;
@@ -1006,21 +1058,7 @@ function pick(cx, cy, loose, hover) {
   return best;
 }
 // Wat een klik in de huidige modus zou raken.
-function uiActTarget(p) {
-  if (!p) return null;
-  if (OPENMODE) { const pl = uiOpenPlan(p); return pl ? pl.n : p; }
-  if (MODE === 'part') return uiOpen(p.parent) ? p : p.parent;
-  if (MODE === 'layers') return pathFrom(p).find(x => x.asm && !uiOpen(x)) || p;
-  if (MODE === 'collapse') return uiDeepestOpen(p) || p;
-  return p;
-}
-function uiTipText(p, t) {
-  if (OPENMODE) { const pl = uiOpenPlan(p); return pl ? `${uiOpenLabel(pl.n)} · <i>klik om te ${pl.open ? 'openen' : 'sluiten'}</i>` : `${p.name} · <i>niets te openen</i>`; }
-  if (MODE === 'collapse') return t.asm ? `${t.name} · ${fmtCount(t)} · klik om in te klappen` : `${p.name} · <i>niets uitgeklapt om in te klappen</i>`;
-  if (MODE === 'select') return `${p.name} · <i>klik voor gegevens</i>`;
-  if (t.asm) return `${t.name} · ${fmtCount(t)} · klik om uit te klappen`;
-  return `${t.name} · <i>klik om uit te lichten</i>`;
-}
+function uiActTarget(p) { return p ? uiMode().target(p) : null; }
 function uiShowTip(html, x, y) {
   const tip = els.tip;
   if (tip._h !== html) { tip.innerHTML = html.replace(/<(?!\/?i>)/g, '&lt;'); tip._h = html; }
@@ -1039,10 +1077,10 @@ function uiDoHover() {
   uiHoverT = performance.now();
   const p = pick(uiHoverPos.x, uiHoverPos.y, false, true);
   if (!p) { uiHideTip(); return; }
-  const t = uiActTarget(p);
+  const m = uiMode(), t = m.target(p);
   if (uiSetHover(t)) requestRender();
-  uiShowTip(uiTipText(p, t), uiHoverPos.x, uiHoverPos.y);
-  canvas.style.cursor = OPENMODE && !uiOpenPlan(p) ? '' : 'pointer';
+  uiShowTip(m.tip(p, t), uiHoverPos.x, uiHoverPos.y);
+  canvas.style.cursor = m.cursor(p) ? 'pointer' : '';
 }
 function uiHoverTarget(x, y) { const p = pick(x, y); const t = uiActTarget(p); return t ? t.name : null; }
 
@@ -1120,7 +1158,7 @@ canvas.addEventListener('pointerup', e => {
   const now = e.timeStamp, L = uiLastTap;
   if (L && now - L.t < CFG.gebaar.dubbelMs && now - L.t >= 0 && Math.hypot(e.clientX - L.x, e.clientY - L.y) < CFG.gebaar.dubbelPx && L.type === d.type) {
     uiLastTap = null;
-    if (OPENMODE) return; // in Openen is dubbelklik gelijk aan een enkele klik: de eerste klik heeft al gedaan wat er te doen was
+    if (!uiMode().dubbel) return; // in Openen is dubbelklik gelijk aan een enkele klik
     if (L.pick) uiDive(L.pick); // altijd het onderdeel van de eerste tik
     return;
   }
@@ -1199,18 +1237,7 @@ $('helpClose').onclick = () => uiHelp(false);
 els.helpDlg.addEventListener('click', e => { if (e.target === els.helpDlg) uiHelp(false); });
 
 /* ---------- toetsenbord (werkt zodra de pagina de focus heeft; het canvas krijgt die bij de eerste aanraking) ---------- */
-function uiEnter(shift) {
-  const n = SEL || ROOT;
-  if (OPENMODE) { // Enter opent of sluit de opener van de selectie, Shift+Enter sluit de binnenste open opener
-    if (shift) uiOpenClose(n); else { const pl = uiPanelPlan(n); if (pl) uiOpenTo(pl.n, pl.open); }
-    return;
-  }
-  if (shift) { if (n.asm && uiOpen(n)) doCollapse(n); else if (!n.asm) uiCollapseAt(n); return; }
-  if (n.asm && !uiOpen(n)) { doExplode(n); return; }
-  const a = uiClosedAbove(n);
-  if (a) { doExplode(a); return; }
-  if (n.asm) doCollapse(n); else { uiPush(); uiLift(n); uiAfterAction(); }
-}
+function uiEnter(shift) { uiMode().enter(SEL || ROOT, shift); }
 if (!uiTouch) els.search.placeholder += ' (toets /)';
 window.addEventListener('keydown', e => {
   const t = e.target;

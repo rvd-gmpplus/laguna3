@@ -492,7 +492,7 @@ function uiMatFor(m) {
 let uiMatKey = null;
 function applyMats() {
   // een gekozen opener (portier, kap) krijgt geen gele tint: hij is het doel van de klik en zou anders geel blijven
-  const showHl = SEL && SEL !== ROOT && !ISO.includes(SEL) && (!SEL.asm || SEL.target <= 0.5) && !(OPENMODE && SEL.opn);
+  const showHl = SEL && SEL !== ROOT && !ISO.includes(SEL) && (!SEL.asm || SEL.target <= 0.5) && uiMode().tint(SEL);
   const key = [showHl ? SEL : null, SYSCOL, XRAY, uiDimSet, uiFade, uiHovSet];
   if (uiMatKey && key.every((v, i) => v === uiMatKey[i])) return;
   uiMatKey = key;
