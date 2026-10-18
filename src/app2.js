@@ -1,5 +1,5 @@
 /* ===================== interactie, paneel, presetmenu's, labels, render-lus ===================== */
-document.documentElement.lang = 'nl';
+document.documentElement.lang = TXT.taal;
 const $ = id => document.getElementById(id);
 const els = {
   sheet: $('sheet'), crumbs: $('crumbs'), name: $('selName'), meta: $('selMeta'), desc: $('selDesc'), spec: $('selSpec'), kids: $('selKids'), kidsTitle: $('kidsTitle'),
@@ -15,7 +15,9 @@ const UI_THEME_KEY = AUTO.id + '-theme';        // U5: onthouden themakeuze (lig
 let MODE = 'part', LABELS = true, CTX = null, ACTIVE_PRESET = 'assembled', needs = true;
 let uiLabelForce = false;
 const requestRender = () => { needs = true; uiWake(); }; // P4: de lus kan stilstaan (uiWake in app1.js)
-const fmtCount = n => (n.count === 1 ? '1 onderdeel' : `${n.count} onderdelen`);
+const fmtCount = n => TXT.onderdelen(n.count);
+// standbadge in het paneel; on: gemarkeerd (open, uitgeklapt, uitgelicht)
+const uiBadge = (txt, on) => `<span class="state${on ? ' open' : ''}">${txt}</span>`;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const uiTouch = !!(window.matchMedia && matchMedia('(hover: none), (pointer: coarse)').matches);
 if (uiTouch) document.body.classList.add('touch');
@@ -68,24 +70,24 @@ function renderPanel() {
   // herhaalde opbouw van het paneel voor (bij elke handeling twee tot drie keer)
   if (els.name.textContent !== n.name) els.name.textContent = n.name;
   const m = uiMode(), state = m.state(n);
-  const isoTxt = ISO.includes(n) ? ' · geïsoleerd' : '';
-  const meta = `${state}${n.asm ? fmtCount(n) : (n.parent ? 'in ' + esc(n.parent.name) : '')}${isoTxt}`;
+  const isoTxt = ISO.includes(n) ? TXT.geisoleerd : '';
+  const meta = `${state}${n.asm ? fmtCount(n) : (n.parent ? TXT.inGroep(esc(n.parent.name)) : '')}${isoTxt}`;
   if (els.meta._h !== meta) { els.meta._h = meta; els.meta.innerHTML = meta; }
   const plan = m.plan(n);
   els.open.hidden = !plan;
-  if (plan) { els.open.textContent = plan.open ? 'Openen' : 'Sluiten'; els.open.setAttribute('aria-label', (plan.open ? 'Openen: ' : 'Sluiten: ') + uiOpenLabel(plan.n)); els.open.title = (plan.open ? 'Opent ' : 'Sluit ') + uiOpenLabel(plan.n) + ' (Enter)'; }
+  if (plan) { els.open.textContent = TXT.openKnop(plan.open); els.open.setAttribute('aria-label', TXT.openKnopAria(plan.open, uiOpenLabel(plan.n))); els.open.title = TXT.openKnopTitel(plan.open, uiOpenLabel(plan.n)); }
   // in Openen is er niets uit te klappen of te isoleren: alleen de opener en In beeld blijven
   els.toggle.hidden = !n.asm || !m.uitklap;
-  els.toggle.textContent = n.asm && uiOpen(n) ? 'Inklappen' : 'Uitklappen';
+  els.toggle.textContent = n.asm && uiOpen(n) ? TXT.inklappen : TXT.uitklappen;
   els.all.hidden = !n.asm || !m.uitklap;
   els.dive.hidden = n.asm || !m.uitklap;
   els.dim.hidden = !DIM || !m.uitklap;
-  if (DIM) els.dim.title = 'De gedimde rest van de auto weer volledig tonen (buiten ' + DIM.name + ')';
+  if (DIM) els.dim.title = TXT.dimTitel(DIM.name);
   els.up.hidden = !m.uitklap; els.iso.hidden = !m.uitklap;
   els.up.disabled = !uiClosedAbove(n);
-  els.up.title = els.up.disabled ? 'Alles boven deze selectie is al uitgeklapt' : 'De dichte groep boven de selectie uitklappen (Enter)';
+  els.up.title = els.up.disabled ? TXT.omhoogVol : TXT.omhoogTitel;
   const isoOn = ISO.length === 1 && ISO[0] === n;
-  els.iso.textContent = isoOn || (ISO.length && n === ROOT) ? 'Alles tonen' : 'Isoleren';
+  els.iso.textContent = isoOn || (ISO.length && n === ROOT) ? TXT.allesTonen : TXT.isoleren;
   els.iso.disabled = n === ROOT && !ISO.length;
   syncSheetHeight();
   uiUiDirty = true;
@@ -104,7 +106,7 @@ function uiPanelFixed(n) {
   els.kidsTitle.hidden = !n.asm;
   renderPn(n);
   if (n.asm) {
-    els.kidsTitle.textContent = `Bestaat uit (${n.kids.length})`;
+    els.kidsTitle.textContent = TXT.bestaatUit(n.kids.length);
     const MAXK = CFG.indeling.kinderen;
     n.kids.slice(0, MAXK).forEach((k, i) => {
       const b = document.createElement('button');
@@ -113,7 +115,7 @@ function uiPanelFixed(n) {
       els.kids.appendChild(b);
     });
     if (n.kids.length > MAXK) {
-      const b = document.createElement('button'); b.textContent = `… en nog ${n.kids.length - MAXK} (zie Onderdelen)`;
+      const b = document.createElement('button'); b.textContent = TXT.enNog(n.kids.length - MAXK);
       b.onclick = () => { showTab('tree'); if (uiSheetBottom()) setSheet('open'); };
       els.kids.appendChild(b);
     }
@@ -192,11 +194,11 @@ function renderPn(n) {
   if (!uiPnGen && !uiReady) { uiPnLater = true; return; }
   const r = uiPnRec(n), u = r && r.u, st = mk('p', 'pn-status');
   let badge, ok = false;
-  if (r && r.kind === 'zelf' && u.st === 'past') { badge = 'Past volgens catalogus'; ok = true; }
-  else if (r && r.kind === 'zelf' && u.st === 'vin') badge = u.kz ? 'Gekozen voor deze auto' : 'Variant: kies op VIN';
-  else if (r && r.kind === 'zelf' && u.st === 'nietgevonden') badge = 'Niet gevonden';
-  else if (r && r.kind !== 'zelf') badge = r.kind === 'set' ? 'Deel van set' : 'Deel van';
-  else if (!n.asm || uiPnCover(n) === 0) badge = 'Niet onderzocht';
+  if (r && r.kind === 'zelf' && u.st === 'past') { badge = TXT.pnPast; ok = true; }
+  else if (r && r.kind === 'zelf' && u.st === 'vin') badge = u.kz ? TXT.pnGekozen : TXT.pnVin;
+  else if (r && r.kind === 'zelf' && u.st === 'nietgevonden') badge = TXT.pnNietGevonden;
+  else if (r && r.kind !== 'zelf') badge = r.kind === 'set' ? TXT.pnDeelSet : TXT.pnDeel;
+  else if (!n.asm || uiPnCover(n) === 0) badge = TXT.pnNietOnderzocht;
   if (badge) st.appendChild(mk('span', 'state' + (ok ? ' ok' : ''), badge));
   if (r && r.kind !== 'zelf') {
     const un = uiPnUnitNode.get(r.id);
@@ -206,17 +208,17 @@ function renderPn(n) {
   } else if (r && u.n && u.n !== n.name) st.appendChild(mk('small', null, u.n));
   if (n.asm) {
     const sub = n.kids.reduce((a, k) => a + uiPnCover(k), 0);
-    if (sub > 0) st.appendChild(mk('small', null, `Hieronder hebben ${sub} van ${n.count} onderdelen een nummer.`));
+    if (sub > 0) st.appendChild(mk('small', null, TXT.pnHieronder(sub, n.count)));
   }
   box.appendChild(st);
   const kz = r && r.kind === 'zelf' && u.kz;
   if (kz) {
     // De uitvoering voor de auto van de gebruiker, volgens de RDW en het chassisnummer van de gebruiker (zie build_pn.py, VIN_KEUZE).
-    box.appendChild(mk('h4', null, 'Gekozen voor deze auto'));
+    box.appendChild(mk('h4', null, TXT.pnGekozen));
     const k = mk('div', 'pn-kzbox');
     k.appendChild(mk('p', 'pn-txt', kz.v));
     const gek = [...(kz.o || []), ...(kz.a || []).map(x => x[0] + ' ' + x[1])];
-    if (gek.length) k.appendChild(mk('p', 'pn-txt', 'Nummer: ' + gek.join(', ') + '. Bewijs ' + kz.b + ', zekerheid van de keuze ' + kz.z + '.'));
+    if (gek.length) k.appendChild(mk('p', 'pn-txt', TXT.pnKeuze(gek.join(', '), kz.b, kz.z)));
     k.appendChild(mk('p', 'pn-txt', kz.g));
     const bronnen = (kz.s || []).filter(x => /^https:\/\//i.test(x));
     if (bronnen.length) {
@@ -231,45 +233,45 @@ function renderPn(n) {
   if (uiPnHasNum(r)) {
     const head = (txt) => box.appendChild(mk('h4', null, txt));
     if (u.oe && u.oe.length) {
-      head(r.kind === 'zelf' ? (u.oe.length > 1 ? AUTO.merk + '-nummers' : AUTO.merk + '-nummer') : AUTO.merk + '-nummer van ' + (u.n || r.id));
+      head(r.kind === 'zelf' ? TXT.pnMerkNummer(AUTO.merk, u.oe.length > 1) : TXT.pnMerkNummerVan(AUTO.merk, u.n || r.id));
       const ul = mk('ul', 'pn-nums');
-      for (const [num, note, lvl] of u.oe) { const li = mk('li'); if (isKz(num)) li.className = 'pn-kz'; li.appendChild(mk('b', null, num)); if (isKz(num)) li.appendChild(mk('em', null, 'gekozen')); if (lvl) li.appendChild(uiPnLvl(mk, lvl)); if (note) li.appendChild(mk('span', null, note)); ul.appendChild(li); }
+      for (const [num, note, lvl] of u.oe) { const li = mk('li'); if (isKz(num)) li.className = 'pn-kz'; li.appendChild(mk('b', null, num)); if (isKz(num)) li.appendChild(mk('em', null, TXT.pnGekozenKort)); if (lvl) li.appendChild(uiPnLvl(mk, lvl)); if (note) li.appendChild(mk('span', null, note)); ul.appendChild(li); }
       box.appendChild(ul);
     }
     if (u.am && u.am.length) {
-      head('Andere fabrikanten');
+      head(TXT.pnAndere);
       const t = mk('table', 'pn-tab'), hr = t.createTHead().insertRow();
-      for (const h of ['Merk', 'Nummer', 'Bewijs', 'Opmerking']) hr.appendChild(mk('th', null, h));
+      for (const h of TXT.pnKolommen) hr.appendChild(mk('th', null, h));
       const tb = t.createTBody();
-      for (const [merk, num, note, lvl] of u.am) { const tr = tb.insertRow(); if (isKz(null, [merk, num])) tr.className = 'pn-kz'; tr.appendChild(mk('td', null, merk)); tr.appendChild(mk('td', 'num', num)); const td = mk('td'); if (lvl) td.appendChild(uiPnLvl(mk, lvl)); tr.appendChild(td); const tn = mk('td', null, note || ''); if (tr.className === 'pn-kz') tn.appendChild(mk('em', null, (note ? ' ' : '') + 'gekozen')); tr.appendChild(tn); }
+      for (const [merk, num, note, lvl] of u.am) { const tr = tb.insertRow(); if (isKz(null, [merk, num])) tr.className = 'pn-kz'; tr.appendChild(mk('td', null, merk)); tr.appendChild(mk('td', 'num', num)); const td = mk('td'); if (lvl) td.appendChild(uiPnLvl(mk, lvl)); tr.appendChild(td); const tn = mk('td', null, note || ''); if (tr.className === 'pn-kz') tn.appendChild(mk('em', null, (note ? ' ' : '') + TXT.pnGekozenKort)); tr.appendChild(tn); }
       box.appendChild(t);
     }
-    box.appendChild(mk('p', 'pn-txt', 'Bewijs: A staat in de catalogus voor dit type (' + AUTO.pnType + ') op de juiste plaats; B is het ' + AUTO.merk + '-nummer van zo\'n artikel; C is een kruisverwijzing van een A- of B-nummer; D komt alleen uit een advertentie voor een gebruikt onderdeel en is niet in een catalogus gecontroleerd.'));
+    box.appendChild(mk('p', 'pn-txt', TXT.pnBewijs(AUTO.pnType, AUTO.merk)));
   }
-  if (u && u.var) { box.appendChild(mk('h4', null, kz ? 'Varianten in de catalogus' : 'Variant')); box.appendChild(mk('p', 'pn-txt', u.var)); }
+  if (u && u.var) { box.appendChild(mk('h4', null, kz ? TXT.pnVarianten : TXT.pnVariant)); box.appendChild(mk('p', 'pn-txt', u.var)); }
   // de notitie bij een eenheid is per auto een onderzoeksaantekening of een toelichting voor de lezer (auto.json: pnToelichting)
-  if (AUTO.pnToelichting && u && u.note) { box.appendChild(mk('h4', null, 'Toelichting')); box.appendChild(mk('p', 'pn-txt', u.note)); }
-  if (u && u.per) { box.appendChild(mk('h4', null, 'Verpakking')); box.appendChild(mk('p', 'pn-txt', u.per)); }
+  if (AUTO.pnToelichting && u && u.note) { box.appendChild(mk('h4', null, TXT.pnToelichting)); box.appendChild(mk('p', 'pn-txt', u.note)); }
+  if (u && u.per) { box.appendChild(mk('h4', null, TXT.pnVerpakking)); box.appendChild(mk('p', 'pn-txt', u.per)); }
   const links = u && (u.src || []).filter(x => x && /^https?:\/\//i.test(x[0]));
   if (links && links.length) {
-    box.appendChild(mk('h4', null, 'Bronnen'));
+    box.appendChild(mk('h4', null, TXT.pnBronnen));
     const d = mk('div', 'pn-src');
     for (const [url, label] of links) { const a = mk('a', null, label || url); a.href = url; a.target = '_blank'; a.rel = UI_LINK_REL; d.appendChild(a); }
     box.appendChild(d);
   }
   const inf = PN_DATA.info && PN_DATA.info[uiRelPath(n)];
   if (inf && inf.length) {
-    box.appendChild(mk('h4', null, 'Onderhoud en bekende problemen'));
+    box.appendChild(mk('h4', null, TXT.pnOnderhoud));
     const dl = mk('dl', 'pn-info');
     for (const [label, waarde, bron, zeker] of inf) {
       dl.appendChild(mk('dt', null, label));
       const dd = mk('dd', null, waarde);
-      if (bron || zeker) { const sm = mk('small', null, (zeker ? zeker + (bron ? ', ' : '') : '')); if (bron && /^https?:\/\//i.test(bron)) { const a = mk('a', null, 'bron'); a.href = bron; a.target = '_blank'; a.rel = UI_LINK_REL; sm.appendChild(a); } else if (bron) sm.appendChild(document.createTextNode(bron)); dd.appendChild(sm); }
+      if (bron || zeker) { const sm = mk('small', null, (zeker ? zeker + (bron ? ', ' : '') : '')); if (bron && /^https?:\/\//i.test(bron)) { const a = mk('a', null, TXT.pnBron); a.href = bron; a.target = '_blank'; a.rel = UI_LINK_REL; sm.appendChild(a); } else if (bron) sm.appendChild(document.createTextNode(bron)); dd.appendChild(sm); }
       dl.appendChild(dd);
     }
     box.appendChild(dl);
   }
-  if (PN_DATA.meta && PN_DATA.meta.checked && (r || n.asm)) box.appendChild(mk('p', 'pn-txt', 'Gegevens gecontroleerd op ' + PN_DATA.meta.checked + '.'));
+  if (PN_DATA.meta && PN_DATA.meta.checked && (r || n.asm)) box.appendChild(mk('p', 'pn-txt', TXT.pnGecontroleerd(PN_DATA.meta.checked)));
 }
 function uiPnFill() {
   if (!uiPnLater) return;
@@ -277,7 +279,7 @@ function uiPnFill() {
 }
 function uiPnLvl(mk, lvl) {
   const e = mk('span', 'pn-lvl', lvl);
-  e.title = { A: 'In de catalogus voor dit type, op de juiste plaats', B: AUTO.merk + '-nummer van een artikel dat voor dit type in de catalogus staat', C: 'Kruisverwijzing van een A- of B-nummer', D: 'Alleen uit een advertentie voor een gebruikt onderdeel van dit model; niet in een catalogus gecontroleerd' }[lvl] || '';
+  e.title = TXT.pnNiveau(lvl, AUTO.merk);
   return e;
 }
 
@@ -285,7 +287,7 @@ function uiPnLvl(mk, lvl) {
 // I5/I6: schakelaars en spreidingsschuif volgen de stand ook na presets, stap terug en de rondleiding
 function uiSyncToggles() {
   $('tXray').checked = XRAY; $('tSys').checked = SYSCOL; els.legend.hidden = !SYSCOL;
-  const sp = Math.round(SPREAD * 100); $('spread').value = String(sp); $('spreadOut').textContent = sp + '%';
+  const sp = Math.round(SPREAD * 100); $('spread').value = String(sp); $('spreadOut').textContent = TXT.procent(sp);
 }
 function uiAfterAction() {
   renderPanel();
@@ -342,10 +344,10 @@ function uiEnterExplode(n, shift) {
   if (n.asm) doCollapse(n); else { uiPush(); uiLift(n); uiAfterAction(); }
 }
 function uiStateExplode(n) {
-  if (n.asm) return uiOpen(n) ? '<span class="state open">Uitgeklapt</span>' : (n.target > 0 ? '<span class="state">Deels uitgeklapt</span>' : '<span class="state">Ingeklapt</span>');
-  return n === uiLifted ? '<span class="state open">Uitgelicht</span>' : '<span class="state">Onderdeel</span>';
+  if (n.asm) return uiOpen(n) ? uiBadge(TXT.stand.uitgeklapt, true) : uiBadge(n.target > 0 ? TXT.stand.deels : TXT.stand.ingeklapt);
+  return n === uiLifted ? uiBadge(TXT.stand.uitgelicht, true) : uiBadge(TXT.stand.onderdeel);
 }
-const uiTipExplode = (p, t) => t.asm ? `${t.name} · ${fmtCount(t)} · klik om uit te klappen` : `${t.name} · <i>klik om uit te lichten</i>`;
+const uiTipExplode = (p, t) => (t.asm ? TXT.tipUitklappen(t.name, fmtCount(t)) : TXT.tipUitlichten(t.name));
 // gemeenschappelijk voor de vier klikmodi van Uitklappen
 const uiModeExplode = {
   tip: uiTipExplode, cursor: () => true, collapse: uiCollapseDeepest, enter: uiEnterExplode, reveal: uiRevealExplode,
@@ -357,19 +359,19 @@ const UI_MODES = {
   collapse: Object.assign({}, uiModeExplode, {
     act: p => { if (!p.asm) uiCollapseAt(p); else if (uiOpen(p)) doCollapse(p); else uiSelectAct(p); },
     target: p => uiDeepestOpen(p) || p,
-    tip: (p, t) => t.asm ? `${t.name} · ${fmtCount(t)} · klik om in te klappen` : `${p.name} · <i>niets uitgeklapt om in te klappen</i>`,
+    tip: (p, t) => (t.asm ? TXT.tipInklappen(t.name, fmtCount(t)) : TXT.tipNietsIn(p.name)),
   }),
-  select: Object.assign({}, uiModeExplode, { act: uiSelectAct, target: p => p, tip: p => `${p.name} · <i>klik voor gegevens</i>` }),
+  select: Object.assign({}, uiModeExplode, { act: uiSelectAct, target: p => p, tip: p => TXT.tipInfo(p.name) }),
   open: {
     act: p => uiOpenAct(p),
     target: p => { const pl = uiOpenPlan(p); return pl ? pl.n : p; },
-    tip: p => { const pl = uiOpenPlan(p); return pl ? `${uiOpenLabel(pl.n)} · <i>klik om te ${pl.open ? 'openen' : 'sluiten'}</i>` : `${p.name} · <i>niets te openen</i>`; },
+    tip: p => { const pl = uiOpenPlan(p); return pl ? TXT.tipOpen(uiOpenLabel(pl.n), pl.open) : TXT.tipNietsOpen(p.name); },
     cursor: p => !!uiOpenPlan(p),
     collapse: p => uiOpenClose(p),
     // Enter opent of sluit de opener van de selectie, Shift+Enter sluit de binnenste open opener
     enter: (n, shift) => { if (shift) uiOpenClose(n); else { const pl = uiPanelPlan(n); if (pl) uiOpenTo(pl.n, pl.open); } },
     reveal: uiRevealOpen,
-    state: n => (n.opn && !n.opn.lead ? (n.ot > 0 ? '<span class="state open">Open</span>' : '<span class="state">Dicht</span>') : n.asm ? '<span class="state">Gemonteerd</span>' : uiStateExplode(n)),
+    state: n => (n.opn && !n.opn.lead ? (n.ot > 0 ? uiBadge(TXT.stand.open, true) : uiBadge(TXT.stand.dicht)) : n.asm ? uiBadge(TXT.stand.gemonteerd) : uiStateExplode(n)),
     plan: n => uiPanelPlan(n),
     // de wortel krijgt een eigen uitleg bij de modus (U7: een eigen tekst, geen knip uit de beschrijving in systems.js)
     desc: n => (n === ROOT ? uiOpenRootDesc : (n.d || '')),
@@ -477,7 +479,7 @@ function isolate(list) {
   ISO = list.slice(); applyVisibility(); uiFadeFrom(before); applyMats(); updateGround(); uiSyncIso(); requestRender();
 }
 function uiSyncIso() {
-  const on = ISO.length > 0, txt = ISO.map(n => n.name).join(' en ');
+  const on = ISO.length > 0, txt = TXT.namenEn(ISO.map(n => n.name));
   // Eerst de tekst, dan de badge en de maat: een andere naam kan de badge laten omslaan, en het dock verandert dan meteen
   // (niet pas bij de ResizeObserver, die op een trage machine na het kadreren komt).
   let relayout = false;
@@ -622,9 +624,9 @@ function treeRow(n, level) {
   const li = document.createElement('li'); li.setAttribute('role', 'none');
   const row = document.createElement('div'); row.className = 'trow' + (n === SEL ? ' sel' : ''); row.setAttribute('role', 'treeitem'); row.setAttribute('aria-level', String(level)); row.setAttribute('aria-selected', String(n === SEL));
   const tw = document.createElement('button'); tw.className = 'tw';
-  if (n.asm) { const op = openRows.has(n.id); row.setAttribute('aria-expanded', String(op)); tw.textContent = op ? '▾' : '▸'; tw.setAttribute('aria-label', op ? 'Inklappen in lijst' : 'Uitklappen in lijst'); tw.onclick = () => { op ? openRows.delete(n.id) : openRows.add(n.id); renderTree(); }; } else { tw.tabIndex = -1; tw.setAttribute('aria-hidden', 'true'); }
+  if (n.asm) { const op = openRows.has(n.id); row.setAttribute('aria-expanded', String(op)); tw.textContent = op ? '▾' : '▸'; tw.setAttribute('aria-label', op ? TXT.lijstIn : TXT.lijstUit); tw.onclick = () => { op ? openRows.delete(n.id) : openRows.add(n.id); renderTree(); }; } else { tw.tabIndex = -1; tw.setAttribute('aria-hidden', 'true'); }
   const dot = document.createElement('span'); dot.className = 'dot' + (uiOpen(n) ? ' open' : ''); if (!n.asm) dot.style.visibility = 'hidden';
-  dot.title = uiOpen(n) ? 'uitgeklapt' : 'ingeklapt';
+  dot.title = uiOpen(n) ? TXT.bolOpen : TXT.bolDicht;
   const nm = document.createElement('button'); nm.className = 'tn'; nm.textContent = n.name; nm.onclick = () => reveal(n);
   const c = document.createElement('span'); c.className = 'tc'; c.textContent = n.asm ? n.count : '';
   row.append(tw, dot, nm, c); li.appendChild(row);
@@ -671,11 +673,11 @@ function renderTree() {
   const ul = document.createElement('ul');
   if (all) {
     const hits = all.slice(0, CFG.indeling.treffers);
-    const syn = terms.length > 1 ? ` (ook gezocht op ${terms.slice(1).join(', ')})` : '';
-    els.treeInfo.textContent = all.length ? (all.length === 1 ? '1 treffer' : `${all.length} treffers`) + syn + (all.length > hits.length ? `, de eerste ${hits.length} staan hieronder` : '') : 'Geen onderdeel gevonden met die naam' + syn + '.';
-    hits.forEach(n => { const li = treeRow(n, 1); const small = document.createElement('div'); small.className = 'tpath'; small.textContent = ancestors(n).slice(1).map(a => a.name).join(' › ') || 'hele auto'; li.appendChild(small); ul.appendChild(li); });
+    const syn = terms.length > 1 ? TXT.zoekOok(terms.slice(1)) : '';
+    els.treeInfo.textContent = all.length ? TXT.treffers(all.length) + syn + (all.length > hits.length ? TXT.eersteN(hits.length) : '') : TXT.geenTreffer(syn);
+    hits.forEach(n => { const li = treeRow(n, 1); const small = document.createElement('div'); small.className = 'tpath'; small.textContent = ancestors(n).slice(1).map(a => a.name).join(' › ') || TXT.heleAuto; li.appendChild(small); ul.appendChild(li); });
   } else {
-    els.treeInfo.textContent = q.length === 1 ? 'Typ minstens twee letters.' : '';
+    els.treeInfo.textContent = q.length === 1 ? TXT.tweeLetters : '';
     ul.appendChild(treeRow(ROOT, 1));
   }
   els.tree.appendChild(ul);
@@ -696,7 +698,7 @@ function setSheet(state) {
   if (uiSide()) state = 'open'; // zijkolom: altijd de volle inhoud, geen peek en geen lade
   els.sheet.dataset.state = state;
   $('sheetToggle').setAttribute('aria-expanded', String(state === 'open'));
-  $('sheetToggle').setAttribute('aria-label', state === 'open' ? 'Paneel kleiner maken' : 'Paneel groter maken');
+  $('sheetToggle').setAttribute('aria-label', state === 'open' ? TXT.paneelKleiner : TXT.paneelGroter);
   $('btnParts').setAttribute('aria-pressed', String(state === 'open' && !$('tab-tree').hidden));
   $('btnView').setAttribute('aria-pressed', String(state === 'open' && !$('tab-view').hidden));
   syncSheetHeight(); layoutView(); uiRefitSoon();
@@ -712,7 +714,7 @@ function syncSheetHeight() {
 }
 
 /* ---------- weergave-bediening ---------- */
-$('spread').addEventListener('input', e => { uiSetSpread(e.target.value / 100, false); $('spreadOut').textContent = e.target.value + '%'; requestRender(); });
+$('spread').addEventListener('input', e => { uiSetSpread(e.target.value / 100, false); $('spreadOut').textContent = TXT.procent(e.target.value); requestRender(); });
 $('spread').addEventListener('change', () => { updateGround(); focusNodes(contextNodes()); });
 $('tLabels').addEventListener('change', e => { LABELS = e.target.checked; requestRender(); });
 $('tXray').addEventListener('change', e => { uiPush(); XRAY = e.target.checked; clearPreset(); applyMats(); uiAfterAction(); });
@@ -743,7 +745,7 @@ uiThemeBtns.forEach((b, i) => {
 });
 uiSyncTheme();
 // U9: beeld opslaan en de kaart afdrukken
-function uiSlug(s) { return uiNorm(s).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'beeld'; }
+function uiSlug(s) { return uiNorm(s).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || TXT.beeldNaam; }
 function uiSaveImage() {
   const n = SEL || ROOT, r = uiPnRec(n), nums = r && r.kind === 'zelf' && r.u ? [...(r.u.oe || []).map(x => x[0]), ...(r.u.am || []).map(x => x[0] + ' ' + x[1])] : [];
   uiBatchSync(); renderer.render(scene, camera); // op verzoek tekenen: de buffer wordt na het tonen niet bewaard
@@ -756,14 +758,14 @@ function uiSaveImage() {
   g.fillStyle = cs.color || '#151a21'; g.textBaseline = 'middle';
   g.font = `700 ${Math.round(15 * dpr)}px ${cs.fontFamily}`; g.fillText(n.name, Math.round(14 * dpr), h + bar / 2, w * 0.55);
   g.font = `${Math.round(12 * dpr)}px ${cs.fontFamily}`; g.textAlign = 'right';
-  g.fillText((nums.length ? 'Onderdeelnummer ' + nums.slice(0, 2).join(', ') + ' · ' : '') + AUTO.titel + ', versie ' + uiVersion, w - Math.round(14 * dpr), h + bar / 2, w * 0.43);
+  g.fillText((nums.length ? TXT.beeldNummer(nums.slice(0, 2).join(', ')) : '') + TXT.beeldVoet(AUTO.titel, uiVersion), w - Math.round(14 * dpr), h + bar / 2, w * 0.43);
   const name = `${AUTO.id}-${uiSlug(n.name)}.png`;
   return new Promise(res => c2.toBlob(blob => {
-    if (!blob) { uiToast('Het beeld kon niet worden opgeslagen.'); res(null); return; }
+    if (!blob) { uiToast(TXT.beeldMislukt); res(null); return; }
     const a = document.createElement('a'), url = URL.createObjectURL(blob);
     a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 2000);
-    uiToast('Beeld opgeslagen als ' + name);
+    uiToast(TXT.beeldOpgeslagen(name));
     res({ name, w: c2.width, h: c2.height, numbers: nums });
   }, 'image/png'));
 }
@@ -808,18 +810,17 @@ function uiApplyX(w, x, now) {
   // Een opgetild onderdeel gaat terug zodra zijn groep dichtgaat, anders zweeft het buiten de gesloten auto.
   if (uiLifted && !uiOpen(uiLifted.parent)) uiDrop();
 }
-const uiFmt = (v, d = 1) => v.toFixed(d).replace('.', ',');
 let uiDrag = false, uiPlayS = null;
 // Golf 5c-2, P3: tijdens afspelen draait dit elk frame; de DOM (waarde, tekst, aria-* en het pictogram) alleen schrijven als
 // er iets verandert.
 function uiSyncExplode(fromSlider) {
   const w = uiWorking(), L = uiLevels(w).length, x = uiExplodeX(w), v = L ? x / L : 0;
-  const val = String(Math.round(v * 1000)), pct = Math.round(v * 100) + '%', vt = `${uiFmt(x)} van ${L} ${L === 1 ? 'laag' : 'lagen'}`;
+  const val = String(Math.round(v * 1000)), pct = TXT.procent(Math.round(v * 100)), vt = TXT.lagen(x, L);
   if (!fromSlider && !uiDrag && els.explode.value !== val) els.explode.value = val;
   if (els.explodeOut.textContent !== pct) els.explodeOut.textContent = pct;
   if (els.explode.getAttribute('aria-valuetext') !== vt) els.explode.setAttribute('aria-valuetext', vt);
   if (els.explodeName.textContent !== w.name) { els.explodeName.textContent = w.name; uiUiDirty = true; }
-  const lbl = uiPlayS ? 'Stop' : (v >= 0.999 ? 'Monteren' : 'Demonteren');
+  const lbl = uiPlayS ? TXT.stop : (v >= 0.999 ? TXT.monteren : TXT.demonteren);
   if (els.play.lastChild.textContent !== lbl) { els.play.lastChild.textContent = lbl; els.play.setAttribute('aria-label', lbl); uiUiDirty = true; }
   const pressed = String(!!uiPlayS);
   if (els.play.getAttribute('aria-pressed') !== pressed) els.play.setAttribute('aria-pressed', pressed);
@@ -902,9 +903,9 @@ function uiSyncCats() {
     const cat = b.dataset.cat, n = PRESETS.filter(q => q.cat === cat && appPresetOk(q)).length;
     const on = !!p && p.cat === cat;
     b.classList.toggle('on', on);
-    const txt = cat === 'Overzicht' && appTour ? 'Rondleiding loopt' : (on ? p.label : `${n} presets`);
+    const txt = cat === 'Overzicht' && appTour ? TXT.tourLoopt : (on ? p.label : TXT.presetsAantal(n));
     if (b.lastChild.textContent !== txt) { b.lastChild.textContent = txt; uiUiDirty = true; textChanged = true; }
-    b.setAttribute('aria-label', `${cat}${on ? ', actief: ' + p.label : ''}`);
+    b.setAttribute('aria-label', TXT.catAria(cat, on ? p.label : ''));
   }
   // De naam van de actieve preset kan de presetbalk laten omslaan naar een tweede rij en zo het vrije beeld verkleinen.
   // Direct opnieuw meten: layoutView ziet dan de nieuwe hoogte en laat de camera opnieuw inpassen (G1), nog voor de
@@ -932,13 +933,13 @@ function uiOpenMenu(cat, btn) {
   // U6: de kop met de sluitknop staat buiten het element met role="menu"; dat bevat alleen menuitems
   const head = document.createElement('div'); head.className = 'mhead';
   head.innerHTML = `<span>${esc(cat)}</span>`;
-  const close = document.createElement('button'); close.className = 'mclose'; close.setAttribute('aria-label', 'Menu sluiten'); close.textContent = '×'; close.onclick = () => uiCloseMenu(true);
+  const close = document.createElement('button'); close.className = 'mclose'; close.setAttribute('aria-label', TXT.menuSluiten); close.textContent = '×'; close.onclick = () => uiCloseMenu(true);
   head.appendChild(close); m.appendChild(head);
-  const list = document.createElement('div'); list.setAttribute('role', 'menu'); list.setAttribute('aria-label', 'Presets ' + cat); m.appendChild(list);
+  const list = document.createElement('div'); list.setAttribute('role', 'menu'); list.setAttribute('aria-label', TXT.menuAria(cat)); m.appendChild(list);
   for (const p of PRESETS.filter(q => q.cat === cat && appPresetOk(q))) {
     const b = document.createElement('button');
     b.className = 'mi'; b.setAttribute('role', 'menuitem'); b.dataset.preset = p.id; b.tabIndex = -1;
-    const label = p.tour && appTour ? 'Stop rondleiding' : p.label;
+    const label = p.tour && appTour ? TXT.tourStoppen : p.label;
     b.innerHTML = `<span class="mi-t">${esc(label)}${p.key ? `<kbd>${p.key}</kbd>` : ''}</span><span class="mi-n">${esc(p.note)}</span>`;
     if (p.id === ACTIVE_PRESET) b.setAttribute('aria-current', 'true');
     b.onclick = () => { uiCloseMenu(false); uiRunPreset(p.id); };
@@ -995,7 +996,7 @@ function uiRunPreset(id) {
 }
 function uiTourCaption(p, i, n) {
   if (!p) { els.tourBar.hidden = true; if (uiNarrow()) layoutView(); uiUiChanged(); return; }
-  els.tourText.innerHTML = `<b>Rondleiding ${i + 1} van ${n} · ${esc(p.label)}</b>${esc(p.note)}`;
+  els.tourText.innerHTML = `<b>${TXT.tourKop(i + 1, n, esc(p.label))}</b>${esc(p.note)}`;
   els.tourBar.hidden = false;
   if (uiNarrow()) layoutView();
   uiUiChanged();
@@ -1005,7 +1006,7 @@ function uiSyncTour() {
   uiSyncCats();
   const t = appTour, paused = !!(t && t.paused), pb = $('tourPause');
   pb.setAttribute('aria-pressed', String(paused));
-  pb.setAttribute('aria-label', paused ? 'Hervatten' : 'Pauze'); pb.title = paused ? 'Rondleiding hervatten' : 'Rondleiding pauzeren';
+  pb.setAttribute('aria-label', paused ? TXT.hervatten : TXT.pauze); pb.title = paused ? TXT.tourHervatten : TXT.tourPauzeren;
   pb.firstElementChild.innerHTML = paused ? '<path d="M8 5l11 7-11 7z"/>' : '<path d="M7 5h4v14H7zM13 5h4v14h-4z"/>';
   $('tourPrev').disabled = !t || t.i <= 0;
   $('tourNext').disabled = !t;
@@ -1187,16 +1188,14 @@ function uiInitHint() {
   try { seen = window.localStorage.getItem(uiHintKey) === '1'; } catch (_) { seen = false; }
   if (seen) { els.hint.hidden = true; return; }
   uiHintStage = 1;
-  els.hint.textContent = uiTouch
-    ? 'Tik op een onderdeel om het uit te klappen · dubbeltik om er direct heen te gaan · houd vast om in te klappen'
-    : 'Klik op een onderdeel om het uit te klappen · dubbelklik om er direct naartoe te gaan · rechtsklik om in te klappen';
+  els.hint.textContent = uiTouch ? TXT.hintTik : TXT.hintKlik;
   setTimeout(uiHintNext, CFG.tijd.hintMs);
 }
 // U8: na de uitleg één concrete suggestie, tot de eerste klik of tik (daarna nooit meer: de hint telt als gezien)
 function uiHintNext() {
   if (uiHintStage !== 1 || els.hint.hidden || els.hint.classList.contains('gone')) return;
   uiHintStage = 2;
-  els.hint.textContent = uiTouch ? 'Probeer: tik op de motorkap' : 'Probeer: klik op de motorkap';
+  els.hint.textContent = uiTouch ? TXT.probeerTik : TXT.probeerKlik;
   uiUiChanged();
 }
 function hideHint(instant) {
@@ -1210,8 +1209,8 @@ function hideHint(instant) {
 // U7: het hulpvenster leest de categorieën en sneltoetsen uit appCats en PRESETS (niet met de hand bijhouden)
 function uiFillHelp() {
   const keyed = PRESETS.filter(p => p.key && appPresetOk(p)).sort((a, b) => a.key.localeCompare(b.key));
-  $('helpCats').textContent = `${appCats.length} categorieën (${appCats.join(', ')}) met kant-en-klare standen, ook de rondleiding.`;
-  $('helpKeysT').innerHTML = keyed.length ? `<kbd>${esc(keyed[0].key)}</kbd> tot <kbd>${esc(keyed[keyed.length - 1].key)}</kbd>` : '';
+  $('helpCats').textContent = TXT.hulpCats(appCats);
+  $('helpKeysT').innerHTML = keyed.length ? TXT.hulpToetsen(esc(keyed[0].key), esc(keyed[keyed.length - 1].key)) : '';
   $('helpKeys').textContent = keyed.map(p => p.label).join(', ') + '.';
 }
 // U6: zolang het hulpvenster open is, is de rest van de pagina inert (waar de browser dat kent) en blijft Tab in het venster
@@ -1238,7 +1237,7 @@ els.helpDlg.addEventListener('click', e => { if (e.target === els.helpDlg) uiHel
 
 /* ---------- toetsenbord (werkt zodra de pagina de focus heeft; het canvas krijgt die bij de eerste aanraking) ---------- */
 function uiEnter(shift) { uiMode().enter(SEL || ROOT, shift); }
-if (!uiTouch) els.search.placeholder += ' (toets /)';
+if (!uiTouch) els.search.placeholder += TXT.zoekToets;
 window.addEventListener('keydown', e => {
   const t = e.target;
   if (!els.helpDlg.hidden) {
@@ -1468,7 +1467,7 @@ function updateLabels() {
   while (labelPool.length < uiCands.length) uiNewLabel();
   for (let i = 0; i < uiCands.length; i++) {
     const k = uiCands[i], el = labelPool[i];
-    if (el._t !== k) { el.firstChild.textContent = String(k.idx + 1); el.lastChild.textContent = k.name; el.title = k.name; el._t = k; el.setAttribute('aria-label', `${k.idx + 1}. ${k.name}`); }
+    if (el._t !== k) { el.firstChild.textContent = String(k.idx + 1); el.lastChild.textContent = k.name; el.title = k.name; el._t = k; el.setAttribute('aria-label', TXT.labelAria(k.idx + 1, k.name)); }
   }
   for (let i = 0; i < uiCands.length; i++) {
     const k = uiCands[i];
@@ -1533,15 +1532,15 @@ let uiLabelsMore = 0, uiMoreEl = null;
 function uiPlaceMore(g) {
   if (!uiMoreEl) {
     uiMoreEl = document.createElement('button'); uiMoreEl.className = 'lmore'; uiMoreEl.hidden = true; uiMoreEl.tabIndex = -1;
-    uiMoreEl.title = 'Alle onderdelen van deze groep in de lijst';
+    uiMoreEl.title = TXT.meerTitel;
     uiMoreEl.onclick = () => { showTab('tree'); if (uiSheetBottom()) setSheet('open'); if (uiMoreEl._g) { openRows.add(uiMoreEl._g.id); renderTree(); } };
     els.labels.appendChild(uiMoreEl);
   }
   const el = uiMoreEl;
   // bij verbergen ook de onthouden plek wissen, anders blijft een chip die op dezelfde plek terugkomt op -9999 staan
   if (!uiLabelsMore) { if (!el.hidden) { el.hidden = true; el.style.transform = 'translate(-9999px,-9999px)'; el._x = el._y = null; } return; }
-  const txt = `+${uiLabelsMore} meer`;
-  if (el.textContent !== txt) { el.textContent = txt; el.setAttribute('aria-label', `${uiLabelsMore} onderdelen meer zonder label; open de lijst`); el._w = 0; }
+  const txt = TXT.meer(uiLabelsMore);
+  if (el.textContent !== txt) { el.textContent = txt; el.setAttribute('aria-label', TXT.meerAria(uiLabelsMore)); el._w = 0; }
   el._g = g;
   if (el.hidden) el.hidden = false;
   if (!el._w) { el._w = el.offsetWidth; el._h = el.offsetHeight; }
@@ -1728,7 +1727,7 @@ function uiWarmMaterials() {
 let uiContextLost = false;
 canvas.addEventListener('webglcontextlost', e => {
   e.preventDefault(); uiContextLost = true;
-  uiNotice('De 3D-weergave is onderbroken (de grafische context is verloren). De pagina herstelt dit meestal zelf; zo niet, laad haar dan opnieuw.');
+  uiNotice(TXT.contextWeg);
 });
 canvas.addEventListener('webglcontextrestored', () => {
   uiContextLost = false;
@@ -1815,7 +1814,7 @@ function uiDebugFrame(now, dt, drew) {
   uiDbg.acc += dt;
   if (now - uiDbg.t < 500) return;
   const i = renderer.info.render, fps = uiDbg.acc > 0 ? uiDbg.n / uiDbg.acc : 0;
-  uiDbg.el.textContent = (uiDbg.n ? fps.toFixed(0) + ' fps' : 'rust') + ' · ' + i.calls + ' tekenopdrachten · ' + Math.round(i.triangles / 1000) + 'k driehoeken · dpr ' + renderer.getPixelRatio().toFixed(2) + (uiLite ? ' · lichte weergave' : '') + ' · versie ' + uiVersion;
+  uiDbg.el.textContent = TXT.debug(uiDbg.n ? fps : null, i.calls, Math.round(i.triangles / 1000), renderer.getPixelRatio(), uiLite, uiVersion);
   uiDbg.t = now; uiDbg.n = 0; uiDbg.acc = 0;
 }
 
@@ -1845,7 +1844,7 @@ function uiUrlApply() {
   }
   if (open) {
     const refs = open.split(',').map(x => x.trim()).filter(Boolean);
-    const p = { id: 'url', cat: 'Openen', label: 'Gedeelde stand', note: 'De stand uit de gedeelde link.', opens: refs };
+    const p = { id: 'url', cat: 'Openen', label: TXT.gedeeldeStand, note: TXT.gedeeldeStandUitleg, opens: refs };
     if (refs.length && appPresetOk(p)) { appApplyPreset(p, { noHistory: true }); finishAll(); }
   }
 }
@@ -1863,7 +1862,7 @@ updateGround();
 { const f = uiFitPoints(uiCollect([ROOT], true), DIRS.iso, 1.04); if (f) { camera.position.copy(f.pos); controls.target.copy(f.target); } uiLastFit = { preset: appPresetById.get('assembled') }; }
 controls.update();
 uiTiming.render0 = Math.round(performance.now());
-LOADING.textContent = 'Eerste weergave…';
+LOADING.textContent = TXT.laadEerste;
 uiBatchSync();
 renderer.render(scene, camera);
 LOADING.classList.add('gone');

@@ -12,9 +12,9 @@ function uiWake() {
 const ROOT = (() => {
   const t0 = performance.now();
   uiTiming.buildStart = Math.round(t0);
-  LOADING.textContent = 'Onderdelen bouwen…';
+  LOADING.textContent = TXT.laadBouwen;
   try { const r = buildCar(); uiTiming.buildCar = Math.round(performance.now() - t0); return r; } catch (e) {
-    LOADING.textContent = 'Het model kon niet worden opgebouwd (' + (e && e.message ? e.message : e) + '). Laad de pagina opnieuw.';
+    LOADING.textContent = TXT.laadModelFout(e && e.message ? e.message : e);
     throw e;
   }
 })();
