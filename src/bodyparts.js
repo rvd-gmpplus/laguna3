@@ -7,11 +7,14 @@ MAT.paintIn.color.setHex(0x9a9ea4);
 MAT.glass.color.setHex(0x040608); MAT.glass.opacity = 0.92; MAT.glass.envMapIntensity = 0.12; MAT.glass.roughness = 0.08; MAT.glass.specularIntensity = 0.14;
 // voorruit: zelfde glas, maar de binnenkant (achterzijde van de driehoeken) heeft maar 0,45 maal de dekking. Transparante dubbelzijdige materialen worden in twee gangen getekend (eerst BackSide met FLIP_SIDED,
 // dan FrontSide); gl_FrontFacing zegt daar niets (is in beide gangen waar). De buitenkant van dit glas is de BackSide-gang (gemeten), dus de FrontSide-gang zonder FLIP_SIDED is de binnenkant, zodat de ruit van binnen niet als egaal zwart vlak leest en de kap,
-// de wissers en de lucht erachter doorschemeren; de buitenkant is gelijk aan MAT.glass. Een shaderaanpassing in plaats van een tweede mesh: geen extra tekenopdracht voor de ruit zelf.
+// de wissers en de lucht erachter doorschemeren; de buitenkant heeft 0,80 dekking (zie hieronder). Een shaderaanpassing in plaats van een tweede mesh: geen extra tekenopdracht voor de ruit zelf.
 // De kloon (markering, kleur per systeem) krijgt dezelfde aanpassing mee.
 function bodGlassWs(m) {
   m.name = 'glassWs';
-  m.onBeforeCompile = sh => { sh.fragmentShader = sh.fragmentShader.replace('#include <alphamap_fragment>', '#include <alphamap_fragment>\n#ifndef FLIP_SIDED\n\tdiffuseColor.a *= 0.45;\n#endif'); };
+  // buitenkant 0,80 dekkend in plaats van 0,92 (golf 5c-2, K11, besluit van de gebruiker op 18 oktober 2026): van buiten schemeren
+  // spiegel en dashboard door; de zijruiten en de achterruit blijven 0,92. Factor op de dekking van MAT.glass, als getal in de shader.
+  const buiten = (0.80 / MAT.glass.opacity).toFixed(6);
+  m.onBeforeCompile = sh => { sh.fragmentShader = sh.fragmentShader.replace('#include <alphamap_fragment>', '#include <alphamap_fragment>\n#ifndef FLIP_SIDED\n\tdiffuseColor.a *= 0.45;\n#else\n\tdiffuseColor.a *= ' + buiten + ';\n#endif'); };
   m.clone = function () { return bodGlassWs(THREE.MeshPhysicalMaterial.prototype.clone.call(this)); };
   return m;
 }
@@ -599,25 +602,27 @@ function bodMirX(g, s) {
   return g;
 }
 const bodTLY = (z, f) => lerp(bodTLlo(Math.max(z, bodZT)), bodTLtop(Math.max(z, bodZT)), f);
-function buildTaillight(s) {
+// deel 'buiten': het vaste deel op het achterscherm (onder Carrosserie); deel 'binnen': het deel in de klep, dat onder Achterklep
+// hangt en met de klep meedraait (golf 5c-2, K9: hing onder Carrosserie en bleef staan als de klep openging)
+function buildTaillight(s, deel = 'buiten') {
   const n = sn(s), xin = 0.34, xs = bodTGseam(0.92);
   const side = (off, f0, f1) => patch((z, p) => bodLow(z, p, off), bodZT + 0.0012, bodTLZ - 0.001, 18, z => sideR(s, bodSY(z, bodTLY(z, f0)), Math.max(bodSY(z, bodTLY(z, f0)) + 1e-4, bodSY(z, bodTLY(z, f1)))), 3, bodDense(-2.06, bodTLZ, 4));
   const face = (x0, x1, f0, f1, off, nx = 8, dy = 0) => { return bodMirX(bodTailGeo(x0, x1, bodTLY(bodZT, f0) + dy, bodTLY(bodZT, f1) - dy, off, 3, nx), s); };
   const [f0, f1, f2, f3] = bodTLF, xo = 1.2;
-  return A(`Achterlicht ${n}`, { d: 'Slank horizontaal achterlicht in twee delen, verdeeld over de klepnaad: een deel op het achterscherm dat om de afgeronde hoek de flank in loopt en een deel in de achterklep.', ex: [s * 0.3, 0.1, -0.5] }, [
+  if (deel === 'binnen') return A(`Achterlicht binnendeel ${n}`, { d: 'Deel van het achterlicht in de achterklep met achterlicht en achteruitrijlicht; zet de lijnen van het buitendeel over de naad voort en draait met de klep mee.', ex: [s * 0.03, 0.04, -0.08] }, [
+    P('Lens binnendeel', merge([face(xin, xs, f2, f3, 0.003), face(xin, xs, f0, f1, 0.003)]), MAT.lensRed, { d: 'Rode lens van het binnendeel (achterlicht): bovenband en onderstrook.', ex: [0, 0.03, -0.06] }),
+    P('Lens achteruitrijlicht', face(xin, xs, f1, f2, 0.0035), MAT.lensClear, { d: 'Heldere middenband over het achteruitrijlicht, in lijn met de heldere band van het buitendeel.', ex: [0, 0, -0.1] }),
+    P('Reflector binnendeel', face(xin + 0.004, xs - 0.008, f0, f3, -0.012, 8, 0.006), MAT.reflector, { d: 'Verchroomde reflector achter de lenzen.', ex: [0, 0, 0.04] }),
+    P('Lichthuis binnendeel', face(xin + 0.01, xs - 0.01, f0, f3, -0.028, 8, 0.008), MAT.plastic, { d: 'Behuizing in de achterklep.', ex: [0, 0, 0.06] }),
+    P('Lampdrager binnendeel', face(xin + 0.03, xs - 0.03, f0, f3, -0.018, 8, 0.02), MAT.ecu, { d: 'Lampdrager met fittingen en stekker.', ex: [0, 0, 0.1] }),
+  ]);
+  return A(`Achterlicht ${n}`, { d: 'Slank horizontaal achterlicht in twee delen, verdeeld over de klepnaad: een deel op het achterscherm dat om de afgeronde hoek de flank in loopt en een deel in de achterklep (dat hangt onder Achterklep als Achterlicht binnendeel en draait met de klep mee).', ex: [s * 0.3, 0.1, -0.5] }, [
     A('Buitendeel', { d: 'Vast deel op het achterscherm met achterlicht, remlicht en knipperlicht (LED-uitstraling); loopt onder de schouder in een punt naar voren.', ex: [s * 0.1, 0, -0.06] }, [
       P('Lens buitendeel', merge([side(-0.003, f2, f3), side(-0.003, f0, f1), face(xs + 0.003, xo, f2, f3, 0.003), face(xs + 0.003, xo, f0, f1, 0.003)]), MAT.lensRed, { d: 'Rode afdeklens met een brede bovenband en een smalle onderstrook, van het staartvlak om de hoek de flank in.', ex: [s * 0.05, 0, -0.06] }),
       P('Heldere band buitendeel', merge([side(-0.0035, f1, f2), face(xs + 0.003, xo, f1, f2, 0.0035)]), MAT.lensClear, { d: 'Heldere horizontale band in de lens waarachter de knipperlichtunit zit; geeft de witte LED-streep van het fase 2-achterlicht.', ex: [s * 0.07, 0, -0.08] }),
       P('Lichthuis buitendeel', merge([side(0.05, f0, f3), face(xs + 0.01, xo, f0, f3, -0.05, 8, 0.008)]), MAT.plastic, { d: 'Kunststof behuizing met bevestigingsbouten in het achterscherm.', ex: [-s * 0.04, 0, 0.06] }),
       P('LED-print buitendeel', merge([side(0.035, 0.15, 0.85), face(xs + 0.02, xo, f0, f3, -0.035, 8, 0.02)]), MAT.ecu, { d: 'Printplaat met de lampen van achter-, rem- en knipperlicht.', ex: [0, 0, 0.1] }),
       P('Reflector buitendeel', merge([side(0.02, f0, f3), face(xs + 0.003, xo, f0, f3, -0.02, 8, 0.01)]), MAT.reflector, { d: 'Verchroomde reflector achter de lens; zichtbaar door het rode glas en de heldere band.', ex: [0, 0, 0.05] }),
-    ]),
-    A('Binnendeel', { d: 'Deel in de achterklep met achterlicht en achteruitrijlicht; zet de lijnen van het buitendeel over de naad voort.', ex: [s * 0.03, 0.04, -0.08] }, [
-      P('Lens binnendeel', merge([face(xin, xs, f2, f3, 0.003), face(xin, xs, f0, f1, 0.003)]), MAT.lensRed, { d: 'Rode lens van het binnendeel (achterlicht): bovenband en onderstrook.', ex: [0, 0.03, -0.06] }),
-      P('Lens achteruitrijlicht', face(xin, xs, f1, f2, 0.0035), MAT.lensClear, { d: 'Heldere middenband over het achteruitrijlicht, in lijn met de heldere band van het buitendeel.', ex: [0, 0, -0.1] }),
-      P('Reflector binnendeel', face(xin + 0.004, xs - 0.008, f0, f3, -0.012, 8, 0.006), MAT.reflector, { d: 'Verchroomde reflector achter de lenzen.', ex: [0, 0, 0.04] }),
-      P('Lichthuis binnendeel', face(xin + 0.01, xs - 0.01, f0, f3, -0.028, 8, 0.008), MAT.plastic, { d: 'Behuizing in de achterklep.', ex: [0, 0, 0.06] }),
-      P('Lampdrager binnendeel', face(xin + 0.03, xs - 0.03, f0, f3, -0.018, 8, 0.02), MAT.ecu, { d: 'Lampdrager met fittingen en stekker.', ex: [0, 0, 0.1] }),
     ]),
   ]);
 }
@@ -1133,6 +1138,8 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
       P('Slotkast achterklep', G.rbox(0.08, 0.05, 0.03, 0.008), MAT.darkSteel, { d: 'Slot met vanghaak die door een sleuf in het binnenpaneel om de slotbeugel in het achterpaneel grijpt.', p: [0, 0.74, bodZT - 0.03], ex: [0, -0.04, 0] }),
       P('Slotmotor achterklep', G.rbox(0.05, 0.04, 0.025, 0.008), MAT.plastic, { d: 'Elektrische ontgrendelmotor.', p: [0.07, 0.75, bodZT - 0.03], ex: [0.04, 0, 0] }),
     ]),
+    // binnendelen van de achterlichten: zitten in de klep en draaien mee (geometrie in wereldcoördinaten, zoals de rest van de klep)
+    buildTaillight(L, 'binnen'), buildTaillight(R, 'binnen'),
     // gasveren: telescoop van het carrosseriepunt A naar het klepunt B. De groep staat in A met de lokale +z naar B (gebouwde stand);
     // de app richt hem bij het openen opnieuw en schuift de zuigerstang uit (290 mm ingeschoven, 495 mm uitgeschoven)
     // De cilinder is een gesloten draaivorm: kogelkom als halve bol onder, buis van 32 mm, platte kop met 0,5 mm afschuining, en binnenin een
