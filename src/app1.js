@@ -4,11 +4,14 @@
 // Golf 5c-2, P4: de render-lus (loop in app2-loop.js) stopt in rust. uiWake() start hem weer; alles wat een animatie begint of de
 // scène verandert, roept hem aan (requestRender doet dat ook). Pas na het opstarten (uiLoopLive) doet hij iets.
 let uiLoopLive = false, uiLoopOn = false, uiLoopWoke = false;
+let needs = true;          // er is iets te tekenen: de lus tekent bij het volgende frame
+let uiWasActive = false;   // in het vorige frame bewoog er iets (uiFrame in app2-loop.js; pick in app2-input.js)
 function uiWake() {
   if (!uiLoopLive || uiLoopOn) return;
   uiLoopOn = true; uiLoopWoke = true;
   requestAnimationFrame(loop);
 }
+const requestRender = () => { needs = true; uiWake(); }; // P4: de lus kan stilstaan
 const ROOT = (() => {
   const t0 = performance.now();
   uiTiming.buildStart = Math.round(t0);
@@ -114,6 +117,7 @@ function uiByPath(path) {
 
 /* ---------- uitklappen ---------- */
 let SPREAD = 1;
+let uiSpreadEnd = 1;   // spreiding aan het eind van de lopende animatie (uiExFin)
 const DUR = REDUCED ? 0.01 : CFG.tijd.uitklapS;
 const ease = t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 const uiAnim = new Set();     // groepen die animeren
@@ -414,8 +418,12 @@ function isUnder(n, a) { for (let p = n; p; p = p.parent) if (p === a) return tr
 let ISO = [];
 let XRAY = false, SYSCOL = false, SEL = null;
 let OPENMODE = false;   // klikmodus Openen (bediening in app2-controls.js): een klik opent of sluit openers in plaats van uit te klappen
+let MODE = 'part', LABELS = true;   // klikmodus van het dock (UI_MODES in app2-panel.js) en de schakelaar Labels
+let CTX = null, ACTIVE_PRESET = 'assembled'; // groep die de labels krijgt na de laatste handeling; actieve preset (null: geen)
+let uiLabelForce = false;          // de labels van CTX gaan voor (preset met `labels`, uiLabelGroup in app2-labels.js)
 const uiPickable = [];
 let uiPickVer = 0;
+let uiFade = null; // U4: lopende fade bij isoleren, { t: verstreken s, out: Set<mesh> }
 function uiInScope(a) { return !ISO.length || ISO.some(r => isUnder(a, r)); }
 // Ingesloten onderdelen (inner) zijn niet te zien zolang hun oudergroep dicht is; dan tekenen we ze niet.
 // Staat de ouder zelf buiten de isolatie (je isoleert het ingesloten deel), dan is er niets dat het verbergt.
@@ -442,7 +450,6 @@ function applyVisibility() {
 // op de nieuwe stand; alleen obj.visible van de vervagende meshes en hun groepen wordt zolang overschreven.
 const uiFadeMat = new THREE.MeshBasicMaterial({ color: 0xaab5c2, transparent: true, opacity: 0.5, depthWrite: false, toneMapped: false });
 uiFadeMat.name = 'uiFade';
-let uiFade = null; // { t: verstreken s, out: Set<mesh> }
 function uiVisibleMeshes() { const s = new Set(); for (const m of MESHES) if (m.userData.node.ev) s.add(m); return s; }
 function uiFadeShow() {
   for (const m of uiFade.out) for (let o = m; o && o !== scene; o = o.parent) o.visible = true;
@@ -520,6 +527,7 @@ function uiMatFor(m) {
 let uiMatKey = null;
 function applyMats() {
   // een gekozen opener (portier, kap) krijgt geen gele tint: hij is het doel van de klik en zou anders geel blijven
+  // uiMode staat later in het script (app2-panel.js); hij wordt pas gelezen met een selectie, en SEL is null tot de start
   const showHl = SEL && SEL !== ROOT && !ISO.includes(SEL) && (!SEL.asm || SEL.target <= 0.5) && uiMode().tint(SEL);
   const key = [showHl ? SEL : null, SYSCOL, XRAY, uiDimSet, uiFade, uiHovSet];
   if (uiMatKey && key.every((v, i) => v === uiMatKey[i])) return;
@@ -544,7 +552,6 @@ function uiSetHover(n) {
 const VIEW = { l: 0, r: 0, t: 0, b: 0 };
 let W = 1, H = 1;
 const DIRS = { iso: V3(1, 0.42, 1.08), front: V3(0.12, 0.22, 1), rear: V3(-0.15, 0.3, -1), side: V3(1, 0.1, 0.02), top: V3(0.0001, 1, 0.12), isoRear: V3(-1, 0.45, -1) };
-let uiSpreadEnd = 1;
 // Eindstand voorspellen: posities na afloop van alle lopende animaties, met de zichtbaarheid van de eindstand (uiInnerHidden(n, true)).
 function uiWithFinal(fn) {
   const moved = uiOpenFinalNodes();
@@ -590,6 +597,7 @@ function predictedBox(nodes) {
   return box;
 }
 let camAnim = null;
+let uiUserCam = false; // de gebruiker heeft de camera zelf verplaatst sinds de laatste inpassing
 // Camera inpassen op een puntenwolk zodat alles binnen het vrije beeld valt (tussen paneel, dock en titel).
 function uiFitPoints(pts, dir, pad = 1.08, opt = {}) {
   if (!pts.length) return null;
@@ -664,6 +672,9 @@ function stepCam(dt) {
 // zelf, zodat duiken, Alles uitklappen, afspelen, kruimelklik en rondleiding nooit op een ouder doel terugvallen; een preset
 // zet daarna { preset } (appApplyPreset), zodat het kader met het onderwerp van de preset meegaat.
 let uiLastFit = null;
+// G1: uiFitRef is het kader (uiLastFit) waarop de camera is ingepast, uiFitFree de hoogte van het vrije beeld op dat moment
+// (layoutView en uiRefitNow in app2-loop.js zetten ze; uiSnap en uiRestore bewaren ze)
+let uiFitRef = null, uiFitFree = -1;
 function focusNodes(nodes, dir, pad, opt = {}) {
   const pts = uiCollect(nodes, true);
   if (!pts.length) uiCollect(nodes.map(() => ROOT), true, pts);
@@ -673,7 +684,6 @@ function focusNodes(nodes, dir, pad, opt = {}) {
   updateGround();
 }
 function contextNodes() { return ISO.length ? ISO : [ROOT]; }
-let uiUserCam = false; // de gebruiker heeft de camera zelf verplaatst sinds de laatste inpassing
 
 /* ---------- vloer ---------- */
 // Vloer en schaduw als DataTexture uit JavaScript (geen 2D-canvas: dat tekenen kostte in software-WebGL bij het

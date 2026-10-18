@@ -17,9 +17,10 @@ const els = {
 };
 // Getallen van de bediening staan in CFG (core.js, golf 5c-2, K1).
 const UI_THEME_KEY = AUTO.id + '-theme';        // U5: onthouden themakeuze (light, dark; systeem = niets bewaard)
-let MODE = 'part', LABELS = true, CTX = null, ACTIVE_PRESET = 'assembled', needs = true;
-let uiLabelForce = false;
-const requestRender = () => { needs = true; uiWake(); }; // P4: de lus kan stilstaan (uiWake in app1.js)
+// MODE, LABELS, CTX, ACTIVE_PRESET, uiLabelForce, needs en requestRender staan in app1.js: app1.js en presets.js lezen ze.
+// uiReady: de eerste weergave is klaar en de pagina bedienbaar (gezet bij de start in app2-loop.js), uiReadyT: dat moment.
+let uiReady = false, uiReadyT = 0;
+const uiVersion = (document.querySelector('meta[name="model-version"]') || {}).content || ''; // VERSION plus inhoudshash (build.py)
 const fmtCount = n => TXT.onderdelen(n.count);
 // standbadge in het paneel; on: gemarkeerd (open, uitgeklapt, uitgelicht)
 const uiBadge = (txt, on) => `<span class="state${on ? ' open' : ''}">${txt}</span>`;
@@ -64,6 +65,9 @@ function uiDeepestOpen(p) { let a = null; pathFrom(p).forEach(x => { if (x.asm &
 //   dubbel          een dubbelklik duikt naar het onderdeel (in Openen heeft de eerste klik al gedaan wat er te doen was)
 //   dim             duiken dimt de rest (U19)
 //   tint(n)         de geselecteerde knoop krijgt de gele tint (in Openen niet op een opener: die is het doel van de klik)
+// U7: de uitleg bij de hele auto in de modus Openen (de beschrijving in systems.js noemt het uitklappen)
+const uiOpenRootDesc = AUTO.openUitleg;
+const uiOpenLabel = n => (n.opn && n.opn.label) || n.name; // naam van een opener in teksten
 function uiSelectAct(p) { uiPush(); select(p); uiAfterAction(); }
 // Klik op onderdeel P (modus Onderdeel): is de eigen groep G dicht, dan klapt alleen G ter plekke uit;
 // staat G al open, dan wordt P geselecteerd en uitgelicht. Een klik klapt nooit een groep boven G uit.
@@ -290,8 +294,6 @@ function uiPnLvl(mk, lvl) {
 }
 
 /* ---------- selectie en paneel ---------- */
-// U7: de uitleg bij de hele auto in de modus Openen (de beschrijving in systems.js noemt het uitklappen)
-const uiOpenRootDesc = AUTO.openUitleg;
 function select(n, opts = {}) {
   n = n || uiScopeRoot();
   if (uiLifted && uiLifted !== n) uiDrop();

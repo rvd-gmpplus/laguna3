@@ -172,6 +172,7 @@ function uiMeasureUi() {
 function uiRects() { return uiMeasureUi(); }
 const uiDirs = [0, 0.52, -0.52, 1.05, -1.05, 1.57, -1.57, 2.36, -2.36, 3.14];
 const uiRadii = [30, 52, 78, 110, 150];
+let uiLabelsMore = 0, uiMoreEl = null;
 function updateLabels() {
   if (uiUiDirty) { uiRectCache = uiMeasureUi(); uiUiDirty = false; }
   const g = uiLabelGroup();
@@ -247,7 +248,6 @@ function updateLabels() {
   uiPlaceMore(g);
   return shown;
 }
-let uiLabelsMore = 0, uiMoreEl = null;
 function uiPlaceMore(g) {
   if (!uiMoreEl) {
     uiMoreEl = document.createElement('button'); uiMoreEl.className = 'lmore'; uiMoreEl.hidden = true; uiMoreEl.tabIndex = -1;

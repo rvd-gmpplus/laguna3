@@ -2,9 +2,9 @@
 
 /* ---------- formaat en vrij beeld ---------- */
 let uiRefitTimer = 0;
-// G1: uiFitRef is het kader (uiLastFit) waarop de camera is ingepast, uiFitFree de hoogte van het vrije beeld op dat moment;
+// G1: het kader waarop de camera is ingepast staat in uiFitRef en uiFitFree (app1.js, bij uiLastFit);
 // uiRefitCheck: de wachtende herkadrering komt alleen van een layoutwijziging en vervalt als de camera al past.
-let uiFitRef = null, uiFitFree = -1, uiRefitCheck = false;
+let uiRefitCheck = false;
 const uiViewPrev = { l: -99, r: -99, t: -99, b: -99 };
 let uiViewW = 0, uiViewH = 0;
 function layoutView() {
@@ -193,7 +193,7 @@ function uiAfterAnim() {
 // achtergrondwerk (labelankers en batches, binnen een tijdsbudget). Is er na een frame niets meer te doen, dan vraagt de lus
 // geen volgend frame aan; uiWake() (app1.js) start hem weer bij invoer, animatie, rondleiding, formaatwissel,
 // contextherstel en thema (via requestRender en de animatiefuncties). Een fout midden in een frame houdt de lus draaiende.
-let last = performance.now(), uiWasActive = false, uiBatchDrawT = 0;
+let last = performance.now(), uiBatchDrawT = 0; // uiWasActive staat bij de lusstand in app1.js
 function loop(now) {
   let more = true;
   try { more = uiFrame(now); } finally { if (more) requestAnimationFrame(loop); else { uiLoopOn = false; uiDebugIdle(); } }
@@ -236,7 +236,6 @@ function uiBackgroundWork(now, active) {
 
 /* ---------- debug-overlay (?debug=1): tekensnelheid, tekenopdrachten, pixelratio, lichte weergave en versie, zodat een
    melding van een echt apparaat meetbaar is (docs/telefoontest.md) ---------- */
-const uiVersion = (document.querySelector('meta[name="model-version"]') || {}).content || '';
 const uiDebug = (() => { try { return new URLSearchParams(location.search).get('debug') === '1'; } catch (_) { return false; } })();
 const uiDbg = uiDebug ? { el: document.createElement('div'), t: 0, n: 0, acc: 0 } : null;
 if (uiDbg) { uiDbg.el.id = 'debug'; uiDbg.el.setAttribute('aria-hidden', 'true'); document.getElementById('app').appendChild(uiDbg.el); }
@@ -282,8 +281,7 @@ function uiUrlApply() {
   }
 }
 
-/* ---------- start ---------- */
-let uiReady = false, uiReadyT = 0;
+/* ---------- start (uiReady en uiReadyT staan bovenin app2-panel.js) ---------- */
 uiTiming.startUp = Math.round(performance.now());
 applyVisibility();
 if (uiSide()) els.sheet.dataset.state = 'open';

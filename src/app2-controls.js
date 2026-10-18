@@ -129,7 +129,6 @@ els.focus.onclick = () => { focusNodes([SEL], null, SEL.asm ? 1.08 : 1.6, { min:
 // De eerste dichte opener gaat open; zijn ze allemaal open, dan sluit de binnenste. Een klik op de ruit van een dicht
 // portier opent dus het portier, daarna de ruit; een tweede klik op de ruit sluit de ruit weer. Rechtsklik, Shift+klik en
 // lang drukken sluiten de binnenste open opener op het pad. Ingang: alles ingeklapt (Gemonteerd), openers blijven; uitgang: openers blijven staan.
-const uiOpenLabel = n => (n.opn && n.opn.label) || n.name;
 function uiOpenPath(p) {
   const chain = []; for (let a = p; a; a = a.parent) chain.unshift(a);
   const out = [];
@@ -223,6 +222,7 @@ function uiCloseOpenList() {
   if (!uiOpenListOn || !uiNarrow()) return;
   uiOpenListOn = false; $('btnOpenList').setAttribute('aria-expanded', 'false'); uiSyncOpenUi(); uiUiChanged(); layoutView();
 }
+let uiOpenWas = false;
 function uiSyncOpenUi() {
   uiUrlSync(); // de adresbalk volgt de openstand (ook via de testhaken setOpen en openAll)
   $('app').classList.toggle('omode', OPENMODE);
@@ -235,7 +235,6 @@ function uiSyncOpenUi() {
   if ($('openList').hidden === showList) $('openList').hidden = !showList;
   if (uiOpenWas !== OPENMODE) { uiOpenWas = OPENMODE; uiUiChanged(); layoutView(); }
 }
-let uiOpenWas = false;
 
 /* ---------- weergave-bediening ---------- */
 $('spread').addEventListener('input', e => { uiSetSpread(e.target.value / 100, false); $('spreadOut').textContent = TXT.procent(e.target.value); requestRender(); });
@@ -420,6 +419,7 @@ els.presets.addEventListener('keydown', e => {
   const j = e.key === 'Home' ? 0 : e.key === 'End' ? cats.length - 1 : (i + (e.key === 'ArrowRight' ? 1 : cats.length - 1)) % cats.length;
   e.preventDefault(); uiCatTabStop(cats[j]); cats[j].focus();
 });
+let uiCatSeen = null;
 function uiSyncCats() {
   const p = ACTIVE_PRESET && appPresetById.get(ACTIVE_PRESET);
   let textChanged = false;
@@ -447,7 +447,6 @@ function uiSyncCats() {
     }
   }
 }
-let uiCatSeen = null;
 function uiMenuItems() { return [...els.menu.querySelectorAll('.mi')]; }
 function uiOpenMenu(cat, btn) {
   uiCloseMenu(false);
