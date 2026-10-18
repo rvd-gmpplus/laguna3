@@ -148,7 +148,6 @@ function appApplyPreset(p, opt = {}) {
 /* ---------- rondleiding ---------- */
 // R4: de rondleiding kent pauze en hervat (knop, of vanzelf als het tabblad verborgen is), vorige en volgende.
 // appTour: { i: huidige stap, timer, due: tijdstip van de volgende stap, left: resttijd bij pauze, paused, auto }
-const APP_TOUR_STEP_MS = 5000, APP_TOUR_STEP_REDUCED_MS = 4500;
 let appTour = null;
 function uiStartTour() {
   uiStopPlay();
@@ -175,7 +174,7 @@ function uiTourStep(dir) {
 }
 function uiTourArm() {
   if (!appTour || appTour.paused) return;
-  const ms = REDUCED ? APP_TOUR_STEP_REDUCED_MS : APP_TOUR_STEP_MS;
+  const ms = REDUCED ? CFG.tijd.tourStapRustigMs : CFG.tijd.tourStapMs;
   appTour.due = performance.now() + ms;
   appTour.timer = setTimeout(uiTourStep, ms);
 }

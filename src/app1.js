@@ -84,7 +84,7 @@ function uiByPath(path) {
 
 /* ---------- uitklappen ---------- */
 let SPREAD = 1;
-const DUR = REDUCED ? 0.01 : 0.85;
+const DUR = REDUCED ? 0.01 : CFG.tijd.uitklapS;
 const ease = t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 const uiAnim = new Set();     // groepen die animeren
 const uiOffAnim = new Set();  // knopen met een animerende verschuiving (uitlichten, optillen)
@@ -140,7 +140,7 @@ for (const n of ALL) {
     if (o.move) o.mv = V3(...o.move);
     if (o.arc) { o.apv = V3(...o.arc.pivot); o.aax = V3(...o.arc.axis).normalize(); o.aang = o.arc.angle; }
     if (o.tilt) { o.tpv = V3(...o.tilt.pivot); o.tax = V3(...o.tilt.axis).normalize(); o.tang = o.tilt.angle; o.tf = o.tilt.part != null ? o.tilt.part : 0.35; }
-    o.dur = o.dur || (REDUCED ? 0.01 : 0.9);
+    o.dur = o.dur || (REDUCED ? 0.01 : CFG.tijd.openS);
     o.followers = []; o.stays = []; o.struts = []; o.needBy = [];
     if (o.type === 'hinge' && (!o.pv || !o.ax || typeof o.angle !== 'number')) console.error('openmodus: scharnier ' + n.name + ' mist pivot, axis of angle');
   }
@@ -403,7 +403,7 @@ function applyVisibility() {
   if (uiFade) uiFadeShow(); // U4: wat uitfadet blijft tot het einde van de fade getekend
   uiVisDirty = false; uiPickVer++;
 }
-// U4: overgang bij isoleren. Wat uit beeld gaat, wordt UI_ISO_FADE_MS lang als vervagend spook getekend (één gedeeld
+// U4: overgang bij isoleren. Wat uit beeld gaat, wordt CFG.tijd.isoFadeMs lang als vervagend spook getekend (één gedeeld
 // materiaal, geen kloon per mesh) en pas daarna verborgen. De zichtbaarheid (ev, aanwijzen, labels) staat al meteen
 // op de nieuwe stand; alleen obj.visible van de vervagende meshes en hun groepen wordt zolang overschreven.
 const uiFadeMat = new THREE.MeshBasicMaterial({ color: 0xaab5c2, transparent: true, opacity: 0.5, depthWrite: false, toneMapped: false });
@@ -430,7 +430,7 @@ function uiFadeEnd() { if (!uiFade) return; uiFade = null; applyVisibility(); ap
 function uiStepFade(dt) {
   if (!uiFade) return false;
   uiFade.t += dt;
-  const k = Math.min(1, uiFade.t / (UI_ISO_FADE_MS / 1000));
+  const k = Math.min(1, uiFade.t / (CFG.tijd.isoFadeMs / 1000));
   uiFadeMat.opacity = 0.5 * (1 - k);
   if (k >= 1) uiFadeEnd();
   return true;
@@ -734,7 +734,7 @@ function uiSnap() {
 }
 function uiPush() {
   uiHist.push(uiSnap());
-  if (uiHist.length > 50) uiHist.shift();
+  if (uiHist.length > CFG.indeling.historie) uiHist.shift();
   if (typeof uiSyncUndo === 'function') uiSyncUndo();
 }
 function uiRestore(s, instant) {

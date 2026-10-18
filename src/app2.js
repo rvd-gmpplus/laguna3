@@ -10,13 +10,8 @@ const els = {
   quality: $('tQuality'), qualityRow: $('qualityRow'), qualityNote: $('qualityNote'),
   notice: $('notice'), toast: $('toast'), isoBadge: $('isoBadge'), isoName: $('isoName'),
 };
-// Tijden en afstanden van golf 5c-1 bij elkaar (er is nog geen CFG; oudere constanten staan bij hun gebruik).
-const UI_ISO_FADE_MS = 300;                  // U4: uitfaden van wat bij isoleren uit beeld gaat
-const UI_TOAST_MS = 1800;                    // U8, U9: korte melding onderin (volledige labelnaam, beeld opgeslagen)
-const UI_HINT_MS = 9000;                     // hint bij de start, daarna (U8) de suggestie tot de eerste klik
-const UI_LABEL_MAX = 24, UI_LABEL_MAX_NARROW = 10; // U2: hoogstens zoveel labels; smal scherm (onder 600 px) minder
+// Getallen van de bediening staan in CFG (core.js, golf 5c-2, K1).
 const UI_THEME_KEY = AUTO.id + '-theme';        // U5: onthouden themakeuze (light, dark; systeem = niets bewaard)
-const UI_PRESS_VIBRATE_MS = 10;              // U8: trilling als de ring bij lang drukken vol is
 let MODE = 'part', LABELS = true, CTX = null, ACTIVE_PRESET = 'assembled', needs = true;
 let uiLabelForce = false;
 const requestRender = () => { needs = true; uiWake(); }; // P4: de lus kan stilstaan (uiWake in app1.js)
@@ -25,10 +20,13 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 const uiTouch = !!(window.matchMedia && matchMedia('(hover: none), (pointer: coarse)').matches);
 if (uiTouch) document.body.classList.add('touch');
 // Indeling van het paneel: onder als lade (telefoon staand), als kolom rechts (bureaublad en telefoon liggend).
-// Dezelfde voorwaarde staat in de mediaquery van head.html (blok 'telefoon liggend: zijkolom').
-const uiMqSide = window.matchMedia ? matchMedia('(max-width: 919.98px) and (max-height: 520px) and (orientation: landscape)') : null;
+// Eén mediaquery per breekpunt uit CFG.indeling; dezelfde voorwaarden staan in de mediaqueries van head.html.
+const uiMqText = `(max-width: ${CFG.indeling.breekpunt - 0.02}px)`; // 919,98 px: precies als in de CSS (smaller dan het breekpunt)
+const uiMqNarrow = window.matchMedia ? matchMedia(uiMqText) : null;
+const uiMqSide = window.matchMedia ? matchMedia(`${uiMqText} and (max-height: ${CFG.indeling.liggendMaxH}px) and (orientation: landscape)`) : null;
+const uiNarrow = () => (uiMqNarrow ? uiMqNarrow.matches : window.innerWidth < CFG.indeling.breekpunt); // smaller dan het breekpunt
 const uiSide = () => !!(uiMqSide && uiMqSide.matches);
-const uiSheetBottom = () => window.innerWidth < 920 && !uiSide();
+const uiSheetBottom = () => uiNarrow() && !uiSide();
 controls.minDistance = 0.05;
 let uiUiDirty = true;            // schermvlakken van de bediening opnieuw meten
 let uiSyncPending = false;
@@ -111,7 +109,7 @@ function uiPanelFixed(n) {
   renderPn(n);
   if (n.asm) {
     els.kidsTitle.textContent = `Bestaat uit (${n.kids.length})`;
-    const MAXK = 80;
+    const MAXK = CFG.indeling.kinderen;
     n.kids.slice(0, MAXK).forEach((k, i) => {
       const b = document.createElement('button');
       b.innerHTML = `<b>${i + 1}</b>${esc(k.name)}`;
@@ -539,13 +537,13 @@ const uiOpenChips = OPENERS.map(n => {
 let uiOpenListOn = false;
 $('btnOpenList').onclick = () => {
   uiOpenListOn = !uiOpenListOn; $('btnOpenList').setAttribute('aria-expanded', String(uiOpenListOn)); uiSyncOpenUi(); uiUiChanged(); layoutView();
-  if (window.innerWidth < 920) uiRefitSoon(); // de lijst neemt vrij beeld in of geeft het terug: de auto past in wat overblijft
+  if (uiNarrow()) uiRefitSoon(); // de lijst neemt vrij beeld in of geeft het terug: de auto past in wat overblijft
 };
 // Op een smal scherm (telefoon staand en liggend, tablet) is de lijst een keuzemenu: na een keuze gaat hij dicht, zodat hij het
 // beeld niet afdekt en het vrije beeld weer de volle hoogte heeft voordat de camera de opener kadreert. Op het bureaublad
 // staat hij naast het beeld en blijft open.
 function uiCloseOpenList() {
-  if (!uiOpenListOn || window.innerWidth >= 920) return;
+  if (!uiOpenListOn || !uiNarrow()) return;
   uiOpenListOn = false; $('btnOpenList').setAttribute('aria-expanded', 'false'); uiSyncOpenUi(); uiUiChanged(); layoutView();
 }
 function uiSyncOpenUi() {
@@ -611,13 +609,13 @@ function renderTree() {
     if (byNum) uiPnReady();
     all = ALL.filter(n => terms.some(t => n.norm.includes(t)) || (byNum && (uiPnIdx.get(n) || { q: '' }).q.includes(qn)));
   }
-  const key = els.search.value + '|' + uiPnGen + '|' + (all ? all.length + '|' + uiTreeSig(all.slice(0, 80)) : uiTreeSig([ROOT]));
+  const key = els.search.value + '|' + uiPnGen + '|' + (all ? all.length + '|' + uiTreeSig(all.slice(0, CFG.indeling.treffers)) : uiTreeSig([ROOT]));
   if (key === uiTreeKey) return;
   uiTreeKey = key;
   els.tree.innerHTML = '';
   const ul = document.createElement('ul');
   if (all) {
-    const hits = all.slice(0, 80);
+    const hits = all.slice(0, CFG.indeling.treffers);
     const syn = terms.length > 1 ? ` (ook gezocht op ${terms.slice(1).join(', ')})` : '';
     els.treeInfo.textContent = all.length ? (all.length === 1 ? '1 treffer' : `${all.length} treffers`) + syn + (all.length > hits.length ? `, de eerste ${hits.length} staan hieronder` : '') : 'Geen onderdeel gevonden met die naam' + syn + '.';
     hits.forEach(n => { const li = treeRow(n, 1); const small = document.createElement('div'); small.className = 'tpath'; small.textContent = ancestors(n).slice(1).map(a => a.name).join(' › ') || 'hele auto'; li.appendChild(small); ul.appendChild(li); });
@@ -721,7 +719,7 @@ let uiToastTimer = 0;
 function uiToast(txt) {
   els.toast.textContent = txt; els.toast.hidden = false; els.toast.classList.remove('gone');
   clearTimeout(uiToastTimer);
-  uiToastTimer = setTimeout(() => { els.toast.classList.add('gone'); setTimeout(() => { if (els.toast.classList.contains('gone')) els.toast.hidden = true; }, REDUCED ? 0 : 300); }, UI_TOAST_MS);
+  uiToastTimer = setTimeout(() => { els.toast.classList.add('gone'); setTimeout(() => { if (els.toast.classList.contains('gone')) els.toast.hidden = true; }, REDUCED ? 0 : 300); }, CFG.tijd.toastMs);
 }
 // R2: melding die blijft staan tot ze wordt weggehaald (contextverlies)
 function uiNotice(txt) { els.notice.hidden = !txt; els.notice.textContent = txt || ''; }
@@ -902,7 +900,7 @@ function uiOpenMenu(cat, btn) {
 function uiPlaceMenu() {
   const m = els.menu, btn = uiMenuBtn;
   if (!btn || m.hidden) return;
-  if (window.innerWidth <= 600) { m.style.left = ''; m.style.top = ''; m.style.bottom = ''; m.style.maxHeight = ''; return; }
+  if (window.innerWidth <= CFG.indeling.smal) { m.style.left = ''; m.style.top = ''; m.style.bottom = ''; m.style.maxHeight = ''; return; }
   const r = btn.getBoundingClientRect();
   const w = m.offsetWidth;
   m.style.left = clamp(r.left, 8, window.innerWidth - w - 8) + 'px';
@@ -941,10 +939,10 @@ function uiRunPreset(id) {
   return appApplyPreset(p);
 }
 function uiTourCaption(p, i, n) {
-  if (!p) { els.tourBar.hidden = true; if (window.innerWidth < 920) layoutView(); uiUiChanged(); return; }
+  if (!p) { els.tourBar.hidden = true; if (uiNarrow()) layoutView(); uiUiChanged(); return; }
   els.tourText.innerHTML = `<b>Rondleiding ${i + 1} van ${n} · ${esc(p.label)}</b>${esc(p.note)}`;
   els.tourBar.hidden = false;
-  if (window.innerWidth < 920) layoutView();
+  if (uiNarrow()) layoutView();
   uiUiChanged();
 }
 // R4: de knoppen in de rondleidingsbalk volgen de stand (pauze of hervat, vorige uit bij de eerste stap)
@@ -993,8 +991,8 @@ function pick(cx, cy, loose, hover) {
   if (hit && uiDimSet && uiDimmed(hit.object)) { const f = hits.find(h => !uiDimmed(h.object)); if (f) hit = f; }
   if (hit) return hit.object.userData.node;
   if (!loose) return null;
-  // vinger naast een klein onderdeel: het dichtstbijzijnde onderdeel binnen 22 px
-  let best = null, bd = 22 * 22;
+  // vinger naast een klein onderdeel: het dichtstbijzijnde onderdeel binnen CFG.gebaar.naastPx
+  let best = null, bd = CFG.gebaar.naastPx * CFG.gebaar.naastPx;
   for (const m of list) {
     const n = m.userData.node;
     uiPv.copy(n.lc).applyMatrix4(m.matrixWorld).project(camera);
@@ -1057,18 +1055,17 @@ function uiCancelPress() {
 // niet op het moment waarop een handler toevallig draait. De timer toont de ring en wapent het lang drukken;
 // vóór het doorvoeren laat hij wachtende invoer eerst afhandelen (een animatieframe en daarna een nul-timeout).
 // Komt er in die tijd een pointerup of pointercancel binnen, dan beslist die (op zijn eigen tijdstempel).
-const UI_PRESS_MS = 500;
 function uiCommitPress(d, fromUp) {
   if (d.consumed || (d.ended && !fromUp)) return;
   d.consumed = true;
   if (uiPressS && uiPressS.d === d) uiCancelPress();
-  try { navigator.vibrate && navigator.vibrate(UI_PRESS_VIBRATE_MS); } catch (_) { } // U8: de ring is vol (alleen waar vibrate bestaat)
+  try { navigator.vibrate && navigator.vibrate(CFG.gebaar.trilMs); } catch (_) { } // U8: de ring is vol (alleen waar vibrate bestaat)
   if (d.pick) uiCollapseAt(d.pick);
 }
 function uiStartPress(d) {
   uiCancelPress();
   const s = uiPressS = { d, raf: 0, zero: 0 };
-  s.show = setTimeout(() => { els.press.style.transform = `translate(${d.x}px, ${d.y}px)`; els.press.hidden = false; void els.press.offsetWidth; els.press.classList.add('run'); }, 150);
+  s.show = setTimeout(() => { els.press.style.transform = `translate(${d.x}px, ${d.y}px)`; els.press.hidden = false; void els.press.offsetWidth; els.press.classList.add('run'); }, CFG.gebaar.ringMs);
   // gewapend: eerst wachtende invoer laten afhandelen, dan pas doorvoeren als de vinger er nog ligt. Kwam een timer
   // te laat (de hoofddraad was bezig, er kan invoer in de rij staan), dan opnieuw kijken tot de draad weer vrij is.
   s.tries = 0;
@@ -1082,7 +1079,7 @@ function uiStartPress(d) {
       uiCommitPress(d);
     }));
   };
-  later(UI_PRESS_MS, check);
+  later(CFG.gebaar.drukMs, check);
 }
 canvas.addEventListener('pointerdown', e => {
   for (const l of labelPool) l._pd = false; // elk gebaar begint schoon: geen label houdt een oude druk vast
@@ -1096,10 +1093,10 @@ canvas.addEventListener('pointerdown', e => {
   } else { if (down) down.ended = true; down = null; uiCancelPress(); }
 });
 canvas.addEventListener('pointermove', e => {
-  if (down && down.id === e.pointerId && Math.hypot(e.clientX - down.x, e.clientY - down.y) >= 7) uiCancelPress();
+  if (down && down.id === e.pointerId && Math.hypot(e.clientX - down.x, e.clientY - down.y) >= CFG.gebaar.sleepPx) uiCancelPress();
   if (e.pointerType !== 'mouse' || e.buttons) { if (!els.tip.hidden) uiHideTip(); return; }
   uiHoverPos = { x: e.clientX, y: e.clientY };
-  const wait = 60 - (performance.now() - uiHoverT);
+  const wait = CFG.gebaar.aanwijsMs - (performance.now() - uiHoverT);
   if (wait <= 0) uiDoHover(); else if (!uiHoverTimer) uiHoverTimer = setTimeout(uiDoHover, wait);
 });
 canvas.addEventListener('pointerleave', () => { uiHoverPos = null; clearTimeout(uiHoverTimer); uiHoverTimer = 0; uiHideTip(); });
@@ -1111,14 +1108,14 @@ canvas.addEventListener('pointerup', e => {
   uiCancelPress();
   if (d.consumed) return;
   const moved = Math.hypot(e.clientX - d.x, e.clientY - d.y), dt = e.timeStamp - d.t;
-  if (moved >= 7) return; // slepen is nooit een klik
+  if (moved >= CFG.gebaar.sleepPx) return; // slepen is nooit een klik
   // lang drukken op touch: beslist door de duur van het gebaar zelf, ook als de timer nog niet aan de beurt was
-  if (d.type !== 'mouse' && d.button === 0 && dt >= UI_PRESS_MS) { uiCommitPress(d, true); return; }
-  if (dt >= 600) return;
+  if (d.type !== 'mouse' && d.button === 0 && dt >= CFG.gebaar.drukMs) { uiCommitPress(d, true); return; }
+  if (dt >= CFG.gebaar.tikMaxMs) return;
   if (d.button === 2) { if (d.type === 'mouse') { d.pick ? uiCollapseAt(d.pick) : uiBackground(); } return; }
   if (d.button !== 0) return;
   const now = e.timeStamp, L = uiLastTap;
-  if (L && now - L.t < 420 && now - L.t >= 0 && Math.hypot(e.clientX - L.x, e.clientY - L.y) < 26 && L.type === d.type) {
+  if (L && now - L.t < CFG.gebaar.dubbelMs && now - L.t >= 0 && Math.hypot(e.clientX - L.x, e.clientY - L.y) < CFG.gebaar.dubbelPx && L.type === d.type) {
     uiLastTap = null;
     if (OPENMODE) return; // in Openen is dubbelklik gelijk aan een enkele klik: de eerste klik heeft al gedaan wat er te doen was
     if (L.pick) uiDive(L.pick); // altijd het onderdeel van de eerste tik
@@ -1152,7 +1149,7 @@ function uiInitHint() {
   els.hint.textContent = uiTouch
     ? 'Tik op een onderdeel om het uit te klappen · dubbeltik om er direct heen te gaan · houd vast om in te klappen'
     : 'Klik op een onderdeel om het uit te klappen · dubbelklik om er direct naartoe te gaan · rechtsklik om in te klappen';
-  setTimeout(uiHintNext, UI_HINT_MS);
+  setTimeout(uiHintNext, CFG.tijd.hintMs);
 }
 // U8: na de uitleg één concrete suggestie, tot de eerste klik of tik (daarna nooit meer: de hint telt als gezien)
 function uiHintNext() {
@@ -1356,11 +1353,11 @@ function uiAnchorFlush() { // voor tests en voor finishAll: alles in de rij dire
 // per frame: vooruit inplannen en binnen het budget bouwen; true als er ankers klaar zijn gekomen (labels opnieuw leggen)
 function uiAnchorFrame(active) {
   uiAnchorPrefetch();
-  return (uiAnchorQ.size || uiAnchorJob) ? uiAnchorStep(active ? 2 : 8) : false;
+  return (uiAnchorQ.size || uiAnchorJob) ? uiAnchorStep(active ? CFG.budget.ankerActief : CFG.budget.ankerRust) : false;
 }
 function uiAnchorPrefetch() {
   const g = LABELS ? (SEL && SEL.asm && uiOpen(SEL) ? SEL : (CTX && uiOpen(CTX) ? CTX : null)) : null;
-  const max = W < 600 ? 10 : 24;
+  const max = W < CFG.indeling.smal ? CFG.indeling.labelsSmal : CFG.indeling.labels;
   if (g === uiPfGroup && max === uiPfMax) return;
   uiPfGroup = g; uiPfMax = max;
   if (!g) return;
@@ -1427,7 +1424,7 @@ const uiRadii = [30, 52, 78, 110, 150];
 function updateLabels() {
   if (uiUiDirty) { uiRectCache = uiMeasureUi(); uiUiDirty = false; }
   const g = uiLabelGroup();
-  const max = W < 600 ? UI_LABEL_MAX_NARROW : UI_LABEL_MAX;
+  const max = W < CFG.indeling.smal ? CFG.indeling.labelsSmal : CFG.indeling.labels;
   uiCands.length = 0;
   if (SEL && !SEL.asm && SEL.ev && LABELS) uiCands.push(SEL);
   const lp = uiLabelForce && ACTIVE_PRESET ? appPresetById.get(ACTIVE_PRESET) : null;
@@ -1580,7 +1577,7 @@ function layoutView() {
   // in hoogte verandert nadat de camera was ingepast: opnieuw inpassen, anders valt het onderwerp buiten het beeld.
   // Een kader dat sinds de vorige meting is ingepast, is ingepast op het vrije beeld van die vorige meting (prevFree).
   if (uiLastFit !== uiFitRef) { uiFitRef = uiLastFit; uiFitFree = prevFree; }
-  if (uiFitFree >= 0 && Math.abs((H - VIEW.t - VIEW.b) - uiFitFree) > 24) uiRefitSoon(true);
+  if (uiFitFree >= 0 && Math.abs((H - VIEW.t - VIEW.b) - uiFitFree) > CFG.indeling.herkaderPx) uiRefitSoon(true);
   camera.setViewOffset(W, H, (VIEW.r - VIEW.l) / 2, (VIEW.b - VIEW.t) / 2, W, H);
   camera.updateProjectionMatrix();
   uiPlaceMenu();
@@ -1589,7 +1586,7 @@ function layoutView() {
 }
 // Na een wijziging van het vrije beeld opnieuw inpassen, tenzij de gebruiker de camera zelf heeft verplaatst.
 // Een kader dat na de laatste meting is ingepast, hoort bij het huidige vrije beeld; anders telt het verschil met het vrije beeld bij het inpassen.
-function uiFitStale() { return uiLastFit === uiFitRef && uiFitFree >= 0 && Math.abs((H - VIEW.t - VIEW.b) - uiFitFree) > 24; }
+function uiFitStale() { return uiLastFit === uiFitRef && uiFitFree >= 0 && Math.abs((H - VIEW.t - VIEW.b) - uiFitFree) > CFG.indeling.herkaderPx; }
 function uiRefitNow() {
   const check = uiRefitCheck;
   clearTimeout(uiRefitTimer); uiRefitTimer = 0; uiRefitCheck = false;
@@ -1604,7 +1601,7 @@ function uiRefitNow() {
 function uiRefitSoon(check) {
   uiRefitCheck = !!check && (!uiRefitTimer || uiRefitCheck);
   clearTimeout(uiRefitTimer);
-  uiRefitTimer = setTimeout(uiRefitNow, 160);
+  uiRefitTimer = setTimeout(uiRefitNow, CFG.tijd.herkaderMs);
 }
 let uiDprCap = Math.min(window.devicePixelRatio || 1, 2), uiDpr = uiDprCap;
 function resize() {
@@ -1620,7 +1617,7 @@ function resize() {
 window.addEventListener('resize', () => { resize(); uiRefitSoon(); });
 if (window.ResizeObserver) {
   let lastH = 0;
-  new ResizeObserver(() => { syncSheetHeight(); layoutView(); const h = els.sheet.offsetHeight; if (uiSheetBottom() && Math.abs(h - lastH) > 24) uiRefitSoon(); lastH = h; }).observe(els.sheet);
+  new ResizeObserver(() => { syncSheetHeight(); layoutView(); const h = els.sheet.offsetHeight; if (uiSheetBottom() && Math.abs(h - lastH) > CFG.indeling.herkaderPx) uiRefitSoon(); lastH = h; }).observe(els.sheet);
   new ResizeObserver(() => layoutView()).observe(els.dock);
 }
 
@@ -1766,8 +1763,8 @@ function uiBackgroundWork(now, active) {
   // batches bouwen in de vrije tijd van het frame; opnieuw tekenen als de rij leeg is of hoogstens elke 300 ms
   // (een weergave per batch zou in software-WebGL de opbouw zelf vertragen); bij het opstarten hoogstens elke 1,5 s,
   // zodat de eerste batches niet op een rij volle weergaven van de losse auto hoeven te wachten
-  const uiStart = now - uiReadyT < 8000;
-  if (uiBatchOn && (uiBatchQ.size || uiBatchJob) && uiBatchStep(active ? 3 : (uiStart ? 25 : 10)) && (!uiBatchQ.size && !uiBatchJob || now - uiBatchDrawT > (uiStart ? 1500 : 300))) { needs = true; uiBatchDrawT = now; }
+  const uiStart = now - uiReadyT < CFG.tijd.startMs;
+  if (uiBatchOn && (uiBatchQ.size || uiBatchJob) && uiBatchStep(active ? CFG.budget.batchActief : (uiStart ? CFG.budget.batchStart : CFG.budget.batchRust)) && (!uiBatchQ.size && !uiBatchJob || now - uiBatchDrawT > (uiStart ? CFG.budget.batchTekenStartMs : CFG.budget.batchTekenMs))) { needs = true; uiBatchDrawT = now; }
   if (uiTiming.batches === undefined && !uiBatchQ.size && !uiBatchJob) uiTiming.batches = Math.round(now);
   return !!(uiAnchorQ.size || uiAnchorJob || (uiBatchOn && (uiBatchQ.size || uiBatchJob)));
 }
@@ -1925,7 +1922,7 @@ window.__model = {
   // klaar: gebouwd, eerste keer getekend en bedienbaar; op de batches van de beginstand wordt hoogstens 2 s gewacht
   // (tests die gebundelde aantallen meten roepen eerst batchFlush() aan)
   get ready() {
-    const ok = uiReady && (!uiBatchOn || (!uiBatchQ.size && !uiBatchJob) || performance.now() - uiReadyT > 2000);
+    const ok = uiReady && (!uiBatchOn || (!uiBatchQ.size && !uiBatchJob) || performance.now() - uiReadyT > CFG.tijd.klaarMs);
     if (ok && uiTiming.ready === undefined) uiTiming.ready = Math.round(performance.now());
     return ok;
   },

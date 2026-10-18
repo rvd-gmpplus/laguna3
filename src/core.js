@@ -1,5 +1,48 @@
 'use strict';
 /* ===================== basis: renderer, scène, materialen, geometrie-hulpen ===================== */
+/* ---------- instellingen van de app (golf 5c-2, K1) ---------- */
+// Alle vaste getallen van de bediening op één plek: gebaren, tijden, rekenbudgetten per frame en indeling. Tijden in ms,
+// tenzij de naam op S eindigt (seconden); afstanden in CSS-pixels. De mediaqueries in head.html gebruiken dezelfde
+// breekpunten met het getal zelf (CSS kent geen variabele in een mediaquery); elk van die regels verwijst naar CFG.indeling.
+const CFG = Object.freeze({
+  gebaar: Object.freeze({
+    sleepPx: 7,          // vanaf zoveel beweging is een gebaar slepen (geen tik, geen lang drukken)
+    tikMaxMs: 600,       // langer ingedrukt (muis) is geen klik
+    dubbelMs: 420,       // tweede tik binnen deze tijd ...
+    dubbelPx: 26,        // ... en binnen deze afstand is een dubbeltik
+    drukMs: 500,         // lang drukken op een aanraakscherm
+    ringMs: 150,         // de ring van lang drukken verschijnt na deze tijd
+    trilMs: 10,          // U8: trilling als de ring vol is
+    naastPx: 22,         // een vinger naast een klein onderdeel: het dichtstbijzijnde binnen deze straal
+    aanwijsMs: 60,       // aanwijzen met de muis hoogstens zo vaak
+  }),
+  tijd: Object.freeze({
+    hintMs: 9000,        // hint bij de start, daarna (U8) de suggestie tot de eerste klik
+    toastMs: 1800,       // U8, U9: korte melding onderin
+    isoFadeMs: 300,      // U4: uitfaden van wat bij isoleren uit beeld gaat
+    tourStapMs: 5000, tourStapRustigMs: 4500, // R4: duur van een stap van de rondleiding (normaal, minder beweging)
+    herkaderMs: 160,     // R3: herkadreren na een formaatwissel of een andere indeling, zoveel later
+    uitklapS: 0.85,      // standaardduur van uitklappen (een volle stap)
+    openS: 0.9,          // standaardduur van openen (open.dur van een opener gaat voor)
+    startMs: 8000,       // zolang na het opstarten krijgen de batches meer rekentijd
+    klaarMs: 2000,       // __model.ready wacht hoogstens zolang op de batches van de beginstand
+  }),
+  budget: Object.freeze({ // rekentijd per frame (ms) voor werk op de achtergrond
+    batchActief: 3, batchRust: 10, batchStart: 25, // samengevoegde groepen bouwen: tijdens beweging, in rust, bij het opstarten
+    batchTekenMs: 300, batchTekenStartMs: 1500,  // na een klare batch hoogstens zo vaak opnieuw tekenen (in rust, bij het opstarten)
+    ankerActief: 2, ankerRust: 8,                // labelankers vooruit bouwen
+  }),
+  indeling: Object.freeze({
+    breekpunt: 920,      // vanaf deze breedte staat het paneel als kolom rechts; smaller is het een lade onderin
+    liggendMaxH: 520,    // smaller dan het breekpunt en hoogstens zo hoog in liggende stand: zijkolom (telefoon liggend)
+    smal: 600,           // smal scherm: minder labels, het presetmenu als lade onderin
+    labels: 24, labelsSmal: 10, // U2: hoogstens zoveel labels
+    historie: 50,        // stappen terug
+    kinderen: 80,        // knoppen in de lijst Bestaat uit
+    treffers: 80,        // zoektreffers in de onderdelenlijst
+    herkaderPx: 24,      // het vrije beeld verandert meer dan dit in hoogte: opnieuw inpassen
+  }),
+});
 const LOADING = document.getElementById('loading');
 // tijdlijn van het opstarten (ms sinds het begin van de navigatie), uit te lezen via __model.timing
 const uiTiming = { script: Math.round(performance.now()) };

@@ -265,13 +265,15 @@ input[type=range]{width:100%;accent-color:var(--ink)}
 .pn-info dd{margin:0;min-width:0}
 .pn-info dd small{display:block;color:var(--ink-2);font-size:11px}
 /* ---------- desktop ---------- */
+/* Breekpunten: 920 px is CFG.indeling.breekpunt, 520 px CFG.indeling.liggendMaxH en 600 px CFG.indeling.smal (core.js).
+   CSS kent geen variabele in een mediaquery; wie een breekpunt wijzigt, past CFG en deze regels samen aan. */
 @media (min-width:920px){
   #sheet{top:calc(12px + env(safe-area-inset-top,0px));right:16px;bottom:16px;width:var(--panel-w);border-radius:16px;overflow:hidden}
   #dock{right:calc(var(--panel-w) + 32px)}
   #topbar{right:calc(var(--panel-w) + 32px)}
   #btnParts,#btnView{display:none}
 }
-/* ---------- mobiel ---------- */
+/* ---------- mobiel (smaller dan CFG.indeling.breekpunt) ---------- */
 @media (max-width:919.98px){
   /* openmodus: de segmentknop krijgt een eigen regel onder de titel, over de volle breedte */
   #topbar{flex-wrap:wrap}
@@ -368,10 +370,9 @@ input[type=range]{width:100%;accent-color:var(--ink)}
   .seg .short{display:inline}
   .seg button{padding:5px 8px}
   .pbtn{width:34px;padding:0;justify-content:center}
-}
-/* telefoon liggend: zijkolom. Het paneel staat als kolom rechts over de volle hoogte (zoals op het bureaublad) en het beeld
-   krijgt de rest; de lade, de peek-stand en de knoppen voor de lade vervallen. Dezelfde voorwaarde staat in app2.js (uiMqSide). */
-@media (max-width:919.98px) and (max-height:520px) and (orientation:landscape){
+  /* telefoon liggend: zijkolom. Het paneel staat als kolom rechts over de volle hoogte (zoals op het bureaublad) en het beeld
+     krijgt de rest; de lade, de peek-stand en de knoppen voor de lade vervallen. Dezelfde voorwaarde staat in app2.js (uiMqSide,
+     uit CFG.indeling.breekpunt en CFG.indeling.liggendMaxH). */
   #app{--side-w:calc(clamp(250px,36vw,330px) + env(safe-area-inset-right,0px))}
   #sheet{top:0;right:0;bottom:0;left:auto;width:var(--side-w);height:auto!important;max-height:none;border-radius:0;border-width:0 0 0 1px;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) 0;overflow:hidden;transition:none}
   .grab,#btnParts,#btnView{display:none}
