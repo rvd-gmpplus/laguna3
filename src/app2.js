@@ -133,7 +133,7 @@ function uiPanelFixed(n) {
 // paneel de nummers na de eerste weergave. In het geheugen heeft PN_DATA dezelfde vorm als vroeger (testcontract).
 let uiPnIdx = new Map(), uiPnUnitNode = new Map(), uiPnBad = [], uiPnCov = new Map(), uiPnGen = 0, uiPnLater = false;
 const UI_LINK_REL = 'noopener noreferrer'; // R5: cataloguslinks zonder opener en zonder verwijzende pagina (Referer)
-const uiPnCompact = t => String(t).toLowerCase().replace(/[\s.\-\/]/g, '');
+const uiPnCompact = t => uiNorm(t).replace(/[\s.\-\/]/g, ''); // een nummer zonder spaties, punten, streepjes en schuine strepen (K3: op uiNorm)
 const uiPnHasNum = r => !!r && ((r.u.oe && r.u.oe.length > 0) || (r.u.am && r.u.am.length > 0));
 // map uit partnumbers.js: een lijst [p, rest, eenheid, relatie, regel?] met voorvoegselcodering (build_pn.py, front_code)
 // terug naar pad -> [eenheid, relatie, regel]; een object (oudere of lege gegevens) blijft zoals het is
@@ -167,7 +167,7 @@ function uiPnReady() { if (!uiPnGen) uiPnBuild(); }
 function uiPnBuild() {
   uiPnIdx = new Map(); uiPnUnitNode = new Map(); uiPnBad = []; uiPnCov = new Map(); uiPnGen++;
   // paden opzoeken in een vaste tabel: een naam kan zelf een schuine streep bevatten (ABS/ESP-unit)
-  const full = new Map(ALL.map(k => [uiPathOf(k).replace(/^[^/]+\//, ''), k]));
+  const full = new Map(ALL.map(k => [uiRelPath(k), k]));
   for (const [path, e] of Object.entries(PN_DATA.map || {})) {
     const n = full.get(path) || uiByPath(path), id = Array.isArray(e) ? e[0] : null, u = id != null && PN_DATA.units ? PN_DATA.units[id] : null;
     if (!n) { uiPnBad.push(path + ': pad bestaat niet'); continue; }
@@ -261,7 +261,7 @@ function renderPn(n) {
     for (const [url, label] of links) { const a = mk('a', null, label || url); a.href = url; a.target = '_blank'; a.rel = UI_LINK_REL; d.appendChild(a); }
     box.appendChild(d);
   }
-  const inf = PN_DATA.info && PN_DATA.info[uiPathOf(n).replace(/^[^/]+\//, '')];
+  const inf = PN_DATA.info && PN_DATA.info[uiRelPath(n)];
   if (inf && inf.length) {
     box.appendChild(mk('h4', null, 'Onderhoud en bekende problemen'));
     const dl = mk('dl', 'pn-info');
@@ -403,13 +403,16 @@ function uiSoftFrame(nodes) {
   if (f) { animCam(f.pos, f.target, 0.9); uiLastFit = { nodes, dir: null, pad: 1.3, opt: { min: 0.45 } }; }
 }
 const uiPv = V3(0, 0, 0);
+// Een wereldpunt naar schermpixels in een vlak van w bij h (linksboven 0,0). v wordt ter plekke omgezet; z blijft de diepte
+// van project() (boven 1 ligt het punt achter de camera). Golf 5c-2, K3: was vier keer uitgeschreven.
+function uiToScreen(v, w = W, h = H) { v.project(camera); v.x = (v.x * 0.5 + 0.5) * w; v.y = (-v.y * 0.5 + 0.5) * h; return v; }
 function uiProject(pts) {
   camera.updateMatrixWorld();
   let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
   for (let i = 0; i < pts.length; i += 3) {
-    uiPv.set(pts[i], pts[i + 1], pts[i + 2]).project(camera);
+    uiToScreen(uiPv.set(pts[i], pts[i + 1], pts[i + 2]));
     if (uiPv.z > 1) return null;
-    const x = (uiPv.x * 0.5 + 0.5) * W, y = (-uiPv.y * 0.5 + 0.5) * H;
+    const x = uiPv.x, y = uiPv.y;
     if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
   }
   return Number.isFinite(x0) ? { x0, y0, x1, y1 } : null;
@@ -995,9 +998,9 @@ function pick(cx, cy, loose, hover) {
   let best = null, bd = CFG.gebaar.naastPx * CFG.gebaar.naastPx;
   for (const m of list) {
     const n = m.userData.node;
-    uiPv.copy(n.lc).applyMatrix4(m.matrixWorld).project(camera);
+    uiToScreen(uiPv.copy(n.lc).applyMatrix4(m.matrixWorld), r.width, r.height);
     if (uiPv.z > 1) continue;
-    const dx = (uiPv.x * 0.5 + 0.5) * r.width + r.left - cx, dy = (-uiPv.y * 0.5 + 0.5) * r.height + r.top - cy, d = dx * dx + dy * dy;
+    const dx = uiPv.x + r.left - cx, dy = uiPv.y + r.top - cy, d = dx * dx + dy * dy;
     if (d < bd) { bd = d; best = n; }
   }
   return best;
@@ -1258,12 +1261,15 @@ const uiSvgNs = 'http://www.w3.org/2000/svg';
 let uiRectCache = [], uiNPlaced = 0, uiVx0 = 0, uiVy0 = 0, uiVx1 = 0, uiVy1 = 0;
 const uiCands = [], uiSpots = [];
 const uiAnchor = V3(0, 0, 0), uiGc = V3(0, 0, 0);
-function uiLabelGroup() {
+// De groep waarvan de kinderen een label krijgen: de open selectie, anders de open context (CTX), en pas als die ver genoeg
+// uitgeklapt is. vooruit (uiAnchorPrefetch): al zodra de groep opengaat, en zonder de vaste labelgroep van een preset.
+// Golf 5c-2, K3: de ankerrij had een eigen kopie van deze keuze.
+function uiLabelGroup(vooruit = false) {
   if (!LABELS) return null;
-  if (uiLabelForce && CTX) return CTX;
-  if (SEL && SEL.asm && uiOpen(SEL) && SEL.amt > 0.6) return SEL;
-  if (CTX && uiOpen(CTX) && CTX.amt > 0.6) return CTX;
-  return null;
+  if (!vooruit && uiLabelForce && CTX) return CTX;
+  const ok = g => g && uiOpen(g) && (vooruit || g.amt > 0.6);
+  if (SEL && SEL.asm && ok(SEL)) return SEL;
+  return ok(CTX) ? CTX : null;
 }
 // Labelanker op de gelabelde knoop zelf. Het midden van het kader (n.lc) ligt bij een groep vaak op een ander deel of
 // in de lucht, zeker als de groep zelf is uitgeklapt (Stuurpomp: Pomphuis en Stroomregelklep). Daarom ankert elk
@@ -1356,7 +1362,7 @@ function uiAnchorFrame(active) {
   return (uiAnchorQ.size || uiAnchorJob) ? uiAnchorStep(active ? CFG.budget.ankerActief : CFG.budget.ankerRust) : false;
 }
 function uiAnchorPrefetch() {
-  const g = LABELS ? (SEL && SEL.asm && uiOpen(SEL) ? SEL : (CTX && uiOpen(CTX) ? CTX : null)) : null;
+  const g = uiLabelGroup(true);
   const max = W < CFG.indeling.smal ? CFG.indeling.labelsSmal : CFG.indeling.labels;
   if (g === uiPfGroup && max === uiPfMax) return;
   uiPfGroup = g; uiPfMax = max;
@@ -1445,12 +1451,12 @@ function updateLabels() {
   uiVx0 = v.x0 + M; uiVy0 = v.y0 + M; uiVx1 = v.x1 - M; uiVy1 = v.y1 - M;
   uiNPlaced = 0;
   let gx = 0, gy = 0;
-  if (g) { uiGc.copy(g.lc).applyMatrix4(g.obj.matrixWorld).project(camera); gx = (uiGc.x * 0.5 + 0.5) * W; gy = (-uiGc.y * 0.5 + 0.5) * H; }
+  if (g) { uiToScreen(uiGc.copy(g.lc).applyMatrix4(g.obj.matrixWorld)); gx = uiGc.x; gy = uiGc.y; }
   let shown = 0;
   for (let i = 0; i < uiCands.length; i++) {
     const k = uiCands[i], el = labelPool[i];
-    uiLabelAnchor(k, uiAnchor).project(camera);
-    const ax = (uiAnchor.x * 0.5 + 0.5) * W, ay = (-uiAnchor.y * 0.5 + 0.5) * H;
+    uiToScreen(uiLabelAnchor(k, uiAnchor));
+    const ax = uiAnchor.x, ay = uiAnchor.y;
     const w = k._lw || 100, h = k._lh || 22;
     let found = false, dx = 0, dy = 0;
     if (uiAnchor.z <= 1 && ax >= uiVx0 && ax <= uiVx1 && ay >= uiVy0 && ay <= uiVy1) {
@@ -1795,7 +1801,7 @@ function uiUrlSync() {
   const q = u.searchParams; q.delete('preset'); q.delete('open');
   if (ACTIVE_PRESET && appPresetById.has(ACTIVE_PRESET) && ACTIVE_PRESET !== 'assembled') q.set('preset', ACTIVE_PRESET);
   else if (OPENMODE) {
-    const open = OPENERS.filter(n => n.ot > 0).map(n => uiNameCount.get(n.name) === 1 ? n.name : uiPathOf(n).replace(/^[^/]+\//, ''));
+    const open = OPENERS.filter(n => n.ot > 0).map(n => uiNameCount.get(n.name) === 1 ? n.name : uiRelPath(n));
     if (open.length) q.set('open', open.join(','));
   }
   const s = q.toString(), next = u.pathname + (s ? '?' + s : '') + u.hash;

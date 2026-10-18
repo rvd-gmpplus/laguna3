@@ -17,7 +17,7 @@ function appPresetNames(p) {
 }
 // verwijzing naar een opener (pad of unieke naam) zonder consolefout; geeft de leider van de opener, anders null
 function appOpenRef(ref) {
-  const n = !ref ? null : ref.includes('/') ? uiByPath(ref) : (uiNameCount.get(ref) === 1 ? uiNames.get(ref) : null);
+  const n = uiResolve(ref);
   return n && n.opn ? (n.opn.lead || n) : null;
 }
 function appPresetErrors(p) {
@@ -57,7 +57,7 @@ const appPresetOk = p => p.tour || appPresetErrors(p).length === 0;
 function appSubject(p) {
   if (p.opens && p.opens !== 'all' && !p.frame) { // het kader van de eerste opener (open.look.nodes), anders de opener zelf
     const l = appOpenRef(p.opens[0]), lk = l && l.opn.look, out = [];
-    for (const r of lk && lk.nodes ? lk.nodes : [l]) { const m = typeof r === 'string' ? (r.includes('/') ? uiByPath(r) : uiNames.get(r)) : r; if (m && !out.includes(m)) out.push(m); }
+    for (const r of lk && lk.nodes ? lk.nodes : [l]) { const m = typeof r === 'string' ? uiResolve(r) : r; if (m && !out.includes(m)) out.push(m); }
     if (out.length) return out;
   }
   const names = p.frame || (p.iso && p.iso.length ? p.iso : [appCar]);

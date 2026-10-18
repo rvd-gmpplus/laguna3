@@ -90,18 +90,19 @@ const uiAnim = new Set();     // groepen die animeren
 const uiOffAnim = new Set();  // knopen met een animerende verschuiving (uitlichten, optillen)
 let uiVisDirty = true;
 const uiOpen = n => !!n && n.asm && n.target > 0.5;
-function placeKids(n) {
-  const s = n.amt * SPREAD;
-  for (const k of n.kids) {
-    if (k.ou > 0) uiOpenPose(k); else k.obj.position.copy(k.base);
-    k.obj.position.addScaledVector(k.exv, s);
-    if (k.hasOff) k.obj.position.add(k.off);
-  }
+// De positieregel (golf 5c-2, K3: was zes varianten): positie = rustpositie (base, of de openpose van een opener)
+// + exv x stand van de ouder x spreiding + verschuiving. uiExOff telt de huidige stand op p op (amt, SPREAD, off);
+// uiExFin de eindstand van het uitklappen (doel van de ouder en de eindspreiding), zonder verschuiving.
+function uiExOff(k, p) {
+  if (k.parent) p.addScaledVector(k.exv, k.parent.amt * SPREAD);
+  if (k.hasOff) p.add(k.off);
+  return p;
 }
+function uiExFin(k, p) { return p.addScaledVector(k.exv, k.parent.target * uiSpreadEnd); }
+function placeKids(n) { for (const k of n.kids) uiPlace(k); }
 function uiPlace(k) {
   if (k.ou > 0) uiOpenPose(k); else k.obj.position.copy(k.base);
-  if (k.parent) k.obj.position.addScaledVector(k.exv, k.parent.amt * SPREAD);
-  if (k.hasOff) k.obj.position.add(k.off);
+  uiExOff(k, k.obj.position);
 }
 
 /* ---------- openmodus: scharnieren, schuiven, volgers, vaste delen en telescopen ---------- */
@@ -121,13 +122,17 @@ const STRUTS = [], STAYS = [];
 const uiOq = new THREE.Quaternion(), uiOq2 = new THREE.Quaternion(), uiOv = V3(0, 0, 0), uiOv2 = V3(0, 0, 0);
 const uiOm = new THREE.Matrix4(), uiOm2 = new THREE.Matrix4(), uiOm3 = new THREE.Matrix4(), uiOs = V3(1, 1, 1);
 const UI_Z = V3(0, 0, 1);
+// Verwijzing naar een knoop: een pad vanaf de wortel (met /) of een naam die precies één keer voorkomt; anders null.
+// uiResolve zwijgt (presets toetsen zelf), uiRef meldt een verwijzing die niet oplost (golf 5c-2, K3: was drie kopieën).
+function uiResolve(ref) { return !ref ? null : ref.includes('/') ? uiByPath(ref) : (uiNameCount.get(ref) === 1 ? uiNames.get(ref) : null); }
 function uiRef(ref, who) {
   if (!ref) return null;
-  const n = ref.includes('/') ? uiByPath(ref) : (uiNameCount.get(ref) === 1 ? uiNames.get(ref) : null);
+  const n = uiResolve(ref);
   if (!n) console.error('openmodus: verwijzing ' + JSON.stringify(ref) + ' van ' + who + ' lost niet op' + (uiNameCount.get(ref) > 1 ? ' (naam niet uniek, gebruik een pad)' : ''));
   return n;
 }
 const uiPathOf = n => { const a = []; for (let k = n; k; k = k.parent) a.unshift(k.name); return a.join('/'); };
+const uiRelPath = n => uiPathOf(n).replace(/^[^/]+\//, ''); // pad zonder wortel (sleutel van de nummergegevens en van ?open=)
 const uiOpenAnc = n => { for (let p = n.parent; p; p = p.parent) if (p.opn) return p; return null; };
 for (const n of ALL) {
   n.ou = 0; n.ot = 0; n.opk = 1; n.opa0 = 0; n.opd = 0.9;
@@ -204,10 +209,10 @@ function uiStayFix(k) {
   O.obj.updateMatrix();
   uiOm.identity();
   for (let p = k.parent; p && p !== O; p = p.parent) { p.obj.updateMatrix(); uiOm.premultiply(p.obj.matrix); }   // A
-  uiOv.copy(O.base); if (O.parent) uiOv.addScaledVector(O.exv, O.parent.amt * SPREAD); if (O.hasOff) uiOv.add(O.off);
+  uiExOff(O, uiOv.copy(O.base));
   uiOm2.compose(uiOv, O.q0, O.s0);                                   // X
   uiOm3.copy(O.obj.matrix).invert().multiply(uiOm2).multiply(uiOm);   // Ocur^-1 * X * A
-  if (!k.opn) { k.obj.position.copy(k.base); if (k.parent) k.obj.position.addScaledVector(k.exv, k.parent.amt * SPREAD); if (k.hasOff) k.obj.position.add(k.off); k.obj.quaternion.copy(k.q0); k.obj.scale.copy(k.s0); }
+  if (!k.opn) { uiExOff(k, k.obj.position.copy(k.base)); k.obj.quaternion.copy(k.q0); k.obj.scale.copy(k.s0); }
   k.obj.updateMatrix();
   uiOm2.copy(uiOm).invert().multiply(uiOm3).multiply(k.obj.matrix);
   uiOm2.decompose(k.obj.position, k.obj.quaternion, uiOs); k.obj.scale.copy(uiOs);
@@ -285,8 +290,8 @@ function uiOpenFinalNodes() {
 function uiOpenFinalPose() {
   for (const n of OPENERS) if (n.ou > 0 || n.ot > 0) {
     n.ou = n.ot;
-    if (n.ou > 0) { uiOpenPose(n); n.obj.position.addScaledVector(n.exv, n.parent.target * uiSpreadEnd); } else n.obj.quaternion.copy(n.q0);
-    for (const f of n.opn.followers) { f.ou = n.ou; if (f.ou > 0) { uiOpenPose(f); f.obj.position.addScaledVector(f.exv, f.parent.target * uiSpreadEnd); } else f.obj.quaternion.copy(f.q0); if (f.stay) uiStayFix(f); }
+    if (n.ou > 0) { uiOpenPose(n); uiExFin(n, n.obj.position); } else n.obj.quaternion.copy(n.q0);
+    for (const f of n.opn.followers) { f.ou = n.ou; if (f.ou > 0) { uiOpenPose(f); uiExFin(f, f.obj.position); } else f.obj.quaternion.copy(f.q0); if (f.stay) uiStayFix(f); }
     for (const k of n.opn.stays) uiStayFix(k);
   }
   const keep = STRUTS.map(t => t.strut.dirty);
@@ -388,7 +393,8 @@ function uiInScope(a) { return !ISO.length || ISO.some(r => isUnder(a, r)); }
 // Staat de ouder zelf buiten de isolatie (je isoleert het ingesloten deel), dan is er niets dat het verbergt.
 // een open opener (de ouder zelf of een broer) legt de ingesloten delen van die ouder bloot
 const uiOpenNear = (p, fin) => (fin ? p.ot : p.ou) > 0 || p.kids.some(k => k.opn && (fin ? (k.opn.lead ? k.opn.lead.ot : k.ot) : k.ou) > 0);
-function uiInnerHidden(n) { const p = n.parent; return !!(n.inner && p && p.target === 0 && p.amt < 1e-4 && uiInScope(p) && !uiOpenNear(p, false)); }
+// fin: in de eindstand (na alle lopende animaties; voor camera en kaders), anders de stand van nu (golf 5c-2, K3: was ook uiPredHidden)
+function uiInnerHidden(n, fin = false) { const p = n.parent; return !!(n.inner && p && p.target === 0 && (fin || p.amt < 1e-4) && uiInScope(p) && !uiOpenNear(p, fin)); }
 function applyVisibility() {
   const onPath = new Set();
   for (const r of ISO) for (let a = r.parent; a; a = a.parent) onPath.add(a);
@@ -511,14 +517,13 @@ const VIEW = { l: 0, r: 0, t: 0, b: 0 };
 let W = 1, H = 1;
 const DIRS = { iso: V3(1, 0.42, 1.08), front: V3(0.12, 0.22, 1), rear: V3(-0.15, 0.3, -1), side: V3(1, 0.1, 0.02), top: V3(0.0001, 1, 0.12), isoRear: V3(-1, 0.45, -1) };
 let uiSpreadEnd = 1;
-// Eindstand voorspellen: posities na afloop van alle lopende animaties, met de zichtbaarheid van de eindstand.
-function uiPredHidden(n) { const p = n.parent; return !!(n.inner && p && p.target === 0 && uiInScope(p) && !uiOpenNear(p, true)); }
+// Eindstand voorspellen: posities na afloop van alle lopende animaties, met de zichtbaarheid van de eindstand (uiInnerHidden(n, true)).
 function uiWithFinal(fn) {
   const moved = uiOpenFinalNodes();
   for (const n of moved) { (n._q || (n._q = new THREE.Quaternion())).copy(n.obj.quaternion); n._s = n.obj.scale.clone(); n._u = n.ou; }
   for (const n of ALL) if (n.parent) {
     (n._p || (n._p = V3(0, 0, 0))).copy(n.obj.position);
-    n.obj.position.copy(n.base).addScaledVector(n.exv, n.parent.target * uiSpreadEnd).add(n.pull).add(n.liftV);
+    uiExFin(n, n.obj.position.copy(n.base)).add(n.pull).add(n.liftV);
   }
   if (moved.length) uiOpenFinalPose();
   ROOT.obj.updateMatrixWorld(true);
@@ -533,7 +538,7 @@ const uiCorner = V3(0, 0, 0);
 function uiCollect(nodes, final = true, out = []) {
   const go = () => {
     const walk = n => {
-      if (final ? uiPredHidden(n) : !n.ev) return;
+      if (final ? uiInnerHidden(n, true) : !n.ev) return;
       if (!n.asm) {
         if (final && ISO.length && !uiInScope(n)) return;
         const g = n.obj.geometry; if (!g.boundingBox) g.computeBoundingBox();
