@@ -272,14 +272,15 @@ function notchRect(u0, u1, v0, v1, cut = []) {
 // kussen of plaat uit één stuk met rondom afgeronde randen: rechthoekige omtrek poly (tegen de klok in, in het vlak u-v,
 // buitenmaat), dikte t langs de derde as (gecentreerd), randstraal b; holle hoeken van de omtrek krijgen straal ri.
 // Geen naden zoals bij losse blokken; de normalen zijn glad met een knik boven 30 graden.
-function roundPlate(poly, t, b, ri = 0.025, seg = 4) {
+// klein(i): optioneel; geeft hoek i de kleine afronding (4 mm) ook als die hol is (golf 5c-2, K8: was de lokale kopie intRoundPlate)
+function roundPlate(poly, t, b, ri = 0.025, seg = 4, klein = null) {
   b = Math.min(b, t / 2 - 0.0008);
   const n = poly.length, unit = (a, c) => { const dx = c[0] - a[0], dy = c[1] - a[1], l = Math.hypot(dx, dy); return [dx / l, dy / l]; };
   // omtrek b naar binnen: de afronding van ExtrudeGeometry zet hem weer b naar buiten
   const ins = poly.map((P, i) => { const e1 = unit(poly[(i + n - 1) % n], P), e2 = unit(P, poly[(i + 1) % n]); return [P[0] - b * (e1[1] + e2[1]), P[1] + b * (e1[0] + e2[0])]; });
   const pts = [];
   ins.forEach((P, i) => {
-    const d1 = unit(P, ins[(i + n - 1) % n]), d2 = unit(P, ins[(i + 1) % n]), convex = d1[0] * d2[1] - d1[1] * d2[0] < 0, r = convex ? 0.004 : ri + b;
+    const d1 = unit(P, ins[(i + n - 1) % n]), d2 = unit(P, ins[(i + 1) % n]), convex = d1[0] * d2[1] - d1[1] * d2[0] < 0, r = convex || (klein && klein(i)) ? 0.004 : ri + b;
     const cx = P[0] + (d1[0] + d2[0]) * r, cy = P[1] + (d1[1] + d2[1]) * r, a1 = Math.atan2(-d2[1], -d2[0]);
     let da = Math.atan2(-d1[1], -d1[0]) - a1; while (da > PI) da -= 2 * PI; while (da < -PI) da += 2 * PI;
     for (let k = 0; k <= 3; k++) pts.push(new THREE.Vector2(cx + r * Math.cos(a1 + da * k / 3), cy + r * Math.sin(a1 + da * k / 3)));
