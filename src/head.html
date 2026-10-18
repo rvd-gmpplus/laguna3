@@ -477,6 +477,13 @@ input[type=range]{width:100%;accent-color:var(--ink)}
 
 <div id="app">
   <canvas id="stage" tabindex="0" role="application" aria-label="{{canvasLabel}}"></canvas>
+  <script>
+  // Golf 5c-2: de tekenbuffer vóór het maken van de WebGL-context op de CSS-maat van het canvas zetten. three.js neemt die
+  // maat over en setPixelRatio in core.js maakt er meteen de juiste buffer van, zodat resize() bij het opstarten niets meer
+  // hoeft te doen; een tekenbuffer na de context opnieuw toewijzen kost in software-WebGL (SwiftShader) ruim een halve
+  // seconde. Klopt de maat later niet (ander formaat), dan past resize() hem zoals altijd aan.
+  (function () { var c = document.getElementById('stage'); if (c && c.clientWidth > 0 && c.clientHeight > 0) { c.width = c.clientWidth; c.height = c.clientHeight; } })();
+  </script>
   <div id="labels"><svg id="leaders" aria-hidden="true"></svg></div>
   <header id="topbar">
     <div class="title">
