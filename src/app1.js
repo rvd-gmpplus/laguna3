@@ -515,7 +515,18 @@ function uiHvMat(base) { let m = uiHV.get(base); if (!m) { m = uiTint(base, 0x3d
 function uiSelMat(base) { let m = uiSL.get(base); if (!m) { m = uiTint(base, 0xf2c230, 0.75); uiSL.set(base, m); } return m; }
 const uiGhostHv = new THREE.MeshStandardMaterial({ color: 0x5aa0ff, emissive: 0x2f86ff, emissiveIntensity: 0.3, transparent: true, opacity: 0.3, depthWrite: false, side: THREE.DoubleSide });
 let uiSelSet = new Set(), uiHovSet = new Set(), uiHovNode = null;
-function uiMatFor(m) {
+// uitsnijdend materiaal (alphaTest met een textuur, zoals een opschrift): een vervangend materiaal (systeemkleur, dimmen, vervagen,
+// markering) houdt de textuur, de alphaTest en de polygonOffset van het basismateriaal, anders wordt het opschrift een dichte plaat
+const uiCutC = new WeakMap();
+function uiCut(base, mat) {
+  if (!base.alphaTest || mat === base || mat.map) return mat;
+  let c = uiCutC.get(base); if (!c) uiCutC.set(base, c = new Map());
+  let r = c.get(mat);
+  if (!r) { r = mat.clone(); r.map = base.map; r.alphaTest = base.alphaTest; r.polygonOffset = base.polygonOffset; r.polygonOffsetFactor = base.polygonOffsetFactor; r.polygonOffsetUnits = base.polygonOffsetUnits; c.set(mat, r); }
+  return r;
+}
+function uiMatFor(m) { return uiCut(m.userData.base, uiMatPick(m)); }
+function uiMatPick(m) {
   const n = m.userData.node;
   let mat = m.userData.base;
   if (SYSCOL && n.sys) mat = SYS_MATS[n.sys] || mat;
@@ -860,9 +871,9 @@ function uiBatchClean() {
   }
 }
 function uiBatchMat(base, g) {
-  if (XRAY && g.isBody) return GHOST;
-  if (DIM && !isUnder(g, DIM) && !isUnder(DIM, g)) return uiDimMat;
-  if (SYSCOL && g.sys) return SYS_MATS[g.sys] || base;
+  if (XRAY && g.isBody) return uiCut(base, GHOST);
+  if (DIM && !isUnder(g, DIM) && !isUnder(DIM, g)) return uiCut(base, uiDimMat);
+  if (SYSCOL && g.sys) return uiCut(base, SYS_MATS[g.sys] || base);
   return base;
 }
 function uiBatchShow(g) {

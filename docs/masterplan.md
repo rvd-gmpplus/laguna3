@@ -614,7 +614,7 @@ Besluiten vooraf (zie `docs/onderzoek/beslissingen.md`, golf 5i): T4 naar 385 kB
 
 Gedaan:
 - Ruiten: zijruiten, kwartsruiten en achterruit met de tint en dekking van de voorruit (`MAT.bodGlassSide`); panoramadak ongewijzigd.
-- Afdekkap (`src/engine3.js`, `engCoverShell` en `engCoverTop`): hoogteveld over een afgeronde rechthoek met rok, gaten en kommen; eindigt links 8 mm voor de motorsteun distributiezijde en blijft boven de dynamo; voor diep omlaag over de inlaatkanalen; 2,5 cm onder de buitenhuid van de motorkap (`integrity.py`).
+- Afdekkap (`src/engine3.js`, `engCoverShell` en `engCoverTop`): hoogteveld over een afgeronde rechthoek met rok, gaten en kommen; eindigt rechts in de auto (distributiezijde) 8 mm voor de motorsteun distributiezijde en blijft boven de dynamo; voor diep omlaag over de inlaatkanalen; 2,5 cm onder de buitenhuid van de motorkap (`integrity.py`).
 - Olievuldop midden op het kleppendeksel (`ENG_OIL`), vulhals 2 cm boven de bodem van de kom; middelste ribbe van het deksel ingekort.
 - Peilstokgreep 4,2 cm hoger in een kom.
 - Ruitensproeiertank rechtsvoor met gele dop; kapslang naar rechts, achter motorsteun en vuldop langs.

@@ -982,7 +982,7 @@ function buildBody() {
     // boven de motorafdekkap naar de rechter scharnierhoek en zakt daar onder y 0,88 naar de slangkoppeling van het systeem (wereld -0,60; 0,815; 1,48; golf 5i: rechts, met de tank rechtsvoor),
     // waar het einde bij gesloten kap 0,5 mm boven de koppeling stopt. Route schematisch.
     P('T-stuk sproeierslang', merge([G.cyl('x', 0.0045, 0.0045, 2 * bodSprT[3], 10), xf(G.cyl('z', 0.0045, 0.0045, bodSprT[4], 10), [0, 0, bodSprT[4] / 2])]), MAT.plastic, { d: 'Kunststof T-stuk dat de slangen naar de twee sproeiers voedt vanuit de ene toevoerslang.', p: bodSprT.slice(0, 3), ex: [0, -0.05, 0] }),
-    P('Sproeierslang naar koppeling', tube([[0, bodSprT[1], bodSprT[2] + bodSprT[4] + 0.0003], [0, bodSprT[1] - 0.001, 1.428], [-0.05, 0.894, 1.415], [-0.13, 0.884, 1.405], [-0.22, 0.88, 1.41], [-0.32, 0.874, 1.425], [-0.45, 0.866, 1.432], [-0.55, 0.86, 1.44], [-0.592, 0.85, 1.465], [-0.60, 0.835, 1.48], [-0.60, 0.8205, 1.48]], 0.003, 40, 5), MAT.rubber, { d: 'Toevoerslang onder de kap van de slangkoppeling bij de rechter veerpoottoren naar het T-stuk; loopt met de kap mee als die opent (route schematisch).', ex: [0.03, -0.05, 0] }),
+    P('Sproeierslang naar koppeling', tube([[0, bodSprT[1], bodSprT[2] + bodSprT[4] + 0.0003], [0, bodSprT[1] - 0.001, 1.428], [-0.05, 0.894, 1.415], [-0.13, 0.884, 1.405], [-0.22, 0.88, 1.41], [-0.32, 0.874, 1.425], [-0.45, 0.866, 1.432], [-0.55, 0.86, 1.44], [-0.592, 0.85, 1.465], [-0.60, 0.835, 1.48], [-0.60, 0.8205, 1.48]], 0.003, 40, 5), MAT.rubber, { d: 'Toevoerslang onder de kap van de slangkoppeling bij de rechter veerpoottoren naar het T-stuk; loopt met de kap mee als die opent (route schematisch).', ex: [-0.03, -0.05, 0] }),
   ]);
 
   /* ================= voorschermen ================= */
