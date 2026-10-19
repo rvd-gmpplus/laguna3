@@ -1,6 +1,6 @@
 # Kerncijfers
 
-Gegenereerd door `tools/orkestratie/cijfers.py` uit `stats.json` op 2026-10-19, bron `d97c831 2026-10-19`. Niet met de hand bewerken; andere documenten verwijzen hiernaar in plaats van getallen te herhalen.
+Gegenereerd door `tools/orkestratie/cijfers.py` uit `stats.json` op 2026-10-19, bron `1f3ed3e 2026-10-19`. Niet met de hand bewerken; andere documenten verwijzen hiernaar in plaats van getallen te herhalen.
 
 ## Boom
 
@@ -22,11 +22,11 @@ Gegenereerd door `tools/orkestratie/cijfers.py` uit `stats.json` op 2026-10-19, 
 | Carrosserie | 508 | 177.773 | 190.000 |
 | Onderstel | 500 | 110.560 | 125.000 |
 | Interieur | 287 | 85.564 | 95.000 |
-| Koeling en luchtinlaat | 78 | 21.224 | 25.000 |
+| Koeling en luchtinlaat | 78 | 21.248 | 25.000 |
 | Uitlaatsysteem | 52 | 13.200 | 20.000 |
-| Elektrisch systeem | 51 | 9.144 | 12.000 |
-| Brandstofsysteem | 38 | 8.568 | 12.000 |
-| Totaal | 2.562 | 654.217 | 700.000 |
+| Elektrisch systeem | 51 | 9.496 | 12.000 |
+| Brandstofsysteem | 38 | 8.544 | 12.000 |
+| Totaal | 2.562 | 654.569 | 700.000 |
 
 ## Tekenopdrachten (gemonteerd)
 
@@ -40,16 +40,16 @@ Gegenereerd door `tools/orkestratie/cijfers.py` uit `stats.json` op 2026-10-19, 
 
 | Moment | ms |
 |---|---|
-| script | 29 |
-| buildStart | 71 |
-| buildCar | 397 |
-| startUp | 492 |
-| render0 | 507 |
-| firstFrame | 695 |
-| interactive | 697 |
-| ready | 6.292 |
-| batches | 725 |
-| duur buildCar() | 326 |
+| script | 36 |
+| buildStart | 81 |
+| buildCar | 419 |
+| startUp | 525 |
+| render0 | 542 |
+| firstFrame | 729 |
+| interactive | 731 |
+| ready | 6.949 |
+| batches | 762 |
+| duur buildCar() | 338 |
 
 Deze tijden zeggen niets over een echt apparaat; zie `docs/telefoontest.md`.
 
