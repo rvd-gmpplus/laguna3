@@ -21,6 +21,8 @@ function bodGlassWs(m) {
   return m;
 }
 MAT.glassWs = bodGlassWs(MAT.glass.clone());
+// golf 5h-2: voorruit lichter en met meer luchtreflectie, anders las hij als zwart gat (persfoto: grijsblauw met interieur erachter)
+MAT.glassWs.color.setHex(0x222930); MAT.glassWs.envMapIntensity = 0.5; MAT.glassWs.specularIntensity = 0.5;
 // zijruiten en kwartsruiten (golf 5f, S7 kenmerk 4): iets minder dekkend en met wat meer luchtreflectie dan de achterruit, zodat het glas als
 // donkergrijs leest en de zwarte B-stijl en het stijltje ernaast als zwart vlak afsteken (bij 0,92 en 0,12 waren glas en stijl even zwart)
 MAT.bodGlassSide = MAT.glass.clone(); MAT.bodGlassSide.name = 'bodGlassSide'; MAT.bodGlassSide.opacity = 0.84; MAT.bodGlassSide.envMapIntensity = 0.9;
