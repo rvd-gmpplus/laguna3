@@ -332,7 +332,7 @@ Poort van golf 5c-1: itest van 150 naar circa 190 controles, allemaal groen; p95
 
 Golf 5f (carrosserie: S7 kenmerk 4, het onrustige achterpaneel, het losse zwarte blokje bij de C-stijl, de spikkels) en golf 5e (F1 tot en met F4 uit handboeken, schema's en catalogi) liepen samen, op besluit van de gebruiker; golf 6 wacht. De besluiten staan in [onderzoek/beslissingen.md](onderzoek/beslissingen.md), sectie "Besluiten van 19 oktober 2026 (golf 5f en 5e)". De bronkeuze bij een conflict ligt bij de orkestrator: werkplaatshandboek boven onderdelencatalogus boven overige bronnen.
 
-Eigendom: `src/body.js` is alleen-lezen voor de domeineigenaars. De orkestrator heeft de wijziging van `body.js` door de carrosserie in ronde 2 en 3 goedgekeurd (besluit van de orkestrator, 19 oktober 2026); in de tak staat ze in `aaa46c3` (het staartvlak helt naar voren en de bumperrichel rondt af: `bodTB`, `bodTB1`, `bodTF`, `bodTipR`).
+Eigendom: `src/body.js` is alleen-lezen voor de domeineigenaars. De orkestrator heeft de wijziging van `body.js` door de carrosserie in ronde 2 goedgekeurd (ronde 3 liet `body.js` ongewijzigd) (besluit van de orkestrator, 19 oktober 2026); in de tak staat ze in `aaa46c3` (het staartvlak helt naar voren en de bumperrichel rondt af: `bodTB`, `bodTB1`, `bodTF`, `bodTipR`).
 
 ### Wat gedaan is
 
@@ -360,9 +360,9 @@ Klaar is (`CLAUDE.md`): volledige set groen op macOS en op Linux, visdiff groen 
 | Volledige set op macOS | Groen. |
 | Volledige set op Linux (VM `lag3-vm`) | Groen. |
 | Visdiff op Linux | 42 van 42 na de vernieuwde basislijn (`ee84333`, 17 beelden vernieuwd). |
-| Botsingszwaai (open stand, alle openers) | [ZWAAI] |
+| Botsingszwaai (open stand, alle openers) | Zes geraakte openers (Achterklep, de vier portieren, Motorkap) gezwaaid tegen `main` (stap 0,05, h 4 mm) op `8fe6435`: ECHT 0. Eén grensgeval (Portier rechtsvoor stand 0,95, Deurvanger tegen Schermpaneel, 5,85 naar 5,96 mm) is met de ruisproef bij h 1,5 mm RUIS (omhullende 5,99 tegen 6,00 mm); de stand is door de hoek van 67 graden een iets andere hoek dan in `main`. |
 | Herkenbaarheid (S7), eis 7 van 9, doel 8 | 7 van 9 bij meerderheid, zie hieronder. Eis gehaald, doel niet. |
-| Advisor-oordeel | De punten van de advisor zijn verwerkt (rij Advisor-ronde); het oordeel na die ronde: [ADVISOR-OORDEEL]. |
+| Advisor-oordeel | De punten van de advisor zijn verwerkt (rij Advisor-ronde); het oordeel na die ronde: pass (nacontrole, alle 11 punten opgelost). |
 
 S7 (drie Opus-beoordelaars, high; beelden van de echte GPU, `LAG3_GPU=1`):
 
