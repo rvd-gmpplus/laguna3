@@ -259,10 +259,10 @@ Stand: tip `84b9adc` (advisor ronde 1 verwerkt), `index.html` nog niet herbouwd 
 
 | Test | Uitslag |
 |---|---|
-| Volledige strikte set op macOS (`tools/orkestratie/finaltests.sh`) | INVULLEN-MAC |
-| Volledige set in de Linux-VM (`tools/lag3-vm.sh test`), inclusief `visdiff` op Linux | INVULLEN-VM |
-| `build.py --lint`, `pncheck.py`, `framework.py check`, `tri.py --gate` | INVULLEN-MAC |
-| `pubsmoke.py` met het JSON-blok `#pn` | INVULLEN-MAC |
+| Volledige strikte set op macOS (`tools/orkestratie/finaltests.sh`) | op `84b9adc` (19 oktober 2026, 05:02 tot 05:14 UTC) alles groen in één run: 13 van 13 tests, itest 232 van 232, visdiff 42 van 42 tegen een eigen Mac-meting van `ca0e159`, anchor ok; ruis: alleen `GPU stall due to ReadPixels` |
+| Volledige set in de Linux-VM (`tools/lag3-vm.sh test`), inclusief `visdiff` op Linux | op `84b9adc` (05:14 tot 05:32 UTC) alles groen behalve visdiff, 40 van 42 tegen de basislijn van versie 10: 33-tailgate (2,52 procent, K9) en 38-openDoors (1,53 procent, K11), beide bedoeld en bekeken; daarna de Linux-basislijn vernieuwd in `922f416` (42 van 42 binnen de drempel, anchorcheck.json ongewijzigd) |
+| `build.py --lint`, `pncheck.py`, `framework.py check`, `tri.py --gate` | ok op `84b9adc` (lint, pncheck en framework check los; `tri.py --gate` binnen de Mac- en de VM-set) |
+| `pubsmoke.py` met het JSON-blok `#pn` | ok in de Mac- en de VM-set: het blok overleeft het hostgeraamte, 1.660 nummerpaden gelezen |
 | Botsingsmeting in open stand (zwaai van achterklep en expansiedop) | 0 nieuwe doordringingen (ECHT 0) |
 | S7 voor K11 (voorruit van buiten 0,92 en 0,80) | elk 8 van 9, alleen kenmerk 4 deels |
 | Advisor ronde 1 (Opus, max) | PASS onder voorwaarden, geen P1; de P3-punten staan in `84b9adc` |
