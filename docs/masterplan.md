@@ -482,7 +482,7 @@ Elke golf krijgt vooraf een korte premortem (één lens, zeven oorzaken, struike
 | T1 | `tri.py --gate` boven een budget na een samenvoeging | niet publiceren; eigenaar verlaagt segmenten of stations in de eigen golf; budgetten zelf staan in `anchors.json` en wijzigen alleen met een reden in `beslissingen.md` |
 | T2 | Poort K1-K13: een kenmerk zakt twee stappen (ja naar nee), of zakt één stap en een tweede, onafhankelijk panel reproduceert dat | de wijziging die het kenmerk raakt terugdraaien; een daling van één stap zonder reproductie is ruis en geen actie |
 | T3 | CI push-job rood op `main` | niets anders tot groen; een rode nachtrun opent een issue |
-| T4 | `index.html` meer dan 100 kB gegroeid in één golf zonder reden in het commitbericht, of boven 1,5 MB raw / 370 kB gzip (MB = 10^6 bytes, `gzip -6`; grens verhoogd door de gebruiker op 17 oktober 2026, was 1,4 MB / 330 kB) | reden toevoegen of terugdraaien; 5d mag groeien met de nummers die het toevoegt |
+| T4 | `index.html` meer dan 100 kB gegroeid in één golf zonder reden in het commitbericht, of boven 1,5 MB raw / 385 kB gzip (MB = 10^6 bytes, `gzip -6`; grens verhoogd door de gebruiker op 17 oktober 2026, was 1,4 MB / 330 kB, en op 19 oktober 2026 voor golf 5i naar 385 kB gzip) | reden toevoegen of terugdraaien; 5d mag groeien met de nummers die het toevoegt |
 | T5 | Golf langer dan anderhalf maal de richting | scope halveren, de rest naar de volgende golf; nooit de poort overslaan |
 | T6 | Een melding van de gebruiker zonder reproductie met `pick.py`, stralen of opname | eerst reproduceren, dan pas wijzigen |
 | T7 | `pncheck` rood, een lokvogel doorgelaten, of bronnen per nummer gedaald | de plak vervalt in zijn geheel |
@@ -605,3 +605,17 @@ Aanleiding: klacht van de gebruiker over de voorruit en de aansluitingen eromhee
 | Gebruiker | "Maak de ruit lichter, zoals op de foto": buitendekking voorruit 0,50 (was 0,80), luchtreflectie 0,9; helderheid midden ruit 93 tegen 90 op de foto. | `56cfdac` |
 
 Uitslag: exterieurtoets 9 van 9 (GPU-beelden, kenmerk 4 volgens B7); clash 85 naar 75 doordringende paren, 0 nieuw; zie CHANGELOG versie 14 voor de sets en de zwaai. Open voor later: langere overgang van de A-stijlvoet (bodAPL), spiegelhuis als slanke druppel, losse zwarte balk boven het kenteken, lichte rechthoek rond het kenteken achter, overbelichte motorkap (belichting, apart besluit). De wijzigingen in `body.js` en `interior.js` (alleen-lezen voor de carrosserie) zijn door de orkestrator goedgekeurd.
+
+## Golf 5i: ruiten en motorruimte naar foto (versie 15)
+
+Verzoek van de gebruiker op 19 oktober 2026: de overige ruiten in de tint van de voorruit, en de motorruimte natuurgetrouw naar een foto van een Laguna III 2.0T (de afdekkap ontbrak in feite: hij was een kleine donkere plaat). Later in de golf: de olievuldop op de plek van de foto, en de afdekkap bij uitklappen als los onderdeel.
+
+Besluiten vooraf (zie `docs/onderzoek/beslissingen.md`, golf 5i): T4 naar 385 kB gzip, opschrift als textuur, advisor Opus 5.5 high, publiceren als versie 15 na een groene poort.
+
+Gedaan:
+- Ruiten: zijruiten, kwartsruiten en achterruit met de tint en dekking van de voorruit (`MAT.bodGlassSide`); panoramadak ongewijzigd.
+- Afdekkap (`src/engine3.js`, `engCoverShell` en `engCoverTop`): hoogteveld over een afgeronde rechthoek met rok, gaten en kommen; eindigt links 8 mm voor de motorsteun distributiezijde en blijft boven de dynamo; voor diep omlaag over de inlaatkanalen; 2,5 cm onder de buitenhuid van de motorkap (`integrity.py`).
+- Olievuldop midden op het kleppendeksel (`ENG_OIL`), vulhals 2 cm boven de bodem van de kom; middelste ribbe van het deksel ingekort.
+- Peilstokgreep 4,2 cm hoger in een kom.
+- Ruitensproeiertank rechtsvoor met gele dop; kapslang naar rechts, achter motorsteun en vuldop langs.
+- Accubak zwart; zwarte voorrand van de torpedoplaat.
