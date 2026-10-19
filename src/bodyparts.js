@@ -11,9 +11,9 @@ MAT.glass.color.setHex(0x040608); MAT.glass.opacity = 0.92; MAT.glass.envMapInte
 // De kloon (markering, kleur per systeem) krijgt dezelfde aanpassing mee.
 function bodGlassWs(m) {
   m.name = 'glassWs';
-  // buitenkant 0,80 dekkend in plaats van 0,92 (golf 5c-2, K11, besluit van de gebruiker op 18 oktober 2026): van buiten schemeren
+  // buitenkant 0,50 dekkend (golf 5h, gebruiker 19 oktober 2026: "lichter, zoals op de foto"; was 0,80, golf 5c-2): van buiten schemeren
   // spiegel en dashboard door; de zijruiten en de achterruit blijven 0,92. Factor op de dekking van MAT.glass, als getal in de shader.
-  const buiten = (0.80 / MAT.glass.opacity).toFixed(6);
+  const buiten = (0.50 / MAT.glass.opacity).toFixed(6);
   // three r147 kiest het programma op onBeforeCompile.toString(); de factor zit in de closure, dus hij moet in de sleutel
   m.customProgramCacheKey = () => 'glassWs' + buiten;
   m.onBeforeCompile = sh => { sh.fragmentShader = sh.fragmentShader.replace('#include <alphamap_fragment>', '#include <alphamap_fragment>\n#ifndef FLIP_SIDED\n\tdiffuseColor.a *= 0.45;\n#else\n\tdiffuseColor.a *= ' + buiten + ';\n#endif'); };
@@ -21,8 +21,8 @@ function bodGlassWs(m) {
   return m;
 }
 MAT.glassWs = bodGlassWs(MAT.glass.clone());
-// golf 5h-2: voorruit lichter en met meer luchtreflectie, anders las hij als zwart gat (persfoto: grijsblauw met interieur erachter)
-MAT.glassWs.color.setHex(0x222930); MAT.glassWs.envMapIntensity = 0.5; MAT.glassWs.specularIntensity = 0.5;
+// golf 5h: eigen tint en luchtreflectie, zoals de persfoto (grijsblauw met interieur erachter)
+MAT.glassWs.color.setHex(0x222930); MAT.glassWs.envMapIntensity = 0.9; MAT.glassWs.specularIntensity = 0.5;
 // zijruiten en kwartsruiten (golf 5f, S7 kenmerk 4): iets minder dekkend en met wat meer luchtreflectie dan de achterruit, zodat het glas als
 // donkergrijs leest en de zwarte B-stijl en het stijltje ernaast als zwart vlak afsteken (bij 0,92 en 0,12 waren glas en stijl even zwart)
 MAT.bodGlassSide = MAT.glass.clone(); MAT.bodGlassSide.name = 'bodGlassSide'; MAT.bodGlassSide.opacity = 0.84; MAT.bodGlassSide.envMapIntensity = 0.9;

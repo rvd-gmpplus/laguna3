@@ -592,3 +592,16 @@ Daarna publiceren (Pages via `main`, het artefact als spiegel), de URL terugleze
 | 60 | 4Control niet vastgesteld | vastgesteld: de auto heeft het niet (`ca25166`) |
 | 17, 23 | 223 ingesloten knopen, 439 tekenopdrachten | klopt; `ontwerp` en `testen` noemen nog 253 en 390 (A14) |
 | 59 | torsiebalk boven de vloer | ook de brandstoftank ligt boven de vloer (G3) |
+
+## Golf 5h: voorruit en voorkant (versie 14)
+
+Aanleiding: klacht van de gebruiker over de voorruit en de aansluitingen eromheen, met een persfoto van een Laguna III fase 2 als voorbeeld; advisor Fable 5.1 op xhigh op verzoek van de gebruiker.
+
+| Ronde | Wat | Commit |
+|---|---|---|
+| 1 | Kas loopt tussen z 0,97 en 1,06 over in de kapvorm (open driehoeken naast de ruithoeken weg); wissers laag in de ruitvoet; wissermotor onder de torpedobak (zes oude doordringingen weg); zwarte spiegeldriehoek; bovengrille 5 cm zwart met chroomlijn. Fable: bijsturen. | `1657942` |
+| 2 | Voorruit eigen tint en glans (dekking 0,80 blijft); A-stijlvoet zonder bult, smoothstep, dashboardhuid vanaf z 1,00; spiegel 7 cm naar voren; ruitvoet dichter. Fable: pass. | `3b15d9f` |
+| Poort | Spiegelvoet 0,7 mm naar buiten (zwaai vond 0,11 mm tegen de rubberlijn). | `26cc75e` |
+| Gebruiker | "Maak de ruit lichter, zoals op de foto": buitendekking voorruit 0,50 (was 0,80), luchtreflectie 0,9; helderheid midden ruit 93 tegen 90 op de foto. | volgt |
+
+Uitslag: exterieurtoets 9 van 9 (GPU-beelden, kenmerk 4 volgens B7); clash 85 naar 75 doordringende paren, 0 nieuw; zie CHANGELOG versie 14 voor de sets en de zwaai. Open voor later: langere overgang van de A-stijlvoet (bodAPL), spiegelhuis als slanke druppel, losse zwarte balk boven het kenteken, lichte rechthoek rond het kenteken achter, overbelichte motorkap (belichting, apart besluit). De wijzigingen in `body.js` en `interior.js` (alleen-lezen voor de carrosserie) zijn door de orkestrator goedgekeurd.
