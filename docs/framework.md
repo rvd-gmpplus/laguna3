@@ -138,6 +138,15 @@ Export naar een doelauto (espace5), in deze volgorde:
 4. `python3 build.py`, `framework.py check` en de volledige set; draai `pubsmoke.py` voor het blok `#pn`. Neem de lokale kopieën van `roundPlate` met een kleine afronding over naar de parameter `klein`.
 5. Controleer dat de eigen tests die rechtstreeks op `PN_DATA`, de renderlus of `src/app2.js` leunen, nog kloppen: na een wijziging via interne namen is `requestRender()` nodig (zie `docs/testen.md`, Bevroren testcontract).
 
+## Wat golf 5f en 5e aan de generieke laag toevoegde
+
+In laguna3 (golf 5f en 5e, versie 12, tak `golf-5f`) kwamen twee generieke wijzigingen; de rest van de golf is autospecifiek (carrosserie, interieur, teksten). Beide gaan mee met `framework.py export` (espace5 versie 6).
+
+- `src/core.js` en `src/app1.js`, `src/app2-controls.js` (F4): de tijden van de trapsgewijze beweging staan in `CFG.tijd`: `staffelS` (duiken), `tonenStaffelS` (tonen), `staffelMaxS` (samen hoogstens zolang, voor duiken en tonen), `allesStaffelS` en `allesStaffelMaxS` (alles uitklappen onder een groep). `uiStaffel(stap, k, max)` in `app1.js` geeft de wachttijd per laag: de stap, maar nooit meer dan `max` verdeeld over k lagen; bij `REDUCED` nul. `uiDive`, `uiRevealExplode` en `explodeAllUnder` gebruiken hem; de duur van één stap (`CFG.tijd.uitklapS`) blijft. Een doelauto met eigen waarden past alleen `CFG` aan.
+- `tools/harness.py` en `tools/orkestratie/finaltests.sh`: `LAG3_GPU=1` start de testbrowser op de echte GPU (ANGLE Metal, alleen macOS; op andere systemen stopt de harness met een melding) en meldt dat in het rapport. Alleen voor beelden die het oog beoordeelt (de herkenbaarheidspoort, de galerij); `finaltests.sh` zet de variabele uit, zodat de testset, `visdiff` en de basislijnen op SwiftShader blijven. De naam van de variabele is nog die van de eerste auto; een doelauto mag hem houden.
+
+Autospecifiek en dus niet generiek: de `bod*`-constanten van de B-stijl en het staartvlak, de kaartlezer en de startknop in `interior.js`, en de ATF-tekst in `drivetrain.js`.
+
 ## espace5 naar het framework
 
 Stand van 16 oktober: alle generieke bestanden wijken af of ontbreken, omdat espace5 op versie 6 is blijven staan. De overstap, in de sessie die aan espace5 werkt (niet vanuit hier, om haar werk niet te kruisen):

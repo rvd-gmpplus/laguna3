@@ -143,7 +143,7 @@ Motorcode van de auto van de gebruiker (bijgewerkt op 15 oktober 2026): waarschi
 | Achterbank | Gedeeld 1/3 en 2/3, armsteun met bekerhouders, drie hoofdsteunen, ISOFIX | UK-brochure | Bevestigd |
 | Audio | Bose met tien luidsprekers, digitale versterker met zes kanalen; middenluidspreker in het dashboard | Planète Renault, UK-brochure | Bevestigd (aantal, middenluidspreker), Geschat (overige posities), Aannemelijk (versterker in de bagageruimte) |
 | Navigatie | Carminat TomTom Live, scherm van 14 cm | UK-brochure, Autozine | Bevestigd |
-| Kaartsleutel met startknop | Handsfree Renault-kaart | Renault-handboek fase 2, Anglo-Celt | Bevestigd (aanwezig); plaats van de knop niet gevonden |
+| Kaartsleutel met startknop | Handsfree Renault-kaart. Kaartsleuf (horizontaal) onder het linker middenluchtrooster en ronde startknop aan de linkerrand van het middenpaneel, dus in het dashboard en niet op de console; de maten in het model zijn geschat | Renault-handboek fase 2, Anglo-Celt; plaats: Renault Notice d'utilisation Laguna III fase 2, NU 936-5, blz. 1.42-1.43, item 22 | Bevestigd (aanwezig en plaats), Geschat (maten) |
 | Airbags | Zes: bestuurder, passagier, twee zijairbags voor, twee gordijnairbags | Renault-handboek fase 2 | Bevestigd |
 | Instrumentenpaneel | Analoge wijzers met LCD-display | UK-brochure | Aannemelijk |
 | Klimaat | Automatisch tweezone | UK-brochure | Bevestigd |
@@ -153,7 +153,7 @@ Motorcode van de auto van de gebruiker (bijgewerkt op 15 oktober 2026): waarschi
 
 | Gegeven | Waarde | Bron | Status |
 |---|---|---|---|
-| Accu | In de motorruimte in een accubak met afdekkap, accuafkoppelunit en UPC-zekeringkast; zijde rechtsvoor, bronnen verschillen | Renault-werkplaatsboek, Auto-Doc | Bevestigd (motorruimte), Geschat (zijde) |
+| Accu | In de motorruimte in een accubak met afdekkap, accuafkoppelunit en UPC-zekeringkast; zijde rechtsvoor, bronnen verschillen. MR 415 (80A en 10A) wijst op linksvoor boven de automaat (de accubak draagt de motor-ECU en de zekeringkast); geen wijziging in het model tot een bron of een controle aan de auto | Renault-werkplaatsboek, Auto-Doc | Bevestigd (motorruimte), Geschat (zijde) |
 | UCH | Onderin het dashboard links | Renault-zekeringenschema | Bevestigd |
 | Tank | 66 l onder de achterbank voor de achteras | Renault-handboek | Bevestigd (inhoud), Geschat (plaats) |
 | Uitlaat | Drieweg-katalysator achter de turbo, middendemper (425 mm), achterdemper, twee lambdasondes; eindpijpen dubbel chroom | Autodoc, UK-brochure | Aannemelijk |
@@ -174,10 +174,21 @@ De Laguna III 2.0T 170 automaat Initiale in fase 2 bestaat niet op elke markt. B
 - Het spaakontwerp van de velg: tien tapse spaken volgens een persfoto, niet voor deze uitvoering bevestigd.
 - Bouten, clips en afdichtingen staan op representatieve plaatsen.
 
+## Openingshoeken in de modus Openen
+
+De hoeken van de openers zijn grotendeels geschat uit foto's, het instructieboekje en het werkplaatshandboek; de eindstanden staan in [ontwerp-en-architectuur.md](ontwerp-en-architectuur.md), "De 26 openers".
+
+| Opener | Hoek in het model | Bron | Status |
+|---|---|---|---|
+| Voorportier links en rechts | 67 graden (was 68) | RiDC, gradenboog op het voorportier van een Laguna Grandtour Initiale 2011; de voorportieren zijn gelijk aan die van de hatchback. Enige gevonden bron; RiDC zet bij veel auto's 67 graden, mogelijk een plafond van het protocol | Aannemelijk |
+| Achterklep | 66 graden | Gasveer van 495 mm uitgeschoven, op 66 graden afgesteld met geschatte ophangpunten. De UK-brochure van oktober 2011 noemt "Height with boot open 1 900" mm; het hoogste punt van de klep haalt 1,90 m bij circa 31 graden (dan staat de onderrand rond 1,4 m, geen bruikbare laadopening) en is 2,36 m bij 66 graden. Wat de brochure meet, is open | Geschat |
+| Motorkap, achterportieren | Zie ontwerp-en-architectuur.md | Foto's en handboeken | Geschat |
+
 ## Open punten
 
-- Standaard wielmaat (17 of 18 inch) en wielontwerp van een Nederlandse Initiale Paris uit 2011.
-- Plaats van de motor-ECU, de claxons, de accu (links of rechts) en de startknop.
+- Wielontwerp van een Nederlandse Initiale Paris uit 2011 (de maat is beantwoord: 18 inch is een optie, zie Velgen hierboven).
+- Plaats van de motor-ECU, de claxons en de accu (links of rechts; MR 415 wijst op linksvoor boven de automaat, het model heeft rechtsvoor).
+- Openingshoek van de motorkap en het achterportier, en de stand van de achterklep (het model heeft 66 graden; hoogste punt van de open klep 2,36 m tegen 1,90 m in de UK-brochure van oktober 2011, een meting met een rolmaat beslist).
 - Merk van de remklauwen en van de stuurpomp.
 - Overhangen: fabriek 1014 en 925 mm, model 980 en 959 mm, beelden circa 920 en 840 mm.
 - Renault-tandentallen voor de eindoverbrenging 3,804.
