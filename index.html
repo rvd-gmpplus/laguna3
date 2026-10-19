@@ -1,6 +1,6 @@
 <!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"></head><body>
 <title>Laguna III explosietekening</title>
-<meta name="model-version" content="11 (bron 652c146)">
+<meta name="model-version" content="11 (bron a4be215)">
 <meta name="description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback (2011, 2,0 Turbo, automaat): 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
 <meta property="og:title" content="Laguna III explosietekening">
 <meta property="og:description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback: 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
@@ -618,7 +618,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
   <div id="press" hidden><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="28"/></svg></div>
   <div id="helpDlg" hidden><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
     <h2 id="helpTitle">Bediening</h2>
-    <p class="ver">Laguna III explosietekening, versie 11 (bron 652c146)</p>
+    <p class="ver">Laguna III explosietekening, versie 11 (bron a4be215)</p>
     <div id="helpMouse"><h3>Met de muis</h3><dl>
       <dt>Klik</dt><dd>De groep van het onderdeel klapt uit; de rest blijft staan. Staat die groep al open, dan wordt het onderdeel uitgelicht.</dd>
       <dt>Dubbelklik</dt><dd>Direct naar dit onderdeel: alle groepen erboven gaan laag voor laag open.</dd>
@@ -4250,7 +4250,7 @@ function drvOutside() {
 function buildGearbox() {
   return A('Automaatversnellingsbak', {
     d: 'Zestraps automaat Jatco JF613E (Renault-code AJ0, gebaseerd op het Lepelletier-systeem) met koppelomvormer, drie planetaire sets, vijf schakelelementen plus vrijloop en ingebouwd differentieel; dwars links naast de motor. De interne koppeling van de sets en alle kleine onderdelen zijn schematisch weergegeven. Het droge gewicht is circa 93 kg en de lengte circa 385 mm.',
-    spec: [['Type', 'Jatco JF613E (Renault AJ0)'], ['Overbrengingen', '4,199 / 2,405 / 1,583 / 1,161 / 0,855 / 0,685, achteruit 3,457 (Mitsubishi F6AJA-handboek; de snelheden per 1.000 tpm in de Renault-persmap kloppen hier binnen 0,2 % mee)'], ['Eindoverbrenging', '3,804 (Renault-persmap 2007)'], ['ATF', 'Elf Elfmatic J6 (het handboek van 2009 noemt in zijn tabel ELF MATIC S6); totaal 7,6 liter, na aftappen 3,5 liter']],
+    spec: [['Type', 'Jatco JF613E (Renault AJ0)'], ['Overbrengingen', '4,199 / 2,405 / 1,583 / 1,161 / 0,855 / 0,685, achteruit 3,457 (Mitsubishi F6AJA-handboek; de snelheden per 1.000 tpm in de Renault-persmap kloppen hier binnen 0,2 % mee)'], ['Eindoverbrenging', '3,804 (Renault-persmap 2007)'], ['ATF', 'Elf Elfmatic J6 (goedgekeurd voor Renault AJ0/AJ8); totaal 7,6 liter, na aftappen 3,5 liter, vullen met 3,2 liter, niveau bij 40 graden']],
     p: [GB_X, 0, 0], ex: [0.66, 0, 0],
   }, [
     ...drvHousing(),
@@ -4727,7 +4727,7 @@ function buildWheel(s, front) {
     return zTo(merge(list), 'x');
   });
   const a = 0.7, wa = [2.1, 4.3];
-  return A(`Wiel ${n}`, { d: 'Lichtmetalen velg met tien taps toelopende spaken en band 225/45 R18. Maat: 18 inch (UK Initiale Lux standaard; voor een Nederlandse Initiale Paris van 2011 is 17 inch even goed mogelijk). De naam van het velgontwerp (Celsium) is voor deze auto niet bevestigd.', p: [s * tr, AY, z], s: [s, 1, 1], spec: [['Band', '225/45 R18'], ['Steekcirkel', '5 × 114,3 mm'], ['Bevestiging', '5 wielbouten M14 × 1,5'], ['Middengat', 'Ø66,1 mm'], ['Bandenspanningssensor', 'in het ventiel']], ex: [s * 1.05, -0.1, front ? 0.55 : -0.65] }, [
+  return A(`Wiel ${n}`, { d: 'Lichtmetalen velg met tien taps toelopende spaken en band 225/45 R18. Maat: 18 inch, in Nederland bij de Initiale een optie, onder meer in het Pack Lumière (panoramadak plus 18 inch, tot 31 januari 2011); standaard was 17 inch. De naam van het velgontwerp (Celsium) is voor deze auto niet bevestigd.', p: [s * tr, AY, z], s: [s, 1, 1], spec: [['Band', '225/45 R18'], ['Steekcirkel', '5 × 114,3 mm'], ['Bevestiging', '5 wielbouten M14 × 1,5'], ['Middengat', 'Ø66,1 mm'], ['Bandenspanningssensor', 'in het ventiel']], ex: [s * 1.05, -0.1, front ? 0.55 : -0.65] }, [
     P('Band', tire, MAT.rubber, { d: 'Radiaalband 225/45 R18 met vier lengtegroeven in het loopvlak.', ex: [-0.07, 0, 0] }),
     P('Velgbed', rimB, MAT.chsRimWell, { d: 'Velgbed (ton) van gegoten aluminium met de wulpen waarop de band zit.', ex: [0.02, 0, 0] }),
     P('Velgster', star, MAT.chsRimFace, { d: 'Sterwerk met tien taps toelopende spaken en naafplaat met vijf boutgaten.', ex: [0.1, 0, 0] }),
