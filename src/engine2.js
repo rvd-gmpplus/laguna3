@@ -264,8 +264,8 @@ function buildLube() {
       P('Afdichtring filter', G.torus('z', 0.0305, 0.0018, 28, 5), MAT.rubber, { d: 'Rubber afdichtring Ø61 mm.', p: [0, 0, -0.001], ex: [0, 0, -0.03] }),
     ]),
     A('Peilstok', { d: 'Peilstok met geleidebuis aan de voorzijde van het blok; de exacte plaats voor de Laguna III is niet gevonden.', ex: [0, 0.14, 0.1] }, [
-      P('Peilstok', merge([tube([[0.205, 0.0, 0.112], [0.205, 0.2, 0.128], [0.205, 0.385, 0.142]], 0.002, 16, 5), xf(G.torus('z', 0.012, 0.0035, 18, 6), [0.205, 0.402, 0.143]), xf(G.cyl('y', 0.005, 0.005, 0.012, 8), [0.205, 0.388, 0.142])]), MAT.handle, { d: 'Peilstok met gele greep: aan de markeringen op het uiteinde lees je de oliestand af.', ex: [0, 0.12, 0] }),
-      P('Geleidebuis', tube([[0.205, -0.02, 0.11], [0.205, 0.2, 0.128], [0.205, 0.38, 0.142]], 0.0055, 20, 8), MAT.plastic, { d: 'Geleidebuis van de peilstok.', ex: [0, 0, 0] }),
+      P('Peilstok', merge([tube([[0.205, 0.0, 0.112], [0.205, 0.2, 0.128], [0.205, 0.427, 0.1455]], 0.002, 16, 5), xf(G.torus('z', 0.012, 0.0035, 18, 6), [0.205, 0.444, 0.1462]), xf(G.cyl('y', 0.005, 0.005, 0.012, 8), [0.205, 0.43, 0.1456])]), MAT.handle, { d: 'Peilstok met gele greep: aan de markeringen op het uiteinde lees je de oliestand af. De greep zit in een kom van de afdekkap.', ex: [0, 0.12, 0] }),
+      P('Geleidebuis', tube([[0.205, -0.02, 0.11], [0.205, 0.2, 0.128], [0.205, 0.422, 0.1451]], 0.0055, 20, 8), MAT.plastic, { d: 'Geleidebuis van de peilstok.', ex: [0, 0, 0] }),
       P('O-ring geleidebuis', engORing(0.0058, 0.0012), MAT.rubber, { d: 'Afdichting van de geleidebuis in het blok.', p: [0.205, 0.004, 0.112], ex: [0, -0.04, 0.02] }),
       P('Beugel peilstokbuis', merge([G.box(0.012, 0.01, 0.026), xf(hexBolt(0.012, 0.005, 'z'), [0, 0, -0.016], [PI, 0, 0])]), MAT.steel, { d: 'Beugel die de buis aan de kop vastzet.', p: [0.205, 0.28, 0.122], ex: [0, 0, 0.05] }),
     ]),

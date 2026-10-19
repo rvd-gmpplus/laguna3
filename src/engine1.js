@@ -13,7 +13,8 @@ const ENG_MJ_R = 0.0274, ENG_PIN_R = 0.024;           // hoofdlagertap Ø54,8, k
 const ENG_CAM_RB = 0.0165, ENG_ROLL_R = 0.0085;
 const ENG_BRIDGE_T = 0.024, ENG_COVER_Y = CAMY + ENG_BRIDGE_T + 0.001, ENG_COVER_H = 0.04;
 const ENG_COVER_TOP = ENG_COVER_Y + ENG_COVER_H;
-const ENG_NECK_TOP = 0.473 + 0.022;                    // bovenkant van de vulhals: 2,2 cm boven de afdekkap (die op 0,473 ligt)
+const ENG_NECK_TOP = 0.478;                           // bovenkant van de vulhals: 2 cm boven de bodem van de kom in de afdekkap (engine3.js)
+const ENG_OIL = [0, 0.05];                            // vulhals (x, z): midden op het deksel, net voor de bobines (golf 5i, naar foto: midden op de afdekkap)
 const XT = -0.245, XA = -0.345;                       // vlak van distributieriem en multiriem
 const ENG_PS = [-0.27, -0.005, 0.255], ENG_PS_R = 0.058;   // stuurpomp: oorsprong (pompas, x-niveau van de pomp), tipstraal van de poelie
 const ENG_TURBO = [0.07, 0.14, -0.255];               // hartlijn turbo-as (lagerhuis)
@@ -344,12 +345,13 @@ function engCoverGeo() {
     XC.forEach(x => cs.holes.push(circlePath(x, 0, 0.0165)));
     const cover = plan(cs, ENG_COVER_H); cover.translate(0, ENG_COVER_Y + ENG_COVER_H / 2, 0);
     const L = [cover];
-    [-0.17, -0.088, 0, 0.088, 0.17].forEach(x => L.push(xf(G.box(0.008, 0.006, 0.16), [x, ENG_COVER_TOP + 0.002, 0])));
-    // vulhals: een opstaande hals in het deksel die door de afdekkap (bovenkant op 0,473 in het motorframe, zie engine3.js) heen steekt;
+    [-0.17, -0.088, 0.088, 0.17].forEach(x => L.push(xf(G.box(0.008, 0.006, 0.16), [x, ENG_COVER_TOP + 0.002, 0])));
+    L.push(xf(G.box(0.008, 0.006, 0.084), [0, ENG_COVER_TOP + 0.002, -0.038]));   // middelste ribbe tot voor de vulhals
+    // vulhals: een opstaande hals in het deksel die door het gat in de kom van de afdekkap (engine3.js) heen steekt;
     // de donkere opening zit als apart onderdeel (Vulopening) boven op de hals en de dop zit er in de dichte stand overheen
-    L.push(xf(G.cyl('y', 0.031, 0.031, ENG_NECK_TOP - ENG_COVER_TOP, 24), [-0.17, (ENG_COVER_TOP + ENG_NECK_TOP) / 2, -0.05]));
+    L.push(xf(G.cyl('y', 0.031, 0.031, ENG_NECK_TOP - ENG_COVER_TOP, 24), [ENG_OIL[0], (ENG_COVER_TOP + ENG_NECK_TOP) / 2, ENG_OIL[1]]));
     // scharnierlip op de rand van de hals: de as waar de gele dop omheen klapt (Olievuldop, open.pivot)
-    L.push(xf(G.box(0.0065, 0.011, 0.016), [-0.17 + 0.0335 - 0.00075, ENG_NECK_TOP - 0.0055, -0.05]));
+    L.push(xf(G.box(0.0065, 0.011, 0.016), [ENG_OIL[0] + 0.0335 - 0.00075, ENG_NECK_TOP - 0.0055, ENG_OIL[1]]));
     return merge(L);
   });
 }
@@ -420,8 +422,8 @@ function buildHead() {
       P('Deksel', engCoverGeo(), MAT.aluCast, { d: 'Deksel over de lagerbrug met doorvoeren voor de vier bobines.', ex: [0, 0, 0] }),
       P('Kleppendekselpakking', coverGasket, MAT.rubber, { d: 'Rubber pakking onder het kleppendeksel.', ex: [0, -0.025, 0] }),
       A('Kleppendekselbouten', { d: 'Acht bouten van het kleppendeksel (aantal geschat).', ex: [0, 0.05, 0] }, coverBolts),
-      P('Vulopening', xf(G.cyl('y', 0.021, 0.021, 0.002, 24), [-0.17, ENG_NECK_TOP + 0.001, -0.05]), MAT.blackGloss, { d: 'Open vulhals voor de motorolie in het kleppendeksel: een donkere opening in een opstaande ring; hier zit de dop in als hij dicht is.', ex: [0, 0.03, 0] }),
-      P('Olievuldop', merge([G.cyl('y', 0.0335, 0.0335, 0.016, 24), xf(G.box(0.04, 0.006, 0.01), [0, 0.011, 0])]), MAT.plateYellow, { d: 'Gele dop van de olievulopening; klapt om een scharnierlip aan de rand van de vulhals omhoog en blijft aan de hals vastzitten (opener, schematisch: in werkelijkheid draai je de dop los).', p: [-0.17, ENG_NECK_TOP + 0.008, -0.05], ex: [0, 0.09, 0], open: hinge([-0.17 + 0.0335, ENG_NECK_TOP, -0.05], [0, 0, 1], -1.8, { min: 1.44, needs: 'Motorkap', label: 'Olievuldop', look: { dir: [-0.2, 0.5, 0.9], nodes: ['Olievuldop', 'Deksel'] } }) }),
+      P('Vulopening', xf(G.cyl('y', 0.021, 0.021, 0.002, 24), [ENG_OIL[0], ENG_NECK_TOP + 0.001, ENG_OIL[1]]), MAT.blackGloss, { d: 'Open vulhals voor de motorolie in het kleppendeksel: een donkere opening in een opstaande ring; hier zit de dop in als hij dicht is.', ex: [0, 0.03, 0] }),
+      P('Olievuldop', merge([G.cyl('y', 0.0335, 0.0335, 0.016, 24), xf(G.box(0.04, 0.006, 0.01), [0, 0.011, 0])]), MAT.plateYellow, { d: 'Gele dop van de olievulopening; klapt om een scharnierlip aan de rand van de vulhals omhoog en blijft aan de hals vastzitten (opener, schematisch: in werkelijkheid draai je de dop los).', p: [ENG_OIL[0], ENG_NECK_TOP + 0.008, ENG_OIL[1]], ex: [0, 0.09, 0], open: hinge([ENG_OIL[0] + 0.0335, ENG_NECK_TOP, ENG_OIL[1]], [0, 0, 1], -1.8, { min: 1.44, needs: 'Motorkap', label: 'Olievuldop', look: { dir: [-0.2, 0.5, 0.9], nodes: ['Olievuldop', 'Deksel'] } }) }),
     ]),
     buildIgnition(),
   ]);

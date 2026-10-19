@@ -12,7 +12,7 @@ MAT.glass.color.setHex(0x040608); MAT.glass.opacity = 0.92; MAT.glass.envMapInte
 function bodGlassWs(m) {
   m.name = 'glassWs';
   // buitenkant 0,50 dekkend (golf 5h, gebruiker 19 oktober 2026: "lichter, zoals op de foto"; was 0,80, golf 5c-2): van buiten schemeren
-  // spiegel en dashboard door; de zijruiten en de achterruit blijven 0,92. Factor op de dekking van MAT.glass, als getal in de shader.
+  // spiegel en dashboard door; de zijruiten en de achterruit zijn sinds golf 5i 0,50 zonder deze aanpassing (MAT.bodGlassSide). Factor op de dekking van MAT.glass, als getal in de shader.
   const buiten = (0.50 / MAT.glass.opacity).toFixed(6);
   // three r147 kiest het programma op onBeforeCompile.toString(); de factor zit in de closure, dus hij moet in de sleutel
   m.customProgramCacheKey = () => 'glassWs' + buiten;
@@ -23,9 +23,10 @@ function bodGlassWs(m) {
 MAT.glassWs = bodGlassWs(MAT.glass.clone());
 // golf 5h: eigen tint en luchtreflectie, zoals de persfoto (grijsblauw met interieur erachter)
 MAT.glassWs.color.setHex(0x222930); MAT.glassWs.envMapIntensity = 0.9; MAT.glassWs.specularIntensity = 0.5;
-// zijruiten en kwartsruiten (golf 5f, S7 kenmerk 4): iets minder dekkend en met wat meer luchtreflectie dan de achterruit, zodat het glas als
-// donkergrijs leest en de zwarte B-stijl en het stijltje ernaast als zwart vlak afsteken (bij 0,92 en 0,12 waren glas en stijl even zwart)
-MAT.bodGlassSide = MAT.glass.clone(); MAT.bodGlassSide.name = 'bodGlassSide'; MAT.bodGlassSide.opacity = 0.84; MAT.bodGlassSide.envMapIntensity = 0.9;
+// zijruiten, kwartsruiten en achterruit (golf 5i, gebruiker 19 oktober 2026: "dezelfde tint als de voorruit"): tint, dekking en
+// luchtreflectie van de buitenkant van de voorruit; zonder de shaderaanpassing, dus van binnen even licht als van buiten
+MAT.bodGlassSide = MAT.glass.clone(); MAT.bodGlassSide.name = 'bodGlassSide'; MAT.bodGlassSide.opacity = 0.50;
+MAT.bodGlassSide.color.setHex(0x222930); MAT.bodGlassSide.envMapIntensity = 0.9; MAT.bodGlassSide.specularIntensity = 0.5;
 // nieuwe carrosseriematerialen: zwart mat voor stijlen en raamkaders, helder chroom voor lijsten en sierstrips, spiegelglas
 std('bodPillar', 0x060607, 0, 0.8, { envMapIntensity: 0.12 });
 std('bodBright', 0xf4f6f8, 0.6, 0.16, { envMapIntensity: 1.5 });
@@ -839,6 +840,8 @@ function buildBody() {
     // onderaan loopt het schutbord als teenplaat door tot de vloer, met een opening waar tunnel en downpipe doorlopen
     P('Schutbord', merge([G.rbox(1.5, 0.62, 0.012, 0.004), xf(G.box(0.58, 0.118, 0.012), [0.46, -0.361, 0]), xf(G.box(0.58, 0.118, 0.012), [-0.46, -0.361, 0])]), MAT.paintIn, { d: 'Scheidingswand tussen motorruimte en interieur; onderaan als teenplaat tot op de vloer, met een opening voor de tunnel en de downpipe.', p: [0, 0.6, 1.02], ex: [0, 0, -0.08] }),
     P('Torpedobak', merge([G.box(1.42, 0.012, 0.12), xf(G.box(1.42, 0.1, 0.012), [0, -0.05, 0.06])]), MAT.paintIn, { d: 'Bak onder de torpedoplaat waarin wissermotor en luchtinlaat van het interieur zitten.', p: [0, 0.905, 1.08], ex: [0, 0.06, 0] }),
+    // zwarte voorrand van de torpedoplaat over de voorwand van de torpedobak (golf 5i, naar foto: die strook is van voren zwart, niet in lakkleur)
+    P('Voorrand torpedoplaat', G.box(1.32, 0.084, 0.004), MAT.plastic, { d: 'Zwarte kunststof voorrand van de torpedoplaat die de voorwand van de torpedobak afdekt.', p: [0, 0.846, 1.1485], ex: [0, 0.06, 0.02] }),
     // ligt 2,2 cm onder de achterrand van de motorkap (die loopt door tot de voorruitbasis), zodat in zijaanzicht geen zwarte trede tussen kap en A-stijl staat
     P('Torpedoplaat', merge([bodDeck(WS0 + 0.004, 1.128, 6, () => S4 + 0.004, 26, [], 0.022), ...[-0.4, -0.2, 0, 0.2, 0.4].map(x => { const g = new THREE.BoxGeometry(0.16, 0.004, 0.03); g.translate(x, bodSec(1.095).yd - 0.02 - 0.06 * x * x, 1.095); return g; })]), MAT.plastic, { d: 'Kunststof afdekplaat met wisserrooster en luchtinlaat voor het interieur onder de achterrand van de motorkap, voor de voorruit.', ex: [0, 0.1, 0.02] }),
     P('Frontmodule', merge([xf(G.box(1.08, 0.06, 0.06), [0, 0.72, 0]), xf(G.box(1.0, 0.06, 0.06), [0, 0.26, 0]), xf(G.box(0.06, 0.46, 0.06), [0.52, 0.49, 0]), xf(G.box(0.06, 0.46, 0.06), [-0.52, 0.49, 0]), xf(G.box(0.05, 0.4, 0.05), [0, 0.49, 0])]), MAT.plastic, { d: 'Kunststof frontmodule (slotplaat) die radiateur, koplampen en motorkapslot draagt.', p: [0, 0, 2.06], ex: [0, 0.04, 0.12] }),
@@ -976,10 +979,10 @@ function buildBody() {
       P('Sproeierslang', tube([[s * 0.28, halfPt(1.17, bodSAtX(1.17, 0.28))[1] - 0.02, 1.17], [s * 0.15, bodSec(1.3).yd - 0.05, 1.3], [s * 0.06, bodSec(1.4).yd - 0.049, 1.39], [s * 0.03, bodSprT[1], bodSprT[2]], [s * (bodSprT[3] + 0.0003), bodSprT[1], bodSprT[2]]], 0.003, 16, 5), MAT.rubber, { d: 'Toevoerslang onder de kap, van het T-stuk op de hartlijn naar de sproeier.', ex: [0, -0.03, 0] }),
     ])),
     // T-stuk op de hartlijn waar de twee sproeierslangen samenkomen, met een uitloop naar voren; de doorverbinding loopt onder de isolatie en
-    // boven de motorafdekkap naar de linker scharnierhoek en zakt daar onder y 0,88 naar de slangkoppeling van het systeem (wereld 0,60; 0,815; 1,48),
+    // boven de motorafdekkap naar de rechter scharnierhoek en zakt daar onder y 0,88 naar de slangkoppeling van het systeem (wereld -0,60; 0,815; 1,48; golf 5i: rechts, met de tank rechtsvoor),
     // waar het einde bij gesloten kap 0,5 mm boven de koppeling stopt. Route schematisch.
     P('T-stuk sproeierslang', merge([G.cyl('x', 0.0045, 0.0045, 2 * bodSprT[3], 10), xf(G.cyl('z', 0.0045, 0.0045, bodSprT[4], 10), [0, 0, bodSprT[4] / 2])]), MAT.plastic, { d: 'Kunststof T-stuk dat de slangen naar de twee sproeiers voedt vanuit de ene toevoerslang.', p: bodSprT.slice(0, 3), ex: [0, -0.05, 0] }),
-    P('Sproeierslang naar koppeling', tube([[0, bodSprT[1], bodSprT[2] + bodSprT[4] + 0.0003], [0, bodSprT[1] - 0.001, 1.428], [0.05, 0.895, 1.44], [0.12, 0.879, 1.45], [0.30, 0.871, 1.462], [0.45, 0.865, 1.472], [0.55, 0.86, 1.478], [0.592, 0.85, 1.48], [0.60, 0.835, 1.48], [0.60, 0.8205, 1.48]], 0.003, 40, 5), MAT.rubber, { d: 'Toevoerslang onder de kap van de slangkoppeling bij de linker veerpoottoren naar het T-stuk; loopt met de kap mee als die opent (route schematisch).', ex: [0.03, -0.05, 0] }),
+    P('Sproeierslang naar koppeling', tube([[0, bodSprT[1], bodSprT[2] + bodSprT[4] + 0.0003], [0, bodSprT[1] - 0.001, 1.428], [-0.05, 0.894, 1.415], [-0.13, 0.884, 1.405], [-0.22, 0.88, 1.41], [-0.32, 0.874, 1.425], [-0.45, 0.866, 1.432], [-0.55, 0.86, 1.44], [-0.592, 0.85, 1.465], [-0.60, 0.835, 1.48], [-0.60, 0.8205, 1.48]], 0.003, 40, 5), MAT.rubber, { d: 'Toevoerslang onder de kap van de slangkoppeling bij de rechter veerpoottoren naar het T-stuk; loopt met de kap mee als die opent (route schematisch).', ex: [0.03, -0.05, 0] }),
   ]);
 
   /* ================= voorschermen ================= */
@@ -1208,7 +1211,7 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     open: hinge(bodTgPv, [1, 0, 0], bodTgAng, { min: 60 * PI / 180, label: 'Achterklep', look: { dir: [0.6, 0.6, -1], nodes: ['Achterklep', 'Gasveer links', 'Gasveer rechts'] } }) }, [
     P('Buitenpaneel achterklep', merge([tgOuter, bodSPweb(1, bodQScr(SP), 1, 0.003, 16), bodSPweb(-1, bodQScr(SP), 1, 0.003, 16)]), MAT.paint, { d: 'Plaatwerk van de achterklep onder en achter de ruit.', ex: [0, 0, -0.08] }),
     P('Binnenpaneel achterklep', merge([bodTailGeo(-0.36, 0.36, 0.68, ydT - 0.02, -0.04, 4, 8), ...tgRing]), MAT.paintIn, { d: 'Binnenframe van de achterklep met scharnier- en slotversteviging. Rond de achterruit loopt een smalle rand van 7 cm (de lijmrand), zodat de ruit van binnen als donker glas te zien is.', ex: [0, 0, 0] }),
-    P('Achterruit', scr, MAT.glass, { d: 'Verwarmde achterruit van gehard glas, zeer vlak geplaatst (ca. 14 graden).', ex: [0, 0.14, 0.02] }),
+    P('Achterruit', scr, MAT.bodGlassSide, { d: 'Verwarmde achterruit van gehard glas, zeer vlak geplaatst (ca. 14 graden).', ex: [0, 0.14, 0.02] }),
     P('Spoilerlip', lip, MAT.paint, { d: 'Kleine spoilerlip (eendenstaartje) aan de onderrand van de achterruit: een dun, licht opkrullend blad van ca. 3,5 cm met een scherpe achterrand, zo breed als de ruit en aan de uiteinden in het plaatwerk weglopend.', ex: [0, 0.1, -0.06] }),
     // achter het glas, net onder de dakrand: steekt in zijaanzicht niet boven de daklijn uit en schemert door de getinte ruit
     P('Derde remlicht', G.rbox(0.30, 0.008, 0.02, 0.003), MAT.lensRed, { d: 'Derde remlicht achter de bovenrand van de achterruit, direct onder de dakrand (plaats geschat uit fase 2-foto\'s, schematisch).', p: [0, YR(RW0 - 0.045) - 0.011, RW0 - 0.045], r: [-Math.atan2(YR(RW0) - YR(RW0 - 0.09), 0.09), 0, 0], ex: [0, 0.05, -0.08] }),

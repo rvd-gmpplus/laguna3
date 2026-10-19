@@ -1,6 +1,6 @@
 <!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"></head><body>
 <title>Laguna III explosietekening</title>
-<meta name="model-version" content="14 (bron 5077802)">
+<meta name="model-version" content="14 (bron 2b88caa)">
 <meta name="description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback (2011, 2,0 Turbo, automaat): 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
 <meta property="og:title" content="Laguna III explosietekening">
 <meta property="og:description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback: 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
@@ -618,7 +618,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
   <div id="press" hidden><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="28"/></svg></div>
   <div id="helpDlg" hidden><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
     <h2 id="helpTitle">Bediening</h2>
-    <p class="ver">Laguna III explosietekening, versie 14 (bron 5077802)</p>
+    <p class="ver">Laguna III explosietekening, versie 14 (bron 2b88caa)</p>
     <div id="helpMouse"><h3>Met de muis</h3><dl>
       <dt>Klik</dt><dd>De groep van het onderdeel klapt uit; de rest blijft staan. Staat die groep al open, dan wordt het onderdeel uitgelicht.</dd>
       <dt>Dubbelklik</dt><dd>Direct naar dit onderdeel: alle groepen erboven gaan laag voor laag open.</dd>
@@ -1523,7 +1523,7 @@ MAT.glass.color.setHex(0x040608); MAT.glass.opacity = 0.92; MAT.glass.envMapInte
 function bodGlassWs(m) {
   m.name = 'glassWs';
   // buitenkant 0,50 dekkend (golf 5h, gebruiker 19 oktober 2026: "lichter, zoals op de foto"; was 0,80, golf 5c-2): van buiten schemeren
-  // spiegel en dashboard door; de zijruiten en de achterruit blijven 0,92. Factor op de dekking van MAT.glass, als getal in de shader.
+  // spiegel en dashboard door; de zijruiten en de achterruit zijn sinds golf 5i 0,50 zonder deze aanpassing (MAT.bodGlassSide). Factor op de dekking van MAT.glass, als getal in de shader.
   const buiten = (0.50 / MAT.glass.opacity).toFixed(6);
   // three r147 kiest het programma op onBeforeCompile.toString(); de factor zit in de closure, dus hij moet in de sleutel
   m.customProgramCacheKey = () => 'glassWs' + buiten;
@@ -1534,9 +1534,10 @@ function bodGlassWs(m) {
 MAT.glassWs = bodGlassWs(MAT.glass.clone());
 // golf 5h: eigen tint en luchtreflectie, zoals de persfoto (grijsblauw met interieur erachter)
 MAT.glassWs.color.setHex(0x222930); MAT.glassWs.envMapIntensity = 0.9; MAT.glassWs.specularIntensity = 0.5;
-// zijruiten en kwartsruiten (golf 5f, S7 kenmerk 4): iets minder dekkend en met wat meer luchtreflectie dan de achterruit, zodat het glas als
-// donkergrijs leest en de zwarte B-stijl en het stijltje ernaast als zwart vlak afsteken (bij 0,92 en 0,12 waren glas en stijl even zwart)
-MAT.bodGlassSide = MAT.glass.clone(); MAT.bodGlassSide.name = 'bodGlassSide'; MAT.bodGlassSide.opacity = 0.84; MAT.bodGlassSide.envMapIntensity = 0.9;
+// zijruiten, kwartsruiten en achterruit (golf 5i, gebruiker 19 oktober 2026: "dezelfde tint als de voorruit"): tint, dekking en
+// luchtreflectie van de buitenkant van de voorruit; zonder de shaderaanpassing, dus van binnen even licht als van buiten
+MAT.bodGlassSide = MAT.glass.clone(); MAT.bodGlassSide.name = 'bodGlassSide'; MAT.bodGlassSide.opacity = 0.50;
+MAT.bodGlassSide.color.setHex(0x222930); MAT.bodGlassSide.envMapIntensity = 0.9; MAT.bodGlassSide.specularIntensity = 0.5;
 // nieuwe carrosseriematerialen: zwart mat voor stijlen en raamkaders, helder chroom voor lijsten en sierstrips, spiegelglas
 std('bodPillar', 0x060607, 0, 0.8, { envMapIntensity: 0.12 });
 std('bodBright', 0xf4f6f8, 0.6, 0.16, { envMapIntensity: 1.5 });
@@ -2350,6 +2351,8 @@ function buildBody() {
     // onderaan loopt het schutbord als teenplaat door tot de vloer, met een opening waar tunnel en downpipe doorlopen
     P('Schutbord', merge([G.rbox(1.5, 0.62, 0.012, 0.004), xf(G.box(0.58, 0.118, 0.012), [0.46, -0.361, 0]), xf(G.box(0.58, 0.118, 0.012), [-0.46, -0.361, 0])]), MAT.paintIn, { d: 'Scheidingswand tussen motorruimte en interieur; onderaan als teenplaat tot op de vloer, met een opening voor de tunnel en de downpipe.', p: [0, 0.6, 1.02], ex: [0, 0, -0.08] }),
     P('Torpedobak', merge([G.box(1.42, 0.012, 0.12), xf(G.box(1.42, 0.1, 0.012), [0, -0.05, 0.06])]), MAT.paintIn, { d: 'Bak onder de torpedoplaat waarin wissermotor en luchtinlaat van het interieur zitten.', p: [0, 0.905, 1.08], ex: [0, 0.06, 0] }),
+    // zwarte voorrand van de torpedoplaat over de voorwand van de torpedobak (golf 5i, naar foto: die strook is van voren zwart, niet in lakkleur)
+    P('Voorrand torpedoplaat', G.box(1.32, 0.084, 0.004), MAT.plastic, { d: 'Zwarte kunststof voorrand van de torpedoplaat die de voorwand van de torpedobak afdekt.', p: [0, 0.846, 1.1485], ex: [0, 0.06, 0.02] }),
     // ligt 2,2 cm onder de achterrand van de motorkap (die loopt door tot de voorruitbasis), zodat in zijaanzicht geen zwarte trede tussen kap en A-stijl staat
     P('Torpedoplaat', merge([bodDeck(WS0 + 0.004, 1.128, 6, () => S4 + 0.004, 26, [], 0.022), ...[-0.4, -0.2, 0, 0.2, 0.4].map(x => { const g = new THREE.BoxGeometry(0.16, 0.004, 0.03); g.translate(x, bodSec(1.095).yd - 0.02 - 0.06 * x * x, 1.095); return g; })]), MAT.plastic, { d: 'Kunststof afdekplaat met wisserrooster en luchtinlaat voor het interieur onder de achterrand van de motorkap, voor de voorruit.', ex: [0, 0.1, 0.02] }),
     P('Frontmodule', merge([xf(G.box(1.08, 0.06, 0.06), [0, 0.72, 0]), xf(G.box(1.0, 0.06, 0.06), [0, 0.26, 0]), xf(G.box(0.06, 0.46, 0.06), [0.52, 0.49, 0]), xf(G.box(0.06, 0.46, 0.06), [-0.52, 0.49, 0]), xf(G.box(0.05, 0.4, 0.05), [0, 0.49, 0])]), MAT.plastic, { d: 'Kunststof frontmodule (slotplaat) die radiateur, koplampen en motorkapslot draagt.', p: [0, 0, 2.06], ex: [0, 0.04, 0.12] }),
@@ -2487,10 +2490,10 @@ function buildBody() {
       P('Sproeierslang', tube([[s * 0.28, halfPt(1.17, bodSAtX(1.17, 0.28))[1] - 0.02, 1.17], [s * 0.15, bodSec(1.3).yd - 0.05, 1.3], [s * 0.06, bodSec(1.4).yd - 0.049, 1.39], [s * 0.03, bodSprT[1], bodSprT[2]], [s * (bodSprT[3] + 0.0003), bodSprT[1], bodSprT[2]]], 0.003, 16, 5), MAT.rubber, { d: 'Toevoerslang onder de kap, van het T-stuk op de hartlijn naar de sproeier.', ex: [0, -0.03, 0] }),
     ])),
     // T-stuk op de hartlijn waar de twee sproeierslangen samenkomen, met een uitloop naar voren; de doorverbinding loopt onder de isolatie en
-    // boven de motorafdekkap naar de linker scharnierhoek en zakt daar onder y 0,88 naar de slangkoppeling van het systeem (wereld 0,60; 0,815; 1,48),
+    // boven de motorafdekkap naar de rechter scharnierhoek en zakt daar onder y 0,88 naar de slangkoppeling van het systeem (wereld -0,60; 0,815; 1,48; golf 5i: rechts, met de tank rechtsvoor),
     // waar het einde bij gesloten kap 0,5 mm boven de koppeling stopt. Route schematisch.
     P('T-stuk sproeierslang', merge([G.cyl('x', 0.0045, 0.0045, 2 * bodSprT[3], 10), xf(G.cyl('z', 0.0045, 0.0045, bodSprT[4], 10), [0, 0, bodSprT[4] / 2])]), MAT.plastic, { d: 'Kunststof T-stuk dat de slangen naar de twee sproeiers voedt vanuit de ene toevoerslang.', p: bodSprT.slice(0, 3), ex: [0, -0.05, 0] }),
-    P('Sproeierslang naar koppeling', tube([[0, bodSprT[1], bodSprT[2] + bodSprT[4] + 0.0003], [0, bodSprT[1] - 0.001, 1.428], [0.05, 0.895, 1.44], [0.12, 0.879, 1.45], [0.30, 0.871, 1.462], [0.45, 0.865, 1.472], [0.55, 0.86, 1.478], [0.592, 0.85, 1.48], [0.60, 0.835, 1.48], [0.60, 0.8205, 1.48]], 0.003, 40, 5), MAT.rubber, { d: 'Toevoerslang onder de kap van de slangkoppeling bij de linker veerpoottoren naar het T-stuk; loopt met de kap mee als die opent (route schematisch).', ex: [0.03, -0.05, 0] }),
+    P('Sproeierslang naar koppeling', tube([[0, bodSprT[1], bodSprT[2] + bodSprT[4] + 0.0003], [0, bodSprT[1] - 0.001, 1.428], [-0.05, 0.894, 1.415], [-0.13, 0.884, 1.405], [-0.22, 0.88, 1.41], [-0.32, 0.874, 1.425], [-0.45, 0.866, 1.432], [-0.55, 0.86, 1.44], [-0.592, 0.85, 1.465], [-0.60, 0.835, 1.48], [-0.60, 0.8205, 1.48]], 0.003, 40, 5), MAT.rubber, { d: 'Toevoerslang onder de kap van de slangkoppeling bij de rechter veerpoottoren naar het T-stuk; loopt met de kap mee als die opent (route schematisch).', ex: [0.03, -0.05, 0] }),
   ]);
 
   /* ================= voorschermen ================= */
@@ -2719,7 +2722,7 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     open: hinge(bodTgPv, [1, 0, 0], bodTgAng, { min: 60 * PI / 180, label: 'Achterklep', look: { dir: [0.6, 0.6, -1], nodes: ['Achterklep', 'Gasveer links', 'Gasveer rechts'] } }) }, [
     P('Buitenpaneel achterklep', merge([tgOuter, bodSPweb(1, bodQScr(SP), 1, 0.003, 16), bodSPweb(-1, bodQScr(SP), 1, 0.003, 16)]), MAT.paint, { d: 'Plaatwerk van de achterklep onder en achter de ruit.', ex: [0, 0, -0.08] }),
     P('Binnenpaneel achterklep', merge([bodTailGeo(-0.36, 0.36, 0.68, ydT - 0.02, -0.04, 4, 8), ...tgRing]), MAT.paintIn, { d: 'Binnenframe van de achterklep met scharnier- en slotversteviging. Rond de achterruit loopt een smalle rand van 7 cm (de lijmrand), zodat de ruit van binnen als donker glas te zien is.', ex: [0, 0, 0] }),
-    P('Achterruit', scr, MAT.glass, { d: 'Verwarmde achterruit van gehard glas, zeer vlak geplaatst (ca. 14 graden).', ex: [0, 0.14, 0.02] }),
+    P('Achterruit', scr, MAT.bodGlassSide, { d: 'Verwarmde achterruit van gehard glas, zeer vlak geplaatst (ca. 14 graden).', ex: [0, 0.14, 0.02] }),
     P('Spoilerlip', lip, MAT.paint, { d: 'Kleine spoilerlip (eendenstaartje) aan de onderrand van de achterruit: een dun, licht opkrullend blad van ca. 3,5 cm met een scherpe achterrand, zo breed als de ruit en aan de uiteinden in het plaatwerk weglopend.', ex: [0, 0.1, -0.06] }),
     // achter het glas, net onder de dakrand: steekt in zijaanzicht niet boven de daklijn uit en schemert door de getinte ruit
     P('Derde remlicht', G.rbox(0.30, 0.008, 0.02, 0.003), MAT.lensRed, { d: 'Derde remlicht achter de bovenrand van de achterruit, direct onder de dakrand (plaats geschat uit fase 2-foto\'s, schematisch).', p: [0, YR(RW0 - 0.045) - 0.011, RW0 - 0.045], r: [-Math.atan2(YR(RW0) - YR(RW0 - 0.09), 0.09), 0, 0], ex: [0, 0.05, -0.08] }),
@@ -3003,7 +3006,8 @@ const ENG_MJ_R = 0.0274, ENG_PIN_R = 0.024;           // hoofdlagertap Ø54,8, k
 const ENG_CAM_RB = 0.0165, ENG_ROLL_R = 0.0085;
 const ENG_BRIDGE_T = 0.024, ENG_COVER_Y = CAMY + ENG_BRIDGE_T + 0.001, ENG_COVER_H = 0.04;
 const ENG_COVER_TOP = ENG_COVER_Y + ENG_COVER_H;
-const ENG_NECK_TOP = 0.473 + 0.022;                    // bovenkant van de vulhals: 2,2 cm boven de afdekkap (die op 0,473 ligt)
+const ENG_NECK_TOP = 0.478;                           // bovenkant van de vulhals: 2 cm boven de bodem van de kom in de afdekkap (engine3.js)
+const ENG_OIL = [0, 0.05];                            // vulhals (x, z): midden op het deksel, net voor de bobines (golf 5i, naar foto: midden op de afdekkap)
 const XT = -0.245, XA = -0.345;                       // vlak van distributieriem en multiriem
 const ENG_PS = [-0.27, -0.005, 0.255], ENG_PS_R = 0.058;   // stuurpomp: oorsprong (pompas, x-niveau van de pomp), tipstraal van de poelie
 const ENG_TURBO = [0.07, 0.14, -0.255];               // hartlijn turbo-as (lagerhuis)
@@ -3334,12 +3338,13 @@ function engCoverGeo() {
     XC.forEach(x => cs.holes.push(circlePath(x, 0, 0.0165)));
     const cover = plan(cs, ENG_COVER_H); cover.translate(0, ENG_COVER_Y + ENG_COVER_H / 2, 0);
     const L = [cover];
-    [-0.17, -0.088, 0, 0.088, 0.17].forEach(x => L.push(xf(G.box(0.008, 0.006, 0.16), [x, ENG_COVER_TOP + 0.002, 0])));
-    // vulhals: een opstaande hals in het deksel die door de afdekkap (bovenkant op 0,473 in het motorframe, zie engine3.js) heen steekt;
+    [-0.17, -0.088, 0.088, 0.17].forEach(x => L.push(xf(G.box(0.008, 0.006, 0.16), [x, ENG_COVER_TOP + 0.002, 0])));
+    L.push(xf(G.box(0.008, 0.006, 0.084), [0, ENG_COVER_TOP + 0.002, -0.038]));   // middelste ribbe tot voor de vulhals
+    // vulhals: een opstaande hals in het deksel die door het gat in de kom van de afdekkap (engine3.js) heen steekt;
     // de donkere opening zit als apart onderdeel (Vulopening) boven op de hals en de dop zit er in de dichte stand overheen
-    L.push(xf(G.cyl('y', 0.031, 0.031, ENG_NECK_TOP - ENG_COVER_TOP, 24), [-0.17, (ENG_COVER_TOP + ENG_NECK_TOP) / 2, -0.05]));
+    L.push(xf(G.cyl('y', 0.031, 0.031, ENG_NECK_TOP - ENG_COVER_TOP, 24), [ENG_OIL[0], (ENG_COVER_TOP + ENG_NECK_TOP) / 2, ENG_OIL[1]]));
     // scharnierlip op de rand van de hals: de as waar de gele dop omheen klapt (Olievuldop, open.pivot)
-    L.push(xf(G.box(0.0065, 0.011, 0.016), [-0.17 + 0.0335 - 0.00075, ENG_NECK_TOP - 0.0055, -0.05]));
+    L.push(xf(G.box(0.0065, 0.011, 0.016), [ENG_OIL[0] + 0.0335 - 0.00075, ENG_NECK_TOP - 0.0055, ENG_OIL[1]]));
     return merge(L);
   });
 }
@@ -3410,8 +3415,8 @@ function buildHead() {
       P('Deksel', engCoverGeo(), MAT.aluCast, { d: 'Deksel over de lagerbrug met doorvoeren voor de vier bobines.', ex: [0, 0, 0] }),
       P('Kleppendekselpakking', coverGasket, MAT.rubber, { d: 'Rubber pakking onder het kleppendeksel.', ex: [0, -0.025, 0] }),
       A('Kleppendekselbouten', { d: 'Acht bouten van het kleppendeksel (aantal geschat).', ex: [0, 0.05, 0] }, coverBolts),
-      P('Vulopening', xf(G.cyl('y', 0.021, 0.021, 0.002, 24), [-0.17, ENG_NECK_TOP + 0.001, -0.05]), MAT.blackGloss, { d: 'Open vulhals voor de motorolie in het kleppendeksel: een donkere opening in een opstaande ring; hier zit de dop in als hij dicht is.', ex: [0, 0.03, 0] }),
-      P('Olievuldop', merge([G.cyl('y', 0.0335, 0.0335, 0.016, 24), xf(G.box(0.04, 0.006, 0.01), [0, 0.011, 0])]), MAT.plateYellow, { d: 'Gele dop van de olievulopening; klapt om een scharnierlip aan de rand van de vulhals omhoog en blijft aan de hals vastzitten (opener, schematisch: in werkelijkheid draai je de dop los).', p: [-0.17, ENG_NECK_TOP + 0.008, -0.05], ex: [0, 0.09, 0], open: hinge([-0.17 + 0.0335, ENG_NECK_TOP, -0.05], [0, 0, 1], -1.8, { min: 1.44, needs: 'Motorkap', label: 'Olievuldop', look: { dir: [-0.2, 0.5, 0.9], nodes: ['Olievuldop', 'Deksel'] } }) }),
+      P('Vulopening', xf(G.cyl('y', 0.021, 0.021, 0.002, 24), [ENG_OIL[0], ENG_NECK_TOP + 0.001, ENG_OIL[1]]), MAT.blackGloss, { d: 'Open vulhals voor de motorolie in het kleppendeksel: een donkere opening in een opstaande ring; hier zit de dop in als hij dicht is.', ex: [0, 0.03, 0] }),
+      P('Olievuldop', merge([G.cyl('y', 0.0335, 0.0335, 0.016, 24), xf(G.box(0.04, 0.006, 0.01), [0, 0.011, 0])]), MAT.plateYellow, { d: 'Gele dop van de olievulopening; klapt om een scharnierlip aan de rand van de vulhals omhoog en blijft aan de hals vastzitten (opener, schematisch: in werkelijkheid draai je de dop los).', p: [ENG_OIL[0], ENG_NECK_TOP + 0.008, ENG_OIL[1]], ex: [0, 0.09, 0], open: hinge([ENG_OIL[0] + 0.0335, ENG_NECK_TOP, ENG_OIL[1]], [0, 0, 1], -1.8, { min: 1.44, needs: 'Motorkap', label: 'Olievuldop', look: { dir: [-0.2, 0.5, 0.9], nodes: ['Olievuldop', 'Deksel'] } }) }),
     ]),
     buildIgnition(),
   ]);
@@ -3683,8 +3688,8 @@ function buildLube() {
       P('Afdichtring filter', G.torus('z', 0.0305, 0.0018, 28, 5), MAT.rubber, { d: 'Rubber afdichtring Ø61 mm.', p: [0, 0, -0.001], ex: [0, 0, -0.03] }),
     ]),
     A('Peilstok', { d: 'Peilstok met geleidebuis aan de voorzijde van het blok; de exacte plaats voor de Laguna III is niet gevonden.', ex: [0, 0.14, 0.1] }, [
-      P('Peilstok', merge([tube([[0.205, 0.0, 0.112], [0.205, 0.2, 0.128], [0.205, 0.385, 0.142]], 0.002, 16, 5), xf(G.torus('z', 0.012, 0.0035, 18, 6), [0.205, 0.402, 0.143]), xf(G.cyl('y', 0.005, 0.005, 0.012, 8), [0.205, 0.388, 0.142])]), MAT.handle, { d: 'Peilstok met gele greep: aan de markeringen op het uiteinde lees je de oliestand af.', ex: [0, 0.12, 0] }),
-      P('Geleidebuis', tube([[0.205, -0.02, 0.11], [0.205, 0.2, 0.128], [0.205, 0.38, 0.142]], 0.0055, 20, 8), MAT.plastic, { d: 'Geleidebuis van de peilstok.', ex: [0, 0, 0] }),
+      P('Peilstok', merge([tube([[0.205, 0.0, 0.112], [0.205, 0.2, 0.128], [0.205, 0.427, 0.1455]], 0.002, 16, 5), xf(G.torus('z', 0.012, 0.0035, 18, 6), [0.205, 0.444, 0.1462]), xf(G.cyl('y', 0.005, 0.005, 0.012, 8), [0.205, 0.43, 0.1456])]), MAT.handle, { d: 'Peilstok met gele greep: aan de markeringen op het uiteinde lees je de oliestand af. De greep zit in een kom van de afdekkap.', ex: [0, 0.12, 0] }),
+      P('Geleidebuis', tube([[0.205, -0.02, 0.11], [0.205, 0.2, 0.128], [0.205, 0.422, 0.1451]], 0.0055, 20, 8), MAT.plastic, { d: 'Geleidebuis van de peilstok.', ex: [0, 0, 0] }),
       P('O-ring geleidebuis', engORing(0.0058, 0.0012), MAT.rubber, { d: 'Afdichting van de geleidebuis in het blok.', p: [0.205, 0.004, 0.112], ex: [0, -0.04, 0.02] }),
       P('Beugel peilstokbuis', merge([G.box(0.012, 0.01, 0.026), xf(hexBolt(0.012, 0.005, 'z'), [0, 0, -0.016], [PI, 0, 0])]), MAT.steel, { d: 'Beugel die de buis aan de kop vastzet.', p: [0.205, 0.28, 0.122], ex: [0, 0, 0.05] }),
     ]),
@@ -3876,12 +3881,87 @@ function buildFlexplate() {
     ...[0, 1, 2, 3, 4, 5].map(k => P(`Flexplaatbout ${k + 1}`, hexBolt(0.02, 0.009, '-x'), MAT.darkSteel, { d: 'Bout tussen flexplaat en krukasflens; vervangen bij demontage.', p: [0.2305, 0.03 * Math.cos(k * PI / 3 + PI / 6), 0.03 * Math.sin(k * PI / 3 + PI / 6)], ex: [0.09, 0, 0] })),
   ]);
 }
+// Afdekkap (golf 5i, naar de foto van de gebruiker van 19 oktober 2026): zilvergrijze kunststof kap over het hele blok, ook over het
+// inlaatspruitstuk. Hoog niveau achter met vier taps toelopende ribben, een trede naar een lager voorvlak dat naar voren afloopt,
+// links (distributiezijde) een hoog deel tot voor met drie groeven, een kom met gat rond de olievulhals en een kom rond de peilstok. De kap
+// eindigt links 8 mm voor de motorsteun distributiezijde en blijft daar boven de dynamo.
+std('engCoverGrey', 0x7b8087, 0.4, 0.5);
+const ENG_CV = { x0: -0.218, x1: 0.27, z0: -0.15, z1: 0.29, rc: 0.05, R: 0.02, L1: 0.476, zc: 0.08 };
+const ENG_CV_OIL = ENG_OIL, ENG_CV_DIP = [0.205, 0.1454];
+const engSmooth = (a, b, v) => { const t = clamp((v - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+function engCoverTop(x, z) {
+  const C = ENG_CV, hoog = engSmooth(-0.15, -0.11, x);                                        // links (distributiezijde) blijft het hoge niveau tot voor
+  let y = C.L1 - hoog * (0.016 * engSmooth(C.zc - 0.006, C.zc + 0.006, z) + Math.max(0, z - C.zc) * 0.2 + 0.03 * engSmooth(0.2, 0.29, z));   // trede, helling en ronde neus
+  y -= (1 - hoog) * 0.03 * engSmooth(0.1, 0.29, z);                                         // links zakt de voorkant 3 cm (ruimte onder de motorkap, 1,9 cm boven de dynamo)
+  for (const g of [-0.2, -0.186, -0.172]) y -= 0.004 * Math.exp(-(((x - g) / 0.005) ** 2)) * engSmooth(0.05, 0.09, z) * engSmooth(C.z1, C.z1 - 0.05, z);   // drie groeven links voor
+  for (const xr of [-0.135, -0.045, 0.045, 0.135]) {                                       // vier ribben vanaf de achterrand
+    const u = (z - C.z0) / 0.1, w = lerp(0.03, 0.013, clamp(u, 0, 1));
+    y += 0.008 * engSmooth(w + 0.006, w - 0.002, Math.abs(x - xr)) * engSmooth(1.12, 0.96, u);
+  }
+  const dOil = Math.hypot(x - ENG_CV_OIL[0], z - ENG_CV_OIL[1]);
+  y -= 0.018 * (1 - engSmooth(0.04, 0.066, dOil));                                         // kom rond de olievuldop
+  const dDip = Math.hypot((x - ENG_CV_DIP[0]) / 0.75, z - ENG_CV_DIP[1]);
+  y -= 0.022 * (1 - engSmooth(0.03, 0.062, dDip));                                         // kom rond de peilstok
+  return y;
+}
+// hoogteveld over een rechthoek met afgeronde hoeken (bovenaanzicht), met afgeronde bovenrand (straal R), een rok omlaag tot bot(x, z)
+// en ronde gaten; punten buiten de omtrek of in een gat schuiven naar de rand
+function engCoverShell(C, top, bot, holes, nx, nz) {
+  const cx = (C.x0 + C.x1) / 2, cz = (C.z0 + C.z1) / 2, hw = (C.x1 - C.x0) / 2, hd = (C.z1 - C.z0) / 2;
+  const inside = (x, z) => { const qx = Math.abs(x - cx) - hw + C.rc, qz = Math.abs(z - cz) - hd + C.rc; return C.rc - Math.hypot(Math.max(qx, 0), Math.max(qz, 0)) - Math.min(Math.max(qx, qz), 0); };
+  const proj = (x, z) => {
+    const sx = Math.sign(x - cx) || 1, sz = Math.sign(z - cz) || 1, qx = Math.abs(x - cx) - hw + C.rc, qz = Math.abs(z - cz) - hd + C.rc;
+    if (qx > 0 && qz > 0) { const l = Math.hypot(qx, qz); if (l > C.rc) { x = cx + sx * (hw - C.rc + qx / l * C.rc); z = cz + sz * (hd - C.rc + qz / l * C.rc); } }
+    else { x = clamp(x, C.x0, C.x1); z = clamp(z, C.z0, C.z1); }
+    for (const [hx, hz, r] of holes) { const d = Math.hypot(x - hx, z - hz); if (d < r) { const k = d > 1e-9 ? r / d : 1; x = hx + (d > 1e-9 ? (x - hx) * k : r); z = hz + (d > 1e-9 ? (z - hz) * k : 0); } }
+    return [x, z];
+  };
+  const pos = [], idx = [], ring = [];
+  for (let j = 0; j <= nz; j++) for (let i = 0; i <= nx; i++) {
+    const [x, z] = proj(lerp(C.x0, C.x1, i / nx), lerp(C.z0, C.z1, j / nz)), e = Math.max(0, inside(x, z)), t = top(x, z);
+    pos.push(x, e < C.R ? t - C.R + Math.sqrt(Math.max(0, C.R * C.R - (C.R - e) ** 2)) : t, z);
+  }
+  const at = (i, j) => j * (nx + 1) + i, inHole = (a, b, c) => { const x = (pos[a * 3] + pos[b * 3] + pos[c * 3]) / 3, z = (pos[a * 3 + 2] + pos[b * 3 + 2] + pos[c * 3 + 2]) / 3; return holes.some(([hx, hz, r]) => Math.hypot(x - hx, z - hz) < r * 0.985); };
+  for (let j = 0; j < nz; j++) for (let i = 0; i < nx; i++) {
+    const a = at(i, j), b = at(i + 1, j), c = at(i + 1, j + 1), d = at(i, j + 1);
+    if (!inHole(a, b, c)) idx.push(a, b, c);
+    if (!inHole(a, c, d)) idx.push(a, c, d);
+  }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals();
+  for (let i = 0; i < nx; i++) ring.push(at(i, 0)); for (let j = 0; j < nz; j++) ring.push(at(nx, j));
+  for (let i = nx; i > 0; i--) ring.push(at(i, nz)); for (let j = nz; j > 0; j--) ring.push(at(0, j));
+  const sk = [];
+  ring.forEach((a, k) => {
+    const b = ring[(k + 1) % ring.length], A0 = pos.slice(a * 3, a * 3 + 3), B0 = pos.slice(b * 3, b * 3 + 3);
+    const A1 = [A0[0], Math.min(bot(A0[0], A0[2]), A0[1] - 0.008), A0[2]], B1 = [B0[0], Math.min(bot(B0[0], B0[2]), B0[1] - 0.008), B0[2]];
+    sk.push(...A0, ...B0, ...B1, ...A0, ...B1, ...A1);
+  });
+  const s = new THREE.BufferGeometry(); s.setAttribute('position', new THREE.Float32BufferAttribute(sk, 3)); s.computeVertexNormals();
+  return merge([g, s]);
+}
+// "RENAULT 2.0T" op het voorvlak: canvastextuur op een vlak dat de helling van het voorvlak volgt
+function engLogoTex() {
+  const c = document.createElement('canvas'); c.width = 512; c.height = 96;
+  const k = c.getContext('2d'); k.textBaseline = 'middle';
+  let x = 6;
+  k.font = 'bold 60px Arial, Helvetica, sans-serif'; k.fillStyle = '#4c4f54';
+  for (const ch of 'RENAULT') { k.fillText(ch, x, 50); x += k.measureText(ch).width + 7; }
+  x += 22; k.font = '54px Arial, Helvetica, sans-serif'; k.fillStyle = '#6a6e74'; k.fillText('2.0', x, 50); x += k.measureText('2.0').width + 2;
+  k.fillStyle = '#e8c21a'; k.fillText('T', x, 50);
+  const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.anisotropy = 4;
+  return t;
+}
+std('engLogo', 0xffffff, 0, 0.6, { map: engLogoTex(), alphaTest: 0.4, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
 function buildEngineCover() {
-  const top = 0.473, cap = cache('engTopCover', () => merge([xf(G.rbox(0.4, 0.016, 0.22, 0.008), [0, -0.008, 0]), ...[-0.12, -0.04, 0.04, 0.12].map(x => xf(G.box(0.05, 0.003, 0.16), [x, 0.0005, 0]))]));
+  const C = ENG_CV;
+  const bot = (x, z) => 0.452 - 0.277 * engSmooth(0.1, 0.25, z) * engSmooth(0.27, 0.21, x) * engSmooth(-0.13, -0.09, x);   // voor diep omlaag over de inlaatkanalen; links hoog boven de dynamo
+  const cap = cache('engTopCover5i', () => engCoverShell(C, engCoverTop, bot, [[...ENG_CV_OIL, 0.037], [...ENG_CV_DIP, 0.024]], 84, 58));
+  const lx = 0.05, lz = 0.236, slope = Math.atan(0.2);
   const grom = [[0.188, 0.06], [-0.14, 0.075], [-0.05, -0.085]];
-  return A('Motorafdekkap', { d: 'Kunststof afdekkap bovenop de motor met akoestische schuimlaag, op rubber nokken.', ex: [0, 1.05, -0.12] }, [
-    P('Afdekkap', cap, MAT.plastic, { d: 'Kunststof afdekkap (vorm geschat).', p: [0, top - 0.0005, 0], ex: [0, 0, 0] }),
-    P('Akoestische schuimlaag', G.rbox(0.38, 0.006, 0.2, 0.003), MAT.engFoam, { d: 'Schuimlaag aan de onderkant die motorgeluid dempt.', p: [0, top - 0.019, 0], ex: [0, -0.05, 0] }),
+  return A('Motorafdekkap', { d: 'Zilvergrijze kunststof afdekkap over de hele bovenkant van de motor en het inlaatspruitstuk, met de tekst RENAULT 2.0T, een akoestische schuimlaag en drie rubber nokken. De olievulhals steekt door een kom in de kap; de gele greep van de peilstok zit in een tweede kom. Vorm naar een foto van een Laguna III 2.0T; maten geschat. Bij uitklappen komt de kap als één geheel recht omhoog los, zodat vulhals en peilstok vrij door de gaten gaan.', ex: [0, 1.05, 0] }, [
+    P('Afdekkap', cap, MAT.engCoverGrey, { d: 'Kunststof afdekkap: hoog achterdeel met vier ribben, een trede naar het aflopende voorvlak, een hoog linkerdeel met drie groeven en kommen voor de olievuldop en de peilstok (vorm naar foto, maten geschat).', ex: [0, 0, 0] }),
+    P('Opschrift afdekkap', cache('engLogoPlane', () => xf(new THREE.PlaneGeometry(0.24, 0.045), [0, 0, 0], [-HALF + slope, 0, 0])), MAT.engLogo, { d: 'Opschrift RENAULT 2.0T op het voorvlak van de afdekkap; blijft bij uitklappen op de kap.', p: [lx, engCoverTop(lx, lz) + 0.0012, lz], ex: [0, 0, 0] }),
+    P('Akoestische schuimlaag', G.rbox(0.38, 0.006, 0.14, 0.003), MAT.engFoam, { d: 'Schuimlaag aan de onderkant die motorgeluid dempt.', p: [0.07, 0.4535, -0.078], ex: [0, -0.05, 0] }),
     ...grom.map(([x, z], k) => P(`Rubber nok ${k + 1}`, G.cyl('y', 0.0065, 0.0065, 0.024, 10), MAT.rubber, { d: 'Rubber nok waarop de afdekkap klemt.', p: [x, ENG_COVER_TOP + 0.012, z], ex: [0, -0.1, 0] })),
   ]);
 }
@@ -5646,7 +5726,7 @@ function buildInterior() {
 /* ===================== koeling, luchtinlaat, uitlaat, brandstof, elektra en de samenstelling van de auto ===================== */
 // Alles wat aan de motor of de startmotor hangt begint op ENG_PORTS.* (via ENG2CAR) of DRV_PORTS.starterTerminal.
 std('sysHose', 0x1b1d20, 0, 0.8);
-std('sysBattery', 0x2c3947, 0, 0.55);
+std('sysBattery', 0x1f2125, 0, 0.6);                           // zwarte accubak (golf 5i, naar foto; was blauwgrijs)
 std('sysTkNis', 0x3a3e44, 0.15, 0.55);                          // tankkom: halfdonker satijn, donkerder dan de lak
 std('sysDemper', 0x4a4642, 0.35, 0.88);                         // einddemper en eindpijpen: donker, ruw plaatstaal (onder de bumper is bijna niets te zien)
 
@@ -6055,22 +6135,23 @@ function buildElectrical() {
     P('Kabelboom cabine', tube([uchAt(-0.05, -0.062, 0.083), [0.4, 0.45, 0.66], [0.5, 0.27, 0.7], [0.42, 0.255, 0.0], [0.42, 0.255, -1.0], [0.45, 0.26, -1.9], [0.53, 0.27, -2.1], [0.59, 0.32, -2.2], [0.6, 0.42, -2.22], [0.6, 0.55, -2.235]], 0.01, 80, 6), MAT.sysHose, { d: 'Bedrading van de centrale cabine-unit onder de bekleding langs de dorpel en onder de bagagevloer door naar de achterlichten; hij stijgt pas achter de achterrand van de vloerplaat.', ex: [0.1, 0, 0] }),
     P('Doorvoer schutbord', G.cyl('z', 0.04, 0.04, 0.02, 14), MAT.rubber, { d: 'Rubber doorvoer in het schutbord voor de kabelboom.', p: [0.18, 0.62, 1.03], ex: [0, 0, 0.12] }),
   ]);
-  // ruitensproeierinstallatie: tank in het vak linksvoor tussen de langsligger (x tot 0,572) en de bumpersteun (vanaf x 0,715), achter de
-  // frontmodule en onder de koplamp; de vulhals staat achter de koplamp en vóór de wielkast. De slang loopt over de tank en de wielkast naar
-  // de koppeling vóór de linker veerpoottoren, waar de sproeierslang van de kap aansluit (plaats schematisch, geen bron voor de echte plek).
-  std('sysWashCap', 0x2b5fb4, 0, 0.55);
-  const WX = 0.6425, WY = 0.46, WZ = 1.91, WW = 0.115, WH = 0.22, WL = 0.22;      // hart en maten van de tank
-  const neck = [0.62, WZ - 0.075], NT = 0.745;                                   // vulhals: x, z en de hoogte van de bovenrand
-  const pu = [0.655, 0.395, WZ + WL / 2 + 0.017];                                // hart van de pomp, tegen de voorkant van de tank
-  const wEnd = [0.60, 0.815, 1.48];                                              // koppeling vóór de veerpoottoren
-  const washer = A('Ruitensproeierinstallatie', { d: 'Ruitensproeiertank met elektrische pomp en de sproeierslang naar de motorkap, schematisch geplaatst in het vak linksvoor in de motorruimte, onder de koplamp. De echte plaats en inhoud van de tank zijn voor deze auto niet gevonden.', ex: [0.16, 0.06, 0.06] }, [
+  // ruitensproeierinstallatie: tank in het vak rechtsvoor tussen de langsligger (x tot -0,572) en de bumpersteun (vanaf x -0,715), achter de
+  // frontmodule en onder de koplamp; de vulhals met de gele dop staat achter de koplamp en vóór de wielkast (golf 5i: rechtsvoor, zoals op de
+  // foto van een Laguna III 2.0T; was gespiegeld linksvoor). De slang loopt over de tank en de wielkast, buiten langs het oliereservoir van de
+  // stuurbekrachtiging, naar de koppeling vóór de rechter veerpoottoren, waar de sproeierslang van de kap aansluit (maat van de tank schematisch).
+  std('sysWashCap', 0xe2b51c, 0, 0.5);
+  const WX = -0.6425, WY = 0.46, WZ = 1.91, WW = 0.115, WH = 0.22, WL = 0.22;      // hart en maten van de tank
+  const neck = [-0.62, WZ - 0.075], NT = 0.745;                                   // vulhals: x, z en de hoogte van de bovenrand
+  const pu = [-0.655, 0.395, WZ + WL / 2 + 0.017];                                // hart van de pomp, tegen de voorkant van de tank
+  const wEnd = [-0.60, 0.815, 1.48];                                              // koppeling vóór de veerpoottoren
+  const washer = A('Ruitensproeierinstallatie', { d: 'Ruitensproeiertank met elektrische pomp en de sproeierslang naar de motorkap, in het vak rechtsvoor in de motorruimte, onder de koplamp; de vulhals met de gele dop staat rechtsvoor, zoals op een foto van een Laguna III 2.0T. Vorm en inhoud van de tank zijn niet gevonden (schematisch).', ex: [-0.16, 0.06, 0.06] }, [
     P('Sproeiertank', G.rbox(WW, WH, WL, 0.016), MAT.tank, { d: 'Doorschijnend kunststof reservoir voor de ruitensproeiervloeistof (vorm en maten schematisch).', p: [WX, WY, WZ] }),
     P('Vulhals sproeiertank', G.cyl('y', 0.02, 0.02, NT - (WY + WH / 2) - 0.0005, 16), MAT.tank, { d: 'Opstaande vulhals die vanaf de tank tot net onder de motorkap reikt, zodat je hem bij open kap kunt bijvullen.', p: [neck[0], (NT + WY + WH / 2 + 0.0005) / 2, neck[1]], ex: [0, 0.05, 0] }),
-    P('Vuldop sproeiertank', merge([G.cyl('y', 0.026, 0.026, 0.018, 18), xf(G.box(0.036, 0.008, 0.008), [0, 0.012, 0])]), MAT.sysWashCap, { d: 'Blauwe kunststof dop op de vulhals met een greep om hem los te trekken (kleur schematisch).', p: [neck[0], NT + 0.0093, neck[1]], ex: [0, 0.12, 0] }),
+    P('Vuldop sproeiertank', merge([G.cyl('y', 0.026, 0.026, 0.018, 18), xf(G.box(0.036, 0.008, 0.008), [0, 0.012, 0])]), MAT.sysWashCap, { d: 'Gele kunststof dop op de vulhals met een greep om hem los te trekken (kleur naar foto).', p: [neck[0], NT + 0.0093, neck[1]], ex: [0, 0.12, 0] }),
     P('Sproeierpomp', merge([G.cyl('y', 0.015, 0.015, 0.07, 16), xf(G.cyl('z', 0.006, 0.006, 0.008, 10), [0, -0.025, -0.01275]), xf(G.cyl('y', 0.004, 0.004, 0.016, 8), [0, 0.043, 0])]), MAT.plastic, { d: 'Elektrische pomp die onderin tegen de tank zit en de vloeistof door de slang naar de sproeiers op de kap perst.', p: pu, ex: [0, -0.02, 0.1] }),
-    P('Stekker sproeierpomp', G.rbox(0.014, 0.02, 0.016, 0.004), MAT.plasticGrey, { d: 'Stekker met de voeding van de pomp (bedrading schematisch).', p: [pu[0] + 0.0225, pu[1] - 0.005, pu[2]], ex: [0.06, 0, 0.06] }),
-    P('Tankbeugel sproeiertank', G.box(0.011, 0.03, 0.08), MAT.darkSteel, { d: 'Stalen beugel waarmee de tank aan de linker langsligger vastzit (schematisch).', p: [0.5785, 0.44, WZ], ex: [-0.06, 0, 0] }),
-    P('Sproeierslang motorruimte', tube([[pu[0], pu[1] + 0.0515, pu[2]], [pu[0], 0.50, pu[2]], [0.655, 0.565, pu[2] - 0.003], [0.655, 0.582, 2.025], [0.655, 0.582, 2.0], [0.655, 0.58, 1.93], [0.655, 0.58, 1.84], [0.652, 0.59, 1.78], [0.648, 0.60, 1.74], [0.645, 0.60, 1.70], [0.642, 0.648, 1.66], [0.638, 0.683, 1.62], [0.634, 0.71, 1.58], [0.628, 0.731, 1.54], [0.618, 0.752, 1.495], [wEnd[0], wEnd[1] - 0.04, wEnd[2]], [wEnd[0], wEnd[1] - 0.0165, wEnd[2]]], 0.0035, 64, 6), MAT.rubber, { d: 'Dunne rubber slang van de pomp over de tank en de wielkast naar de koppeling vóór de veerpoottoren, waar de slang naar de sproeiers op de kap aansluit.', ex: [0, 0.06, 0] }),
+    P('Stekker sproeierpomp', G.rbox(0.014, 0.02, 0.016, 0.004), MAT.plasticGrey, { d: 'Stekker met de voeding van de pomp (bedrading schematisch).', p: [pu[0] - 0.0225, pu[1] - 0.005, pu[2]], ex: [-0.06, 0, 0.06] }),
+    P('Tankbeugel sproeiertank', G.box(0.011, 0.03, 0.08), MAT.darkSteel, { d: 'Stalen beugel waarmee de tank aan de rechter langsligger vastzit (schematisch).', p: [-0.5785, 0.44, WZ], ex: [0.06, 0, 0] }),
+    P('Sproeierslang motorruimte', tube([[pu[0], pu[1] + 0.0515, pu[2]], [pu[0], 0.50, pu[2]], [-0.655, 0.565, pu[2] - 0.003], [-0.655, 0.582, 2.025], [-0.655, 0.582, 2.0], [-0.655, 0.58, 1.93], [-0.655, 0.58, 1.84], [-0.652, 0.59, 1.78], [-0.648, 0.60, 1.74], [-0.645, 0.60, 1.70], [-0.642, 0.648, 1.66], [-0.638, 0.683, 1.62], [-0.634, 0.71, 1.58], [-0.628, 0.731, 1.54], [-0.618, 0.752, 1.495], [wEnd[0], wEnd[1] - 0.04, wEnd[2]], [wEnd[0], wEnd[1] - 0.0165, wEnd[2]]], 0.0035, 64, 6), MAT.rubber, { d: 'Dunne rubber slang van de pomp over de tank en de wielkast, buiten langs het stuuroliereservoir, naar de koppeling vóór de rechter veerpoottoren, waar de slang naar de sproeiers op de kap aansluit.', ex: [0, 0.06, 0] }),
     P('Slangkoppeling sproeierslang', G.cyl('y', 0.006, 0.006, 0.02, 10), MAT.plastic, { d: 'Kunststof verbindingsstuk tussen de slang in de motorruimte en de sproeierslang van de motorkap.', p: [wEnd[0], wEnd[1] - 0.005, wEnd[2]], ex: [0, 0.08, 0] }),
   ]);
   return A('Elektrisch systeem', { d: 'Accu met zekeringkast, motorcomputer, cabine-unit, claxons, voedings- en massakabels, de kabelbomen en de ruitensproeierinstallatie.', ex: [-1.5, 0.7, 1.4] }, [accu, upc, ecu, uch, ...horns, plusCable, massa, harness, washer]);

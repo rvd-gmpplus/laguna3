@@ -1,7 +1,7 @@
 /* ===================== koeling, luchtinlaat, uitlaat, brandstof, elektra en de samenstelling van de auto ===================== */
 // Alles wat aan de motor of de startmotor hangt begint op ENG_PORTS.* (via ENG2CAR) of DRV_PORTS.starterTerminal.
 std('sysHose', 0x1b1d20, 0, 0.8);
-std('sysBattery', 0x2c3947, 0, 0.55);
+std('sysBattery', 0x1f2125, 0, 0.6);                           // zwarte accubak (golf 5i, naar foto; was blauwgrijs)
 std('sysTkNis', 0x3a3e44, 0.15, 0.55);                          // tankkom: halfdonker satijn, donkerder dan de lak
 std('sysDemper', 0x4a4642, 0.35, 0.88);                         // einddemper en eindpijpen: donker, ruw plaatstaal (onder de bumper is bijna niets te zien)
 
@@ -410,22 +410,23 @@ function buildElectrical() {
     P('Kabelboom cabine', tube([uchAt(-0.05, -0.062, 0.083), [0.4, 0.45, 0.66], [0.5, 0.27, 0.7], [0.42, 0.255, 0.0], [0.42, 0.255, -1.0], [0.45, 0.26, -1.9], [0.53, 0.27, -2.1], [0.59, 0.32, -2.2], [0.6, 0.42, -2.22], [0.6, 0.55, -2.235]], 0.01, 80, 6), MAT.sysHose, { d: 'Bedrading van de centrale cabine-unit onder de bekleding langs de dorpel en onder de bagagevloer door naar de achterlichten; hij stijgt pas achter de achterrand van de vloerplaat.', ex: [0.1, 0, 0] }),
     P('Doorvoer schutbord', G.cyl('z', 0.04, 0.04, 0.02, 14), MAT.rubber, { d: 'Rubber doorvoer in het schutbord voor de kabelboom.', p: [0.18, 0.62, 1.03], ex: [0, 0, 0.12] }),
   ]);
-  // ruitensproeierinstallatie: tank in het vak linksvoor tussen de langsligger (x tot 0,572) en de bumpersteun (vanaf x 0,715), achter de
-  // frontmodule en onder de koplamp; de vulhals staat achter de koplamp en vóór de wielkast. De slang loopt over de tank en de wielkast naar
-  // de koppeling vóór de linker veerpoottoren, waar de sproeierslang van de kap aansluit (plaats schematisch, geen bron voor de echte plek).
-  std('sysWashCap', 0x2b5fb4, 0, 0.55);
-  const WX = 0.6425, WY = 0.46, WZ = 1.91, WW = 0.115, WH = 0.22, WL = 0.22;      // hart en maten van de tank
-  const neck = [0.62, WZ - 0.075], NT = 0.745;                                   // vulhals: x, z en de hoogte van de bovenrand
-  const pu = [0.655, 0.395, WZ + WL / 2 + 0.017];                                // hart van de pomp, tegen de voorkant van de tank
-  const wEnd = [0.60, 0.815, 1.48];                                              // koppeling vóór de veerpoottoren
-  const washer = A('Ruitensproeierinstallatie', { d: 'Ruitensproeiertank met elektrische pomp en de sproeierslang naar de motorkap, schematisch geplaatst in het vak linksvoor in de motorruimte, onder de koplamp. De echte plaats en inhoud van de tank zijn voor deze auto niet gevonden.', ex: [0.16, 0.06, 0.06] }, [
+  // ruitensproeierinstallatie: tank in het vak rechtsvoor tussen de langsligger (x tot -0,572) en de bumpersteun (vanaf x -0,715), achter de
+  // frontmodule en onder de koplamp; de vulhals met de gele dop staat achter de koplamp en vóór de wielkast (golf 5i: rechtsvoor, zoals op de
+  // foto van een Laguna III 2.0T; was gespiegeld linksvoor). De slang loopt over de tank en de wielkast, buiten langs het oliereservoir van de
+  // stuurbekrachtiging, naar de koppeling vóór de rechter veerpoottoren, waar de sproeierslang van de kap aansluit (maat van de tank schematisch).
+  std('sysWashCap', 0xe2b51c, 0, 0.5);
+  const WX = -0.6425, WY = 0.46, WZ = 1.91, WW = 0.115, WH = 0.22, WL = 0.22;      // hart en maten van de tank
+  const neck = [-0.62, WZ - 0.075], NT = 0.745;                                   // vulhals: x, z en de hoogte van de bovenrand
+  const pu = [-0.655, 0.395, WZ + WL / 2 + 0.017];                                // hart van de pomp, tegen de voorkant van de tank
+  const wEnd = [-0.60, 0.815, 1.48];                                              // koppeling vóór de veerpoottoren
+  const washer = A('Ruitensproeierinstallatie', { d: 'Ruitensproeiertank met elektrische pomp en de sproeierslang naar de motorkap, in het vak rechtsvoor in de motorruimte, onder de koplamp; de vulhals met de gele dop staat rechtsvoor, zoals op een foto van een Laguna III 2.0T. Vorm en inhoud van de tank zijn niet gevonden (schematisch).', ex: [-0.16, 0.06, 0.06] }, [
     P('Sproeiertank', G.rbox(WW, WH, WL, 0.016), MAT.tank, { d: 'Doorschijnend kunststof reservoir voor de ruitensproeiervloeistof (vorm en maten schematisch).', p: [WX, WY, WZ] }),
     P('Vulhals sproeiertank', G.cyl('y', 0.02, 0.02, NT - (WY + WH / 2) - 0.0005, 16), MAT.tank, { d: 'Opstaande vulhals die vanaf de tank tot net onder de motorkap reikt, zodat je hem bij open kap kunt bijvullen.', p: [neck[0], (NT + WY + WH / 2 + 0.0005) / 2, neck[1]], ex: [0, 0.05, 0] }),
-    P('Vuldop sproeiertank', merge([G.cyl('y', 0.026, 0.026, 0.018, 18), xf(G.box(0.036, 0.008, 0.008), [0, 0.012, 0])]), MAT.sysWashCap, { d: 'Blauwe kunststof dop op de vulhals met een greep om hem los te trekken (kleur schematisch).', p: [neck[0], NT + 0.0093, neck[1]], ex: [0, 0.12, 0] }),
+    P('Vuldop sproeiertank', merge([G.cyl('y', 0.026, 0.026, 0.018, 18), xf(G.box(0.036, 0.008, 0.008), [0, 0.012, 0])]), MAT.sysWashCap, { d: 'Gele kunststof dop op de vulhals met een greep om hem los te trekken (kleur naar foto).', p: [neck[0], NT + 0.0093, neck[1]], ex: [0, 0.12, 0] }),
     P('Sproeierpomp', merge([G.cyl('y', 0.015, 0.015, 0.07, 16), xf(G.cyl('z', 0.006, 0.006, 0.008, 10), [0, -0.025, -0.01275]), xf(G.cyl('y', 0.004, 0.004, 0.016, 8), [0, 0.043, 0])]), MAT.plastic, { d: 'Elektrische pomp die onderin tegen de tank zit en de vloeistof door de slang naar de sproeiers op de kap perst.', p: pu, ex: [0, -0.02, 0.1] }),
-    P('Stekker sproeierpomp', G.rbox(0.014, 0.02, 0.016, 0.004), MAT.plasticGrey, { d: 'Stekker met de voeding van de pomp (bedrading schematisch).', p: [pu[0] + 0.0225, pu[1] - 0.005, pu[2]], ex: [0.06, 0, 0.06] }),
-    P('Tankbeugel sproeiertank', G.box(0.011, 0.03, 0.08), MAT.darkSteel, { d: 'Stalen beugel waarmee de tank aan de linker langsligger vastzit (schematisch).', p: [0.5785, 0.44, WZ], ex: [-0.06, 0, 0] }),
-    P('Sproeierslang motorruimte', tube([[pu[0], pu[1] + 0.0515, pu[2]], [pu[0], 0.50, pu[2]], [0.655, 0.565, pu[2] - 0.003], [0.655, 0.582, 2.025], [0.655, 0.582, 2.0], [0.655, 0.58, 1.93], [0.655, 0.58, 1.84], [0.652, 0.59, 1.78], [0.648, 0.60, 1.74], [0.645, 0.60, 1.70], [0.642, 0.648, 1.66], [0.638, 0.683, 1.62], [0.634, 0.71, 1.58], [0.628, 0.731, 1.54], [0.618, 0.752, 1.495], [wEnd[0], wEnd[1] - 0.04, wEnd[2]], [wEnd[0], wEnd[1] - 0.0165, wEnd[2]]], 0.0035, 64, 6), MAT.rubber, { d: 'Dunne rubber slang van de pomp over de tank en de wielkast naar de koppeling vóór de veerpoottoren, waar de slang naar de sproeiers op de kap aansluit.', ex: [0, 0.06, 0] }),
+    P('Stekker sproeierpomp', G.rbox(0.014, 0.02, 0.016, 0.004), MAT.plasticGrey, { d: 'Stekker met de voeding van de pomp (bedrading schematisch).', p: [pu[0] - 0.0225, pu[1] - 0.005, pu[2]], ex: [-0.06, 0, 0.06] }),
+    P('Tankbeugel sproeiertank', G.box(0.011, 0.03, 0.08), MAT.darkSteel, { d: 'Stalen beugel waarmee de tank aan de rechter langsligger vastzit (schematisch).', p: [-0.5785, 0.44, WZ], ex: [0.06, 0, 0] }),
+    P('Sproeierslang motorruimte', tube([[pu[0], pu[1] + 0.0515, pu[2]], [pu[0], 0.50, pu[2]], [-0.655, 0.565, pu[2] - 0.003], [-0.655, 0.582, 2.025], [-0.655, 0.582, 2.0], [-0.655, 0.58, 1.93], [-0.655, 0.58, 1.84], [-0.652, 0.59, 1.78], [-0.648, 0.60, 1.74], [-0.645, 0.60, 1.70], [-0.642, 0.648, 1.66], [-0.638, 0.683, 1.62], [-0.634, 0.71, 1.58], [-0.628, 0.731, 1.54], [-0.618, 0.752, 1.495], [wEnd[0], wEnd[1] - 0.04, wEnd[2]], [wEnd[0], wEnd[1] - 0.0165, wEnd[2]]], 0.0035, 64, 6), MAT.rubber, { d: 'Dunne rubber slang van de pomp over de tank en de wielkast, buiten langs het stuuroliereservoir, naar de koppeling vóór de rechter veerpoottoren, waar de slang naar de sproeiers op de kap aansluit.', ex: [0, 0.06, 0] }),
     P('Slangkoppeling sproeierslang', G.cyl('y', 0.006, 0.006, 0.02, 10), MAT.plastic, { d: 'Kunststof verbindingsstuk tussen de slang in de motorruimte en de sproeierslang van de motorkap.', p: [wEnd[0], wEnd[1] - 0.005, wEnd[2]], ex: [0, 0.08, 0] }),
   ]);
   return A('Elektrisch systeem', { d: 'Accu met zekeringkast, motorcomputer, cabine-unit, claxons, voedings- en massakabels, de kabelbomen en de ruitensproeierinstallatie.', ex: [-1.5, 0.7, 1.4] }, [accu, upc, ecu, uch, ...horns, plusCable, massa, harness, washer]);

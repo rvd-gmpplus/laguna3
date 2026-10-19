@@ -124,12 +124,87 @@ function buildFlexplate() {
     ...[0, 1, 2, 3, 4, 5].map(k => P(`Flexplaatbout ${k + 1}`, hexBolt(0.02, 0.009, '-x'), MAT.darkSteel, { d: 'Bout tussen flexplaat en krukasflens; vervangen bij demontage.', p: [0.2305, 0.03 * Math.cos(k * PI / 3 + PI / 6), 0.03 * Math.sin(k * PI / 3 + PI / 6)], ex: [0.09, 0, 0] })),
   ]);
 }
+// Afdekkap (golf 5i, naar de foto van de gebruiker van 19 oktober 2026): zilvergrijze kunststof kap over het hele blok, ook over het
+// inlaatspruitstuk. Hoog niveau achter met vier taps toelopende ribben, een trede naar een lager voorvlak dat naar voren afloopt,
+// links (distributiezijde) een hoog deel tot voor met drie groeven, een kom met gat rond de olievulhals en een kom rond de peilstok. De kap
+// eindigt links 8 mm voor de motorsteun distributiezijde en blijft daar boven de dynamo.
+std('engCoverGrey', 0x7b8087, 0.4, 0.5);
+const ENG_CV = { x0: -0.218, x1: 0.27, z0: -0.15, z1: 0.29, rc: 0.05, R: 0.02, L1: 0.476, zc: 0.08 };
+const ENG_CV_OIL = ENG_OIL, ENG_CV_DIP = [0.205, 0.1454];
+const engSmooth = (a, b, v) => { const t = clamp((v - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+function engCoverTop(x, z) {
+  const C = ENG_CV, hoog = engSmooth(-0.15, -0.11, x);                                        // links (distributiezijde) blijft het hoge niveau tot voor
+  let y = C.L1 - hoog * (0.016 * engSmooth(C.zc - 0.006, C.zc + 0.006, z) + Math.max(0, z - C.zc) * 0.2 + 0.03 * engSmooth(0.2, 0.29, z));   // trede, helling en ronde neus
+  y -= (1 - hoog) * 0.03 * engSmooth(0.1, 0.29, z);                                         // links zakt de voorkant 3 cm (ruimte onder de motorkap, 1,9 cm boven de dynamo)
+  for (const g of [-0.2, -0.186, -0.172]) y -= 0.004 * Math.exp(-(((x - g) / 0.005) ** 2)) * engSmooth(0.05, 0.09, z) * engSmooth(C.z1, C.z1 - 0.05, z);   // drie groeven links voor
+  for (const xr of [-0.135, -0.045, 0.045, 0.135]) {                                       // vier ribben vanaf de achterrand
+    const u = (z - C.z0) / 0.1, w = lerp(0.03, 0.013, clamp(u, 0, 1));
+    y += 0.008 * engSmooth(w + 0.006, w - 0.002, Math.abs(x - xr)) * engSmooth(1.12, 0.96, u);
+  }
+  const dOil = Math.hypot(x - ENG_CV_OIL[0], z - ENG_CV_OIL[1]);
+  y -= 0.018 * (1 - engSmooth(0.04, 0.066, dOil));                                         // kom rond de olievuldop
+  const dDip = Math.hypot((x - ENG_CV_DIP[0]) / 0.75, z - ENG_CV_DIP[1]);
+  y -= 0.022 * (1 - engSmooth(0.03, 0.062, dDip));                                         // kom rond de peilstok
+  return y;
+}
+// hoogteveld over een rechthoek met afgeronde hoeken (bovenaanzicht), met afgeronde bovenrand (straal R), een rok omlaag tot bot(x, z)
+// en ronde gaten; punten buiten de omtrek of in een gat schuiven naar de rand
+function engCoverShell(C, top, bot, holes, nx, nz) {
+  const cx = (C.x0 + C.x1) / 2, cz = (C.z0 + C.z1) / 2, hw = (C.x1 - C.x0) / 2, hd = (C.z1 - C.z0) / 2;
+  const inside = (x, z) => { const qx = Math.abs(x - cx) - hw + C.rc, qz = Math.abs(z - cz) - hd + C.rc; return C.rc - Math.hypot(Math.max(qx, 0), Math.max(qz, 0)) - Math.min(Math.max(qx, qz), 0); };
+  const proj = (x, z) => {
+    const sx = Math.sign(x - cx) || 1, sz = Math.sign(z - cz) || 1, qx = Math.abs(x - cx) - hw + C.rc, qz = Math.abs(z - cz) - hd + C.rc;
+    if (qx > 0 && qz > 0) { const l = Math.hypot(qx, qz); if (l > C.rc) { x = cx + sx * (hw - C.rc + qx / l * C.rc); z = cz + sz * (hd - C.rc + qz / l * C.rc); } }
+    else { x = clamp(x, C.x0, C.x1); z = clamp(z, C.z0, C.z1); }
+    for (const [hx, hz, r] of holes) { const d = Math.hypot(x - hx, z - hz); if (d < r) { const k = d > 1e-9 ? r / d : 1; x = hx + (d > 1e-9 ? (x - hx) * k : r); z = hz + (d > 1e-9 ? (z - hz) * k : 0); } }
+    return [x, z];
+  };
+  const pos = [], idx = [], ring = [];
+  for (let j = 0; j <= nz; j++) for (let i = 0; i <= nx; i++) {
+    const [x, z] = proj(lerp(C.x0, C.x1, i / nx), lerp(C.z0, C.z1, j / nz)), e = Math.max(0, inside(x, z)), t = top(x, z);
+    pos.push(x, e < C.R ? t - C.R + Math.sqrt(Math.max(0, C.R * C.R - (C.R - e) ** 2)) : t, z);
+  }
+  const at = (i, j) => j * (nx + 1) + i, inHole = (a, b, c) => { const x = (pos[a * 3] + pos[b * 3] + pos[c * 3]) / 3, z = (pos[a * 3 + 2] + pos[b * 3 + 2] + pos[c * 3 + 2]) / 3; return holes.some(([hx, hz, r]) => Math.hypot(x - hx, z - hz) < r * 0.985); };
+  for (let j = 0; j < nz; j++) for (let i = 0; i < nx; i++) {
+    const a = at(i, j), b = at(i + 1, j), c = at(i + 1, j + 1), d = at(i, j + 1);
+    if (!inHole(a, b, c)) idx.push(a, b, c);
+    if (!inHole(a, c, d)) idx.push(a, c, d);
+  }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals();
+  for (let i = 0; i < nx; i++) ring.push(at(i, 0)); for (let j = 0; j < nz; j++) ring.push(at(nx, j));
+  for (let i = nx; i > 0; i--) ring.push(at(i, nz)); for (let j = nz; j > 0; j--) ring.push(at(0, j));
+  const sk = [];
+  ring.forEach((a, k) => {
+    const b = ring[(k + 1) % ring.length], A0 = pos.slice(a * 3, a * 3 + 3), B0 = pos.slice(b * 3, b * 3 + 3);
+    const A1 = [A0[0], Math.min(bot(A0[0], A0[2]), A0[1] - 0.008), A0[2]], B1 = [B0[0], Math.min(bot(B0[0], B0[2]), B0[1] - 0.008), B0[2]];
+    sk.push(...A0, ...B0, ...B1, ...A0, ...B1, ...A1);
+  });
+  const s = new THREE.BufferGeometry(); s.setAttribute('position', new THREE.Float32BufferAttribute(sk, 3)); s.computeVertexNormals();
+  return merge([g, s]);
+}
+// "RENAULT 2.0T" op het voorvlak: canvastextuur op een vlak dat de helling van het voorvlak volgt
+function engLogoTex() {
+  const c = document.createElement('canvas'); c.width = 512; c.height = 96;
+  const k = c.getContext('2d'); k.textBaseline = 'middle';
+  let x = 6;
+  k.font = 'bold 60px Arial, Helvetica, sans-serif'; k.fillStyle = '#4c4f54';
+  for (const ch of 'RENAULT') { k.fillText(ch, x, 50); x += k.measureText(ch).width + 7; }
+  x += 22; k.font = '54px Arial, Helvetica, sans-serif'; k.fillStyle = '#6a6e74'; k.fillText('2.0', x, 50); x += k.measureText('2.0').width + 2;
+  k.fillStyle = '#e8c21a'; k.fillText('T', x, 50);
+  const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.anisotropy = 4;
+  return t;
+}
+std('engLogo', 0xffffff, 0, 0.6, { map: engLogoTex(), alphaTest: 0.4, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
 function buildEngineCover() {
-  const top = 0.473, cap = cache('engTopCover', () => merge([xf(G.rbox(0.4, 0.016, 0.22, 0.008), [0, -0.008, 0]), ...[-0.12, -0.04, 0.04, 0.12].map(x => xf(G.box(0.05, 0.003, 0.16), [x, 0.0005, 0]))]));
+  const C = ENG_CV;
+  const bot = (x, z) => 0.452 - 0.277 * engSmooth(0.1, 0.25, z) * engSmooth(0.27, 0.21, x) * engSmooth(-0.13, -0.09, x);   // voor diep omlaag over de inlaatkanalen; links hoog boven de dynamo
+  const cap = cache('engTopCover5i', () => engCoverShell(C, engCoverTop, bot, [[...ENG_CV_OIL, 0.037], [...ENG_CV_DIP, 0.024]], 84, 58));
+  const lx = 0.05, lz = 0.236, slope = Math.atan(0.2);
   const grom = [[0.188, 0.06], [-0.14, 0.075], [-0.05, -0.085]];
-  return A('Motorafdekkap', { d: 'Kunststof afdekkap bovenop de motor met akoestische schuimlaag, op rubber nokken.', ex: [0, 1.05, -0.12] }, [
-    P('Afdekkap', cap, MAT.plastic, { d: 'Kunststof afdekkap (vorm geschat).', p: [0, top - 0.0005, 0], ex: [0, 0, 0] }),
-    P('Akoestische schuimlaag', G.rbox(0.38, 0.006, 0.2, 0.003), MAT.engFoam, { d: 'Schuimlaag aan de onderkant die motorgeluid dempt.', p: [0, top - 0.019, 0], ex: [0, -0.05, 0] }),
+  return A('Motorafdekkap', { d: 'Zilvergrijze kunststof afdekkap over de hele bovenkant van de motor en het inlaatspruitstuk, met de tekst RENAULT 2.0T, een akoestische schuimlaag en drie rubber nokken. De olievulhals steekt door een kom in de kap; de gele greep van de peilstok zit in een tweede kom. Vorm naar een foto van een Laguna III 2.0T; maten geschat. Bij uitklappen komt de kap als één geheel recht omhoog los, zodat vulhals en peilstok vrij door de gaten gaan.', ex: [0, 1.05, 0] }, [
+    P('Afdekkap', cap, MAT.engCoverGrey, { d: 'Kunststof afdekkap: hoog achterdeel met vier ribben, een trede naar het aflopende voorvlak, een hoog linkerdeel met drie groeven en kommen voor de olievuldop en de peilstok (vorm naar foto, maten geschat).', ex: [0, 0, 0] }),
+    P('Opschrift afdekkap', cache('engLogoPlane', () => xf(new THREE.PlaneGeometry(0.24, 0.045), [0, 0, 0], [-HALF + slope, 0, 0])), MAT.engLogo, { d: 'Opschrift RENAULT 2.0T op het voorvlak van de afdekkap; blijft bij uitklappen op de kap.', p: [lx, engCoverTop(lx, lz) + 0.0012, lz], ex: [0, 0, 0] }),
+    P('Akoestische schuimlaag', G.rbox(0.38, 0.006, 0.14, 0.003), MAT.engFoam, { d: 'Schuimlaag aan de onderkant die motorgeluid dempt.', p: [0.07, 0.4535, -0.078], ex: [0, -0.05, 0] }),
     ...grom.map(([x, z], k) => P(`Rubber nok ${k + 1}`, G.cyl('y', 0.0065, 0.0065, 0.024, 10), MAT.rubber, { d: 'Rubber nok waarop de afdekkap klemt.', p: [x, ENG_COVER_TOP + 0.012, z], ex: [0, -0.1, 0] })),
   ]);
 }
