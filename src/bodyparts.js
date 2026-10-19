@@ -88,7 +88,7 @@ const bodRDloZ = z => z > -0.665 ? 0.305 : bodRDlo(z);                     // on
 // Golf 5f: de voorste afdekking is versmald (voorkant op de gordel z -0,121 in plaats van -0,073); met 0,15 m was de stijl veel breder dan
 // op de auto. De achterste afdekking blijft gelijk: de ruit van het achterportier zakt schuin langs die achterkant (helling bodBRK) en schuift
 // met een smallere afdekking door de voorste sluitrand en het scharnierblad van het portier.
-const bodBGK = Math.tan(12 * PI / 180), bodBF0 = -0.121, bodBFK = 0.091 / 0.43, bodBRK = 0.066 / 0.43, bodBGW = 0.0045;
+const bodBGK = Math.tan(12 * PI / 180), bodBF0 = -0.121, bodBFK = 0.091 / 0.43, bodBRK = 0.066 / 0.43, bodBGW = 0.0045, bodBRW = 0.014;
 const bodBg = y => -0.148 - (y - 0.946) * bodBGK;                          // hartlijn van de naad tussen de afdekkingen
 const bodBf = y => bodBF0 - (y - 0.946) * bodBFK;                          // voorkant van de voorste afdekking (achterrand ruit voorportier)
 const bodBr = y => -0.223 - (y - 0.946) * bodBRK;                          // achterkant van de achterste afdekking (voorrand ruit achterportier)
@@ -139,14 +139,6 @@ function bodQdBand(s, q0, q1, d0, d1, out, crown = 0, nq = 12, nt = 1) {
   return patch((q, t) => {
     const d = d0 + (d1 - d0) * t, o = out + crown * Math.sin(PI * t); let z = bodQd(1.1) + d;
     for (let i = 0; i < 4; i++) z = bodQd(bodGhHalf(z, q)[1]) + d;
-    const [x, y] = bodGhHalf(z, q); return [s * (x + o), y + (q > bodQS ? o * 0.6 : 0), z];
-  }, q0, q1, nq, () => [0, 1], nt);
-}
-// zelfde band langs een willekeurige hellende lijn z = zl(y) (de randen van de B-stijl)
-function bodLineBand(s, zl, q0, q1, d0, d1, out, crown = 0, nq = 12, nt = 1) {
-  return patch((q, t) => {
-    const d = d0 + (d1 - d0) * t, o = out + crown * Math.sin(PI * t); let z = zl(1.1) + d;
-    for (let i = 0; i < 4; i++) z = zl(bodGhHalf(z, q)[1]) + d;
     const [x, y] = bodGhHalf(z, q); return [s * (x + o), y + (q > bodQS ? o * 0.6 : 0), z];
   }, q0, q1, nq, () => [0, 1], nt);
 }
@@ -439,12 +431,9 @@ function buildDoor(s, isFront) {
     P('Raamrubber boven', topBand, MAT.bodPillar, { d: 'Zwart rubber en kader tussen de ruit en de dakrail, waarop de chroomlijst ligt.', ex: [s * 0.03, 0.08, 0] }),
     P('Rubberlijn raamomlijsting', ringRub, MAT.bodPillar, { d: 'Smalle zwarte rubberlijn tussen de chromen raamomlijsting en de lak van de dakrail.', ex: [s * 0.04, 0.1, 0] }),
     !isFront && P('Chroomlijst raamstijl', merge([bodQdBand(s, 0.03, bodQV - bodTW + 0.001, -0.0245, -0.0105, 0.0025, 0.0015, 14, 4), bodQdBand(s, 0.03, bodQV - bodTW + 0.001, 0.0105, 0.0245, 0.0025, 0.0015, 14, 4)]), MAT.bodChrome, { d: 'Twee smalle chroomlijsten langs de randen van het schuine stijltje, zodat de chromen omlijsting rond de portierruit en rond de kwartsruit doorloopt.', ex: [s * 0.05, 0.1, -0.04] }),
-    // eindstuk van de chroomomlijsting in de bovenhoek van de ruit aan de B-stijl: loopt van het hart van de bovenband (eronder weg) langs de rand
-    // van de stijl omlaag over het zwarte raamrubber tot net onder de bovenrand van de ruit (ca. 4 cm, lengte geschat); 0,0034 boven de kas, net boven
-    // het raamrubber (0,003), zodat het als hoek van de lijst aansluit.
-    // De B-stijl zelf blijft zwart zonder chroomlijst: met een chroomlijst over de hele hoogte aan beide kanten (golf 5b-3 E3) las de stijl als
-    // dubbele witte lijn in plaats van als zwart vlak (S7 kenmerk 4, ronde 2); de omlijsting loopt om de hele raampartij (bovenrand, gordel, spiegeldriehoek, kwartsruit)
-    P('Chroomlijst B-stijl', bodLineBand(s, isFront ? bodBf : bodBr, bodQG - 0.012, bodQV, -0.005, 0.005, 0.0034, 0.0015, 8, 4), MAT.bodChrome, { d: `Kort chromen eindstuk van de raamomlijsting in de bovenhoek ${isFront ? 'aan de achterrand van de voorste zijruit' : 'aan de voorrand van de achterste zijruit'}, dat een paar centimeter langs de zwarte B-stijl omlaag buigt (lengte geschat).`, ex: [s * 0.05, 0.1, isFront ? 0.04 : -0.04] }),
+    // De B-stijl zelf blijft zwart zonder chroom: met een chroomlijst over de hele hoogte aan beide kanten (golf 5b-3 E3) las de stijl als
+    // dubbele witte lijn, en ook de korte chromen eindstukken in de bovenhoeken (golf 5f ronde 2) lazen als twee lichte strepen naast een dunne
+    // zwarte stijl (S7 kenmerk 4). De chroomlijst loopt alleen langs de bovenrand van de ruiten, over de afdekkingen tot de naad ertussen.
     P('Gordelsierlijst', beltGeo, MAT.bodChrome, { d: 'Verchroomde sierlijst op de gordellijn, met het buitenste raamrubber.', ex: [s * 0.08, 0.05, 0] }),
     P('Gordelrubber buiten', beltRub, MAT.bodPillar, { d: 'Buitenste raamschachtrubber: een smalle zwarte lip tussen de gordelsierlijst en de ruit en een schaduwlijn onder de lijst.', ex: [s * 0.07, 0.03, 0] }),
     P('Gordelrubber binnen', tube(beltPts.map(p => [p[0] - s * 0.03, p[1] - 0.004, p[2]]), 0.006, 24, 5), MAT.rubber, { d: 'Binnenste raamschachtrubber dat de ruit afstrijkt.', ex: [-s * 0.06, 0.04, 0] }),
@@ -483,9 +472,12 @@ function buildDoor(s, isFront) {
     P('Deurvanger', G.rbox(0.012, 0.03, 0.2, 0.004), MAT.darkSteel, { d: 'Vanger die het portier in twee standen openhoudt.', p: [s * (surfX(z1 - 0.1, 0.62) - 0.022), 0.62, z1 - 0.1], ex: [-s * 0.05, 0, 0.06] }),
     A('Scharnieren', { d: 'Twee portierscharnieren aan de voorrand met elk twee bouten.', ex: [-s * 0.04, 0, 0.1] }, [doorHinge('boven', hPins[0]), doorHinge('onder', hPins[1])]),
   ];
-  // B-stijlafdekking: zwart raamkader van dit portier aan de B-stijlzijde, de naad ertussen in lijn met de sluitnaad onder de gordel
-  kids.push(P('Afdekking B-stijl', isFront ? bodBand(s, bodBF0, bodBFK, -0.148 + bodBGW, bodBGK, 0.002) : bodBand(s, -0.148 - bodBGW, bodBGK, -0.223, bodBRK, 0.002), MAT.bodPillarGloss,
-    { d: isFront ? 'Hoogglans zwarte afdekking op het raamkader van het voorportier, de voorste helft van de zwarte B-stijl, licht naar achteren hellend.' : 'Hoogglans zwarte afdekking op het raamkader van het achterportier, de achterste helft van de zwarte B-stijl.', ex: [s * 0.06, 0.04, 0] }));
+  // B-stijlafdekking: zwart raamkader van dit portier aan de B-stijlzijde, de naad ertussen in lijn met de sluitnaad onder de gordel.
+  // Golf 5f ronde 3 (S7 kenmerk 4): elke afdekking loopt bodBRW verder over de rand van de ruit (het runkanaal van het raamkader), zodat het
+  // zwarte vlak op de gordel ca. 12,8 cm breed is (bovenaan ca. 11 cm) en de lichte bekleding en de stoelen binnen niet direct langs de stijl
+  // als lichte streep lezen. De ruitranden zelf (bodBf, bodBr) blijven waar ze waren; de ruit loopt nu 4 mm plus bodBRW onder de afdekking.
+  kids.push(P('Afdekking B-stijl', isFront ? bodBand(s, bodBF0 + bodBRW, bodBFK, -0.148 + bodBGW, bodBGK, 0.002) : bodBand(s, -0.148 - bodBGW, bodBGK, -0.223 - bodBRW, bodBRK, 0.002), MAT.bodPillarGloss,
+    { d: isFront ? 'Hoogglans zwarte afdekking op het raamkader van het voorportier, de voorste helft van de zwarte B-stijl, licht naar achteren hellend; dekt ook het runkanaal langs de achterrand van de ruit af.' : 'Hoogglans zwarte afdekking op het raamkader van het achterportier, de achterste helft van de zwarte B-stijl; dekt ook het runkanaal langs de voorrand van de ruit af.', ex: [s * 0.06, 0.04, 0] }));
   if (isFront) kids.push(P('Naadrubber B-stijl', bodBand(s, -0.148 + bodBGW + 0.001, bodBGK, -0.148 - bodBGW - 0.001, bodBGK, 0.0008), MAT.bodPillar, { d: 'Mat zwart rubber in de naad tussen de twee B-stijlafdekkingen, in het verlengde van de sluitnaad onder de gordel.', ex: [s * 0.03, 0.02, 0] }));
   if (isFront) {
     kids.push(P('Spiegeldriehoek', bodGhSide(s, bodSail, 0.93, 6, z => [0.004, Math.min(bodQS - 0.02, bodQy(z, 0.93 + (0.93 - z) * 0.55))], 4, [], 0.001), MAT.bodPillar, { d: 'Zwarte driehoekige afdekplaat tussen zijruit en A-stijl waarop de spiegel staat.', ex: [s * 0.05, 0.05, 0.03] }));
