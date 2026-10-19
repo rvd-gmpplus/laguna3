@@ -799,7 +799,7 @@ const bodHumpT = z => z <= bodHumpZ[0] || z >= bodHumpZ[3] ? 0 : z < bodHumpZ[1]
 const bodHumpW = z => z <= bodHumpZ[0] - 0.1 || z >= bodHumpZ[3] + 0.1 ? 0 : z < bodHumpZ[0] ? sstep((z - bodHumpZ[0] + 0.1) / 0.1) : z <= bodHumpZ[3] ? 1 : sstep((bodHumpZ[3] + 0.1 - z) / 0.1);
 const bodHumpBreaks = (() => { const b = []; for (let i = 0; i <= 8; i++) b.push(bodHumpZ[0] + (bodHumpZ[1] - bodHumpZ[0]) * i / 8, bodHumpZ[2] + (bodHumpZ[3] - bodHumpZ[2]) * i / 8); for (let i = 0; i < 4; i++) b.push(bodHumpZ[0] - 0.1 + 0.025 * i, bodHumpZ[3] + 0.025 * (i + 1)); return b; })();
 // Voorste langsligger (44 mm breed, in z/y gevormd): achter het voorwiel op y 0,385 tot 0,485 (boven de aandrijfassen, onder het veerschotel van de
-// veerpoot), voor het wiel op y 0,30 tot 0,40 (de accu staat erop, de crashbox sluit erop aan); tussen z 1,72 en 1,80 loopt hij schuin
+// veerpoot), voor het wiel op y 0,30 tot 0,40 (de crashbox sluit erop aan; de accu staat sinds golf 5g links achter boven de automaat); tussen z 1,72 en 1,80 loopt hij schuin
 const bodFrontRail = (() => { const g = extrude(shapeOf([[1.03, 0.385], [1.72, 0.385], [1.80, 0.30], [2.03, 0.30], [2.03, 0.40], [1.80, 0.40], [1.72, 0.485], [1.03, 0.485]]), 0.044); g.rotateY(-HALF); return g; })();
 function buildBody() {
   const L = 1, R = -1, both = f => [L, R].map(f);
@@ -823,7 +823,7 @@ function buildBody() {
   ]);
   // voorkop
   const frontGrp = A('Voorkop', { d: 'Dragende voorbouw: langsliggers met kreukelzones, veerpoottorens, schutbord, torpedobak, frontmodule en bumperbalk.', ex: [0, 0.05, 0.42] }, [
-    ...both(s => P(`Langsligger voor ${sn(s)}`, bodFrontRail, MAT.paintIn, { d: 'Kokerprofiel in de motorruimte dat botsenergie opvangt. Plaats en maten schematisch: het profiel is 44 mm breed en 100 mm hoog. Achter het voorwiel ligt het boven de aandrijfassen (y 0,385 tot 0,485), naast de zijdeksels van de versnellingsbak en binnen de veerpoot en de koppelstang van de stabilisator; voor het wiel zakt het naar y 0,30 tot 0,40, waar het de accu draagt en aansluit op de crashbox.', p: [s * 0.55, 0, 0], ex: [s * 0.08, 0, 0] })),
+    ...both(s => P(`Langsligger voor ${sn(s)}`, bodFrontRail, MAT.paintIn, { d: 'Kokerprofiel in de motorruimte dat botsenergie opvangt. Plaats en maten schematisch: het profiel is 44 mm breed en 100 mm hoog. Achter het voorwiel ligt het boven de aandrijfassen (y 0,385 tot 0,485), naast de zijdeksels van de versnellingsbak en binnen de veerpoot en de koppelstang van de stabilisator; voor het wiel zakt het naar y 0,30 tot 0,40, waar het aansluit op de crashbox.', p: [s * 0.55, 0, 0], ex: [s * 0.08, 0, 0] })),
     ...both(s => P(`Crashbox ${sn(s)}`, G.rbox(0.09, 0.1, 0.13, 0.01), MAT.steel, { d: 'Kreukelelement tussen langsligger en bumperbalk; wordt na een lichte aanrijding vervangen.', p: [s * 0.545, 0.37, 2.11], ex: [s * 0.04, 0, 0.08] })),
     ...both(s => P(`Veerpoottoren ${sn(s)}`, merge([G.cyl('y', 0.095, 0.13, 0.26, 24, true), xf(G.cyl('y', 0.095, 0.095, 0.006, 24), [0, 0.13, 0])]), MAT.paintIn, { d: 'Bevestigingspunt van de veerpoot in de carrosserie.', p: [s * 0.6, 0.71, 1.33], ex: [s * 0.1, 0.06, 0] })),
     // achter de band sluit een wand onder de kuip de wielkast af naar het voorste eind van de dorpel en de A-stijlvoet
