@@ -45,7 +45,7 @@ std('bodGrille', 0x0f1013, 0.25, 0.3, { envMapIntensity: 0.6 });             // 
 // middengrijs gelakt staal van de gasveercilinders: lichter dan het zwart van de zijrand en de bekleding, zodat de veer in het achterklepbeeld leest
 std('bodStrut', 0x62676e, 0.55, 0.35, { envMapIntensity: 0.9 });
 const bodSY = (z, y) => sAtY(z, y);
-const bodRSeam = z => bodYLEDGE - 0.105 * sstep((z + 2.02) / 0.24);   // naad achterscherm/achterbumper op de flank (zie rfLo)
+const bodRSeam = z => bodYLEDGE - 0.215 * sstep((z + 2.08) / 0.30);   // naad achterscherm/achterbumper op de flank (zie rfLo)
 const sn = s => sideName(s);
 // naden tussen linker- en rechterhelft gladtrekken (gedeelde normalen)
 // ook over naden tussen losse vlakken: weldAll in core.js (zelfde tolerantie 1e-4)
@@ -920,8 +920,9 @@ function buildBody() {
   ]);
   // achterbouw
   // naad achterscherm/achterbumper op de flank (golf 5j, S7 kenmerk 8): op de richelhoogte bij de hoek, naar voren in een boog omlaag tot
-  // y 0,53 bij de achterkant van de wielboog (bumperbovenrand 0,52 tot 0,62 in het exterieuronderzoek), zodat de naad de heup volgt en
-  // niet als lange horizontale lijn achter het achterwiel leest
+  // y 0,42 bij de achterkant van de wielboog, zodat de naad de heup volgt en niet als lange horizontale lijn achter het achterwiel leest.
+  // Ronde 2: was 0,53; het verticale stuk naad langs de wielboog (van de boog tot de naad) las als snede die de heup in panelen hakt en is
+  // nu nog 9 cm, grotendeels achter de boogflens
   const rfLo = z => { if (z < AXR - ARCH) return bodSY(z, bodRSeam(z) + 0.003); if (z <= AXR + ARCH) return Math.max(archS(z), bodSY(z, 0.25)); return bodSY(z, 0.304); };
   const rfHi = z => { if (z <= bodTLZ) return tlLow(z) - 0.002; if (z <= -1.27) return S4 - 0.0008; return bodSY(z, bodRDloZ(z) - 0.004); };
   // de stukken naast de tankopening in drie banden (onder, naast en boven de opening) met dezelfde rijen als de stroken onder en boven de
@@ -959,7 +960,9 @@ function buildBody() {
     ...both(s => P(`Hoedenplanksteun ${sn(s)}`, G.rbox(0.05, 0.16, 0.5, 0.01), MAT.paintIn, { d: 'Steun van de bagageruimteafdekking tegen de binnenzijwand.', p: [s * 0.66, 0.92, -1.85], ex: [s * 0.06, 0.04, 0] })),
     P('Achterpaneel', G.rbox(1.2, 0.26, 0.012, 0.004), MAT.paintIn, { d: 'Dwarspaneel onder de achterklepopening met de slotbeugel.', p: [0, 0.5, bodZT + 0.03], ex: [0, 0, -0.06] }),
     P('Achterklepsponning', tube(bodTGPath(0.045), 0.012, 80, 6), MAT.paintIn, { d: 'Gelaste sponning rond de achterklepopening waarop de afdichting zit.', ex: [0, 0.04, -0.04] }),
-    P('Bumperbalk achter', tube([-0.55, -0.42, -0.28, 0, 0.28, 0.42, 0.55].map(x => [x, 0.5, Math.max(bodZT + 0.02, bodRearZ(Math.abs(x), 0.5) + 0.075)]), 0.04, 24, 8), MAT.steel, { d: 'Stalen botsbalk achter de achterbumper.', ex: [0, 0, -0.1] }),
+    // golf 5j ronde 2: 6,8 cm voor de bumperhuid (was 7,5): door de heup ligt de huid op de hoeken 7 mm verder naar voren, en de balk
+    // moet op dezelfde plek blijven, achter de bagageruimtevloer die bij het openen langs de uiteinden draait
+    P('Bumperbalk achter', tube([-0.55, -0.42, -0.28, 0, 0.28, 0.42, 0.55].map(x => [x, 0.5, Math.max(bodZT + 0.02, bodRearZ(Math.abs(x), 0.5) + 0.068)]), 0.04, 24, 8), MAT.steel, { d: 'Stalen botsbalk achter de achterbumper.', ex: [0, 0, -0.1] }),
   ]);
   // binnen de boogopening: de buitenrand volgt de huid op 6 mm; het laatste stuk loopt uit tot 8 mm voorbij de boogrand,
   // achter de huid, zodat er geen open ring tussen scherm en boog is waardoor je de holte achter het scherm in kijkt
@@ -1066,8 +1069,8 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   const grilleWalls = merge([inWall(-inX, inY1, inX, inY1, 30), inWall(-inX, inY0, inX, inY0, 30), inWall(-inX, inY0, -inX, inY1, 4), inWall(inX, inY0, inX, inY1, 4)]);
   const slats = merge([0.331, 0.353, 0.375, 0.397, 0.419].map(slat).concat([-0.24, 0, 0.24].map(x => patch((y, t) => fPt(x + (t - 0.5) * 0.006, y, -0.008 - 0.016 * t), inY0, inY1, 4, () => [0, 1], 1))));
   const plateY = 0.505;
-  // bovenrand van de bovengrille: 6 mm onder de kapvoorrand, die van y 0,661 op de hartlijn naar 0,672 bij |x| 0,30 oploopt
-  const bodGrTop = x => 0.655 + 0.011 * (x / 0.30) ** 2;
+  // bovenrand van de bovengrille: 6 mm onder de kapvoorrand (de boog van de koplampspits naar de neus, zie bodHoodS), op elke x gemeten
+  const bodGrTop = x => { const z = bodHLZ1 + (bodHoodZ1 - bodHLZ1) * Math.sqrt(Math.max(0, 1 - (x / bodHoodX0) ** 2)); return halfPt(z, bodSAtX(z, x))[1] - 0.006; };
   const frontBumper = A('Voorbumper', { d: 'Kunststof bumperschaal van de fase 2 met bovengrille, kentekenvlak, brede onderste inlaat met chromen onderrand en mistlampen met chromen balk.', ex: [0, -0.04, 0.72] }, [
     P('Bumperschaal voor', shellF, MAT.paint, { d: 'Gespoten kunststof bumperschaal in carrosseriekleur.', ex: [0, 0, 0] }),
     // flens onder de naad tussen kapvoorrand en bumper (6 mm onder de huid): door de naad is geen motorruimte meer te zien
@@ -1078,14 +1081,15 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
       P('Grillesleuf', patch((u, t) => { const x = lerp(-0.30, 0.30, t), y1 = bodGrTop(x); return fPt(x, lerp(y1 - 0.04, y1, u), 0.0015); }, 0, 1, 3, () => [0, 1], 20), MAT.blackGloss, { d: 'Hoogglans zwart rooster dat de smalle sleuf tussen de kapvoorrand en de bumper afsluit.', ex: [0, 0, 0] }),
       P('Chroomlijn grille', tube([-0.30, -0.15, 0, 0.15, 0.30].map(x => { const y = bodGrTop(x) - 0.045; return [x, y, frontZ(x, y) + 0.0005]; }), 0.0035, 16, 8), MAT.bodChrome, { d: 'Dunne chroomlijn onder de grillesleuf.', ex: [0, -0.02, 0.04] }),
     ]),
-    // golf 5j (S7): het zwarte vlak is nog maar 1 tot 1,5 cm rondom de plaat (was +/-0,34 tot y 0,572): op de smalle neus liep het brede vlak om de
+    // golf 5j (S7): het zwarte vlak is nog maar 0,6 tot 1,5 cm rondom de plaat (was +/-0,34 tot y 0,572): op de smalle neus liep het brede vlak om de
     // hoek en las het met de plaat als kastje dat naar voren steekt
-    P('Kentekenvlak', fFace(-0.285, 0.285, plateY - 0.065, plateY + 0.07, 0.0012, 20, 4), MAT.blackGloss, { d: 'Zwart vlak boven de onderste inlaat waarop de kentekenplaat zit.', ex: [0, 0.02, 0.08] }),
-    // plaat en houder volgen de bolling van het voorvlak en liggen er vlak op (2 tot 3,5 mm), zonder zichtbaar blok erachter
-    P('Kentekenplaathouder', merge([fFace(-0.268, 0.268, plateY - 0.06, plateY + 0.06, 0.0022, 16, 2), fFace(-0.268, 0.268, plateY - 0.06, plateY + 0.06, 0.0017, 16, 2)]), MAT.plastic, { d: 'Dunne kunststof houder die de plaat in de bolling van het kentekenvlak houdt.', ex: [0, 0, 0.1] }),
+    P('Kentekenvlak', fFace(-0.285, 0.285, plateY - 0.065, plateY + 0.061, 0.0012, 40, 12), MAT.blackGloss, { d: 'Zwart vlak boven de onderste inlaat waarop de kentekenplaat zit.', ex: [0, 0.02, 0.08] }),
+    // plaat en houder volgen de bolling van het voorvlak en liggen er vlak op (2 tot 4 mm), zonder zichtbaar blok erachter; 8 rijen in y
+    // (ronde 2: met 2 tot 4 rijen lag het vlak tussen de rijen binnen de bolle neus en stak de bumperschaal er bovenin door)
+    P('Kentekenplaathouder', merge([fFace(-0.268, 0.268, plateY - 0.06, plateY + 0.06, 0.0022, 16, 8), fFace(-0.268, 0.268, plateY - 0.06, plateY + 0.06, 0.0017, 16, 8)]), MAT.plastic, { d: 'Dunne kunststof houder die de plaat in de bolling van het kentekenvlak houdt.', ex: [0, 0, 0.1] }),
     A('Kentekenplaat voor', { d: 'Gele Nederlandse kentekenplaat (zonder kenteken weergegeven).', ex: [0, 0.03, 0.26] }, [
-      P('Plaat', merge([fFace(-0.215, 0.26, plateY - 0.055, plateY + 0.055, 0.0040, 16, 2), fFace(-0.26, 0.26, plateY - 0.055, plateY + 0.055, 0.0028, 18, 2)]), MAT.plateYellow, { d: 'Retroreflecterende gele plaat van 520 × 110 mm.', ex: [0, 0, 0.03] }),
-      P('EU-strook', fFace(-0.26, -0.215, plateY - 0.055, plateY + 0.055, 0.0042, 2, 2), MAT.plateBlue, { d: 'Blauwe strook met de landcode links op de plaat, zonder tekst weergegeven.', ex: [-0.06, 0, 0.02] }),
+      P('Plaat', merge([fFace(-0.215, 0.26, plateY - 0.055, plateY + 0.055, 0.0040, 16, 8), fFace(-0.26, 0.26, plateY - 0.055, plateY + 0.055, 0.0028, 18, 8)]), MAT.plateYellow, { d: 'Retroreflecterende gele plaat van 520 × 110 mm.', ex: [0, 0, 0.03] }),
+      P('EU-strook', fFace(-0.26, -0.215, plateY - 0.055, plateY + 0.055, 0.0042, 2, 8), MAT.plateBlue, { d: 'Blauwe strook met de landcode links op de plaat, zonder tekst weergegeven.', ex: [-0.06, 0, 0.02] }),
     ]),
     A('Onderste luchtinlaat', { d: 'Brede, lage inlaat voor radiateur en intercooler, met een chromen onderrand.', ex: [0, -0.05, 0.12] }, [
       P('Inlaatrooster', slats, MAT.bodGrille, { d: 'Zwart kunststof rooster met schuine horizontale lamellen, ca. 2 cm verzonken achter de chromen lijst.', ex: [0, 0, 0.04] }),
@@ -1114,7 +1118,9 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
         // kop 1,5 mm onder de huid in plaats van er precies tegen: de bumperschaal met stations naar doorbuiging ligt daar tot 0,5 mm lager
         P('Sproeierkop koplamp', G.cyl('x', 0.008, 0.008, 0.04, 10), MAT.plastic, { d: 'Telescopische sproeierkop.', inner: true, ...bodPose(s, bodAt(z, y, -0.0215), nn), ex: [s * 0.04, 0, 0.03] }),
       ]); })),
-    A('Parkeersensoren voor', { d: 'Vier ultrasone sensoren van de parkeerhulp voor (op de Initiale aannemelijk standaard, in andere markten optie).', ex: [0, 0.03, 0.12] }, [-0.42, -0.15, 0.15, 0.42].map((x, i) => P(`Parkeersensor voor ${i + 1}`, G.cyl('z', 0.011, 0.011, 0.02, 12), MAT.paint, { d: 'Ultrasone parkeersensor voor (op de Initiale aannemelijk standaard, in andere markten optie).', p: fPt(x, 0.452, -0.006), ex: [0, 0.02, 0.06] }))),
+    // golf 5j ronde 2: de middelste twee naast de plaat (|x| 0,33) in plaats van onder de onderrand (|x| 0,15, y 0,452), waar ze als grijze
+    // halve maantjes door plaat en houder staken; de buitenste naar |x| 0,47 boven de chromen wenkbrauw van de mistlampen
+    A('Parkeersensoren voor', { d: 'Vier ultrasone sensoren van de parkeerhulp voor (op de Initiale aannemelijk standaard, in andere markten optie).', ex: [0, 0.03, 0.12] }, [[-0.47, 0.47], [-0.33, 0.49], [0.33, 0.49], [0.47, 0.47]].map(([x, y], i) => P(`Parkeersensor voor ${i + 1}`, G.cyl('z', 0.011, 0.011, 0.02, 12), MAT.paint, { d: 'Ultrasone parkeersensor voor (op de Initiale aannemelijk standaard, in andere markten optie).', p: fPt(x, y, -0.006), ex: [0, 0.02, 0.06] }))),
     ...both(s => P(`Bumpersteun voor ${sn(s)}`, G.rbox(0.05, 0.08, 0.12, 0.01), MAT.plastic, { d: 'Steun die de bumperschaal aan voorscherm en frontmodule vasthoudt.', p: [s * 0.74, 0.5, 1.86], ex: [s * 0.05, 0, 0] })),
   ]);
 
@@ -1195,7 +1201,7 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     P('Reflector rechts', G.rbox(0.1, 0.03, 0.01, 0.006), MAT.lensRed, { d: 'Rode reflector onderin de bumper.', p: [-0.62, 0.34, bodRearZ(0.62, 0.34) - 0.004], ex: [-0.04, 0, -0.08] }),
     A('Parkeersensoren achter', { d: 'Vier ultrasone sensoren van de parkeerhulp achter (standaard op Initiale Paris), onder en naast de kentekenuitsparing.', ex: [0, 0.03, -0.12] }, [[0.5, 0.43], [0.17, 0.345], [-0.17, 0.345], [-0.5, 0.43]].map(([x, y], i) => P(`Parkeersensor achter ${i + 1}`, G.cyl('z', 0.011, 0.011, 0.02, 12), MAT.paint, { d: 'Ultrasone parkeersensor achter (standaard op Initiale Paris).', p: [x, y, bodRearZ(x, y) + 0.006], ex: [0, 0.02, -0.06] }))),
     ...both(s => P(`Uitlaatuitsparing ${sn(s)}`, exWalls(s), MAT.blackGloss, { d: 'Zwarte inham in de onderrand van de bumper (ca. 13 cm breed, 5 tot 7 cm hoog) waarin het verchroomde uitlaateindstuk zit; het eindstuk zelf hoort bij het uitlaatsysteem. Vorm en maat geschat.', ex: [0, -0.04, -0.06] })),
-    ...both(s => P(`Bumpersteun achter ${sn(s)}`, G.rbox(0.05, 0.08, 0.14, 0.01), MAT.plastic, { d: 'Geleider die de bumperschaal aan het achterscherm vasthoudt; door de naad bij de bumperrichel net zichtbaar.', p: [s * 0.76, 0.55, -1.95], ex: [s * 0.05, 0, 0] })),
+    ...both(s => P(`Bumpersteun achter ${sn(s)}`, G.rbox(0.05, 0.08, 0.14, 0.01), MAT.plastic, { d: 'Geleider die de bumperschaal aan het achterscherm vasthoudt, achter de naad op de flank.', p: [s * 0.76, 0.50, -1.95], ex: [s * 0.05, 0, 0] })),
   ]);
 
   /* ================= achterklep ================= */
