@@ -33,7 +33,9 @@ std('bodMirror', 0xb4bec6, 1, 0.04, { envMapIntensity: 1.1 });
 std('bodPillarGloss', 0x020203, 0, 0.9, { envMapIntensity: 0.02 });
 std('bodValance', 0x2b2d31, 0, 0.66);                                     // donkergrijs kunststof van de onderschort achter
 // chroom van de sierlijsten (raamomlijsting, gordel, voorbumper): volledig metallisch, glad en met een donkerder basis dan bodBright, zodat het
-// de omgeving met contrast spiegelt (heldere lichtvlakken naast donkere vloer) in plaats van vlak wit te lezen
+// de omgeving met contrast spiegelt (heldere lichtvlakken naast donkere vloer) in plaats van vlak wit te lezen. Golf 5f (T1): basis lichter
+// (0xd0d6dc in plaats van 0xa9b0b7) en iets ruwer (0,1 in plaats van 0,06), omdat de bovenband van de raamomlijsting donkerder las dan de lak.
+// Dit materiaal geldt ook voor de chroomlijnen van grille en inlaat en de chroomwenkbrauwen voor: die werden mee lichter
 std('bodChrome', 0xd0d6dc, 1, 0.1, { envMapIntensity: 2.0 });
 std('bodGrille', 0x1d1f23, 0.35, 0.24, { envMapIntensity: 1.1 });             // glanzend zwart kunststof van de inlaatlamellen
 // middengrijs gelakt staal van de gasveercilinders: lichter dan het zwart van de zijrand en de bekleding, zodat de veer in het achterklepbeeld leest
@@ -83,9 +85,10 @@ const bodFDF = y => 0.84 + (y - 0.31) / 0.61 * 0.065;                    // voor
 const bodFDlo = z => z < 0.84 ? 0.307 : 0.31 + (z - 0.84) / 0.065 * 0.61;  // onderrand voorportier per z
 const bodRDlo = pchip([[-1.268, 0.877], [-1.20, 0.795], [-1.109, 0.66], [-1.0, 0.525], [-0.916, 0.406], [-0.80, 0.338], [-0.665, 0.305]]);
 const bodRDloZ = z => z > -0.665 ? 0.305 : bodRDlo(z);                     // onderrand achterportier (zwaait om de achterwielboog)
-// B-stijl: twee zwarte afdekkingen naast elkaar (raamkader voorportier voor de naad, raamkader achterportier erachter), samen ca. 0,10 m
-// breed op de gordel en 0,077 m bovenaan, helling ca. 12 graden naar achteren; de sluitnaad (z -0,148 op de gordel) loopt ertussen omhoog.
-// Golf 5f: de voorste afdekking is versmald (voorkant op de gordel z -0,121 in plaats van -0,073); met 0,15 m was de stijl veel breder dan
+// B-stijl: twee zwarte afdekkingen naast elkaar (raamkader voorportier voor de naad, raamkader achterportier erachter), samen ca. 12,8 cm
+// breed op de gordel en ca. 11 cm bovenaan (inclusief het runkanaal, bodBRW per kant, golf 5f ronde 3), helling ca. 12 graden naar achteren;
+// de sluitnaad (z -0,148 op de gordel) loopt ertussen omhoog. De ruitranden (bodBf, bodBr) liggen op de gordel 10,2 cm uit elkaar.
+// Golf 5f: de voorste ruitrand ligt op de gordel op z -0,121 in plaats van -0,073; met 0,15 m was het zwarte vlak breder dan
 // op de auto. De achterste afdekking blijft gelijk: de ruit van het achterportier zakt schuin langs die achterkant (helling bodBRK) en schuift
 // met een smallere afdekking door de voorste sluitrand en het scharnierblad van het portier.
 const bodBGK = Math.tan(12 * PI / 180), bodBF0 = -0.121, bodBFK = 0.091 / 0.43, bodBRK = 0.066 / 0.43, bodBGW = 0.0045, bodBRW = 0.014;
@@ -294,7 +297,7 @@ function bodDoorAxis(s, isFront) {
   const pinAt = y => { if (isFront) { const zf = bodFDF(y); return [s * (surfX(zf, y) - 0.016), y, zf + 0.016]; } return [s * (surfX(z1, y) - 0.0065), y, z1 + 0.0063]; };
   const pins = [pinAt(isFront ? 0.76 : 0.74), pinAt(isFront ? 0.45 : 0.50)];
   const d = [0, 1, 2].map(i => pins[0][i] - pins[1][i]), l = Math.hypot(...d);
-  return { pins, pv: pins[1], ax: d.map(v => v / l), ang: -s * (isFront ? 68 : 62) * PI / 180 };
+  return { pins, pv: pins[1], ax: d.map(v => v / l), ang: -s * (isFront ? 67 : 62) * PI / 180 }; // voorportier 67 graden: RiDC, gradenboog op een Laguna Grandtour Initiale 2011
 }
 function buildDoor(s, isFront) {
   const n = sn(s), pos = isFront ? 'voor' : 'achter', tag = n + pos;
@@ -371,7 +374,7 @@ function buildDoor(s, isFront) {
   // De pennen van beide scharnieren liggen op een lijn en die lijn is de draaias van het portier (open.pivot en open.axis), zodat beide ogen
   // in elke stand om de pen liggen. Lokaal assenstelsel per scharnier: oorsprong op het hart van de pen, y langs de as, x naar buiten, z naar voren.
   // Ligging van de as: de buitenkant van de voorrand blijft bij het openen buiten de huid zolang de as minstens tan(hoek/2) maal zijn diepte
-  // voor de voorrand ligt (68 graden: 0,67 maal). Een diepere pen laat de voorrand onder het voorscherm of door het voorportier zwaaien.
+  // voor de voorrand ligt (67 graden: 0,66 maal). Een diepere pen laat de voorrand onder het voorscherm of door het voorportier zwaaien.
   // Voorportier: pen 16 mm binnen de huid en 16 mm voor de schuine voorrand (bodFDF), 6 graden voorover zoals de voorrand (de zijkant is bol,
   // dus halverwege ligt de rechte as 21 mm diep: 16 mm naar voren houdt de voorrand daar buiten het scherm); het oog blijft onder
   // het voorscherm, dat langs zijn achterrand boven 0,8 m tot 5 mm naar binnen buigt (bovenste scharnier daarom op 0,76 m in plaats van 0,79 m);
@@ -477,7 +480,7 @@ function buildDoor(s, isFront) {
   // zwarte vlak op de gordel ca. 12,8 cm breed is (bovenaan ca. 11 cm) en de lichte bekleding en de stoelen binnen niet direct langs de stijl
   // als lichte streep lezen. De ruitranden zelf (bodBf, bodBr) blijven waar ze waren; de ruit loopt nu 4 mm plus bodBRW onder de afdekking.
   kids.push(P('Afdekking B-stijl', isFront ? bodBand(s, bodBF0 + bodBRW, bodBFK, -0.148 + bodBGW, bodBGK, 0.002) : bodBand(s, -0.148 - bodBGW, bodBGK, -0.223 - bodBRW, bodBRK, 0.002), MAT.bodPillarGloss,
-    { d: isFront ? 'Hoogglans zwarte afdekking op het raamkader van het voorportier, de voorste helft van de zwarte B-stijl, licht naar achteren hellend; dekt ook het runkanaal langs de achterrand van de ruit af.' : 'Hoogglans zwarte afdekking op het raamkader van het achterportier, de achterste helft van de zwarte B-stijl; dekt ook het runkanaal langs de voorrand van de ruit af.', ex: [s * 0.06, 0.04, 0] }));
+    { d: isFront ? 'Hoogglans zwarte afdekking (weergegeven als mat zwart) op het raamkader van het voorportier, de voorste helft van de zwarte B-stijl, licht naar achteren hellend; dekt ook het runkanaal langs de achterrand van de ruit af.' : 'Hoogglans zwarte afdekking (weergegeven als mat zwart) op het raamkader van het achterportier, de achterste helft van de zwarte B-stijl; dekt ook het runkanaal langs de voorrand van de ruit af.', ex: [s * 0.06, 0.04, 0] }));
   if (isFront) kids.push(P('Naadrubber B-stijl', bodBand(s, -0.148 + bodBGW + 0.001, bodBGK, -0.148 - bodBGW - 0.001, bodBGK, 0.0008), MAT.bodPillar, { d: 'Mat zwart rubber in de naad tussen de twee B-stijlafdekkingen, in het verlengde van de sluitnaad onder de gordel.', ex: [s * 0.03, 0.02, 0] }));
   if (isFront) {
     kids.push(P('Spiegeldriehoek', bodGhSide(s, bodSail, 0.93, 6, z => [0.004, Math.min(bodQS - 0.02, bodQy(z, 0.93 + (0.93 - z) * 0.55))], 4, [], 0.001), MAT.bodPillar, { d: 'Zwarte driehoekige afdekplaat tussen zijruit en A-stijl waarop de spiegel staat.', ex: [s * 0.05, 0.05, 0.03] }));
@@ -515,7 +518,7 @@ function buildMirror(s) {
     open: hinge([s * 0.95, 0.94, 0.74], [0, 1, 0], s * 80 * PI / 180, { min: 64 * PI / 180, label: `Buitenspiegel ${n}`, look: { dir: [s * 0.8, 0.3, 0.75], nodes: [`Buitenspiegel ${n}`] } }) }, [
     // voet als smalle plaat tussen portier en de binnenkant van het spiegelhuis (x 0,8085 tot 0,8245, achter de voorkant van de kap): als blok van
     // 9 x 5 x 7 cm voor de kap las hij in vooraanzicht als los zwart blokje onder de spiegel (S7, golf 5f ronde 2)
-    P('Spiegelvoet', G.rbox(0.016, 0.032, 0.1, 0.005), MAT.bodPillar, { d: 'Voet met bevestigingsplaat op het portier aan de binnenkant van het spiegelhuis; blijft staan als de spiegel inklapt.', p: M(0.8165, 0.941, 0.75), stay: true, ex: [-s * 0.05, -0.05, 0] }),
+    P('Spiegelvoet', G.rbox(0.016, 0.032, 0.1, 0.005), MAT.bodPillar, { d: 'Voet met bevestigingsplaat op het portier aan de binnenkant van het spiegelhuis; blijft staan als de spiegel inklapt (plaats geschat).', p: M(0.8165, 0.941, 0.75), stay: true, ex: [-s * 0.05, -0.05, 0] }),
     P('Spiegelkap', cache('bodMirCapT' + k, () => bodLoft(s, [[1, 0], [1, 0.03], [0.95, 0.07], [0.8, 0.11], [0.5, 0.135], [0.12, 0.145]], true)), MAT.paint, { d: 'Kap in carrosseriekleur aan de voorzijde van het spiegelhuis.', p: M(cx, cy, 0.668), ex: [0, 0.02, 0.1] }),
     P('Spiegelhuis', cache('bodMirRimT' + k, () => bodLoft(s, [[0.93, -0.004], [1.01, -0.004], [1.01, 0.012]], false)), MAT.paint, { d: 'Kunststof huis in carrosseriekleur met een rand rond het glas, dat glas, motoren en verwarming draagt.', p: M(cx, cy, 0.664), ex: [0, 0, -0.02] }),
     P('Spiegelglas', cache('bodMirGlT' + k, () => { const g = new THREE.ShapeGeometry(shapeOf(bodMirOutline().map(([u, v]) => [s * u * 0.93, v * 0.93]))); return g; }), MAT.bodMirror, { d: 'Bol spiegelglas in de spiegelkap, waarin de bestuurder het verkeer naast en schuin achter de auto ziet.', p: M(cx, cy, 0.661), ex: [0, 0, -0.12] }),
@@ -646,6 +649,8 @@ function bodTGPath(inw) {
   const seamX = y => 0.462 + 0.012 * sstep((y - 0.80) / 0.15);
   // om dezelfde reden houdt het pad de z van het staartvlak van vóór golf 5f ronde 2 (bolling 0,05 m over de hele hoogte): het nieuwe vlak
   // ligt op deze punten hoogstens 1,1 cm voor of achter het oude, de afdichting blijft 1,9 tot 4 cm binnen de huid
+  // Let op: seamX en tz0 zijn vaste getallen, geen afgeleide van het staartvlak. Verandert het staartvlak (body.js, tailZ), dan moeten ze
+  // mee, anders komt de afdichting buiten de huid of te diep in de sponning
   const tz0 = [-2.3001, -2.2951, -2.2874, -2.2796];
   [0.66, 0.8, 0.95, ydT - 0.05].forEach((y, i) => { const xs = Math.min(seamX(y), ringX(bodZT, y)) - 0.03; side.push([xs, y, tz0[i] + inw]); });
   for (const z of [bodZT + 0.03, -2.2, SP]) { const p = halfPt(z, bodSAtX(z, bodTGdx(z) - 0.02)); side.push([p[0], p[1] - inw, z]); }
@@ -1079,11 +1084,12 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
 
   /* ================= achterbumper ================= */
   const rbBr = bodDense(-2.3, bodZT, 4);
-  // uitlaatuitsparing (golf 5f ronde 2): een echte inham in de onderrand van de bumper, |x| 0,385 tot 0,515, tot y 0,345 en van z -2,15
+  // uitlaatuitsparing (golf 5f ronde 2): een echte inham in de onderrand van de bumper, |x| 0,385 tot 0,515, tot y 0,345 en van z -2,13
   // naar achteren (binnen de kabelboom naar de achterlichten, die in de hoek op x 0,53 tot 0,6 omhoog loopt). Bumperschaal en onderschort worden op de vlakken van dat blok geknipt; plafond, voorwand en zijwanden (zwart, 3 mm
   // onder de onderrand beginnend zodat ze de rand van de onderschort dekken) sluiten de inham. Het eindstuk van het uitlaatsysteem zit er
   // met de achterkant gelijk met het bumpervlak in; eerder was dit een zwart vlakje op de onderkant en hing het eindstuk eronder
-  const exX0 = 0.385, exX1 = 0.515, exY1 = 0.345, exZF = -2.15, exC = [0.45, 0.305, -2.22];
+  // voorwand op z -2,13 (was -2,15): daar raakte de oplopende uitlaatpijp de onderrand van de voorwand op 0,1 mm (advisorronde golf 5f)
+  const exX0 = 0.385, exX1 = 0.515, exY1 = 0.345, exZF = -2.13, exC = [0.45, 0.305, -2.22];
   const exCut = g => bodClipBox(bodClipBox(g, 1, exX0, exX1, exY1, exZF), -1, exX0, exX1, exY1, exZF);
   const exLowY = (z, x) => { if (!bodInside(z, x, exY1)) return exY1; let lo = bodSec(z).yb, hi = exY1; for (let i = 0; i < 24; i++) { const m = (lo + hi) / 2; if (bodInside(z, x, m)) hi = m; else lo = m; } return hi; };
   const exWalls = s => {
@@ -1226,9 +1232,10 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     ...both(s => P(`Klepscharnier ${sn(s)}`, G.rbox(0.03, 0.03, 0.08, 0.006), MAT.darkSteel, { d: 'Scharnier tussen dak en achterklep, het deel aan de carrosseriezijde (geschroefd op de dakrand); blijft staan als de klep opent.', p: [s * 0.42, YR(RW0) - 0.04, RW0 - 0.01], stay: true, ex: [0, 0.04, 0.04] })),
     // scharnierblad onder de bovenrand van de achterruit, evenwijdig aan het glas en 9 mm eronder (hart), achter de schermcassette van het panoramadak: zoals op de auto zit het scharnier
     // onder de dakrand en is het van buiten niet te zien. Lag eerst vlak en half boven het glas en las in de beelden van opzij en schuin achter
-    // als klein zwart vierkantje bij de C-stijl (S7, golf 5f)
-    ...both(s => { const a = panP(RW0 - 0.08, 0.42), b = panP(RW0 - 0.03, 0.42);
-      return P(`Klepscharnierblad ${sn(s)}`, G.rbox(0.026, 0.007, 0.05, 0.003), MAT.bodPillar, { d: 'Plat zwart scharnierblad aan de achterklep onder de bovenrand van de achterruit; draait om de scharnierpen op de dakrand en is van buiten niet te zien.', p: [s * 0.42, (a[1] + b[1]) / 2 - 0.009, RW0 - 0.055], r: [-Math.atan2(b[1] - a[1], b[2] - a[2]), 0, 0], ex: [0, 0.05, -0.02] }); }),
+    // als klein zwart vierkantje bij de C-stijl (S7, golf 5f). Het blad begint achter het scharnierblok (achterkant z RW0 - 0,05) met ca. 0,6 mm
+    // speling: met het hart op RW0 - 0,055 lag het 9,7 mm in het blok (clash.py, advisorronde golf 5f)
+    ...both(s => { const zc = RW0 - 0.075, a = panP(zc - 0.025, 0.42), b = panP(zc + 0.025, 0.42);
+      return P(`Klepscharnierblad ${sn(s)}`, G.rbox(0.026, 0.007, 0.05, 0.003), MAT.bodPillar, { d: 'Plat zwart scharnierblad aan de achterklep onder de bovenrand van de achterruit; draait om de scharnierpen op de dakrand en is van buiten niet te zien.', p: [s * 0.42, (a[1] + b[1]) / 2 - 0.009, zc], r: [-Math.atan2(b[1] - a[1], b[2] - a[2]), 0, 0], ex: [0, 0.05, -0.02] }); }),
     ...both(s => P(`Klepbuffer ${sn(s)}`, G.cyl('z', 0.012, 0.012, 0.02, 10), MAT.rubber, { d: 'Rubberen aanslag op de carrosserie die het rammelen van de klep voorkomt.', inner: true, stay: true, p: [s * 0.48, 0.68, bodZT + 0.035], ex: [s * 0.03, 0, 0.04] })),
     // plus een donkere strook van 8 mm, 2 mm onder de huid achter de zijnaden in het staartvlak (onder en boven het achterlicht): door de spleet van
     // 3 mm zag je eerst de lichte bovenkant van de bumperrichel, zodat de naad als onregelmatige witte lijn las in plaats van als donkere naad

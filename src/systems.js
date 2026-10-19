@@ -226,10 +226,12 @@ function buildExhaust() {
   const endGeo = cache('sysEndFlat', () => merge([xf(G.rbox(0.66, 0.075, 0.26, 0.03), [0, 0, 0]), xf(G.cyl('z', 0.026, 0.026, 0.05, 14), [0.05, 0, 0.14])]));
   const einddemper = A('Einddemper', { d: 'Dwarsgeplaatste einddemper achter de achteras, met aan beide kanten een uitlaatpijp naar een verchroomd eindstuk (twee chromen eindstukken: aannemelijk voor deze uitvoering).', ex: [0, -0.1, -0.18] }, [
     P('Demperhuis eind', endGeo, MAT.sysDemper, { d: 'Dwarsgeplaatste einddemper van geplooid plaatstaal.', p: [0, EY, EZ], ex: [0, 0, 0] }),
-    // de buis loopt strak onder de bumperonderkant (1 tot 3 cm vrij) naar de zwarte inham in de bumperonderrand (Achterbumper/Uitlaatuitsparing:
-    // |x| 0,385 tot 0,515, tot y 0,345, vanaf z -2,15) en stijgt daarin naar het eindstuk. Het eindstuk zit in de inham met de achterkant
+    // de buis loopt onder de bumperonderkant naar de zwarte inham in de bumperonderrand (Achterbumper/Uitlaatuitsparing: |x| 0,385 tot 0,515,
+    // tot y 0,345, vanaf z -2,13) en stijgt daarin naar het eindstuk. Kleinste speling (clash.py, advisorronde golf 5f): 16 mm tot de voorwand
+    // van de inham en de onderschort, 18 mm tot de bumperschaal, 42 mm tot de kabelboom; eerder 0,1 mm tot de onderrand van de voorwand.
+    // Daarvoor ligt het steunpunt op z -2,14 een centimeter lager (y 0,235) en staat de voorwand 2 cm verder naar voren. Het eindstuk zit in de inham met de achterkant
     // gelijk met het bumpervlak (z -2,27 op y 0,31); eerder hing het met het hart op y 0,268 als losse cilinder onder de bumper (S7, golf 5f ronde 2)
-    ...[1, -1].map(s => P(`Uitlaatpijp ${sideName(s)}`, tube([[s * 0.29, EY, EZ - 0.07], [s * 0.36, 0.212, -2.03], [s * 0.45, 0.228, -2.075], [s * 0.45, 0.245, -2.14], [s * 0.45, 0.285, -2.19], [s * 0.45, 0.305, -2.22], [s * 0.45, 0.305, -2.25]], 0.02, 24, 10), MAT.sysDemper, { d: 'Korte buis van het uiteinde van de einddemper, strak onder de bumper en in de inham in de bumperonderrand oplopend naar het chromen eindstuk.', ex: [s * 0.015, 0, -0.03] })),
+    ...[1, -1].map(s => P(`Uitlaatpijp ${sideName(s)}`, tube([[s * 0.29, EY, EZ - 0.07], [s * 0.36, 0.212, -2.03], [s * 0.45, 0.228, -2.075], [s * 0.45, 0.235, -2.14], [s * 0.45, 0.285, -2.19], [s * 0.45, 0.305, -2.22], [s * 0.45, 0.305, -2.25]], 0.02, 24, 10), MAT.sysDemper, { d: 'Korte buis van het uiteinde van de einddemper, strak onder de bumper en in de inham in de bumperonderrand oplopend naar het chromen eindstuk.', ex: [s * 0.015, 0, -0.03] })),
     ...[1, -1].map(s => P(`Uitlaateindstuk ${sideName(s)}`, annulus(0.026, 0.031, 0.06, 'z', 22), MAT.chrome, { d: 'Klein verchroomd eindstuk (62 mm) in de zwarte inham in de onderrand van de bumper, met de achterkant gelijk met het bumpervlak (plaats en maat geschat).', p: [s * 0.45, 0.305, -2.243], ex: [s * 0.015, 0, -0.1] })),
   ]);
   const hang = (n, x, yp, z, yb) => {
