@@ -592,7 +592,9 @@ function bodSPweb(s, q0, q1, dz, nq = 14) {
   }, q0, q1, nq, () => [0, 1], 2);
 }
 /* ---------- achterlichten (over de klepnaad verdeeld) ---------- */
-const bodTGseam = y => 0.462 + 0.012 * sstep((y - 0.80) / 0.15);         // zijnaad van de achterklep in het staartvlak
+// zijnaad van de achterklep in het staartvlak: recht, op dezelfde x als de deling van het achterlicht. Was 0,462 onder en 0,474 boven met een
+// overgang in de lampband, zodat de naad onder het achterlicht ca. 1 cm naast de deling van de lamp uitkwam (S7: gekartelde naadlijnen, golf 5f)
+const bodTGseam = y => 0.472;
 // zijrand van de achterruit als q van de halve kas: de ruit loopt om de dakrailronding heen (q 0,63 tot 0,65, daar staat het vlak ca. 45 graden),
 // zodat ze in zijaanzicht als donkere band langs de dakval van C-stijl tot lip leest; de bovenhoek rondt bij de knik met het dak af naar de dakrand
 const bodQScr = z => lerp(0.63, 0.65, clamp((z - SP) / (RW0 - SP), 0, 1)) + (bodQR - 0.65) * sstep((z - RW0 + 0.07) / 0.07);
@@ -635,7 +637,10 @@ function buildTaillight(s, deel = 'buiten') {
 // rand van de achterklepopening, op afstand 'inw' binnen de huid (sponning en afdichting)
 function bodTGPath(inw) {
   const side = [], ydT = bodSec(bodZT).yd;
-  for (const y of [0.66, 0.8, 0.95, ydT - 0.05]) { const xs = Math.min(bodTGseam(y), ringX(bodZT, y)) - 0.03; side.push([xs, y, tailZ(xs, y) + inw]); }
+  // het pad houdt de x van de vroegere naad (0,462 onder, 0,474 boven): de buis is een spline door alle punten, en een verschoven punt
+  // onderaan verschuift de hele buis (ook bij het dak) en daarmee haar afstand tot de hemel en de hoedenplanksteun
+  const seamX = y => 0.462 + 0.012 * sstep((y - 0.80) / 0.15);
+  for (const y of [0.66, 0.8, 0.95, ydT - 0.05]) { const xs = Math.min(seamX(y), ringX(bodZT, y)) - 0.03; side.push([xs, y, tailZ(xs, y) + inw]); }
   for (const z of [bodZT + 0.03, -2.2, SP]) { const p = halfPt(z, bodSAtX(z, bodTGdx(z) - 0.02)); side.push([p[0], p[1] - inw, z]); }
   for (const z of [-1.9, -1.6, -1.35, RW0 + 0.02]) { const q = bodQScr(z), p = bodGhHalf(z, q); side.push([p[0] - inw, p[1] - inw, z]); }
   const mid = [0, 0.655, tailZ(0, 0.655) + inw], top = [0, YR(RW0 + 0.02) - inw, RW0 + 0.02];
@@ -1166,7 +1171,9 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     ...both(s => { const a = panP(RW0 - 0.08, 0.42), b = panP(RW0 - 0.03, 0.42);
       return P(`Klepscharnierblad ${sn(s)}`, G.rbox(0.026, 0.007, 0.05, 0.003), MAT.bodPillar, { d: 'Plat zwart scharnierblad aan de achterklep onder de bovenrand van de achterruit; draait om de scharnierpen op de dakrand en is van buiten niet te zien.', p: [s * 0.42, (a[1] + b[1]) / 2 - 0.009, RW0 - 0.055], r: [-Math.atan2(b[1] - a[1], b[2] - a[2]), 0, 0], ex: [0, 0.05, -0.02] }); }),
     ...both(s => P(`Klepbuffer ${sn(s)}`, G.cyl('z', 0.012, 0.012, 0.02, 10), MAT.rubber, { d: 'Rubberen aanslag op de carrosserie die het rammelen van de klep voorkomt.', inner: true, stay: true, p: [s * 0.48, 0.68, bodZT + 0.035], ex: [s * 0.03, 0, 0.04] })),
-    P('Klepafdichting', tube(bodTGPath(0.03), 0.008, 80, 5), MAT.rubber, { d: 'Rubber afdichting tussen klep en sponning, op de sponning van de carrosserie; blijft staan als de klep opent.', stay: true, ex: [0, 0, 0.06] }),
+    // plus een donkere strook van 8 mm, 2 mm onder de huid achter de zijnaden in het staartvlak (onder en boven het achterlicht): door de spleet van
+    // 3 mm zag je eerst de lichte bovenkant van de bumperrichel, zodat de naad als onregelmatige witte lijn las in plaats van als donkere naad
+    P('Klepafdichting', merge([tube(bodTGPath(0.03), 0.008, 80, 5), ...[L, R].flatMap(sd => [[bodYLEDGE + 0.004, bodTLY(bodZT, 0)], [bodTLY(bodZT, 1), ydT - 0.002]].map(([y0, y1]) => bodMirX(bodTailGeo(bodTGseam(y0) - 0.0025, bodTGseam(y0) + 0.0055, y0, y1, -0.002, 8, 1), sd)))]), MAT.rubber, { d: 'Rubber afdichting tussen klep en sponning, op de sponning van de carrosserie; blijft staan als de klep opent. In de zijnaden van het staartvlak van buiten te zien als donkere lijn.', stay: true, ex: [0, 0, 0.06] }),
     P('Binnenbekleding achterklep', bodTailGeo(-0.48, 0.48, 0.7, ydT - 0.04, -0.055, 4, 8), MAT.dash, { d: 'Kunststof binnenbekleding met greep om de klep te sluiten.', ex: [0, 0, 0.12] }),
   ]);
 
