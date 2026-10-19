@@ -1079,11 +1079,12 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
 
   /* ================= achterbumper ================= */
   const rbBr = bodDense(-2.3, bodZT, 4);
-  // uitlaatuitsparing (golf 5f ronde 2): een echte inham in de onderrand van de bumper, |x| 0,385 tot 0,515, tot y 0,345 en van z -2,15
+  // uitlaatuitsparing (golf 5f ronde 2): een echte inham in de onderrand van de bumper, |x| 0,385 tot 0,515, tot y 0,345 en van z -2,13
   // naar achteren (binnen de kabelboom naar de achterlichten, die in de hoek op x 0,53 tot 0,6 omhoog loopt). Bumperschaal en onderschort worden op de vlakken van dat blok geknipt; plafond, voorwand en zijwanden (zwart, 3 mm
   // onder de onderrand beginnend zodat ze de rand van de onderschort dekken) sluiten de inham. Het eindstuk van het uitlaatsysteem zit er
   // met de achterkant gelijk met het bumpervlak in; eerder was dit een zwart vlakje op de onderkant en hing het eindstuk eronder
-  const exX0 = 0.385, exX1 = 0.515, exY1 = 0.345, exZF = -2.15, exC = [0.45, 0.305, -2.22];
+  // voorwand op z -2,13 (was -2,15): daar raakte de oplopende uitlaatpijp de onderrand van de voorwand op 0,1 mm (advisorronde golf 5f)
+  const exX0 = 0.385, exX1 = 0.515, exY1 = 0.345, exZF = -2.13, exC = [0.45, 0.305, -2.22];
   const exCut = g => bodClipBox(bodClipBox(g, 1, exX0, exX1, exY1, exZF), -1, exX0, exX1, exY1, exZF);
   const exLowY = (z, x) => { if (!bodInside(z, x, exY1)) return exY1; let lo = bodSec(z).yb, hi = exY1; for (let i = 0; i < 24; i++) { const m = (lo + hi) / 2; if (bodInside(z, x, m)) hi = m; else lo = m; } return hi; };
   const exWalls = s => {
