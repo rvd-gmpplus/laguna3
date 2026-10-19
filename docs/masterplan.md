@@ -619,3 +619,14 @@ Gedaan:
 - Peilstokgreep 4,2 cm hoger in een kom.
 - Ruitensproeiertank rechtsvoor met gele dop; kapslang naar rechts, achter motorsteun en vuldop langs.
 - Accubak zwart; zwarte voorrand van de torpedoplaat.
+- Bij uitklappen komt de afdekkap als één geheel recht omhoog los (`ex` 0; 1,05; 0), het opschrift blijft op de kap.
+
+Rondes (UTC 19 oktober 2026): ronde 1 (`954e5b6` tot `50d1c14`, 18:47 tot 18:49) met advisor (Opus 5.5 high) bijsturen op tien punten; ronde 2 (`cba7364`, 19:07): opschrift volgt de vorm van de kap (`engLogoGeo`) en schaalt mee met het lettertype, vervangende materialen houden textuur en uitsnede (`uiCut` in `src/app1.js`, generiek), geen omgeklapte driehoeken en een kraag langs de gaten, links en rechts in autotermen, kapslang klapt naar rechts uit, schuimlaag tegen de kap. Advisor ronde 2: pass.
+
+Uitslag: S7 8 van 9 bij alle drie de beoordelaars (kenmerk 8 deels; alle ruiten lezen als autoglas in één tint); clash tegen B0 0 nieuwe of diepere paren; zwaai (Motorkap, Olievuldop, Dop expansievat, 65 standen, h 4 mm) ECHT 0; volledige set op de Mac groen behalve visdiff tegen de Linux-basislijn (platformverschil), itest 232 van 232; Linux zie CHANGELOG versie 15. Cijfers: [cijfers.md](cijfers.md).
+
+Open voor later:
+- Bij isoleren vervaagt het opschrift niet mee (`uiFadeFrom` zet `uiFadeMat` direct; advisor ronde 2).
+- De rubber nokken raken de kap niet meer, terwijl hun tekst zegt dat de kap erop klemt.
+- S7-meldingen: achterstuk onder de achterlichten leest als blok (kenmerk 8), zwarte balk boven het voorkenteken, bolle motorkap van voren, blokkige spiegels, lijst om het kwartsruitje dubbel.
+- `uiCut` naar espace5 met `framework.py export`.
