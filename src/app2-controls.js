@@ -31,12 +31,12 @@ function uiBackground() {
 function uiDive(p) {
   if (!p) return;
   uiPush();
-  let i = 0;
-  for (const a of pathFrom(p)) if (a.asm && a !== p && !uiOpen(a)) setTarget(a, 1, (i++) * (REDUCED ? 0 : 0.22));
+  const lv = [...pathFrom(p)].filter(a => a.asm && a !== p && !uiOpen(a)), st = uiStaffel(CFG.tijd.staffelS, lv.length, CFG.tijd.staffelMaxS);
+  lv.forEach((a, i) => setTarget(a, 1, i * st));
   CTX = p.parent || p; uiLabelForce = false; clearPreset();
   if (uiMode().dim) uiSetDim(p); // U19
   select(p);
-  focusNodes([p], null, p.asm ? 1.15 : 1.7, { min: 0.3, dur: Math.max(0.95, i * 0.22 + 0.55) });
+  focusNodes([p], null, p.asm ? 1.15 : 1.7, { min: 0.3, dur: Math.max(0.95, lv.length * st + 0.55) });
   uiAfterAction();
 }
 function reveal(n) { uiMode().reveal(n); }
@@ -51,14 +51,14 @@ function uiRevealOpen(n) {
 function uiRevealExplode(n) {
   uiPush();
   if (ISO.length && !uiInScope(n)) { ISO = []; applyVisibility(); updateGround(); }
-  let i = 0;
-  for (const a of ancestors(n)) if (!uiOpen(a)) setTarget(a, 1, (i++) * (REDUCED ? 0 : 0.18));
+  const lv = [...ancestors(n)].filter(a => !uiOpen(a)), st = uiStaffel(0.18, lv.length, CFG.tijd.staffelMaxS);
+  lv.forEach((a, i) => setTarget(a, 1, i * st));
   CTX = n.parent || null; uiLabelForce = false; clearPreset();
   uiSetDim(n); // U19 (de wortel zet het uit)
   // telefoon: paneel terug naar de smalle stand, zodat je ziet wat er gebeurt
   if (uiSheetBottom() && els.sheet.dataset.state === 'open') setSheet('peek');
   select(n);
-  focusNodes([n], null, n.asm ? 1.12 : 1.6, { min: 0.3, dur: Math.max(0.95, i * 0.18 + 0.55) });
+  focusNodes([n], null, n.asm ? 1.12 : 1.6, { min: 0.3, dur: Math.max(0.95, lv.length * st + 0.55) });
   uiAfterAction();
 }
 function uiUp() {

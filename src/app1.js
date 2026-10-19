@@ -403,7 +403,13 @@ function uiDrop() {
   uiLifted = null;
 }
 function subtree(n, out = []) { out.push(n); n.kids.forEach(k => subtree(k, out)); return out; }
-function explodeAllUnder(n) { subtree(n).forEach(a => { if (a.asm) setTarget(a, 1, (a.depth - n.depth) * (REDUCED ? 0 : 0.32)); }); }
+// F4: wachttijd per laag van een trapsgewijze beweging over k lagen; de lagen samen wachten hoogstens max seconden
+const uiStaffel = (stap, k, max) => (REDUCED ? 0 : Math.min(stap, max / Math.max(1, k - 1)));
+function explodeAllUnder(n) {
+  const asm = subtree(n).filter(a => a.asm), md = Math.max(0, ...asm.map(a => a.depth - n.depth));
+  const st = uiStaffel(CFG.tijd.allesStaffelS, md + 1, CFG.tijd.allesStaffelMaxS);
+  asm.forEach(a => setTarget(a, 1, (a.depth - n.depth) * st));
+}
 function collapseTree(n) {
   const list = subtree(n).filter(a => a.asm);
   const md = Math.max(...list.map(a => a.depth));
