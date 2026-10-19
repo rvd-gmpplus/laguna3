@@ -640,10 +640,13 @@ function bodTGPath(inw) {
   // het pad houdt de x van de vroegere naad (0,462 onder, 0,474 boven): de buis is een spline door alle punten, en een verschoven punt
   // onderaan verschuift de hele buis (ook bij het dak) en daarmee haar afstand tot de hemel en de hoedenplanksteun
   const seamX = y => 0.462 + 0.012 * sstep((y - 0.80) / 0.15);
-  for (const y of [0.66, 0.8, 0.95, ydT - 0.05]) { const xs = Math.min(seamX(y), ringX(bodZT, y)) - 0.03; side.push([xs, y, tailZ(xs, y) + inw]); }
+  // om dezelfde reden houdt het pad de z van het staartvlak van vóór golf 5f ronde 2 (bolling 0,05 m over de hele hoogte): het nieuwe vlak
+  // ligt op deze punten hoogstens 1,1 cm voor of achter het oude, de afdichting blijft 1,9 tot 4 cm binnen de huid
+  const tz0 = [-2.3001, -2.2951, -2.2874, -2.2796];
+  [0.66, 0.8, 0.95, ydT - 0.05].forEach((y, i) => { const xs = Math.min(seamX(y), ringX(bodZT, y)) - 0.03; side.push([xs, y, tz0[i] + inw]); });
   for (const z of [bodZT + 0.03, -2.2, SP]) { const p = halfPt(z, bodSAtX(z, bodTGdx(z) - 0.02)); side.push([p[0], p[1] - inw, z]); }
   for (const z of [-1.9, -1.6, -1.35, RW0 + 0.02]) { const q = bodQScr(z), p = bodGhHalf(z, q); side.push([p[0] - inw, p[1] - inw, z]); }
-  const mid = [0, 0.655, tailZ(0, 0.655) + inw], top = [0, YR(RW0 + 0.02) - inw, RW0 + 0.02];
+  const mid = [0, 0.655, -2.318 + inw], top = [0, YR(RW0 + 0.02) - inw, RW0 + 0.02];
   return [mid, ...side, top, ...side.slice().reverse().map(p => [-p[0], p[1], p[2]]), mid];
 }
 // opening in een huiddeel: houdt alleen het deel van elke driehoek dat buiten de rechthoek |x| < X0, Y0 < y < Y1 ligt (in vooraanzicht,
@@ -1044,27 +1047,28 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
 
   /* ================= achterbumper ================= */
   const rbBr = bodDense(-2.3, bodZT, 4);
-  const rFace = (x0, x1, y0, y1, out, nx = 12, ny = 3) => patch((y, t) => { const x = x0 + (x1 - x0) * t; return [x, y, bodRearZ(x, y) - out]; }, y0, y1, ny, () => [0, 1], nx);
   // verdiepte kentekenuitsparing (fase 2-foto): plaat met het midden op y 0,46, opening ca. 2 cm rondom de plaat, wanden schuin naar binnen
   // naar een bodem 1 cm diep. De bumperschaal krijgt daar een echte opening: de driehoeken van de staartpunt worden exact op de rand van
-  // de opening geknipt (bodClipOut in een over z gespiegeld frame, alleen achter z -2,28), en een 1,2 mm hoger kraagvlak rondom (zelfde lak)
-  // geeft de rand. Eerder vielen hele driehoeken weg die de opening raakten; dat vroeg fijne driehoeken rond de opening. Na het knippen
+  // de opening geknipt (bodClipOut in een over z gespiegeld frame, alleen achter z -2,28); de wanden beginnen 0,3 mm boven de huid op de
+  // snijrand. Het kraagvlak van 1,2 mm rondom (golf 5b) las als lichte rechthoek los van de bumper en is weg (S7, golf 5f ronde 2). Eerder vielen hele driehoeken weg die de opening raakten; dat vroeg fijne driehoeken rond de opening. Na het knippen
   // weer gelast (weldAll), zodat het stuk gladde normalen houdt zoals voorheen en niet in vlakjes leest.
-  const rPlateY = 0.46, rcX = 0.285, rcY0 = 0.385, rcY1 = 0.527, rcXi = 0.272, rcYi0 = 0.396, rcYi1 = 0.521, rcD = 0.010, rcOut = 0.0012;
+  const rPlateY = 0.46, rcX = 0.285, rcY0 = 0.385, rcY1 = 0.527, rcXi = 0.272, rcYi0 = 0.396, rcYi1 = 0.521, rcD = 0.010, rcOut = 0.0003;
   const bodCut = g => { g.scale(1, 1, -1); const r = bodClipOut(g, rcX, rcY0, rcY1, 2.28); r.scale(1, 1, -1); return weldAll(r); };
   // stations naar doorbuiging (koorde hoogstens 0,3 mm, golf 5b-2; bij 0,6 mm lazen de hoeken naast de uitsparing in vlakjes); de
   // stations van de kentekenuitsparing (tipBr) en van de richel (rbBr) blijven vast. Was 30 x 22 (zijkant), 24 x 26 plus tipBr en
   // 12 x 18 plus rbBr (staartpunt) gelijke stappen.
   const tipBr = rbBr.concat(bodDense(ZR, -2.296, 30));
   const shRs = bodSagSide(-1.778, bodZT, z => [S1 * 0.45, bodSY(z, bodYLEDGE)], 0.0003, { nuF: 120, nvF: 120 });
-  const shRa = bodSagSide(ZR + 1e-4, bodZT, () => [0, S2], 0.0003, { keep: tipBr, nuF: 48, nvF: 160 });
-  const shRb = bodSagSide(ZR + 1e-4, bodZT, () => [S2, 1], 0.0003, { keep: rbBr, nuF: 48, nvF: 160 });
+  // de staartpunt eindigt 0,1 mm voor bodZT: op bodZT zelf geeft bodSec de volle doorsnede van het achterscherm (tot het dek), en de laatste
+  // strook van de schaal stond daardoor als verborgen schot van de richel tot het dek achter het staartvlak (de binnenbekleding van de klep
+  // zwaaide er bij het openen doorheen; golf 5f ronde 2)
+  const shRa = bodSagSide(ZR + 1e-4, bodZT - 1e-4, () => [0, S2], 0.0003, { keep: tipBr, nuF: 48, nvF: 160 });
+  const shRb = bodSagSide(ZR + 1e-4, bodZT - 1e-4, () => [S2, 1], 0.0003, { keep: rbBr, nuF: 48, nvF: 160 });
   const shellR = bodWeld(merge([
     shRs.geo(L), shRs.geo(R),
     ...[shRa.geo(L), shRb.geo(L), shRa.geo(R), shRb.geo(R)].map(bodCut),
     // sluitvlak op de staartpunt licht bol (hoogstens 4 mm, binnen ZR - 6 mm): een vlak eindvlak las als lichte rechthoek boven de kentekenuitsparing
     (() => { const z = ZR + 1e-4, c = bodSec(z); return patch((y, t) => { const X = ringX(z, y), v = 2 * (y - c.yb) / (c.yd - c.yb) - 1; return [X * t, y, z - 0.004 * (1 - t * t) * (1 - v * v)]; }, c.yb + 1e-4, c.yd - 1e-4, 8, () => [-1, 1], 16); })(),
-    rFace(-0.315, 0.315, 0.372, rcY0, rcOut, 16, 2), rFace(-0.315, 0.315, rcY1, 0.535, rcOut, 16, 2), rFace(-0.315, -rcX, rcY0, rcY1, rcOut, 2, 8), rFace(rcX, 0.315, rcY0, rcY1, rcOut, 2, 8),
   ]));
   // schuine wanden van de opening (buitenrand op de huid, binnenrand op de bodem) en de bodem
   const rcO = (x, y) => [x, y, bodRearZ(x, y) - rcOut], rcI = (x, y) => [x, y, bodRearZ(x, y) + rcD];

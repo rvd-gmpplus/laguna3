@@ -42,7 +42,11 @@ const YB = pchip([[-2.35, 0.53], [-2.335, 0.47], [-2.30, 0.38], [-2.268, 0.31], 
 const bodYTm = pchip([[-2.268, 0.985], [-2.25, 0.994], [-2.20, 0.999], [-2.10, 0.988], [-1.905, 0.962], [-1.655, 0.963], [-1.405, 0.968], [-1.155, 0.972], [-0.905, 0.965], [-0.655, 0.960], [-0.405, 0.952],
   [-0.155, 0.946], [0.095, 0.942], [0.345, 0.934], [0.595, 0.924], [0.845, 0.911], [0.98, 0.895], [1.095, 0.872], [1.345, 0.825], [1.595, 0.795], [1.845, 0.765], [2.0, 0.725], [2.095, 0.69],
   [2.20, 0.648], [2.30, 0.605], [2.345, 0.565]]);
-function YT(z) { return z < bodZT ? bodYLEDGE : bodYTm(z); }
+// bovenrand van de bumper: in de laatste 3 cm voor ZR rondt de richel als kwartcirkel af naar het achtervlak, zodat het sluitvlak op ZR
+// klein blijft en niet als los licht vlak boven de kentekenuitsparing leest (S7, golf 5f ronde 2)
+const bodTipR = 0.03;
+const bodTipDrop = z => { const a = clamp(ZR + bodTipR - z, 0, bodTipR); return bodTipR - Math.sqrt(bodTipR * bodTipR - a * a); };
+function YT(z) { return z < bodZT ? bodYLEDGE - bodTipDrop(z) : bodYTm(z); }
 // hartlijn van het dek (motorkap, torpedo, achterklep tussen lip en staartvlak); onder het glas niet zichtbaar.
 // Achter de lip daalt het dek vlotter naar het staartvlak (geen dikke plank boven de achterlichten)
 const bodYD = pchip([[-2.268, 1.025], [-2.258, 1.038], [-2.24, 1.054], [-2.21, 1.072], [-2.17, 1.091], [-2.11, 1.118], [-1.95, 1.02], [-1.85, 0.99], [-1.0, 0.99], [0.0, 0.97], [0.6, 0.95], [0.88, 0.935], [1.0, 0.962], [1.06, 0.975], [1.20, 0.979], [1.345, 0.971],
@@ -233,16 +237,19 @@ function frontZ(x, y) {
   for (let i = 0; i < 26; i++) { const m = (lo + hi) / 2; if (bodInside(m, x, y)) lo = m; else hi = m; }
   return lo;
 }
-// staartvlak boven de bumper: bol in bovenaanzicht (0,05 m in het midden); naar de bovenrand toe neemt de bolling af,
-// zodat het vlak naar voren omrolt in het dek achter de lip
-const bodTB = 0.05, bodTF = 0.10;
+// staartvlak boven de bumper: bol in bovenaanzicht; de bolling in het midden neemt van 0,062 m op de bumperrichel lineair af naar
+// 0,015 m aan de bovenrand, zodat het vlak naar boven ca. 4,7 cm naar voren helt, en rolt in de bovenste 15 cm naar voren om in het dek
+// achter de lip. Was 0,05 m over de hele hoogte met een omrol van 10 cm: het vlak stond steil en las als blok (S7, golf 5f ronde 2)
+const bodTB = 0.062, bodTB1 = 0.015, bodTF = 0.15;
 let bodYDT = 0;
 function tailZ(x, y) {
-  // r^6-term: aan de rand helt het vlak even sterk als de flank (ca. 19 graden in bovenaanzicht), zodat de hoek rond doorloopt
-  const X = Math.max(0.05, ringX(bodZT, y)), r = clamp(Math.abs(x) / X, 0, 1), e = 1 - 0.55 * r * r - 0.45 * r ** 6;
   if (!bodYDT) bodYDT = bodSec(bodZT).yd;
+  const X = Math.max(0.05, ringX(bodZT, y)), r = clamp(Math.abs(x) / X, 0, 1), b = lerp(bodTB, bodTB1, clamp((y - bodYLEDGE) / (bodYDT - bodYLEDGE), 0, 1));
+  // r^m-term: aan de rand helt het vlak even sterk als de flank (helling 3,8 x 0,05 per eenheid r, ca. 19 graden in bovenaanzicht),
+  // ook waar de bolling kleiner of groter is dan 0,05 m, zodat de hoek rond doorloopt
+  const m = Math.max(2, (0.19 / b - 1.1) / 0.45), e = 1 - 0.55 * r * r - 0.45 * r ** m;
   const u = clamp((y - bodYDT + bodTF) / bodTF, 0, 1);
-  return bodZT - bodTB * e * (1 - Math.pow(u, 1.5));
+  return bodZT - b * e * (1 - Math.pow(u, 1.5));
 }
 function bodTailGeo(x0, x1, y0, y1, off = 0, ny = 10, nx = 16) {
   return patch((y, t) => { const X = ringX(bodZT, y), xa = Math.min(X, Math.max(-X, x0)), xb = Math.max(xa, Math.min(X, x1)), x = xa + (xb - xa) * t; return [x, y, tailZ(x, y) - off]; }, y0, y1, ny, () => [0, 1], nx);
