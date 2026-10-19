@@ -481,6 +481,7 @@
   "Renault Laguna III/Interieur/Bekleding/Dakbekleding/Zonneklep rechts",
   "Renault Laguna III/Interieur/Bekleding/Bagageruimte/Bagageruimtevloer",
   "Renault Laguna III/Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppendeksel/Olievuldop",
+  "Renault Laguna III/Aandrijflijn/Motor F4Rt/Smering/Peilstok/Peilstok",
   "Renault Laguna III/Koeling en luchtinlaat/Expansievat/Expansiedop",
   "Renault Laguna III/Brandstofsysteem/Vulsysteem/Tankklep"
  ],
@@ -536,7 +537,7 @@
   "Carrosserie": 190000,
   "Onderstel": 125000,
   "Interieur": 95000,
-  "Koeling en luchtinlaat": 25000,
+  "Koeling en luchtinlaat": 30000,
   "Uitlaatsysteem": 20000,
   "Brandstofsysteem": 12000,
   "Elektrisch systeem": 12000

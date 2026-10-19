@@ -82,7 +82,7 @@ Motorcode van de auto van de gebruiker (bijgewerkt op 15 oktober 2026): waarschi
 | Olie en koelvloeistof | Olie 5,4 l inclusief filter (Bevestigd: persmap en handboek); koelvloeistof circa 7,7 l (Aannemelijk) | Renault-persmap 2007, lagunanotice, Motul-tabel, Automoli | Bevestigd (olie) |
 | Plaats in de auto | Dwars voorin; distributiezijde rechts, vliegwiel en bak links; inlaatzijde naar voren, turbo en uitlaat naar achteren | L'argus, Rensatis, Revue technique | Bevestigd (dwars), Aannemelijk (zijden) |
 | Motorsteunen | Rechter bovensteun aan de distributiezijde, linkersteun aan de bak, koppelstang onderaan | Autodoc | Aannemelijk |
-| Motor-ECU | Plaats en type. Het model heeft hem nog rechts tegen het schot; MR 415 zet hem op de accubak, dus links achter. Open punt, nog niet verplaatst | MR 415 | Niet gevonden (bevestiging van de plaats) |
+| Motor-ECU | Plaats en type. Sinds versie 16 op een beugel aan de achterkant van de accubak, linksvoor (MR 415 zet hem op de accubak) | MR 415 | Aannemelijk (plaats), Niet gevonden (type) |
 | Toepassing | Ook in o.a. Mégane RS | Planète Renault | Bevestigd |
 
 ## Transmissie en aandrijfassen
@@ -153,7 +153,7 @@ Motorcode van de auto van de gebruiker (bijgewerkt op 15 oktober 2026): waarschi
 
 | Gegeven | Waarde | Bron | Status |
 |---|---|---|---|
-| Accu | In de motorruimte links achter, boven de automaat, in een accubak met afdekkap, accuafkoppelunit en UPC-zekeringkast (die op de accubak staat). Het model heeft de accu sinds versie 13 daar (eerder rechtsvoor); het luchtfilter, de aanzuigslang, de resonator, de hete laadluchtslang en de brandstofleiding zijn daarvoor verlegd. MR 415 (80A en 10A) past erbij: de accubak draagt de zekeringkast en de motor-ECU. Plaats en maat van de bak zijn geschat | Waarneming gebruiker (19 oktober 2026), Renault-werkplaatsboek, Auto-Doc | Bevestigd (motorruimte en zijde, waarneming gebruiker), Geschat (maat) |
+| Accu | In de motorruimte linksvoor, direct achter de zwarte radiateurafdekplaat, onder een zwarte accukap met een zichtbare rode pluskabel; de zekeringkast (UPC) met maxizekeringen staat achter de kap, het luchtfilterhuis linksachter erachter. Het model heeft de accu sinds versie 16 daar (versie 13 tot 15 linksachter, eerder rechtsvoor). Plaats en maat van de bak zijn geschat | Waarneming gebruiker (19 oktober 2026), foto forumlaguna3 t8080 (2.0T 205 GT), foto Autoweek, Renault-werkplaatsboek MR 415 | Bevestigd (zone, foto's en waarneming), Geschat (maat) |
 | UCH | Onderin het dashboard links | Renault-zekeringenschema | Bevestigd |
 | Tank | 66 l onder de achterbank voor de achteras | Renault-handboek | Bevestigd (inhoud), Geschat (plaats) |
 | Uitlaat | Drieweg-katalysator achter de turbo, middendemper (425 mm), achterdemper, twee lambdasondes; eindpijpen dubbel chroom | Autodoc, UK-brochure | Aannemelijk |
@@ -188,7 +188,7 @@ De hoeken van de openers zijn grotendeels geschat uit foto's, het instructieboek
 ## Open punten
 
 - Wielontwerp van een Nederlandse Initiale Paris uit 2011 (de maat is beantwoord: 18 inch, bevestigd door de gebruiker, zie Velgen hierboven).
-- Plaats van de motor-ECU (het model heeft hem rechts tegen het schot; MR 415 zet hem op de accubak, links achter) en van de claxons. De accu is beantwoord: links achter boven de automaat (waarneming gebruiker, versie 13).
+- Plaats van de claxons. De accu en de motor-ECU zijn beantwoord: accu linksvoor achter de radiateurplaat, ECU op de accubak (versie 16, foto's en MR 415).
 - Het verloop van de multiriem (alleen figuur 124137 van MR 415; de verbruikers en de lengte zijn bevestigd).
 - Openingshoek van het achterportier. De motorkap (65 graden, binnen de geschatte 60 tot 75 graden van de gebruiker) en de achterklep (66 graden, besloten) zijn afgehandeld; een meting met een rolmaat kan ze nog verfijnen.
 - Merk van de remklauwen en van de stuurpomp.

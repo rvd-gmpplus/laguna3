@@ -416,7 +416,7 @@ Na de publicatie van versie 12 (19 oktober 2026, `d4186f1`, tag `v12`, artefactv
 
 ### Wat open blijft
 
-- De plaats van de motor-ECU: het model heeft hem nog rechts tegen het schot; MR 415 zet hem op de accubak, dus links achter. Verplaatsen is een volgende stap als de gebruiker dat wil (beslispunt).
+- De plaats van de motor-ECU: sinds versie 16 op de accubak linksvoor (golf 5j).
 - Het verloop van de multiriem (figuur 124137 van MR 415, niet gevonden).
 - Gedaan (niet meer open): de botsingsmeting van de motorkap in open stand, zwaai van de Motorkap tegen `main` (stap 0,05, h 4 mm) op `81b42dd`: ECHT 0, RUIS 0, NOG TE BEOORDELEN 0.
 - De hoek van het achterportier (Meetlijst).
