@@ -20,7 +20,7 @@ daar niet uit komt: de pagina op een echte telefoon en een echte GPU. Het kost o
 | 4 | Preset Openen, Alles open. | fps; staan alle portieren, kap en klep open zonder gaten? |
 | 5 | Modus Uitklappen, tik op de motorkap, dubbeltik op een bout. | Klapt de kap uit, duikt de dubbeltik naar de bout? |
 | 6 | Houd een onderdeel 1 seconde vast. | Loopt de ring vol en klapt de groep in, zonder dat de telefoon een menu opent? |
-| 7 | Preset Overzicht, Gemonteerd, kijk van boven op de motorkap (Weergave, camerastand Boven). | Donkere spikkels op de kap? (In de container vermoedelijk software-rasterisatie.) |
+| 7 | Preset Overzicht, Gemonteerd, kijk van boven op de motorkap (Weergave, camerastand Boven). | Donkere spikkels op de kap? (In de container zijn ze een SwiftShader-artefact, gemeten in golf 5f: op de echte GPU van een Mac zijn er geen. Op een echt toestel horen ze er dus niet te zijn; deze stap blijft nuttig als controle.) |
 | 8 | Draai de telefoon naar liggend en terug. | Staat het paneel als zijkolom, springt de camera niet weg? |
 | 9 | Zet in Weergave de lichte weergave aan en uit. | Verschil in fps en in glans van de lak? |
 | 10 | Deel de link vanuit de adresbalk na stap 3. | Opent de link bij een ander op dezelfde stand? |

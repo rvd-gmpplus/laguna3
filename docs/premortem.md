@@ -104,7 +104,7 @@ Eindstand van de code is `ff42dbd`. De testset liep op `9c731c8`; `ff42dbd` vera
 - Draad 3 (herkenbaarheid): poort 5 haalt S7 met 7 van 9, op `9c731c8`. Niet opnieuw gedraaid na de uitlaatreparatie.
 - Draad 5 (schaal): 390 tekenopdrachten gemonteerd met bundelen (1.726 zonder), p95 1 ms, grens 8 ms. De Aandrijflijn is met 237.310 driehoeken nu binnen het budget van 240.000; de hele auto telt 630.368 driehoeken. Nog steeds alleen in software-rendering gemeten.
 - Draad 7 (publicatie): versie 5 teruggelezen en gelijk aan `index.html`.
-- Niet gesloten: niet getest op een echte telefoon of GPU; donkere spikkels op de motorkap in het bovenaanzicht (vermoedelijk software-rasterisatie, niet bewezen); 84 van de 345 labelankers liggen achter een ander deel; U19 en de zijkolom voor de telefoon in liggende stand zijn niet gebouwd.
+- Niet gesloten: niet getest op een echte telefoon of GPU; donkere spikkels op de motorkap in het bovenaanzicht (toen vermoedelijk software-rasterisatie, niet bewezen; in golf 5f gemeten als SwiftShader-artefact: op de echte GPU van een Mac zijn er geen, en stap 7 van [telefoontest.md](telefoontest.md) controleert het op een echt toestel); 84 van de 345 labelankers liggen achter een ander deel; U19 en de zijkolom voor de telefoon in liggende stand zijn niet gebouwd.
 
 ## Premortem golf 4
 

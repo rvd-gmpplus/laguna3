@@ -49,7 +49,7 @@ Op 15 oktober om 19:49 UTC werkt een andere sessie (Opus 5.5 met vijf subagents)
 - Elke analyse en elke golf begint met `git ls-remote --heads origin` en een compare per tak; dit plan miste eerst twee commits doordat de meting van vóór 19:18 UTC was.
 - Per golf worden start, samenvoeging en publicatie met tijd in `CHANGELOG.md` genoteerd, zodat de volgende premortem met echte duren werkt.
 
-## Voortgang (19 oktober 2026; bijgewerkt na golf 5c-2, versie 11 gebouwd; de laatste publicatie is versie 10, `d3fe58f`)
+## Voortgang (19 oktober 2026; bijgewerkt na golf 5f en 5e, versie 12 gebouwd; de laatste publicatie is versie 11, `1a856a5`)
 
 | Golf | Stand |
 |---|---|
@@ -66,6 +66,7 @@ Op 15 oktober om 19:49 UTC werkt een andere sessie (Opus 5.5 met vijf subagents)
 | Versie 10 live | Op 17 oktober om circa 21:10 UTC in `main` (`d3fe58f`, fast-forward van `f63b185`; bevat ook `f63b185` uit een andere sessie en `47fb5ae`), ci en Pages success; Pages om 21:20 UTC en het artefact om circa 21:21 UTC byte voor byte teruggelezen (`CHANGELOG.md`). |
 | Na versie 10 (18 oktober 2026) | PR #8 (`opentest.py`, `EPS = 1e-6`) is samengevoegd (`e7fc7b1`) en gaat met de volgende export naar espace5 (besluit: `docs/onderzoek/beslissingen.md`, 18 oktober 2026). De tags `v1` tot en met `v10` staan sinds 18 oktober 2026 op GitHub (`handomdraai.md`, punt 2). De espace5-tak `golf-5b3-export` is op 18 oktober 2026 samengevoegd en gepubliceerd als espace5 versie 4 (`main` `7467be7`, framework uit laguna3 `09d44c4` met de haak `extraTests`; set op Mac en Linux-VM functioneel groen, visdiff tegen `main` op hetzelfde platform met alleen bedoelde verschillen, daarna een Linux-basislijn uit de VM; Pages en artefact byte voor byte teruggelezen; tags `v1` tot en met `v4`; zie `CHANGELOG.md` van espace5). |
 | Golf 5c-2 | Gedaan op 18 en 19 oktober 2026 op de tak `golf-5c2` (tip `84b9adc`), versie 11 gebouwd en nog niet gepubliceerd. Vier blokken in eigen worktrees, samengevoegd in `2644a80` (A: K7 tot en met K11), `ca0e159` (B: P1 tot en met P4 en de presize van de tekenbuffer), `59dde45` (C: K1 tot en met K4 en K6) en `c00783d` (D: K5, `initAppFields` en `app2.js` in vijf bestanden); daarna advisor ronde 1 (Opus, max): PASS onder voorwaarden, geen P1, de P3-punten zijn opgepakt in `84b9adc`. Per punt zie de kolom Stand in de tabel van Golf 5c-2, de meting en de open punten onder "Stand na golf 5c-2". Poort: `docs/testen.md`, "Resultaten golf 5c-2" (uitslag Mac: Mac op `84b9adc` (19 oktober 2026, 05:02 tot 05:14 UTC) alles groen in één run: 13 van 13 tests, itest 232 van 232, visdiff 42 van 42 tegen een eigen Mac-meting van `ca0e159`, anchor ok; ruis: alleen `GPU stall due to ReadPixels`; uitslag VM en visdiff: VM op `84b9adc` (05:14 tot 05:32 UTC) alles groen behalve visdiff, 40 van 42 tegen de basislijn van versie 10: 33-tailgate (2,52 procent, K9) en 38-openDoors (1,53 procent, K11), beide bedoeld en bekeken; daarna de Linux-basislijn vernieuwd in `922f416` (42 van 42 binnen de drempel, anchorcheck.json ongewijzigd)). Besluiten van de gebruiker van 18 oktober 2026: `docs/onderzoek/beslissingen.md`. |
+| Golf 5f en 5e | Gedaan op 19 oktober 2026 op de tak `golf-5f` (tip `8fe6435`, `VERSION` 12), nog niet gepubliceerd: carrosserie in drie rondes plus een advisor-ronde (S7 7 van 9, besluit B7 voor kenmerk 4), F1 tot en met F4, de galerij op de echte GPU. Per punt en met de commits: sectie "Golf 5f en 5e". |
 | Volgende | Nog geen golf gepland. Versie 11 is gepubliceerd (19 oktober 2026, `main` fast-forward `2c42e30..1a856a5` (met PR #8) gepusht om 05:33 UTC; ci success (05:33 tot 05:38), pages build and deployment success (05:33 tot 05:34); Pages om 05:38 en het artefact (artefactversie 13) byte voor byte teruggelezen; tag `v11` op `1a856a5`). De export van 5c-2 naar espace5 is gedaan: espace5 versie 5 (`0f2b69c`, gepubliceerd 19 oktober 2026, Mac en VM alles groen, visdiff 51 van 51, tag `v5`). Open punten voor een volgende golf: (1) `ready` op SwiftShader, circa 2 s GPU-tijd van het eerste frame, het doel van 25 procent is niet gehaald en geaccepteerd; (2) S7 kenmerk 4 (B-stijl als dunne lijn, chroomlijst zwak), in de meting bij K11 voor 0,92 en 0,80 even deels; (3) de rommelige staart en de spikkels die de S7-beoordelaars noemen; (4) de T4-marge van circa 8,9 kB gzip (exact: 361.239 bytes gzip -6 en 1.350.225 bytes raw op `80bee59`, dus een marge van 8.761 bytes gzip op de eindstand), waarmee een volgende geometriegolf weer ruimte heeft. `index.html` wordt alleen opnieuw gebouwd als er in `src/` iets verandert. |
 
 ## Golf 5a-1: vangnet-kern (eerst; 1 dag, met een stopregel)
@@ -295,7 +296,7 @@ Stand 16 oktober 2026, 04:00 UTC: alles in de tabellen hierboven is gebouwd (R1 
 
 Poort van golf 5c-1: itest van 150 naar circa 190 controles, allemaal groen; p95 en tekenopdrachten niet slechter dan golf 4; het eerste-beeld-criterium op de telefoon; publicatie versie 8, drie vóór/na-paren tegen versie 7.
 
-## Golf 5c-2: prestaties en codegezondheid (GEDAAN op 18 en 19 oktober 2026; versie 11 gebouwd op de tak `golf-5c2`, nog niet gepubliceerd; 1 tot 1,5 dag was de raming)
+## Golf 5c-2: prestaties en codegezondheid (GEDAAN op 18 en 19 oktober 2026; versie 11 gebouwd op de tak `golf-5c2` en op 19 oktober 2026 gepubliceerd; 1 tot 1,5 dag was de raming)
 
 | Nr | Wat | Waar | Meting | Stand |
 |---|---|---|---|---|
@@ -327,6 +328,75 @@ Poort van golf 5c-1: itest van 150 naar circa 190 controles, allemaal groen; p95
 - Open: `ready` op SwiftShader; S7 kenmerk 4; de rommelige staart en de spikkels die de S7-beoordelaars noemen; de T4-marge. De tak `u.info` (K2) blijft bewust staan omdat itest controle 15 hem toetst.
 - Export: het framework gaat met `framework.py export` naar espace5; zie [framework.md](framework.md), sectie Wat golf 5c-2 aan de generieke laag toevoegde.
 
+## Golf 5f en 5e: carrosserie, feiten en de uitklapanimatie (19 oktober 2026; versie 12 gebouwd op de tak `golf-5f`, nog niet gepubliceerd)
+
+Golf 5f (carrosserie: S7 kenmerk 4, het onrustige achterpaneel, het losse zwarte blokje bij de C-stijl, de spikkels) en golf 5e (F1 tot en met F4 uit handboeken, schema's en catalogi) liepen samen, op besluit van de gebruiker; golf 6 wacht. De besluiten staan in [onderzoek/beslissingen.md](onderzoek/beslissingen.md), sectie "Besluiten van 19 oktober 2026 (golf 5f en 5e)". De bronkeuze bij een conflict ligt bij de orkestrator: werkplaatshandboek boven onderdelencatalogus boven overige bronnen.
+
+Eigendom: `src/body.js` is alleen-lezen voor de domeineigenaars. De orkestrator heeft de wijziging van `body.js` door de carrosserie in ronde 2 en 3 goedgekeurd (besluit van de orkestrator, 19 oktober 2026); in de tak staat ze in `aaa46c3` (het staartvlak helt naar voren en de bumperrichel rondt af: `bodTB`, `bodTB1`, `bodTF`, `bodTipR`).
+
+### Wat gedaan is
+
+| Stap | Wat | Commits |
+|---|---|---|
+| Besluiten | Besluiten vooraf: omvang, `ready` alleen meten, bronkeuze door de orkestrator, publicatie als versie 12, espace5 versie 6 | `a5f8d65` |
+| 5e | ATF bevestigd (Elfmatic J6, 7,6 l), velgtekst met de opties, besluiten F2 en F3 vastgelegd | `ba569e6` |
+| 5e, F2 | Kaartlezer en startknop naar het dashboard (Notice NU 936-5, blz. 1.42-1.43, item 22), samengevoegd uit `golf-5f-int`; `index.html` herbouwd | `1c30c39`, `2201c13`, `414b93e` |
+| 5e, F4 | Trapsgewijze uitklapbeweging begrensd (`CFG.tijd.staffel*`) | `fe4f033` |
+| Meetmiddel | `LAG3_GPU=1` in de harness: beelden voor het oog op de echte GPU, testset en visdiff op SwiftShader | `ca68d71` |
+| 5f, ronde 1 (T1 tot en met T3) | B-stijl als zwart vlak, zijruiten lichter; klepscharnierblad onder de achterruit; rechte, donkere zijnaden van de achterklep. Samengevoegd uit `golf-5f-carr`; `index.html` herbouwd | `a8672dd`, `4f8139f`, `8290ea1`, `05e2dc4`, `5828f60` |
+| 5f, ronde 2 (R1 tot en met R5) | Staartvlak helt naar voren en de bumperpunt rondt af (R1); onderlip, sierstrip en naden voor zonder kartels (R2); uitlaateinden in een inham in de bumper (R3); achterste dakglas zonder lichtvlek (R4); spiegelvoet als smalle plaat (R5). Samengevoegd uit `golf-5f-carr2`; `index.html` herbouwd | `aaa46c3`, `3613e96`, `1899690`, `56a88ba`, `1cc2076`, `130a309`, `c4cc2a1` |
+| 5f, ronde 3 (Q1 en Q3) | B-stijl breder (circa 12,8 cm), mat zwart, zonder chromen eindstukken (Q1); binnendelen van het achterlicht met afgeronde binnenrand, het klepvlak volgt (Q3). Samengevoegd uit `golf-5f-carr3`; `index.html` herbouwd; de onderdelenboom ververst (Chroomlijst B-stijl, vier paden, eruit) | `9e56964`, `9374b72`, `31b32e5`, `129eb6d`, `79545bf` |
+| Visdiff-basislijn | 17 beelden vernieuwd uit de VM-run op `79545bf` met `visdiff --basislijn` (carrosserie, startknop, velgtekst); besluit B7 voor S7 kenmerk 4 | `ee84333` |
+| Advisor-ronde | Tonen-staffel in `CFG`, `LAG3_GPU` alleen op macOS en nooit in `finaltests.sh`, besluiten F4, B7 en achterklep aangescherpt (`7752ed0`); voorportier 67 in plaats van 68 graden (`ae3b040`); klepscharnierblad begint achter het scharnierblok (`1ac1799`); uitlaat minstens 16 mm vrij van bumper en inham (`c72c69f`); teksten carrosserie (`bcb2b07`). Samengevoegd uit `golf-5f-fix`; `index.html` herbouwd; `VERSION` 12 | `7752ed0`, `ae3b040`, `1ac1799`, `c72c69f`, `bcb2b07`, `95c17f6`, `942f1ae`, `8fe6435` |
+
+Wat de gebruiker ziet: de rij van versie 12 in [CHANGELOG.md](../CHANGELOG.md). Aantallen (knopen, onderdelen, driehoeken, budgetten) staan in [cijfers.md](cijfers.md).
+
+### Exitcriteria en uitslag
+
+Klaar is (`CLAUDE.md`): volledige set groen op macOS en op Linux, visdiff groen op Linux, open-standbotsingsmeting zonder nieuwe doordringingen, advisor-oordeel pass.
+
+| Criterium | Uitslag |
+|---|---|
+| Volledige set op macOS | Groen. |
+| Volledige set op Linux (VM `lag3-vm`) | Groen. |
+| Visdiff op Linux | 42 van 42 na de vernieuwde basislijn (`ee84333`, 17 beelden vernieuwd). |
+| Botsingszwaai (open stand, alle openers) | [ZWAAI] |
+| Herkenbaarheid (S7), eis 7 van 9, doel 8 | 7 van 9 bij meerderheid, zie hieronder. Eis gehaald, doel niet. |
+| Advisor-oordeel | De punten van de advisor zijn verwerkt (rij Advisor-ronde); het oordeel na die ronde: [ADVISOR-OORDEEL]. |
+
+S7 (drie Opus-beoordelaars, high; beelden van de echte GPU, `LAG3_GPU=1`):
+
+| Meting | Score | Kenmerken die niet unaniem ja zijn |
+|---|---|---|
+| Basis (vanaf `414b93e`) | 8 van 9 | 4 deels (3 van 3: B-stijl een dunne lijn, chroomlijst nauwelijks); 8 ja, deels, ja |
+| Na ronde 2 | 7 van 9 | 4 deels (3 van 3); 8 deels, ja, deels (staart in het bovenaanzicht stomp en breed); 7 ja, ja, deels |
+| Na ronde 3 | 7 van 9 | 4 deels (3 van 3); 8 ja, deels, deels |
+
+Het bovenaanzicht van de basis en van ronde 3 is vorm voor vorm gelijk (alleen de lichtvlek op het achterste dakglas is weg): de wisseling bij kenmerk 8 is vermoedelijk oordeelsruis (T2). Een zijglas met dekking 0,62 en 0,72 gaf voor kenmerk 4 nauwelijks verschil. Meldingen die per ronde terugkwamen: onrustige naden en een vlekkerig vlak van achterklep en bumper, uitlaateinden als losse cilinders, gekartelde randen voor (basis, drie van drie), daarna de binnendelen van de achterlichten als rechthoekige blokjes, een lichte band rond het kenteken, een V-knik midden op de motorkap en de spoilerlip als dikke zwarte band (ronde 2).
+
+**Besluit B7** (gebruiker, 19 oktober 2026): kenmerk 4 krijgt geen geometrie meer en wordt beoordeeld op de maat in het model (zwarte B-stijl van circa 12 tot 13 cm, geschat uit foto's, raamlijsten langs de bovenrand en drie zijruiten met kwartsruitje). "Leest op 1280 × 800 als smalle zwarte streep" is daarmee geen reden meer voor deels. De gemeten score blijft 7 van 9.
+
+### Metingen
+
+- Spikkels en `ready` (`ready` alleen meten): op de echte GPU (ANGLE Metal, Apple M5 Pro) zijn er geen spikkels en is `ready` 0,67 s (mediaan van 5); met SwiftShader is `ready` 2 tot 7 s, afhankelijk van de belasting. De spikkels op motorkap, dak en portieren zijn dus een SwiftShader-artefact, en de circa 2 s van `ready` uit golf 5c-2 zijn rekentijd van de software-renderer. Op de echte GPU valt niets te verbeteren. Gevolg: opnames voor oordelen op het oog (S7, galerij) gaan op de GPU; de testset, visdiff en de basislijnen blijven op SwiftShader (zie [testen.md](testen.md)). De opstarttijdlijn van de Mac met SwiftShader staat in [cijfers.md](cijfers.md).
+- Uitklapanimatie (F4): van de onderdelen liggen er 1.438 op 5 of meer gesloten groepen diep. Een duik daarheen duurde 1,73 tot 2,39 s en alles uitklappen 3,09 s (7 lagen); nu hoogstens circa 1,45 s en circa 2,25 s. De duur van een stap blijft 0,85 s; de hypothese "te snel bij kleine groepen" is niet bevestigd, want een stap duurt altijd 0,85 s, ongeacht de afstand.
+
+### F1 tot en met F4
+
+| Nr | Stand | Wat |
+|---|---|---|
+| F1 | Gedaan (`ba569e6`) | ATF: Elfmatic J6, 7,6 l totaal, 3,5 l na aftappen. ELF MATIC S6 in de AJX-tabel van MR 415 is een tabelnaam of drukfout: de Nederlandse editie van 2007 noemt J6, Elf keurt J6 goed voor de AJ0 en een product S6 bestaat in geen catalogus. Bijgewerkt in `beslissingen.md`, `specificaties-en-bronnen.md` en `src/drivetrain.js`. |
+| F2 | Deels | Gedaan: voorportier 67 graden (RiDC, `ae3b040`; Aannemelijk), velgtekst met de opties (18 inch blijft, `ba569e6`), kaartlezer en startknop in het dashboard (`1c30c39`, `2201c13`; Bevestigd met NU 936-5, blz. 1.42-1.43, item 22). Open: achterklep (blijft op 66 graden; de brochure noemt 1.900 mm met open klep tegen 2,36 m voor het hoogste punt in het model, een rolmaat beslist), accuzijde (aanwijzing linksvoor boven de automaat in MR 415; het model heeft rechtsvoor), de hoeken van motorkap en achterportier. |
+| F3 | Deels | Multiriem: 7PK1795 (1.795 mm) bevestigd; de kortere riemloop in het model blijft met de bestaande uitleg. Open: het verloop (alleen in figuur 124137 van MR 415, 11A-17; niet gevonden). |
+| F4 | Gedaan (`fe4f033`, `7752ed0`) | Duiken en tonen wachten per laag nog 0,22 en 0,18 s, maar samen hoogstens 0,6 s; alles uitklappen 0,32 s per laag, samen hoogstens 1,4 s (`CFG.tijd.staffelMaxS` en `allesStaffelMaxS`). De GIF-vergelijking naast versie 1 vervalt: er is gemeten in plaats van opgenomen, en een meting zegt hier meer dan een opname. |
+
+### Open na golf 5f en 5e
+
+- Metingen aan de auto van de gebruiker (Meetlijst in [handomdraai.md](../handomdraai.md)): het hoogste punt van de open achterklep, de accuzijde en de hoeken van motorkap en achterportier.
+- Het verloop van de multiriem (figuur 124137 van MR 415).
+- S7: kenmerk 4 volgt sinds B7 de maat in het model; kenmerk 8 blijft ruis-gevoelig.
+- Export naar espace5 (versie 6) na publicatie van versie 12.
+
 ## Golf 5d: onderdeelnummers (1 dag in plakken; versie 9)
 
 Voorwaarde: A10. Eigenaar: gegevens, met dezelfde verificatiepoort als golf 4 (opnieuw ophalen, letterlijk op de pagina, drie lokvogels per plak, alle lokvogels afgewezen). Firecrawl heeft geen tegoed; Jina-reader en curl zijn de route. Dekking wordt geteld op `zelf` met een plafond per eenheid voor `set` en `deel` (anders geeft één "Boutenset" op driehonderd bouten de telling in één keer).
@@ -344,14 +414,14 @@ Stand 16 oktober 2026, 02:40 UTC (structurele ronde, commits `5889293` en `1e781
 
 Poort: `pncheck` groen (reproduceerbaar, bronnen per nummer niet gedaald); dekking op de 100-lijst in `cijfers.md`; lokvogels 0 doorgelaten; itest 15 groen.
 
-## Golf 5e: feiten en de echte auto (doorlopend)
+## Golf 5e: feiten en de echte auto (doorlopend; F1 tot en met F4 in versie 12, zie "Golf 5f en 5e" hierboven voor de stand)
 
 | Nr | Wat | Grond |
 |---|---|---|
-| F1 | ATF: MR 415 noemt ELF MATIC S6, 7,6 l totaal en 3,5 l na aftappen in een AJX-tabel; `beslissingen.md` en `specificaties:99` zeggen Elfmatic J6, 8 l, "Bevestigd". Uitzoeken welke tabel voor de AJ0 geldt; besluit in `beslissingen.md`, status in `specificaties`, spec in `drivetrain.js:420`. | handomdraai 15 |
-| F2 | Metingen aan de auto van de gebruiker: hoeken van kap, portieren en klep, velgmaat (17 of 18 inch), accuzijde, plaats van de startknop; daarna `open.angle` en de specificaties bijwerken. 4Control is beantwoord (`ca25166`). | handomdraai 16; specificaties "Open punten" |
-| F3 | Multiriem (1.569 mm tegen 1.795 mm): alleen met de riemloop uit MR 415; de dynamo 0,11 m hoger komt boven het kapprofiel. Anders blijft de eerlijke beschrijving staan. | audit |
-| F4 | De uitklapanimatie zelf beoordelen: `DUR` 0,85 s (`app1.js:77`) en staffels van 0,22 s; één vóór/na-opname als GIF naast versie 1 (te traag bij diep duiken, te snel bij kleine groepen). | ontbrak |
+| F1 | ATF: MR 415 noemt ELF MATIC S6, 7,6 l totaal en 3,5 l na aftappen in een AJX-tabel; `beslissingen.md` en `specificaties:99` zeggen Elfmatic J6, 8 l, "Bevestigd". Uitzoeken welke tabel voor de AJ0 geldt; besluit in `beslissingen.md`, status in `specificaties`, spec in `drivetrain.js:420`. Stand: gedaan in versie 12 (Elfmatic J6, 7,6 l, Bevestigd). | handomdraai 15 |
+| F2 | Metingen aan de auto van de gebruiker: hoeken van kap, portieren en klep, velgmaat (17 of 18 inch), accuzijde, plaats van de startknop; daarna `open.angle` en de specificaties bijwerken. 4Control is beantwoord (`ca25166`). Stand na golf 5f en 5e: de startknop is beantwoord door de gebruiksaanwijzing (dashboard, geen meting nodig), de velgmaat door de prijslijst (18 inch blijft), het voorportier staat op 67 graden (RiDC); open blijven de achterklep (hoogste punt met een rolmaat), de accuzijde en de hoeken van motorkap en achterportier. | handomdraai 16; specificaties "Open punten" |
+| F3 | Multiriem (1.569 mm tegen 1.795 mm): alleen met de riemloop uit MR 415; de dynamo 0,11 m hoger komt boven het kapprofiel. Anders blijft de eerlijke beschrijving staan. Stand: de lengte 1.795 mm (7PK1795) is bevestigd, het verloop staat alleen in figuur 124137 van MR 415 en is niet gevonden; de beschrijving blijft. | audit |
+| F4 | De uitklapanimatie zelf beoordelen: `DUR` 0,85 s (`app1.js:77`) en staffels van 0,22 s; één vóór/na-opname als GIF naast versie 1 (te traag bij diep duiken, te snel bij kleine groepen). Stand: gedaan als meting; de staffel is begrensd (`CFG.tijd.staffelMaxS`, `allesStaffelMaxS`), de GIF vervalt. | ontbrak |
 
 ## Golf 6 (strategisch, alleen bij een concrete aanleiding)
 
@@ -374,7 +444,8 @@ Poort: `pncheck` groen (reproduceerbaar, bronnen per nummer niet gedaald); dekki
 | 5 | 5b-2 geometrie en budget | 6 domeinagents (gedaan op 16 oktober, 16:18 tot 20:21 UTC) | 1,5 tot 2 dagen | set strikt, budgetten, `visdiff` (eigen basis), poort niet lager, S7 8 van 9 (niet gehaald) | ja, versie 9 (gepubliceerd op 16 oktober, 21:30 UTC) |
 | 5b | 5b-3 restpunten van 5b-2 | orkestrator plus domeinagents | 1 tot 1,5 dag | zoals 5b-2, met `clash.py` 0 | ja, versie 10 |
 | 6 | 5c-2 prestaties en codegezondheid | 1 app-agent | 1 tot 1,5 dag, K5 apart | volledige set; `timing()` 25 procent korter | ja, versie 11 |
-| 7 | 5e feiten | orkestrator plus gebruiker | doorlopend | besluit in `beslissingen.md` | mee met de volgende versie |
+| 6b | 5f carrosserie en 5e feiten (F1 tot en met F4) | orkestrator plus domeinagents (carrosserie, interieur, app) | 1 dag (19 oktober 2026), drie rondes plus een advisor-ronde | set groen op macOS en Linux, visdiff op Linux, zwaai zonder nieuwe doordringing, S7 minstens 7 van 9, advisor pass | ja, versie 12 |
+| 7 | 5e feiten (rest) | orkestrator plus gebruiker | doorlopend | besluit in `beslissingen.md` | mee met de volgende versie |
 | 8 | 6 strategisch | spike van 1 dag | op aanvraag | volledige itest op de spike | nee tot besluit |
 
 Elke golf krijgt vooraf een korte premortem (één lens, zeven oorzaken, struikeldraden) zoals in `docs/premortem.md`, en achteraf de drie tijden in `CHANGELOG.md`.
@@ -423,7 +494,7 @@ Nog open:
 
 1. **Afstemming met de sessie op `ccr-bd755431-1qfniw`**: dit plan wacht op de geplande check (23:09 UTC) en begint pas als die tak rust; daarna gebeurt alles vanaf `main`.
 2. **Telefoonsessie** met het protocol van A7, zodra versie 7 staat.
-3. **Metingen aan de auto** (F2): hoeken van kap, portieren en klep; velgmaat; accuzijde; startknop.
+3. **Metingen aan de auto** (F2): hoeken van kap, portieren en klep; velgmaat; accuzijde; startknop. Na golf 5f en 5e zijn velgmaat en startknop beantwoord; open blijven het hoogste punt van de open achterklep, de accuzijde en de hoeken van motorkap en achterportier.
 4. **Golf 6**: wel of geen spike naar ES-modules en een actuele three.js; standaardadvies is nee tot er een aanleiding is. Een tweede bestand naast de pagina alleen als het artefact als kanaal mag vervallen.
 5. **Prioriteit** als er maar één spoor tegelijk kan: de volgorde hierboven (zichtbaar eerst, geometrie en schuld daarna). Wie liever de nummers eerst wil, schuift 5d naar stap 3; dat kan, want 5d hangt alleen aan A10.
 
