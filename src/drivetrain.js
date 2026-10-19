@@ -412,7 +412,7 @@ function drvOutside() {
 function buildGearbox() {
   return A('Automaatversnellingsbak', {
     d: 'Zestraps automaat Jatco JF613E (Renault-code AJ0, gebaseerd op het Lepelletier-systeem) met koppelomvormer, drie planetaire sets, vijf schakelelementen plus vrijloop en ingebouwd differentieel; dwars links naast de motor. De interne koppeling van de sets en alle kleine onderdelen zijn schematisch weergegeven. Het droge gewicht is circa 93 kg en de lengte circa 385 mm.',
-    spec: [['Type', 'Jatco JF613E (Renault AJ0)'], ['Overbrengingen', '4,199 / 2,405 / 1,583 / 1,161 / 0,855 / 0,685, achteruit 3,457 (Mitsubishi F6AJA-handboek; de snelheden per 1.000 tpm in de Renault-persmap kloppen hier binnen 0,2 % mee)'], ['Eindoverbrenging', '3,804 (Renault-persmap 2007)'], ['ATF', 'Elf Elfmatic J6 (het handboek van 2009 noemt in zijn tabel ELF MATIC S6); totaal 7,6 liter, na aftappen 3,5 liter']],
+    spec: [['Type', 'Jatco JF613E (Renault AJ0)'], ['Overbrengingen', '4,199 / 2,405 / 1,583 / 1,161 / 0,855 / 0,685, achteruit 3,457 (Mitsubishi F6AJA-handboek; de snelheden per 1.000 tpm in de Renault-persmap kloppen hier binnen 0,2 % mee)'], ['Eindoverbrenging', '3,804 (Renault-persmap 2007)'], ['ATF', 'Elf Elfmatic J6 (goedgekeurd voor Renault AJ0/AJ8); totaal 7,6 liter, na aftappen 3,5 liter, vullen met 3,2 liter, niveau bij 40 graden']],
     p: [GB_X, 0, 0], ex: [0.66, 0, 0],
   }, [
     ...drvHousing(),

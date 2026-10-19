@@ -363,7 +363,7 @@ function buildWheel(s, front) {
     return zTo(merge(list), 'x');
   });
   const a = 0.7, wa = [2.1, 4.3];
-  return A(`Wiel ${n}`, { d: 'Lichtmetalen velg met tien taps toelopende spaken en band 225/45 R18. Maat: 18 inch (UK Initiale Lux standaard; voor een Nederlandse Initiale Paris van 2011 is 17 inch even goed mogelijk). De naam van het velgontwerp (Celsium) is voor deze auto niet bevestigd.', p: [s * tr, AY, z], s: [s, 1, 1], spec: [['Band', '225/45 R18'], ['Steekcirkel', '5 × 114,3 mm'], ['Bevestiging', '5 wielbouten M14 × 1,5'], ['Middengat', 'Ø66,1 mm'], ['Bandenspanningssensor', 'in het ventiel']], ex: [s * 1.05, -0.1, front ? 0.55 : -0.65] }, [
+  return A(`Wiel ${n}`, { d: 'Lichtmetalen velg met tien taps toelopende spaken en band 225/45 R18. Maat: 18 inch, in Nederland bij de Initiale een optie, onder meer in het Pack Lumière (panoramadak plus 18 inch, tot 31 januari 2011); standaard was 17 inch. De naam van het velgontwerp (Celsium) is voor deze auto niet bevestigd.', p: [s * tr, AY, z], s: [s, 1, 1], spec: [['Band', '225/45 R18'], ['Steekcirkel', '5 × 114,3 mm'], ['Bevestiging', '5 wielbouten M14 × 1,5'], ['Middengat', 'Ø66,1 mm'], ['Bandenspanningssensor', 'in het ventiel']], ex: [s * 1.05, -0.1, front ? 0.55 : -0.65] }, [
     P('Band', tire, MAT.rubber, { d: 'Radiaalband 225/45 R18 met vier lengtegroeven in het loopvlak.', ex: [-0.07, 0, 0] }),
     P('Velgbed', rimB, MAT.chsRimWell, { d: 'Velgbed (ton) van gegoten aluminium met de wulpen waarop de band zit.', ex: [0.02, 0, 0] }),
     P('Velgster', star, MAT.chsRimFace, { d: 'Sterwerk met tien taps toelopende spaken en naafplaat met vijf boutgaten.', ex: [0.1, 0, 0] }),

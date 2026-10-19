@@ -83,7 +83,7 @@ Op volgorde van wat de gebruiker het eerst ziet; de lijst van de parallelle sess
 ### Feiten en model
 
 14. Motorcode 811 of 813: waarschijnlijk 813, zekerheid middel. "Geen faseversteller" is alleen voor de 811 bewezen (persmap 2007).
-15. ATF: hoeveelheid bevestigd; of Elfmatic J6 en ELF MATIC S6 dezelfde olie zijn, is open. Navragen bij een dealer.
+15. ATF: gesloten in golf 5e (19 oktober 2026). Elfmatic J6, 7,6 l totaal, 3,5 l na aftappen; ELF MATIC S6 is een tabelnaam of drukfout (zie `docs/onderzoek/beslissingen.md`).
 16. Hoeken en slagen van de openers zijn geschat. De gebruiker kan ze aan de eigen auto meten (zie Meetlijst).
 17. Oud en bekend: de kabelboom in de cabine raakt de nieuwe opkant in de bodemplaat; achterarm en veerrubber liggen aan de binnenkant van de wielkast boven de vloerplaat; de tank is schematisch kleiner dan 66 liter; 84 van de 345 labelankers liggen achter een ander deel; donkere spikkels op motorkap en dak in het bovenaanzicht (vermoedelijk software-rasterisatie); de spoilerlip leest van opzij als losse zwarte wig (S7).
 18. De ECU-tekst in `src/systems.js` is in golf 5b-2 (G9c) opgeruimd; niet opnieuw nagelopen op de motorcode 811 of 813.
