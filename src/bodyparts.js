@@ -39,7 +39,6 @@ std('bodGrille', 0x1d1f23, 0.35, 0.24, { envMapIntensity: 1.1 });             //
 // middengrijs gelakt staal van de gasveercilinders: lichter dan het zwart van de zijrand en de bekleding, zodat de veer in het achterklepbeeld leest
 std('bodStrut', 0x62676e, 0.55, 0.35, { envMapIntensity: 0.9 });
 const bodSY = (z, y) => sAtY(z, y);
-const bodSAtXLow = (z, x) => { const c = bodSec(z); return x / Math.max(1e-6, c.hw - c.bul - c.rb) * S1; };   // s op de onderkant bij |x|
 const sn = s => sideName(s);
 // naden tussen linker- en rechterhelft gladtrekken (gedeelde normalen)
 // ook over naden tussen losse vlakken: weldAll in core.js (zelfde tolerantie 1e-4)
@@ -665,6 +664,22 @@ function bodClipOut(g, X0, Y0, Y1, zMin) {
   }
   const r = new THREE.BufferGeometry(); r.setAttribute('position', new THREE.Float32BufferAttribute(out, 3)); r.computeVertexNormals(); return r;
 }
+// inham in een huiddeel: houdt alleen het deel van elke driehoek dat buiten het blok x0 <= s * x <= x1, y < y1, z < z1 ligt; exact op de
+// vlakken geknipt (buitengebied als vier disjuncte convexe stukken, halfruimten n . p <= c). Voor de uitlaatuitsparing in de bumperhoek
+function bodClipBox(g, s, x0, x1, y1, z1) {
+  const p = g.attributes.position, ix = g.index ? g.index.array : [...Array(p.count).keys()], out = [];
+  const V = k => [p.getX(k), p.getY(k), p.getZ(k)];
+  const cut = (poly, n, c) => { const r = []; poly.forEach((A, i) => { const B = poly[(i + 1) % poly.length], da = n[0] * A[0] + n[1] * A[1] + n[2] * A[2] - c, db = n[0] * B[0] + n[1] * B[1] + n[2] * B[2] - c;
+    if (da <= 0) r.push(A); if ((da < 0 && db > 0) || (da > 0 && db < 0)) { const t = da / (da - db); r.push(A.map((v, k) => v + (B[k] - v) * t)); } }); return r; };
+  const xin = [[[-s, 0, 0], -x0], [[s, 0, 0], x1]], regs = [[[[s, 0, 0], x0]], [[[-s, 0, 0], -x1]], [...xin, [[0, -1, 0], -y1]], [...xin, [[0, 1, 0], y1], [[0, 0, -1], -z1]]];
+  for (let i = 0; i < ix.length; i += 3) {
+    const tri = [V(ix[i]), V(ix[i + 1]), V(ix[i + 2])];
+    if (tri.every(v => s * v[0] <= x0) || tri.every(v => s * v[0] >= x1) || tri.every(v => v[1] >= y1) || tri.every(v => v[2] >= z1)) { tri.forEach(v => out.push(...v)); continue; }
+    for (const hs of regs) { let poly = tri; for (const [n, c] of hs) { poly = cut(poly, n, c); if (poly.length < 3) break; }
+      for (let k = 1; k + 1 < poly.length; k++) out.push(...poly[0], ...poly[k], ...poly[k + 1]); }
+  }
+  const r = new THREE.BufferGeometry(); r.setAttribute('position', new THREE.Float32BufferAttribute(out, 3)); r.computeVertexNormals(); return r;
+}
 // Achterwielkast: kuip (halve cilinder, straal bodWHR, x 0,51 tot 0,73) met een binnenwand op x = s * 0,51 van de vloer tot
 // de kuipboog. De wand heeft een sleuf waar de torsiebalk met de stabilisatorstaaf doorloopt en een uitsparing voor de
 // schroefveer (x 0,438 tot 0,582); achter die uitsparing zit een veerkoker naar binnen tot x 0,432, met de bovenkant op
@@ -1059,6 +1074,29 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
 
   /* ================= achterbumper ================= */
   const rbBr = bodDense(-2.3, bodZT, 4);
+  // uitlaatuitsparing (golf 5f ronde 2): een echte inham in de onderrand van de bumper, |x| 0,385 tot 0,515, tot y 0,345 en van z -2,15
+  // naar achteren (binnen de kabelboom naar de achterlichten, die in de hoek op x 0,53 tot 0,6 omhoog loopt). Bumperschaal en onderschort worden op de vlakken van dat blok geknipt; plafond, voorwand en zijwanden (zwart, 3 mm
+  // onder de onderrand beginnend zodat ze de rand van de onderschort dekken) sluiten de inham. Het eindstuk van het uitlaatsysteem zit er
+  // met de achterkant gelijk met het bumpervlak in; eerder was dit een zwart vlakje op de onderkant en hing het eindstuk eronder
+  const exX0 = 0.385, exX1 = 0.515, exY1 = 0.345, exZF = -2.15, exC = [0.45, 0.305, -2.22];
+  const exCut = g => bodClipBox(bodClipBox(g, 1, exX0, exX1, exY1, exZF), -1, exX0, exX1, exY1, exZF);
+  const exLowY = (z, x) => { if (!bodInside(z, x, exY1)) return exY1; let lo = bodSec(z).yb, hi = exY1; for (let i = 0; i < 24; i++) { const m = (lo + hi) / 2; if (bodInside(z, x, m)) hi = m; else lo = m; } return hi; };
+  const exWalls = s => {
+    const yL = (z, x) => Math.min(exY1 - 0.001, exLowY(z, x) - 0.003), zE = x => bodRearZ(x, exY1);
+    const g = merge([
+      patch((x, t) => [s * x, exY1, lerp(exZF, zE(x), t)], exX0, exX1, 8, () => [0, 1], 8),
+      patch((x, y) => [s * x, y, exZF], exX0, exX1, 8, x => [yL(exZF, x), exY1], 3),
+      ...[exX0, exX1].map(xw => patch((z, y) => [s * xw, y, z], exZF, zE(xw), 12, z => [yL(z, xw), exY1], 3)),
+    ].map(q => q.toNonIndexed()));
+    // driehoeken met de voorzijde naar het hart van de inham (daar zit het eindstuk)
+    const P3 = g.attributes.position, A3 = P3.array, c = [s * exC[0], exC[1], exC[2]];
+    for (let i = 0; i < P3.count; i += 3) {
+      const a = [0, 1, 2].map(k => [P3.getX(i + k), P3.getY(i + k), P3.getZ(i + k)]), u = a[1].map((v, k) => v - a[0][k]), w = a[2].map((v, k) => v - a[0][k]);
+      const n = [u[1] * w[2] - u[2] * w[1], u[2] * w[0] - u[0] * w[2], u[0] * w[1] - u[1] * w[0]], m = a[0].map((v, k) => (v + a[1][k] + a[2][k]) / 3 - c[k]);
+      if (n[0] * m[0] + n[1] * m[1] + n[2] * m[2] > 0) for (let k = 0; k < 3; k++) { const t = A3[3 * (i + 1) + k]; A3[3 * (i + 1) + k] = A3[3 * (i + 2) + k]; A3[3 * (i + 2) + k] = t; }
+    }
+    g.computeVertexNormals(); return g;
+  };
   // verdiepte kentekenuitsparing (fase 2-foto): plaat met het midden op y 0,46, opening ca. 2 cm rondom de plaat, wanden schuin naar binnen
   // naar een bodem 1 cm diep. De bumperschaal krijgt daar een echte opening: de driehoeken van de staartpunt worden exact op de rand van
   // de opening geknipt (bodClipOut in een over z gespiegeld frame, alleen achter z -2,28); de wanden beginnen 0,3 mm boven de huid op de
@@ -1076,12 +1114,12 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   // zwaaide er bij het openen doorheen; golf 5f ronde 2)
   const shRa = bodSagSide(ZR + 1e-4, bodZT - 1e-4, () => [0, S2], 0.0003, { keep: tipBr, nuF: 48, nvF: 160 });
   const shRb = bodSagSide(ZR + 1e-4, bodZT - 1e-4, () => [S2, 1], 0.0003, { keep: rbBr, nuF: 48, nvF: 160 });
-  const shellR = bodWeld(merge([
+  const shellR = bodWeld(exCut(merge([
     shRs.geo(L), shRs.geo(R),
     ...[shRa.geo(L), shRb.geo(L), shRa.geo(R), shRb.geo(R)].map(bodCut),
     // sluitvlak op de staartpunt licht bol (hoogstens 4 mm, binnen ZR - 6 mm): een vlak eindvlak las als lichte rechthoek boven de kentekenuitsparing
     (() => { const z = ZR + 1e-4, c = bodSec(z); return patch((y, t) => { const X = ringX(z, y), v = 2 * (y - c.yb) / (c.yd - c.yb) - 1; return [X * t, y, z - 0.004 * (1 - t * t) * (1 - v * v)]; }, c.yb + 1e-4, c.yd - 1e-4, 8, () => [-1, 1], 16); })(),
-  ]));
+  ])));
   // schuine wanden van de opening (buitenrand op de huid, binnenrand op de bodem) en de bodem
   const rcO = (x, y) => [x, y, bodRearZ(x, y) - rcOut], rcI = (x, y) => [x, y, bodRearZ(x, y) + rcD];
   const rcWall = (a0, a1, b0, b1, n) => patch((u, t) => { const o = rcO(lerp(a0[0], a1[0], u), lerp(a0[1], a1[1], u)), i = rcI(lerp(b0[0], b1[0], u), lerp(b0[1], b1[1], u)); return [lerp(o[0], i[0], t), lerp(o[1], i[1], t), lerp(o[2], i[2], t)]; }, 0, 1, n, () => [0, 1], 2);
@@ -1105,11 +1143,11 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     // de uitlaateindstukken (uitlaatsysteem, y 0,30) liggen aan de onderrand
     // de band stopt waar de onderkant van de staartpunt boven 0,366 komt (z ca. -2,29): daarachter bleef een strook zonder hoogte over die als
     // dunne staande lijn midden door de kentekenplaat te zien was
-    P('Onderschort', merge([L, R].map(sd => lowSide(sd, -2.02, zVal, 40, z => [0, bodSY(z, Math.max(YB(z) + 0.002, Math.min(0.368, YB(z) + 0.09)))], 8, bodDense(-2.3, bodZT, 6).concat(bodDense(zVal, -2.3, 4)), -0.0025))), MAT.bodValance, { d: 'Donkergrijze kunststof onderschort langs de onderrand van de achterbumper (ca. 9 cm hoog), met aan de onderrand de uitsparingen voor de uitlaat.', ex: [0, -0.08, -0.04] }),
+    P('Onderschort', bodWeld(exCut(merge([L, R].map(sd => lowSide(sd, -2.02, zVal, 40, z => [0, bodSY(z, Math.max(YB(z) + 0.002, Math.min(0.368, YB(z) + 0.09)))], 8, bodDense(-2.3, bodZT, 6).concat(bodDense(zVal, -2.3, 4)), -0.0025))))), MAT.bodValance, { d: 'Donkergrijze kunststof onderschort langs de onderrand van de achterbumper (ca. 9 cm hoog), met de uitsparingen voor de uitlaat.', ex: [0, -0.08, -0.04] }),
     P('Mistachterlicht', G.rbox(0.1, 0.03, 0.012, 0.006), MAT.lensRed, { d: 'Mistachterlicht onderin de bumper aan de bestuurderszijde (positie geschat uit fase 2-foto\'s).', p: [0.62, 0.34, bodRearZ(0.62, 0.34) - 0.004], ex: [0.04, 0, -0.08] }),
     P('Reflector rechts', G.rbox(0.1, 0.03, 0.01, 0.006), MAT.lensRed, { d: 'Rode reflector onderin de bumper.', p: [-0.62, 0.34, bodRearZ(0.62, 0.34) - 0.004], ex: [-0.04, 0, -0.08] }),
     A('Parkeersensoren achter', { d: 'Vier ultrasone sensoren van de parkeerhulp achter (standaard op Initiale Paris), onder en naast de kentekenuitsparing.', ex: [0, 0.03, -0.12] }, [[0.5, 0.43], [0.17, 0.345], [-0.17, 0.345], [-0.5, 0.43]].map(([x, y], i) => P(`Parkeersensor achter ${i + 1}`, G.cyl('z', 0.011, 0.011, 0.02, 12), MAT.paint, { d: 'Ultrasone parkeersensor achter (standaard op Initiale Paris).', p: [x, y, bodRearZ(x, y) + 0.006], ex: [0, 0.02, -0.06] }))),
-    ...both(s => P(`Uitlaatuitsparing ${sn(s)}`, lowSide(s, -2.29, -2.13, 6, z => [clamp(bodSAtXLow(z, 0.72), 0, S1), clamp(bodSAtXLow(z, 0.56), 0, S1)], 3, [], -0.0035), MAT.blackGloss, { d: 'Uitsparing in de onderrand voor het verchroomde uitlaateindstuk (het eindstuk zelf hoort bij het uitlaatsysteem).', ex: [0, -0.04, -0.06] })),
+    ...both(s => P(`Uitlaatuitsparing ${sn(s)}`, exWalls(s), MAT.blackGloss, { d: 'Zwarte inham in de onderrand van de bumper (ca. 13 cm breed, 5 tot 7 cm hoog) waarin het verchroomde uitlaateindstuk zit; het eindstuk zelf hoort bij het uitlaatsysteem. Vorm en maat geschat.', ex: [0, -0.04, -0.06] })),
     ...both(s => P(`Bumpersteun achter ${sn(s)}`, G.rbox(0.05, 0.08, 0.14, 0.01), MAT.plastic, { d: 'Geleider die de bumperschaal aan het achterscherm vasthoudt; door de naad bij de bumperrichel net zichtbaar.', p: [s * 0.76, 0.55, -1.95], ex: [s * 0.05, 0, 0] })),
   ]);
 
