@@ -2,6 +2,8 @@
 
 Alle tests draaien in headless Chromium via Playwright (Python), met WebGL via SwiftShader (software-rendering). Elk script bouwt `src/` naar een tijdelijke testmap, start een kleine lokale webserver op die map en opent de pagina op 1280 × 800 (muis) en, waar nodig, op 390 × 844 (touch, schaal 2). Elk script geeft exitcode 0 bij slagen en 1 bij een fout.
 
+Uitzondering voor beelden die het oog beoordeelt (de S7-poort, de galerij): `LAG3_GPU=1` start de testbrowser op de echte GPU (macOS: ANGLE Metal). SwiftShader tekent op lak, dak en raamlijsten donkere spikkels die op een echte GPU niet bestaan (gemeten in golf 5f). De testset, visdiff en de basislijnen blijven op SwiftShader, omdat die pixels op elke machine gelijk zijn.
+
 ## Voorbereiding
 
 ```bash

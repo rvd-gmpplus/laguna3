@@ -25,6 +25,10 @@ THREE_VERSION = _build.THREE_VERSION
 # npm `dist.integrity` van three@0.147.0: het opgehaalde pakket moet hier byte voor byte mee kloppen
 THREE_INTEGRITY = 'sha512-LPTOslYQXFkmvceQjFTNnVVli2LaVF6C99Pv34fJypp8NbQLbTlu3KinZ0zURghS5zEehK+VQyvWuPZ/Sm8fzw=='
 ARGS = ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist']
+# LAG3_GPU=1: echte GPU (macOS: ANGLE Metal) in plaats van SwiftShader, alleen voor beelden die het oog beoordeelt (S7, galerij);
+# visdiff, basislijnen en de testset blijven op SwiftShader (golf 5f, 19 oktober 2026: de spikkels zijn een SwiftShader-artefact)
+if os.environ.get('LAG3_GPU') == '1':
+    ARGS = ['--use-angle=metal', '--enable-gpu', '--ignore-gpu-blocklist']
 # Contract: consolemeldingen die geen fout zijn. Alleen de orkestrator wijzigt deze lijst, elke regel met reden en datum.
 IGNORE = (
     'favicon.ico',  # de testpagina heeft geen favicon en de browser vraagt hem toch op (golf 1, 13 oktober 2026)
