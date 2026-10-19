@@ -6,7 +6,7 @@ Onderzoek in twee rondes: 12 oktober 2026 voor het eerste model, 13 oktober 2026
 
 | Status | Betekenis |
 |---|---|
-| Bevestigd | Officiële bron (Renault-persmap, brochure, handboek) of twee onafhankelijke bronnen die overeenkomen. |
+| Bevestigd | Officiële bron (Renault-persmap, brochure, handboek), twee onafhankelijke bronnen die overeenkomen, of een waarneming van de gebruiker aan de eigen auto (dan staat "waarneming gebruiker" erbij). |
 | Aannemelijk | Eén redelijke bron, of bevestigd voor de motor- of bakfamilie maar niet letterlijk voor deze auto. |
 | Geschat | Afgeleid of ingeschat; de methode staat erbij. |
 | Niet gevonden | Na gericht zoeken geen bron. Het model toont dan een representatieve opbouw en zegt dat in de beschrijving. |
@@ -16,10 +16,10 @@ Onderzoek in twee rondes: 12 oktober 2026 voor het eerste model, 13 oktober 2026
 | Onderwerp | Besluit | Status |
 |---|---|---|
 | Automaat | Jatco JF613E, Renault-code AJ0, Lepelletier-opbouw. Niet Aisin: de enige bron voor "Aisin" is een automatisch gegenereerde reviewpagina over de 204 pk GT. Ook een Poolse ATF-dienstverlener noemt TF-80SC, zonder typeplaatje of nummer. De Renault-overbrengingen sluiten de TF-80SC uit. | Bevestigd (type); verhoudingen uit het handboek van de zusterbak Mitsubishi F6AJA, die met de Renault-persmap 2007 binnen 0,2 % kloppen |
-| Stuurbekrachtiging | Hydraulisch met variabele assistentie, pomp aangedreven door de multiriem. Geen elektropomp (GEP): die staat bij de 2.0 140 (M4R) en de dCi 130. Het motoronderzoek noemde "électro-hydraulique" op grond van algemene bronnen; de Renault-persmap voor de F4Rt 811 zegt "hydraulique variable" (voor de 813 niet apart bevestigd). | Aannemelijk (riemaandrijving), Bevestigd (hydraulisch met variabele assistentie) |
+| Stuurbekrachtiging | Hydraulisch met variabele assistentie, pomp aangedreven door de multiriem. Geen elektropomp (GEP): die staat bij de 2.0 140 (M4R) en de dCi 130. Het motoronderzoek noemde "électro-hydraulique" op grond van algemene bronnen; de Renault-persmap voor de F4Rt 811 zegt "hydraulique variable" (voor de 813 niet apart bevestigd). | Bevestigd (riemaandrijving, per catalogus van 19 oktober 2026; hydraulisch met variabele assistentie) |
 | Remmen | Voor geventileerd 296 × 26 mm, zwevende klauw met zuiger Ø57. Achter massief 300 × 11 mm (niet 260), gecombineerde klauw met zuiger Ø38 en kabel naar de elektrische parkeerrem. | Bevestigd |
 | ABS-encoder | Magnetische codeerring in de wiellagereenheid, geen getande ring. | Bevestigd |
-| Velgen | 18 inch met band 225/45 R18 en tien tapse spaken blijft in het model. Standaard op de Initiale was 17 inch (215/50 R17 of 225/50 R17; Franse prijslijst januari 2011, AutoWeek september 2010); 18 inch was een optie, in Nederland onder meer in het Pack Lumière (panoramadak plus 18 inch, tot 31 januari 2011; Autozine september 2010). De auto heeft het panoramadak en is in februari 2011 toegelaten, dus 18 inch is aannemelijk. | Aannemelijk |
+| Velgen | 18 inch met band 225/45 R18 en tien tapse spaken blijft in het model. Standaard op de Initiale was 17 inch (215/50 R17 of 225/50 R17; Franse prijslijst januari 2011, AutoWeek september 2010); 18 inch was een optie, in Nederland onder meer in het Pack Lumière (panoramadak plus 18 inch, tot 31 januari 2011; Autozine september 2010). De gebruiker heeft op 19 oktober 2026 aan de eigen auto vastgesteld dat de velg 18 inch is met band 225/45 R18. | Bevestigd (waarneming gebruiker) |
 | 4Control | Niet in het model, en niet op de auto van de gebruiker (opgave van de gebruiker, 15 oktober 2026: Initiale Paris zonder 4Control). Het was op de Initiale een optie van 2000 euro (Franse prijslijst 2011); het model toont de standaard H-as. | Bevestigd (gebruiker) |
 | Panoramadak | In het model: elektrisch panoramadak met schuivend voorglas en vast achterglas. De auto van de gebruiker heeft het; het is een optie bij de Initiale (850 euro in Frankrijk). Afmetingen in het model: voorste glas z 0,20 tot -0,50 (opening in het dak vanaf 0,22), dwarsbalk -0,50 tot -0,58, achterste glas -0,58 tot -1,11, breedte plus en min 0,47. Deze maten zijn geschat uit foto's. | Bevestigd (optie), Geschat (afmetingen) |
 | Stoelen | Elektrisch met geheugen (bestuurder), verwarming, handmatige lendensteun. Geen massage en geen ventilatie. Geperforeerd leder, beige of donker (Dark Carbon); het model houdt beige. | Bevestigd |
@@ -74,15 +74,15 @@ Motorcode van de auto van de gebruiker (bijgewerkt op 15 oktober 2026): waarschi
 | Turbo-uitvoering | Twin-scroll spruitstuk (cilinders 1+4 en 2+3), watergekoeld lagerhuis, interne wastegate met drukdoos | Planète Renault (F4Rt Vel Satis), Rensatis | Aannemelijk |
 | Laaddruk | Voor de F4Rt niet gevonden; schatting 0,8 tot 1,0 bar overdruk | | Niet gevonden / Geschat |
 | Intercooler | Lucht-lucht, voor de radiateur | Autodoc, piecesauto.fr | Aannemelijk |
-| Multiriem | 7PK1795 (7 ribben, 1795 mm), automatische spanner en een geleiderol | Autodoc (ContiTech-kit) | Bevestigd (maat) |
-| Aangedreven door de multiriem | Dynamo, aircocompressor en stuurpomp (drie verbruikers) | Besluit; Autodoc, Caradisiac-forum | Aannemelijk (stuurpomp) |
+| Multiriem | 7PK, 1.790 tot 1.795 mm (7 ribben): RIDEX-set 542R0055 en SNR CA7PK1792 (1.792 mm), ContiTech 7PK1795 en Meyle 050 007 1795 (1.795 mm); het model noemt 7PK1795. Automatische spanner en een geleiderol | Autodoc, op TecDoc-type 23370 (Laguna III Hatchback (BT) 2.0 16V Turbo 170 pk, F4R 811), 19 oktober 2026 | Bevestigd (maat en type); het verloop van de riem is open |
+| Aangedreven door de multiriem | Dynamo, aircocompressor en stuurbekrachtigingspomp (drie verbruikers) | Autodoc-catalogus (de riemsets noemen alle drie), Caradisiac-forum | Bevestigd |
 | Dynamo | Valeo TG15C-reeks, 150 A, riempoelie met 7 groeven | Autodoc | Bevestigd |
 | Aircocompressor | Denso-type, R134a, 7 ribben | Autodoc | Aannemelijk |
 | Waterpomp | Aangedreven door de distributieriem | Autodoc, Revue technique | Bevestigd |
 | Olie en koelvloeistof | Olie 5,4 l inclusief filter (Bevestigd: persmap en handboek); koelvloeistof circa 7,7 l (Aannemelijk) | Renault-persmap 2007, lagunanotice, Motul-tabel, Automoli | Bevestigd (olie) |
 | Plaats in de auto | Dwars voorin; distributiezijde rechts, vliegwiel en bak links; inlaatzijde naar voren, turbo en uitlaat naar achteren | L'argus, Rensatis, Revue technique | Bevestigd (dwars), Aannemelijk (zijden) |
 | Motorsteunen | Rechter bovensteun aan de distributiezijde, linkersteun aan de bak, koppelstang onderaan | Autodoc | Aannemelijk |
-| Motor-ECU | Plaats en type | | Niet gevonden |
+| Motor-ECU | Plaats en type. Het model heeft hem nog rechts tegen het schot; MR 415 zet hem op de accubak, dus links achter. Open punt, nog niet verplaatst | MR 415 | Niet gevonden (bevestiging van de plaats) |
 | Toepassing | Ook in o.a. Mégane RS | Planète Renault | Bevestigd |
 
 ## Transmissie en aandrijfassen
@@ -122,9 +122,9 @@ Motorcode van de auto van de gebruiker (bijgewerkt op 15 oktober 2026): waarschi
 | ABS/ESP | ABS, EBV, noodremassistent, ESP met onderstuurcontrole en ASR; hydraulische eenheid Bosch ESP 8.0 volgens onderdelenlijst | Renault-persmap 2007, Franse brochure 2008 | Bevestigd (ESP-set), Aannemelijk (Bosch 8.0) |
 | Parkeerrem | Elektrisch: één gesloten unit onder de vloer bij de achteras met een elektromotor en wormwiel die twee kabels naar de achterklauwen trekt; schakelaar naast de keuzehendel; wegrijhulp; noodontgrendeling via een kabel in het reservewielputje | Renault-handboek fase 2, Planète Renault, Dialogys-document | Bevestigd (unit en kabels), Aannemelijk (noodkabel); exacte montageplek niet bevestigd |
 | Stuurinrichting | Tandheugel, hydraulisch met variabele (snelheidsafhankelijke) assistentie; 2,9 slagen tussen de aanslagen | Renault-persmap 2007 | Bevestigd |
-| Stuurpomp | Vleugelpomp aangedreven door de multiriem met apart reservoir en slangen | Besluit; Caradisiac-forum, toppiecesvoiture.fr | Aannemelijk |
+| Stuurpomp | Vleugelpomp aangedreven door de multiriem (Autodoc-catalogus) met apart reservoir en slangen | Autodoc; Caradisiac-forum, toppiecesvoiture.fr | Bevestigd (aandrijving), Aannemelijk (uitvoering) |
 | Stuurkolom | In hoogte en diepte verstelbaar met hendel, elektrisch kolomslot | Renault-handboek fase 2 | Bevestigd |
-| Velg | 18 inch, 7,5 J × 18, ET 47, tien taps toelopende spaken (ontwerp "Celsium" is niet bevestigd voor de foto) | UK-brochure (Initiale Lux), eBay-advertentie, persfoto | Aannemelijk |
+| Velg | 18 inch met band 225/45 R18 (maat van de auto van de gebruiker), 7,5 J × 18, ET 47, tien taps toelopende spaken (ontwerp "Celsium" is niet bevestigd voor de foto) | Waarneming gebruiker (maat); UK-brochure (Initiale Lux), eBay-advertentie, persfoto (J, ET en spaken) | Bevestigd (maat, waarneming gebruiker), Aannemelijk (J, ET en spaken) |
 | Band | 225/45 R18 95W, buitendiameter 0,660 m | UK-brochure, koleso.ee | Bevestigd als leverbare maat |
 | Wielbevestiging | 5 × 114,3, centreergat 66,1, wielbouten M14 × 1,5 | koleso.ee, auto-doc.be | Bevestigd (steek en draad), Aannemelijk (centreergat) |
 | Bandenspanningssensor | In het ventiel van elk wiel | Renault-handboek fase 1, Franse brochure 2008 | Bevestigd (principe) |
@@ -153,7 +153,7 @@ Motorcode van de auto van de gebruiker (bijgewerkt op 15 oktober 2026): waarschi
 
 | Gegeven | Waarde | Bron | Status |
 |---|---|---|---|
-| Accu | In de motorruimte in een accubak met afdekkap, accuafkoppelunit en UPC-zekeringkast; zijde rechtsvoor, bronnen verschillen. MR 415 (80A en 10A) wijst op linksvoor boven de automaat (de accubak draagt de motor-ECU en de zekeringkast); geen wijziging in het model tot een bron of een controle aan de auto | Renault-werkplaatsboek, Auto-Doc | Bevestigd (motorruimte), Geschat (zijde) |
+| Accu | In de motorruimte links achter, boven de automaat, in een accubak met afdekkap, accuafkoppelunit en UPC-zekeringkast (die op de accubak staat). Het model heeft de accu sinds versie 13 daar (eerder rechtsvoor); het luchtfilter, de aanzuigslang, de resonator, de hete laadluchtslang en de brandstofleiding zijn daarvoor verlegd. MR 415 (80A en 10A) past erbij: de accubak draagt de zekeringkast en de motor-ECU. Plaats en maat van de bak zijn geschat | Waarneming gebruiker (19 oktober 2026), Renault-werkplaatsboek, Auto-Doc | Bevestigd (motorruimte en zijde, waarneming gebruiker), Geschat (maat) |
 | UCH | Onderin het dashboard links | Renault-zekeringenschema | Bevestigd |
 | Tank | 66 l onder de achterbank voor de achteras | Renault-handboek | Bevestigd (inhoud), Geschat (plaats) |
 | Uitlaat | Drieweg-katalysator achter de turbo, middendemper (425 mm), achterdemper, twee lambdasondes; eindpijpen dubbel chroom | Autodoc, UK-brochure | Aannemelijk |
@@ -181,14 +181,16 @@ De hoeken van de openers zijn grotendeels geschat uit foto's, het instructieboek
 | Opener | Hoek in het model | Bron | Status |
 |---|---|---|---|
 | Voorportier links en rechts | 67 graden (was 68) | RiDC, gradenboog op het voorportier van een Laguna Grandtour Initiale 2011; de voorportieren zijn gelijk aan die van de hatchback. Enige gevonden bron; RiDC zet bij veel auto's 67 graden, mogelijk een plafond van het protocol | Aannemelijk |
-| Achterklep | 66 graden | Gasveer van 495 mm uitgeschoven, op 66 graden afgesteld met geschatte ophangpunten. De UK-brochure van oktober 2011 noemt "Height with boot open 1 900" mm; het hoogste punt van de klep haalt 1,90 m bij circa 31 graden (dan staat de onderrand rond 1,4 m, geen bruikbare laadopening) en is 2,36 m bij 66 graden. Wat de brochure meet, is open | Geschat |
-| Motorkap, achterportieren | Zie ontwerp-en-architectuur.md | Foto's en handboeken | Geschat |
+| Achterklep | 66 graden | Gasveer van 495 mm uitgeschoven, op 66 graden afgesteld met geschatte ophangpunten. De gebruiker vindt de stand in het model goed (19 oktober 2026); het open punt over de brochuremaat "Height with boot open 1 900" mm (UK-brochure van oktober 2011; het hoogste punt van de klep is 2,36 m bij 66 graden en haalt 1,90 m bij circa 31 graden, waar geen bruikbare laadopening is) is gesloten | Besloten (waarneming gebruiker) |
+| Motorkap | 65 graden | De gebruiker schat 60 tot 75 graden op de eigen auto (19 oktober 2026); zie ontwerp-en-architectuur.md | Aannemelijk (past bij waarneming gebruiker) |
+| Achterportieren | Zie ontwerp-en-architectuur.md | Foto's en handboeken | Geschat |
 
 ## Open punten
 
-- Wielontwerp van een Nederlandse Initiale Paris uit 2011 (de maat is beantwoord: 18 inch is een optie, zie Velgen hierboven).
-- Plaats van de motor-ECU, de claxons en de accu (links of rechts; MR 415 wijst op linksvoor boven de automaat, het model heeft rechtsvoor).
-- Openingshoek van de motorkap en het achterportier, en de stand van de achterklep (het model heeft 66 graden; hoogste punt van de open klep 2,36 m tegen 1,90 m in de UK-brochure van oktober 2011, een meting met een rolmaat beslist).
+- Wielontwerp van een Nederlandse Initiale Paris uit 2011 (de maat is beantwoord: 18 inch, bevestigd door de gebruiker, zie Velgen hierboven).
+- Plaats van de motor-ECU (het model heeft hem rechts tegen het schot; MR 415 zet hem op de accubak, links achter) en van de claxons. De accu is beantwoord: links achter boven de automaat (waarneming gebruiker, versie 13).
+- Het verloop van de multiriem (alleen figuur 124137 van MR 415; de verbruikers en de lengte zijn bevestigd).
+- Openingshoek van het achterportier. De motorkap (65 graden, binnen de geschatte 60 tot 75 graden van de gebruiker) en de achterklep (66 graden, besloten) zijn afgehandeld; een meting met een rolmaat kan ze nog verfijnen.
 - Merk van de remklauwen en van de stuurpomp.
 - Overhangen: fabriek 1014 en 925 mm, model 980 en 959 mm, beelden circa 920 en 840 mm.
 - Renault-tandentallen voor de eindoverbrenging 3,804.

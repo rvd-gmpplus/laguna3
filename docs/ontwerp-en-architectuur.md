@@ -268,7 +268,7 @@ Hoeken in graden, slag in meter. De eindstand en de ondergrens komen uit `tools/
 
 | Opener | Soort | Eindstand | Ondergrens | Bijzonderheden |
 |---|---|---|---|---|
-| Motorkap | scharnier achterrand | 65 | 55 | motorkapsteun van 0,50 m als volger met eigen scharnier (steunstang van 8 mm straal in donker staal); aluminium kap; camera van linksvoor |
+| Motorkap | scharnier achterrand | 65 (past bij de geschatte 60 tot 75 graden van de gebruiker) | 55 | motorkapsteun van 0,50 m als volger met eigen scharnier (steunstang van 8 mm straal in donker staal); aluminium kap; camera van linksvoor |
 | Portier linksvoor, rechtsvoor | scharnier voor de voorrand | 67 (was 68; RiDC, zie [specificaties-en-bronnen.md](specificaties-en-bronnen.md), Openingshoeken) | 60 | scharnierblad aan de carrosseriezijde blijft staan; B-stijl in lak met slotbeugel, de afdekking van de B-stijl begint boven de chroomband, en boven de gordel ligt een gelakte plaat zodat de stijl bij een open portier als stijl leest; camera haaks op de zij, iets van voren |
 | Portier linksachter, rechtsachter | scharnier op de B-stijl | 62 | 55 | de kwartsruit draait als volger om dezelfde as mee (`bodDoorAxis`) |
 | Zijruit (vier) | schuif in het portier | voor 0,39, achter 0,30 | voor 0,35, achter 0,26 | achter blijft een strook staan; de achterste ruit zakt schuin mee met de helling van de B-stijl (slag 0,314, 4,8 cm naar voren), de geleiderails en kabels lopen evenwijdig |
@@ -398,7 +398,9 @@ Eindwaarden: de stuurpomp zit binnen zone P (`ENG_PS`, poelie met tipstraal 0,05
 
 11. Golf 5c-2 (18 en 19 oktober 2026; versie 11, gepubliceerd): prestaties en codegezondheid in vier blokken. A: restpunten uit 5b-3 (de binnendelen van de achterlichten onder Achterklep en daarna Achterlicht links en rechts als vast deel zonder groep Buitendeel, de expansiedop op catalogusmaat, de voorruit van buiten op 0,80, de tekst van de Gordelband, `intRoundPlate` in `roundPlate`). B: de nummergegevens lui uit het blok `#pn`, één synchronisatie per handeling, geen DOM per frame, een lus die in rust stilstaat. C: `CFG`, `TXT`, `UI_MODES`, dode code en dubbele hulpjes. D: `initAppFields` en `app2.js` in vijf bestanden. Plan, per punt en metingen: [masterplan.md](masterplan.md), sectie Golf 5c-2.
 
-12. Golf 5f en 5e (19 oktober 2026; versie 12, gebouwd): de carrosserie in drie rondes en een advisor-ronde op de S7-meldingen (B-stijl, staart, bumper, uitlaat in de bumper, randen voor, dakglas, spiegelvoet, binnendelen van het achterlicht; zie de sectie hierboven), de feiten uit handboeken en catalogi (ATF, startknop en kaartlezer in het dashboard, voorportier 67 graden, velgtekst) en de uitklapanimatie, waarvan de trap per laag nu in totaal begrensd is (`CFG.tijd.staffelMaxS` en `allesStaffelMaxS`). Daarnaast een meetmiddel: `LAG3_GPU=1` start de testbrowser op de echte GPU (alleen macOS), voor beelden die het oog beoordeelt. Plan, uitslag en commits: [masterplan.md](masterplan.md), sectie Golf 5f en 5e.
+12. Golf 5f en 5e (19 oktober 2026; versie 12, gepubliceerd): de carrosserie in drie rondes en een advisor-ronde op de S7-meldingen (B-stijl, staart, bumper, uitlaat in de bumper, randen voor, dakglas, spiegelvoet, binnendelen van het achterlicht; zie de sectie hierboven), de feiten uit handboeken en catalogi (ATF, startknop en kaartlezer in het dashboard, voorportier 67 graden, velgtekst) en de uitklapanimatie, waarvan de trap per laag nu in totaal begrensd is (`CFG.tijd.staffelMaxS` en `allesStaffelMaxS`). Daarnaast een meetmiddel: `LAG3_GPU=1` start de testbrowser op de echte GPU (alleen macOS), voor beelden die het oog beoordeelt. Plan, uitslag en commits: [masterplan.md](masterplan.md), sectie Golf 5f en 5e.
+
+13. Vervolgronde 5g (19 oktober 2026; versie 13, gebouwd): de accu staat links achter in de motorruimte boven de automaat, naar de waarneming van de gebruiker op de eigen auto; het luchtfilter en de leidingen eromheen zijn daarvoor verlegd (zie de sectie "Motorruimte links achter (versie 13)"). Verder is de velg van 18 inch bevestigd, drijft de multiriem ook de stuurpomp aan (catalogus) en past de motorkap van 65 graden bij de waarneming van 60 tot 75 graden. Plan en besluiten: [masterplan.md](masterplan.md), sectie Vervolgronde 5g.
 
 ### Airconditioningleidingen en vulpijp (golf 5b-3)
 
@@ -431,6 +433,19 @@ B-stijl (S7 kenmerk 4). De twee afdekkingen zijn mat zwart (diep zwart, ruw, vri
 Staart, bumper en uitlaat. Het staartvlak boven de bumper heeft een bolling die van 0,062 m op de bumperrichel lineair afneemt naar 0,015 m aan de bovenrand (`bodTB`, `bodTB1`) en rolt in de bovenste 15 cm naar voren om in het dek (`bodTF`); de bovenrand van de bumper rondt in de laatste 3 cm af als kwartcirkel (`bodTipR`, `bodTipDrop`). Dat zijn de enige wijzigingen in het alleen-lezen `body.js` (goedgekeurd door de orkestrator). Let op: in `bodyparts.js` zijn de x van de zijnaad en de afdichting van de achterklep vaste getallen, geen afgeleide van het staartvlak; verandert het staartvlak (`tailZ`), dan moeten ze mee, anders komt de afdichting buiten de huid of te diep in de sponning. De zijnaden van de achterklep zijn recht, op dezelfde x als de deling van het achterlicht. Het binnendeel van het achterlicht eindigt aan de binnenkant in een halve ellips van 3,5 cm diep in plaats van een rechte rand, en het klepvlak ertussen volgt die rand. De uitlaateindstukken zitten in een inham in de onderrand van de bumper (|x| 0,385 tot 0,515, tot y 0,345, vanaf z -2,13), met de achterkant gelijk met het bumpervlak; de uitlaatbuis blijft minstens 16 mm van de voorwand van de inham en de onderschort, 18 mm van de bumperschaal en 42 mm van de kabelboom (`clash.py`). Het achterste panoramaglas heeft ruwheid 0,2 en spiegeling 0,3, zodat de hemel er geen felle witte vlek meer op maakt, en de buitenspiegel staat op een voet als smalle plaat achter de kap in plaats van een blok.
 
 Voorportier. De hoek is 67 graden (RiDC; zie [specificaties-en-bronnen.md](specificaties-en-bronnen.md), Openingshoeken). De hoek staat in `bodDoorAxis` in `bodyparts.js` (voorportier 67, achterportier 62 graden); het klepscharnierblad begint nu achter het scharnierblok.
+
+### Motorruimte links achter (versie 13)
+
+De gebruiker zag op de eigen auto dat de accu links achter in de motorruimte staat, boven de automaat; het model had hem rechtsvoor. Dat past bij MR 415 (de accubak draagt de zekeringkast en de motor-ECU). De plaats staat in `src/systems.js` (hartpunt `BX`, `BY`, `BZ` in de accu-groep); de maat van de bak is geschat. Wat er voor is verlegd, zodat niets elkaar raakt en de botsingsmeting schoon blijft:
+
+- De Zekeringkast motorruimte staat op een bakje bovenop de accubak (zoals in het werkplaatsboek), met kabelboom en stekker mee.
+- Het luchtfilterhuis (`AB`) staat 3 cm verder naar voren en is ingekort van 27 naar 22 cm diep; deksel, element en clips volgen, de uitlaat van het deksel zit nu aan de achterkant.
+- De Aanzuigslang turbo loopt langs de wielkastzijde van de accu omlaag en achter de accu langs naar de turbo; de Resonator hangt onder het luchtfilterhuis.
+- De Hete laadluchtslang en de Bovenste radiateurslang zijn lichtjes verlegd, en de Toevoerleiding (brandstof) loopt rond de nieuwe plek.
+- De Accukabel plus gaat aan de voorkant van de accu omlaag en onder het luchtfilterhuis door naar de startmotor; de Massakabel accu loopt over de aanzuigslang heen naar een massaoog op de bovenkant van de linker wielkast.
+- Van de stuurslangen Zuigslang en Retourslang (`src/chassis.js`) is alleen de tekst bijgewerkt (de punten zijn gelijk) en de Langsligger voor (`src/bodyparts.js`) kreeg een nieuwe tekst; de motorkap kreeg alleen een commentaar.
+
+Open: de motor-ECU staat nog rechts tegen het schot (MR 415 zet hem op de accubak, dus links achter) en het verloop van de multiriem is niet bekend (alleen figuur 124137 van MR 415).
 
 ## Bewuste keuzes
 
