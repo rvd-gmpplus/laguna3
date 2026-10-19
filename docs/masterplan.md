@@ -630,3 +630,51 @@ Open voor later:
 - De rubber nokken raken de kap niet meer, terwijl hun tekst zegt dat de kap erop klemt.
 - S7-meldingen: achterstuk onder de achterlichten leest als blok (kenmerk 8), zwarte balk boven het voorkenteken, bolle motorkap van voren, blokkige spiegels, lijst om het kwartsruitje dubbel.
 - `uiCut` naar espace5 met `framework.py export`.
+
+## Golf 5j: motorruimte naar de echte auto, draaidop en peilstok, exterieurpunten (versie 16)
+
+Verzoek van de gebruiker op 19 oktober 2026: de open punten van versie 15, plus de motorruimte naar de echte auto. Het ging om de zwarte radiateurplaat, het expansievat vóór de rechter veerpoottoren, de accu voor en het luchtfilter achter (links), de koelventilator zichtbaar, een airco-leiding over het stuuroliereservoir, een peilstok die bij openen uit de buis floept, en de olievuldop als draaidop die op de afdekkap gaat liggen. Fotoonderzoek (forumlaguna3 t8080 en t3529, Autoweek, gebruikershandleiding) bevestigde de indeling; de gebruiker koos daarna "doorvoeren" voor accu en luchtfilter.
+
+Werkwijze: drie takken naast elkaar.
+- `golf-5j`, de orkestrator: draaidop, peilstok, vervagen van het opschrift en de opentest-fix.
+- `golf-5j-sys`, systemen: motorruimte en stuuroliereservoir.
+- `golf-5j-body`, carrosserie: de S7-punten.
+
+Elke tak is apart gemeten met clash tegen B0 (`c0cb022`) en de zwaai.
+
+Gedaan:
+- **Motorruimte:**
+  - accu linksvoor onder een zwarte kap, met rode pluskabel en de ECU op de accubak; zekeringkast en luchtfilterhuis linksachter;
+  - zichtbare geribbelde aanzuigslang vanaf het deksel;
+  - expansievat vóór de rechter veerpoottoren, met de airco-vloeistofleiding (rubber stuk) over de dop van het stuuroliereservoir;
+  - zwarte radiateurafdekplaat met sleuf voor de slotbeugel;
+  - koelventilator achter de radiateur, vrij uitklappend.
+- **Olievuldop:** draaidop (`slide` met het nieuwe `tilt.rise`). Hij draait een en een kwart slag los, gaat 5 cm omhoog en ligt dan plat op het voorvlak van de afdekkap tussen vulgat en peilstok. De peilstok floept 15 cm omhoog langs de buisas; het uiteinde blijft in de buis.
+- **Opschrift:** vervaagt mee bij isoleren (`uiFadeCuts`, alphaTest schaalt mee).
+- **Carrosserie (S7):**
+  - ronde achterheup en lagere bumpernaad;
+  - smalle bovengrille en schoon voorkenteken (parkeersensoren naast de plaat);
+  - gladde, iets lagere motorkap (parabool in de hoogte, `bodHoodDP` weg);
+  - druppelspiegels en één lijst om het kwartsruitje;
+  - een sluitvlak in de achterbumperhoek.
+- **Tests:**
+  - `tools/opentest.py`: stralen met de nodige openers open (needs);
+  - keerringen van de aandrijfassen uit het ingesloten Differentieel (ui_inner);
+  - budget Koeling en luchtinlaat 30.000.
+
+Rondes (UTC 19 en 20 oktober):
+- **Ronde 1:** agents en orkestrator. Advisor (Opus 5.5 high): bijsturen op 9 punten (vervagen, airco-leiding naast het reservoir, golf in de kap, kenteken, docs, commentaren, aanzuigslang laag). Volle zwaai: ECHT 1, de Bagageruimtevloer in de Bumperbalk achter.
+- **Ronde 2:** alle punten opgelost, advisor pass.
+- **Poort:** `ui_inner` vond twee bestaande spleten, bloot gelegd door een verschoven stralenraster (achterbumperhoek en keerring); daarna opgelost.
+
+S7 op GPU-beelden: ronde 1 9, 9 en 8; ronde 2 9, 9 en 8 van 9.
+
+Open voor later:
+- vouwen op de motorkap van de koplamppunten naar de voorruit (de kap kan pas lager als de motorruimte verandert);
+- zwart vlak achter het voorkenteken (kenmerk 6);
+- chroomlijn op de bovengrille;
+- dubbele zijlijsten (kenmerk 10);
+- een vlekkerige bumperrand achter;
+- rood onderdeel zichtbaar in de voorste wielboog;
+- de aanzuigslang loopt pas vanaf het deksel hoog;
+- `uiCut` en `tilt.rise` naar espace5 met `framework.py export`.
