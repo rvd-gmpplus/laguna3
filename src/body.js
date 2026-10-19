@@ -52,6 +52,21 @@ function YT(z) { return z < bodZT ? bodYLEDGE - bodTipDrop(z) : bodYTm(z); }
 const bodYD = pchip([[-2.268, 1.025], [-2.258, 1.038], [-2.24, 1.054], [-2.21, 1.072], [-2.17, 1.091], [-2.11, 1.118], [-1.95, 1.02], [-1.85, 0.99], [-1.0, 0.99], [0.0, 0.97], [0.6, 0.95], [0.88, 0.935], [1.0, 0.962], [1.06, 0.975], [1.20, 0.979], [1.345, 0.971],
   [1.595, 0.932], [1.845, 0.887], [1.975, 0.852], [2.095, 0.811], [2.20, 0.752], [2.27, 0.69], [2.30, 0.645], [2.325, 0.60], [2.345, 0.565]]);
 const bodDP = pchip([[-2.3, 2.6], [-1.9, 2.8], [1.0, 4.2], [1.9, 4.2], [2.22, 3.2], [2.345, 2.4]]);  // exponent van het dekprofiel (vlak midden, afgeronde randen)
+// golf 5j (S7): de bolling van de motorkap is voor de voorwielas tot 1,6 cm lager (de hoogte boven de kapnaad schaalt mee, zodat de kap
+// vlakker wordt en van voren niet meer als koepel boven de koplampen uitkomt). Geleidelijk vanaf z 1,15 (bij de voorwielas, silhouetmarge
+// 3 cm, 4 mm lager); bij de kapvoorrand (aansluiting op bumper en koplampspitsen) geen verlaging. Binnenframe en isolatie van de kap worden met bodDropOff op
+// de oude hoogte gebouwd: daaronder zit de motorruimte zonder speling (afdekkap, motorsteun, reservoirs op 0 tot 8 mm)
+let bodDropOff = false;
+// verloop in z: van 1,15 (kwadratisch) lineair oplopend tot 1,9 en dan in 35 cm terug naar 0 bij 2,25, zodat de hartlijn bol blijft
+// (een snelle aanloop met een vlak stuk erna gaf een holle band dwars over de kap, golf 5j ronde 2)
+const bodHoodDrop = z => {
+  if (bodDropOff || z <= 1.15 || z >= 2.25) return 0;
+  const u = Math.min(1, (z - 1.15) / 0.75), up = u < 0.2 ? u * u / 0.4 : u - 0.1;
+  return 0.016 * up / 0.9 * (1 - sstep((z - 1.9) / 0.35));
+};
+// en de schouders lopen geleidelijker op: de exponent van het kapprofiel is op de buitenhuid tot 1,0 lager (4,2 naar 3,2), van 0 bij
+// z 1,15 tot vol bij 1,45 en terug naar 0 bij de kapvoorrand; samen met de verlaging hoogstens ca. 2 cm onder het oude dek
+const bodHoodDP = z => (z <= 1.15 || z >= 2.25) ? 0 : 1.0 * sstep((z - 1.15) / 0.3) * (1 - sstep((z - 1.95) / 0.3));
 // daklijn op de hartlijn (voorruit bol, dak als een boog, vlakke achterruit onder ca. 14 graden)
 const YR = pchip([[-2.11, 1.13], [-1.905, 1.181], [-1.655, 1.246], [-1.405, 1.31], [-1.17, 1.37], [-0.905, 1.418], [-0.655, 1.441], [-0.43, 1.447], [-0.155, 1.44], [0.095, 1.414],
   [0.30, 1.346], [0.345, 1.332], [0.595, 1.237], [0.845, 1.112], [1.06, 0.975]]);
@@ -59,7 +74,14 @@ const YR = pchip([[-2.11, 1.13], [-1.905, 1.181], [-1.655, 1.246], [-1.405, 1.31
 const bodYC = pchip([[-2.2, 0.985], [-1.98, 0.975], [-1.4, 0.93], [-1.0, 0.90], [0.0, 0.852], [0.95, 0.80], [1.3, 0.785]]);
 // bovenaanzicht: boven de bumperrichel loopt de staart ronder in dan de bumper (hoekstraal ca. 0,3 m); factor op x
 const bodKU = pchip([[-2.268, 0.925], [-2.22, 0.93], [-2.15, 0.952], [-2.05, 0.982], [-1.95, 0.997], [-1.85, 1.0]]);
-const bodKY0 = bodYLEDGE + 0.01, bodKY1 = 0.14;          // overgang van bumperbreedte naar de smallere bovenstaart
+// golf 5j (S7 kenmerk 8): de overgang begint pas boven de bumperrichel en loopt over 22 cm, zodat de bumperhoek zonder trede in de
+// bovenstaart overgaat (was 0,645 tot 0,785: de bumper stak als bredere bak onder de achterlichten uit)
+const bodKY0 = bodYLEDGE + 0.06, bodKY1 = 0.22;          // overgang van bumperbreedte naar de smallere bovenstaart
+// heup achter het achterwiel (golf 5j, S7 kenmerk 8): de flank trekt naar onderen in (tuck-under), zodat de achterkant van achteren als ronde
+// heup leest en niet als staand blok met vlakke zijkanten. Factor op x: 1 - K * (1 - u)^2 met u = (y - yb) / H, convex van de onderrand tot
+// raakvlak met de flank op H boven de onderrand; in z van 0 bij -1,60 (achter de wielboogtop) naar vol bij -1,95
+const bodHipK = 0.09, bodHipH = 0.50;
+const bodHipT = z => sstep((-1.60 - z) / 0.35);
 const S1 = 0.14, S2 = 0.22, S3 = 0.60, S4 = 0.72, BUL = 0.016, CRW = 0.03;
 const sstep = t => { const u = clamp(t, 0, 1); return u * u * (3 - 2 * u); };
 // doorsnede van de onderbak op z
@@ -85,6 +107,7 @@ function flank(z, y, t, ytop, bul = BUL) {
 function bodHalf(z, s, c) {
   const q = bodHalf0(z, s, c);
   if (c.ku < 1) q[0] *= 1 - (1 - c.ku) * sstep((q[1] - bodKY0) / bodKY1);
+  if (z < -1.60) { const u = clamp((q[1] - c.yb) / bodHipH, 0, 1); q[0] *= 1 - bodHipK * bodHipT(z) * (1 - u) * (1 - u); }
   return q;
 }
 function bodHalf0(z, s, c) {
@@ -97,13 +120,14 @@ function bodHalf0(z, s, c) {
     return [hw + f, y];
   }
   if (s <= S4) { const a = (s - S3) / (S4 - S3) * th; return [cx + rs * Math.cos(a), cy + rs * Math.sin(a)]; }
-  const t = (s - S4) / (1 - S4), x = xe * (1 - t); return [x, yt + cr * (1 - Math.pow(1 - t, p)) + bodCrease(z, x)];
+  const t = (s - S4) / (1 - S4), x = xe * (1 - t), dp = bodDropOff ? 0 : bodHoodDP(z);
+  return [x, yt + (cr - bodHoodDrop(z)) * (1 - Math.pow(1 - t, p - dp)) + bodCrease(z, x)];
 }
 // twee vouwlijnen in de motorkap van de binnenspitsen van de koplampen schuin naar de voorruitbasis
 function bodCrease(z, x) {
   if (z < 1.1 || z > 2.26) return 0;
   const xc = lerp(0.60, 0.36, (z - 1.13) / (bodHLZ1 - 1.13)), f = sstep((z - 1.1) / 0.08) * (1 - sstep((z - 2.2) / 0.06));
-  return 0.007 * f * (1 - sstep((Math.abs(x) - xc) / 0.05 + 0.5));
+  return 0.009 * f * (1 - sstep((Math.abs(x) - xc) / 0.035 + 0.5));   // golf 5j: 9 mm over 3,5 cm (was 7 mm over 5 cm), zodat de vouw als lijn leest
 }
 function halfPt(z, s) { return bodHalf(z, s, bodSec(z)); }
 // parameter s van de doorsnede bij hoogte y (flank, schouder en dek)
