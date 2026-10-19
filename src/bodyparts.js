@@ -736,7 +736,7 @@ function bodBootPlate(hw, zc, hd, t, b, ri) {
 }
 /* ---------- openers: maten en hulpfuncties (motorkap, steun) ---------- */
 // Motorkap: draaias op de achterrand van het Buitenpaneel (z 1,064) op de hoogte van de hartlijn (y 0,976). Punten van de achterrand
-// liggen daaronder (de kap is bol) en stijgen bij het openen; niets draait de torpedoplaat of de voorruit in. Hoek 65 graden.
+// liggen daaronder (de kap is bol) en stijgen bij het openen; niets draait de torpedoplaat of de voorruit in. Hoek 65 graden; past bij de waarneming van de gebruiker op de eigen auto (60 tot 75 graden, 19 oktober 2026).
 const bodHoodPv = [0, 0.976, 1.064], bodHoodAng = -65 * PI / 180;
 // punt van de kap (kapframe) na het openen
 function bodHoodPt(p) {
