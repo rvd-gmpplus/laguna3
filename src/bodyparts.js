@@ -1271,8 +1271,10 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     P('Wisserblad links', wArm(0.012, 0.62, 0.0065), MAT.rubber, { d: 'Wisserblad bestuurderszijde.', ex: [0, 0.14, 0] }),
     P('Wisserblad rechts', wArm(-0.488, -0.048, 0.0065), MAT.rubber, { d: 'Wisserblad passagierszijde.', ex: [0, 0.14, 0] }),
     ...[[-0.02, 'bestuurderszijde'], [-0.52, 'passagierszijde']].map(([x, nm]) => P(`Wisseraskap ${nm}`, G.cyl('y', 0.014, 0.016, 0.014, 12), MAT.blackGloss, Object.assign({ d: 'Kap over de asmoer van de wisserarm, op de voorruitbasis direct achter de motorkap.', ex: [0, 0.05, 0] }, wCap(x)))),
-    P('Wissermotor', merge([G.cyl('z', 0.04, 0.04, 0.09, 16), xf(G.rbox(0.08, 0.06, 0.05, 0.01), [0, 0, 0.06])]), MAT.darkSteel, { d: 'Elektromotor van de ruitenwissers in de torpedobak.', p: [0.3, 0.9, 1.07], ex: [0, -0.1, 0.06] }),
-    P('Wisserstangenmechaniek', merge([rodBetween([-0.52, 0.92, 1.1], [0.3, 0.9, 1.08], 0.007, 8), rodBetween([0.3, 0.9, 1.08], [-0.02, 0.92, 1.1], 0.007, 8)]), MAT.steel, { d: 'Stangenstelsel dat beide wisserassen aandrijft.', ex: [0, -0.06, 0.12] }),
+    // golf 5h: motor in de bak onder de bodemplaat van de torpedobak (tussen schutbord en voorwand), stangen op de plaat onder de
+    // torpedoplaat; eerst stonden motor en stangen dwars door de plaat, het schutbord en de voorkant van het dashboard (tot 38 mm)
+    P('Wissermotor', merge([G.cyl('x', 0.032, 0.032, 0.09, 16), xf(G.rbox(0.05, 0.06, 0.06, 0.008), [-0.07, 0, 0])]), MAT.darkSteel, { d: 'Elektromotor met wormwielkast van de ruitenwissers in de torpedobak, onder de bodemplaat.', p: [0.3, 0.862, 1.08], ex: [0, -0.1, 0.06] }),
+    P('Wisserstangenmechaniek', merge([rodBetween([-0.52, 0.919, 1.07], [0.3, 0.919, 1.07], 0.007, 8), rodBetween([0.3, 0.919, 1.07], [-0.02, 0.919, 1.075], 0.007, 8)]), MAT.steel, { d: 'Stangenstelsel dat beide wisserassen aandrijft (schematisch).', ex: [0, -0.06, 0.12] }),
   ]);
 
   return A('Carrosserie', { d: 'Zelfdragende carrosserie van de vijfdeurs hatchback in zilvergrijs metallic (Gris Platine), met alle aanbouwdelen, ruiten en verlichting.', ex: [0, 2.0, 0], spec: [['Lengte', '4.695 mm'], ['Breedte zonder / met spiegels', '1.811 / 2.060 mm'], ['Hoogte', '1.445 mm'], ['Wielbasis', '2.756 mm'], ['Spoorbreedte voor / achter', '1.557 / 1.512 mm'], ['Kleur', 'Gris Platine (D69)']] }, [
