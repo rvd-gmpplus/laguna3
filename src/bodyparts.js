@@ -7,7 +7,7 @@ MAT.paintIn.color.setHex(0x9a9ea4);
 MAT.glass.color.setHex(0x040608); MAT.glass.opacity = 0.92; MAT.glass.envMapIntensity = 0.12; MAT.glass.roughness = 0.08; MAT.glass.specularIntensity = 0.14;
 // voorruit: zelfde glas, maar de binnenkant (achterzijde van de driehoeken) heeft maar 0,45 maal de dekking. Transparante dubbelzijdige materialen worden in twee gangen getekend (eerst BackSide met FLIP_SIDED,
 // dan FrontSide); gl_FrontFacing zegt daar niets (is in beide gangen waar). De buitenkant van dit glas is de BackSide-gang (gemeten), dus de FrontSide-gang zonder FLIP_SIDED is de binnenkant, zodat de ruit van binnen niet als egaal zwart vlak leest en de kap,
-// de wissers en de lucht erachter doorschemeren; de buitenkant heeft 0,80 dekking (zie hieronder). Een shaderaanpassing in plaats van een tweede mesh: geen extra tekenopdracht voor de ruit zelf.
+// de wissers en de lucht erachter doorschemeren; de buitenkant heeft 0,50 dekking (zie hieronder). Een shaderaanpassing in plaats van een tweede mesh: geen extra tekenopdracht voor de ruit zelf.
 // De kloon (markering, kleur per systeem) krijgt dezelfde aanpassing mee.
 function bodGlassWs(m) {
   m.name = 'glassWs';

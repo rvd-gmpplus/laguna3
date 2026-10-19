@@ -36,7 +36,7 @@ De eerste keer toont de pagina een korte hint. Die verdwijnt na de eerste handel
 - Sneller starten: de nummergegevens staan als JSON-blok in de pagina en worden pas gelezen als je het paneel met onderdeelnummers opent of op nummer zoekt, en de tekenbuffer heeft zijn maat al vóór de WebGL-context. De eerste weergave komt daardoor veel eerder en de auto is eerder bruikbaar; de laatste fase (`ready`) is op software-rendering niet korter. De renderlus staat stil als er niets beweegt. Metingen en besluit: [docs/masterplan.md](docs/masterplan.md), sectie "Stand na golf 5c-2".
 - Achterlichten: het binnendeel van beide achterlichten hangt onder de achterklep en draait mee als de klep opengaat; Achterlicht links en rechts zijn zelf het vaste deel (de groep Buitendeel is vervallen).
 - Expansiedop: kleiner, volgens de catalogus (dop Ø52, opening Ø33, hals Ø42 mm).
-- Voorruit: van buiten 0,80 dekkend (was 0,92); zijruiten en achterruit blijven 0,92. Het zwarte vlak naast de open motorkap is het donkere dashboard achter de ruit.
+- Voorruit: van buiten 0,50 dekkend met eigen tint en luchtreflectie (golf 5h, zoals de persfoto; was 0,80 en daarvoor 0,92); zijruiten 0,84 en achterruit 0,92.
 - Gordelband voor: de beschrijving volgt de rusttand van de band.
 - Onder de motorkap: constanten in `CFG`, teksten in `TXT`, één strategie per klikmodus (`UI_MODES`) en één knoopschema (`initAppFields`); de bediening is opgedeeld in `src/app2-panel.js`, `src/app2-controls.js`, `src/app2-labels.js`, `src/app2-input.js` en `src/app2-loop.js` (was één `src/app2.js`).
 
