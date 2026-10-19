@@ -1,6 +1,6 @@
 <!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"></head><body>
 <title>Laguna III explosietekening</title>
-<meta name="model-version" content="16 (bron 697ca4b)">
+<meta name="model-version" content="16 (bron f91da4f)">
 <meta name="description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback (2011, 2,0 Turbo, automaat): 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
 <meta property="og:title" content="Laguna III explosietekening">
 <meta property="og:description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback: 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
@@ -618,7 +618,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
   <div id="press" hidden><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="28"/></svg></div>
   <div id="helpDlg" hidden><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
     <h2 id="helpTitle">Bediening</h2>
-    <p class="ver">Laguna III explosietekening, versie 16 (bron 697ca4b)</p>
+    <p class="ver">Laguna III explosietekening, versie 16 (bron f91da4f)</p>
     <div id="helpMouse"><h3>Met de muis</h3><dl>
       <dt>Klik</dt><dd>De groep van het onderdeel klapt uit; de rest blijft staan. Staat die groep al open, dan wordt het onderdeel uitgelicht.</dd>
       <dt>Dubbelklik</dt><dd>Direct naar dit onderdeel: alle groepen erboven gaan laag voor laag open.</dd>
@@ -4356,8 +4356,8 @@ function drvDiff() {
     P('Conisch lager links', merge([annulus(0.04, 0.05, 0.014, 'x', 36), annulus(0.03, 0.038, 0.016, 'x', 36)]), MAT.bearing, { d: 'Conisch rollager van het differentieelhuis aan de zijdekselzijde.', p: [0.059, 0, 0], ex: [0.16, 0, 0] }),
     P('Conisch lager rechts', merge([annulus(0.04, 0.05, 0.014, 'x', 36), annulus(0.03, 0.038, 0.016, 'x', 36)]), MAT.bearing, { d: 'Conisch rollager van het differentieelhuis aan de motorzijde.', p: [-0.059, 0, 0], ex: [-0.16, 0, 0] }),
     P('Afstelplaatje differentieel', annulus(0.032, 0.045, 0.001, 'x', 32), MAT.steel, { d: 'Plaatje waarmee de lagervoorspanning wordt afgesteld.', p: [-0.0695, 0, 0], ex: [-0.2, 0, 0] }),
-    P('Keerring links', merge([annulus(0.016, 0.034, 0.007, 'x', 32)]), MAT.rubber, { d: 'Keerring waar de linker aandrijfas het huis verlaat.', p: [0.076, 0, 0], ex: [0.24, 0, 0] }),
-    P('Keerring rechts', merge([annulus(0.016, 0.034, 0.007, 'x', 32)]), MAT.rubber, { d: 'Keerring waar de rechter aandrijfas het huis verlaat.', p: [-0.076, 0, 0], ex: [-0.24, 0, 0] }),
+    P('Keerring links', merge([annulus(0.0128, 0.034, 0.007, 'x', 32)]), MAT.rubber, { d: 'Keerring waar de linker aandrijfas het huis verlaat.', p: [0.076, 0, 0], ex: [0.24, 0, 0] }),
+    P('Keerring rechts', merge([annulus(0.0128, 0.034, 0.007, 'x', 32)]), MAT.rubber, { d: 'Keerring waar de rechter aandrijfas het huis verlaat.', p: [-0.076, 0, 0], ex: [-0.24, 0, 0] }),
   ]);
 }
 
