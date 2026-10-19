@@ -1226,9 +1226,10 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     ...both(s => P(`Klepscharnier ${sn(s)}`, G.rbox(0.03, 0.03, 0.08, 0.006), MAT.darkSteel, { d: 'Scharnier tussen dak en achterklep, het deel aan de carrosseriezijde (geschroefd op de dakrand); blijft staan als de klep opent.', p: [s * 0.42, YR(RW0) - 0.04, RW0 - 0.01], stay: true, ex: [0, 0.04, 0.04] })),
     // scharnierblad onder de bovenrand van de achterruit, evenwijdig aan het glas en 9 mm eronder (hart), achter de schermcassette van het panoramadak: zoals op de auto zit het scharnier
     // onder de dakrand en is het van buiten niet te zien. Lag eerst vlak en half boven het glas en las in de beelden van opzij en schuin achter
-    // als klein zwart vierkantje bij de C-stijl (S7, golf 5f)
-    ...both(s => { const a = panP(RW0 - 0.08, 0.42), b = panP(RW0 - 0.03, 0.42);
-      return P(`Klepscharnierblad ${sn(s)}`, G.rbox(0.026, 0.007, 0.05, 0.003), MAT.bodPillar, { d: 'Plat zwart scharnierblad aan de achterklep onder de bovenrand van de achterruit; draait om de scharnierpen op de dakrand en is van buiten niet te zien.', p: [s * 0.42, (a[1] + b[1]) / 2 - 0.009, RW0 - 0.055], r: [-Math.atan2(b[1] - a[1], b[2] - a[2]), 0, 0], ex: [0, 0.05, -0.02] }); }),
+    // als klein zwart vierkantje bij de C-stijl (S7, golf 5f). Het blad begint achter het scharnierblok (achterkant z RW0 - 0,05) met ca. 0,6 mm
+    // speling: met het hart op RW0 - 0,055 lag het 9,7 mm in het blok (clash.py, advisorronde golf 5f)
+    ...both(s => { const zc = RW0 - 0.075, a = panP(zc - 0.025, 0.42), b = panP(zc + 0.025, 0.42);
+      return P(`Klepscharnierblad ${sn(s)}`, G.rbox(0.026, 0.007, 0.05, 0.003), MAT.bodPillar, { d: 'Plat zwart scharnierblad aan de achterklep onder de bovenrand van de achterruit; draait om de scharnierpen op de dakrand en is van buiten niet te zien.', p: [s * 0.42, (a[1] + b[1]) / 2 - 0.009, zc], r: [-Math.atan2(b[1] - a[1], b[2] - a[2]), 0, 0], ex: [0, 0.05, -0.02] }); }),
     ...both(s => P(`Klepbuffer ${sn(s)}`, G.cyl('z', 0.012, 0.012, 0.02, 10), MAT.rubber, { d: 'Rubberen aanslag op de carrosserie die het rammelen van de klep voorkomt.', inner: true, stay: true, p: [s * 0.48, 0.68, bodZT + 0.035], ex: [s * 0.03, 0, 0.04] })),
     // plus een donkere strook van 8 mm, 2 mm onder de huid achter de zijnaden in het staartvlak (onder en boven het achterlicht): door de spleet van
     // 3 mm zag je eerst de lichte bovenkant van de bumperrichel, zodat de naad als onregelmatige witte lijn las in plaats van als donkere naad
