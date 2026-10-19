@@ -227,7 +227,7 @@ function buildEngineCover() {
     P('Afdekkap', cap, MAT.engCoverGrey, { d: 'Kunststof afdekkap: hoog achterdeel met vier ribben, een trede naar het aflopende voorvlak, een hoog deel met drie groeven aan de distributiezijde (rechts in de auto) en kommen voor de olievuldop en de peilstok (vorm naar foto, maten geschat).', ex: [0, 0, 0] }),
     P('Opschrift afdekkap', cache('engLogoPlane2', () => engLogoGeo(lx, lz, 0.24, 0.045)), MAT.engLogo, { d: 'Opschrift RENAULT 2.0T op het voorvlak van de afdekkap; blijft bij uitklappen op de kap.', ex: [0, 0, 0] }),
     P('Akoestische schuimlaag', G.rbox(0.38, 0.006, 0.13, 0.003), MAT.engFoam, { d: 'Schuimlaag aan de onderkant van het hoge achterdeel van de kap die motorgeluid dempt.', p: [0.07, 0.4665, -0.08], ex: [0, -0.05, 0] }),
-    ...grom.map(([x, z], k) => P(`Rubber nok ${k + 1}`, G.cyl('y', 0.0065, 0.0065, 0.024, 10), MAT.rubber, { d: 'Rubber nok waarop de afdekkap klemt.', p: [x, ENG_COVER_TOP + 0.012, z], ex: [0, -0.1, 0] })),
+    ...grom.map(([x, z], k) => P(`Rubber nok ${k + 1}`, G.cyl('y', 0.0065, 0.0065, 0.024, 10), MAT.rubber, { d: 'Rubber nok op het kleppendeksel; de klemnokken aan de onderkant van de afdekkap drukken erop (de klemnokken zelf zijn niet weergegeven).', p: [x, ENG_COVER_TOP + 0.012, z], ex: [0, -0.1, 0] })),
   ]);
 }
 

@@ -142,8 +142,8 @@ function uiPlace(k) {
 /* ---------- openmodus: scharnieren, schuiven, volgers, vaste delen en telescopen ---------- */
 // Een knoop met `open` draait om een scharnier of schuift, bovenop de uitklapregel:
 //   pos = pivot + R(u * angle) * (base - pivot) + exv * amt * SPREAD + off,  quat = R * q0
-// 'slide': eerst `tilt` (eerste deel van u, standaard 35 %), dan `move` (recht) of `arc` (draaien om een
-// verre as, zodat een paneel de kromming van het dak volgt). u is de geanimeerde openstand (0 tot 1).
+// 'slide': eerst `tilt` (eerste deel van u, standaard 35 %, met optioneel `rise`: een verschuiving tijdens het kantelen), dan `move` (recht)
+// en/of `arc` (draaien om een verre as, zodat een paneel de kromming van het dak volgt). u is de geanimeerde openstand (0 tot 1).
 // Een volger (`follow`) beweegt met de u van zijn leider. Een knoop met `stay` in de deelboom van een
 // opener blijft staan als die opener draait (carrosseriezijde van een scharnier, afdichting). Een volger
 // met `stay` beweegt in het frame van de rustende opener (motorkapsteun onder de motorkap).
@@ -176,7 +176,7 @@ for (const n of ALL) {
     if (o.axis) o.ax = V3(...o.axis).normalize();
     if (o.move) o.mv = V3(...o.move);
     if (o.arc) { o.apv = V3(...o.arc.pivot); o.aax = V3(...o.arc.axis).normalize(); o.aang = o.arc.angle; }
-    if (o.tilt) { o.tpv = V3(...o.tilt.pivot); o.tax = V3(...o.tilt.axis).normalize(); o.tang = o.tilt.angle; o.tf = o.tilt.part != null ? o.tilt.part : 0.35; }
+    if (o.tilt) { o.tpv = V3(...o.tilt.pivot); o.tax = V3(...o.tilt.axis).normalize(); o.tang = o.tilt.angle; o.tf = o.tilt.part != null ? o.tilt.part : 0.35; if (o.tilt.rise) o.trs = V3(...o.tilt.rise); }
     o.dur = o.dur || (REDUCED ? 0.01 : CFG.tijd.openS);
     o.followers = []; o.stays = []; o.struts = []; o.needBy = [];
     if (o.type === 'hinge' && (!o.pv || !o.ax || typeof o.angle !== 'number')) console.error('openmodus: scharnier ' + n.name + ' mist pivot, axis of angle');
@@ -225,6 +225,7 @@ function uiOpenPose(k) {
       uiOq.setFromAxisAngle(o.tax, o.tang * ut);
       p.sub(o.tpv).applyQuaternion(uiOq).add(o.tpv);
       k.obj.quaternion.premultiply(uiOq);
+      if (o.trs) p.addScaledVector(o.trs, ut);   // rise: tijdens het kantelen recht omhoog (een draaidop die losdraait)
     }
     if (o.apv) { uiOq.setFromAxisAngle(o.aax, o.aang * us); p.sub(o.apv).applyQuaternion(uiOq).add(o.apv); k.obj.quaternion.premultiply(uiOq); }
     if (o.mv) p.addScaledVector(o.mv, us);
@@ -456,6 +457,9 @@ function applyVisibility() {
 // op de nieuwe stand; alleen obj.visible van de vervagende meshes en hun groepen wordt zolang overschreven.
 const uiFadeMat = new THREE.MeshBasicMaterial({ color: 0xaab5c2, transparent: true, opacity: 0.5, depthWrite: false, toneMapped: false });
 uiFadeMat.name = 'uiFade';
+// uitsnijdende klonen van het vervaagmateriaal (uiCut) vervagen mee
+const uiFadeCuts = new Set();
+function uiFadeSync() { for (const c of uiFadeCuts) c.opacity = uiFadeMat.opacity; }
 function uiVisibleMeshes() { const s = new Set(); for (const m of MESHES) if (m.userData.node.ev) s.add(m); return s; }
 function uiFadeShow() {
   for (const m of uiFade.out) for (let o = m; o && o !== scene; o = o.parent) o.visible = true;
@@ -468,9 +472,9 @@ function uiFadeFrom(before) {
   for (const m of before) if (!m.userData.node.ev) out.add(m);
   if (!out.size) return false;
   uiFade = { t: 0, out }; uiWake();
-  uiFadeMat.opacity = 0.5;
+  uiFadeMat.opacity = 0.5; uiFadeSync();
   uiFadeShow();
-  for (const m of out) m.material = uiFadeMat;
+  for (const m of out) m.material = uiCut(m.userData.base, uiFadeMat);
   return true;
 }
 function uiFadeEnd() { if (!uiFade) return; uiFade = null; applyVisibility(); applyMats(); }
@@ -478,7 +482,7 @@ function uiStepFade(dt) {
   if (!uiFade) return false;
   uiFade.t += dt;
   const k = Math.min(1, uiFade.t / (CFG.tijd.isoFadeMs / 1000));
-  uiFadeMat.opacity = 0.5 * (1 - k);
+  uiFadeMat.opacity = 0.5 * (1 - k); uiFadeSync();
   if (k >= 1) uiFadeEnd();
   return true;
 }
@@ -522,7 +526,7 @@ function uiCut(base, mat) {
   if (!base.alphaTest || mat === base || mat.map) return mat;
   let c = uiCutC.get(base); if (!c) uiCutC.set(base, c = new Map());
   let r = c.get(mat);
-  if (!r) { r = mat.clone(); r.map = base.map; r.alphaTest = base.alphaTest; r.polygonOffset = base.polygonOffset; r.polygonOffsetFactor = base.polygonOffsetFactor; r.polygonOffsetUnits = base.polygonOffsetUnits; c.set(mat, r); }
+  if (!r) { r = mat.clone(); r.map = base.map; r.alphaTest = base.alphaTest; r.polygonOffset = base.polygonOffset; r.polygonOffsetFactor = base.polygonOffsetFactor; r.polygonOffsetUnits = base.polygonOffsetUnits; c.set(mat, r); if (mat === uiFadeMat) uiFadeCuts.add(r); }
   return r;
 }
 function uiMatFor(m) { return uiCut(m.userData.base, uiMatPick(m)); }

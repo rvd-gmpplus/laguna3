@@ -14,7 +14,14 @@ const ENG_CAM_RB = 0.0165, ENG_ROLL_R = 0.0085;
 const ENG_BRIDGE_T = 0.024, ENG_COVER_Y = CAMY + ENG_BRIDGE_T + 0.001, ENG_COVER_H = 0.04;
 const ENG_COVER_TOP = ENG_COVER_Y + ENG_COVER_H;
 const ENG_NECK_TOP = 0.478;                           // bovenkant van de vulhals: 2 cm boven de bodem van de kom in de afdekkap (engine3.js)
-const ENG_OIL = [0, 0.05];                            // vulhals (x, z): midden op het deksel, net voor de bobines (golf 5i, naar foto: midden op de afdekkap)
+const ENG_OIL = [0, 0.05];
+const ENG_CAP_BASE = [ENG_OIL[0], ENG_NECK_TOP + 0.008, ENG_OIL[1]], ENG_CAP_RISE = 0.025;   // draaidop: hart in de dichte stand, lift bij het losdraaien
+const ENG_CAP_TILT = Math.atan(0.2);                                                           // helling van het voorvlak van de afdekkap (engine3.js)
+// rustplek op de afdekkap: hart 8,5 mm boven het voorvlak (langs de normaal), tussen vulgat en peilstok; engCoverTop staat in engine3.js
+function engCapMove() {
+  const x = 0.10, z = 0.125, y = engCoverTop(x, z), n = 0.0085;
+  return [x - ENG_CAP_BASE[0], y + n * Math.cos(ENG_CAP_TILT) - ENG_CAP_BASE[1] - ENG_CAP_RISE, z + n * Math.sin(ENG_CAP_TILT) - ENG_CAP_BASE[2]];
+}                            // vulhals (x, z): midden op het deksel, net voor de bobines (golf 5i, naar foto: midden op de afdekkap)
 const XT = -0.245, XA = -0.345;                       // vlak van distributieriem en multiriem
 const ENG_PS = [-0.27, -0.005, 0.255], ENG_PS_R = 0.058;   // stuurpomp: oorsprong (pompas, x-niveau van de pomp), tipstraal van de poelie
 const ENG_TURBO = [0.07, 0.14, -0.255];               // hartlijn turbo-as (lagerhuis)
@@ -350,8 +357,7 @@ function engCoverGeo() {
     // vulhals: een opstaande hals in het deksel die door het gat in de kom van de afdekkap (engine3.js) heen steekt;
     // de donkere opening zit als apart onderdeel (Vulopening) boven op de hals en de dop zit er in de dichte stand overheen
     L.push(xf(G.cyl('y', 0.031, 0.031, ENG_NECK_TOP - ENG_COVER_TOP, 24), [ENG_OIL[0], (ENG_COVER_TOP + ENG_NECK_TOP) / 2, ENG_OIL[1]]));
-    // scharnierlip op de rand van de hals: de as waar de gele dop omheen klapt (Olievuldop, open.pivot)
-    L.push(xf(G.box(0.0065, 0.011, 0.016), [ENG_OIL[0] + 0.0335 - 0.00075, ENG_NECK_TOP - 0.0055, ENG_OIL[1]]));
+    // de hals heeft schroefdraad voor de draaidop (Olievuldop); geen scharnierlip meer (golf 5j)
     return merge(L);
   });
 }
@@ -423,7 +429,9 @@ function buildHead() {
       P('Kleppendekselpakking', coverGasket, MAT.rubber, { d: 'Rubber pakking onder het kleppendeksel.', ex: [0, -0.025, 0] }),
       A('Kleppendekselbouten', { d: 'Acht bouten van het kleppendeksel (aantal geschat).', ex: [0, 0.05, 0] }, coverBolts),
       P('Vulopening', xf(G.cyl('y', 0.021, 0.021, 0.002, 24), [ENG_OIL[0], ENG_NECK_TOP + 0.001, ENG_OIL[1]]), MAT.blackGloss, { d: 'Open vulhals voor de motorolie in het kleppendeksel: een donkere opening in een opstaande ring; hier zit de dop in als hij dicht is.', ex: [0, 0.03, 0] }),
-      P('Olievuldop', merge([G.cyl('y', 0.0335, 0.0335, 0.016, 24), xf(G.box(0.04, 0.006, 0.01), [0, 0.011, 0])]), MAT.plateYellow, { d: 'Gele dop van de olievulopening; klapt om een scharnierlip aan de rand van de vulhals omhoog en blijft aan de hals vastzitten (opener, schematisch: in werkelijkheid draai je de dop los).', p: [ENG_OIL[0], ENG_NECK_TOP + 0.008, ENG_OIL[1]], ex: [0, 0.09, 0], open: hinge([ENG_OIL[0] + 0.0335, ENG_NECK_TOP, ENG_OIL[1]], [0, 0, 1], -1.8, { min: 1.44, needs: 'Motorkap', label: 'Olievuldop', look: { dir: [-0.2, 0.5, 0.9], nodes: ['Olievuldop', 'Deksel'] } }) }),
+      // draaidop (golf 5j, gebruiker: "het is een draaidop"): openen draait hem anderhalve slag los en tilt hem 2,5 cm, daarna gaat hij
+      // in een boog naar de afdekkap en ligt hij plat op het voorvlak tussen het vulgat en de peilstok (rustplek ENG_CAP_REST)
+      P('Olievuldop', merge([G.cyl('y', 0.0335, 0.0335, 0.016, 24), xf(G.box(0.04, 0.006, 0.01), [0, 0.011, 0])]), MAT.plateYellow, { d: 'Gele draaidop van de olievulopening met een greep; draai hem los om olie bij te vullen. Bij openen legt het model hem op de afdekkap, tussen het vulgat en de peilstok.', p: ENG_CAP_BASE, ex: [0, 0.09, 0], open: { type: 'slide', label: 'Olievuldop', min: 0.1, needs: 'Motorkap', dur: 1.1, tilt: { pivot: ENG_CAP_BASE, axis: [0, 1, 0], angle: 2.5 * PI, part: 0.4, rise: [0, ENG_CAP_RISE, 0] }, arc: { pivot: [ENG_CAP_BASE[0], ENG_CAP_BASE[1] + ENG_CAP_RISE, ENG_CAP_BASE[2]], axis: [1, 0, 0], angle: ENG_CAP_TILT }, move: engCapMove(), look: { dir: [0.2, 0.6, 0.9], nodes: ['Olievuldop', 'Afdekkap'] } } }),
     ]),
     buildIgnition(),
   ]);
