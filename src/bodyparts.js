@@ -604,6 +604,16 @@ function bodMirX(g, s) {
   return g;
 }
 const bodTLY = (z, f) => lerp(bodTLlo(Math.max(z, bodZT)), bodTLtop(Math.max(z, bodZT)), f);
+// binnenrand van het binnendeel in de klep (golf 5f ronde 3, S7: de binnendelen lazen als rechthoekige stickers): geen rechte verticale rand op
+// x 0,34 maar een halve ellips (3,5 cm diep), zodat de lamp aan de binnenkant afgerond eindigt; het klepvlak ertussen volgt dezelfde rand.
+// Lenzen en klepvlak gebruiken dezelfde hoogtestations (dichter bij boven- en onderrand), zodat de randen naadloos op elkaar aansluiten.
+const bodTLin = 0.34, bodTLinR = 0.035;
+const bodTLxin = y => { const y0 = bodTLY(bodZT, 0), y1 = bodTLY(bodZT, 1), u = clamp((2 * y - y0 - y1) / (y1 - y0), -1, 1); return bodTLin + bodTLinR * (1 - Math.sqrt(1 - u * u)); };
+const bodTLys = () => { const y0 = bodTLY(bodZT, 0), y1 = bodTLY(bodZT, 1), out = []; for (let i = 1; i < 18; i++) out.push(lerp(y0, y1, (1 - Math.cos(PI * i / 18)) / 2)); return out.concat(bodTLF.map(f => lerp(y0, y1, f))); };
+// vlak op het staartvlak tussen x0f(y) en x1f(y) (functies van de hoogte), 'off' achter het vlak; hoogtestations van bodTLys
+function bodTLgeo(x0f, x1f, y0, y1, off, nx = 8) {
+  return patch((y, t) => { const X = ringX(bodZT, y), xa = clamp(x0f(y), -X, X), xb = Math.max(xa, Math.min(X, x1f(y))), x = xa + (xb - xa) * t; return [x, y, tailZ(x, y) - off]; }, y0, y1, 1, () => [0, 1], nx, bodTLys());
+}
 // deel 'buiten': het vaste deel op het achterscherm (onder Carrosserie); deel 'binnen': het deel in de klep, dat onder Achterklep
 // hangt en met de klep meedraait (golf 5c-2, K9: hing onder Carrosserie en bleef staan als de klep openging)
 function buildTaillight(s, deel = 'buiten') {
@@ -611,9 +621,10 @@ function buildTaillight(s, deel = 'buiten') {
   const side = (off, f0, f1) => patch((z, p) => bodLow(z, p, off), bodZT + 0.0012, bodTLZ - 0.001, 18, z => sideR(s, bodSY(z, bodTLY(z, f0)), Math.max(bodSY(z, bodTLY(z, f0)) + 1e-4, bodSY(z, bodTLY(z, f1)))), 3, bodDense(-2.06, bodTLZ, 4));
   const face = (x0, x1, f0, f1, off, nx = 8, dy = 0) => { return bodMirX(bodTailGeo(x0, x1, bodTLY(bodZT, f0) + dy, bodTLY(bodZT, f1) - dy, off, 3, nx), s); };
   const [f0, f1, f2, f3] = bodTLF, xo = 1.2;
+  const faceR = (fa, fb, off) => bodMirX(bodTLgeo(bodTLxin, () => xs, bodTLY(bodZT, fa), bodTLY(bodZT, fb), off), s);
   if (deel === 'binnen') return A(`Achterlicht binnendeel ${n}`, { d: 'Deel van het achterlicht in de achterklep met achterlicht en achteruitrijlicht; zet de lijnen van het buitendeel over de naad voort en draait met de klep mee.', ex: [s * 0.03, 0.04, -0.08] }, [
-    P('Lens binnendeel', merge([face(xin, xs, f2, f3, 0.003), face(xin, xs, f0, f1, 0.003)]), MAT.lensRed, { d: 'Rode lens van het binnendeel (achterlicht): bovenband en onderstrook.', ex: [0, 0.03, -0.06] }),
-    P('Lens achteruitrijlicht', face(xin, xs, f1, f2, 0.0035), MAT.lensClear, { d: 'Heldere middenband over het achteruitrijlicht, in lijn met de heldere band van het buitendeel.', ex: [0, 0, -0.1] }),
+    P('Lens binnendeel', merge([faceR(f2, f3, 0.003), faceR(f0, f1, 0.003)]), MAT.lensRed, { d: 'Rode lens van het binnendeel (achterlicht): bovenband en onderstrook.', ex: [0, 0.03, -0.06] }),
+    P('Lens achteruitrijlicht', faceR(f1, f2, 0.0035), MAT.lensClear, { d: 'Heldere middenband over het achteruitrijlicht, in lijn met de heldere band van het buitendeel.', ex: [0, 0, -0.1] }),
     P('Reflector binnendeel', face(xin + 0.004, xs - 0.008, f0, f3, -0.012, 8, 0.006), MAT.reflector, { d: 'Verchroomde reflector achter de lenzen.', ex: [0, 0, 0.04] }),
     P('Lichthuis binnendeel', face(xin + 0.01, xs - 0.01, f0, f3, -0.028, 8, 0.008), MAT.plastic, { d: 'Behuizing in de achterklep.', ex: [0, 0, 0.06] }),
     P('Lampdrager binnendeel', face(xin + 0.03, xs - 0.03, f0, f3, -0.018, 8, 0.02), MAT.ecu, { d: 'Lampdrager met fittingen en stekker.', ex: [0, 0, 0.1] }),
@@ -1151,7 +1162,7 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   const ydT = bodSec(bodZT).yd;
   const tgOuter = merge([
     tgFace(-bodTGseam(0.7), bodTGseam(0.7), bodYLEDGE + 0.004, bodTLY(bodZT, 0), 8),
-    tgFace(-0.34, 0.34, bodTLY(bodZT, 0), bodTLY(bodZT, 1), 4, 10),
+    bodTLgeo(y => -bodTLxin(y), bodTLxin, bodTLY(bodZT, 0), bodTLY(bodZT, 1), 0, 10),
     tgFace(-bodTGseam(1.0), bodTGseam(1.0), bodTLY(bodZT, 1), ydT - 0.001, 5),
     // dek achter de lip: rolt bol af naar het staartvlak; vlak onder de lip ligt ca. 2 cm lager (schaduwlijn)
     bodDeck(bodZT, SP + 0.002, 22, z => bodSAtX(z, bodTGdx(z)), 24, bodDense(bodZT, -2.22, 6)),
