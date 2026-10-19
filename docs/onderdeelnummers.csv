@@ -5686,12 +5686,14 @@ Interieur/Dashboard/Bedieningspanelen/Audiobediening/Audiopaneel;Audiopaneel;5;o
 Interieur/Dashboard/Bedieningspanelen/Audiobediening/CD-sleuf;CD-sleuf;5;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
 Interieur/Dashboard/Bedieningspanelen/Audiobediening/Volumeknop;Volumeknop;5;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
 Interieur/Dashboard/Bedieningspanelen/Audiobediening/Zoekknop;Zoekknop;5;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
+Interieur/Dashboard/Bedieningspanelen/Kaartlezer;Kaartlezer;4;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;"Bekend storingspunt: Kaartlezer en handsfree Renault-kaart geven start- en herkenningsproblemen (Een bron; https://www.fiches-auto.fr/fiabilite-renault/fiabilite-184-pannes-renault-laguna-3.php)"
 Interieur/Dashboard/Bedieningspanelen/Klimaatbediening;Klimaatbediening;4;groep;;;;;niet onderzocht;;;;;;;;;;;;;;
 Interieur/Dashboard/Bedieningspanelen/Klimaatbediening/Klimaatpaneel;Klimaatpaneel;5;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
 Interieur/Dashboard/Bedieningspanelen/Klimaatbediening/Klimaattoetsen;Klimaattoetsen;5;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
 Interieur/Dashboard/Bedieningspanelen/Klimaatbediening/Temperatuurknop bestuurder;Temperatuurknop bestuurder;5;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
 Interieur/Dashboard/Bedieningspanelen/Klimaatbediening/Temperatuurknop passagier;Temperatuurknop passagier;5;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
 Interieur/Dashboard/Bedieningspanelen/Klimaatbediening/Ventilatorknop;Ventilatorknop;5;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
+Interieur/Dashboard/Bedieningspanelen/Startknop;Startknop;4;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
 Interieur/Dashboard/Dashboardschil;Dashboardschil;3;groep;;;;;niet onderzocht;;;;;;;;;;;;;;
 Interieur/Dashboard/Dashboardschil/Dashboarddrager;Dashboarddrager;4;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
 Interieur/Dashboard/Dashboardschil/Dashboardeindkap links;Dashboardeindkap links;4;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
@@ -5793,7 +5795,6 @@ Interieur/Middenconsole/Consolevoorpaneel;Consolevoorpaneel;3;onderdeel;;;;;niet
 Interieur/Middenconsole/Joystick navigatie;Joystick navigatie;3;groep;;;;;niet onderzocht;;;;;;;;;;;;;;
 Interieur/Middenconsole/Joystick navigatie/Joystickbasis;Joystickbasis;4;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
 Interieur/Middenconsole/Joystick navigatie/Joystickknop;Joystickknop;4;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
-Interieur/Middenconsole/Kaartlezer;Kaartlezer;3;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;"Bekend storingspunt: Kaartlezer en handsfree Renault-kaart geven start- en herkenningsproblemen (Een bron; https://www.fiches-auto.fr/fiabilite-renault/fiabilite-184-pannes-renault-laguna-3.php)"
 Interieur/Middenconsole/Keuzehendelmodule;Keuzehendelmodule;3;groep;;;;;niet onderzocht;;;;;;;;;;;;;;
 Interieur/Middenconsole/Keuzehendelmodule/Keuzehendel;Keuzehendel;4;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
 Interieur/Middenconsole/Keuzehendelmodule/Keuzehendelhoes;Keuzehendelhoes;4;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
@@ -5802,7 +5803,6 @@ Interieur/Middenconsole/Keuzehendelmodule/Keuzekabel;Keuzekabel;4;onderdeel;;;;;
 Interieur/Middenconsole/Keuzehendelmodule/Ontgrendelknop hendel;Ontgrendelknop hendel;4;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
 Interieur/Middenconsole/Keuzehendelmodule/Standaanduiding;Standaanduiding;4;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
 Interieur/Middenconsole/Parkeerremschakelaar;Parkeerremschakelaar;3;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
-Interieur/Middenconsole/Startknop;Startknop;3;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
 Interieur/Pedalen;Pedalen;2;groep;;;;;niet onderzocht;;;;;;;;;;;;;;
 Interieur/Pedalen/Gaspedaalarm;Gaspedaalarm;3;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
 Interieur/Pedalen/Gaspedaalpad;Gaspedaalpad;3;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
