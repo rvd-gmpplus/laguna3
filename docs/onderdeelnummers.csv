@@ -429,8 +429,6 @@ Aandrijflijn/Automaatversnellingsbak/Differentieel/Conisch lager rechts;Conisch 
 Aandrijflijn/Automaatversnellingsbak/Differentieel/Differentieelhuis;Differentieelhuis;4;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
 Aandrijflijn/Automaatversnellingsbak/Differentieel/Dikteringen satellietwielen;Dikteringen satellietwielen;4;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
 Aandrijflijn/Automaatversnellingsbak/Differentieel/Dikteringen zijwielen;Dikteringen zijwielen;4;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
-Aandrijflijn/Automaatversnellingsbak/Differentieel/Keerring links;Keerring links;4;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
-Aandrijflijn/Automaatversnellingsbak/Differentieel/Keerring rechts;Keerring rechts;4;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
 Aandrijflijn/Automaatversnellingsbak/Differentieel/Kroonwiel;Kroonwiel;4;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
 Aandrijflijn/Automaatversnellingsbak/Differentieel/Kroonwielbouten;Kroonwielbouten;4;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
 Aandrijflijn/Automaatversnellingsbak/Differentieel/Satellietas;Satellietas;4;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
@@ -439,6 +437,8 @@ Aandrijflijn/Automaatversnellingsbak/Differentieel/Satellietwiel onder;Satelliet
 Aandrijflijn/Automaatversnellingsbak/Differentieel/Zijwiel links;Zijwiel links;4;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
 Aandrijflijn/Automaatversnellingsbak/Differentieel/Zijwiel rechts;Zijwiel rechts;4;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
 Aandrijflijn/Automaatversnellingsbak/Ingaande as;Ingaande as;3;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
+Aandrijflijn/Automaatversnellingsbak/Keerring links;Keerring links;3;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
+Aandrijflijn/Automaatversnellingsbak/Keerring rechts;Keerring rechts;3;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;
 Aandrijflijn/Automaatversnellingsbak/Klepblok;Klepblok;3;groep;;;;;niet onderzocht;;;;;;;;;;;;;;
 Aandrijflijn/Automaatversnellingsbak/Klepblok/Accumulatoren;Accumulatoren;4;groep;;;;;niet onderzocht;;;;;;;;;;;;;;
 Aandrijflijn/Automaatversnellingsbak/Klepblok/Accumulatoren/Accumulator 1;Accumulator 1;5;onderdeel;;;;;niet onderzocht;;;;;;;;;;;;;;

@@ -240,8 +240,6 @@ function drvDiff() {
     P('Conisch lager links', merge([annulus(0.04, 0.05, 0.014, 'x', 36), annulus(0.03, 0.038, 0.016, 'x', 36)]), MAT.bearing, { d: 'Conisch rollager van het differentieelhuis aan de zijdekselzijde.', p: [0.059, 0, 0], ex: [0.16, 0, 0] }),
     P('Conisch lager rechts', merge([annulus(0.04, 0.05, 0.014, 'x', 36), annulus(0.03, 0.038, 0.016, 'x', 36)]), MAT.bearing, { d: 'Conisch rollager van het differentieelhuis aan de motorzijde.', p: [-0.059, 0, 0], ex: [-0.16, 0, 0] }),
     P('Afstelplaatje differentieel', annulus(0.032, 0.045, 0.001, 'x', 32), MAT.steel, { d: 'Plaatje waarmee de lagervoorspanning wordt afgesteld.', p: [-0.0695, 0, 0], ex: [-0.2, 0, 0] }),
-    P('Keerring links', merge([annulus(0.0128, 0.034, 0.007, 'x', 32)]), MAT.rubber, { d: 'Keerring waar de linker aandrijfas het huis verlaat.', p: [0.076, 0, 0], ex: [0.24, 0, 0] }),
-    P('Keerring rechts', merge([annulus(0.0128, 0.034, 0.007, 'x', 32)]), MAT.rubber, { d: 'Keerring waar de rechter aandrijfas het huis verlaat.', p: [-0.076, 0, 0], ex: [-0.24, 0, 0] }),
   ]);
 }
 
@@ -418,7 +416,11 @@ function buildGearbox() {
     ...drvHousing(),
     drvConverter(), drvPump(),
     P('Ingaande as', drvL('InAs', [[0.0075, 0.035], [0.012, 0.045], [0.012, 0.36], [0.009, 0.382]], 16), MAT.steel, { d: 'Ingaande as (circa 347 mm) van het turbinewiel door alle schakelelementen; met oliekanalen.', ex: [0.05, 0.0, 0.72], inner: true }),
-    drvSets(), drvClutches(), drvOutput(), drvPark(), drvCounter(), drvDiff(), drvValve(),
+    drvSets(), drvClutches(), drvOutput(), drvPark(), drvCounter(), drvDiff(),
+    // keerringen in de uitgangen van het huis: van buiten zichtbaar, dus niet onder het ingesloten Differentieel (golf 5j, ui_inner)
+    P('Keerring links', merge([annulus(0.0128, 0.034, 0.007, 'x', 32)]), MAT.rubber, { d: 'Keerring waar de linker aandrijfas het huis verlaat.', p: [DIFF[0] + 0.076, DIFF[1], DIFF[2]], ex: [0.24, 0, 0] }),
+    P('Keerring rechts', merge([annulus(0.0128, 0.034, 0.007, 'x', 32)]), MAT.rubber, { d: 'Keerring waar de rechter aandrijfas het huis verlaat.', p: [DIFF[0] - 0.076, DIFF[1], DIFF[2]], ex: [-0.24, 0, 0] }),
+    drvValve(),
     drvOutside(),
     drvStarter(),
   ]);
