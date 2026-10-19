@@ -1,6 +1,6 @@
 <!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"></head><body>
 <title>Laguna III explosietekening</title>
-<meta name="model-version" content="11 (bron b99eae2)">
+<meta name="model-version" content="12 (bron 0523197)">
 <meta name="description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback (2011, 2,0 Turbo, automaat): 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
 <meta property="og:title" content="Laguna III explosietekening">
 <meta property="og:description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback: 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
@@ -618,7 +618,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
   <div id="press" hidden><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="28"/></svg></div>
   <div id="helpDlg" hidden><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
     <h2 id="helpTitle">Bediening</h2>
-    <p class="ver">Laguna III explosietekening, versie 11 (bron b99eae2)</p>
+    <p class="ver">Laguna III explosietekening, versie 12 (bron 0523197)</p>
     <div id="helpMouse"><h3>Met de muis</h3><dl>
       <dt>Klik</dt><dd>De groep van het onderdeel klapt uit; de rest blijft staan. Staat die groep al open, dan wordt het onderdeel uitgelicht.</dd>
       <dt>Dubbelklik</dt><dd>Direct naar dit onderdeel: alle groepen erboven gaan laag voor laag open.</dd>
@@ -684,7 +684,7 @@ const CFG = Object.freeze({
     tourStapMs: 5000, tourStapRustigMs: 4500, // R4: duur van een stap van de rondleiding (normaal, minder beweging)
     herkaderMs: 160,     // R3: herkadreren na een formaatwissel of een andere indeling, zoveel later
     uitklapS: 0.85,      // standaardduur van uitklappen (een volle stap)
-    staffelS: 0.22, staffelMaxS: 0.6, // F4: wachttijd per laag bij duiken en tonen, samen hoogstens zolang (een duik duurt zo hoogstens circa 1,45 s)
+    staffelS: 0.22, tonenStaffelS: 0.18, staffelMaxS: 0.6, // F4: wachttijd per laag bij duiken (0,22) en tonen (0,18), samen hoogstens zolang (een duik duurt zo hoogstens circa 1,45 s)
     allesStaffelS: 0.32, allesStaffelMaxS: 1.4, // F4: idem bij alles uitklappen onder een groep (hoogstens circa 2,25 s)
     openS: 0.9,          // standaardduur van openen (open.dur van een opener gaat voor)
     startMs: 8000,       // zolang na het opstarten krijgen de batches meer rekentijd
@@ -7877,7 +7877,7 @@ function uiRevealOpen(n) {
 function uiRevealExplode(n) {
   uiPush();
   if (ISO.length && !uiInScope(n)) { ISO = []; applyVisibility(); updateGround(); }
-  const lv = [...ancestors(n)].filter(a => !uiOpen(a)), st = uiStaffel(0.18, lv.length, CFG.tijd.staffelMaxS);
+  const lv = [...ancestors(n)].filter(a => !uiOpen(a)), st = uiStaffel(CFG.tijd.tonenStaffelS, lv.length, CFG.tijd.staffelMaxS);
   lv.forEach((a, i) => setTarget(a, 1, i * st));
   CTX = n.parent || null; uiLabelForce = false; clearPreset();
   uiSetDim(n); // U19 (de wortel zet het uit)
