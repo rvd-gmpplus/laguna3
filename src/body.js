@@ -137,12 +137,19 @@ function bodGh(z) {
 // voet van de C-stijl: tussen SP en SP + bodCPL gaat de kasdoorsnede geleidelijk over in een bolle dekdoorsnede (zelfde x, hoogte
 // volgens het dekprofiel met de daklijn als top), zodat C-stijl en onderhoeken van de achterruit zonder trede in het dek achter de ruit lopen
 const bodCPL = 0.30;
-const bodMorph = z => (z >= SP + bodCPL ? 0 : sstep((SP + bodCPL - z) / bodCPL));
+// voet van de A-stijl (golf 5h): tussen WS0 - bodAPL en WS0 gaat de kas over in de dekdoorsnede van de kap, zodat ruit en stijl op de
+// kap aansluiten (anders een open driehoek naast de ruithoek). Overgang sstep; de dashboardhuid begint op z 1,00 (glas 26 mm erboven).
+const bodAPL = 0.09;
+const bodMorph = z => (z >= SP + bodCPL ? sstep((z - WS0 + bodAPL) / bodAPL) : sstep((SP + bodCPL - z) / bodCPL));
 function bodGhHalf(z, q, g) {
   const b = bodMorph(z);
   g = g || bodGh(z);
   const r = bodGhHalf0(z, q, g);
-  if (b > 0) { const yd = g.yb + (g.yc - g.yb) * (1 - Math.pow(clamp(r[0] / g.xb, 0, 1), bodDP(z))); r[1] = lerp(r[1], yd, b); }
+  if (b > 0) {
+    // A-voet: ook de bult uit bodGhHalf0 wegnemen (anders een kreukel)
+    if (z > WS0 - bodAPL && q <= bodQS) r[0] -= b * 0.012 * Math.sin(PI * q / bodQS) * Math.min(1, (g.ye - g.yb) / 0.2);
+    const yd = g.yb + (g.yc - g.yb) * (1 - Math.pow(clamp(r[0] / g.xb, 0, 1), bodDP(z))); r[1] = lerp(r[1], yd, b);
+  }
   return r;
 }
 function bodGhHalf0(z, q, g) {

@@ -1,6 +1,6 @@
 <!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"></head><body>
 <title>Laguna III explosietekening</title>
-<meta name="model-version" content="13 (bron 508106f)">
+<meta name="model-version" content="13 (bron 7a60b5e)">
 <meta name="description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback (2011, 2,0 Turbo, automaat): 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
 <meta property="og:title" content="Laguna III explosietekening">
 <meta property="og:description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback: 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
@@ -618,7 +618,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
   <div id="press" hidden><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="28"/></svg></div>
   <div id="helpDlg" hidden><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
     <h2 id="helpTitle">Bediening</h2>
-    <p class="ver">Laguna III explosietekening, versie 13 (bron 508106f)</p>
+    <p class="ver">Laguna III explosietekening, versie 13 (bron 7a60b5e)</p>
     <div id="helpMouse"><h3>Met de muis</h3><dl>
       <dt>Klik</dt><dd>De groep van het onderdeel klapt uit; de rest blijft staan. Staat die groep al open, dan wordt het onderdeel uitgelicht.</dd>
       <dt>Dubbelklik</dt><dd>Direct naar dit onderdeel: alle groepen erboven gaan laag voor laag open.</dd>
@@ -1345,12 +1345,19 @@ function bodGh(z) {
 // voet van de C-stijl: tussen SP en SP + bodCPL gaat de kasdoorsnede geleidelijk over in een bolle dekdoorsnede (zelfde x, hoogte
 // volgens het dekprofiel met de daklijn als top), zodat C-stijl en onderhoeken van de achterruit zonder trede in het dek achter de ruit lopen
 const bodCPL = 0.30;
-const bodMorph = z => (z >= SP + bodCPL ? 0 : sstep((SP + bodCPL - z) / bodCPL));
+// voet van de A-stijl (golf 5h): tussen WS0 - bodAPL en WS0 gaat de kas over in de dekdoorsnede van de kap, zodat ruit en stijl op de
+// kap aansluiten (anders een open driehoek naast de ruithoek). Overgang sstep; de dashboardhuid begint op z 1,00 (glas 26 mm erboven).
+const bodAPL = 0.09;
+const bodMorph = z => (z >= SP + bodCPL ? sstep((z - WS0 + bodAPL) / bodAPL) : sstep((SP + bodCPL - z) / bodCPL));
 function bodGhHalf(z, q, g) {
   const b = bodMorph(z);
   g = g || bodGh(z);
   const r = bodGhHalf0(z, q, g);
-  if (b > 0) { const yd = g.yb + (g.yc - g.yb) * (1 - Math.pow(clamp(r[0] / g.xb, 0, 1), bodDP(z))); r[1] = lerp(r[1], yd, b); }
+  if (b > 0) {
+    // A-voet: ook de bult uit bodGhHalf0 wegnemen (anders een kreukel)
+    if (z > WS0 - bodAPL && q <= bodQS) r[0] -= b * 0.012 * Math.sin(PI * q / bodQS) * Math.min(1, (g.ye - g.yb) / 0.2);
+    const yd = g.yb + (g.yc - g.yb) * (1 - Math.pow(clamp(r[0] / g.xb, 0, 1), bodDP(z))); r[1] = lerp(r[1], yd, b);
+  }
   return r;
 }
 function bodGhHalf0(z, q, g) {
@@ -1525,6 +1532,8 @@ function bodGlassWs(m) {
   return m;
 }
 MAT.glassWs = bodGlassWs(MAT.glass.clone());
+// golf 5h-2: voorruit lichter en met meer luchtreflectie, anders las hij als zwart gat (persfoto: grijsblauw met interieur erachter)
+MAT.glassWs.color.setHex(0x222930); MAT.glassWs.envMapIntensity = 0.5; MAT.glassWs.specularIntensity = 0.5;
 // zijruiten en kwartsruiten (golf 5f, S7 kenmerk 4): iets minder dekkend en met wat meer luchtreflectie dan de achterruit, zodat het glas als
 // donkergrijs leest en de zwarte B-stijl en het stijltje ernaast als zwart vlak afsteken (bij 0,92 en 0,12 waren glas en stijl even zwart)
 MAT.bodGlassSide = MAT.glass.clone(); MAT.bodGlassSide.name = 'bodGlassSide'; MAT.bodGlassSide.opacity = 0.84; MAT.bodGlassSide.envMapIntensity = 0.9;
@@ -1541,7 +1550,8 @@ std('bodValance', 0x2b2d31, 0, 0.66);                                     // don
 // (0xd0d6dc in plaats van 0xa9b0b7) en iets ruwer (0,1 in plaats van 0,06), omdat de bovenband van de raamomlijsting donkerder las dan de lak.
 // Dit materiaal geldt ook voor de chroomlijnen van grille en inlaat en de chroomwenkbrauwen voor: die werden mee lichter
 std('bodChrome', 0xd0d6dc, 1, 0.1, { envMapIntensity: 2.0 });
-std('bodGrille', 0x1d1f23, 0.35, 0.24, { envMapIntensity: 1.1 });             // glanzend zwart kunststof van de inlaatlamellen
+// golf 5h: donkerder en minder spiegelend (was 0x1d1f23, metaal 0,35, omgeving 1,1): de lamellen lazen als grijs rooster, op de persfoto is de inlaat diep zwart
+std('bodGrille', 0x0f1013, 0.25, 0.3, { envMapIntensity: 0.6 });             // glanzend zwart kunststof van de inlaatlamellen
 // middengrijs gelakt staal van de gasveercilinders: lichter dan het zwart van de zijrand en de bekleding, zodat de veer in het achterklepbeeld leest
 std('bodStrut', 0x62676e, 0.55, 0.35, { envMapIntensity: 0.9 });
 const bodSY = (z, y) => sAtY(z, y);
@@ -1650,6 +1660,9 @@ function bodQdBand(s, q0, q1, d0, d1, out, crown = 0, nq = 12, nt = 1) {
   }, q0, q1, nq, () => [0, 1], nt);
 }
 const bodSail = 0.865;                                                    // spiegeldriehoek tussen z 0,865 en de A-stijl
+// bovenrand van de spiegeldriehoek (golf 5h): van de bovenrand van de zijruit op bodSail recht naar de gordel op z 0,93, zoals de zwarte
+// driehoek in de ruithoek op de persfoto (fase 2). Was 0,966 tot 0,93 m: een strookje van 5 cm onder een breed gelakt vlak van de A-stijl
+const bodSailTop = z => lerp(bodYG(bodSail) - 0.003, YT(0.93) + 0.002, clamp((z - bodSail) / (0.93 - bodSail), 0, 1));
 const bodQy = (z, y) => bodQAtY(z, y);
 
 /* ---------- sierlijsten met afgerond profiel ---------- */
@@ -1843,8 +1856,10 @@ function buildDoor(s, isFront) {
   for (let i = 0; i <= 16; i++) { const z = zB0 + (zB1 - zB0) * i / 16, g = bodGh(z); beltPts.push([s * (g.xb + 0.007), g.yb + 0.003, z]); }
   // bovenband bol (hooglicht boven, donkere onderhelft) op het staande vlak; voorportier ook langs de voorrand bij de spiegeldriehoek
   const topPath = bodLinZ(zT0, zT1, 36, bodQV), sailPath = [0.04, 0.12, 0.22, 0.32, 0.42, 0.5, 0.53, bodQV].map(q => [gz1 + 0.006, q]);
-  const ringGeo = merge([bodTrim(s, topPath, -bodTW, bodTW, 0.0035, 0.003, 8)].concat(isFront ? [bodTrim(s, sailPath, -bodTW, bodTW, 0.0035, 0.003, 6)] : []));
-  const ringRub = merge([bodTrim(s, topPath, -bodTW - bodTR, -bodTW + 0.0005, 0.0026, 0, 1)].concat(isFront ? [bodTrim(s, sailPath, bodTW - 0.0005, bodTW + 0.004, 0.0026, 0, 1)] : []));   // langs de spiegeldriehoek (zwart) blijft 4 mm genoeg
+  const ringGeo = bodTrim(s, topPath, -bodTW, bodTW, 0.0035, 0.003, 8);
+  // langs de voorrand bij de spiegeldriehoek geen chroom meer maar een zwarte lijst van 2 x bodTW plus 4 mm (golf 5h): de staande chroomstreep las in
+  // driekwartbeelden als witte streep naast de A-stijl; op de persfoto loopt de zwarte driehoek daar door tot de ruit
+  const ringRub = merge([bodTrim(s, topPath, -bodTW - bodTR, -bodTW + 0.0005, 0.0026, 0, 1)].concat(isFront ? [bodTrim(s, sailPath, -bodTW, bodTW + 0.004, 0.0026, 0, 2)] : []));
   // gordellijst onderaan de ruit: bolle chroomband van 15 mm met een donkere rubberlijn naar het glas en een schaduwlijn naar de lak
   const beltPath = bodLinZ(zB0, zB1, 30, 0);
   const { chrome: beltGeo, rubber: beltRub } = bodBeltTrim(s, beltPath);
@@ -1934,9 +1949,9 @@ function buildDoor(s, isFront) {
     P('Zijruit', glass, MAT.bodGlassSide, { d: 'Zakbare zijruit van gehard veiligheidsglas. Zakt elektrisch in het portier; ' + (isFront ? 'de zijruit gaat bijna volledig omlaag.' : 'de zijruit blijft een stukje boven de gordellijn staan (de wielkast beperkt de diepte).'), ex: [0, 0.32, 0],
       open: winSlide({ min: dDropMin, label: `Zijruit ${n}${pos}`, look: { dir: [s * 1, 0.7, isFront ? 0.4 : 0.15], nodes: [dName] } }) }),
     A('Raamlijsten en sierlijsten', { d: 'Chromen raamomlijsting, gordelsierlijst met rubber en de zijsierlijst met aluminium inzet.', ex: [s * 0.52, 0.04, 0.1] }, [
-    P('Chroomlijst raamomlijsting', ringGeo, MAT.bodChrome, { d: isFront ? 'Zilverchromen band langs de bovenrand van de ruit en de voorrand bij de spiegeldriehoek (Initiale Paris: cerclage chromé).' : 'Zilverchromen band langs de bovenrand van de ruit (Initiale Paris: cerclage chromé).', ex: [s * 0.05, 0.12, 0] }),
+    P('Chroomlijst raamomlijsting', ringGeo, MAT.bodChrome, { d: 'Zilverchromen band langs de bovenrand van de ruit (Initiale Paris: cerclage chromé).', ex: [s * 0.05, 0.12, 0] }),
     P('Raamrubber boven', topBand, MAT.bodPillar, { d: 'Zwart rubber en kader tussen de ruit en de dakrail, waarop de chroomlijst ligt.', ex: [s * 0.03, 0.08, 0] }),
-    P('Rubberlijn raamomlijsting', ringRub, MAT.bodPillar, { d: 'Smalle zwarte rubberlijn tussen de chromen raamomlijsting en de lak van de dakrail.', ex: [s * 0.04, 0.1, 0] }),
+    P('Rubberlijn raamomlijsting', ringRub, MAT.bodPillar, { d: isFront ? 'Smalle zwarte rubberlijn tussen de chromen raamomlijsting en de lak van de dakrail, en een zwarte lijst langs de voorrand van de ruit bij de spiegeldriehoek.' : 'Smalle zwarte rubberlijn tussen de chromen raamomlijsting en de lak van de dakrail.', ex: [s * 0.04, 0.1, 0] }),
     !isFront && P('Chroomlijst raamstijl', merge([bodQdBand(s, 0.03, bodQV - bodTW + 0.001, -0.0245, -0.0105, 0.0025, 0.0015, 14, 4), bodQdBand(s, 0.03, bodQV - bodTW + 0.001, 0.0105, 0.0245, 0.0025, 0.0015, 14, 4)]), MAT.bodChrome, { d: 'Twee smalle chroomlijsten langs de randen van het schuine stijltje, zodat de chromen omlijsting rond de portierruit en rond de kwartsruit doorloopt.', ex: [s * 0.05, 0.1, -0.04] }),
     // De B-stijl zelf blijft zwart zonder chroom: met een chroomlijst over de hele hoogte aan beide kanten (golf 5b-3 E3) las de stijl als
     // dubbele witte lijn, en ook de korte chromen eindstukken in de bovenhoeken (golf 5f ronde 2) lazen als twee lichte strepen naast een dunne
@@ -1987,7 +2002,7 @@ function buildDoor(s, isFront) {
     { d: isFront ? 'Hoogglans zwarte afdekking (weergegeven als mat zwart) op het raamkader van het voorportier, de voorste helft van de zwarte B-stijl, licht naar achteren hellend; dekt ook het runkanaal langs de achterrand van de ruit af.' : 'Hoogglans zwarte afdekking (weergegeven als mat zwart) op het raamkader van het achterportier, de achterste helft van de zwarte B-stijl; dekt ook het runkanaal langs de voorrand van de ruit af.', ex: [s * 0.06, 0.04, 0] }));
   if (isFront) kids.push(P('Naadrubber B-stijl', bodBand(s, -0.148 + bodBGW + 0.001, bodBGK, -0.148 - bodBGW - 0.001, bodBGK, 0.0008), MAT.bodPillar, { d: 'Mat zwart rubber in de naad tussen de twee B-stijlafdekkingen, in het verlengde van de sluitnaad onder de gordel.', ex: [s * 0.03, 0.02, 0] }));
   if (isFront) {
-    kids.push(P('Spiegeldriehoek', bodGhSide(s, bodSail, 0.93, 6, z => [0.004, Math.min(bodQS - 0.02, bodQy(z, 0.93 + (0.93 - z) * 0.55))], 4, [], 0.001), MAT.bodPillar, { d: 'Zwarte driehoekige afdekplaat tussen zijruit en A-stijl waarop de spiegel staat.', ex: [s * 0.05, 0.05, 0.03] }));
+    kids.push(P('Spiegeldriehoek', bodGhSide(s, bodSail, 0.93, 8, z => [0.004, Math.min(bodQS - 0.02, bodQy(z, bodSailTop(z)))], 6, [], 0.001), MAT.bodPillar, { d: 'Zwarte driehoekige afdekplaat tussen zijruit en A-stijl waarop de spiegel staat.', ex: [s * 0.05, 0.05, 0.03] }));
     kids.push(buildMirror(s));
   } else {
     // schuin stijltje tussen zakbare ruit en kwartsruit (zijfoto fase 2: zwarte balk van ca. 3 cm met chroom langs beide ruiten): hoogglans zwart,
@@ -2016,20 +2031,20 @@ function bodLoft(sg, rings, cap) {
   const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals(); return g;
 }
 function buildMirror(s) {
-  const n = sn(s), cx = 0.925, cy = 0.975, cz = 0.738, k = s > 0 ? 'L' : 'R';
+  const n = sn(s), cx = 0.925, cy = 0.975, cz = 0.808, k = s > 0 ? 'L' : 'R';
   const M = (x, y, z) => [s * x, y, z];
   return A(`Buitenspiegel ${n}`, { d: 'Elektrisch verstelbare, verwarmde en elektrisch inklapbare buitenspiegel in carrosseriekleur (Initiale Paris met geheugen). Klapt ongeveer 80 graden naar achteren (hoek geschat).', ex: [s * 0.32, 0.12, 0.08],
-    open: hinge([s * 0.95, 0.94, 0.74], [0, 1, 0], s * 80 * PI / 180, { min: 64 * PI / 180, label: `Buitenspiegel ${n}`, look: { dir: [s * 0.8, 0.3, 0.75], nodes: [`Buitenspiegel ${n}`] } }) }, [
-    // voet als smalle plaat tussen portier en de binnenkant van het spiegelhuis (x 0,8085 tot 0,8245, achter de voorkant van de kap): als blok van
-    // 9 x 5 x 7 cm voor de kap las hij in vooraanzicht als los zwart blokje onder de spiegel (S7, golf 5f ronde 2)
-    P('Spiegelvoet', G.rbox(0.016, 0.032, 0.1, 0.005), MAT.bodPillar, { d: 'Voet met bevestigingsplaat op het portier aan de binnenkant van het spiegelhuis; blijft staan als de spiegel inklapt (plaats geschat).', p: M(0.8165, 0.941, 0.75), stay: true, ex: [-s * 0.05, -0.05, 0] }),
-    P('Spiegelkap', cache('bodMirCapT' + k, () => bodLoft(s, [[1, 0], [1, 0.03], [0.95, 0.07], [0.8, 0.11], [0.5, 0.135], [0.12, 0.145]], true)), MAT.paint, { d: 'Kap in carrosseriekleur aan de voorzijde van het spiegelhuis.', p: M(cx, cy, 0.668), ex: [0, 0.02, 0.1] }),
-    P('Spiegelhuis', cache('bodMirRimT' + k, () => bodLoft(s, [[0.93, -0.004], [1.01, -0.004], [1.01, 0.012]], false)), MAT.paint, { d: 'Kunststof huis in carrosseriekleur met een rand rond het glas, dat glas, motoren en verwarming draagt.', p: M(cx, cy, 0.664), ex: [0, 0, -0.02] }),
-    P('Spiegelglas', cache('bodMirGlT' + k, () => { const g = new THREE.ShapeGeometry(shapeOf(bodMirOutline().map(([u, v]) => [s * u * 0.93, v * 0.93]))); return g; }), MAT.bodMirror, { d: 'Bol spiegelglas in de spiegelkap, waarin de bestuurder het verkeer naast en schuin achter de auto ziet.', p: M(cx, cy, 0.661), ex: [0, 0, -0.12] }),
-    P('Glasdrager', G.rbox(0.17, 0.106, 0.008, 0.01), MAT.plastic, { d: 'Kunststof drager waarop het glas is geklikt.', p: M(cx, cy, 0.668), ex: [0, 0, -0.08] }),
-    P('Verwarmingsfolie', G.box(0.16, 0.1, 0.002), MAT.heater, { d: 'Verwarmingsfolie achter het glas tegen condens en ijs.', p: M(cx, cy, 0.6645), inner: true, ex: [0, 0, -0.1] }),
-    P('Verstelmotor', G.rbox(0.06, 0.05, 0.04, 0.008), MAT.darkSteel, { d: 'Motor met twee assen voor het verstellen van het glas (met geheugen).', p: M(cx, cy, 0.7), inner: true, ex: [0, 0.06, -0.04] }),
-    P('Inklapmotor', G.cyl('y', 0.022, 0.022, 0.05, 16), MAT.darkSteel, { d: 'Motor die de spiegel elektrisch inklapt.', p: M(0.95, 0.955, 0.74), ex: [0, -0.06, 0] }),
+    open: hinge([s * 0.95, 0.94, 0.81], [0, 1, 0], s * 80 * PI / 180, { min: 64 * PI / 180, label: `Buitenspiegel ${n}`, look: { dir: [s * 0.8, 0.3, 0.75], nodes: [`Buitenspiegel ${n}`] } }) }, [
+    // voet: smalle plaat 13 mm buiten de huid tussen portier en spiegelhuis (een blok voor de kap las als los zwart blokje, 5f-2);
+    // 5h-2: spiegel 7 cm naar achteren, op de spiegeldriehoek zoals op de persfoto
+    P('Spiegelvoet', G.rbox(0.016, 0.032, 0.1, 0.005), MAT.bodPillar, { d: 'Voet met bevestigingsplaat op het portier aan de binnenkant van het spiegelhuis; blijft staan als de spiegel inklapt (plaats geschat).', p: M(bodGhHalf(0.82, 0.11)[0] + 0.013, 0.941, 0.82), stay: true, ex: [-s * 0.05, -0.05, 0] }),
+    P('Spiegelkap', cache('bodMirCapT' + k, () => bodLoft(s, [[1, 0], [1, 0.03], [0.95, 0.07], [0.8, 0.11], [0.5, 0.135], [0.12, 0.145]], true)), MAT.paint, { d: 'Kap in carrosseriekleur aan de voorzijde van het spiegelhuis.', p: M(cx, cy, 0.738), ex: [0, 0.02, 0.1] }),
+    P('Spiegelhuis', cache('bodMirRimT' + k, () => bodLoft(s, [[0.93, -0.004], [1.01, -0.004], [1.01, 0.012]], false)), MAT.paint, { d: 'Kunststof huis in carrosseriekleur met een rand rond het glas, dat glas, motoren en verwarming draagt.', p: M(cx, cy, 0.734), ex: [0, 0, -0.02] }),
+    P('Spiegelglas', cache('bodMirGlT' + k, () => { const g = new THREE.ShapeGeometry(shapeOf(bodMirOutline().map(([u, v]) => [s * u * 0.93, v * 0.93]))); return g; }), MAT.bodMirror, { d: 'Bol spiegelglas in de spiegelkap, waarin de bestuurder het verkeer naast en schuin achter de auto ziet.', p: M(cx, cy, 0.731), ex: [0, 0, -0.12] }),
+    P('Glasdrager', G.rbox(0.17, 0.106, 0.008, 0.01), MAT.plastic, { d: 'Kunststof drager waarop het glas is geklikt.', p: M(cx, cy, 0.738), ex: [0, 0, -0.08] }),
+    P('Verwarmingsfolie', G.box(0.16, 0.1, 0.002), MAT.heater, { d: 'Verwarmingsfolie achter het glas tegen condens en ijs.', p: M(cx, cy, 0.7345), inner: true, ex: [0, 0, -0.1] }),
+    P('Verstelmotor', G.rbox(0.06, 0.05, 0.04, 0.008), MAT.darkSteel, { d: 'Motor met twee assen voor het verstellen van het glas (met geheugen).', p: M(cx, cy, 0.77), inner: true, ex: [0, 0.06, -0.04] }),
+    P('Inklapmotor', G.cyl('y', 0.022, 0.022, 0.05, 16), MAT.darkSteel, { d: 'Motor die de spiegel elektrisch inklapt.', p: M(0.95, 0.955, 0.81), ex: [0, -0.06, 0] }),
   ]);
 }
 
@@ -2354,7 +2369,7 @@ function buildBody() {
   // d = -(qFr + k) loopt van de ruit af (het pad heeft stijgende z, de ruit ligt aan de kant d > 0)
   const qBelt = s => bodBeltTrim(s, bodLinZ(bodQZ - 0.012, -0.96, 14, 0));
   const qTrim = (s, k0, k1, out, crown, nv) => bodTrim(s, qEdge, z => -(qFr(z) + k1), z => -(qFr(z) + k0), out, crown, nv);
-  const aPillarLo = z => z < bodSail - 0.004 ? bodQG + 0.03 : z < 0.93 ? Math.min(bodQS - 0.02, bodQy(z, 0.93 + (0.93 - z) * 0.55)) : 0.004;
+  const aPillarLo = z => z < bodSail - 0.004 ? bodQG + 0.03 : z < 0.93 ? Math.min(bodQS - 0.02, bodQy(z, bodSailTop(z))) : 0.004;
   // dakplaat met twee openingen: panRoofGeo() in panorama.js (4 mm overlap met de achterruit, geen spleet op de naad)
   // de kwartsruit ligt boven het achterportier (de sluitnaad loopt achter de punt op de gordel, z -1,2665) en zit in het raamkader van dat portier
   // achter het schuine stijltje: hij draait om dezelfde scharnieras mee. Bleef hij staan, dan hing hij bij een open achterportier los in de
@@ -2374,7 +2389,7 @@ function buildBody() {
     A('Dakbogen', { d: 'Drie dwarsliggers onder het dakpaneel. Door de twee openingen van het panoramadak liggen ze onder de plaatstroken voor, tussen en achter de glaspanelen (onder de dwarsbalk en boven de hemelbekleding).', ex: [0, 0.1, 0] }, [[0.285, 'voor'], [-0.54, 'midden'], [-1.14, 'achter']].map(([z, nm]) => P(`Dakboog ${nm}`, (() => { const pts = []; for (let i = 0; i <= 12; i++) { const w = bodQR / 2 + (1 - bodQR) * i / 12; const p = ghPt(z, w); pts.push([p[0] * 0.97, p[1] - 0.005, z]); } return tube(pts, 0.0045, 24, 6); })(), MAT.paintIn, { d: 'Dwarsligger onder het dakpaneel.', ex: [0, -0.04, z * 0.05] }))),
     buildPanorama(),
     ...both(s => P(`Dakrail ${sn(s)}`, bodGhSide(s, -0.95, WS1, 30, () => [bodQG + 0.03, bodQR], 10), MAT.paint, { d: 'Zijdelingse dakligger boven de portieren.', ex: [s * 0.08, 0.04, 0] })),
-    ...both(s => P(`A-stijl ${sn(s)}`, bodGhSide(s, WS1, WS0, 24, z => [aPillarLo(z), bodQR], 5, bodDense(0.78, 0.95, 6)), MAT.paint, { d: 'Voorste dakstijl langs de voorruit.', ex: [s * 0.08, 0.04, 0.04] })),
+    ...both(s => P(`A-stijl ${sn(s)}`, bodGhSide(s, WS1, WS0, 24, z => [aPillarLo(z), bodQR], 8, bodDense(0.78, 0.95, 6).concat(bodDense(WS0 - bodAPL, WS0, 9))), MAT.paint, { d: 'Voorste dakstijl langs de voorruit.', ex: [s * 0.08, 0.04, 0.04] })),
     // B-stijl: profiel onder (tot 1,06 m) en boven de gordel het gelakte buitenvlak van de stijl tot de bovenrand van de ruiten, 4 mm onder de
     // twee zwarte afdekkingen van de portierkaders (de onderste 10 cm dieper, binnen de zakkende voorste zijruit; zie bodBPillarFace). Dicht blijft het vlak achter die afdekkingen (16 mm van de glasranden, zodat het niet
     // door de ruiten te zien is); bij een open portier leest de stijl zo als stijl. Zonder dit vlak keek je daar langs de afdekking van het
@@ -2544,9 +2559,10 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     P('Bumperschaal voor', shellF, MAT.paint, { d: 'Gespoten kunststof bumperschaal in carrosseriekleur.', ex: [0, 0, 0] }),
     // flens onder de naad tussen kapvoorrand en bumper (6 mm onder de huid): door de naad is geen motorruimte meer te zien
     P('Kapnaadflens', merge([L, R].map(sd => lowSide(sd, bodHLZ1 - 0.03, bodHoodZ1, 20, z => { const h = bodHoodS(z); return [Math.min(0.999, h - 0.008), Math.min(1, h + 0.008)]; }, 2, bodDense(2.27, bodHoodZ1, 6).concat(bodHoodTip), 0.006))), MAT.plastic, { d: 'Kunststof flens van de bumperschaal onder de naad met de voorrand van de motorkap.', ex: [0, 0.03, 0.04] }),
-    A('Bovengrille', { d: 'Smalle zwarte sleuf direct onder de voorrand van de motorkap.', ex: [0, 0.04, 0.12] }, [
-      P('Grillesleuf', fFace(-0.3, 0.3, 0.618, 0.648, 0.003, 20, 2), MAT.blackGloss, { d: 'Hoogglans zwart rooster dat de smalle sleuf tussen de kapvoorrand en de bumper afsluit.', ex: [0, 0, 0] }),
-      P('Chroomlijn grille', tube([-0.3, -0.15, 0, 0.15, 0.3].map(x => [x, 0.611, frontZ(x, 0.611) + 0.001]), 0.005, 16, 8), MAT.bodChrome, { d: 'Dunne chroomlijn onder de grillesleuf.', ex: [0, -0.02, 0.04] }),
+    // golf 5h: de band is 5 cm hoog en 0,66 m breed (was 3 cm en 0,60 m), zoals de zwarte bovengrille tussen de koplampspitsen op de persfoto
+    A('Bovengrille', { d: 'Smalle zwarte band direct onder de voorrand van de motorkap, tussen de binnenspitsen van de koplampen.', ex: [0, 0.04, 0.12] }, [
+      P('Grillesleuf', fFace(-0.33, 0.33, 0.598, 0.648, 0.003, 20, 3), MAT.blackGloss, { d: 'Hoogglans zwart rooster dat de smalle sleuf tussen de kapvoorrand en de bumper afsluit.', ex: [0, 0, 0] }),
+      P('Chroomlijn grille', tube([-0.33, -0.165, 0, 0.165, 0.33].map(x => [x, 0.592, frontZ(x, 0.592) + 0.001]), 0.005, 16, 8), MAT.bodChrome, { d: 'Dunne chroomlijn onder de grillesleuf.', ex: [0, -0.02, 0.04] }),
     ]),
     P('Kentekenvlak', fFace(-0.34, 0.34, 0.44, 0.572, 0.002, 20, 4), MAT.blackGloss, { d: 'Zwart horizontaal vlak boven de onderste inlaat waarop de kentekenplaat zit.', ex: [0, 0.02, 0.08] }),
     // plaat en houder volgen de bolling van het voorvlak en liggen er vrijwel vlak op (3 tot 5 mm), zonder zichtbaar blok erachter
@@ -2750,20 +2766,28 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   /* ================= voorruit en wissers ================= */
   const wsW = [bodQR / 2 + 0.002, 1 - bodQR / 2 - 0.002];
   const windscreen = A('Voorruit', { d: 'Gelaagde voorruit onder een hoek van ca. 26 graden, met rubber en regensensor.', ex: [0, 0.4, 0.42] }, [
-    P('Voorruitglas', patch((z, w) => ghPt(z, w), WS1 + 0.004, WS0 - 0.006, 28, () => wsW, 22), MAT.glassWs, { d: 'Gelaagd veiligheidsglas met akoestische tussenlaag.', ex: [0, 0.08, 0.04] }),
-    P('Voorruitrubber', (() => { const pts = []; const zz = [WS0 - 0.01, 0.85, 0.65, 0.45, WS1 + 0.006]; zz.forEach(z => { const p = bodGhAt(z, bodQR - 0.004, 0.004); pts.push([p[0], p[1], z]); }); for (let i = 1; i < 10; i++) { const p = ghPt(WS1 + 0.006, 0.36 + 0.28 * i / 10); pts.push([p[0], p[1] + 0.004, p[2]]); } zz.slice().reverse().forEach(z => { const p = bodGhAt(z, bodQR - 0.004, 0.004); pts.push([-p[0], p[1], z]); }); return tube(pts, 0.006, 80, 5); })(), MAT.rubber, { d: 'Zwarte sierrubber langs zijkanten en bovenrand.', ex: [0, 0.04, 0] }),
+    P('Voorruitglas', patch((z, w) => ghPt(z, w), WS1 + 0.004, WS0 - 0.002, 28, () => wsW, 22, bodDense(WS0 - bodAPL, WS0 - 0.002, 9)), MAT.glassWs, { d: 'Gelaagd veiligheidsglas met akoestische tussenlaag.', ex: [0, 0.08, 0.04] }),
+    P('Voorruitrubber', (() => { const pts = []; const zz = [WS0 - 0.004, WS0 - 0.02, WS0 - 0.035, WS0 - 0.055, WS0 - bodAPL, 0.85, 0.65, 0.45, WS1 + 0.006]; zz.forEach(z => { const p = bodGhAt(z, bodQR - 0.004, 0.004); pts.push([p[0], p[1], z]); }); for (let i = 1; i < 10; i++) { const p = ghPt(WS1 + 0.006, 0.36 + 0.28 * i / 10); pts.push([p[0], p[1] + 0.004, p[2]]); } zz.slice().reverse().forEach(z => { const p = bodGhAt(z, bodQR - 0.004, 0.004); pts.push([-p[0], p[1], z]); }); return tube(pts, 0.006, 80, 5); })(), MAT.rubber, { d: 'Zwarte sierrubber langs zijkanten en bovenrand.', ex: [0, 0.04, 0] }),
     P('Regensensor', G.rbox(0.07, 0.012, 0.06, 0.008), MAT.plastic, { d: 'Regen- en lichtsensor achter de ruit bij de binnenspiegel.', p: [0, YR(0.36) - 0.022, 0.36], r: [0.4, 0, 0], ex: [0, -0.06, 0] }),
   ]);
   const wipeOn = (x, z, lift) => { const g = bodGh(z), q = bodQR + (1 - bodQR) * (1 - Math.abs(x) / g.xr); const p = bodGhHalf(z, Math.min(1, q), g); return [x, p[1] + lift, z]; };
-  const wArm = (x0, x1, lift) => tube([0, 0.33, 0.66, 1].map(t => { const x = x0 + (x1 - x0) * t, z = 1.035 - 0.02 * Math.sin(PI * t); return wipeOn(x, z, lift); }), 0.007, 24, 6);
+  // golf 5h: armen en bladen liggen in rust laag in de voet van de ruit (z 1,046, net boven de achterrand van de kap), zoals op de persfoto
+  // waar ze vrijwel wegvallen; eerst lagen ze 2 tot 4 cm hoger op het glas en lazen ze als losse zwarte strepen boven de kap
+  const wArm = (x0, x1, lift) => tube([0, 0.33, 0.66, 1].map(t => { const x = x0 + (x1 - x0) * t, z = 1.046 - 0.012 * Math.sin(PI * t); return wipeOn(x, z, lift); }), 0.006, 24, 6);
+  // de armen beginnen aan de rand van hun kap en de arm aan de passagierszijde eindigt voor de kap aan de bestuurderszijde (tandem)
+  // kap op de asmoer: staat haaks op het glas (gekanteld met de helling van de ruit), zodat hij niet in het glas steekt
+  const wCap = x => { const z = 1.043, a = wipeOn(x, z - 0.01, 0), b = wipeOn(x, z + 0.01, 0), t = Math.atan2(a[1] - b[1], 0.02), p = wipeOn(x, z, 0);
+    return { p: [x, p[1] + 0.009 * Math.cos(t), z + 0.009 * Math.sin(t)], r: [t, 0, 0] }; };
   const wipers = A('Ruitenwissers', { d: 'Wisserinstallatie met torpedoplaat, twee armen in tandemopstelling (linksgestuurd), motor en stangenstelsel.', ex: [0, 1.0, 0.1] }, [
-    P('Wisserarm links', wArm(-0.02, 0.58, 0.022), MAT.blackGloss, { d: 'Wisserarm aan de bestuurderszijde (linksgestuurd: tandemopstelling, dus niet symmetrisch).', ex: [0, 0.08, 0] }),
-    P('Wisserarm rechts', wArm(-0.52, 0.02, 0.022), MAT.blackGloss, { d: 'Wisserarm aan de passagierszijde.', ex: [0, 0.08, 0] }),
-    P('Wisserblad links', wArm(0.0, 0.62, 0.008), MAT.rubber, { d: 'Wisserblad bestuurderszijde.', ex: [0, 0.14, 0] }),
-    P('Wisserblad rechts', wArm(-0.5, 0.04, 0.008), MAT.rubber, { d: 'Wisserblad passagierszijde.', ex: [0, 0.14, 0] }),
-    ...[[-0.02, 'bestuurderszijde'], [-0.52, 'passagierszijde']].map(([x, nm]) => P(`Wisseraskap ${nm}`, G.cyl('y', 0.016, 0.018, 0.02, 12), MAT.blackGloss, { d: 'Kap over de asmoer van de wisserarm, op de voorruitbasis direct achter de motorkap.', p: wipeOn(x, 1.04, 0.014), ex: [0, 0.05, 0] })),
-    P('Wissermotor', merge([G.cyl('z', 0.04, 0.04, 0.09, 16), xf(G.rbox(0.08, 0.06, 0.05, 0.01), [0, 0, 0.06])]), MAT.darkSteel, { d: 'Elektromotor van de ruitenwissers in de torpedobak.', p: [0.3, 0.9, 1.07], ex: [0, -0.1, 0.06] }),
-    P('Wisserstangenmechaniek', merge([rodBetween([-0.52, 0.92, 1.1], [0.3, 0.9, 1.08], 0.007, 8), rodBetween([0.3, 0.9, 1.08], [-0.02, 0.92, 1.1], 0.007, 8)]), MAT.steel, { d: 'Stangenstelsel dat beide wisserassen aandrijft.', ex: [0, -0.06, 0.12] }),
+    P('Wisserarm links', wArm(-0.002, 0.58, 0.013), MAT.blackGloss, { d: 'Wisserarm aan de bestuurderszijde (linksgestuurd: tandemopstelling, dus niet symmetrisch).', ex: [0, 0.08, 0] }),
+    P('Wisserarm rechts', wArm(-0.502, -0.065, 0.013), MAT.blackGloss, { d: 'Wisserarm aan de passagierszijde.', ex: [0, 0.08, 0] }),
+    P('Wisserblad links', wArm(0.012, 0.62, 0.0065), MAT.rubber, { d: 'Wisserblad bestuurderszijde.', ex: [0, 0.14, 0] }),
+    P('Wisserblad rechts', wArm(-0.488, -0.048, 0.0065), MAT.rubber, { d: 'Wisserblad passagierszijde.', ex: [0, 0.14, 0] }),
+    ...[[-0.02, 'bestuurderszijde'], [-0.52, 'passagierszijde']].map(([x, nm]) => P(`Wisseraskap ${nm}`, G.cyl('y', 0.014, 0.016, 0.014, 12), MAT.blackGloss, Object.assign({ d: 'Kap over de asmoer van de wisserarm, op de voorruitbasis direct achter de motorkap.', ex: [0, 0.05, 0] }, wCap(x)))),
+    // golf 5h: motor in de bak onder de bodemplaat van de torpedobak (tussen schutbord en voorwand), stangen op de plaat onder de
+    // torpedoplaat; eerst stonden motor en stangen dwars door de plaat, het schutbord en de voorkant van het dashboard (tot 38 mm)
+    P('Wissermotor', merge([G.cyl('x', 0.032, 0.032, 0.09, 16), xf(G.rbox(0.05, 0.06, 0.06, 0.008), [-0.07, 0, 0])]), MAT.darkSteel, { d: 'Elektromotor met wormwielkast van de ruitenwissers in de torpedobak, onder de bodemplaat.', p: [0.3, 0.862, 1.08], ex: [0, -0.1, 0.06] }),
+    P('Wisserstangenmechaniek', merge([rodBetween([-0.52, 0.919, 1.07], [0.3, 0.919, 1.07], 0.007, 8), rodBetween([0.3, 0.919, 1.07], [-0.02, 0.919, 1.075], 0.007, 8)]), MAT.steel, { d: 'Stangenstelsel dat beide wisserassen aandrijft (schematisch).', ex: [0, -0.06, 0.12] }),
   ]);
 
   return A('Carrosserie', { d: 'Zelfdragende carrosserie van de vijfdeurs hatchback in zilvergrijs metallic (Gris Platine), met alle aanbouwdelen, ruiten en verlichting.', ex: [0, 2.0, 0], spec: [['Lengte', '4.695 mm'], ['Breedte zonder / met spiegels', '1.811 / 2.060 mm'], ['Hoogte', '1.445 mm'], ['Wielbasis', '2.756 mm'], ['Spoorbreedte voor / achter', '1.557 / 1.512 mm'], ['Kleur', 'Gris Platine (D69)']] }, [
@@ -5090,7 +5114,7 @@ function intBelts() {
 /* ---------- dashboard ---------- */
 // zijprofiel (z, y) van het dashboard; bovenkant en voorvlak worden voor de huid en de bedieningspanelen hergebruikt
 const intDashPf = [[1.03, 0.935], [0.8, 0.95], [0.62, 0.945], [0.52, 0.91], [0.47, 0.84], [0.48, 0.74], [0.55, 0.62], [0.58, 0.52], [0.68, 0.5], [0.9, 0.6], [1.0, 0.78]];
-const intDashTopPts = [[1.03, 0.935], [0.8, 0.95], [0.62, 0.945], [0.52, 0.91], [0.47, 0.84]];
+const intDashTopPts = [[1.00, 0.937], [0.8, 0.95], [0.62, 0.945], [0.52, 0.91], [0.47, 0.84]];
 const intFacePts = [[0.52, 0.91], [0.47, 0.84], [0.48, 0.74], [0.55, 0.62]];
 const intSkinT = 0.012;
 // polylijn van boven naar onder (of voor naar achter) verschoven langs de normaal naar de bestuurder (positief = naar buiten)
