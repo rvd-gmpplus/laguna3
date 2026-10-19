@@ -1,5 +1,7 @@
 # Handomdraai laguna3
 
+Stand 20 oktober 2026, golf 5j: versie 16 (motorruimte naar de echte auto, draaidop en peilstok, exterieurpunten) is gepubliceerd (`main` fast-forward `c0cb022..32b298d`, tag `v16`, artefactversie 18, Pages byte voor byte teruggelezen). Open punten: zie `docs/masterplan.md`, golf 5j.
+
 Stand 19 oktober 2026, golf 5i: versie 15 (ruiten in de tint van de voorruit, motorruimte naar een foto: afdekkap met opschrift, olievuldop midden, sproeiertank rechtsvoor, zwarte accu) is gepubliceerd (`main` fast-forward `d7407af..37930aa`, tag `v15`, artefactversie 17, Pages byte voor byte teruggelezen). Open punten: zie `docs/masterplan.md`, golf 5i.
 
 Stand 19 oktober 2026, golf 5h: versie 13 (vervolgronde 5g, accu links achter) is gepubliceerd (tag `v13`); versie 14 (golf 5h: voorruit, ruitvoet, A-stijlen, spiegel en bovengrille naar de persfoto, getoetst door Fable 5.1 op xhigh) is gepubliceerd, tag `v14`; zie [docs/masterplan.md](docs/masterplan.md), sectie Golf 5h. Linux-tests draaien sinds vandaag in een tijdelijke container (`tools/lag3-vm.sh test`).
