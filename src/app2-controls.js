@@ -51,7 +51,7 @@ function uiRevealOpen(n) {
 function uiRevealExplode(n) {
   uiPush();
   if (ISO.length && !uiInScope(n)) { ISO = []; applyVisibility(); updateGround(); }
-  const lv = [...ancestors(n)].filter(a => !uiOpen(a)), st = uiStaffel(0.18, lv.length, CFG.tijd.staffelMaxS);
+  const lv = [...ancestors(n)].filter(a => !uiOpen(a)), st = uiStaffel(CFG.tijd.tonenStaffelS, lv.length, CFG.tijd.staffelMaxS);
   lv.forEach((a, i) => setTarget(a, 1, i * st));
   CTX = n.parent || null; uiLabelForce = false; clearPreset();
   uiSetDim(n); // U19 (de wortel zet het uit)

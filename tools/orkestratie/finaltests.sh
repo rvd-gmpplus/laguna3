@@ -5,6 +5,7 @@
 # dezelfde strikte exitcode, en staan na de vaste lijst in tests.txt. Zonder dat veld is alles precies zoals hierboven.
 # Gebruik: tools/orkestratie/finaltests.sh UITVOERMAP
 set -u
+unset LAG3_GPU  # de set, visdiff en de basislijnen draaien altijd op SwiftShader (zie docs/testen.md)
 if [ $# -lt 1 ] || [ -z "$1" ]; then echo "gebruik: $0 UITVOERMAP" >&2; exit 2; fi
 OUT="$(mkdir -p "$1" && cd "$1" && pwd)" || exit 2
 R="$(cd "$(dirname "$0")/../.." && pwd)"

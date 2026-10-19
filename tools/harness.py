@@ -28,6 +28,8 @@ ARGS = ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-
 # LAG3_GPU=1: echte GPU (macOS: ANGLE Metal) in plaats van SwiftShader, alleen voor beelden die het oog beoordeelt (S7, galerij);
 # visdiff, basislijnen en de testset blijven op SwiftShader (golf 5f, 19 oktober 2026: de spikkels zijn een SwiftShader-artefact)
 if os.environ.get('LAG3_GPU') == '1':
+    if sys.platform != 'darwin':
+        sys.exit('LAG3_GPU=1 werkt alleen op macOS (ANGLE Metal); zet de variabele uit')
     ARGS = ['--use-angle=metal', '--enable-gpu', '--ignore-gpu-blocklist']
 # Contract: consolemeldingen die geen fout zijn. Alleen de orkestrator wijzigt deze lijst, elke regel met reden en datum.
 IGNORE = (
@@ -166,6 +168,8 @@ class Session:
         return [l for l in self.logs if '] warning:' in l]
 
     def report(self):
+        if os.environ.get('LAG3_GPU') == '1':
+            print('renderer: echte GPU (LAG3_GPU=1, ANGLE Metal)')
         for t, s in self.load_times:
             print(f'laadtijd {t}: {s} s')
         if self.logs:

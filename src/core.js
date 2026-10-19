@@ -23,7 +23,7 @@ const CFG = Object.freeze({
     tourStapMs: 5000, tourStapRustigMs: 4500, // R4: duur van een stap van de rondleiding (normaal, minder beweging)
     herkaderMs: 160,     // R3: herkadreren na een formaatwissel of een andere indeling, zoveel later
     uitklapS: 0.85,      // standaardduur van uitklappen (een volle stap)
-    staffelS: 0.22, staffelMaxS: 0.6, // F4: wachttijd per laag bij duiken en tonen, samen hoogstens zolang (een duik duurt zo hoogstens circa 1,45 s)
+    staffelS: 0.22, tonenStaffelS: 0.18, staffelMaxS: 0.6, // F4: wachttijd per laag bij duiken (0,22) en tonen (0,18), samen hoogstens zolang (een duik duurt zo hoogstens circa 1,45 s)
     allesStaffelS: 0.32, allesStaffelMaxS: 1.4, // F4: idem bij alles uitklappen onder een groep (hoogstens circa 2,25 s)
     openS: 0.9,          // standaardduur van openen (open.dur van een opener gaat voor)
     startMs: 8000,       // zolang na het opstarten krijgen de batches meer rekentijd
