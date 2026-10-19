@@ -395,7 +395,7 @@ Het bovenaanzicht van de basis en van ronde 3 is vorm voor vorm gelijk (alleen d
 - Metingen aan de auto van de gebruiker (Meetlijst in [handomdraai.md](../handomdraai.md)): het hoogste punt van de open achterklep, de accuzijde en de hoeken van motorkap en achterportier.
 - Het verloop van de multiriem (figuur 124137 van MR 415).
 - S7: kenmerk 4 volgt sinds B7 de maat in het model; kenmerk 8 blijft ruis-gevoelig.
-- Export naar espace5 (versie 6) na publicatie van versie 12.
+- Export naar espace5 gedaan: espace5 versie 6 (`e2e0d76`, framework uit `d4186f1`), Mac en Linux-VM groen (itest 152 van 152, visdiff 51 van 51), Pages en artefact byte voor byte teruggelezen, tag `v6`; zie de CHANGELOG van espace5.
 
 ## Golf 5d: onderdeelnummers (1 dag in plakken; versie 9)
 
