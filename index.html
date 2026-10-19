@@ -1,6 +1,6 @@
 <!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"></head><body>
 <title>Laguna III explosietekening</title>
-<meta name="model-version" content="16 (bron ed0a831)">
+<meta name="model-version" content="16 (bron 697ca4b)">
 <meta name="description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback (2011, 2,0 Turbo, automaat): 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
 <meta property="og:title" content="Laguna III explosietekening">
 <meta property="og:description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback: 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
@@ -618,7 +618,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
   <div id="press" hidden><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="28"/></svg></div>
   <div id="helpDlg" hidden><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
     <h2 id="helpTitle">Bediening</h2>
-    <p class="ver">Laguna III explosietekening, versie 16 (bron ed0a831)</p>
+    <p class="ver">Laguna III explosietekening, versie 16 (bron 697ca4b)</p>
     <div id="helpMouse"><h3>Met de muis</h3><dl>
       <dt>Klik</dt><dd>De groep van het onderdeel klapt uit; de rest blijft staan. Staat die groep al open, dan wordt het onderdeel uitgelicht.</dd>
       <dt>Dubbelklik</dt><dd>Direct naar dit onderdeel: alle groepen erboven gaan laag voor laag open.</dd>
@@ -1260,21 +1260,17 @@ function YT(z) { return z < bodZT ? bodYLEDGE - bodTipDrop(z) : bodYTm(z); }
 const bodYD = pchip([[-2.268, 1.025], [-2.258, 1.038], [-2.24, 1.054], [-2.21, 1.072], [-2.17, 1.091], [-2.11, 1.118], [-1.95, 1.02], [-1.85, 0.99], [-1.0, 0.99], [0.0, 0.97], [0.6, 0.95], [0.88, 0.935], [1.0, 0.962], [1.06, 0.975], [1.20, 0.979], [1.345, 0.971],
   [1.595, 0.932], [1.845, 0.887], [1.975, 0.852], [2.095, 0.811], [2.20, 0.752], [2.27, 0.69], [2.30, 0.645], [2.325, 0.60], [2.345, 0.565]]);
 const bodDP = pchip([[-2.3, 2.6], [-1.9, 2.8], [1.0, 4.2], [1.9, 4.2], [2.22, 3.2], [2.345, 2.4]]);  // exponent van het dekprofiel (vlak midden, afgeronde randen)
-// golf 5j (S7): de bolling van de motorkap is voor de voorwielas tot 1,6 cm lager (de hoogte boven de kapnaad schaalt mee, zodat de kap
-// vlakker wordt en van voren niet meer als koepel boven de koplampen uitkomt). Geleidelijk vanaf z 1,15 (bij de voorwielas, silhouetmarge
-// 3 cm, 4 mm lager); bij de kapvoorrand (aansluiting op bumper en koplampspitsen) geen verlaging. Binnenframe en isolatie van de kap worden met bodDropOff op
-// de oude hoogte gebouwd: daaronder zit de motorruimte zonder speling (afdekkap, motorsteun, reservoirs op 0 tot 8 mm)
+// golf 5j (S7): de bolling van de motorkap is voor de voorwielas lager (tot 2 cm, vooral naar voren; de hoogte boven de kapnaad
+// schaalt mee, zodat de kap vlakker wordt en van voren niet meer als koepel boven de koplampen uitkomt). Binnenframe en isolatie van de
+// kap worden met bodDropOff op de oude hoogte gebouwd: daaronder zit de motorruimte zonder speling (afdekkap, motorsteun, reservoirs op
+// 0 tot 8 mm); de buitenhuid blijft minstens 6 mm boven het binnenframe (3 cm onder het dek).
 let bodDropOff = false;
-// verloop in z: van 1,15 (kwadratisch) lineair oplopend tot 1,9 en dan in 35 cm terug naar 0 bij 2,25, zodat de hartlijn bol blijft
-// (een snelle aanloop met een vlak stuk erna gaf een holle band dwars over de kap, golf 5j ronde 2)
-const bodHoodDrop = z => {
-  if (bodDropOff || z <= 1.15 || z >= 2.25) return 0;
-  const u = Math.min(1, (z - 1.15) / 0.75), up = u < 0.2 ? u * u / 0.4 : u - 0.1;
-  return 0.016 * up / 0.9 * (1 - sstep((z - 1.9) / 0.35));
-};
-// en de schouders lopen geleidelijker op: de exponent van het kapprofiel is op de buitenhuid tot 1,0 lager (4,2 naar 3,2), van 0 bij
-// z 1,15 tot vol bij 1,45 en terug naar 0 bij de kapvoorrand; samen met de verlaging hoogstens ca. 2 cm onder het oude dek
-const bodHoodDP = z => (z <= 1.15 || z >= 2.25) ? 0 : 1.0 * sstep((z - 1.15) / 0.3) * (1 - sstep((z - 1.95) / 0.3));
+// verlaging als parabool in de hoogte van de hartlijn: K (y0 - y)(y - yN) met y = bodYD(z), y0 de hoogte op z 1,15 en yN die op de
+// neus van de kap (z 2,29). Nul aan beide einden, grootst (ca. 2 cm) rond z 2,0 tot 2,1, en de hartlijn blijft overal bol: de extra
+// kromming is 2K maal de helling in het kwadraat, klein waar de kap vlak is en ruim gedekt door de neusbocht waar hij steil is.
+// Ronde 2: een eigen verloop in z (oplopen, vlak, aflopen) en een kleinere exponent over 30 cm gaven een golf met bulten dwars over de kap
+const bodHoodYD0 = bodYD(1.15), bodHoodYN = bodYD(2.29), bodHoodK = 0.8;
+const bodHoodDrop = z => (bodDropOff || z <= 1.15 || z >= 2.29) ? 0 : Math.max(0, bodHoodK * (bodHoodYD0 - bodYD(z)) * (bodYD(z) - bodHoodYN));
 // daklijn op de hartlijn (voorruit bol, dak als een boog, vlakke achterruit onder ca. 14 graden)
 const YR = pchip([[-2.11, 1.13], [-1.905, 1.181], [-1.655, 1.246], [-1.405, 1.31], [-1.17, 1.37], [-0.905, 1.418], [-0.655, 1.441], [-0.43, 1.447], [-0.155, 1.44], [0.095, 1.414],
   [0.30, 1.346], [0.345, 1.332], [0.595, 1.237], [0.845, 1.112], [1.06, 0.975]]);
@@ -1328,14 +1324,13 @@ function bodHalf0(z, s, c) {
     return [hw + f, y];
   }
   if (s <= S4) { const a = (s - S3) / (S4 - S3) * th; return [cx + rs * Math.cos(a), cy + rs * Math.sin(a)]; }
-  const t = (s - S4) / (1 - S4), x = xe * (1 - t), dp = bodDropOff ? 0 : bodHoodDP(z);
-  return [x, yt + (cr - bodHoodDrop(z)) * (1 - Math.pow(1 - t, p - dp)) + bodCrease(z, x)];
+  const t = (s - S4) / (1 - S4), x = xe * (1 - t); return [x, yt + (cr - bodHoodDrop(z)) * (1 - Math.pow(1 - t, p)) + bodCrease(z, x)];
 }
 // twee vouwlijnen in de motorkap van de binnenspitsen van de koplampen schuin naar de voorruitbasis
 function bodCrease(z, x) {
   if (z < 1.1 || z > 2.26) return 0;
   const xc = lerp(0.60, 0.36, (z - 1.13) / (bodHLZ1 - 1.13)), f = sstep((z - 1.1) / 0.08) * (1 - sstep((z - 2.2) / 0.06));
-  return 0.009 * f * (1 - sstep((Math.abs(x) - xc) / 0.035 + 0.5));   // golf 5j: 9 mm over 3,5 cm (was 7 mm over 5 cm), zodat de vouw als lijn leest
+  return 0.009 * f * (1 - sstep((Math.abs(x) - xc) / 0.05 + 0.5));   // golf 5j: 9 mm (was 7 mm) over 5 cm, zodat de vouw beter leest
 }
 function halfPt(z, s) { return bodHalf(z, s, bodSec(z)); }
 // parameter s van de doorsnede bij hoogte y (flank, schouder en dek)
@@ -1580,7 +1575,7 @@ std('bodGrille', 0x0f1013, 0.25, 0.3, { envMapIntensity: 0.6 });             // 
 // middengrijs gelakt staal van de gasveercilinders: lichter dan het zwart van de zijrand en de bekleding, zodat de veer in het achterklepbeeld leest
 std('bodStrut', 0x62676e, 0.55, 0.35, { envMapIntensity: 0.9 });
 const bodSY = (z, y) => sAtY(z, y);
-const bodRSeam = z => bodYLEDGE - 0.105 * sstep((z + 2.02) / 0.24);   // naad achterscherm/achterbumper op de flank (zie rfLo)
+const bodRSeam = z => bodYLEDGE - 0.215 * sstep((z + 2.08) / 0.30);   // naad achterscherm/achterbumper op de flank (zie rfLo)
 const sn = s => sideName(s);
 // naden tussen linker- en rechterhelft gladtrekken (gedeelde normalen)
 // ook over naden tussen losse vlakken: weldAll in core.js (zelfde tolerantie 1e-4)
@@ -2357,7 +2352,7 @@ const bodHumpT = z => z <= bodHumpZ[0] || z >= bodHumpZ[3] ? 0 : z < bodHumpZ[1]
 const bodHumpW = z => z <= bodHumpZ[0] - 0.1 || z >= bodHumpZ[3] + 0.1 ? 0 : z < bodHumpZ[0] ? sstep((z - bodHumpZ[0] + 0.1) / 0.1) : z <= bodHumpZ[3] ? 1 : sstep((bodHumpZ[3] + 0.1 - z) / 0.1);
 const bodHumpBreaks = (() => { const b = []; for (let i = 0; i <= 8; i++) b.push(bodHumpZ[0] + (bodHumpZ[1] - bodHumpZ[0]) * i / 8, bodHumpZ[2] + (bodHumpZ[3] - bodHumpZ[2]) * i / 8); for (let i = 0; i < 4; i++) b.push(bodHumpZ[0] - 0.1 + 0.025 * i, bodHumpZ[3] + 0.025 * (i + 1)); return b; })();
 // Voorste langsligger (44 mm breed, in z/y gevormd): achter het voorwiel op y 0,385 tot 0,485 (boven de aandrijfassen, onder het veerschotel van de
-// veerpoot), voor het wiel op y 0,30 tot 0,40 (de crashbox sluit erop aan; de accu staat sinds golf 5g links achter boven de automaat); tussen z 1,72 en 1,80 loopt hij schuin
+// veerpoot), voor het wiel op y 0,30 tot 0,40 (de crashbox sluit erop aan; de accu staat sinds golf 5j linksvoor achter de radiateurplaat); tussen z 1,72 en 1,80 loopt hij schuin
 const bodFrontRail = (() => { const g = extrude(shapeOf([[1.03, 0.385], [1.72, 0.385], [1.80, 0.30], [2.03, 0.30], [2.03, 0.40], [1.80, 0.40], [1.72, 0.485], [1.03, 0.485]]), 0.044); g.rotateY(-HALF); return g; })();
 function buildBody() {
   const L = 1, R = -1, both = f => [L, R].map(f);
@@ -2455,8 +2450,9 @@ function buildBody() {
   ]);
   // achterbouw
   // naad achterscherm/achterbumper op de flank (golf 5j, S7 kenmerk 8): op de richelhoogte bij de hoek, naar voren in een boog omlaag tot
-  // y 0,53 bij de achterkant van de wielboog (bumperbovenrand 0,52 tot 0,62 in het exterieuronderzoek), zodat de naad de heup volgt en
-  // niet als lange horizontale lijn achter het achterwiel leest
+  // y 0,42 bij de achterkant van de wielboog, zodat de naad de heup volgt en niet als lange horizontale lijn achter het achterwiel leest.
+  // Ronde 2: was 0,53; het verticale stuk naad langs de wielboog (van de boog tot de naad) las als snede die de heup in panelen hakt en is
+  // nu nog 9 cm, grotendeels achter de boogflens
   const rfLo = z => { if (z < AXR - ARCH) return bodSY(z, bodRSeam(z) + 0.003); if (z <= AXR + ARCH) return Math.max(archS(z), bodSY(z, 0.25)); return bodSY(z, 0.304); };
   const rfHi = z => { if (z <= bodTLZ) return tlLow(z) - 0.002; if (z <= -1.27) return S4 - 0.0008; return bodSY(z, bodRDloZ(z) - 0.004); };
   // de stukken naast de tankopening in drie banden (onder, naast en boven de opening) met dezelfde rijen als de stroken onder en boven de
@@ -2494,7 +2490,9 @@ function buildBody() {
     ...both(s => P(`Hoedenplanksteun ${sn(s)}`, G.rbox(0.05, 0.16, 0.5, 0.01), MAT.paintIn, { d: 'Steun van de bagageruimteafdekking tegen de binnenzijwand.', p: [s * 0.66, 0.92, -1.85], ex: [s * 0.06, 0.04, 0] })),
     P('Achterpaneel', G.rbox(1.2, 0.26, 0.012, 0.004), MAT.paintIn, { d: 'Dwarspaneel onder de achterklepopening met de slotbeugel.', p: [0, 0.5, bodZT + 0.03], ex: [0, 0, -0.06] }),
     P('Achterklepsponning', tube(bodTGPath(0.045), 0.012, 80, 6), MAT.paintIn, { d: 'Gelaste sponning rond de achterklepopening waarop de afdichting zit.', ex: [0, 0.04, -0.04] }),
-    P('Bumperbalk achter', tube([-0.55, -0.42, -0.28, 0, 0.28, 0.42, 0.55].map(x => [x, 0.5, Math.max(bodZT + 0.02, bodRearZ(Math.abs(x), 0.5) + 0.075)]), 0.04, 24, 8), MAT.steel, { d: 'Stalen botsbalk achter de achterbumper.', ex: [0, 0, -0.1] }),
+    // golf 5j ronde 2: 6,8 cm voor de bumperhuid (was 7,5): door de heup ligt de huid op de hoeken 7 mm verder naar voren, en de balk
+    // moet op dezelfde plek blijven, achter de bagageruimtevloer die bij het openen langs de uiteinden draait
+    P('Bumperbalk achter', tube([-0.55, -0.42, -0.28, 0, 0.28, 0.42, 0.55].map(x => [x, 0.5, Math.max(bodZT + 0.02, bodRearZ(Math.abs(x), 0.5) + 0.068)]), 0.04, 24, 8), MAT.steel, { d: 'Stalen botsbalk achter de achterbumper.', ex: [0, 0, -0.1] }),
   ]);
   // binnen de boogopening: de buitenrand volgt de huid op 6 mm; het laatste stuk loopt uit tot 8 mm voorbij de boogrand,
   // achter de huid, zodat er geen open ring tussen scherm en boog is waardoor je de holte achter het scherm in kijkt
@@ -2601,8 +2599,8 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   const grilleWalls = merge([inWall(-inX, inY1, inX, inY1, 30), inWall(-inX, inY0, inX, inY0, 30), inWall(-inX, inY0, -inX, inY1, 4), inWall(inX, inY0, inX, inY1, 4)]);
   const slats = merge([0.331, 0.353, 0.375, 0.397, 0.419].map(slat).concat([-0.24, 0, 0.24].map(x => patch((y, t) => fPt(x + (t - 0.5) * 0.006, y, -0.008 - 0.016 * t), inY0, inY1, 4, () => [0, 1], 1))));
   const plateY = 0.505;
-  // bovenrand van de bovengrille: 6 mm onder de kapvoorrand, die van y 0,661 op de hartlijn naar 0,672 bij |x| 0,30 oploopt
-  const bodGrTop = x => 0.655 + 0.011 * (x / 0.30) ** 2;
+  // bovenrand van de bovengrille: 6 mm onder de kapvoorrand (de boog van de koplampspits naar de neus, zie bodHoodS), op elke x gemeten
+  const bodGrTop = x => { const z = bodHLZ1 + (bodHoodZ1 - bodHLZ1) * Math.sqrt(Math.max(0, 1 - (x / bodHoodX0) ** 2)); return halfPt(z, bodSAtX(z, x))[1] - 0.006; };
   const frontBumper = A('Voorbumper', { d: 'Kunststof bumperschaal van de fase 2 met bovengrille, kentekenvlak, brede onderste inlaat met chromen onderrand en mistlampen met chromen balk.', ex: [0, -0.04, 0.72] }, [
     P('Bumperschaal voor', shellF, MAT.paint, { d: 'Gespoten kunststof bumperschaal in carrosseriekleur.', ex: [0, 0, 0] }),
     // flens onder de naad tussen kapvoorrand en bumper (6 mm onder de huid): door de naad is geen motorruimte meer te zien
@@ -2613,14 +2611,15 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
       P('Grillesleuf', patch((u, t) => { const x = lerp(-0.30, 0.30, t), y1 = bodGrTop(x); return fPt(x, lerp(y1 - 0.04, y1, u), 0.0015); }, 0, 1, 3, () => [0, 1], 20), MAT.blackGloss, { d: 'Hoogglans zwart rooster dat de smalle sleuf tussen de kapvoorrand en de bumper afsluit.', ex: [0, 0, 0] }),
       P('Chroomlijn grille', tube([-0.30, -0.15, 0, 0.15, 0.30].map(x => { const y = bodGrTop(x) - 0.045; return [x, y, frontZ(x, y) + 0.0005]; }), 0.0035, 16, 8), MAT.bodChrome, { d: 'Dunne chroomlijn onder de grillesleuf.', ex: [0, -0.02, 0.04] }),
     ]),
-    // golf 5j (S7): het zwarte vlak is nog maar 1 tot 1,5 cm rondom de plaat (was +/-0,34 tot y 0,572): op de smalle neus liep het brede vlak om de
+    // golf 5j (S7): het zwarte vlak is nog maar 0,6 tot 1,5 cm rondom de plaat (was +/-0,34 tot y 0,572): op de smalle neus liep het brede vlak om de
     // hoek en las het met de plaat als kastje dat naar voren steekt
-    P('Kentekenvlak', fFace(-0.285, 0.285, plateY - 0.065, plateY + 0.07, 0.0012, 20, 4), MAT.blackGloss, { d: 'Zwart vlak boven de onderste inlaat waarop de kentekenplaat zit.', ex: [0, 0.02, 0.08] }),
-    // plaat en houder volgen de bolling van het voorvlak en liggen er vlak op (2 tot 3,5 mm), zonder zichtbaar blok erachter
-    P('Kentekenplaathouder', merge([fFace(-0.268, 0.268, plateY - 0.06, plateY + 0.06, 0.0022, 16, 2), fFace(-0.268, 0.268, plateY - 0.06, plateY + 0.06, 0.0017, 16, 2)]), MAT.plastic, { d: 'Dunne kunststof houder die de plaat in de bolling van het kentekenvlak houdt.', ex: [0, 0, 0.1] }),
+    P('Kentekenvlak', fFace(-0.285, 0.285, plateY - 0.065, plateY + 0.061, 0.0012, 40, 12), MAT.blackGloss, { d: 'Zwart vlak boven de onderste inlaat waarop de kentekenplaat zit.', ex: [0, 0.02, 0.08] }),
+    // plaat en houder volgen de bolling van het voorvlak en liggen er vlak op (2 tot 4 mm), zonder zichtbaar blok erachter; 8 rijen in y
+    // (ronde 2: met 2 tot 4 rijen lag het vlak tussen de rijen binnen de bolle neus en stak de bumperschaal er bovenin door)
+    P('Kentekenplaathouder', merge([fFace(-0.268, 0.268, plateY - 0.06, plateY + 0.06, 0.0022, 16, 8), fFace(-0.268, 0.268, plateY - 0.06, plateY + 0.06, 0.0017, 16, 8)]), MAT.plastic, { d: 'Dunne kunststof houder die de plaat in de bolling van het kentekenvlak houdt.', ex: [0, 0, 0.1] }),
     A('Kentekenplaat voor', { d: 'Gele Nederlandse kentekenplaat (zonder kenteken weergegeven).', ex: [0, 0.03, 0.26] }, [
-      P('Plaat', merge([fFace(-0.215, 0.26, plateY - 0.055, plateY + 0.055, 0.0040, 16, 2), fFace(-0.26, 0.26, plateY - 0.055, plateY + 0.055, 0.0028, 18, 2)]), MAT.plateYellow, { d: 'Retroreflecterende gele plaat van 520 × 110 mm.', ex: [0, 0, 0.03] }),
-      P('EU-strook', fFace(-0.26, -0.215, plateY - 0.055, plateY + 0.055, 0.0042, 2, 2), MAT.plateBlue, { d: 'Blauwe strook met de landcode links op de plaat, zonder tekst weergegeven.', ex: [-0.06, 0, 0.02] }),
+      P('Plaat', merge([fFace(-0.215, 0.26, plateY - 0.055, plateY + 0.055, 0.0040, 16, 8), fFace(-0.26, 0.26, plateY - 0.055, plateY + 0.055, 0.0028, 18, 8)]), MAT.plateYellow, { d: 'Retroreflecterende gele plaat van 520 × 110 mm.', ex: [0, 0, 0.03] }),
+      P('EU-strook', fFace(-0.26, -0.215, plateY - 0.055, plateY + 0.055, 0.0042, 2, 8), MAT.plateBlue, { d: 'Blauwe strook met de landcode links op de plaat, zonder tekst weergegeven.', ex: [-0.06, 0, 0.02] }),
     ]),
     A('Onderste luchtinlaat', { d: 'Brede, lage inlaat voor radiateur en intercooler, met een chromen onderrand.', ex: [0, -0.05, 0.12] }, [
       P('Inlaatrooster', slats, MAT.bodGrille, { d: 'Zwart kunststof rooster met schuine horizontale lamellen, ca. 2 cm verzonken achter de chromen lijst.', ex: [0, 0, 0.04] }),
@@ -2649,7 +2648,9 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
         // kop 1,5 mm onder de huid in plaats van er precies tegen: de bumperschaal met stations naar doorbuiging ligt daar tot 0,5 mm lager
         P('Sproeierkop koplamp', G.cyl('x', 0.008, 0.008, 0.04, 10), MAT.plastic, { d: 'Telescopische sproeierkop.', inner: true, ...bodPose(s, bodAt(z, y, -0.0215), nn), ex: [s * 0.04, 0, 0.03] }),
       ]); })),
-    A('Parkeersensoren voor', { d: 'Vier ultrasone sensoren van de parkeerhulp voor (op de Initiale aannemelijk standaard, in andere markten optie).', ex: [0, 0.03, 0.12] }, [-0.42, -0.15, 0.15, 0.42].map((x, i) => P(`Parkeersensor voor ${i + 1}`, G.cyl('z', 0.011, 0.011, 0.02, 12), MAT.paint, { d: 'Ultrasone parkeersensor voor (op de Initiale aannemelijk standaard, in andere markten optie).', p: fPt(x, 0.452, -0.006), ex: [0, 0.02, 0.06] }))),
+    // golf 5j ronde 2: de middelste twee naast de plaat (|x| 0,33) in plaats van onder de onderrand (|x| 0,15, y 0,452), waar ze als grijze
+    // halve maantjes door plaat en houder staken; de buitenste naar |x| 0,47 boven de chromen wenkbrauw van de mistlampen
+    A('Parkeersensoren voor', { d: 'Vier ultrasone sensoren van de parkeerhulp voor (op de Initiale aannemelijk standaard, in andere markten optie).', ex: [0, 0.03, 0.12] }, [[-0.47, 0.47], [-0.33, 0.49], [0.33, 0.49], [0.47, 0.47]].map(([x, y], i) => P(`Parkeersensor voor ${i + 1}`, G.cyl('z', 0.011, 0.011, 0.02, 12), MAT.paint, { d: 'Ultrasone parkeersensor voor (op de Initiale aannemelijk standaard, in andere markten optie).', p: fPt(x, y, -0.006), ex: [0, 0.02, 0.06] }))),
     ...both(s => P(`Bumpersteun voor ${sn(s)}`, G.rbox(0.05, 0.08, 0.12, 0.01), MAT.plastic, { d: 'Steun die de bumperschaal aan voorscherm en frontmodule vasthoudt.', p: [s * 0.74, 0.5, 1.86], ex: [s * 0.05, 0, 0] })),
   ]);
 
@@ -2730,7 +2731,7 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     P('Reflector rechts', G.rbox(0.1, 0.03, 0.01, 0.006), MAT.lensRed, { d: 'Rode reflector onderin de bumper.', p: [-0.62, 0.34, bodRearZ(0.62, 0.34) - 0.004], ex: [-0.04, 0, -0.08] }),
     A('Parkeersensoren achter', { d: 'Vier ultrasone sensoren van de parkeerhulp achter (standaard op Initiale Paris), onder en naast de kentekenuitsparing.', ex: [0, 0.03, -0.12] }, [[0.5, 0.43], [0.17, 0.345], [-0.17, 0.345], [-0.5, 0.43]].map(([x, y], i) => P(`Parkeersensor achter ${i + 1}`, G.cyl('z', 0.011, 0.011, 0.02, 12), MAT.paint, { d: 'Ultrasone parkeersensor achter (standaard op Initiale Paris).', p: [x, y, bodRearZ(x, y) + 0.006], ex: [0, 0.02, -0.06] }))),
     ...both(s => P(`Uitlaatuitsparing ${sn(s)}`, exWalls(s), MAT.blackGloss, { d: 'Zwarte inham in de onderrand van de bumper (ca. 13 cm breed, 5 tot 7 cm hoog) waarin het verchroomde uitlaateindstuk zit; het eindstuk zelf hoort bij het uitlaatsysteem. Vorm en maat geschat.', ex: [0, -0.04, -0.06] })),
-    ...both(s => P(`Bumpersteun achter ${sn(s)}`, G.rbox(0.05, 0.08, 0.14, 0.01), MAT.plastic, { d: 'Geleider die de bumperschaal aan het achterscherm vasthoudt; door de naad bij de bumperrichel net zichtbaar.', p: [s * 0.76, 0.55, -1.95], ex: [s * 0.05, 0, 0] })),
+    ...both(s => P(`Bumpersteun achter ${sn(s)}`, G.rbox(0.05, 0.08, 0.14, 0.01), MAT.plastic, { d: 'Geleider die de bumperschaal aan het achterscherm vasthoudt, achter de naad op de flank.', p: [s * 0.76, 0.50, -1.95], ex: [s * 0.05, 0, 0] })),
   ]);
 
   /* ================= achterklep ================= */
@@ -5815,9 +5816,9 @@ std('sysDemper', 0x4a4642, 0.35, 0.88);                         // einddemper en
 const SYS_RT = {
   vent: [[0.104, 0.748, 1.424], [0.104, 0.756, 1.424], [0.104, 0.764, 1.424], [0.104, 0.772, 1.424], [0.112, 0.788, 1.424], [0.112, 0.804, 1.438], [0.111, 0.821, 1.453], [0.111, 0.834, 1.469], [0.108, 0.834, 1.491], [0.105, 0.829, 1.516], [0.101, 0.824, 1.54], [0.094, 0.819, 1.562], [0.087, 0.814, 1.584], [0.065, 0.813, 1.592], [0.043, 0.811, 1.6], [0.02, 0.81, 1.608], [-0.003, 0.809, 1.615], [-0.026, 0.807, 1.623], [-0.05, 0.806, 1.63], [-0.073, 0.805, 1.637], [-0.097, 0.804, 1.644], [-0.12, 0.803, 1.651], [-0.144, 0.802, 1.658], [-0.168, 0.801, 1.665], [-0.192, 0.799, 1.671], [-0.216, 0.798, 1.678], [-0.24, 0.797, 1.684], [-0.264, 0.796, 1.691], [-0.288, 0.795, 1.697], [-0.312, 0.794, 1.704], [-0.336, 0.793, 1.71], [-0.36, 0.792, 1.715], [-0.383, 0.792, 1.72], [-0.406, 0.791, 1.725], [-0.43, 0.79, 1.73], [-0.453, 0.79, 1.734], [-0.475, 0.789, 1.737], [-0.498, 0.788, 1.741], [-0.52, 0.788, 1.744], [-0.528, 0.788, 1.744]],
   aanvoer: [[-0.565, 0.565, 1.757], [-0.555, 0.552, 1.771], [-0.545, 0.539, 1.785], [-0.534, 0.525, 1.798], [-0.523, 0.511, 1.812], [-0.512, 0.497, 1.825], [-0.5, 0.483, 1.838], [-0.488, 0.469, 1.851], [-0.473, 0.453, 1.862], [-0.455, 0.441, 1.865], [-0.436, 0.429, 1.868], [-0.418, 0.417, 1.871], [-0.399, 0.405, 1.874], [-0.381, 0.394, 1.876], [-0.362, 0.383, 1.878], [-0.344, 0.372, 1.88]],
-  air: [[0.256, 0.626, 1.342], [0.256, 0.62, 1.336], [0.256, 0.614, 1.33], [0.256, 0.608, 1.324], [0.25, 0.602, 1.318], [0.244, 0.596, 1.312], [0.229, 0.583, 1.301], [0.214, 0.57, 1.289], [0.199, 0.556, 1.278], [0.184, 0.543, 1.266], [0.169, 0.529, 1.255], [0.15, 0.522, 1.248], [0.132, 0.515, 1.241], [0.113, 0.508, 1.235], [0.095, 0.501, 1.228], [0.076, 0.494, 1.222]],
+  air: [[0.25, 0.775, 1.33], [0.251, 0.765, 1.312], [0.251, 0.756, 1.293], [0.252, 0.746, 1.275], [0.252, 0.736, 1.256], [0.253, 0.726, 1.238], [0.254, 0.715, 1.218], [0.254, 0.698, 1.208], [0.255, 0.679, 1.206], [0.256, 0.658, 1.213], [0.256, 0.636, 1.222], [0.255, 0.615, 1.229], [0.242, 0.596, 1.231], [0.223, 0.579, 1.23], [0.204, 0.562, 1.229], [0.185, 0.546, 1.228], [0.164, 0.532, 1.227], [0.143, 0.519, 1.226], [0.121, 0.505, 1.225], [0.1, 0.492, 1.224]],
   duct: [[0.28, 0.624, 2.176], [0.29, 0.627, 2.153], [0.3, 0.631, 2.129], [0.31, 0.635, 2.106], [0.319, 0.639, 2.082], [0.329, 0.642, 2.059], [0.339, 0.646, 2.035], [0.349, 0.65, 2.011], [0.352, 0.651, 1.987], [0.355, 0.653, 1.962], [0.357, 0.654, 1.938], [0.36, 0.655, 1.913], [0.362, 0.656, 1.888], [0.364, 0.658, 1.864], [0.366, 0.659, 1.839], [0.368, 0.66, 1.815], [0.37, 0.661, 1.791], [0.371, 0.661, 1.767], [0.372, 0.662, 1.744], [0.373, 0.663, 1.721], [0.375, 0.664, 1.699], [0.376, 0.665, 1.677], [0.377, 0.665, 1.655], [0.378, 0.666, 1.634], [0.378, 0.666, 1.622]],
-  vloei: [[-0.274, 0.367, 2.061], [-0.284, 0.382, 2.069], [-0.29, 0.405, 2.067], [-0.297, 0.427, 2.065], [-0.304, 0.45, 2.063], [-0.31, 0.473, 2.061], [-0.317, 0.496, 2.057], [-0.329, 0.513, 2.045], [-0.341, 0.531, 2.033], [-0.353, 0.548, 2.021], [-0.365, 0.565, 2.008], [-0.378, 0.581, 1.996], [-0.391, 0.597, 1.982], [-0.404, 0.613, 1.969], [-0.417, 0.629, 1.955], [-0.431, 0.644, 1.941], [-0.444, 0.659, 1.927], [-0.457, 0.674, 1.913], [-0.47, 0.689, 1.899], [-0.483, 0.703, 1.885], [-0.494, 0.717, 1.87], [-0.505, 0.731, 1.856], [-0.514, 0.744, 1.841], [-0.52, 0.755, 1.826], [-0.525, 0.767, 1.811], [-0.528, 0.777, 1.796], [-0.528, 0.787, 1.78], [-0.527, 0.796, 1.764], [-0.524, 0.805, 1.749], [-0.522, 0.814, 1.733], [-0.517, 0.817, 1.711], [-0.512, 0.82, 1.689], [-0.507, 0.822, 1.667], [-0.503, 0.824, 1.644], [-0.498, 0.826, 1.622], [-0.493, 0.825, 1.599], [-0.487, 0.823, 1.575], [-0.481, 0.821, 1.552], [-0.475, 0.82, 1.529], [-0.469, 0.817, 1.505], [-0.463, 0.815, 1.482], [-0.455, 0.817, 1.46], [-0.447, 0.82, 1.438], [-0.44, 0.822, 1.415], [-0.432, 0.825, 1.393], [-0.424, 0.828, 1.371], [-0.411, 0.827, 1.354], [-0.397, 0.823, 1.339], [-0.381, 0.815, 1.326], [-0.365, 0.806, 1.313], [-0.347, 0.795, 1.302], [-0.329, 0.783, 1.291], [-0.311, 0.772, 1.28], [-0.293, 0.76, 1.269], [-0.274, 0.748, 1.258], [-0.256, 0.735, 1.247], [-0.237, 0.722, 1.237], [-0.219, 0.709, 1.226], [-0.2, 0.696, 1.216], [-0.181, 0.682, 1.206], [-0.162, 0.669, 1.196], [-0.143, 0.656, 1.186], [-0.124, 0.642, 1.176], [-0.106, 0.629, 1.166], [-0.087, 0.616, 1.157], [-0.068, 0.602, 1.147], [-0.049, 0.589, 1.138], [-0.03, 0.576, 1.128], [-0.012, 0.562, 1.119], [0.004, 0.551, 1.12], [0.019, 0.539, 1.121]],
+  vloei: [[-0.275, 0.368, 2.056], [-0.288, 0.382, 2.06], [-0.302, 0.4, 2.06], [-0.315, 0.418, 2.059], [-0.328, 0.436, 2.059], [-0.341, 0.454, 2.058], [-0.354, 0.474, 2.051], [-0.367, 0.492, 2.041], [-0.379, 0.511, 2.032], [-0.392, 0.529, 2.022], [-0.404, 0.547, 2.011], [-0.417, 0.566, 2], [-0.429, 0.584, 1.988], [-0.442, 0.601, 1.975], [-0.454, 0.619, 1.962], [-0.467, 0.636, 1.949], [-0.479, 0.653, 1.936], [-0.491, 0.67, 1.923], [-0.504, 0.687, 1.909], [-0.516, 0.704, 1.895], [-0.528, 0.721, 1.881], [-0.54, 0.735, 1.868], [-0.552, 0.748, 1.854], [-0.564, 0.762, 1.84], [-0.576, 0.776, 1.826], [-0.588, 0.789, 1.812], [-0.578, 0.789, 1.752], [-0.56, 0.808, 1.741], [-0.542, 0.828, 1.73], [-0.535, 0.828, 1.707], [-0.528, 0.829, 1.684], [-0.521, 0.828, 1.661], [-0.514, 0.827, 1.639], [-0.507, 0.825, 1.616], [-0.5, 0.824, 1.594], [-0.493, 0.822, 1.571], [-0.486, 0.82, 1.549], [-0.478, 0.819, 1.527], [-0.471, 0.817, 1.504], [-0.464, 0.816, 1.482], [-0.456, 0.817, 1.46], [-0.449, 0.819, 1.438], [-0.441, 0.821, 1.416], [-0.433, 0.823, 1.394], [-0.425, 0.825, 1.373], [-0.415, 0.828, 1.353], [-0.4, 0.822, 1.339], [-0.385, 0.815, 1.325], [-0.367, 0.805, 1.313], [-0.35, 0.794, 1.302], [-0.332, 0.782, 1.291], [-0.314, 0.77, 1.28], [-0.295, 0.759, 1.269], [-0.277, 0.746, 1.258], [-0.259, 0.734, 1.248], [-0.24, 0.721, 1.238], [-0.222, 0.709, 1.227], [-0.203, 0.696, 1.217], [-0.184, 0.683, 1.207], [-0.165, 0.67, 1.197], [-0.146, 0.657, 1.187], [-0.128, 0.644, 1.177], [-0.109, 0.63, 1.167], [-0.09, 0.617, 1.157], [-0.071, 0.604, 1.147], [-0.052, 0.591, 1.137], [-0.033, 0.578, 1.127], [-0.015, 0.565, 1.117], [0.002, 0.552, 1.119], [0.018, 0.54, 1.121]],
   plus: [[0.346, 0.696, 1.741], [0.337, 0.675, 1.735], [0.331, 0.653, 1.73], [0.325, 0.631, 1.725], [0.319, 0.609, 1.721], [0.314, 0.587, 1.717], [0.309, 0.565, 1.713], [0.305, 0.542, 1.709], [0.301, 0.519, 1.706], [0.297, 0.496, 1.702], [0.294, 0.473, 1.699]],
   massa: [[0.668, 0.758, 1.732], [0.662, 0.758, 1.72], [0.658, 0.749, 1.696], [0.653, 0.739, 1.672], [0.649, 0.73, 1.647], [0.644, 0.72, 1.623]],
   gas: [[0.626, 0.734, 1.906], [0.624, 0.712, 1.909], [0.621, 0.69, 1.912], [0.619, 0.668, 1.915], [0.616, 0.646, 1.917], [0.614, 0.624, 1.92], [0.611, 0.601, 1.923], [0.608, 0.581, 1.925], [0.606, 0.561, 1.927], [0.603, 0.54, 1.928]],
@@ -5944,8 +5945,8 @@ function buildCooling() {
   ]);
   // ---------- expansievat ----------
   // Vóór de rechter veerpoottoren, achter en boven het stuuroliereservoir (foto van de gebruiker, golf 5j; was achter de veerpoottoren bij het
-  // schutbord). Het vat zit op de wielkastboog (de onderkant volgt de boog op 12 mm) en de bovenkant loopt mee met de motorkap: binnen het
-  // motorsteunblok en de dynamo (x -0,525), buiten de lage zijrand van de kap, achter de veerpoottoren (z 1,46), voor het stuuroliereservoir.
+  // schutbord). Het vat zit op de wielkastboog (de onderkant volgt de boog op 12 mm) en de bovenkant loopt mee met de motorkap. Het vat staat
+  // aan de wielkastzijde van het motorsteunblok en de dynamo (x -0,525), binnen de lage zijrand van de kap, vóór de veerpoottoren (die eindigt op z 1,46) en achter het stuuroliereservoir.
   std('sysStreep', 0xf4f4f0, 0, 0.6);
   const archY = z => AY + Math.sqrt(Math.max(0, (ARCH + 0.03) ** 2 - (z - AXF) ** 2));   // bovenkant van de wielkastboog (body.js)
   const EX0 = -0.735, EX1 = -0.530, EZ0 = 1.495, EZ1 = 1.725, ET = [0.795, 0.83, 0.775, 0.815];   // kader en bovenkant in de hoeken (x0z0, x1z0, x0z1, x1z1)
@@ -5998,9 +5999,10 @@ function buildCooling() {
   // Golf 5j: het luchtfilterhuis staat linksachter, direct achter de accukap en vóór de hoofdremcilinder, boven de versnellingsbak (foto van
   // de gebruiker; de accu staat nu linksvoor). Onderbak x 0,175 tot 0,465, z 1,37 tot 1,59; het deksel reikt tot y 0,815, de vacuümslang
   // loopt erboven. De luchtgeleider komt van de grille binnen langs de accu (onder de accukap) naar de voorkant; de geribbelde aanzuigslang
-  // verlaat de achterkant laag, onder de remleidingen door, naar de turbo.
+  // verlaat het deksel aan de achterkant op de hoogte van het deksel (golf 5j ronde 2, foto: hoog en zichtbaar), loopt naar achteren
+  // en duikt tussen de remleidingen en het schutbord omlaag naar de turbo. De lucht komt onder het element binnen en verlaat het huis erboven.
   const AB = [0.32, 0.6775, 1.48], ABW = 0.29, ABD = 0.22;
-  const dIn = [0.38, 0.665, AB[2] + ABD / 2 + 0.022], dOut = [0.255, 0.632, AB[2] - ABD / 2 - 0.022];   // uiteinden inlaat- en uitlaatstomp
+  const dIn = [0.38, 0.665, AB[2] + ABD / 2 + 0.022], dOut = [0.25, 0.775, AB[2] - ABD / 2 - 0.024];   // uiteinden inlaat- en uitlaatstomp
   const cIn = ENG_PORTS.compIn;
   // geribbelde slang: gladde kern met ringen om de 22 mm (buitenstraal r)
   const ribbed = (pts, r, key) => cache(key, () => { const c = new THREE.CatmullRomCurve3(pts.map(q => V3(...q)), false, 'centripetal'), n = Math.floor(c.getLength() / 0.022), rings = [];
@@ -6008,7 +6010,7 @@ function buildCooling() {
     return merge([tube(pts, r - 0.004, 48, 10), ...rings]); });
   const airPts = [dOut, ...SYS_RT.air, sysE(cIn, 0.03), sysP(cIn.p)];
   const ta0 = sysDir(airPts[0], airPts[1]), ta1 = sysDir(airPts[airPts.length - 1], airPts[airPts.length - 2]);
-  const hoseAir = A('Aanzuigslang turbo', { d: 'Geribbelde zwarte aanzuigslang (Ø8 cm) van de achterkant van het luchtfilterhuis naar de compressorinlaat van de turbo: laag onder de remleidingen door en achter de versnellingsbak langs naar de turbo (verloop schematisch).', ex: [0.08, 0.1, -0.12] }, [
+  const hoseAir = A('Aanzuigslang turbo', { d: 'Geribbelde zwarte aanzuigslang (Ø8 cm) van het deksel van het luchtfilterhuis naar de compressorinlaat van de turbo: hoog achter het luchtfilterhuis langs, zichtbaar tussen het luchtfilterhuis en de rembekrachtiger, en dan tussen de remleidingen en het schutbord omlaag naar de turbo (verloop schematisch; de turbo-inlaat zit laag achter de motor).', ex: [0.08, 0.1, -0.12] }, [
     P('Slang', ribbed(airPts, 0.04, 'sysAirRib'), MAT.sysHose, { d: 'Geribbelde rubber slang; volgt de route tussen luchtfilterhuis en turbo.', ex: [0, 0.08, 0] }),
     sysClamp('Klem luchtfilterhuis', sysAt(airPts[0], ta0, -0.012), ta0, 0.04, ta0.clone().negate()),
     sysClamp('Klem turbo', sysAt(airPts[airPts.length - 1], ta1, 0.016), ta1, 0.036, ta1.clone().negate()),
@@ -6016,9 +6018,9 @@ function buildCooling() {
   const ductPts = [[0.27, 0.62, 2.235], ...SYS_RT.duct, dIn];
   const inlaat = A('Luchtinlaat', { d: 'Aanzuigtraject: luchtgeleider van de grille naar het luchtfilterhuis linksachter, luchtfilterhuis met papieren element en de geribbelde aanzuigslang naar de turbocompressor. De motor meet de belasting met een druksensor (MAP) op het inlaatspruitstuk; een luchtmassameter komt in de onderdelenlijsten voor deze motor niet voor (aannemelijk).', ex: [0.2, 0.3, -0.05] }, [
     P('Luchtgeleider', merge([tube(ductPts, 0.025, 48, 12), xf(G.cyl('z', 0.034, 0.025, 0.03, 14), [0.27, 0.62, 2.24])]), MAT.plastic, { d: 'Kunststof kanaal dat koele buitenlucht achter de grille opvangt en langs de binnenkant van de accu, onder de accukap, naar de voorkant van het luchtfilterhuis leidt.', ex: [0, 0.08, 0.2] }),
-    P('Luchtfilterhuis', merge([G.rbox(ABW, 0.105, ABD, 0.015), xf(G.box(ABW + 0.012, 0.008, ABD + 0.008), [0, 0.0485, 0]), xf(G.cyl('z', 0.028, 0.028, 0.024, 16), [dIn[0] - AB[0], dIn[1] - AB[1], ABD / 2 + 0.01]), xf(G.cyl('z', 0.04, 0.04, 0.024, 18), [dOut[0] - AB[0], dOut[1] - AB[1], -ABD / 2 - 0.01])]), MAT.plastic, { d: 'Zwarte kunststof onderbak van het luchtfilter met de rand voor het deksel, de inlaatstomp voor de luchtgeleider aan de voorkant en de uitlaatstomp voor de aanzuigslang aan de achterkant.', p: AB, ex: [0, -0.1, 0] }),
+    P('Luchtfilterhuis', merge([G.rbox(ABW, 0.105, ABD, 0.015), xf(G.box(ABW + 0.012, 0.008, ABD + 0.008), [0, 0.0485, 0]), xf(G.cyl('z', 0.028, 0.028, 0.024, 16), [dIn[0] - AB[0], dIn[1] - AB[1], ABD / 2 + 0.01])]), MAT.plastic, { d: 'Zwarte kunststof onderbak van het luchtfilter met de rand voor het deksel en de inlaatstomp voor de luchtgeleider aan de voorkant (de lucht komt onder het element binnen).', p: AB, ex: [0, -0.1, 0] }),
     P('Luchtfilterelement', cache('sysAirEl3', () => merge([G.rbox(ABW - 0.02, 0.03, ABD - 0.02, 0.006), ...[-0.1, -0.05, 0, 0.05, 0.1].map(x => xf(G.box(0.006, 0.014, ABD - 0.03), [x, 0.02, 0]))])), MAT.filter, { d: 'Geplisseerd papieren filterelement.', p: [AB[0], AB[1] + 0.06, AB[2]], ex: [0, 0.09, 0] }),
-    P('Luchtfilterdeksel', G.rbox(ABW, 0.085, ABD, 0.015), MAT.plastic, { d: 'Zwart deksel van het luchtfilterhuis, vastgezet met vier clips.', p: [AB[0], 0.7725, AB[2]], ex: [0, 0.22, 0] }),
+    P('Luchtfilterdeksel', merge([G.rbox(ABW, 0.085, ABD, 0.015), xf(G.cyl('z', 0.04, 0.04, 0.028, 18), [dOut[0] - AB[0], dOut[1] - 0.7725, -ABD / 2 - 0.01])]), MAT.plastic, { d: 'Zwart deksel van het luchtfilterhuis (schone zijde) met de uitlaatstomp voor de aanzuigslang aan de achterkant, vastgezet met vier clips.', p: [AB[0], 0.7725, AB[2]], ex: [0, 0.22, 0] }),
     ...[[AB[0] + ABW / 2 + 0.008, 1.43, 1], [AB[0] + ABW / 2 + 0.008, 1.575, 1], [0.22, AB[2] + ABD / 2 + 0.006, 0], [0.30, AB[2] + ABD / 2 + 0.006, 0]].map(([x, z, zij], i) => P(`Sluitclip ${i + 1}`, zij ? G.box(0.016, 0.06, 0.012) : G.box(0.012, 0.06, 0.016), MAT.steel, { d: 'Veerclip die het deksel op de onderbak klemt.', p: [x, 0.73, z], ex: zij ? [0.1, 0.12, 0] : [0, 0.12, 0.1] })),
     P('Inlaattemperatuursensor', merge([G.cyl('y', 0.007, 0.007, 0.02, 8), xf(G.rbox(0.02, 0.014, 0.02, 0.004), [0, 0.014, 0])]), MAT.plastic, { d: 'Meet de temperatuur van de aangezogen lucht.', p: [0.31, 0.825, 1.42], ex: [0, 0.1, 0] }),
     P('Rubber ophangpen luchtfilterhuis', G.cyl('y', 0.01, 0.01, 0.03, 10), MAT.rubber, { d: 'Rubber pen waarmee de onderbak op de steun boven de versnellingsbak rust.', p: [0.30, 0.61, 1.42], ex: [0, -0.1, 0] }),
@@ -6038,7 +6040,8 @@ function buildCooling() {
   // expansieventiel langs de rechterflank van de motor naar de dikke nippel. De uiteinden liggen 0,1 mm voor het aansluitvlak.
   // Golf 5j: de vloeistofleiding begint bij de droger aan de rechterkant van de condensor, loopt rechts langs de radiateur omhoog, onder
   // de radiateurafdekplaat naar achteren en zichtbaar over het stuuroliereservoir (rubber tussenstuk met geribbelde persmoffen, zoals op
-  // de foto), dan langs de motorzijde van het expansievat en achter de rechter veerpoottoren langs naar het expansieventiel (SYS_RT.vloei).
+  // de foto: in bovenaanzicht minder dan 1 cm van de as, 7 mm boven de dop), dan langs de bovenrand aan de motorzijde van het expansievat en
+  // binnen langs de rechter veerpoottoren naar het expansieventiel (SYS_RT.vloei; A* in drie benen zodat de punten boven de dop vast liggen).
   const cDis = ENG_PORTS.acDis, cSuc = ENG_PORTS.acSuc;
   const TXV = [0.025, 0.52, 1.0525], txvF = TXV[2] + 0.025 + 0.0001;   // expansieventiel tegen het schutbord (voorkant schutbord z 1,026); voorvlak
   const pers = [sysE(cDis, 0.0001), sysE(cDis, 0.008), sysE(cDis, 0.02), [-0.348, 0.40, 1.8167], [-0.338, 0.466, 1.97], [-0.375, 0.47, 2.034], [-0.352, 0.47, 2.034], [-0.3401, 0.47, 2.034]];
@@ -6052,8 +6055,8 @@ function buildCooling() {
     return merge([G.cyl('z', 0.0085, 0.0085, 0.03, 12), ...[-0.011, -0.004, 0.003, 0.010].map(z => xf(G.torus('z', 0.0085, 0.0018, 12, 4), [0, 0, z]))].map(g => { const h = g.clone(); h.applyQuaternion(qq); h.translate(q.x, q.y, q.z); return h; })); };
   const airco = A('Airconditioningleidingen', { d: 'Leidingen van het koudemiddelcircuit van de airconditioning: de persleiding van de compressor naar de condensor, de vloeistofleiding van de droger naar het expansieventiel op het schutbord en de zuigleiding van het expansieventiel terug naar de compressor. De vloeistofleiding loopt langs de rechter binnenwang over het stuuroliereservoir, met een rubber tussenstuk (foto van de gebruiker). Route, diameters en de plaats van het expansieventiel zijn schematisch; de echte plaats is voor deze auto niet gevonden.', ex: [0.02, -0.04, 0.16] }, [
     P('Persleiding', tube(pers, 0.0055, 30, 6), MAT.alu, { d: 'Aluminium persleiding (Ø11 mm, schematisch): voert het hete gasvormige koudemiddel onder hoge druk van de compressor naar het Leidingblok van de condensor.', ex: [0, -0.03, 0.06] }),
-    P('Vloeistofleiding', merge([sysTubePart(vloei, 0.0045, 140, 6, 0, vU0 + 0.004), sysTubePart(vloei, 0.0045, 140, 6, vU1 - 0.004, 1)]), MAT.alu, { d: 'Dunne aluminium vloeistofleiding (Ø9 mm, schematisch): voert het vloeibare koudemiddel van de droger rechts langs de radiateur, over het stuuroliereservoir en langs de rechter veerpoottoren naar het expansieventiel.', ex: [-0.06, 0.04, 0.06] }),
-    P('Rubberslang vloeistofleiding', sysTubePart(vloei, 0.0065, 140, 8, vU0, vU1), MAT.sysHose, { d: 'Rubber tussenstuk van de vloeistofleiding boven het stuuroliereservoir; vangt de trillingen tussen motor en carrosserie op.', ex: [-0.06, 0.06, 0.06] }),
+    P('Vloeistofleiding', merge([sysTubePart(vloei, 0.0045, 140, 6, 0, vU0 + 0.004), sysTubePart(vloei, 0.0045, 140, 6, vU1 - 0.004, 1)]), MAT.alu, { d: 'Dunne aluminium vloeistofleiding (Ø9 mm, schematisch): voert het vloeibare koudemiddel van de droger rechts langs de radiateur omhoog, in de lengte recht over de dop van het stuuroliereservoir, langs de bovenrand aan de motorzijde van het expansievat en binnen langs de rechter veerpoottoren naar het expansieventiel.', ex: [-0.06, 0.04, 0.06] }),
+    P('Rubberslang vloeistofleiding', sysTubePart(vloei, 0.0065, 140, 8, vU0, vU1), MAT.sysHose, { d: 'Rubber tussenstuk van de vloeistofleiding, recht over de dop van het stuuroliereservoir (7 mm vrij); vangt de trillingen tussen motor en carrosserie op.', ex: [-0.06, 0.06, 0.06] }),
     P('Koppelstuk vloeistofleiding', merge([mof(vU0 + 0.012 / vL), mof(vU1 - 0.012 / vL)]), MAT.alu, { d: 'Geribbelde persmoffen die het rubber tussenstuk op de aluminium leiding vastzetten.', ex: [-0.06, 0.08, 0.06] }),
     P('Zuigleiding', tube(zuig, 0.008, 58, 6), MAT.sysHose, { d: 'Dikke zuigleiding (Ø16 mm, schematisch): voert het koude, gasvormige koudemiddel van het expansieventiel langs de rechterkant van de motor terug naar de compressor.', ex: [-0.06, 0.02, 0] }),
     P('Expansieventiel', G.rbox(0.04, 0.04, 0.05, 0.004), MAT.alu, { d: 'Expansieventiel (blokventiel) tegen het schutbord: laat het koudemiddel uitzetten voordat het de verdamper achter het schutbord in gaat. Plaats en maat schematisch.', p: TXV, ex: [0, 0, -0.06] }),
