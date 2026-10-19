@@ -2,7 +2,7 @@
 
 Interactieve 3D-explosietekening van een Renault Laguna III hatchback (fase 2, 2011) in de uitvoering Initiale Paris: zilvergrijs (Gris Platine D69), met de 2.0 Turbo F4Rt-motor (170 pk) en de zestraps automaat Jatco JF613E (Renault AJ0). Het model bestaat uit losse onderdelen in groepen die tot 8 lagen diep gaan; de aantallen (knopen, groepen, onderdelen, driehoeken per hoofdgroep) staan in [docs/cijfers.md](docs/cijfers.md). Elke groep klapt apart uit en in, tot op klepspie, zuigerveer en remzuiger. Een tweede modus, Openen, laat de motorkap, de portieren, de ruiten, de achterklep, het panoramadak en een reeks interieurdelen open gaan zoals bij de echte auto. Het paneel toont per onderdeel de bekende onderdeelnummers. Alle geometrie wordt in code opgebouwd; er zijn geen 3D-bestanden.
 
-Stand van 17 oktober 2026: versie 10 (golf 5b-3) staat live op https://rvd-gmpplus.github.io/laguna3/ (vanaf `main`, `d3fe58f`, stempel `10 (bron 361c5a2)`) en op het artefact https://claude.ai/artifact/4qJq7YUk5nGSFmexY7WkZR (privé). Wat erin zit, staat onder "Nieuw in golf 5b-3" hieronder en in [CHANGELOG.md](CHANGELOG.md). De pagina toont zelf welke versie je ziet (`?`).
+Stand van 19 oktober 2026: versie 11 (golf 5c-2) is gebouwd op de tak `golf-5c2` en nog niet gepubliceerd (wat erin zit, staat onder "Nieuw in golf 5c-2"). Live is nog versie 10 (golf 5b-3): het staat op https://rvd-gmpplus.github.io/laguna3/ (vanaf `main`, `d3fe58f`, stempel `10 (bron 361c5a2)`) en op het artefact https://claude.ai/artifact/4qJq7YUk5nGSFmexY7WkZR (privé). Wat daarin zit, staat onder "Nieuw in golf 5b-3" hieronder en in [CHANGELOG.md](CHANGELOG.md). De pagina toont zelf welke versie je ziet (`?`).
 
 ![Gemonteerd](docs/screenshots/gemonteerd.png)
 
@@ -30,6 +30,15 @@ De eerste keer toont de pagina een korte hint. Die verdwijnt na de eerste handel
 - App: herkadrering als het dock van layout wisselt, en Stap terug herstelt kader en camera. De samengevoegde weergave (gebundeld renderen) neemt uv mee (`f63b185`, uit een andere sessie en generiek), zodat onderdelen met een textuur niet zwart worden; de batches zijn daardoor groter, zie [docs/cijfers.md](docs/cijfers.md).
 - Onder de motorkap: generieke helpers in `src/core.js`, `spring()` met punten per winding, Nederlandse notatie in alle teksten, en de strenge clashregel (geen paar dieper dan in B0 plus 0,1 mm, ook open over de hele beweging; zie [docs/onderzoek/beslissingen.md](docs/onderzoek/beslissingen.md)).
 - Instap: de instaplijst van elk portier is een afgewerkte dorpel, met een zwarte loopplaat, een opstaande rand over de vloerbedekking en een lichte sierstrip 2,8 cm binnen de buitenrand, zodat de drempel bij een open portier niet meer als grijze vloerstrook leest (de vorm is geschat, geen spec). De ontwerpspeling tot het dichte portier is verticaal 6 mm voor en 5 mm achter.
+
+## Nieuw in golf 5c-2 (versie 11)
+
+- Sneller starten: de nummergegevens staan als JSON-blok in de pagina en worden pas gelezen als je het paneel met onderdeelnummers opent of op nummer zoekt, en de tekenbuffer heeft zijn maat al vóór de WebGL-context. De eerste weergave komt daardoor veel eerder en de auto is eerder bruikbaar; de laatste fase (`ready`) is op software-rendering niet korter. De renderlus staat stil als er niets beweegt. Metingen en besluit: [docs/masterplan.md](docs/masterplan.md), sectie "Stand na golf 5c-2".
+- Achterlichten: het binnendeel van beide achterlichten hangt onder de achterklep en draait mee als de klep opengaat; Achterlicht links en rechts zijn zelf het vaste deel (de groep Buitendeel is vervallen).
+- Expansiedop: kleiner, volgens de catalogus (dop Ø52, opening Ø33, hals Ø42 mm).
+- Voorruit: van buiten 0,80 dekkend (was 0,92); zijruiten en achterruit blijven 0,92. Het zwarte vlak naast de open motorkap is het donkere dashboard achter de ruit.
+- Gordelband voor: de beschrijving volgt de rusttand van de band.
+- Onder de motorkap: constanten in `CFG`, teksten in `TXT`, één strategie per klikmodus (`UI_MODES`) en één knoopschema (`initAppFields`); de bediening is opgedeeld in `src/app2-panel.js`, `src/app2-controls.js`, `src/app2-labels.js`, `src/app2-input.js` en `src/app2-loop.js` (was één `src/app2.js`).
 
 ## Bediening
 
@@ -164,9 +173,9 @@ Haperen de eerste frames (gemiddeld meer dan 40 ms over 20 frames tijdens een an
 |---|---|
 | `index.html` | De gebouwde pagina (identiek aan het gepubliceerde artefact). |
 | `auto.json`, `framework.json` | Wat per auto verschilt in de generieke laag (naam, teksten, merk, opslagsleutels, testhaak), en welk bestand generiek of autospecifiek is. Zie [docs/framework.md](docs/framework.md): hoe de modellering is opgezet en hoe je haar voor een andere auto herhaalt. |
-| `src/` | Broncode in delen: opmaak, geometrie, carrosserie, motor, aandrijflijn, onderstel, interieur, systemen, app-logica en presets. |
+| `src/` | Broncode in delen: opmaak, geometrie, carrosserie, motor, aandrijflijn, onderstel, interieur, systemen, app-logica en presets. De bediening staat sinds versie 11 in vijf bestanden, `app2-panel.js`, `app2-controls.js`, `app2-labels.js`, `app2-input.js` en `app2-loop.js` (volgorde: `ORDER` in `build.py`). |
 | `src/panorama.js` | Het panoramadak: dakplaat met twee openingen, glaspanelen, dwarsbalk, zonneschermen met cassette, luchtgeleider en waterafvoer, met hun openers. De hemelbekleding met de afwerkring en de draaiknop in de hemelconsole staan in `src/interior.js`. |
-| `src/partnumbers.js` | De onderdeelnummers als gegevens. Gemaakt door `tools/orkestratie/build_pn.py` uit `data/pn/` (de canonieke gegevens, zie `data/pn/README.md`); niet met de hand bewerken. |
+| `src/partnumbers.js` | De onderdeelnummers als gegevens. Gemaakt door `tools/orkestratie/build_pn.py` uit `data/pn/` (de canonieke gegevens, zie `data/pn/README.md`); niet met de hand bewerken. `build.py` zet het object als JSON in een eigen blok `#pn` in de pagina; de notitie bij een eenheid (`note`) gaat alleen mee met `pnToelichting` in `auto.json`. |
 | `docs/onderdeelnummers.csv` | Dezelfde nummers als tabel: pad, verkoopeenheid, status, merk, nummer, bewijsniveau, opmerking, bron en de gekozen uitvoering voor de auto van de gebruiker. |
 | `build.py` | Voegt `src/` samen tot `index.html`, controleert de broncode en maakt een testversie. |
 | `tools/` | Testscripts (Playwright, headless Chromium) en `anchors.json` met de ankernamen. |
