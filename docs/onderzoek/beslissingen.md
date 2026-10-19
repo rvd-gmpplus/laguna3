@@ -130,3 +130,16 @@ De gebruiker besliste op 18 oktober 2026 bij de start en tijdens golf 5c-2 (tak 
 | Ruitvoet en A-stijl | De kas loopt tussen z 0,97 en 1,06 met een gladde overgang (smoothstep) in de kapvorm over; de bult in de flank verdwijnt daar; de dashboardhuid begint op z 1,00 in plaats van 1,03. De open driehoeken naast de ruithoeken zijn weg. | Fable-advies, ronde 1 en 2; marge glas tot dashboardhuid circa 24 mm. De bocht in de A-stijlvoet blijft in close-up een bolle schouder: geaccepteerd voor versie 14 (Fable: niet blokkerend), een langere overgang is een latere stap. | Besloten |
 | Buitenspiegel | 7 cm naar voren, op de zwarte spiegeldriehoek, zoals op de persfoto; de voet 0,7 mm naar buiten zodat hij vrij blijft van rubberlijn en spiegelkap. | Persfoto; botsingszwaai. | Aannemelijk (plaats geschat) |
 | Advisor | Fable 5.1 op xhigh als advisor-consult (subagent), op verzoek van de gebruiker: ronde 1 bijsturen, ronde 2 pass. | Verzoek van de gebruiker. | Besloten |
+
+## Besluiten van 19 oktober 2026 (golf 5i, ruiten en motorruimte naar foto)
+
+| Onderwerp | Beslissing | Grond | Status in tekst |
+|---|---|---|---|
+| Ruiten | Zijruiten, kwartsruiten en achterruit krijgen de tint, dekking (0,50) en luchtreflectie van de buitenkant van de voorruit (`MAT.bodGlassSide`, zonder de shaderaanpassing van de voorruit). Het panoramadak blijft sterk getint, zoals de echte auto. | De gebruiker op 19 oktober 2026: "de overige ruiten moeten dezelfde tint hebben als wat de voorruit nu heeft". | Besloten |
+| Afdekkap motor | Zilvergrijze kap over het hele blok en het inlaatspruitstuk, naar een foto van een Laguna III 2.0T: vier ribben achter, trede naar een aflopend voorvlak, hoog linkerdeel met drie groeven, kommen voor olievuldop en peilstok, opschrift RENAULT 2.0T als canvastextuur. De kap blijft bij uitklappen een los onderdeel. Vorm en maten geschat. | Foto van de gebruiker; verzoek van de gebruiker om de kap bij uitklappen netjes los te laten gaan. | Aannemelijk (vorm), Geschat (maten) |
+| Olievuldop | De vulhals staat midden op het kleppendeksel, net voor de bobines (`ENG_OIL`, x 0, z 0,05 in het motorframe), zoals op de foto midden op de kap; was aan de distributiezijde achter. | Verzoek van de gebruiker: "neem de oliedop mee, wil hem wel op de juiste positie hebben". | Aannemelijk (plaats naar foto) |
+| Peilstok | De greep zit 4,2 cm hoger, in een kom van de afdekkap. | Foto. | Aannemelijk |
+| Ruitensproeiertank | Tank, pomp en vulhals rechtsvoor (gespiegeld), met een gele dop; de sproeierslang van de kap loopt naar de rechter koppeling, achter de motorsteun en de olievuldop langs. | Foto: gele dop rechtsvoor naast het stuuroliereservoir. | Aannemelijk (plaats), Geschat (tank) |
+| Accu en torpedobak | Accubak zwart in plaats van blauwgrijs; een zwarte kunststof voorrand van de torpedoplaat dekt de lichte voorwand van de torpedobak af. | Foto. | Aannemelijk |
+| Budgetten | Driehoeken Aandrijflijn 260.000 (was 240.000) en totaal 720.000 (was 700.000), voor de afdekkap als hoogteveld. T4 gzip-grens 385 kB (was 370 kB); meer mag als het nodig is. | Besluit van de gebruiker op 19 oktober 2026. | Besloten |
+| Advisor | Opus 5.5 op high. | Keuze van de gebruiker. | Besloten |
