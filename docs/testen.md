@@ -173,20 +173,20 @@ Een auto kan extra tests aanmelden met het optionele veld `extraTests` in `auto.
 
 `VISDIFF_BASIS` kiest een andere basislijn voor `visdiff` dan `docs/baseline`. Software-rendering is niet vergelijkbaar tussen platforms: op macOS wijkt een beeld circa 2 procent af van de basislijn (Linux-container), in de Linux-VM `lag3-vm` (Apple container, image `explosie-test:1`, Ubuntu 24.04 arm64) 33 procent door bredere tekstrendering, en ook tegen de Mac 6 tot 31 procent. Een run op een ander platform dan de basislijn meet dus eerst een eigen basis op dezelfde machine en bouwt (bijvoorbeeld de presets van de startstand met `presetshots.py`) en zet `VISDIFF_BASIS` daarop. Zo liep golf 5b-2 tegen een basis B0 van de Mac. Zwakte: een afwijking die al in de eigen basis zit, is onzichtbaar; de basis moet dus van een groene startstand komen. De functietests (itest, opentest, integrity) zijn wel platformonafhankelijk; de ankerpoort niet (op de Linux-VM 351/318/263 tegen 352/319/265 op de Mac).
 
-## Linux-VM `lag3-vm`
+## Linux-VM (image `lag3-vm:1`)
 
-De Linux-basislijn van `visdiff` en de Linux-functietests komen uit een vaste VM met Apple container op de Mac van de gebruiker. Elke container is daar een eigen lichte Linux-VM. Beheer met `tools/lag3-vm.sh` (`start`, `test [UITMAP]`, `sh [CMD]`, `status`, `stop`, `rm`).
+De Linux-basislijn van `visdiff` en de Linux-functietests komen uit het image `lag3-vm:1` met Apple container op de Mac van de gebruiker. Elke container is daar een eigen lichte Linux-VM. Sinds 19 oktober 2026 draait elke run in een tijdelijke container die na afloop vanzelf verdwijnt (`container run --rm`), zoals in alto: `tools/lag3-vm.sh test [--repo PAD] [UITMAP]` en `tools/lag3-vm.sh sh [--repo PAD] [CMD]`. Er staat dus geen VM in rust die geheugen vasthoudt. `--repo` werkt voor een repo of een worktree (bij een worktree wordt de hoofdrepo gekoppeld en wijzen `GIT_DIR` en `GIT_WORK_TREE` naar de worktree), en ook voor espace5 (`--repo ~/Documents/GitHub/espace5`). `start`, `status`, `stop` en `rm` beheren nog de oude vaste VM `lag3-vm`, die niet meer nodig is.
 
 | Instelling | Waarde |
 |---|---|
-| Naam | `lag3-vm` |
+| Naam | tijdelijk `lag3-tmp-<pid>` per run (de oude vaste VM heet `lag3-vm`) |
 | Image | `lag3-vm:1` (gelijk aan `explosie-test:1`, digest `sha256:c9672118f5b36dc10af98985ca1205d6c86b22b90360c88eaf5420130eed57e0`, gemaakt op 16 oktober 2026 om 17:54 UTC) |
 | Exacte kopie | `~/.cache/explosietekening/lag3-vm/lag3-vm-1.oci.tar` (661.947.392 bytes, SHA-256 `34e07bdd51cc928609dafd267d8e7f14b78f1a3799ce341d20aa0b67f78e2899`); `start` laadt dit archief als het image ontbreekt |
 | Nabouw | `tools/vm/Containerfile` (uit de geschiedenis van het image, met vastgezette versies); alleen als het archief ontbreekt. Een nabouw is niet byte voor byte gelijk; maak na een nabouw een nieuwe basislijn |
 | Platform | linux/arm64, Ubuntu 24.04.5 LTS, kernel 6.18.35, geen Rosetta |
 | Software | Python 3.12.3, Node 18.19.1 (geen npm), Playwright 1.64.0 met Chromium 1248 (`/ms-playwright`), Pillow 12.3.0, NumPy 2.5.4, 50 lettertypen (fontconfig) |
-| Middelen | 4 CPU's, 8 GB geheugen |
-| Koppelingen | de repo op `/repo`; `~/.cache/explosietekening` op `/root/.cache/explosietekening` (three.js 0.147.0 en de Fonts-cache van de harness); `~/.cache/explosietekening/lag3-vm/out` op `/out` |
+| Middelen | 8 CPU's (`LAG3_CPUS`), 8 GB geheugen (`LAG3_MEM`); 8 en niet 15, zodat een andere zware container (zoals `explosie-test:1` van alto) de Mac niet boven een belasting van circa 30 trekt, waar tests met een tijdgrens vals rood worden. De oude vaste VM had 4 CPU's |
+| Koppelingen | de repo (bij een worktree de hoofdrepo) op `/repo`; `~/.cache/explosietekening` op `/root/.cache/explosietekening` (three.js 0.147.0 en de Fonts-cache van de harness); `~/.cache/explosietekening/lag3-vm/out` op `/out` |
 | Omgeving | `PLAYWRIGHT_BROWSERS_PATH=/ms-playwright`, `PIP_BREAK_SYSTEM_PACKAGES=1`, werkmap `/repo`, gebruiker root, `git safe.directory '*'` |
 | Host | macOS, `container` CLI 1.5.0 (Homebrew, `/opt/homebrew/bin/container`) |
 
