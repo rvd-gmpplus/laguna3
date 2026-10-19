@@ -459,7 +459,8 @@ const uiFadeMat = new THREE.MeshBasicMaterial({ color: 0xaab5c2, transparent: tr
 uiFadeMat.name = 'uiFade';
 // uitsnijdende klonen van het vervaagmateriaal (uiCut) vervagen mee
 const uiFadeCuts = new Set();
-function uiFadeSync() { for (const c of uiFadeCuts) c.opacity = uiFadeMat.opacity; }
+// de alphaTest schaalt mee met de dekking: anders valt het opschrift weg zodra de dekking onder de drempel zakt, terwijl de rest nog vervaagt
+function uiFadeSync() { for (const c of uiFadeCuts) { c.opacity = uiFadeMat.opacity; c.alphaTest = Math.max(1e-3, c.userData.at0 * c.opacity); } }
 function uiVisibleMeshes() { const s = new Set(); for (const m of MESHES) if (m.userData.node.ev) s.add(m); return s; }
 function uiFadeShow() {
   for (const m of uiFade.out) for (let o = m; o && o !== scene; o = o.parent) o.visible = true;
@@ -526,7 +527,7 @@ function uiCut(base, mat) {
   if (!base.alphaTest || mat === base || mat.map) return mat;
   let c = uiCutC.get(base); if (!c) uiCutC.set(base, c = new Map());
   let r = c.get(mat);
-  if (!r) { r = mat.clone(); r.map = base.map; r.alphaTest = base.alphaTest; r.polygonOffset = base.polygonOffset; r.polygonOffsetFactor = base.polygonOffsetFactor; r.polygonOffsetUnits = base.polygonOffsetUnits; c.set(mat, r); if (mat === uiFadeMat) uiFadeCuts.add(r); }
+  if (!r) { r = mat.clone(); r.map = base.map; r.alphaTest = base.alphaTest; r.polygonOffset = base.polygonOffset; r.polygonOffsetFactor = base.polygonOffsetFactor; r.polygonOffsetUnits = base.polygonOffsetUnits; c.set(mat, r); if (mat === uiFadeMat) { r.userData.at0 = base.alphaTest; uiFadeCuts.add(r); } }
   return r;
 }
 function uiMatFor(m) { return uiCut(m.userData.base, uiMatPick(m)); }

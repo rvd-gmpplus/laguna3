@@ -144,3 +144,16 @@ De gebruiker besliste op 18 oktober 2026 bij de start en tijdens golf 5c-2 (tak 
 | Budgetten | Driehoeken Aandrijflijn 260.000 (was 240.000) en totaal 720.000 (was 700.000): ruimte voor later, want de Aandrijflijn zit met de nieuwe afdekkap op 238.056 en paste nog binnen het oude budget. T4 gzip-grens 385 kB (was 370 kB); meer mag als het nodig is (de gebruiker, tweemaal bevestigd). | Besluit van de gebruiker op 19 oktober 2026. | Besloten |
 | Advisor | Opus 5.5 op high. | Keuze van de gebruiker. | Besloten |
 | Opschrift in systeemkleuren | Een vervangend materiaal (systeemkleur, dimmen, x-ray, markering) houdt bij een uitsnijdend basismateriaal (alphaTest) de textuur, de alphaTest en de polygonOffset (`uiCut` in `src/app1.js`); anders werd het opschrift een dichte plaat. Wijziging in de app-laag door de orkestrator. | Advisor golf 5i, punt 2. | Besloten |
+
+## Besluiten van 19 en 20 oktober 2026 (golf 5j, versie 16)
+
+| Onderwerp | Beslissing | Grond | Status in tekst |
+|---|---|---|---|
+| Accu en luchtfilter | Accu linksvoor achter de radiateurplaat (zwarte kap, rode pluskabel, zekeringkast erachter), luchtfilterhuis linksachter; draait de plaats van versie 13 om. | Waarneming van de gebruiker op de eigen auto, bevestigd door foto's (forumlaguna3 t8080, Autoweek) en MR 415; de gebruiker koos na het fotoonderzoek "doorvoeren". | Besloten |
+| Expansievat | Voor de rechter veerpoottoren, achter en boven het stuuroliereservoir. | Gebruiker, foto's. | Besloten |
+| Radiateurafdekplaat | Zwarte plaat over de voorkant tussen de koplampconsoles, met sleuf voor de slotbeugel. | Gebruiker, foto 01 (forumlaguna3). | Besloten |
+| Koelventilator | Blijft achter de radiateur (motorzijde), zichtbaar bij uitklappen. | Keuze van de gebruiker. | Besloten |
+| Olievuldop en peilstok | De olievuldop is een draaidop die bij openen losdraait en op de afdekkap gaat liggen; de peilstok floept bij openen 15 cm omhoog. Nieuw generiek: `tilt.rise` voor schuifopeners (app en opentest). | Verzoek van de gebruiker. | Besloten |
+| Budget Koeling en luchtinlaat | 30.000 driehoeken (was 25.000): de radiateurplaat en het grotere expansievat brengen de groep op 26.672. | Afspraak van de gebruiker: budgetten mogen omhoog waar nodig. | Besloten |
+| Opentest | De botsingstoets straalt nu met de openers die nodig zijn (needs, zoals de motorkap) open; eerder werden de stralen tegen een dichte motorkap getrokken. | Testfout gevonden in golf 5j. | Besloten |
+

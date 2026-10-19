@@ -1,6 +1,6 @@
 <!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"></head><body>
 <title>Laguna III explosietekening</title>
-<meta name="model-version" content="16 (bron 9587915)">
+<meta name="model-version" content="16 (bron ed0a831)">
 <meta name="description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback (2011, 2,0 Turbo, automaat): 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
 <meta property="og:title" content="Laguna III explosietekening">
 <meta property="og:description" content="Interactieve 3D-explosietekening van een Renault Laguna III hatchback: 2.500 onderdelen die uitklappen, portieren en kleppen die opengaan, en onderdeelnummers per deel.">
@@ -618,7 +618,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
   <div id="press" hidden><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="28"/></svg></div>
   <div id="helpDlg" hidden><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
     <h2 id="helpTitle">Bediening</h2>
-    <p class="ver">Laguna III explosietekening, versie 16 (bron 9587915)</p>
+    <p class="ver">Laguna III explosietekening, versie 16 (bron ed0a831)</p>
     <div id="helpMouse"><h3>Met de muis</h3><dl>
       <dt>Klik</dt><dd>De groep van het onderdeel klapt uit; de rest blijft staan. Staat die groep al open, dan wordt het onderdeel uitgelicht.</dd>
       <dt>Dubbelklik</dt><dd>Direct naar dit onderdeel: alle groepen erboven gaan laag voor laag open.</dd>
@@ -3055,14 +3055,14 @@ const ENG_CAM_RB = 0.0165, ENG_ROLL_R = 0.0085;
 const ENG_BRIDGE_T = 0.024, ENG_COVER_Y = CAMY + ENG_BRIDGE_T + 0.001, ENG_COVER_H = 0.04;
 const ENG_COVER_TOP = ENG_COVER_Y + ENG_COVER_H;
 const ENG_NECK_TOP = 0.478;                           // bovenkant van de vulhals: 2 cm boven de bodem van de kom in de afdekkap (engine3.js)
-const ENG_OIL = [0, 0.05];
+const ENG_OIL = [0, 0.05];                            // vulhals (x, z): midden op het deksel, net voor de bobines (golf 5i, naar foto: midden op de afdekkap)
 const ENG_CAP_BASE = [ENG_OIL[0], ENG_NECK_TOP + 0.008, ENG_OIL[1]], ENG_CAP_RISE = 0.05;   // draaidop: hart in de dichte stand, lift bij het losdraaien
 const ENG_CAP_TILT = Math.atan(0.2);                                                           // helling van het voorvlak van de afdekkap (engine3.js)
 // rustplek op de afdekkap: hart 8,5 mm boven het voorvlak (langs de normaal), tussen vulgat en peilstok; engCoverTop staat in engine3.js
 function engCapMove() {
   const x = 0.10, z = 0.14, y = engCoverTop(x, z), n = 0.0085;
   return [x - ENG_CAP_BASE[0], y + n * Math.cos(ENG_CAP_TILT) - ENG_CAP_BASE[1] - ENG_CAP_RISE, z + n * Math.sin(ENG_CAP_TILT) - ENG_CAP_BASE[2]];
-}                            // vulhals (x, z): midden op het deksel, net voor de bobines (golf 5i, naar foto: midden op de afdekkap)
+}
 const XT = -0.245, XA = -0.345;                       // vlak van distributieriem en multiriem
 const ENG_PS = [-0.27, -0.005, 0.255], ENG_PS_R = 0.058;   // stuurpomp: oorsprong (pompas, x-niveau van de pomp), tipstraal van de poelie
 const ENG_TURBO = [0.07, 0.14, -0.255];               // hartlijn turbo-as (lagerhuis)
@@ -3470,8 +3470,8 @@ function buildHead() {
       P('Kleppendekselpakking', coverGasket, MAT.rubber, { d: 'Rubber pakking onder het kleppendeksel.', ex: [0, -0.025, 0] }),
       A('Kleppendekselbouten', { d: 'Acht bouten van het kleppendeksel (aantal geschat).', ex: [0, 0.05, 0] }, coverBolts),
       P('Vulopening', xf(G.cyl('y', 0.021, 0.021, 0.002, 24), [ENG_OIL[0], ENG_NECK_TOP + 0.001, ENG_OIL[1]]), MAT.blackGloss, { d: 'Open vulhals voor de motorolie in het kleppendeksel: een donkere opening in een opstaande ring; hier zit de dop in als hij dicht is.', ex: [0, 0.03, 0] }),
-      // draaidop (golf 5j, gebruiker: "het is een draaidop"): openen draait hem anderhalve slag los en tilt hem 5 cm (vrij van de trede in de kap), daarna gaat hij
-      // in een boog naar de afdekkap en ligt hij plat op het voorvlak tussen het vulgat en de peilstok (rustplek ENG_CAP_REST)
+      // draaidop (golf 5j, gebruiker: "het is een draaidop"): openen draait hem een en een kwart slag los en tilt hem 5 cm (vrij van de trede in de kap), daarna gaat hij
+      // in een boog naar de afdekkap en ligt hij plat op het voorvlak tussen het vulgat en de peilstok (rustplek uit engCapMove)
       P('Olievuldop', merge([G.cyl('y', 0.0335, 0.0335, 0.016, 24), xf(G.box(0.04, 0.006, 0.01), [0, 0.011, 0])]), MAT.plateYellow, { d: 'Gele draaidop van de olievulopening met een greep; draai hem los om olie bij te vullen. Bij openen legt het model hem op de afdekkap, tussen het vulgat en de peilstok.', p: ENG_CAP_BASE, ex: [0, 0.09, 0], open: { type: 'slide', label: 'Olievuldop', min: 0.127, needs: 'Motorkap', dur: 1.1, tilt: { pivot: ENG_CAP_BASE, axis: [0, 1, 0], angle: 2.5 * PI, part: 0.4, rise: [0, ENG_CAP_RISE, 0] }, arc: { pivot: [ENG_CAP_BASE[0], ENG_CAP_BASE[1] + ENG_CAP_RISE, ENG_CAP_BASE[2]], axis: [1, 0, 0], angle: ENG_CAP_TILT }, move: engCapMove(), look: { dir: [0.2, 0.6, 0.9], nodes: ['Olievuldop', 'Afdekkap'] } } }),
     ]),
     buildIgnition(),
@@ -6848,7 +6848,8 @@ const uiFadeMat = new THREE.MeshBasicMaterial({ color: 0xaab5c2, transparent: tr
 uiFadeMat.name = 'uiFade';
 // uitsnijdende klonen van het vervaagmateriaal (uiCut) vervagen mee
 const uiFadeCuts = new Set();
-function uiFadeSync() { for (const c of uiFadeCuts) c.opacity = uiFadeMat.opacity; }
+// de alphaTest schaalt mee met de dekking: anders valt het opschrift weg zodra de dekking onder de drempel zakt, terwijl de rest nog vervaagt
+function uiFadeSync() { for (const c of uiFadeCuts) { c.opacity = uiFadeMat.opacity; c.alphaTest = Math.max(1e-3, c.userData.at0 * c.opacity); } }
 function uiVisibleMeshes() { const s = new Set(); for (const m of MESHES) if (m.userData.node.ev) s.add(m); return s; }
 function uiFadeShow() {
   for (const m of uiFade.out) for (let o = m; o && o !== scene; o = o.parent) o.visible = true;
@@ -6915,7 +6916,7 @@ function uiCut(base, mat) {
   if (!base.alphaTest || mat === base || mat.map) return mat;
   let c = uiCutC.get(base); if (!c) uiCutC.set(base, c = new Map());
   let r = c.get(mat);
-  if (!r) { r = mat.clone(); r.map = base.map; r.alphaTest = base.alphaTest; r.polygonOffset = base.polygonOffset; r.polygonOffsetFactor = base.polygonOffsetFactor; r.polygonOffsetUnits = base.polygonOffsetUnits; c.set(mat, r); if (mat === uiFadeMat) uiFadeCuts.add(r); }
+  if (!r) { r = mat.clone(); r.map = base.map; r.alphaTest = base.alphaTest; r.polygonOffset = base.polygonOffset; r.polygonOffsetFactor = base.polygonOffsetFactor; r.polygonOffsetUnits = base.polygonOffsetUnits; c.set(mat, r); if (mat === uiFadeMat) { r.userData.at0 = base.alphaTest; uiFadeCuts.add(r); } }
   return r;
 }
 function uiMatFor(m) { return uiCut(m.userData.base, uiMatPick(m)); }
