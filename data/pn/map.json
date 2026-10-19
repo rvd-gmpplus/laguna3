@@ -6794,32 +6794,32 @@
   "deel",
   "Gasveer wordt compleet verkocht"
  ],
- "Carrosserie/Achterlicht links/Buitendeel": [
+ "Carrosserie/Achterlicht links": [
   "S4-carrosserie-elektra-interieur:U_TAILO_L",
   "zelf",
   "Autodoc-categorie LED rear lights, Section Outer section"
  ],
- "Carrosserie/Achterlicht links/Buitendeel/Lens buitendeel": [
+ "Carrosserie/Achterlicht links/Lens buitendeel": [
   "S4-carrosserie-elektra-interieur:U_TAILO_L",
   "deel",
   "Achterlicht buitendeel wordt compleet verkocht (Autodoc: Rear light, Outer section, LED)"
  ],
- "Carrosserie/Achterlicht links/Buitendeel/Heldere band buitendeel": [
+ "Carrosserie/Achterlicht links/Heldere band buitendeel": [
   "S4-carrosserie-elektra-interieur:U_TAILO_L",
   "deel",
   "Achterlicht buitendeel wordt compleet verkocht (Autodoc: Rear light, Outer section, LED)"
  ],
- "Carrosserie/Achterlicht links/Buitendeel/Lichthuis buitendeel": [
+ "Carrosserie/Achterlicht links/Lichthuis buitendeel": [
   "S4-carrosserie-elektra-interieur:U_TAILO_L",
   "deel",
   "Achterlicht buitendeel wordt compleet verkocht (Autodoc: Rear light, Outer section, LED)"
  ],
- "Carrosserie/Achterlicht links/Buitendeel/LED-print buitendeel": [
+ "Carrosserie/Achterlicht links/LED-print buitendeel": [
   "S4-carrosserie-elektra-interieur:U_TAILO_L",
   "deel",
   "Achterlicht buitendeel wordt compleet verkocht (Autodoc: Rear light, Outer section, LED)"
  ],
- "Carrosserie/Achterlicht links/Buitendeel/Reflector buitendeel": [
+ "Carrosserie/Achterlicht links/Reflector buitendeel": [
   "S4-carrosserie-elektra-interieur:U_TAILO_L",
   "deel",
   "Achterlicht buitendeel wordt compleet verkocht (Autodoc: Rear light, Outer section, LED)"
@@ -6854,37 +6854,32 @@
   "deel",
   "Achterlicht binnendeel wordt compleet met lamphouder verkocht (Autodoc: Inner Section, with bulb holder). Na verificatie leeg: alleen fase-1-artikelen (tot 11/2010)"
  ],
- "Carrosserie/Achterlicht links": [
-  "S4-carrosserie-elektra-interieur:C_TAIL",
-  "zelf",
-  "Groepsknoop zonder eigen verkoopeenheid"
- ],
- "Carrosserie/Achterlicht rechts/Buitendeel": [
+ "Carrosserie/Achterlicht rechts": [
   "S4-carrosserie-elektra-interieur:U_TAILO_R",
   "zelf",
   "Autodoc-categorie LED rear lights, Section Outer section"
  ],
- "Carrosserie/Achterlicht rechts/Buitendeel/Lens buitendeel": [
+ "Carrosserie/Achterlicht rechts/Lens buitendeel": [
   "S4-carrosserie-elektra-interieur:U_TAILO_R",
   "deel",
   "Achterlicht buitendeel wordt compleet verkocht (Autodoc: Rear light, Outer section, LED)"
  ],
- "Carrosserie/Achterlicht rechts/Buitendeel/Heldere band buitendeel": [
+ "Carrosserie/Achterlicht rechts/Heldere band buitendeel": [
   "S4-carrosserie-elektra-interieur:U_TAILO_R",
   "deel",
   "Achterlicht buitendeel wordt compleet verkocht (Autodoc: Rear light, Outer section, LED)"
  ],
- "Carrosserie/Achterlicht rechts/Buitendeel/Lichthuis buitendeel": [
+ "Carrosserie/Achterlicht rechts/Lichthuis buitendeel": [
   "S4-carrosserie-elektra-interieur:U_TAILO_R",
   "deel",
   "Achterlicht buitendeel wordt compleet verkocht (Autodoc: Rear light, Outer section, LED)"
  ],
- "Carrosserie/Achterlicht rechts/Buitendeel/LED-print buitendeel": [
+ "Carrosserie/Achterlicht rechts/LED-print buitendeel": [
   "S4-carrosserie-elektra-interieur:U_TAILO_R",
   "deel",
   "Achterlicht buitendeel wordt compleet verkocht (Autodoc: Rear light, Outer section, LED)"
  ],
- "Carrosserie/Achterlicht rechts/Buitendeel/Reflector buitendeel": [
+ "Carrosserie/Achterlicht rechts/Reflector buitendeel": [
   "S4-carrosserie-elektra-interieur:U_TAILO_R",
   "deel",
   "Achterlicht buitendeel wordt compleet verkocht (Autodoc: Rear light, Outer section, LED)"
@@ -6918,11 +6913,6 @@
   "S4-carrosserie-elektra-interieur:U_TAILI_R",
   "deel",
   "Achterlicht binnendeel wordt compleet met lamphouder verkocht (Autodoc: Inner Section, with bulb holder). Na verificatie leeg: alleen fase-1-artikelen (tot 11/2010)"
- ],
- "Carrosserie/Achterlicht rechts": [
-  "S4-carrosserie-elektra-interieur:C_TAIL",
-  "zelf",
-  "Groepsknoop zonder eigen verkoopeenheid"
  ],
  "Carrosserie/Achterbumper/Mistachterlicht": [
   "S4-carrosserie-elektra-interieur:U_RFOG",

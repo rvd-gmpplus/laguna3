@@ -80,15 +80,6 @@
   "note": "Groepsknoop in de modelboom zonder eigen verkoopeenheid; alleen indeling. Geen artikelnummer van toepassing.",
   "src": []
  },
- "S4-carrosserie-elektra-interieur:C_TAIL": {
-  "n": "Groep Achterlicht",
-  "st": "nietgevonden",
-  "oe": [],
-  "am": [],
-  "per": "groep",
-  "note": "Groepsknoop in de modelboom zonder eigen verkoopeenheid; alleen indeling. Geen artikelnummer van toepassing.",
-  "src": []
- },
  "S4-carrosserie-elektra-interieur:U_WBLADE_SET": {
   "n": "Wisserbladen voor (set 650 mm + 400 mm)",
   "st": "vin",

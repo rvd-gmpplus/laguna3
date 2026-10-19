@@ -128,7 +128,7 @@ const uiMode = () => (OPENMODE ? UI_MODES.open : UI_MODES[MODE] || UI_MODES.part
 // Gegevens uit PN_DATA (src/partnumbers.js). map: pad zonder wortel -> [eenheid, 'zelf' | 'deel' | 'set', regel].
 // 'zelf': het onderdeel is zelf de verkoopeenheid; 'deel' of 'set': het zit in de eenheid en wordt daarmee besteld.
 // Een knoop zonder regel is niet onderzocht. De pagina toont alleen wat er staat en voegt zelf geen nummers toe.
-// Golf 5c-2, P1: build.py zet de gegevens als JSON in <script type="application/json" id="pn"> en maakt van PN_DATA een
+// Golf 5c-2, P1: build.py zet de gegevens als JSON in het blok #pn (script van het type application/json) en maakt van PN_DATA een
 // object waarvan meta, units, map en info pas bij het eerste gebruik worden gelezen (uiPnLazy). De index (uiPnBuild) wordt
 // pas gebouwd als het paneel, het zoeken op nummer of een testhaak hem nodig heeft (uiPnReady); bij het opstarten vult het
 // paneel de nummers na de eerste weergave. In het geheugen heeft PN_DATA dezelfde vorm als vroeger (testcontract).
@@ -153,6 +153,8 @@ function uiPnLazy() {
   const load = () => {
     if (data) return data;
     const t0 = performance.now(), el = document.getElementById('pn');
+    // uiPnLazy bestaat alleen als build.py de gegevens heeft gesplitst; zonder het blok zou het paneel stil leeg blijven
+    if (!el) console.error('onderdeelnummers: het JSON-blok #pn ontbreekt');
     try { data = uiPnDecode(el ? JSON.parse(el.textContent) : {}); } catch (e) {
       console.error('onderdeelnummers: de gegevens in #pn zijn onleesbaar (' + (e && e.message) + ')');
       data = uiPnDecode({});
