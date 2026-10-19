@@ -137,17 +137,19 @@ function bodGh(z) {
 // voet van de C-stijl: tussen SP en SP + bodCPL gaat de kasdoorsnede geleidelijk over in een bolle dekdoorsnede (zelfde x, hoogte
 // volgens het dekprofiel met de daklijn als top), zodat C-stijl en onderhoeken van de achterruit zonder trede in het dek achter de ruit lopen
 const bodCPL = 0.30;
-// voet van de A-stijl (golf 5h): tussen WS0 - bodAPL en WS0 gaat de kas op dezelfde manier over in de dekdoorsnede van de motorkap, zodat
-// voorruit en A-stijl op de achterrand van de kap aansluiten. Zonder die overgang stond de kas op WS0 tot 5 cm boven de kap (x 0,43 tot 0,83)
-// en keek je door een open driehoek naast elke ruithoek het dashboard in. De overgang is t^3: tot z 1,031 (voorkant van de dashboardhuid,
-// y 0,947 tot |x| 0,75) zakt de ruithoek hoogstens 1,3 cm en blijft hij ca. 7 mm boven de huid; pas in de laatste 3 cm rolt hij naar de kap.
+// voet van de A-stijl (golf 5h): tussen WS0 - bodAPL en WS0 gaat de kas over in de dekdoorsnede van de kap, zodat ruit en stijl op de
+// kap aansluiten (anders een open driehoek naast de ruithoek). Overgang sstep; de dashboardhuid begint op z 1,00 (glas 26 mm erboven).
 const bodAPL = 0.09;
-const bodMorph = z => (z >= SP + bodCPL ? (z <= WS0 - bodAPL ? 0 : Math.min(1, (z - WS0 + bodAPL) / bodAPL) ** 3) : sstep((SP + bodCPL - z) / bodCPL));
+const bodMorph = z => (z >= SP + bodCPL ? sstep((z - WS0 + bodAPL) / bodAPL) : sstep((SP + bodCPL - z) / bodCPL));
 function bodGhHalf(z, q, g) {
   const b = bodMorph(z);
   g = g || bodGh(z);
   const r = bodGhHalf0(z, q, g);
-  if (b > 0) { const yd = g.yb + (g.yc - g.yb) * (1 - Math.pow(clamp(r[0] / g.xb, 0, 1), bodDP(z))); r[1] = lerp(r[1], yd, b); }
+  if (b > 0) {
+    // A-voet: ook de bult uit bodGhHalf0 wegnemen (anders een kreukel)
+    if (z > WS0 - bodAPL && q <= bodQS) r[0] -= b * 0.012 * Math.sin(PI * q / bodQS) * Math.min(1, (g.ye - g.yb) / 0.2);
+    const yd = g.yb + (g.yc - g.yb) * (1 - Math.pow(clamp(r[0] / g.xb, 0, 1), bodDP(z))); r[1] = lerp(r[1], yd, b);
+  }
   return r;
 }
 function bodGhHalf0(z, q, g) {
