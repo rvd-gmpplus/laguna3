@@ -1,7 +1,7 @@
 # Schema van docs/onderdeelnummers.csv
 
 `docs/onderdeelnummers.csv` is de platte uitvoer van de nummergegevens in `data/pn/`, bedoeld voor wie de nummers buiten de
-pagina wil gebruiken (spreadsheet, script). De pagina zelf leest dezelfde gegevens als `PN_DATA` uit `src/partnumbers.js`.
+pagina wil gebruiken (spreadsheet, script). De pagina zelf leest dezelfde gegevens als `PN_DATA` uit `src/partnumbers.js`, met twee verschillen sinds golf 5c-2 (zie "De pagina leest de gegevens lui" hieronder): de notitie `note` staat niet meer in `PN_DATA` zolang `pnToelichting` in `auto.json` uitstaat, en `map` staat in `partnumbers.js` voorvoegselgecodeerd en wordt in de pagina teruggezet.
 Beide bestanden maakt `python3 tools/orkestratie/build_pn.py`; niemand bewerkt ze met de hand. `python3 tools/pncheck.py`
 bouwt ze in het geheugen opnieuw en vergelijkt byte voor byte met wat gecommit is. De aantallen (rijen, bronnen, nummers)
 staan in `docs/cijfers.md` en in de statistiek die `build_pn.py` afdrukt; dit document herhaalt ze niet.
@@ -64,8 +64,8 @@ De wortel `Renault Laguna III` staat niet in de CSV; alle paden zijn zonder wort
 | 22 | `bronnen_keuze` | `kz.s` | Bron-URL's van de keuze, gescheiden door `\|`. |
 | 23 | `info` | `info.json` op het pad | Onderhoudsregels en bekende problemen van dit pad, elk als `label: waarde (zekerheid; bron)`, gescheiden door ` \| `. Staat ook op rijen `niet onderzocht`, want deze regels horen bij het pad en niet bij een eenheid. |
 
-Wat niet in de CSV staat maar wel in `data/pn/` en `PN_DATA`: `note` (de onderzoeksnotitie per eenheid, een lopende tekst
-die de pagina ook niet toont), de hostnaam per bron (`src[i][1]`), `meta.json` (voertuig, TecDoc-type, controledatum, de
+Wat niet in de CSV staat maar wel in `data/pn/`: `note` (de onderzoeksnotitie per eenheid, een lopende tekst; sinds golf 5c-2
+zit hij alleen in `PN_DATA` als `auto.json` `pnToelichting` aanzet, anders blijft hij in `data/pn/`), de hostnaam per bron (`src[i][1]`), `meta.json` (voertuig, TecDoc-type, controledatum, de
 toelichting van het paneel) en het bewijsniveau van de keuze (`kz.b`, gelijk aan het bewijs van de gekozen nummers).
 
 ## Statuslabels
@@ -88,7 +88,7 @@ Enkele knoopnamen bevatten zelf een schuine streep (op de stand van golf 5d: `AB
 4, niet 5. Daarom:
 
 - `pad` is één veld en wordt nooit gesplitst; de koppeling aan `data/pn/map.json` en aan `PN_DATA.map` gaat op het volle pad,
-  net als in de pagina (`src/app2.js` zoekt in een tabel van volle paden).
+  net als in de pagina (`uiPnDecode` in `src/app2-panel.js` zet de voorvoegselcodering terug in een tabel van volle paden).
 - `naam` en `diepte` staan apart. `build_pn.py` leidt ze af uit `data/tree.json`: de ouder van een pad is het langste
   kortere pad in de boom waar het pad mee begint, de naam is de rest. Het ouderpad van een rij is dus `pad` zonder
   `/` plus `naam` aan het eind, en de ouder staat zelf ook in de CSV (als eigen rij, met zijn eigen `naam`).
@@ -120,7 +120,7 @@ twee advertentietitels bij de D-nummers van het panoramadak zijn vervangen door 
 zijde, bouwperiode) blijven; de catalogus levert ze als eigenschap van het artikel en ze zijn nodig om varianten uit elkaar
 te houden.
 
-Wat wel Engelse woorden bevat: de kolom `regel` en het veld `note` (niet in de CSV) zijn onderzoeksaantekeningen en noemen
+Wat wel Engelse woorden bevat: de kolom `regel` en het veld `note` (niet in de CSV, en niet in de pagina zonder `pnToelichting`) zijn onderzoeksaantekeningen en noemen
 soms de categorie waarin de bron het artikel plaatst (`Autodoc Crankshaft seal, positie "transmission sided"`), zodat het
 artikel terug te vinden is; de kolom `var` citeert hier en daar een bouwjaargrens. Dat zijn verwijzingen naar een
 rubriek, geen productbeschrijvingen.
@@ -131,9 +131,18 @@ rubriek, geen productbeschrijvingen.
    `data/pn/map.json`, `data/pn/info.json` en `data/tree.json`.
 2. Hij controleert de gegevens (paden in de boom, eenheden bestaan en worden gebruikt, status geldig, keuze verwijst naar
    bestaande nummers, bronnen met https en zonder `|`) en stopt bij een fout.
-3. Hij schrijft `src/partnumbers.js` (het object `PN_DATA`, de gegevens ongewijzigd) en deze CSV (de projectie hierboven).
+3. Hij schrijft `src/partnumbers.js` (het object `PN_DATA`: eenheden zonder `note` tenzij `pnToelichting` aanstaat, en `map` voorvoegselgecodeerd, zie hieronder) en deze CSV (de projectie hierboven).
 4. `python3 tools/pncheck.py` herbouwt beide in het geheugen en vergelijkt; `--tree` controleert ook dat `data/tree.json`
    gelijk is aan de boom van de pagina. Verandert de boom, dan eerst `pncheck.py --tree --update`, dan opnieuw bouwen.
 
 Een nieuwe ronde nummers (zie `data/pn/README.md`) verandert dit schema niet: nieuwe eenheden en koppelingen komen als
 nieuwe rijen mee.
+
+## De pagina leest de gegevens lui (golf 5c-2, P1)
+
+`data/pn/` en de CSV veranderen hierdoor niet; alleen de weg naar de pagina.
+
+- `build_pn.py` schrijft in `src/partnumbers.js` de regel `const PN_DATA = {...};` met `meta`, `units`, `map` en `info`. `build.py` haalt die regel uit het script, zet de gegevens als JSON in een eigen blok `<script type="application/json" id="pn">` (elke `<` als `\u003c`) en laat in het script `const PN_DATA = uiPnLazy();` staan. De pagina leest het blok pas bij het eerste paneel of de eerste zoekopdracht op nummer. Is de regel geen geldige JSON (de lege stub van `tools/framework.py`), dan blijft hij gewoon JavaScript.
+- `note` staat alleen in `PN_DATA` als `auto.json` het veld `pnToelichting` aanzet. Anders blijft de notitie in `data/pn/` en gaat zij niet naar de pagina (bij de referentieauto scheelt dat circa 69 kB).
+- `map` staat in `partnumbers.js` voorvoegselgecodeerd, in de volgorde van `data/pn/map.json`: een lijst `[p, rest, eenheid, relatie, regel?]`, waarbij het pad de eerste `p` tekens van het vorige pad plus `rest` is (`p` telt in UTF-16-eenheden, zoals `String.slice`) en een lege `regel` wegvalt. In de pagina maakt `uiPnDecode` (`src/app2-panel.js`) er weer de tabel pad zonder wortel naar `[eenheid, relatie, regel]` van, zoals hierboven beschreven. De volgorde blijft die van `map.json`, zodat de eerste `zelf`-knoop per eenheid dezelfde blijft.
+- `tools/pncheck.py` herbouwt nog steeds alles in het geheugen en vergelijkt byte voor byte; `tools/pubsmoke.py` toetst dat het blok `#pn` het geraamte van de artefacthost overleeft en leesbaar is.
