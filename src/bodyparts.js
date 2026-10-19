@@ -21,16 +21,20 @@ function bodGlassWs(m) {
   return m;
 }
 MAT.glassWs = bodGlassWs(MAT.glass.clone());
+// zijruiten en kwartsruiten (golf 5f, S7 kenmerk 4): iets minder dekkend en met wat meer luchtreflectie dan de achterruit, zodat het glas als
+// donkergrijs leest en de zwarte B-stijl en het stijltje ernaast als zwart vlak afsteken (bij 0,92 en 0,12 waren glas en stijl even zwart)
+MAT.bodGlassSide = MAT.glass.clone(); MAT.bodGlassSide.name = 'bodGlassSide'; MAT.bodGlassSide.opacity = 0.84; MAT.bodGlassSide.envMapIntensity = 0.9;
 // nieuwe carrosseriematerialen: zwart mat voor stijlen en raamkaders, helder chroom voor lijsten en sierstrips, spiegelglas
 std('bodPillar', 0x060607, 0, 0.8, { envMapIntensity: 0.12 });
 std('bodBright', 0xf4f6f8, 0.6, 0.16, { envMapIntensity: 1.5 });
 std('bodMirror', 0xb4bec6, 1, 0.04, { envMapIntensity: 1.1 });
-// hoogglans zwart van de B-stijlafdekkingen: donker, vrijwel niet metallisch en weinig omgevingsreflectie, zodat het zwart blijft lezen
-std('bodPillarGloss', 0x08090b, 0.05, 0.3, { envMapIntensity: 0.35 });
+// zwart van de B-stijlafdekkingen en het stijltje achter: diep zwart, ruw en vrijwel zonder omgevingsreflectie. Met glans (ruwheid 0,3, omgeving 0,35)
+// spiegelden de afdekkingen de lichte vloer en lazen ze als twee grijze stroken met een naad ertussen in plaats van als een zwart vlak (S7 kenmerk 4)
+std('bodPillarGloss', 0x020203, 0, 0.9, { envMapIntensity: 0.02 });
 std('bodValance', 0x2b2d31, 0, 0.66);                                     // donkergrijs kunststof van de onderschort achter
 // chroom van de sierlijsten (raamomlijsting, gordel, voorbumper): volledig metallisch, glad en met een donkerder basis dan bodBright, zodat het
 // de omgeving met contrast spiegelt (heldere lichtvlakken naast donkere vloer) in plaats van vlak wit te lezen
-std('bodChrome', 0xa9b0b7, 1, 0.06, { envMapIntensity: 2.1 });
+std('bodChrome', 0xd0d6dc, 1, 0.1, { envMapIntensity: 2.0 });
 std('bodGrille', 0x1d1f23, 0.35, 0.24, { envMapIntensity: 1.1 });             // glanzend zwart kunststof van de inlaatlamellen
 // middengrijs gelakt staal van de gasveercilinders: lichter dan het zwart van de zijrand en de bekleding, zodat de veer in het achterklepbeeld leest
 std('bodStrut', 0x62676e, 0.55, 0.35, { envMapIntensity: 0.9 });
@@ -80,14 +84,17 @@ const bodFDF = y => 0.84 + (y - 0.31) / 0.61 * 0.065;                    // voor
 const bodFDlo = z => z < 0.84 ? 0.307 : 0.31 + (z - 0.84) / 0.065 * 0.61;  // onderrand voorportier per z
 const bodRDlo = pchip([[-1.268, 0.877], [-1.20, 0.795], [-1.109, 0.66], [-1.0, 0.525], [-0.916, 0.406], [-0.80, 0.338], [-0.665, 0.305]]);
 const bodRDloZ = z => z > -0.665 ? 0.305 : bodRDlo(z);                     // onderrand achterportier (zwaait om de achterwielboog)
-// B-stijl: twee zwarte afdekkingen naast elkaar (raamkader voorportier voor de naad, raamkader achterportier erachter), samen 0,15 m
-// breed op de gordel en 0,10 m bovenaan, helling ca. 12 graden naar achteren; de sluitnaad (z -0,148 op de gordel) loopt ertussen omhoog
-const bodBGK = Math.tan(12 * PI / 180), bodBFK = 0.116 / 0.43, bodBRK = 0.066 / 0.43, bodBGW = 0.0045;
+// B-stijl: twee zwarte afdekkingen naast elkaar (raamkader voorportier voor de naad, raamkader achterportier erachter), samen ca. 0,10 m
+// breed op de gordel en 0,077 m bovenaan, helling ca. 12 graden naar achteren; de sluitnaad (z -0,148 op de gordel) loopt ertussen omhoog.
+// Golf 5f: de voorste afdekking is versmald (voorkant op de gordel z -0,121 in plaats van -0,073); met 0,15 m was de stijl veel breder dan
+// op de auto. De achterste afdekking blijft gelijk: de ruit van het achterportier zakt schuin langs die achterkant (helling bodBRK) en schuift
+// met een smallere afdekking door de voorste sluitrand en het scharnierblad van het portier.
+const bodBGK = Math.tan(12 * PI / 180), bodBF0 = -0.121, bodBFK = 0.091 / 0.43, bodBRK = 0.066 / 0.43, bodBGW = 0.0045;
 const bodBg = y => -0.148 - (y - 0.946) * bodBGK;                          // hartlijn van de naad tussen de afdekkingen
-const bodBf = y => -0.073 - (y - 0.946) * bodBFK;                          // voorkant van de voorste afdekking (achterrand ruit voorportier)
+const bodBf = y => bodBF0 - (y - 0.946) * bodBFK;                          // voorkant van de voorste afdekking (achterrand ruit voorportier)
 const bodBr = y => -0.223 - (y - 0.946) * bodBRK;                          // achterkant van de achterste afdekking (voorrand ruit achterportier)
 const bodBgY = z => 0.946 + (-0.148 - z) / bodBGK;                         // hoogte waarop de naad op z ligt
-const bodBfY = z => 0.946 + (-0.073 - z) / bodBFK;                         // hoogte waarop de voorkant op z ligt (omgekeerde van bodBf)
+const bodBfY = z => 0.946 + (bodBF0 - z) / bodBFK;                         // hoogte waarop de voorkant op z ligt (omgekeerde van bodBf)
 const bodBrY = z => 0.946 + (-0.223 - z) / bodBRK;                         // idem voor de achterkant
 // band op de kas tussen twee hellende lijnen z = zf - (y - 0,946) kf (voor) en z = zr - (y - 0,946) kr (achter), van de gordel tot q = qTop
 function bodBand(s, zf, kf, zr, kr, out, qTop = bodQG + 0.03) {
@@ -109,7 +116,7 @@ function bodBand(s, zf, kf, zr, kr, out, qTop = bodQG + 0.03) {
 // recht boven het profiel), daarboven zoals voorheen 4 mm binnen de kas.
 const bodBPEnv = y => 0.7653 - 0.065 * (y - 0.97);
 function bodBPillarFace(s, m = 0.016, o0 = -0.004, o1 = -0.009, qa = 0.03, qTop = bodQG + 0.02) {
-  const zf = y => -0.073 - m - (y - 0.946) * bodBFK, zr = y => -0.223 + m - (y - 0.946) * bodBRK;
+  const zf = y => bodBF0 - m - (y - 0.946) * bodBFK, zr = y => -0.223 + m - (y - 0.946) * bodBRK;
   const pt = (t, q, o) => {
     let z = lerp(zr(1.1), zf(1.1), t);
     for (let i = 0; i < 4; i++) { const y = bodGhHalf(z, q)[1]; z = lerp(zr(y), zf(y), t); }
@@ -426,7 +433,7 @@ function buildDoor(s, isFront) {
     P('Binnenpaneel', inner, MAT.paintIn, { d: 'Draagframe van het portier waarop raammechaniek, slot, luidspreker en bekleding vastzitten.', ex: [0, 0, 0] }),
     P('Zijdelingse botsbalk', tube(isFront ? [[xin(za) * 1.0, 0.37, za], [xin(zm), 0.4, zm], [xin(zb), 0.43, zb]] : [[xin(-0.78), 0.43, -0.78], [xin(zm), 0.435, zm], [xin(zb), 0.44, zb]], 0.018, 16, 10), MAT.steel, { d: 'Hogesterktestalen buis in het portier die bij een zijaanrijding de indringing beperkt.', inner: !isFront, ex: [s * 0.22, 0, 0.3] }),
     P('Waterscherm', lowSide(s, z0 + 0.05, z1 - 0.05, 12, z => [bodSY(z, Math.max(lo(z) + 0.05, 0.4)), bodSY(z, 0.86)], 6, br, 0.075), MAT.plastic, { d: 'Kunststof folie tussen binnenpaneel en bekleding die vocht uit de bekleding houdt.', ex: [-s * 0.14, 0.12, -0.26] }),
-    P('Zijruit', glass, MAT.glass, { d: 'Zakbare zijruit van gehard veiligheidsglas. Zakt elektrisch in het portier; ' + (isFront ? 'de zijruit gaat bijna volledig omlaag.' : 'de zijruit blijft een stukje boven de gordellijn staan (de wielkast beperkt de diepte).'), ex: [0, 0.32, 0],
+    P('Zijruit', glass, MAT.bodGlassSide, { d: 'Zakbare zijruit van gehard veiligheidsglas. Zakt elektrisch in het portier; ' + (isFront ? 'de zijruit gaat bijna volledig omlaag.' : 'de zijruit blijft een stukje boven de gordellijn staan (de wielkast beperkt de diepte).'), ex: [0, 0.32, 0],
       open: winSlide({ min: dDropMin, label: `Zijruit ${n}${pos}`, look: { dir: [s * 1, 0.7, isFront ? 0.4 : 0.15], nodes: [dName] } }) }),
     A('Raamlijsten en sierlijsten', { d: 'Chromen raamomlijsting, gordelsierlijst met rubber en de zijsierlijst met aluminium inzet.', ex: [s * 0.52, 0.04, 0.1] }, [
     P('Chroomlijst raamomlijsting', ringGeo, MAT.bodChrome, { d: isFront ? 'Zilverchromen band langs de bovenrand van de ruit en de voorrand bij de spiegeldriehoek (Initiale Paris: cerclage chromé).' : 'Zilverchromen band langs de bovenrand van de ruit (Initiale Paris: cerclage chromé).', ex: [s * 0.05, 0.12, 0] }),
@@ -478,7 +485,7 @@ function buildDoor(s, isFront) {
     A('Scharnieren', { d: 'Twee portierscharnieren aan de voorrand met elk twee bouten.', ex: [-s * 0.04, 0, 0.1] }, [doorHinge('boven', hPins[0]), doorHinge('onder', hPins[1])]),
   ];
   // B-stijlafdekking: zwart raamkader van dit portier aan de B-stijlzijde, de naad ertussen in lijn met de sluitnaad onder de gordel
-  kids.push(P('Afdekking B-stijl', isFront ? bodBand(s, -0.073, bodBFK, -0.148 + bodBGW, bodBGK, 0.002) : bodBand(s, -0.148 - bodBGW, bodBGK, -0.223, bodBRK, 0.002), MAT.bodPillarGloss,
+  kids.push(P('Afdekking B-stijl', isFront ? bodBand(s, bodBF0, bodBFK, -0.148 + bodBGW, bodBGK, 0.002) : bodBand(s, -0.148 - bodBGW, bodBGK, -0.223, bodBRK, 0.002), MAT.bodPillarGloss,
     { d: isFront ? 'Hoogglans zwarte afdekking op het raamkader van het voorportier, de voorste helft van de zwarte B-stijl, licht naar achteren hellend.' : 'Hoogglans zwarte afdekking op het raamkader van het achterportier, de achterste helft van de zwarte B-stijl.', ex: [s * 0.06, 0.04, 0] }));
   if (isFront) kids.push(P('Naadrubber B-stijl', bodBand(s, -0.148 + bodBGW + 0.001, bodBGK, -0.148 - bodBGW - 0.001, bodBGK, 0.0008), MAT.bodPillar, { d: 'Mat zwart rubber in de naad tussen de twee B-stijlafdekkingen, in het verlengde van de sluitnaad onder de gordel.', ex: [s * 0.03, 0.02, 0] }));
   if (isFront) {
@@ -818,7 +825,7 @@ function buildBody() {
   const qAx = s => bodDoorAxis(s, false);
   const quarter = s => A(`Kwartsruit ${sn(s)}`, { d: 'Vaste driehoekige ruit achter het schuine stijltje, in het raamkader van het achterportier; draait met het portier mee.', ex: [s * 0.22, 0.06, -0.05],
     open: follow(`Portier ${sn(s)}achter`, qAx(s).pv, qAx(s).ax, qAx(s).ang) }, [
-    P('Ruit', bodGhSide(s, bodQZ, bodQd(0.97) - 0.016, 16, z => [0.006, Math.min(bodQy(z, bodQtop(z)), bodQy(z, 0.97 + (-0.93 - 0.016 - z) * 0.33 / 0.06))], 6, bodDense(bodQZ, -1.15, 6)), MAT.glass, { d: 'Vaste kwartsruit van getint veiligheidsglas achter de zakbare ruit van het achterportier; geeft licht en zicht opzij bij de achterbank.', ex: [s * 0.04, 0, 0] }),
+    P('Ruit', bodGhSide(s, bodQZ, bodQd(0.97) - 0.016, 16, z => [0.006, Math.min(bodQy(z, bodQtop(z)), bodQy(z, 0.97 + (-0.93 - 0.016 - z) * 0.33 / 0.06))], 6, bodDense(bodQZ, -1.15, 6)), MAT.bodGlassSide, { d: 'Vaste kwartsruit van getint veiligheidsglas achter de zakbare ruit van het achterportier; geeft licht en zicht opzij bij de achterbank.', ex: [s * 0.04, 0, 0] }),
     P('Raamkader kwartsruit', bodTrim(s, qEdge, z => -(qFr(z) + 0.0005), 0.002, 0.003, 0, 3), MAT.bodPillar, { d: 'Zwart kader langs de rand van de kwartsruit, onder de chroomband.', ex: [s * 0.05, 0.03, 0] }),
     P('Omlijsting', qTrim(s, 0, 2 * bodTW, 0.0035, 0.003, 6), MAT.bodChrome, { d: 'Chromen band langs de bovenrand en de schuine achterrand van de kwartsruit tot de punt op de gordel, in het verlengde van de omlijsting van het achterportier.', ex: [s * 0.06, 0.02, 0] }),
     P('Rubberlijn kwartsruit', merge([qTrim(s, 2 * bodTW - 0.0005, 2 * bodTW + bodTR, 0.0026, 0, 1), qBelt(s).rubber]), MAT.bodPillar, { d: 'Zwarte rubberlijnen langs de omlijsting en de gordellijst van de kwartsruit.', ex: [s * 0.05, 0.05, 0] }),
