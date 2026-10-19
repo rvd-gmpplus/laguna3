@@ -21,7 +21,9 @@ function panGlassIn(m) {
   m.clone = function () { return panGlassIn(THREE.MeshPhysicalMaterial.prototype.clone.call(this)); };
   return m;
 }
-panGlassIn(phys('bodPanoGlass', { color: 0x030405, metalness: 0.05, roughness: 0.05, transparent: true, opacity: 0.92, depthWrite: false, envMapIntensity: 0.4 }));
+// ruwheid 0,2 en spiegeling 0,3: met 0,05 en de standaardspiegeling stond midden op het achterste glas een felle witte vlek in het
+// bovenaanzicht (S7, golf 5f ronde 2); de weerspiegeling van de lucht blijft als zachte glans, zodat het als glas leest
+panGlassIn(phys('bodPanoGlass', { color: 0x030405, metalness: 0.05, roughness: 0.2, specularIntensity: 0.3, transparent: true, opacity: 0.92, depthWrite: false, envMapIntensity: 0.4 }));
 std('bodPanoFrit', 0x040405, 0, 0.35);                  // zwarte keramische rand (frit) op het glas
 std('bodPanoBar', 0x15161a, 0.3, 0.5);                  // dwarsbalk: donkergrijs tot zwart gelakt
 std('bodPanoCass', 0xa49c8a, 0, 0.9);                   // cassette van het zonnescherm: donkerder taupe dan de hemel, zodat het huis en het opgerolde scherm zich aftekenen

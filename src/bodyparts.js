@@ -39,7 +39,6 @@ std('bodGrille', 0x1d1f23, 0.35, 0.24, { envMapIntensity: 1.1 });             //
 // middengrijs gelakt staal van de gasveercilinders: lichter dan het zwart van de zijrand en de bekleding, zodat de veer in het achterklepbeeld leest
 std('bodStrut', 0x62676e, 0.55, 0.35, { envMapIntensity: 0.9 });
 const bodSY = (z, y) => sAtY(z, y);
-const bodSAtXLow = (z, x) => { const c = bodSec(z); return x / Math.max(1e-6, c.hw - c.bul - c.rb) * S1; };   // s op de onderkant bij |x|
 const sn = s => sideName(s);
 // naden tussen linker- en rechterhelft gladtrekken (gedeelde normalen)
 // ook over naden tussen losse vlakken: weldAll in core.js (zelfde tolerantie 1e-4)
@@ -522,7 +521,9 @@ function buildMirror(s) {
   const M = (x, y, z) => [s * x, y, z];
   return A(`Buitenspiegel ${n}`, { d: 'Elektrisch verstelbare, verwarmde en elektrisch inklapbare buitenspiegel in carrosseriekleur (Initiale Paris met geheugen). Klapt ongeveer 80 graden naar achteren (hoek geschat).', ex: [s * 0.32, 0.12, 0.08],
     open: hinge([s * 0.95, 0.94, 0.74], [0, 1, 0], s * 80 * PI / 180, { min: 64 * PI / 180, label: `Buitenspiegel ${n}`, look: { dir: [s * 0.8, 0.3, 0.75], nodes: [`Buitenspiegel ${n}`] } }) }, [
-    P('Spiegelvoet', G.rbox(0.09, 0.05, 0.07, 0.015), MAT.bodPillar, { d: 'Voet met bevestigingsplaat op de spiegeldriehoek van het portier; blijft staan als de spiegel inklapt.', p: M(0.845, 0.94, 0.862), stay: true, ex: [-s * 0.05, -0.05, 0] }),
+    // voet als smalle plaat tussen portier en de binnenkant van het spiegelhuis (x 0,8085 tot 0,8245, achter de voorkant van de kap): als blok van
+    // 9 x 5 x 7 cm voor de kap las hij in vooraanzicht als los zwart blokje onder de spiegel (S7, golf 5f ronde 2)
+    P('Spiegelvoet', G.rbox(0.016, 0.032, 0.1, 0.005), MAT.bodPillar, { d: 'Voet met bevestigingsplaat op het portier aan de binnenkant van het spiegelhuis; blijft staan als de spiegel inklapt.', p: M(0.8165, 0.941, 0.75), stay: true, ex: [-s * 0.05, -0.05, 0] }),
     P('Spiegelkap', cache('bodMirCapT' + k, () => bodLoft(s, [[1, 0], [1, 0.03], [0.95, 0.07], [0.8, 0.11], [0.5, 0.135], [0.12, 0.145]], true)), MAT.paint, { d: 'Kap in carrosseriekleur aan de voorzijde van het spiegelhuis.', p: M(cx, cy, 0.668), ex: [0, 0.02, 0.1] }),
     P('Spiegelhuis', cache('bodMirRimT' + k, () => bodLoft(s, [[0.93, -0.004], [1.01, -0.004], [1.01, 0.012]], false)), MAT.paint, { d: 'Kunststof huis in carrosseriekleur met een rand rond het glas, dat glas, motoren en verwarming draagt.', p: M(cx, cy, 0.664), ex: [0, 0, -0.02] }),
     P('Spiegelglas', cache('bodMirGlT' + k, () => { const g = new THREE.ShapeGeometry(shapeOf(bodMirOutline().map(([u, v]) => [s * u * 0.93, v * 0.93]))); return g; }), MAT.bodMirror, { d: 'Bol spiegelglas in de spiegelkap, waarin de bestuurder het verkeer naast en schuin achter de auto ziet.', p: M(cx, cy, 0.661), ex: [0, 0, -0.12] }),
@@ -640,10 +641,13 @@ function bodTGPath(inw) {
   // het pad houdt de x van de vroegere naad (0,462 onder, 0,474 boven): de buis is een spline door alle punten, en een verschoven punt
   // onderaan verschuift de hele buis (ook bij het dak) en daarmee haar afstand tot de hemel en de hoedenplanksteun
   const seamX = y => 0.462 + 0.012 * sstep((y - 0.80) / 0.15);
-  for (const y of [0.66, 0.8, 0.95, ydT - 0.05]) { const xs = Math.min(seamX(y), ringX(bodZT, y)) - 0.03; side.push([xs, y, tailZ(xs, y) + inw]); }
+  // om dezelfde reden houdt het pad de z van het staartvlak van vóór golf 5f ronde 2 (bolling 0,05 m over de hele hoogte): het nieuwe vlak
+  // ligt op deze punten hoogstens 1,1 cm voor of achter het oude, de afdichting blijft 1,9 tot 4 cm binnen de huid
+  const tz0 = [-2.3001, -2.2951, -2.2874, -2.2796];
+  [0.66, 0.8, 0.95, ydT - 0.05].forEach((y, i) => { const xs = Math.min(seamX(y), ringX(bodZT, y)) - 0.03; side.push([xs, y, tz0[i] + inw]); });
   for (const z of [bodZT + 0.03, -2.2, SP]) { const p = halfPt(z, bodSAtX(z, bodTGdx(z) - 0.02)); side.push([p[0], p[1] - inw, z]); }
   for (const z of [-1.9, -1.6, -1.35, RW0 + 0.02]) { const q = bodQScr(z), p = bodGhHalf(z, q); side.push([p[0] - inw, p[1] - inw, z]); }
-  const mid = [0, 0.655, tailZ(0, 0.655) + inw], top = [0, YR(RW0 + 0.02) - inw, RW0 + 0.02];
+  const mid = [0, 0.655, -2.318 + inw], top = [0, YR(RW0 + 0.02) - inw, RW0 + 0.02];
   return [mid, ...side, top, ...side.slice().reverse().map(p => [-p[0], p[1], p[2]]), mid];
 }
 // opening in een huiddeel: houdt alleen het deel van elke driehoek dat buiten de rechthoek |x| < X0, Y0 < y < Y1 ligt (in vooraanzicht,
@@ -658,6 +662,22 @@ function bodClipOut(g, X0, Y0, Y1, zMin) {
     const away = tri.some(v => v[2] < zMin) || tri.every(v => v[1] <= Y0) || tri.every(v => v[1] >= Y1) || tri.every(v => v[0] >= X0) || tri.every(v => v[0] <= -X0);
     if (away) { tri.forEach(v => out.push(...v)); continue; }
     for (const hs of regs) { let poly = tri; for (const h of hs) { poly = clipPoly(poly, h[0], h[1], h[2]); if (poly.length < 3) break; }
+      for (let k = 1; k + 1 < poly.length; k++) out.push(...poly[0], ...poly[k], ...poly[k + 1]); }
+  }
+  const r = new THREE.BufferGeometry(); r.setAttribute('position', new THREE.Float32BufferAttribute(out, 3)); r.computeVertexNormals(); return r;
+}
+// inham in een huiddeel: houdt alleen het deel van elke driehoek dat buiten het blok x0 <= s * x <= x1, y < y1, z < z1 ligt; exact op de
+// vlakken geknipt (buitengebied als vier disjuncte convexe stukken, halfruimten n . p <= c). Voor de uitlaatuitsparing in de bumperhoek
+function bodClipBox(g, s, x0, x1, y1, z1) {
+  const p = g.attributes.position, ix = g.index ? g.index.array : [...Array(p.count).keys()], out = [];
+  const V = k => [p.getX(k), p.getY(k), p.getZ(k)];
+  const cut = (poly, n, c) => { const r = []; poly.forEach((A, i) => { const B = poly[(i + 1) % poly.length], da = n[0] * A[0] + n[1] * A[1] + n[2] * A[2] - c, db = n[0] * B[0] + n[1] * B[1] + n[2] * B[2] - c;
+    if (da <= 0) r.push(A); if ((da < 0 && db > 0) || (da > 0 && db < 0)) { const t = da / (da - db); r.push(A.map((v, k) => v + (B[k] - v) * t)); } }); return r; };
+  const xin = [[[-s, 0, 0], -x0], [[s, 0, 0], x1]], regs = [[[[s, 0, 0], x0]], [[[-s, 0, 0], -x1]], [...xin, [[0, -1, 0], -y1]], [...xin, [[0, 1, 0], y1], [[0, 0, -1], -z1]]];
+  for (let i = 0; i < ix.length; i += 3) {
+    const tri = [V(ix[i]), V(ix[i + 1]), V(ix[i + 2])];
+    if (tri.every(v => s * v[0] <= x0) || tri.every(v => s * v[0] >= x1) || tri.every(v => v[1] >= y1) || tri.every(v => v[2] >= z1)) { tri.forEach(v => out.push(...v)); continue; }
+    for (const hs of regs) { let poly = tri; for (const [n, c] of hs) { poly = cut(poly, n, c); if (poly.length < 3) break; }
       for (let k = 1; k + 1 < poly.length; k++) out.push(...poly[0], ...poly[k], ...poly[k + 1]); }
   }
   const r = new THREE.BufferGeometry(); r.setAttribute('position', new THREE.Float32BufferAttribute(out, 3)); r.computeVertexNormals(); return r;
@@ -953,11 +973,17 @@ function buildBody() {
     P('Schermpaneel', merge([lowSide(s, 0.842, bodHLZ0 - 0.002, 60, z => [ffLo(z), ffHi(z)], 22, ARCH_BREAKS.concat(bodDense(0.842, 0.906, 6), bodDense(1.75, 1.81, 4))), archLip(s, AXF)]), MAT.paint, { d: 'Kunststof of stalen spatbord, in carrosseriekleur gelakt.', ex: [s * 0.04, 0, 0] }),
     ...[1.0, 1.25, 1.5, 1.72].map((z, i) => P(`Schermbout ${i + 1}`, hexBolt(0.02, 0.007, 'y'), MAT.steel, { d: 'Bout langs de bovenflens waarmee het scherm aan de binnenwand vastzit.', p: [s * (bodSec(z).xe - 0.03), YT(z) - 0.012, z], ex: [0, 0.06, 0] })),
     P('Schermsteun', G.rbox(0.03, 0.08, 0.06, 0.006), MAT.darkSteel, { d: 'Steun die de voorkant van het scherm aan de frontmodule verbindt.', p: [s * (surfX(1.78, 0.6) - 0.05), 0.6, 1.78], ex: [-s * 0.04, 0, 0.04] }),
+    // flenzen onder de naden met de motorkap (6 mm onder de huid) en met de bumper (4 mm): door de naden zag je eerst afwisselend het lichte
+    // binnenframe van de kap en niets, zodat de naden als gestippelde wit-zwarte lijn lazen (S7, golf 5f ronde 2)
+    P('Schermflens', merge([lowSide(s, WS0 + 0.004, bodHLZ0 - 0.002, 40, () => [S4 - 0.006, S4 + 0.010], 2, [], 0.006),
+      lowSide(s, AXF + ARCH + 0.001, bodHLZ0 - 0.002, 12, z => [bodSY(z, bodSeamF(z) - 0.03), bodSY(z, bodSeamF(z) + 0.03)], 4, [], 0.004)]), MAT.plastic, { d: 'Bovenflens van het scherm onder de naad met de motorkap en voorflens onder de naad met de bumper, waar de bumper in valt; in de schaduw van de naad, donker weergegeven.', ex: [s * 0.02, -0.02, 0] }),
   ]);
 
   /* ================= voorbumper ================= */
   const fbLo = () => S1 * 0.45;
-  const fbHi = z => { if (z < bodHLZ0) return bodSY(z, bodSeamF(z)); if (z <= bodHLZ1) return hlLow(z) - 0.002; const h = bodHoodS(z); return h >= 1 ? 1 : h - 0.002; };   // voor de kap: beide helften sluiten op de hartlijn
+  // de bovenrand onder de naad met het scherm ligt 9 mm (in hoogte) onder de onderrand van het scherm (was 4 mm): de naad is
+  // daardoor overal ca. 1,5 mm breed met de schermflens eronder, in plaats van een spleet van hoogstens 0,7 mm die als stippellijn las
+  const fbHi = z => { if (z < bodHLZ0) return bodSY(z, bodSeamF(z) - 0.005 * clamp((bodHLZ0 - z) / 0.012, 0, 1)); if (z <= bodHLZ1) return hlLow(z) - 0.002; const h = bodHoodS(z); return h >= 1 ? 1 : h - 0.002; };   // voor de kap: beide helften sluiten op de hartlijn
   // extra stations vlak voor de neus van de kap: daar loopt de kapvoorrand bijna dwars en liet lineaire interpolatie een gaatje open
 const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   const fbBr = bodDense(1.752, 1.82, 4).concat(bodDense(2.15, ZF, 16), bodDense(2.235, bodHoodZ1, 8), bodHoodTip);
@@ -1030,8 +1056,14 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     ]),
     // de lip loopt tot de hartlijn door (s = 0), zodat de twee helften op de neuspunt aansluiten: eerder bleef daar een V-vormig gat met
     // spitse zwarte punten onder de chroomlijst
-    P('Onderlip', merge([L, R].map(sd => lowSide(sd, 1.80, ZF, 60, z => [0, bodSY(z, YB(z) + 0.022)], 4, bodDense(2.2, ZF, 16), -0.003))), MAT.plastic, { d: 'Zwarte spoilerlip onder de bumper.', ex: [0, -0.08, 0.06] }),
-    ...both(s => P(`Sierstrip onderlip ${sn(s)}`, lowSide(s, 1.76, 2.15, 14, z => [bodSY(z, YB(z) + 0.028), bodSY(z, YB(z) + 0.046)], 1, [], -0.004), MAT.bodBright, { d: 'Zilveren strip langs de bumperzijde die doorloopt in de dorpelsierlijst.', ex: [s * 0.06, -0.03, 0] })),
+    // lip in twee banden: de vlakke onderkant (s 0 tot S1) en de onderste ronding tot 2,2 cm hoog met vier rijen. Eerder vier gelijke rijen
+    // over het geheel, waarvan hoogstens één over de ronding: die koorde zakte tot ca. 6 mm, dieper dan de 3 mm afstand tot de huid, zodat
+    // de bumperschaal er in de beelden van voren gekarteld wit-zwart doorheen stak (S7, golf 5f ronde 2)
+    P('Onderlip', merge([L, R].flatMap(sd => [lowSide(sd, 1.80, ZF, 60, () => [0, S1], 2, bodDense(2.2, ZF, 16), -0.003),
+      lowSide(sd, 1.80, ZF, 60, z => [S1, Math.max(S1 + 1e-4, bodSY(z, YB(z) + 0.022))], 4, bodDense(2.2, ZF, 16), -0.003)])), MAT.plastic, { d: 'Zwarte spoilerlip onder de bumper.', ex: [0, -0.08, 0.06] }),
+    // strip 2,5 mm boven de huid met 32 stations (was 14, de randen lazen als zaagtand) en een punt van 6 cm naar voren toe, zodat het
+    // voorste eind niet als los wit blokje van de bumper afstaat
+    ...both(s => P(`Sierstrip onderlip ${sn(s)}`, lowSide(s, 1.76, 2.15, 32, z => { const w = 0.009 * (0.15 + 0.85 * sstep((2.15 - z) / 0.06)); return [bodSY(z, YB(z) + 0.037 - w), bodSY(z, YB(z) + 0.037 + w)]; }, 1, [], -0.0025), MAT.bodBright, { d: 'Zilveren strip langs de bumperzijde die doorloopt in de dorpelsierlijst.', ex: [s * 0.06, -0.03, 0] })),
     A('Koplampsproeiers', { d: 'Twee uitschuifbare koplampsproeiers onder de bi-xenon koplampen.', ex: [0, 0.02, 0.08] }, both(s => { const z = 2.0, y = bodHLlo(z) - 0.035, p = bodAt(z, y, 0.004), nn = bodNormalAt(z, y);
       return A(`Koplampsproeier ${sn(s)}`, { d: 'Uitschuifbare koplampsproeier (Initiale Paris: koplampsproeiers bij de bi-xenon).', ex: [s * 0.1, 0, 0.1] }, [
         P('Sproeierkapje', G.rbox(0.012, 0.025, 0.06, 0.008), MAT.paint, { d: 'Kapje in carrosseriekleur.', ...bodPose(s, p, nn) }),
@@ -1044,28 +1076,52 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
 
   /* ================= achterbumper ================= */
   const rbBr = bodDense(-2.3, bodZT, 4);
-  const rFace = (x0, x1, y0, y1, out, nx = 12, ny = 3) => patch((y, t) => { const x = x0 + (x1 - x0) * t; return [x, y, bodRearZ(x, y) - out]; }, y0, y1, ny, () => [0, 1], nx);
+  // uitlaatuitsparing (golf 5f ronde 2): een echte inham in de onderrand van de bumper, |x| 0,385 tot 0,515, tot y 0,345 en van z -2,15
+  // naar achteren (binnen de kabelboom naar de achterlichten, die in de hoek op x 0,53 tot 0,6 omhoog loopt). Bumperschaal en onderschort worden op de vlakken van dat blok geknipt; plafond, voorwand en zijwanden (zwart, 3 mm
+  // onder de onderrand beginnend zodat ze de rand van de onderschort dekken) sluiten de inham. Het eindstuk van het uitlaatsysteem zit er
+  // met de achterkant gelijk met het bumpervlak in; eerder was dit een zwart vlakje op de onderkant en hing het eindstuk eronder
+  const exX0 = 0.385, exX1 = 0.515, exY1 = 0.345, exZF = -2.15, exC = [0.45, 0.305, -2.22];
+  const exCut = g => bodClipBox(bodClipBox(g, 1, exX0, exX1, exY1, exZF), -1, exX0, exX1, exY1, exZF);
+  const exLowY = (z, x) => { if (!bodInside(z, x, exY1)) return exY1; let lo = bodSec(z).yb, hi = exY1; for (let i = 0; i < 24; i++) { const m = (lo + hi) / 2; if (bodInside(z, x, m)) hi = m; else lo = m; } return hi; };
+  const exWalls = s => {
+    const yL = (z, x) => Math.min(exY1 - 0.001, exLowY(z, x) - 0.003), zE = x => bodRearZ(x, exY1);
+    const g = merge([
+      patch((x, t) => [s * x, exY1, lerp(exZF, zE(x), t)], exX0, exX1, 8, () => [0, 1], 8),
+      patch((x, y) => [s * x, y, exZF], exX0, exX1, 8, x => [yL(exZF, x), exY1], 3),
+      ...[exX0, exX1].map(xw => patch((z, y) => [s * xw, y, z], exZF, zE(xw), 12, z => [yL(z, xw), exY1], 3)),
+    ].map(q => q.toNonIndexed()));
+    // driehoeken met de voorzijde naar het hart van de inham (daar zit het eindstuk)
+    const P3 = g.attributes.position, A3 = P3.array, c = [s * exC[0], exC[1], exC[2]];
+    for (let i = 0; i < P3.count; i += 3) {
+      const a = [0, 1, 2].map(k => [P3.getX(i + k), P3.getY(i + k), P3.getZ(i + k)]), u = a[1].map((v, k) => v - a[0][k]), w = a[2].map((v, k) => v - a[0][k]);
+      const n = [u[1] * w[2] - u[2] * w[1], u[2] * w[0] - u[0] * w[2], u[0] * w[1] - u[1] * w[0]], m = a[0].map((v, k) => (v + a[1][k] + a[2][k]) / 3 - c[k]);
+      if (n[0] * m[0] + n[1] * m[1] + n[2] * m[2] > 0) for (let k = 0; k < 3; k++) { const t = A3[3 * (i + 1) + k]; A3[3 * (i + 1) + k] = A3[3 * (i + 2) + k]; A3[3 * (i + 2) + k] = t; }
+    }
+    g.computeVertexNormals(); return g;
+  };
   // verdiepte kentekenuitsparing (fase 2-foto): plaat met het midden op y 0,46, opening ca. 2 cm rondom de plaat, wanden schuin naar binnen
   // naar een bodem 1 cm diep. De bumperschaal krijgt daar een echte opening: de driehoeken van de staartpunt worden exact op de rand van
-  // de opening geknipt (bodClipOut in een over z gespiegeld frame, alleen achter z -2,28), en een 1,2 mm hoger kraagvlak rondom (zelfde lak)
-  // geeft de rand. Eerder vielen hele driehoeken weg die de opening raakten; dat vroeg fijne driehoeken rond de opening. Na het knippen
+  // de opening geknipt (bodClipOut in een over z gespiegeld frame, alleen achter z -2,28); de wanden beginnen 0,3 mm boven de huid op de
+  // snijrand. Het kraagvlak van 1,2 mm rondom (golf 5b) las als lichte rechthoek los van de bumper en is weg (S7, golf 5f ronde 2). Eerder vielen hele driehoeken weg die de opening raakten; dat vroeg fijne driehoeken rond de opening. Na het knippen
   // weer gelast (weldAll), zodat het stuk gladde normalen houdt zoals voorheen en niet in vlakjes leest.
-  const rPlateY = 0.46, rcX = 0.285, rcY0 = 0.385, rcY1 = 0.527, rcXi = 0.272, rcYi0 = 0.396, rcYi1 = 0.521, rcD = 0.010, rcOut = 0.0012;
+  const rPlateY = 0.46, rcX = 0.285, rcY0 = 0.385, rcY1 = 0.527, rcXi = 0.272, rcYi0 = 0.396, rcYi1 = 0.521, rcD = 0.010, rcOut = 0.0003;
   const bodCut = g => { g.scale(1, 1, -1); const r = bodClipOut(g, rcX, rcY0, rcY1, 2.28); r.scale(1, 1, -1); return weldAll(r); };
   // stations naar doorbuiging (koorde hoogstens 0,3 mm, golf 5b-2; bij 0,6 mm lazen de hoeken naast de uitsparing in vlakjes); de
   // stations van de kentekenuitsparing (tipBr) en van de richel (rbBr) blijven vast. Was 30 x 22 (zijkant), 24 x 26 plus tipBr en
   // 12 x 18 plus rbBr (staartpunt) gelijke stappen.
   const tipBr = rbBr.concat(bodDense(ZR, -2.296, 30));
   const shRs = bodSagSide(-1.778, bodZT, z => [S1 * 0.45, bodSY(z, bodYLEDGE)], 0.0003, { nuF: 120, nvF: 120 });
-  const shRa = bodSagSide(ZR + 1e-4, bodZT, () => [0, S2], 0.0003, { keep: tipBr, nuF: 48, nvF: 160 });
-  const shRb = bodSagSide(ZR + 1e-4, bodZT, () => [S2, 1], 0.0003, { keep: rbBr, nuF: 48, nvF: 160 });
-  const shellR = bodWeld(merge([
+  // de staartpunt eindigt 0,1 mm voor bodZT: op bodZT zelf geeft bodSec de volle doorsnede van het achterscherm (tot het dek), en de laatste
+  // strook van de schaal stond daardoor als verborgen schot van de richel tot het dek achter het staartvlak (de binnenbekleding van de klep
+  // zwaaide er bij het openen doorheen; golf 5f ronde 2)
+  const shRa = bodSagSide(ZR + 1e-4, bodZT - 1e-4, () => [0, S2], 0.0003, { keep: tipBr, nuF: 48, nvF: 160 });
+  const shRb = bodSagSide(ZR + 1e-4, bodZT - 1e-4, () => [S2, 1], 0.0003, { keep: rbBr, nuF: 48, nvF: 160 });
+  const shellR = bodWeld(exCut(merge([
     shRs.geo(L), shRs.geo(R),
     ...[shRa.geo(L), shRb.geo(L), shRa.geo(R), shRb.geo(R)].map(bodCut),
     // sluitvlak op de staartpunt licht bol (hoogstens 4 mm, binnen ZR - 6 mm): een vlak eindvlak las als lichte rechthoek boven de kentekenuitsparing
     (() => { const z = ZR + 1e-4, c = bodSec(z); return patch((y, t) => { const X = ringX(z, y), v = 2 * (y - c.yb) / (c.yd - c.yb) - 1; return [X * t, y, z - 0.004 * (1 - t * t) * (1 - v * v)]; }, c.yb + 1e-4, c.yd - 1e-4, 8, () => [-1, 1], 16); })(),
-    rFace(-0.315, 0.315, 0.372, rcY0, rcOut, 16, 2), rFace(-0.315, 0.315, rcY1, 0.535, rcOut, 16, 2), rFace(-0.315, -rcX, rcY0, rcY1, rcOut, 2, 8), rFace(rcX, 0.315, rcY0, rcY1, rcOut, 2, 8),
-  ]));
+  ])));
   // schuine wanden van de opening (buitenrand op de huid, binnenrand op de bodem) en de bodem
   const rcO = (x, y) => [x, y, bodRearZ(x, y) - rcOut], rcI = (x, y) => [x, y, bodRearZ(x, y) + rcD];
   const rcWall = (a0, a1, b0, b1, n) => patch((u, t) => { const o = rcO(lerp(a0[0], a1[0], u), lerp(a0[1], a1[1], u)), i = rcI(lerp(b0[0], b1[0], u), lerp(b0[1], b1[1], u)); return [lerp(o[0], i[0], t), lerp(o[1], i[1], t), lerp(o[2], i[2], t)]; }, 0, 1, n, () => [0, 1], 2);
@@ -1089,11 +1145,11 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     // de uitlaateindstukken (uitlaatsysteem, y 0,30) liggen aan de onderrand
     // de band stopt waar de onderkant van de staartpunt boven 0,366 komt (z ca. -2,29): daarachter bleef een strook zonder hoogte over die als
     // dunne staande lijn midden door de kentekenplaat te zien was
-    P('Onderschort', merge([L, R].map(sd => lowSide(sd, -2.02, zVal, 40, z => [0, bodSY(z, Math.max(YB(z) + 0.002, Math.min(0.368, YB(z) + 0.09)))], 8, bodDense(-2.3, bodZT, 6).concat(bodDense(zVal, -2.3, 4)), -0.0025))), MAT.bodValance, { d: 'Donkergrijze kunststof onderschort langs de onderrand van de achterbumper (ca. 9 cm hoog), met aan de onderrand de uitsparingen voor de uitlaat.', ex: [0, -0.08, -0.04] }),
+    P('Onderschort', bodWeld(exCut(merge([L, R].map(sd => lowSide(sd, -2.02, zVal, 40, z => [0, bodSY(z, Math.max(YB(z) + 0.002, Math.min(0.368, YB(z) + 0.09)))], 8, bodDense(-2.3, bodZT, 6).concat(bodDense(zVal, -2.3, 4)), -0.0025))))), MAT.bodValance, { d: 'Donkergrijze kunststof onderschort langs de onderrand van de achterbumper (ca. 9 cm hoog), met de uitsparingen voor de uitlaat.', ex: [0, -0.08, -0.04] }),
     P('Mistachterlicht', G.rbox(0.1, 0.03, 0.012, 0.006), MAT.lensRed, { d: 'Mistachterlicht onderin de bumper aan de bestuurderszijde (positie geschat uit fase 2-foto\'s).', p: [0.62, 0.34, bodRearZ(0.62, 0.34) - 0.004], ex: [0.04, 0, -0.08] }),
     P('Reflector rechts', G.rbox(0.1, 0.03, 0.01, 0.006), MAT.lensRed, { d: 'Rode reflector onderin de bumper.', p: [-0.62, 0.34, bodRearZ(0.62, 0.34) - 0.004], ex: [-0.04, 0, -0.08] }),
     A('Parkeersensoren achter', { d: 'Vier ultrasone sensoren van de parkeerhulp achter (standaard op Initiale Paris), onder en naast de kentekenuitsparing.', ex: [0, 0.03, -0.12] }, [[0.5, 0.43], [0.17, 0.345], [-0.17, 0.345], [-0.5, 0.43]].map(([x, y], i) => P(`Parkeersensor achter ${i + 1}`, G.cyl('z', 0.011, 0.011, 0.02, 12), MAT.paint, { d: 'Ultrasone parkeersensor achter (standaard op Initiale Paris).', p: [x, y, bodRearZ(x, y) + 0.006], ex: [0, 0.02, -0.06] }))),
-    ...both(s => P(`Uitlaatuitsparing ${sn(s)}`, lowSide(s, -2.29, -2.13, 6, z => [clamp(bodSAtXLow(z, 0.72), 0, S1), clamp(bodSAtXLow(z, 0.56), 0, S1)], 3, [], -0.0035), MAT.blackGloss, { d: 'Uitsparing in de onderrand voor het verchroomde uitlaateindstuk (het eindstuk zelf hoort bij het uitlaatsysteem).', ex: [0, -0.04, -0.06] })),
+    ...both(s => P(`Uitlaatuitsparing ${sn(s)}`, exWalls(s), MAT.blackGloss, { d: 'Zwarte inham in de onderrand van de bumper (ca. 13 cm breed, 5 tot 7 cm hoog) waarin het verchroomde uitlaateindstuk zit; het eindstuk zelf hoort bij het uitlaatsysteem. Vorm en maat geschat.', ex: [0, -0.04, -0.06] })),
     ...both(s => P(`Bumpersteun achter ${sn(s)}`, G.rbox(0.05, 0.08, 0.14, 0.01), MAT.plastic, { d: 'Geleider die de bumperschaal aan het achterscherm vasthoudt; door de naad bij de bumperrichel net zichtbaar.', p: [s * 0.76, 0.55, -1.95], ex: [s * 0.05, 0, 0] })),
   ]);
 
