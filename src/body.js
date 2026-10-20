@@ -119,10 +119,14 @@ function bodHalf0(z, s, c) {
   const t = (s - S4) / (1 - S4), x = xe * (1 - t); return [x, yt + (cr - bodHoodDrop(z)) * (1 - Math.pow(1 - t, p)) + bodCrease(z, x)];
 }
 // twee vouwlijnen in de motorkap van de binnenspitsen van de koplampen schuin naar de voorruitbasis
+// golf 5k (S7): trede van 9 mm over 1,6 cm (|x| xc - 2,6 tot xc - 1,0 cm, was 5 cm rond xc), leest als scherpe lichtlijn; binnen de oude
+// overgang, dus nergens hoger dan golf 5j. Het buitenpaneel legt daar extra rijen (hoodRow, bodyparts.js)
+const bodCrH = 0.009, bodCrA = 0.026, bodCrW = 0.016;
+const bodCreaseX = z => lerp(0.60, 0.36, (z - 1.13) / (bodHLZ1 - 1.13));
 function bodCrease(z, x) {
   if (z < 1.1 || z > 2.26) return 0;
-  const xc = lerp(0.60, 0.36, (z - 1.13) / (bodHLZ1 - 1.13)), f = sstep((z - 1.1) / 0.08) * (1 - sstep((z - 2.2) / 0.06));
-  return 0.009 * f * (1 - sstep((Math.abs(x) - xc) / 0.05 + 0.5));   // golf 5j: 9 mm (was 7 mm) over 5 cm, zodat de vouw beter leest
+  const xc = bodCreaseX(z), f = sstep((z - 1.1) / 0.08) * (1 - sstep((z - 2.2) / 0.06));
+  return bodCrH * f * (1 - sstep((Math.abs(x) - xc + bodCrA) / bodCrW));
 }
 function halfPt(z, s) { return bodHalf(z, s, bodSec(z)); }
 // parameter s van de doorsnede bij hoogte y (flank, schouder en dek)
