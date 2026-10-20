@@ -48,7 +48,10 @@ const CFG = Object.freeze({
   cockpit: Object.freeze({
     fov: 70, fovMin: 40, fovMax: 90,          // verticaal gezichtsveld: standaard, kleinste en grootste
     yawMax: 150, pitchMin: -60, pitchMax: 60, // hoofd draaien: opzij (beide kanten) en omlaag of omhoog
-    opzij: 0.15, voor: 0.15, omlaag: 0.10, omhoog: 0.08, // vooroverbuigen: het oog blijft binnen deze doos rond de zitplaats
+    // vooroverbuigen: het oog blijft binnen deze doos rond de zitplaats. Achteruit maar 0,05 m: de hoofdsteun zit circa 0,14 m
+    // achter het oog, en met 0,15 m achteruit en 0,08 m omhoog lag hij 1 tot 2 cm achter het oog (ronde 3, advisor golf 5l)
+    opzij: 0.15, voor: 0.15, achter: 0.05, omlaag: 0.10, omhoog: 0.08,
+    vfovMax: 95,                              // staand (telefoon) wordt het gezichtsveld op de korte kant omgerekend; verticaal hoogstens zoveel
     near: 0.02, far: 80,                      // dieptebereik van de camera in de cockpit (terug naar de oude waarden bij verlaten)
     overgangS: 0.6,                           // overgang naar de stoel en terug (bij minder beweging direct)
     verbergYaw: 90,                           // verder omkijken: de delen in verberg van de eigen zitplaats (auto.json) verdwijnen
