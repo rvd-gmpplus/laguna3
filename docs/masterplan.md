@@ -731,3 +731,50 @@ Open voor later:
 - middelste gordelband vult het beeld bij omkijken vanaf achter midden;
 - cockpit naar espace5 met `framework.py export`;
 - open punten uit golf 5k blijven staan.
+
+## Golf 5m: paneel slepen, Openen in de cockpit, onderdeelnummers (versie 19)
+
+Verzoeken van de gebruiker:
+- het streepje boven het paneel op de telefoon zag eruit als een sleepgreep, maar slepen werkte niet;
+- in de cockpit op Openen tikken mag de cockpit niet verlaten, met een knop terug naar het standaardaanzicht;
+- de echte artikelnummers per onderdeel, gezocht met het kenteken in Autodoc en met het werkplaatshandboek.
+
+Gedaan:
+- **app** (`golf-5m-app`):
+  - **Paneel:** het paneel volgt de vinger vanaf de greep en, in peek, vanaf de kop. Er zijn drie standen: peek, open en vol. Een snelle veeg beslist op richting, een tik wisselt zoals voorheen.
+  - **Cockpit:** Openen laat je zitten, en Uitstappen heet dan "Naar buiten" in de accentkleur. De toets O laat je ook zitten. Itest-controles 23 en 24.
+- **nummers** (`golf-5m-pn`):
+  - **Type en bronnen:** het kenteken in Autodoc bevestigt TecDoc-type 23370. Het werkplaatshandboek MR 415 bevat ongeveer 40 nummers, vooral producten.
+  - **Zes plakken, met deze besluiten van de gebruiker:**
+    - alleen los verkrijgbare onderdelen;
+    - het Renault-nummer plus hooguit één merknummer;
+    - bewijs D alleen bij `vin`;
+    - de headless-route van een plak is toegestaan en vastgelegd.
+  - **Bijsturen na Fable:** Fable 5.1 xhigh bracht de bronnen naar Spareto (curl), Exa en de OEM-pagina's.
+  - **Verificatie:** een verifieerder (Opus 5.5 high) controleerde 153 nummers met 18 lokvogels ertussen. Alle lokvogels zijn afgewezen; 20 foute of onzekere nummers zijn geschrapt.
+  - **Advisor:** Opus 5.5 high gaf ronde 1 "bijsturen". De oliezeef was op een aanname aan het ATF-pakket gekoppeld; die koppeling en het pakket zijn eruit. Ronde 2 gaf pass.
+  - **Ophaalwijze:** staat in `docs/onderzoek/databankenrecht.md`, paragraaf 12.
+
+Dekking per pad, van versie 18 naar versie 19:
+
+| Status | Versie 18 | Versie 19 |
+|---|---|---|
+| Past | 381 | 618 |
+| Kies op VIN | 295 | 464 |
+| Niet onderzocht | 1.525 | 886 |
+
+Van de gedaalde "niet onderzocht" zijn er ongeveer 280 nu "onderzocht, niet los gevonden": ze hangen als `deel` aan een samenstel zonder nummer, zoals de complete automaat.
+
+Poort op `6d2810c`:
+- Linux alles groen: itest 319 van 319, visdiff 42 van 42.
+- Mac alles groen behalve visdiff, dat de Mac niet meet tegen de Linux-basislijn.
+- Er is geen geometrie veranderd, dus geen zwaaimeting.
+
+Open voor later:
+- `#openSeg` met twee radio's tegelijk op `aria-checked`;
+- "Naar buiten" is niet te zien als het paneel open staat in de cockpit;
+- slepen met de muis zonder pointer capture;
+- distributiekappen als `set` met een zwakke grond;
+- 21 eenheden met meer Renault-nummers (varianten of opvolgers), toegestaan tenzij de gebruiker anders beslist;
+- de Renault-catalogus op VIN (partsouq) voor de varianten, uitgesteld door de gebruiker;
+- interieur, uitlaat, koeling en elektra blijven dun, omdat ze in de catalogi nauwelijks voor dit type staan.
