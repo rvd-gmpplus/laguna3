@@ -47,22 +47,31 @@ std('bodStrut', 0x62676e, 0.55, 0.35, { envMapIntensity: 0.9 });
 const bodSY = (z, y) => sAtY(z, y);
 const bodRSeam = z => bodYLEDGE - 0.215 * sstep((z + 2.08) / 0.30);   // naad achterscherm/achterbumper op de flank (zie rfLo)
 const sn = s => sideName(s);
-// naden tussen linker- en rechterhelft gladtrekken (gedeelde normalen)
-// ook over naden tussen losse vlakken: weldAll in core.js (zelfde tolerantie 1e-4)
-// driehoeken die na het lassen twee keer hetzelfde punt hebben (oppervlak 0) weghalen, en de punten die dan nergens meer
-// in voorkomen (die hadden een nulnormaal); volgorde en normalen van de overige punten blijven gelijk
-function bodDropDegen(g) {
-  const ix = g.index.array, keep = [], used = new Int32Array(g.attributes.position.count).fill(-1);
-  for (let i = 0; i < ix.length; i += 3) { const a = ix[i], b = ix[i + 1], c = ix[i + 2]; if (a !== b && b !== c && a !== c) keep.push(a, b, c); }
-  keep.forEach(k => { used[k] = 0; });
-  let n = 0; used.forEach((u, k) => { if (u === 0) used[k] = n++; });
-  const r = new THREE.BufferGeometry();
-  for (const [nm, at] of Object.entries(g.attributes)) {
-    const w = at.itemSize, arr = new at.array.constructor(n * w);
-    used.forEach((j, k) => { if (j >= 0) for (let c = 0; c < w; c++) arr[j * w + c] = at.array[k * w + c]; });
-    r.setAttribute(nm, new THREE.BufferAttribute(arr, w));
+// gelaste schaal met knikken (golf 5k ronde 2): punten op positie samenvoegen (1e-4), driehoeken zonder oppervlak weg, en per hoekpunt
+// van een driehoek de normaal uit de buurdriehoeken van dat punt (naar oppervlak gewogen) die minder dan ang van deze driehoek afwijken.
+// Zoals weldAll glad over naden en geknipte randen, maar een echte knik (omgeklapte smalle driehoeken op een station) blijft een knik;
+// toCreasedNormals (core.js creasedWeld) zoekt buren op een rooster van 1 cm, dit gebruikt de echte buren. Geeft een ongeindexeerde geometrie.
+function bodCreaseWeld(g, ang = 0.8) {
+  g.deleteAttribute('normal');
+  const m = THREE.BufferGeometryUtils.mergeVertices(g, 1e-4), P = m.attributes.position.array, I = m.index.array, F = I.length / 3, c = Math.cos(ang);
+  const fn = new Float64Array(F * 3), fu = new Float64Array(F * 3), ok = new Uint8Array(F), adj = Array.from({ length: m.attributes.position.count }, () => []);
+  for (let f = 0; f < F; f++) {
+    const [a, b, d] = [I[3 * f], I[3 * f + 1], I[3 * f + 2]], e = k => [P[3 * b + k] - P[3 * a + k], P[3 * d + k] - P[3 * a + k]];
+    const [u0, v0] = e(0), [u1, v1] = e(1), [u2, v2] = e(2), n = [u1 * v2 - u2 * v1, u2 * v0 - u0 * v2, u0 * v1 - u1 * v0], l = Math.hypot(...n);
+    if (a === b || b === d || a === d || l < 1e-13) continue;
+    ok[f] = 1; for (let k = 0; k < 3; k++) { fn[3 * f + k] = n[k]; fu[3 * f + k] = n[k] / l; }
+    adj[a].push(f); adj[b].push(f); adj[d].push(f);
   }
-  r.setIndex(keep.map(k => used[k])); return r;
+  const pos = [], nor = [];
+  for (let f = 0; f < F; f++) {
+    if (!ok[f]) continue;
+    for (let k = 0; k < 3; k++) {
+      const v = I[3 * f + k], n = [0, 0, 0];
+      for (const q of adj[v]) if (fu[3 * q] * fu[3 * f] + fu[3 * q + 1] * fu[3 * f + 1] + fu[3 * q + 2] * fu[3 * f + 2] >= c) for (let e = 0; e < 3; e++) n[e] += fn[3 * q + e];
+      const l = Math.hypot(...n) || 1; pos.push(P[3 * v], P[3 * v + 1], P[3 * v + 2]); nor.push(n[0] / l, n[1] / l, n[2] / l);
+    }
+  }
+  const r = new THREE.BufferGeometry(); r.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); r.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3)); return r;
 }
 // buitenwaartse normaal (linkerhelft) en pose op de huid; rechts wordt gespiegeld
 function bodNormalAt(z, y) { return bodN(z, sAtY(z, y)); }
@@ -954,7 +963,7 @@ function buildBody() {
     archLip(s, AXR),
   ]);
   const rear = A('Achterbouw', { d: 'Achterschermen, binnenwielkasten, achterpaneel, hoedenplanksteunen en bumperbalk achter.', ex: [0, 0.04, -0.42] }, [
-    ...both(s => P(`Achterscherm ${sn(s)}`, s < 0 ? weldAll(rearFender(s)) : rearFender(s), MAT.paint, { d: 'Gelast achterzijpaneel van achterportier tot achterlicht, met de wielboogflens.', ex: [s * 0.22, 0, -0.04] })),
+    ...both(s => P(`Achterscherm ${sn(s)}`, s < 0 ? bodCreaseWeld(rearFender(s)) : rearFender(s), MAT.paint, { d: 'Gelast achterzijpaneel van achterportier tot achterlicht, met de wielboogflens.', ex: [s * 0.22, 0, -0.04] })),
     ...both(s => P(`Wielkast achter ${sn(s)}`, merge([G.half('x', bodWHR, 0.22, PI, 24), xf(bodRearWHWall(s), [-s * 0.62, -AY, -AXR])]), MAT.underbody, { d: 'Gesloten binnenwielkast achter met donkere steenslagcoating, gelast aan vloer en achterscherm: kuip boven het wiel en binnenwand naar interieur en bagageruimte, met een sleuf voor de torsiebalk en een veerkoker waar de schroefveer tegen drukt.', p: [s * 0.62, AY, AXR], ex: [s * 0.1, 0.04, 0] })),
     ...both(s => P(`Hoedenplanksteun ${sn(s)}`, G.rbox(0.05, 0.16, 0.5, 0.01), MAT.paintIn, { d: 'Steun van de bagageruimteafdekking tegen de binnenzijwand.', p: [s * 0.66, 0.92, -1.85], ex: [s * 0.06, 0.04, 0] })),
     P('Achterpaneel', G.rbox(1.2, 0.26, 0.012, 0.004), MAT.paintIn, { d: 'Dwarspaneel onder de achterklepopening met de slotbeugel.', p: [0, 0.5, bodZT + 0.03], ex: [0, 0, -0.06] }),
@@ -967,13 +976,13 @@ function buildBody() {
   // achter de huid, zodat er geen open ring tussen scherm en boog is waardoor je de holte achter het scherm in kijkt
   // golf 5k (S7): voor, voor en boven het wiel (a 0,55 tot 1,1 rad), loopt de binnenrand door tot |x| 0,535 (was 0,61) met een staande rand
   // tot straal 0,30, niet onder y 0,50 (langsligger, versnellingsbak). Van opzij keek je door de open wielkast de motorruimte in (rode accukabel)
-  const linerX = (az, a) => az === AXF ? 0.61 - 0.075 * sstep((a - 0.40) / 0.15) * (1 - sstep((a - 1.10) / 0.12)) : 0.61;
+  const linerX = (front, a) => front ? 0.61 - 0.075 * sstep((a - 0.40) / 0.15) * (1 - sstep((a - 1.10) / 0.12)) : 0.61;
   const linerRim = (s, az) => patch((a, t) => { const ri = Math.min(ARCH - 0.01, Math.max(0.30, (0.50 - AY) / Math.sin(a))), r = lerp(ARCH - 0.01, ri, t);
-    return [s * linerX(az, a), AY + r * Math.sin(a), az + r * Math.cos(a)]; }, 0.45, 1.22, 16, () => [0, 1], 2);
-  const liner = (s, az, nm) => P(`Wielkuipscherm ${nm}`, merge([patch((a, t) => { const f = Math.max(0, t * 3 - 2), r = ARCH - 0.01 + f * 0.018, z = az + r * Math.cos(a), y = AY + r * Math.sin(a), xs = surfX(z, y);
-    return [s * (f > 0 ? lerp(xs - 0.012, xs - 0.006, f) : lerp(linerX(az, a), xs - 0.012, t * 1.5)), y, z]; }, -0.2, PI + 0.2, az === AXF ? 40 : 28, () => [0, 1], 3)].concat(az === AXF ? [linerRim(s, az)] : [])), MAT.plastic,
-    { d: az === AXF ? 'Kunststof binnenscherm in de wielkast tegen steenslag en vuil, met een binnenrand die de motorruimte voor en boven het wiel afschermt.' : 'Kunststof binnenscherm in de wielkast tegen steenslag en vuil.', ex: [s * 0.1, 0.08, 0] });
-  const liners = A('Wielkuipschermen', { d: 'Kunststof binnenschermen in de vier wielkasten.', ex: [0, -0.12, 0] }, [liner(L, AXF, 'linksvoor'), liner(R, AXF, 'rechtsvoor'), liner(L, AXR, 'linksachter'), liner(R, AXR, 'rechtsachter')]);
+    return [s * linerX(true, a), AY + r * Math.sin(a), az + r * Math.cos(a)]; }, 0.45, 1.22, 16, () => [0, 1], 2);
+  const liner = (s, az, nm, front = false) => P(`Wielkuipscherm ${nm}`, merge([patch((a, t) => { const f = Math.max(0, t * 3 - 2), r = ARCH - 0.01 + f * 0.018, z = az + r * Math.cos(a), y = AY + r * Math.sin(a), xs = surfX(z, y);
+    return [s * (f > 0 ? lerp(xs - 0.012, xs - 0.006, f) : lerp(linerX(front, a), xs - 0.012, t * 1.5)), y, z]; }, -0.2, PI + 0.2, front ? 40 : 28, () => [0, 1], 3)].concat(front ? [linerRim(s, az)] : [])), MAT.plastic,
+    { d: front ? 'Kunststof binnenscherm in de wielkast tegen steenslag en vuil, met een binnenrand die de motorruimte voor en boven het wiel afschermt.' : 'Kunststof binnenscherm in de wielkast tegen steenslag en vuil.', ex: [s * 0.1, 0.08, 0] });
+  const liners = A('Wielkuipschermen', { d: 'Kunststof binnenschermen in de vier wielkasten.', ex: [0, -0.12, 0] }, [liner(L, AXF, 'linksvoor', true), liner(R, AXF, 'rechtsvoor', true), liner(L, AXR, 'linksachter'), liner(R, AXR, 'rechtsachter')]);
   const cage = A('Carrosseriekooi', { d: 'De gelaste ruwbouw (body in white): vloer, voorbouw, stijlen, dak en achterbouw, met de vaste buitenpanelen.', ex: [0, 0, 0] }, [floorGrp, frontGrp, sideRoof, rear, liners]);
 
   /* ================= motorkap ================= */
@@ -1053,9 +1062,9 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   // stations naar doorbuiging (koorde hoogstens 1 mm, golf 5b-2): de stations voor de neus van de kap en de knikken van de bovenrand
   // (koplamp en kapvoorrand) blijven vast, de overige stations uit fbBr zijn kandidaten; was 56 x 30 gelijke stappen plus fbBr
   const shF = bodSagSide(1.752, ZF, z => [fbLo(z), fbHi(z)], 0.001, { keep: bodHoodTip.concat([bodHLZ0, bodHLZ1, bodHoodZ1]), extra: fbBr, nuF: 240, nvF: 128 });
-  // golf 5k: weldAll (normalen eerst weg). Het vroegere bodWeld laste op positie en normaal; na het knippen had elke driehoek een eigen vlakke normaal,
-  // er werd niets gelast en de schaal was vlak gearceerd (vlakjes in de rondingen en de omgevingsreflectie)
-  const shellF = bodDropDegen(weldAll(merge([shF.geo(L), shF.geo(R), bodCap(ZF - 1e-4, 1)].map(g => bodClipOut(g, inX, inY0, inY1, 2.1)))));
+  // golf 5k: gelast met bodCreaseWeld. Het vroegere bodWeld laste op positie en normaal; na het knippen had elke driehoek een eigen vlakke
+  // normaal en was de schaal vlak gearceerd. Met weldAll (ronde 1) gaf de knik onder de binnenhoek van de koplamp (station bodHLZ1) een lichte streep
+  const shellF = bodCreaseWeld(merge([shF.geo(L), shF.geo(R), bodCap(ZF - 1e-4, 1)].map(g => bodClipOut(g, inX, inY0, inY1, 2.1))));
   // voorvlak-onderdelen: rooster over (x, y), z op het voorvlak
   const fNorm = (x, y) => { const z = frontZ(Math.abs(x), y), n = bodN(z, sAtY(z, y)); return [Math.sign(x || 1) * n[0], n[1], n[2]]; };
   const fPt = (x, y, out) => { const z = frontZ(Math.abs(x), y), n = fNorm(x, y); return [x + n[0] * out, y + n[1] * out, z + n[2] * out]; };
@@ -1083,8 +1092,11 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   const intakeHalf = [[0, 0.311], [0.2, 0.311], [0.34, 0.313], [0.42, 0.317], [0.458, 0.326], [0.478, 0.343], [0.486, 0.365], [0.485, 0.395], [0.48, 0.418], [0.476, 0.432]];
   const intakePts = intakeHalf.slice(1).reverse().map(([x, y]) => [-x, y]).concat(intakeHalf);
   const intakeU = (() => { const pts = intakePts; return tube(pts.map(([x, y]) => fPt(x, y, Math.abs(x) < 0.42 ? lerp(-0.0065, -0.0035, clamp((Math.abs(x) - 0.2) / 0.22, 0, 1)) : lerp(-0.0035, 0.003, clamp((Math.abs(x) - 0.42) / 0.05, 0, 1)))), 0.011, 64, 10); })();   // op de neuspunt en de bolle hoek half verzonken (binnen ZF + 6 mm en de planmaat op z 2,30)
-  // verzonken rooster voor een matzwarte achterwand; wanden van de opening tot de achterwand
-  const inWall = (x0, y0, x1, y1, n) => patch((u, t) => { const x = lerp(x0, x1, u), y = lerp(y0, y1, u); return fPt(x, y, lerp(0.0015, -inD, t)); }, 0, 1, n, () => [0, 1], 2);
+  // verzonken rooster voor een matzwarte achterwand; wanden van de opening tot de achterwand. Golf 5k ronde 2: in de inlaat recht naar
+  // achteren (z) in plaats van langs de normaal; die van fNorm springt op de hartlijn (x-deel +/-0,28 bij de neuspunt), waardoor gaas
+  // en achterwand in twee gespiegelde, verschillend belichte helften met een naad op de hartlijn uiteenvielen
+  const fPtI = (x, y, out) => [x, y, frontZ(Math.abs(x), y) + out];
+  const inWall = (x0, y0, x1, y1, n) => patch((u, t) => { const x = lerp(x0, x1, u), y = lerp(y0, y1, u); return fPtI(x, y, lerp(0.0015, -inD, t)); }, 0, 1, n, () => [0, 1], 2);
   // golf 5k (S7 kenmerk 6, 'honingraat/mesh'): ruitgaas in plaats van vijf lamellen. Staven onder +/-28 graden, 4,5 cm uit elkaar; elke staaf
   // een strookje van 6 mm dat schuin omhoog kijkt (0,7 tot 1,5 cm achter het voorvlak) en het licht als lijntje vangt
   const meshBar = (x0, k) => {
@@ -1093,10 +1105,16 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     for (const xl of [-X, X]) { const yl = y0 + (xl - x0) / (k * ct); if (k * ct > 0 ? xl < 0 : xl > 0) ya = Math.max(ya, yl); else yb = Math.min(yb, yl); }
     if (yb - ya < 0.004) return null;
     const n = Math.max(2, Math.ceil(Math.hypot(yb - ya, (yb - ya) * ct) / 0.025));
-    return patch((y, t) => fPt(xAt(y), y + 0.006 * t, lerp(-0.007, -0.015, t)), ya, yb, n, () => [0, 1], 1);
+    // vaste normalen (onderrand schuin naar voren, bovenrand meer omhoog) en de driehoeken naar voren gedraaid: met berekende normalen
+    // kantelde elke staaf naar opzij, per familie en per helft anders (de bolling van de neus), en las het gaas als twee helften
+    const g = patch((y, t) => fPtI(xAt(y), y + 0.006 * t, lerp(-0.007, -0.015, t)), ya, yb, n, () => [0, 1], 1), N = g.attributes.normal, ix = g.index.array, P3 = g.attributes.position;
+    for (let i = 0; i < N.count; i++) { const v = i % 2 ? [0, 0.62, 0.78] : [0, 0.3, 0.95]; N.setXYZ(i, ...v); }
+    const a = [0, 1, 2].map(k => [P3.getX(ix[k]), P3.getY(ix[k]), P3.getZ(ix[k])]), fz = (a[1][0] - a[0][0]) * (a[2][1] - a[0][1]) - (a[1][1] - a[0][1]) * (a[2][0] - a[0][0]);
+    if (fz < 0) for (let i = 0; i < ix.length; i += 3) { const t = ix[i + 1]; ix[i + 1] = ix[i + 2]; ix[i + 2] = t; }
+    return g;
   };
   const meshBars = k => { const out = [], ct = 1 / Math.tan(28 * PI / 180), h = inY1 - inY0; for (let x0 = -inX - (k > 0 ? h * ct : 0); x0 <= inX + (k < 0 ? h * ct : 0); x0 += 0.045) { const g = meshBar(x0, k); if (g) out.push(g); } return out; };
-  const grilleBack = patch((x, y) => fPt(x, y, -inD), -inX, inX, 30, () => [inY0, inY1], 3);
+  const grilleBack = patch((x, y) => fPtI(x, y, -inD), -inX, inX, 30, () => [inY0, inY1], 3);
   const grilleWalls = merge([inWall(-inX, inY1, inX, inY1, 30), inWall(-inX, inY0, inX, inY0, 30), inWall(-inX, inY0, -inX, inY1, 4), inWall(inX, inY0, inX, inY1, 4)]);
   const slats = merge(meshBars(1).concat(meshBars(-1)));
   const plateY = 0.505;
@@ -1206,12 +1224,19 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   const shRa = bodSagSide(ZR + 1e-4, bodZT - 1e-4, () => [0, S2], 0.0003, { keep: tipBr, nuF: 48, nvF: 160 });
   const shRb = bodSagSide(ZR + 1e-4, bodZT - 1e-4, () => [S2, 1], 0.0003, { keep: rbBr, nuF: 48, nvF: 160 });
   // golf 5k (S7: vlekkerige rand onder de klep): weldAll in plaats van bodWeld, zie shellF
-  const shellR = bodDropDegen(weldAll(exCut(merge([
+  // golf 5k (S7): het sluitvlak las als lichte rechthoek met een harde trede boven de kentekenuitsparing: het had eigen, vlakke normalen
+  // naast de schaal, die daar opzij omrolt. Nu gaan de normalen naar de rand toe ((|x| / X)^3) over in die van de schaal op de laatste
+  // doorsnede (2 mm voor ZR: bodN op ZR zelf is eenzijdig en kantelt twee keer te ver), zodat de arcering zonder trede aansluit; de vorm
+  // blijft gelijk en het vlak wordt niet meegelast
+  const rCap = (() => { const z = ZR + 1e-4, c = bodSec(z), g = patch((y, t) => { const X = ringX(z, y), v = 2 * (y - c.yb) / (c.yd - c.yb) - 1; return [X * t, y, z - 0.004 * (1 - t * t) * (1 - v * v)]; }, c.yb + 1e-4, c.yd - 1e-4, 8, () => [-1, 1], 16);
+    const p = g.attributes.position, n = g.attributes.normal;
+    for (let i = 0; i < p.count; i++) { const x = p.getX(i), y = p.getY(i), w = clamp(Math.abs(x) / Math.max(1e-6, ringX(z, y)), 0, 1) ** 3, e = bodN(ZR + 0.002, sAtY(ZR + 0.002, y)), q = [Math.sign(x || 1) * e[0] * w, e[1], lerp(-1, e[2], w)], l = Math.hypot(...q);
+      const o = Math.sign(q[0] * n.getX(i) + q[1] * n.getY(i) + q[2] * n.getZ(i)) || 1; n.setXYZ(i, o * q[0] / l, o * q[1] / l, o * q[2] / l); }   // zelfde kant als de draairichting
+    return g; })();
+  const shellR = merge([bodCreaseWeld(exCut(merge([
     shRs.geo(L), shRs.geo(R),
     ...[shRa.geo(L), shRb.geo(L), shRa.geo(R), shRb.geo(R)].map(bodCut),
-    // sluitvlak op de staartpunt licht bol (hoogstens 4 mm, binnen ZR - 6 mm): een vlak eindvlak las als lichte rechthoek boven de kentekenuitsparing
-    (() => { const z = ZR + 1e-4, c = bodSec(z); return patch((y, t) => { const X = ringX(z, y), v = 2 * (y - c.yb) / (c.yd - c.yb) - 1; return [X * t, y, z - 0.004 * (1 - t * t) * (1 - v * v)]; }, c.yb + 1e-4, c.yd - 1e-4, 8, () => [-1, 1], 16); })(),
-  ]))));
+  ]))), rCap]);
   // trede op z bodZT (golf 5j ronde 3): de staartpunt heeft boven de richel een eigen schouderronding (straal 3 cm) en is daar tot 4 cm
   // smaller dan de flank ervoor; dat stukje naar achteren gekeerde wand sluit de bumperhoek. Zonder dit vlak keek een straal van
   // rechtsonder achter door de spleet tot de klepbuffer (ui_inner.py --open, stand Glaspaneel voor open)
@@ -1240,7 +1265,7 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     // de uitlaateindstukken (uitlaatsysteem, y 0,30) liggen aan de onderrand
     // de band stopt waar de onderkant van de staartpunt boven 0,366 komt (z ca. -2,29): daarachter bleef een strook zonder hoogte over die als
     // dunne staande lijn midden door de kentekenplaat te zien was
-    P('Onderschort', bodDropDegen(weldAll(exCut(merge([L, R].map(sd => lowSide(sd, -2.02, zVal, 40, z => [0, bodSY(z, Math.max(YB(z) + 0.002, Math.min(0.368, YB(z) + 0.09)))], 8, bodDense(-2.3, bodZT, 6).concat(bodDense(zVal, -2.3, 4)), -0.0025)))))), MAT.bodValance, { d: 'Donkergrijze kunststof onderschort langs de onderrand van de achterbumper (ca. 9 cm hoog), met de uitsparingen voor de uitlaat.', ex: [0, -0.08, -0.04] }),
+    P('Onderschort', bodCreaseWeld(exCut(merge([L, R].map(sd => lowSide(sd, -2.02, zVal, 40, z => [0, bodSY(z, Math.max(YB(z) + 0.002, Math.min(0.368, YB(z) + 0.09)))], 8, bodDense(-2.3, bodZT, 6).concat(bodDense(zVal, -2.3, 4)), -0.0025))))), MAT.bodValance, { d: 'Donkergrijze kunststof onderschort langs de onderrand van de achterbumper (ca. 9 cm hoog), met de uitsparingen voor de uitlaat.', ex: [0, -0.08, -0.04] }),
     P('Mistachterlicht', G.rbox(0.1, 0.03, 0.012, 0.006), MAT.lensRed, { d: 'Mistachterlicht onderin de bumper aan de bestuurderszijde (positie geschat uit fase 2-foto\'s).', p: [0.62, 0.34, bodRearZ(0.62, 0.34) - 0.004], ex: [0.04, 0, -0.08] }),
     P('Reflector rechts', G.rbox(0.1, 0.03, 0.01, 0.006), MAT.lensRed, { d: 'Rode reflector onderin de bumper.', p: [-0.62, 0.34, bodRearZ(0.62, 0.34) - 0.004], ex: [-0.04, 0, -0.08] }),
     A('Parkeersensoren achter', { d: 'Vier ultrasone sensoren van de parkeerhulp achter (standaard op Initiale Paris), onder en naast de kentekenuitsparing.', ex: [0, 0.03, -0.12] }, [[0.5, 0.43], [0.17, 0.345], [-0.17, 0.345], [-0.5, 0.43]].map(([x, y], i) => P(`Parkeersensor achter ${i + 1}`, G.cyl('z', 0.011, 0.011, 0.02, 12), MAT.paint, { d: 'Ultrasone parkeersensor achter (standaard op Initiale Paris).', p: [x, y, bodRearZ(x, y) + 0.006], ex: [0, 0.02, -0.06] }))),
