@@ -482,7 +482,7 @@ Elke golf krijgt vooraf een korte premortem (één lens, zeven oorzaken, struike
 | T1 | `tri.py --gate` boven een budget na een samenvoeging | niet publiceren; eigenaar verlaagt segmenten of stations in de eigen golf; budgetten zelf staan in `anchors.json` en wijzigen alleen met een reden in `beslissingen.md` |
 | T2 | Poort K1-K13: een kenmerk zakt twee stappen (ja naar nee), of zakt één stap en een tweede, onafhankelijk panel reproduceert dat | de wijziging die het kenmerk raakt terugdraaien; een daling van één stap zonder reproductie is ruis en geen actie |
 | T3 | CI push-job rood op `main` | niets anders tot groen; een rode nachtrun opent een issue |
-| T4 | `index.html` meer dan 100 kB gegroeid in één golf zonder reden in het commitbericht, of boven 1,6 MB raw / 430 kB gzip (MB = 10^6 bytes, `gzip -6`; grens verhoogd door de gebruiker op 17 oktober 2026, was 1,4 MB / 330 kB, op 19 oktober 2026 voor golf 5i naar 385 kB op 20 oktober 2026 voor golf 5k naar 395 kB gzip en voor golf 5l (cockpit en interieur) naar 1,6 MB raw en 430 kB gzip, binnen de ruimte die de gebruiker gaf) | reden toevoegen of terugdraaien; 5d mag groeien met de nummers die het toevoegt |
+| T4 | `index.html` meer dan 100 kB gegroeid in één golf zonder reden in het commitbericht, of boven 1,7 MB raw / 450 kB gzip (MB = 10^6 bytes, `gzip -6`; grens verhoogd door de gebruiker op 17 oktober 2026, was 1,4 MB / 330 kB, op 19 oktober 2026 voor golf 5i naar 385 kB op 20 oktober 2026 voor golf 5k naar 395 kB gzip en voor golf 5l (cockpit en interieur) naar 1,6 MB raw en 430 kB gzip, binnen de ruimte die de gebruiker gaf, en op 20 oktober 2026 voor golf 5m (onderdeelnummers) naar 1,7 MB raw en 450 kB gzip; de gebruiker: "mag groter indien nodig") | reden toevoegen of terugdraaien; 5d mag groeien met de nummers die het toevoegt |
 | T5 | Golf langer dan anderhalf maal de richting | scope halveren, de rest naar de volgende golf; nooit de poort overslaan |
 | T6 | Een melding van de gebruiker zonder reproductie met `pick.py`, stralen of opname | eerst reproduceren, dan pas wijzigen |
 | T7 | `pncheck` rood, een lokvogel doorgelaten, of bronnen per nummer gedaald | de plak vervalt in zijn geheel |
@@ -762,6 +762,8 @@ Dekking per pad, van versie 18 naar versie 19:
 | Past | 381 | 618 |
 | Kies op VIN | 295 | 464 |
 | Niet onderzocht | 1.525 | 886 |
+
+T4 naar 1,7 MB raw en 450 kB gzip (pagina 1.624.930 bytes raw, 439.698 bytes gzip); besluit van de gebruiker.
 
 Van de gedaalde "niet onderzocht" zijn er ongeveer 280 nu "onderzocht, niet los gevonden": ze hangen als `deel` aan een samenstel zonder nummer, zoals de complete automaat.
 

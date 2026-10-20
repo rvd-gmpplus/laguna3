@@ -177,3 +177,14 @@ De gebruiker besliste op 18 oktober 2026 bij de start en tijdens golf 5c-2 (tak 
 | Snelheidsmeter | Cijfers 10, 30 tot 270, streepje per 10 km/h. | Foto van de gebruiker (eigen auto). | Besloten |
 | Helderheid Dark Carbon | Leder en dashboard donkerder (zijwang zitting circa sRGB 40, dashboard circa 55); het cockpitlicht blijft. | Advisor Fable 5.1 xhigh ronde 3: goed genoeg, niet verder verdonkeren. | Besloten |
 
+
+## Besluiten van 20 oktober 2026 (golf 5m, versie 19)
+
+| Onderwerp | Beslissing | Grond | Status in tekst |
+|---|---|---|---|
+| Onderdeelnummers, omvang | Alleen los verkrijgbare onderdelen; interne delen als `deel` naar het samenstel, mits dat gezocht is. | Keuze van de gebruiker. | Besloten |
+| Onderdeelnummers, merknummers | Het Renault-nummer plus hooguit één merknummer per nieuwe eenheid; bestaande eenheden niet snoeien. Meerdere Renault-nummers per eenheid blijven toegestaan bij varianten en opvolgers. | Keuze van de gebruiker (databankenrecht); advies van de advisor. | Besloten |
+| Bewijs D | Alleen bij `vin`, nooit als gekozen uitvoering, hooguit drie per eenheid, eerst opwaarderen via een OEM-pagina. | Keuze van de gebruiker op advies van Fable 5.1 xhigh. | Besloten |
+| Headless-route | Toegestaan en vastgelegd in `docs/onderzoek/databankenrecht.md` paragraaf 12; na de verificatie staat er geen nummer van die route meer in de gegevens. | Keuze van de gebruiker. | Besloten |
+| Renault-catalogus op VIN | Later. | Keuze van de gebruiker. | Uitgesteld |
+| T4 | 1,7 MB raw en 450 kB gzip (was 1,6 MB en 430 kB): de onderdeelnummers brengen de pagina op 1,62 MB raw en 440 kB gzip. | De gebruiker: "mag groter indien nodig". | Besloten |
