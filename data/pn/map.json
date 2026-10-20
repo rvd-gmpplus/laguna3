@@ -3001,8 +3001,8 @@
  ],
  "Koeling en luchtinlaat/Koelslangen/Ontluchtingsslang/Slang": [
   "G5m-F-systemen:U_DEGAS",
-  "deel",
-  "Slang is de slang zelf"
+  "zelf",
+  ""
  ],
  "Koeling en luchtinlaat/Koelslangen/Ontluchtingsslang/Klem waterstuk": [
   "S2-lucht-uitlaat-brandstof:U_HCLAMP",
@@ -9613,11 +9613,6 @@
   "G5m-B-automaat:U_AJ0",
   "deel",
   ""
- ],
- "Aandrijflijn/Automaatversnellingsbak/ATF-oliepomp/Oliezeef": [
-  "G5m-B-automaat:U_ATFSET",
-  "set",
-  "Onderhoudspakket; of de zeef erin zit, staat niet vast"
  ],
  "Aandrijflijn/Automaatversnellingsbak/ATF-oliepomp/Pompbus": [
   "G5m-B-automaat:U_AJ0",
