@@ -1108,14 +1108,6 @@
    ]
   ]
  },
- "pilot:U_ARMBOLT": {
-  "n": "Draagarmbouten (voor/achter scharnierbout)",
-  "st": "nietgevonden",
-  "oe": [],
-  "am": [],
-  "note": "Niet gevonden.",
-  "src": []
- },
  "pilot:U_LINK": {
   "n": "Koppelstang voor (stabilisatorstang, 298 mm)",
   "st": "past",
@@ -1169,14 +1161,6 @@
     "autodoc.parts"
    ]
   ]
- },
- "pilot:U_STRUT": {
-  "n": "Veerpoot compleet links (demper, veer, topsteun)",
-  "st": "nietgevonden",
-  "oe": [],
-  "am": [],
-  "note": "Geschrapt: GH-353968C02 kon niet opnieuw op de bronpagina worden aangetroffen. Een complete veerpoot is samen te stellen uit schokdemper, veer, topsteun en stofhoes-set.",
-  "src": []
  },
  "pilot:U_DAMPER": {
   "n": "Schokdemper voor (McPherson, Ø51 x 22 mm, 525 mm)",

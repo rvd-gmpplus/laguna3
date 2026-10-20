@@ -1,0 +1,217 @@
+{
+ "G5m-B-automaat:U_AJ0": {
+  "n": "Automaat AJ0 compleet (Jatco JF613E, zestraps)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "1 stuk",
+  "note": "Niet los in de Autodoc-catalogus voor type 23370: geen categorie voor de complete automatische bak. Interne delen (tandwielsets, koppelingen en remmen, differentieel, pomp, huizen): MR 415 (23A) beschrijft geen demontage van de bak zelf, alleen vervangbare delen op of aan de bak; geen los artikel gevonden. Bak is volgens de eigen kennisbasis een Jatco JF613E (Renault AJ0), niet de Aisin TF-80SC. Revisie- of ruilbak: geen Renault-nummer gevonden.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/parts-kit-automatic-transmission-oil-change-13575/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/transmission-oil-pan-11954/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-B-automaat:U_HYDR": {
+  "n": "Hydraulische verdeler (klepblok) met solenoïdes, sensoren en interne kabelboom",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "1 stuk",
+  "note": "MR 415, 23A, Hydraulic distributor: Removal - Refitting: de verdeler wordt als geheel vervangen (O-ringen en huispakking altijd nieuw) en daarna met het diagnoseapparaat ingeleerd. Autodoc heeft voor type 23370 geen solenoïde (niet beschikbaar) en bij de besturingsunit alleen een mechatronic voor een DSG (VAG, niet passend). Renault-nummer niet gevonden.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/shift-valve-automatic-transmission-15185/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/control-unit-automatic-transmission-10876/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-B-automaat:U_HYDRSEAL": {
+  "n": "Huispakking hydraulische verdeler",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "1 stuk",
+  "note": "MR 415, 23A: huispakking van de verdeler is een onderdeel dat altijd vervangen wordt. Autodoc: pakking automatische bak voor type 23370 niet beschikbaar. Renault-nummer niet gevonden.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/seal-automatic-transmission-oil-pan-11955/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-B-automaat:U_COOLER": {
+  "n": "Water-ATF-koeler met afdichting en koelleidingen",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "1 stuk",
+  "note": "MR 415, 23A, Gearbox oil cooler: Removal - Refitting: koeler los te vervangen met een nieuwe koelerafdichting. Autodoc voor type 23370: bij 'koeler automatische bak' alleen vulslangen (gereedschap) en bij 'koelslang automatische bak' niet beschikbaar. Renault-nummer niet gevonden.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/automatic-transmission-oil-cooler-13209/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/hose-transmission-oil-cooler-15101/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-B-automaat:U_CONV": {
+  "n": "Koppelomvormer",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "1 stuk",
+  "note": "MR 415, 23A, Automatic gearbox converter: Removal - Refitting: de omvormer wordt als geheel vervangen. Geen koppelomvormer in de Autodoc-lijsten voor type 23370 (geen categorie). Renault-nummer niet gevonden.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/parts-kit-automatic-transmission-oil-change-13575/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-B-automaat:U_CONVSEAL": {
+  "n": "Keerring omvormer (converter seal)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "1 stuk",
+  "note": "MR 415, 23A, Converter seal: Removal - Refitting: keerring bij elke demontage nieuw. Autodoc 'Gearbox oil seal' voor type 23370 toont alleen een as-keerring en pakkingensets voor de handbak. Renault-nummer niet gevonden.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/shaft-seal-manual-transmission-10870/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-B-automaat:U_DIFFSEAL_L": {
+  "n": "Keerring differentieel links (automaat)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "1 stuk",
+  "note": "Autodoc 'Shaft seal, differential' voor type 23370 toont zeven artikelen, maar de OE-lijsten en eigenschappen wijzen op de handbak (CORTECO 49108480 en BTA G3R001 noemen transmissiecode PK4); op de artikelpagina's staan voor de Laguna III alleen dieselmotoren of staat de 2.0 16V Turbo niet vermeld. Voor de automaat AJ0 niet bevestigd, daarom geen nummer. MR 415 (23A): keerringen altijd nieuw.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/shaft-seal-differential-15174/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-B-automaat:U_DIFFSEAL_R": {
+  "n": "Keerring differentieel rechts (automaat)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "1 stuk",
+  "note": "Autodoc 'Shaft seal, differential' voor type 23370 toont zeven artikelen, maar de OE-lijsten en eigenschappen wijzen op de handbak (CORTECO 49108480 en BTA G3R001 noemen transmissiecode PK4); op de artikelpagina's staan voor de Laguna III alleen dieselmotoren of staat de 2.0 16V Turbo niet vermeld. Voor de automaat AJ0 niet bevestigd, daarom geen nummer. MR 415 (23A): keerringen altijd nieuw.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/shaft-seal-differential-15174/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-B-automaat:U_PNP": {
+  "n": "Standenschakelaar (multifunctieschakelaar) automaat",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "1 stuk",
+  "note": "MR 415, 23A, Multifunction switch: Removal - Refitting en Adjustment: los vervangbaar. Autodoc heeft voor type 23370 geen categorie voor de standenschakelaar van de automaat. Renault-nummer niet gevonden.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/sensor-speed-13031/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-B-automaat:U_SPD_OUT": {
+  "n": "Toerentalsensor automaat (uitgaand)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "1 stuk",
+  "note": "MR 415, 23A, Speed sensor: Removal - Refitting: de bak heeft een ingaande en een uitgaande sensor. De catalogus voor type 23370 kent één soort 'RPM Sensor, automatic transmission' (positie ingaand bij MAXGEAR, FACET, EPS; METZGER 'boven voor') en scheidt de uitgaande niet af; de Renault-nummers 7701067658 en 7701065844 staan bij de ingaande sensor (S3a). Of ze ook de uitgaande dekken, is niet bewezen.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/sensor-speed-13031/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-B-automaat:U_ATFSET": {
+  "n": "ATF-onderhoudspakket automaat (oliewissel met toebehoren)",
+  "st": "vin",
+  "oe": [
+   [
+    "7701067666",
+    "OE-lijst van beide TCMATIC-pakketten",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "TCMATIC",
+    "105.107.0005",
+    "pakket voor bak JF613E / AJ0 / AJ8, standaard wissel (5 liter olie)",
+    "A"
+   ]
+  ],
+  "var": "Twee pakketten in de catalogus voor type 23370, beide voor bak JF613E / AJ0 / AJ8 en met hetzelfde Renault-nummer: standaard wissel (5 liter olie, het genoemde fabrikantnummer) en uitgebreide wissel (7 liter olie). De inhoud noemt de catalogus niet; of er een filter of zeef in zit, is niet vastgesteld.",
+  "per": "set",
+  "note": "Dit is het enige artikel in de categorie 'Automatic transmission filter' en in 'Parts kit, automatic transmission oil change' voor type 23370. MR 415 (23A, Automatic gearbox oil: Draining - Filling) noemt geen filterwissel, wel aftappen via overloopbuis en peilplug (totaal 7,6 l, na aftappen 3,5 l). Koppeling aan de Oliezeef in map.json is een aanname.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/parts-kit-automatic-transmission-oil-change-13575/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/tcmatic/14779778",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/tcmatic/14779780",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-B-automaat:U_SELCABLE": {
+  "n": "Keuzekabel (schakelkabel) automaat",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "var": "De catalogus voor type 23370 heeft vier keuzekabels (categorie 'kabel handgeschakelde bak') en onderscheidt de automaat AJ0 niet van de handbak (PK4). Welk van de twee Renault-nummers bij de automaat hoort, is niet vastgesteld; kabellengte en VIN controleren.",
+  "per": "1 stuk",
+  "note": "Knoop 'Keuzekabel' staat onder Interieur/Middenconsole/Keuzehendelmodule, niet in deze kandidatenlijst; daarom niet gekoppeld (voor de plak interieur). Verificatie golf 5m: 554831 geschrapt (fout: SEIM 554831 staat op de 23370-pagina, maar in de categorie \"Cable, manual transmission\" en als \"Double Cable Pull\" (1345/970 mm): een schake); 8200930211 geschrapt (fout: 8200930211 is volgens de autodoc-categorie voor 23370 een schakelkabel voor de 6-bak handgeschakeld PK4 (dubbele kabel, Transmission Type: 6); 8200743570 geschrapt (fout: 8200743570 staat alleen als tweede OE bij 8200930211 en Maxgear 32-1934 (dubbele schakelkabel PK4 handbak). Hoort bij de handgeschakelde bak)",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/cable-manual-transmission-15187/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/seim/9924996",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/maxgear/20114938",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/renault/27024003",
+    "autodoc.parts"
+   ]
+  ]
+ }
+}

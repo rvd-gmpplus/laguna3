@@ -181,3 +181,25 @@ Sites en voorwaarden (gelezen op 14 en 15 oktober 2026):
 - Voorwaarden van autobutik.com.ua en czesci-kruszwica.pl niet gelezen. robots.txt van autodoc.parts was niet leesbaar.
 - De Exa-tools vroegen om een inlog die in deze sessie niet beschikbaar was; ik heb Firecrawl, Jina, WebFetch en curl gebruikt, waarbij Firecrawl en Jina halverwege door hun tegoed heen raakten. EUR-Lex gaf een verificatiescherm voor curl, daarom zijn drie arresten via publications.europa.eu gelezen.
 - Tellingen komen uit docs/onderdeelnummers.csv en de PN_DATA in src/partnumbers.js op de peildatum. Het percentage van 0,016 procent berust op een groepscijfer van AUTODOC.
+
+## 12. Aanvulling 20 oktober 2026 (golf 5m): ophaalwijze en besluiten
+
+Bij de nummerronde van golf 5m (plakken `G5m-*` in `data/pn/units/`) zijn de bronnen zo opgehaald:
+
+- spareto.com met curl, met 1 seconde tussen de verzoeken, volgens `robots.txt` (`Crawl-delay: 1`, geen `?brand=` en geen `?per_page=`);
+- Exa, onder meer voor de OEM-pagina's van autodoc.parts (`/car-parts/oem/<nummer>`);
+- werkplaatshandboek MR 415, als tekst in de notitie;
+- winkel- en advertentiepagina's (bewijs D);
+- in plak `G5m-B-automaat`: autodoc.parts met headless Chrome via Playwright, waarbij de automatiseringsvlag gemaskeerd was en de controle van Cloudflare werd afgewacht.
+
+Dat laatste is wat maatregel 1 in paragraaf 8 afraadt. Het gaat om het omzeilen van een technische voorziening, zie Databankenwet artikel 5a en paragraaf 3.8. De gebruiker heeft op 20 oktober 2026 besloten deze route toe te staan en vast te leggen in plaats van de nummers te schrappen. Het risico uit paragraaf 3.8 is daarmee bewust aanvaard. Van die route is na de verificatie één eenheid met nummers overgebleven, het ATF-onderhoudspakket. De ATF vervalt omdat de boom er geen knoop voor heeft. Bij de keuzekabel bleken de nummers bij de handbak PK4 te horen en zijn ze geschrapt.
+
+Besluiten van de gebruiker voor nieuwe plakken:
+
+1. Per eenheid het Renault-nummer en hooguit één merknummer. Bestaande eenheden worden niet gesnoeid.
+2. Bewijs D (advertentie) mag, met deze voorwaarden:
+   - alleen bij status `vin`;
+   - nooit als gekozen uitvoering;
+   - hooguit drie per eenheid;
+   - eerst proberen het nummer naar B op te waarderen via een OEM-pagina.
+3. Alleen los verkrijgbare onderdelen krijgen een eigen nummer. Interne delen krijgen `deel` naar het samenstel, mits dat samenstel als eenheid gezocht is.

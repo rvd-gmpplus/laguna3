@@ -1126,15 +1126,6 @@
    ]
   ]
  },
- "S3b-achteras-remmen-wielen:B_BLEED": {
-  "n": "Ontluchtingsnippel remklauw achter",
-  "st": "nietgevonden",
-  "oe": [],
-  "am": [],
-  "per": "per stuk",
-  "note": "Niet gevonden: niet apart in de Autodoc-lijst voor 23370.",
-  "src": []
- },
  "S3b-achteras-remmen-wielen:B_BLEEDCAP": {
   "n": "Stofdop ontluchtingsnippel",
   "st": "nietgevonden",
@@ -1276,15 +1267,6 @@
   "am": [],
   "per": "per stuk",
   "note": "Niet gevonden: niet apart in de Autodoc-lijst voor 23370.",
-  "src": []
- },
- "S3b-achteras-remmen-wielen:B_BOOSTER": {
-  "n": "Rembekrachtiger (vacuum)",
-  "st": "nietgevonden",
-  "oe": [],
-  "am": [],
-  "per": "per auto",
-  "note": "Het enige bekrachtigerartikel in de lijst 23370 (BOSCH) is \"for vehicles without ESP\"; het model heeft ESP. Voor de ESP-uitvoering is geen bekrachtiger gevonden.",
   "src": []
  },
  "S3b-achteras-remmen-wielen:B_BOOSTERMOER": {
@@ -1723,15 +1705,6 @@
   "am": [],
   "per": "per stuk",
   "note": "Niet gevonden: handelsartikel zonder voertuigspecifiek nummer.",
-  "src": []
- },
- "S3b-achteras-remmen-wielen:B_REPAIRKIT_L": {
-  "n": "Reparatieset remklauw achter links Ø38 (zuigerafdichting en stofhoes)",
-  "st": "nietgevonden",
-  "oe": [],
-  "am": [],
-  "per": "per remklauw (links)",
-  "note": "In de lijst 23370 alleen een set met \"Rear Axle, Right\" gevonden (RIDEX 405R0031); voor links niet bevestigd.",
   "src": []
  }
 }

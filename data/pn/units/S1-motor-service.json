@@ -1650,15 +1650,6 @@
    ]
   ]
  },
- "S1-motor-service:U_HOUSING": {
-  "n": "Waterstuk (thermostaathuis) met thermostaat",
-  "st": "nietgevonden",
-  "oe": [],
-  "am": [],
-  "per": "1 stuk",
-  "note": "Niet gevonden. De artikelen die de zoeker hier noemde (DAYCO DT1018V, MEAT & DORIA 92242, CALORSTAT TH5284.86J) zijn volgens Autodoc losse thermostaten zonder huis; hun Renault-nummers staan bij U_THERMO.",
-  "src": []
- },
  "S1-motor-service:U_THERMO": {
   "n": "Thermostaat (wasthermostaat)",
   "st": "past",
@@ -2773,15 +2764,6 @@
   "note": "Niet gevonden: geen Autodoc-artikel voor type 23370 en geen Renault-catalogus bereikbaar.",
   "src": []
  },
- "S1-motor-service:U_CAMPLUG": {
-  "n": "Afdichtdop nokkenas (vliegwielzijde)",
-  "st": "nietgevonden",
-  "oe": [],
-  "am": [],
-  "per": "2 stuks (inlaat en uitlaat)",
-  "note": "Niet gevonden: geen Autodoc-artikel voor type 23370 en geen Renault-catalogus bereikbaar.",
-  "src": []
- },
  "S1-motor-service:U_VCBOLT": {
   "n": "Kleppendekselbout",
   "st": "nietgevonden",
@@ -2807,15 +2789,6 @@
   "am": [],
   "per": "1 stuk",
   "note": "Niet gevonden: geen Autodoc-artikel voor type 23370 en geen Renault-catalogus bereikbaar.",
-  "src": []
- },
- "S1-motor-service:U_CAMGEAR": {
-  "n": "Nokkenaswiel uitlaat (38 tanden)",
-  "st": "nietgevonden",
-  "oe": [],
-  "am": [],
-  "per": "1 stuk",
-  "note": "Niet gevonden als uitlaatwiel: Autodoc toont voor type 23370 alleen nokkenaswielen met positie \"Intake Side\" of zonder positie; een wiel voor de uitlaatzijde is niet aangetoond. Niet bevestigde kandidaten zijn bewust niet genoemd.",
   "src": []
  },
  "S1-motor-service:U_CAMGEARNUT": {

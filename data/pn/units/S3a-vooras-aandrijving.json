@@ -1,36 +1,4 @@
 {
- "S3a-vooras-aandrijving:G_BED": {
-  "n": "Groep Bediening en sensoren automaat",
-  "st": "nietgevonden",
-  "oe": [],
-  "am": [],
-  "note": "Groepering in de modelboom, geen verkoopeenheid (kind niet_gevonden omdat het schema geen niet_los kent).",
-  "src": []
- },
- "S3a-vooras-aandrijving:U_SELSHAFT": {
-  "n": "Keuzeas met hendel (handklepas automaat)",
-  "st": "nietgevonden",
-  "oe": [],
-  "am": [],
-  "note": "Niet onderzocht buiten Autodoc: de Autodoc-transmissiepagina voor type 23370 toont geen keuzeas, keuzehendel of kabelbediening voor deze automaat (alleen filter, olie, steun, carter en sensor). Renault-nummer niet gevonden.",
-  "src": []
- },
- "S3a-vooras-aandrijving:U_CABLEBRKT": {
-  "n": "Kabelbeugel keuzekabel",
-  "st": "nietgevonden",
-  "oe": [],
-  "am": [],
-  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar. Beugel voor de keuzekabel; niet in de Autodoc-lijsten voor type 23370 gevonden.",
-  "src": []
- },
- "S3a-vooras-aandrijving:U_PNP": {
-  "n": "Standenschakelaar (PNP) met detentveer",
-  "st": "nietgevonden",
-  "oe": [],
-  "am": [],
-  "note": "Autodoc heeft voor type 23370 geen categorie voor de standenschakelaar van de automaat (transmissiepagina toont die niet). Renault-nummer niet gevonden.",
-  "src": []
- },
  "S3a-vooras-aandrijving:U_SPD_IN": {
   "n": "Toerentalsensor automaat (RPM sensor, ingaand)",
   "st": "vin",
@@ -89,22 +57,6 @@
     "autodoc.parts"
    ]
   ]
- },
- "S3a-vooras-aandrijving:U_SPD_OUT": {
-  "n": "Toerentalsensor automaat (uitgaand)",
-  "st": "nietgevonden",
-  "oe": [],
-  "am": [],
-  "note": "Autodoc toont voor type 23370 maar een soort \"RPM Sensor, automatic transmission\" (positie Inlet, zie U_SPD_IN); een aparte uitgaande sensor staat niet in de lijst. Als de nummers 7701067658/7701065844 beide sensoren dekken, bevestigt de bron dat niet.",
-  "src": []
- },
- "S3a-vooras-aandrijving:U_TERMINAL": {
-  "n": "Stekker interne kabelboom automaat (terminal assembly)",
-  "st": "nietgevonden",
-  "oe": [],
-  "am": [],
-  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar. Zit in het klepblok/de bak; niet in Autodoc-lijsten voor type 23370.",
-  "src": []
  },
  "S3a-vooras-aandrijving:U_START": {
   "n": "Startmotor 12 V 0,9 kW, rondsel 9 tanden",
@@ -340,14 +292,6 @@
     "autodoc.parts"
    ]
   ]
- },
- "S3a-vooras-aandrijving:U_FORK": {
-  "n": "Schakelvork startmotor",
-  "st": "nietgevonden",
-  "oe": [],
-  "am": [],
-  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar.",
-  "src": []
  },
  "S3a-vooras-aandrijving:G_AS": {
   "n": "Groep Aandrijfassen",
@@ -957,14 +901,6 @@
    ]
   ]
  },
- "S3a-vooras-aandrijving:U_AXLENUT": {
-  "n": "Aandrijfasmoer M24 (flensmoer)",
-  "st": "nietgevonden",
-  "oe": [],
-  "am": [],
-  "note": "De Autodoc-categorie Nut, stub axle voor 23370 toont vier moeren: METZGER en RENAULT 7703034275 met positie Rear Axle, AIC en GH zonder positie met dezelfde OE-lijst. Een moer voor de aandrijfas voor is niet bevestigd.",
-  "src": []
- },
  "S3a-vooras-aandrijving:U_AXLECOLLAR": {
   "n": "Borgkraag aandrijfasmoer",
   "st": "nietgevonden",
@@ -1370,14 +1306,6 @@
     "autodoc.parts"
    ]
   ]
- },
- "S3a-vooras-aandrijving:U_ARMBOLT": {
-  "n": "Draagarmbouten (voor en achter scharnierbout)",
-  "st": "nietgevonden",
-  "oe": [],
-  "am": [],
-  "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar.",
-  "src": []
  },
  "S3a-vooras-aandrijving:U_BJOINT": {
   "n": "Fuseekogel (kogelgewricht onder, met stofhoes)",
@@ -3330,14 +3258,6 @@
   "oe": [],
   "am": [],
   "note": "Niet onderzocht in deze ronde buiten Autodoc (lijsten type 23370: niet aangetroffen); Renault-EPC niet bereikbaar.",
-  "src": []
- },
- "S3a-vooras-aandrijving:U_CLOCKSPRING": {
-  "n": "Wikkelcontact (airbag-contactrol)",
-  "st": "nietgevonden",
-  "oe": [],
-  "am": [],
-  "note": "Autodoc heeft wikkelcontacten voor andere Laguna-generaties, maar in de lijst voor type 23370 staat geen wikkelcontact.",
   "src": []
  }
 }

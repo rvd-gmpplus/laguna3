@@ -1,0 +1,602 @@
+{
+ "G5m-A-motor:HBOLT": {
+  "n": "Cilinderkopboutenset (10 bouten, M12)",
+  "st": "past",
+  "oe": [
+   [
+    "7701471366",
+    "Renault; op de REINZ-pagina; Autodoc-OEM-pagina noemt ook een koppakkingset met boutenset",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "VICTOR REINZ",
+    "14-32154-01",
+    "boutenset voor de kop",
+    "A"
+   ]
+  ],
+  "var": "",
+  "per": "1 set (10 bouten)",
+  "note": "Bouten voor de kop zijn alleen als set verkrijgbaar. Spareto-lijst voor 2.0 16V Turbo: ELRING 258.180, REINZ 14-32154-01, FAI B1018, AJUSA 81025700 (boutenset).",
+  "src": [
+   [
+    "https://spareto.com/t/vehicles/renault/renau-laguna-iii-bt0-slash-1-2-dot-0-16v-turbo/engine/cylinder-head-parts/cylinder-head-bolt",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/reinz-bolt-kit-cylinder-head/14-32154-01",
+    "spareto.com"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/7701471366",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-A-motor:VSEAL": {
+  "n": "Klepsteelafdichting (per klep)",
+  "st": "past",
+  "oe": [
+   [
+    "7700103938",
+    "Renault; op de ELRING-pagina",
+    "B"
+   ],
+   [
+    "7711113634",
+    "Renault; op de ELRING-pagina",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "ELRING",
+    "151.810",
+    "klepsteel 5,5 mm, binnen 11 mm, FPM",
+    "A"
+   ]
+  ],
+  "var": "",
+  "per": "16 stuks (1 per klep, zelfde nummer)",
+  "note": "Aantal 16 volgt uit 4 kleppen per cilinder bij 4 cilinders; de Spareto-pagina noemt geen aantal. Ook als set per motor verkrijgbaar (REINZ 12-34406-01).",
+  "src": [
+   [
+    "https://spareto.com/t/vehicles/renault/renau-laguna-iii-bt0-slash-1-2-dot-0-16v-turbo/engine/gaskets/seal-valve-stem",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/elring-seal-valve-stem/151-810",
+    "spareto.com"
+   ]
+  ]
+ },
+ "G5m-A-motor:IVALVE": {
+  "n": "Inlaatklep",
+  "st": "vin",
+  "oe": [
+   [
+    "7701471279",
+    "Renault; op de MAHLE-pagina",
+    "B"
+   ],
+   [
+    "7701474287",
+    "Renault; op de MAHLE-pagina",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "MAHLE",
+    "021 VE 30930 000",
+    "inlaatklep",
+    "A"
+   ]
+  ],
+  "var": "Twee Renault-nummers op dezelfde artikelpagina (7701471279 en 7701474287); het verschil is niet vastgesteld, controleer op motorcode.",
+  "per": "8 stuks (zelfde nummer)",
+  "note": "Klep staat in de Spareto-lijst voor 2.0 16V Turbo (valve-train).",
+  "src": [
+   [
+    "https://spareto.com/t/vehicles/renault/renau-laguna-iii-bt0-slash-1-2-dot-0-16v-turbo/engine/engine-control/valve-train",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/mahle-original-inlet-valve/021-ve-30930-000",
+    "spareto.com"
+   ]
+  ]
+ },
+ "G5m-A-motor:EVALVE": {
+  "n": "Uitlaatklep",
+  "st": "vin",
+  "oe": [
+   [
+    "7701471280",
+    "Renault; op de MAHLE-pagina",
+    "B"
+   ],
+   [
+    "7701474286",
+    "Renault; op de MAHLE-pagina",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "MAHLE",
+    "021 VA 30931 100",
+    "uitlaatklep",
+    "A"
+   ]
+  ],
+  "var": "Twee Renault-nummers op dezelfde artikelpagina (7701471280 en 7701474286); het verschil is niet vastgesteld, controleer op motorcode.",
+  "per": "8 stuks (zelfde nummer)",
+  "note": "Klep staat in de Spareto-lijst voor 2.0 16V Turbo (valve-train).",
+  "src": [
+   [
+    "https://spareto.com/t/vehicles/renault/renau-laguna-iii-bt0-slash-1-2-dot-0-16v-turbo/engine/engine-control/valve-train",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/mahle-original-outlet-valve/021-va-30931-100",
+    "spareto.com"
+   ]
+  ]
+ },
+ "G5m-A-motor:TAPPET": {
+  "n": "Hydraulische klepstoter (speling-compensator)",
+  "st": "past",
+  "oe": [
+   [
+    "7700107555",
+    "Renault; op de INA-pagina; Autodoc-OEM-pagina: hydraulisch, inlaat en uitlaat",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "INA",
+    "420 0099 10",
+    "hydraulisch",
+    "A"
+   ]
+  ],
+  "var": "",
+  "per": "16 stuks (zelfde nummer)",
+  "note": "Spareto noemt dit \"Rocker/ Tappet\". Behuizing, plunjer en kogel zijn niet los gevonden.",
+  "src": [
+   [
+    "https://spareto.com/t/vehicles/renault/renau-laguna-iii-bt0-slash-1-2-dot-0-16v-turbo/engine/engine-control/push-rod-tube",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/ina-rocker-tappet/420-0099-10",
+    "spareto.com"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/7700107555",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-A-motor:ROCKER": {
+  "n": "Rolzwenkarm (tuimelaar met rol)",
+  "st": "past",
+  "oe": [
+   [
+    "7700107556",
+    "Renault; op de INA-pagina",
+    "B"
+   ],
+   [
+    "8200115605",
+    "Renault; op de INA-pagina",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "INA",
+    "422 0009 10",
+    "Finger Follower, engine timing",
+    "A"
+   ]
+  ],
+  "var": "",
+  "per": "16 stuks (zelfde nummer)",
+  "note": "Arm, rol en as zijn niet los gevonden.",
+  "src": [
+   [
+    "https://spareto.com/t/vehicles/renault/renau-laguna-iii-bt0-slash-1-2-dot-0-16v-turbo/engine/engine-control/centre-pivot-end-pivot-rocker-arm",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/ina-finger-follower-engine-timing/422-0009-10",
+    "spareto.com"
+   ]
+  ]
+ },
+ "G5m-A-motor:KEEPER": {
+  "n": "Klepspie (klepkegel)",
+  "st": "past",
+  "oe": [
+   [
+    "7700873652",
+    "Renault; op de TRW-pagina",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "TRW Engine Component",
+    "LK-5.5H",
+    "steel 5,5 mm",
+    "A"
+   ]
+  ],
+  "var": "",
+  "per": "aantal per klep niet vastgesteld",
+  "note": "Spareto-lijst valve-train. Verpakking (paar of set) staat niet op de pagina.",
+  "src": [
+   [
+    "https://spareto.com/t/vehicles/renault/renau-laguna-iii-bt0-slash-1-2-dot-0-16v-turbo/engine/engine-control/valve-train?page=3",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/trw-engine-component-valve-keeper/lk-5-5h",
+    "spareto.com"
+   ]
+  ]
+ },
+ "G5m-A-motor:CAMPLUG": {
+  "n": "Afdichtdop nokkenas (plug in de kop)",
+  "st": "vin",
+  "oe": [
+   [
+    "8200058022",
+    "Renault; op de FEBI-23204-pagina",
+    "B"
+   ],
+   [
+    "7700106271",
+    "Renault; op de FEBI-23205/23206-pagina",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "FEBI BILSTEIN",
+    "23204",
+    "Plug, rocker arm shaft mounting bore",
+    "A"
+   ]
+  ],
+  "var": "Twee groepen nummers in de catalogus: FEBI 23204 (7700274026, 8200058022, 6001543014) en FEBI 23205/23206 (7700106271, 7700106383); welke dop op de inlaat- of uitlaatzijde hoort, is niet vastgesteld.",
+  "per": "2 stuks (1 per nokkenas)",
+  "note": "Nieuw record voor U_CAMPLUG (eerder niet gevonden). Spareto noemt de dop \"Plug, rocker arm shaft mounting bore\". Verificatie golf 5m: 6001543014 geschrapt (onzeker: Febi 23204 noemt RENAULT 60 01 543 014 en staat in de typecategorie camshaft. Maar voor dezelfde knoop worden ook nummers van de grotere plu); 7700106383 geschrapt (onzeker: Febi 23205 (57 mm) noemt RENAULT 77 00 106 383 en staat in typecategorie camshaft. Voor dezelfde inlaatknoop worden ook nummers van de klein); 7700274026 geschrapt (onzeker: Febi 23204 noemt RENAULT 77 00 274 026 en staat in typecategorie camshaft; zelfde probleem als C029/C062: twee verschillende pluggen voor de)",
+  "src": [
+   [
+    "https://spareto.com/t/vehicles/renault/renau-laguna-iii-bt0-slash-1-2-dot-0-16v-turbo/engine/engine-control/camshaft",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/febi-bilstein-plug-rocker-arm-shaft-mounting-bore/23204",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/febi-bilstein-plug-rocker-arm-shaft-mounting-bore/23205",
+    "spareto.com"
+   ]
+  ]
+ },
+ "G5m-A-motor:CAMGEAR_EX": {
+  "n": "Nokkenaswiel (38 tanden, uitlaat)",
+  "st": "vin",
+  "oe": [
+   [
+    "7701471374",
+    "Renault; op de TOPRAN-pagina",
+    "B"
+   ],
+   [
+    "8200020968",
+    "Renault; op de TOPRAN-pagina",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "TOPRAN",
+    "702 320",
+    "tandwiel 38 tanden, riemaandrijving",
+    "A"
+   ]
+  ],
+  "var": "De catalogus noemt het wiel \"Gear, camshaft\" zonder inlaat- of uitlaatzijde; toewijzing aan de uitlaatnok is een aanname op grond van 38 tanden.",
+  "per": "1 stuk",
+  "note": "Nieuw record voor U_CAMGEAR (eerder niet gevonden). MAXGEAR 54-1327 heeft dezelfde Renault-nummers.",
+  "src": [
+   [
+    "https://spareto.com/t/vehicles/renault/renau-laguna-iii-bt0-slash-1-2-dot-0-16v-turbo/engine/engine-control/timing-gear",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/topran-gear-camshaft/702-320",
+    "spareto.com"
+   ]
+  ]
+ },
+ "G5m-A-motor:CAMGEAR_IN": {
+  "n": "Nokkenasversteller inlaat (38 tanden)",
+  "st": "past",
+  "oe": [
+   [
+    "7701478459",
+    "Renault; op de HEPU-pagina",
+    "B"
+   ],
+   [
+    "7701477313",
+    "Renault; op de HEPU-pagina",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "HEPU",
+    "21-7088",
+    "Camshaft Adjuster",
+    "A"
+   ]
+  ],
+  "var": "",
+  "per": "1 stuk",
+  "note": "Het wiel van de inlaatnok is een versteller (variabele kleptiming); losse wieltjes zonder versteller zijn niet gevonden. MAXGEAR 54-1526 heeft dezelfde nummers.",
+  "src": [
+   [
+    "https://spareto.com/t/vehicles/renault/renau-laguna-iii-bt0-slash-1-2-dot-0-16v-turbo/engine/engine-control/camshaft",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/hepu-camshaft-adjuster/21-7088",
+    "spareto.com"
+   ]
+  ]
+ },
+ "G5m-A-motor:MAINBRG": {
+  "n": "Hoofdlagerschalen (set voor 5 lagers)",
+  "st": "vin",
+  "oe": [
+   [
+    "7701473556",
+    "Renault; op de Kolbenschmidt-pagina",
+    "B"
+   ],
+   [
+    "7711130052",
+    "Renault; op de Kolbenschmidt-pagina",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "KOLBENSCHMIDT",
+    "77753600",
+    "krukaslagerset",
+    "A"
+   ]
+  ],
+  "var": "77753600 is de standaardmaat (STD); ondermaten bestaan in de catalogus (bijvoorbeeld 77753620 voor 0,50 mm). Kies op de krukasmaat.",
+  "per": "1 set",
+  "note": "Spareto-lijst crankshaft: ook GLYCO H098/5 (STD, 0,25, 0,50) en MAHLE 021 HS 20012 025 (0,25).",
+  "src": [
+   [
+    "https://spareto.com/t/vehicles/renault/renau-laguna-iii-bt0-slash-1-2-dot-0-16v-turbo/engine/crankshaft-drive/crankshaft",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/kolbenschmidt-crankshaft-bearing-set/77753600",
+    "spareto.com"
+   ]
+  ]
+ },
+ "G5m-A-motor:BIGEND": {
+  "n": "Drijfstanglagerschalen (set voor 4 drijfstangen)",
+  "st": "vin",
+  "oe": [
+   [
+    "7711130061",
+    "Renault; op de GLYCO-pagina",
+    "B"
+   ],
+   [
+    "7711130062",
+    "Renault; op de GLYCO-pagina",
+    "B"
+   ],
+   [
+    "7711130073",
+    "Renault; op de GLYCO-pagina",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "GLYCO",
+    "71-3988/4 STD",
+    "standaardmaat",
+    "A"
+   ]
+  ],
+  "var": "Standaardmaat of ondermaat (0,25 en 0,50 mm in de catalogus); kies op de afmeting van de krukpen.",
+  "per": "1 set (schalen voor 4 cilinders)",
+  "note": "GLYCO verkoopt de schalen per stuk; het aantal per verpakking staat niet op de pagina. Autodoc-OEM-pagina 7711130061 noemt ook RIDEX 582B0003.",
+  "src": [
+   [
+    "https://spareto.com/t/vehicles/renault/renau-laguna-iii-bt0-slash-1-2-dot-0-16v-turbo/engine/crankshaft-drive/connecting-rod-assembly",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/glyco-big-end-bearings/71-3988-4-std",
+    "spareto.com"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/7711130061",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-A-motor:THRUST": {
+  "n": "Aanloopring krukas",
+  "st": "past",
+  "oe": [
+   [
+    "7701462824",
+    "Renault; op de MAHLE-pagina",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "MAHLE",
+    "021 AS 20009 000",
+    "standaardmaat",
+    "A"
+   ]
+  ],
+  "var": "",
+  "per": "aantal per verpakking niet vastgesteld",
+  "note": "Ondermaten bestaan (GLYCO A215/2 0,10 mm). Auto heeft twee aanloopringen (distributie- en vliegwielzijde).",
+  "src": [
+   [
+    "https://spareto.com/t/vehicles/renault/renau-laguna-iii-bt0-slash-1-2-dot-0-16v-turbo/engine/crankshaft-drive/crankshaft",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/mahle-original-thrust-washer-crankshaft/021-as-20009-000",
+    "spareto.com"
+   ]
+  ]
+ },
+ "G5m-A-motor:RINGS": {
+  "n": "Zuigerveren (set per zuiger, boring 82,7 mm)",
+  "st": "vin",
+  "oe": [
+   [
+    "7701472823",
+    "Renault; Autodoc-OEM-pagina",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "ENGITECH",
+    "ENT041108 STD",
+    "standaardmaat, boring 82,7 mm",
+    "A"
+   ]
+  ],
+  "var": "Standaardmaat 82,7 mm of ondermaat (0,5 mm); kies op de boring van de cilinder.",
+  "per": "4 sets (1 per zuiger)",
+  "note": "Autodoc-lijst voor 23370 toont \"price per 4 items\"; NE 8938520000 noemt F4R 811. Veren, schraaplamellen en spreidveer zitten in de set.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/piston-ring-set-10631/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/7701472823",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-A-motor:COVER": {
+  "n": "Motorafdekkap (bovenkap)",
+  "st": "vin",
+  "oe": [],
+  "am": [
+   [
+    "3RG",
+    "75601",
+    "motorafdekkap",
+    "A"
+   ]
+  ],
+  "var": "Spareto toont drie afdekkappen voor dit type (3RG 75601, 75602, 75603) met verschillende of geen Renault-nummers (75602: 8200252408, 8200365952); kies op uitvoering van de kap.",
+  "per": "1 stuk",
+  "note": "Alleen de kap zelf; schuimlaag, opschrift en rubber nokken zijn niet los gevonden. Verificatie golf 5m: 8200299952 geschrapt (onzeker: 8200299952 staat als RENAULT-OE bij 3RG 75601 en die past volgens fitment op 2.0 16V Turbo, maar hetzelfde artikel past op 255 Renaults (Cap); 8200791916 geschrapt (onzeker: Zelfde bron als C009: 8200791916 is RENAULT-OE van 3RG 75601, dat op 255 Renaults past (alle Laguna III-motoren). Niet aangetoond dat dit de)",
+  "src": [
+   [
+    "https://spareto.com/t/vehicles/renault/renau-laguna-iii-bt0-slash-1-2-dot-0-16v-turbo/engine/engine-cover",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/3rg-engine-cover/75601",
+    "spareto.com"
+   ]
+  ]
+ },
+ "G5m-A-motor:FLANGE": {
+  "n": "Waterstuk (koelvloeistofflens, aluminium)",
+  "st": "past",
+  "oe": [
+   [
+    "8200934203",
+    "Renault; Renault-artikel in de Autodoc-lijst, aluminium, zonder brandstofsensor",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "BOGAP",
+    "R4252101",
+    "koelvloeistofflens",
+    "A"
+   ]
+  ],
+  "var": "",
+  "per": "1 stuk",
+  "note": "Nieuw record voor U_HOUSING (eerder niet gevonden). Thermostaat en pakking zijn eigen eenheden.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/coolant-flange-10940/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-A-motor:TCOVER": {
+  "n": "Distributiekap (kunststof, \"Timing cover\")",
+  "st": "vin",
+  "oe": [
+   [
+    "8200922001",
+    "Renault; Autodoc-OEM-pagina (BGA en andere merken)",
+    "C"
+   ]
+  ],
+  "am": [
+   [
+    "BGA",
+    "FC7300",
+    "timing cover",
+    "A"
+   ]
+  ],
+  "var": "Autodoc noemt alleen \"Timing cover\"; of dit de boven-, midden- of onderkap is, is niet vastgesteld.",
+  "per": "1 stuk",
+  "note": "Nieuw record voor U_TCOVER_*. Autodoc-lijst: ook METZGER 2386005, LCC LCCM01029, TOPRAN 209 316 001.",
+  "src": [
+   [
+    "https://www.autodoc.parts/car-parts/timing-belt-cover-12115/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/8200922001",
+    "autodoc.parts"
+   ]
+  ]
+ }
+}

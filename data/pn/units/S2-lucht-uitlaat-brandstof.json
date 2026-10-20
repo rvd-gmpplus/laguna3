@@ -1602,15 +1602,6 @@
   "note": "Niet gevonden: OE 215150007R en de slangen FARE SA 15672 (Upper Right), SASIC 3404128 (from expansion tank to engine cooler), ORIGINAL IMPERIUM 224507 en GOOM RH-1246 (geen positie) zijn niet aantoonbaar de bovenste radiateurslang. 215150007R is mogelijk de ontluchtingsslang; VIN of Renault-catalogus nodig.",
   "src": []
  },
- "S2-lucht-uitlaat-brandstof:U_DEGAS": {
-  "n": "Ontluchtingsslang (expansievat naar radiateur)",
-  "st": "nietgevonden",
-  "oe": [],
-  "am": [],
-  "per": "stuk",
-  "note": "Niet gevonden: mogelijk is dit OE 215150007R (zie bovenste radiateurslang); de bronnen scheiden de twee slangen niet.",
-  "src": []
- },
  "S2-lucht-uitlaat-brandstof:C_LUCHTINL": {
   "n": "Groep Luchtinlaat",
   "st": "nietgevonden",
