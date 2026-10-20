@@ -44,7 +44,7 @@ for (const [nm, fl] of [['bodGlassSide', false], ['bodGlassSideR', true]]) {
 // C-stijl. Van binnen zag je tussen de bekleding van het interieur en de ruiten de lak van die panelen als witte strook rond de zijruiten; de
 // binnenkant leest nu als zwart (antidreunlaag en afdichting, schematisch). Welke kant je ziet, volgt niet uit de wikkeling (die wisselt per helft
 // en klapt in de stijlvoeten om) maar uit de plaats: de normaal naar de kijker wijst bij de binnenkant naar de lengteas van de auto (x 0, y 0,75).
-// De lichte modus zet de blanke lak van MAT.paint uit, niet die van dit materiaal (open punt).
+// De lichte modus zet de blanke lak van elk materiaal met clearcoat uit, ook van dit materiaal (uiSetLite, golf 5l).
 const bodDarkGlsl = 'if (bodDk) { diffuseColor.rgb = vec3(0.022, 0.023, 0.025); metalnessFactor = 0.0; roughnessFactor = 0.9; }';
 function bodPaintKasIn(m) {
   m.customProgramCacheKey = () => 'bodPaintKas';
