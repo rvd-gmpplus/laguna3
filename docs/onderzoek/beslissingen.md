@@ -161,6 +161,6 @@ De gebruiker besliste op 18 oktober 2026 bij de start en tijdens golf 5c-2 (tak 
 
 | Onderwerp | Beslissing | Grond | Status in tekst |
 |---|---|---|---|
-| T4 | Gzip-grens 395 kB (was 385 kB): golf 5k (gaas in de inlaat, fijner net van de motorkap) brengt de pagina op 384.749 bytes, 251 bytes onder de oude grens. | De gebruiker op 19 oktober 2026: "als je meer nodig hebt dan 385 kB, neem die ruimte, dat is prima". | Besloten |
+| T4 | Gzip-grens 395 kB (was 385 kB): golf 5k (gaas in de inlaat, fijner net van de motorkap) brengt de pagina op 385.770 bytes, net boven de oude grens van 385 kB. | De gebruiker op 19 oktober 2026: "als je meer nodig hebt dan 385 kB, neem die ruimte, dat is prima". | Besloten |
 | Zijlijsten | Blijft een sierlijst per portier; een S7-beoordelaar vroeg om een dubbele strip. | Eerder besluit (Sierlijst per portier, hierboven): de "dubbele strip" was op foto's de lichtrand en schaduw van een lijst. | Besloten |
 

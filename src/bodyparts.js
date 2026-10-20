@@ -41,7 +41,7 @@ std('bodValance', 0x2b2d31, 0, 0.66);                                     // don
 // Dit materiaal geldt ook voor de chroomlijnen van grille en inlaat en de chroomwenkbrauwen voor: die werden mee lichter
 std('bodChrome', 0xd0d6dc, 1, 0.1, { envMapIntensity: 2.0 });
 // golf 5h: donkerder en minder spiegelend (was 0x1d1f23, metaal 0,35, omgeving 1,1): de lamellen lazen als grijs rooster, op de persfoto is de inlaat diep zwart
-std('bodGrille', 0x0f1013, 0.25, 0.3, { envMapIntensity: 0.6 });             // glanzend zwart kunststof van de inlaatlamellen
+std('bodGrille', 0x0f1013, 0.25, 0.3, { envMapIntensity: 0.6 });             // glanzend zwart kunststof van het inlaatgaas
 // middengrijs gelakt staal van de gasveercilinders: lichter dan het zwart van de zijrand en de bekleding, zodat de veer in het achterklepbeeld leest
 std('bodStrut', 0x62676e, 0.55, 0.35, { envMapIntensity: 0.9 });
 const bodSY = (z, y) => sAtY(z, y);
@@ -1223,7 +1223,7 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   // zwaaide er bij het openen doorheen; golf 5f ronde 2)
   const shRa = bodSagSide(ZR + 1e-4, bodZT - 1e-4, () => [0, S2], 0.0003, { keep: tipBr, nuF: 48, nvF: 160 });
   const shRb = bodSagSide(ZR + 1e-4, bodZT - 1e-4, () => [S2, 1], 0.0003, { keep: rbBr, nuF: 48, nvF: 160 });
-  // golf 5k (S7: vlekkerige rand onder de klep): weldAll in plaats van bodWeld, zie shellF
+  // golf 5k (S7: vlekkerige rand onder de klep): bodCreaseWeld (lassen op positie, knikken blijven), zie shellF
   // golf 5k (S7): het sluitvlak las als lichte rechthoek met een harde trede boven de kentekenuitsparing: het had eigen, vlakke normalen
   // naast de schaal, die daar opzij omrolt. Nu gaan de normalen naar de rand toe ((|x| / X)^3) over in die van de schaal op de laatste
   // doorsnede (2 mm voor ZR: bodN op ZR zelf is eenzijdig en kantelt twee keer te ver), zodat de arcering zonder trede aansluit; de vorm
