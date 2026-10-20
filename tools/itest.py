@@ -706,11 +706,18 @@ def run_view(s, tag, w, h, touch):
         for kw in ['ruit', 'spiegel', 'greep', 'paneel']:
             pg.evaluate("__model.openAll(0, true); __model.setOpenMode(true)"); settle(pg)
             pg.evaluate(f"__model.focusNodes([__model.byName({json.dumps(door)})], new THREE.Vector3(1, 0.3, 0.5), 1.4)"); settle(pg, 200); quiet(pg)
-            nm = pg.evaluate(f"""(() => {{ const L = __model, d = L.byName({json.dumps(door)}); const f = []; (function w(n) {{ if (n.norm.includes({json.dumps(kw)}) && n.ev) f.push(n); n.kids.forEach(w); }})(d); return f.length ? f[0].name : null; }})()""")
-            if not nm:
+            # alle kandidaten met het trefwoord, in boomvolgorde; de eerste die in dit aanzicht van buiten aanklikbaar is telt
+            # (golf 5l: binnen in het portier zitten nu ook onderdelen met zo'n naam, zoals de Spiegelverstelling)
+            nms = pg.evaluate(f"""(() => {{ const L = __model, d = L.byName({json.dumps(door)}); const f = []; (function w(n) {{ if (n.norm.includes({json.dumps(kw)}) && n.ev) f.push(n.name); n.kids.forEach(w); }})(d); return f; }})()""")
+            if not nms:
                 check(f'14 [{tag}] {door}: {kw} aanwezig', False, 'geen onderdeel met die naam in het portier')
                 continue
-            pt = pg.evaluate(f"window.__T.pointIn(window.__T.nodeNamed(__model.byName({json.dumps(door)}), {json.dumps(nm)}))")
+            nm, pt = nms[0], None
+            for cand in nms:
+                pt = pg.evaluate(f"window.__T.pointIn(window.__T.nodeNamed(__model.byName({json.dumps(door)}), {json.dumps(cand)}))")
+                if pt:
+                    nm = cand
+                    break
             if not pt:
                 check(f'14 [{tag}] {door}: punt op {nm} ({kw})', False, 'niet aanklikbaar in dit aanzicht')
                 continue
