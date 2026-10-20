@@ -4,7 +4,7 @@
 
 ### Waar alles staat
 - **Gepubliceerd:** versie 19.
-  - `main` op `4709b13`, tag `v19` op `3bd5b51`.
+  - Tag `v19` op `3bd5b51`; daarna alleen docs op `main`.
   - Pages: https://rvd-gmpplus.github.io/laguna3/ (md5 `2c4461ba5340c8a0a324b02df772148a`).
   - Artefact versie 21: https://claude.ai/artifact/4qJq7YUk5nGSFmexY7WkZR.
 - **Werkplek:** de hoofdcheckout `laguna3/` staat op `main` en is schoon.
