@@ -87,6 +87,20 @@ function bodPaintTgIn(m) {
   return m;
 }
 MAT.bodPaintTg = bodPaintTgIn(THREE.MeshPhysicalMaterial.prototype.clone.call(MAT.paint)); MAT.bodPaintTg.name = 'bodPaintTg';
+// derde remlicht (golf 5l ronde 3): van de achterbank zag je de rode lens als balk onder de dakrand. Alleen de kanten die naar buiten kijken
+// (lokaal boven en achter, door de achterruit) zijn rood glas; onder- en voorkant lezen als het zwarte kunststof huis (normaal in het assenstelsel
+// van het blok, zoals bodPaintTg)
+function bodLens3In(m) {
+  m.customProgramCacheKey = () => 'bodLens3';
+  m.onBeforeCompile = sh => {
+    sh.vertexShader = 'varying vec3 vBodON;\n' + sh.vertexShader.replace('#include <beginnormal_vertex>', '#include <beginnormal_vertex>\n\tvBodON = objectNormal;');
+    sh.fragmentShader = 'varying vec3 vBodON;\n' + sh.fragmentShader
+      .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n\tvec3 bodOn = normalize(vBodON) * (gl_FrontFacing ? 1.0 : -1.0);\n\tif (bodOn.y < -0.3 || bodOn.z > 0.3) { diffuseColor = vec4(0.03, 0.032, 0.036, 1.0); metalnessFactor = 0.0; roughnessFactor = 0.75; }');
+  };
+  m.clone = function () { return bodLens3In(THREE.MeshPhysicalMaterial.prototype.clone.call(this)); };
+  return m;
+}
+MAT.bodLens3 = bodLens3In(THREE.MeshPhysicalMaterial.prototype.clone.call(MAT.lensRed)); MAT.bodLens3.name = 'bodLens3';
 // portierkaart (golf 5l): donker kunststof van de drager, Dark Carbon-leder van inzet en armsteun, pianozwarte lijsten, zwart vilt in de raamschacht
 std('bodDoorCard', 0x1c1d20, 0, 0.74);
 std('bodDoorLeather', 0x2b2d30, 0, 0.58);
@@ -1477,7 +1491,7 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     P('Achterruit', scr, MAT.bodGlassSide, { d: 'Verwarmde achterruit van gehard glas, zeer vlak geplaatst (ca. 14 graden).', ex: [0, 0.14, 0.02] }),
     P('Spoilerlip', lip, MAT.paint, { d: 'Kleine spoilerlip (eendenstaartje) aan de onderrand van de achterruit: een dun, licht opkrullend blad van ca. 3,5 cm met een scherpe achterrand, zo breed als de ruit en aan de uiteinden in het plaatwerk weglopend.', ex: [0, 0.1, -0.06] }),
     // achter het glas, net onder de dakrand: steekt in zijaanzicht niet boven de daklijn uit en schemert door de getinte ruit
-    P('Derde remlicht', G.rbox(0.30, 0.008, 0.02, 0.003), MAT.lensRed, { d: 'Derde remlicht achter de bovenrand van de achterruit, direct onder de dakrand (plaats geschat uit fase 2-foto\'s, schematisch).', p: [0, YR(RW0 - 0.045) - 0.011, RW0 - 0.045], r: [-Math.atan2(YR(RW0) - YR(RW0 - 0.09), 0.09), 0, 0], ex: [0, 0.05, -0.08] }),
+    P('Derde remlicht', G.rbox(0.30, 0.008, 0.02, 0.003), MAT.bodLens3, { d: 'Derde remlicht achter de bovenrand van de achterruit, direct onder de dakrand: rode lens naar buiten in een zwart kunststof huis, dat je van binnen ziet (plaats geschat uit fase 2-foto\'s, schematisch).', p: [0, YR(RW0 - 0.045) - 0.011, RW0 - 0.045], r: [-Math.atan2(YR(RW0) - YR(RW0 - 0.09), 0.09), 0, 0], ex: [0, 0.05, -0.08] }),
     A('Achterruitenwisser', { d: 'Achterruitenwisser die langs de zijrand van de ruit parkeert (links op een foto van fase 2, rechts op een tekening van fase 1; aannemelijk).', ex: [0.06, 0.14, 0] }, [
       P('Wisserarm achter', tube([wPiv, panP((wPiv[2] + wTip[2]) / 2, 0.42, 0.016), wTip], 0.006, 16, 6), MAT.blackGloss, { d: 'Wisserarm die het blad met veerdruk tegen de achterruit houdt en het heen en weer zwaait.', ex: [0, 0.03, 0] }),
       P('Wisserblad achter', tube([panP(-1.85, 0.46, 0.010), panP(-1.42, 0.505, 0.010)], 0.006, 8, 5), MAT.rubber, { d: 'Rubber wisserblad dat regen en vuil van de achterruit veegt.', ex: [0, 0.06, 0] }),

@@ -28,7 +28,7 @@ function panGlassIn(m) {
 panGlassIn(phys('bodPanoGlass', { color: 0x030405, metalness: 0.05, roughness: 0.2, specularIntensity: 0.3, transparent: true, opacity: 0.92, depthWrite: false, envMapIntensity: 0.4 }));
 std('bodPanoFrit', 0x040405, 0, 0.35);                  // zwarte keramische rand (frit) op het glas
 std('bodPanoBar', 0x15161a, 0.3, 0.5);                  // dwarsbalk: donkergrijs tot zwart gelakt
-std('bodPanoCass', 0x9a9d9e, 0, 0.9);                   // cassette van het zonnescherm: iets donkerder grijs dan de lichtgrijze hemel (0xb6b8b7), zodat het huis zich aftekent (golf 5l ronde 2; was taupe)
+std('bodPanoCass', 0x929596, 0, 1.0, { envMapIntensity: 0.3 });   // cassette van het zonnescherm: mat grijs, net iets donkerder dan de hemel (0xa3a5a4, mat), zodat het huis zich aftekent (golf 5l ronde 3; was taupe)
 const PAN_X = 0.47, PAN_XO = 0.50, PAN_XR = 0.52;       // glas, opening in de dakplaat, buitenrand van omlijsting en rails
 const PAN_GF = [0.20, -0.50], PAN_GR = [-0.58, -1.11];  // z-bereik van het voorste en achterste glas
 const PAN_OF = [0.22, -0.50], PAN_OR = [-0.58, -1.11];  // z-bereik van de openingen in de dakplaat
@@ -159,7 +159,9 @@ function buildPanorama() {
   /* ---- zonneschermen: lamellen die naar de cassette schuiven ---- */
   const screen = (nm, z0, z1, n, level, cassZ, hold, look) => {
     const lam = panScreen(z0, z1, n, level, hold);
-    const strip = l => panSlab(l.zb, l.za, -0.435, 0.435, l.lev - 0.001, l.lev, 1, 8);
+    // golf 5l ronde 3: elke lamel is een dun doek (een vlak, geen plaatje met randen van 1 mm) en loopt (behalve de eerste) 5 mm over de vorige
+    // door (hij ligt 1,2 mm hoger). De belichte randen en de kiertjes naar het lichte glas lazen van binnen als contrastrijke lichte lijnen
+    const strip = l => panBand(l.zb, l.za + (l.i > 0 ? 0.005 : 0), -0.435, 0.435, l.lev - 0.0005, 1, 8);
         const lead = lam[0];
     const leader = A(`Zonnescherm ${nm}`, { d: `Handbediend rolgordijn onder het ${nm}e glaspaneel, in dit model een stapel lamellen die in de cassette schuift (schematisch). Met de zwarte greep open of dicht; het dak werkt alleen met geopend scherm.`, ex: [0, -0.12, nm === 'voor' ? 0.1 : -0.1],
       open: { ...lead.open, min: 0.82 * panTravel(lead), label: `Zonnescherm ${nm}`, look } }, [
