@@ -40,6 +40,9 @@ Controles (zie de app-brief):
   21 stap terug tot 50 stappen (55 stappen, 50 keer Backspace, de 51e doet niets) en reduced motion via emulate_media:
      REDUCED staat, overgangen uit, uitklap en preset direct in de eindstand (bevindingen I5 en I6; REDUCED zonder controle)
   22 zoeken: KLEPSPIE en klepspie gelijk; klépspie, solenoide en vacuum vinden klepspie, Solenoïde en Vacuüm (audit U17)
+  23 cockpit (golf 5l): in- en uitstappen herstelt camera, doel, gezichtsveld en near/far exact (tolerantie), elk oogpunt binnen
+     de cabine (stralen omhoog en omlaag), grenzen van draaien, schuiven en zoomen, een klik opent het dashboardkastje, Esc, K, O en
+     Uitstappen, de adresbalk, reduced motion, telefoon staand en liggend (passen, slepen, knijpen), geen consolemeldingen
 """
 import sys, os, random, json, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -1248,6 +1251,269 @@ def run_golf5c(s):
     pg.fill('#treeSearch', ''); pg.click('#tabbtn-info')
     pg.close()
 
+JS_CK = r"""
+window.__CK = {
+  L: () => window.__model,
+  cam() { return { p: camera.position.toArray(), t: controls.target.toArray(), q: camera.quaternion.toArray(), fov: camera.fov, near: camera.near, far: camera.far, zoom: camera.zoom, on: controls.enabled }; },
+  // eerste treffer langs een straal vanaf p in richting d: [afstand, pad zonder wortel] (alleen wat getekend wordt)
+  ray(p, d) {
+    const L = this.L(), rc = new THREE.Raycaster(); rc.layers.enableAll(); L.ROOT.obj.updateMatrixWorld(true);
+    rc.set(new THREE.Vector3(...p), new THREE.Vector3(...d).normalize()); rc.far = 3;
+    const h = rc.intersectObjects(L.MESHES.filter(m => m.visible && m.userData.node.ev), false)[0];
+    if (!h) return null;
+    const a = []; for (let n = h.object.userData.node; n; n = n.parent) a.unshift(n.name);
+    return [h.distance, a.slice(1).join('/')];
+  },
+  // schermpunt op een mesh van de knoop dat de klik echt raakt (pick geeft die knoop of een kind ervan)
+  pointOn(name) {
+    const L = this.L(), g = L.byName(name), v = L.freeView(), rc = canvas.getBoundingClientRect();
+    L.ROOT.obj.updateMatrixWorld(true); camera.updateMatrixWorld();
+    for (const m of g.meshes) {
+      const box = new THREE.Box3().setFromObject(m), c = box.getCenter(new THREE.Vector3()), s = box.getSize(new THREE.Vector3());
+      for (const [fx, fy, fz] of [[0, 0, 0], [0.2, 0.2, 0], [-0.2, 0.2, 0], [0.2, -0.2, 0], [-0.2, -0.2, 0], [0, 0, 0.3], [0, 0, -0.3]]) {
+        const p = new THREE.Vector3(c.x + fx * s.x, c.y + fy * s.y, c.z + fz * s.z).project(camera);
+        if (p.z > 1) continue;
+        const x = Math.round(rc.left + (p.x * 0.5 + 0.5) * rc.width), y = Math.round(rc.top + (-p.y * 0.5 + 0.5) * rc.height);
+        if (x < v.x + 6 || x > v.x + v.w - 6 || y < v.y + 6 || y > v.y + v.h - 6 || document.elementFromPoint(x, y) !== canvas) continue;
+        const n = L.pickNodeAt(x, y); let a = n; while (a && a !== g) a = a.parent;
+        if (a) return [x, y, n.name];
+      }
+    }
+    return null;
+  },
+  // een punt in het vrije beeld waar een klik niets opent (voor de dubbelklik)
+  quietPoint() {
+    const L = this.L(), v = L.freeView();
+    for (let i = 1; i < 8; i++) for (let j = 1; j < 8; j++) {
+      const x = Math.round(v.x + v.w * i / 8), y = Math.round(v.y + v.h * j / 8);
+      if (document.elementFromPoint(x, y) !== canvas) continue;
+      const n = L.pickNodeAt(x, y); if (n && !L.openPlan(n)) return [x, y, n.name];
+    }
+    return null;
+  },
+};
+"""
+
+
+def cam_diff(a, b):
+    d = 0.0
+    for k in ('p', 't', 'q'):
+        d = max(d, max(abs(x - y) for x, y in zip(a[k], b[k])))
+    for k in ('fov', 'near', 'far', 'zoom'):
+        d = max(d, abs(a[k] - b[k]) / max(1.0, abs(a[k])))
+    return d
+
+
+def run_cockpit(s):
+    """23 cockpit (golf 5l): in- en uitstappen herstelt de camera, oogpunten binnen de cabine, grenzen van draaien en schuiven,
+    klik opent het dashboardkastje, Esc en Uitstappen, toetsen, URL, reduced motion, telefoon staand en liggend."""
+    EPS = 1e-6
+    pg = s.page(1280, 800)
+    pg.evaluate(JS_CK)
+    ck = lambda: pg.evaluate('__model.cockpit()')
+    cam = lambda: pg.evaluate('__CK.cam()')
+    seats = pg.evaluate('__model.cockpitSeats()')
+    if not check('23 cockpit: zitplaatsen uit auto.json en een knop Cockpit in de segmentknop', len(seats) == 5 and pg.evaluate("!!document.querySelector('#openSeg [data-ckmode=\"cockpit\"]')"), json.dumps([x['id'] for x in seats])):
+        pg.close()
+        return
+    radios = pg.evaluate("[document.getElementById('openSeg').getAttribute('role'), [...document.querySelectorAll('#openSeg [role=radio]')].map(b => b.textContent.trim())]")
+    check('23 cockpit: radiogroep met drie standen (Uitklappen, Openen, Cockpit)', radios[0] == 'radiogroup' and radios[1] == ['Uitklappen', 'Openen', 'Cockpit'], json.dumps(radios))
+    # (1) in en uit herstelt de camera exact: vanuit een preset met uitklap, röntgen en een open portier
+    pg.evaluate("__model.preset('engine'); __model.finishAll(); __model.setOpen('Portier linksvoor', 1, true); __model.finishAll()")
+    pg.evaluate("document.getElementById('tXray').click()"); settle(pg, 250)
+    c0 = cam()
+    pg.click('#openSeg [data-ckmode="cockpit"]'); pg.wait_for_timeout(60)
+    mid = ck()
+    settle(pg, 120)
+    st = pg.evaluate('__model.state()')
+    c1, k1 = cam(), ck()
+    aria = pg.evaluate("[...document.querySelectorAll('#openSeg [role=radio]')].map(b => [b.getAttribute('aria-checked'), b.tabIndex])")
+    check('23 cockpit: instappen met de knop zet het oog op de bestuurdersplaats (overgang, daarna exact), orbit uit, near 0,02',
+          mid and mid['seat'] == 'bestuurder' and max(abs(a - b) for a, b in zip(c1['p'], k1['eye'])) < EPS and not c1['on'] and abs(c1['near'] - 0.02) < EPS and abs(c1['fov'] - 70) < 1e-3,
+          f"tijdens {mid and mid['moving']}, oog {k1 and k1['eye']}, camera {[round(x, 4) for x in c1['p']]}, orbit {c1['on']}, near {c1['near']}, fov {c1['fov']:.2f}")
+    check('23 cockpit: radiogroep volgt (aria-checked en tabindex op Cockpit)', aria == [['false', -1], ['false', -1], ['true', 0]], json.dumps(aria))
+    check('23 cockpit: ingang gemonteerd, geen isolatie, dimmen of röntgen; het open portier blijft open',
+          not st['open'] and not st['iso'] and not st['xray'] and st['dim'] is None and 'Portier linksvoor' in st['openers'] and st['cockpit'] == 'bestuurder',
+          json.dumps({k: st[k] for k in ('open', 'iso', 'xray', 'dim', 'openers', 'cockpit')}))
+    # ingesloten delen: zichtbaar precies onder auto.json cockpit.binnen (leeg in deze auto: de interieuraudit van golf 5l vond geen
+    # ingesloten interieurdeel dat van binnen te zien is), de rest verborgen zoals gemonteerd
+    vis = pg.evaluate("""(() => { const L = __model, binnen = (AUTO.cockpit.binnen || []).map(r => L.byPath(r) || L.byName(r));
+      const want = n => binnen.some(g => { for (let a = n; a; a = a.parent) if (a === g) return true; return false; });
+      const ins = L.ALL.filter(n => n.inner && n.parent && n.parent.target === 0), bad = ins.filter(n => n.obj.visible !== want(n)).map(n => n.name);
+      return [ins.length, bad.slice(0, 4), L.labelRects().length, getComputedStyle(document.getElementById('presets')).display, getComputedStyle(document.getElementById('xctl')).display, document.getElementById('actIsolate').hidden, document.getElementById('actToggle').hidden]; })()""")
+    check('23 cockpit: ingesloten delen volgen auto.json (binnen), geen labels, presets en explosieschuif verborgen, geen isoleren of uitklappen in het paneel',
+          vis[0] > 0 and not vis[1] and vis[2] == 0 and vis[3] == 'none' and vis[4] == 'none' and vis[5] and vis[6], json.dumps(vis))
+    calls = pg.evaluate("(() => { __model.batchFlush(); const a = __model.drawCalls(); const keep = uiCkShow; uiCkShow = null; applyVisibility(); const b = __model.drawCalls(); uiCkShow = keep; applyVisibility(); return [a, b]; })()")
+    print(f'info 23 tekenopdrachten in de cockpit (bestuurder, vooruit): {calls[0]}, zonder de ingesloten interieurdelen {calls[1]}')
+    if os.environ.get('ITEST_GATES'):
+        check('23 cockpit: tekenopdrachten <= 1500', calls[0] <= 1500, str(calls[0]))
+    url = pg.evaluate('location.search')
+    check('23 cockpit: de adresbalk volgt (?cockpit=bestuurder met de open openers)', 'cockpit=bestuurder' in url and 'Portier' in url, url)
+    k0 = pg.evaluate("__model.state().preset")
+    pg.keyboard.press('1'); settle(pg, 80)
+    check('23 cockpit: een cijfertoets kiest geen preset', pg.evaluate('__model.state().cockpit') == 'bestuurder' and pg.evaluate('__model.state().preset') == k0, str(pg.evaluate('__model.state().preset')))
+    pg.click('#btnCkOut'); pg.wait_for_timeout(60)
+    moving = pg.evaluate('!!uiCkAnim')
+    settle(pg, 120)
+    c2 = cam()
+    pg.wait_for_timeout(500); settle(pg, 60)
+    c3 = cam()
+    check('23 cockpit: Uitstappen zet camera, doel, oriëntatie, gezichtsveld en near/far exact terug (tolerantie 1e-6), ook 0,5 s later',
+          moving and cam_diff(c0, c2) < EPS and cam_diff(c0, c3) < EPS and c2['on'] and pg.evaluate('__model.state().cockpit') is None,
+          f'overgang {moving}, verschil {cam_diff(c0, c2):.2e} en {cam_diff(c0, c3):.2e}, orbit {c2["on"]}')
+    check('23 cockpit: na het uitstappen geen cockpit in de adresbalk', 'cockpit=' not in pg.evaluate('location.search'), pg.evaluate('location.search'))
+    pg.evaluate("__model.undo(); __model.finishAll()"); settle(pg, 120)
+    st = pg.evaluate('__model.state()')
+    check('23 cockpit: stap terug na het uitstappen geeft de stand van voor de cockpit (preset Motor, camera buiten de auto)',
+          'Motor F4Rt' in st['open'] and st['cockpit'] is None and cam_diff(c0, cam()) < 0.05, json.dumps(st['open'][:3]))
+    pg.evaluate("__model.preset('assembled'); __model.openAll(0, true); __model.finishAll()"); settle(pg, 120)
+    # (2) elke zitplaats: oog binnen de cabine; een straal omhoog raakt eerst het dak of de hemel, omlaag eerst de eigen stoel
+    bad = []
+    for st_ in seats:
+        pg.evaluate(f"__model.setCockpit({json.dumps(st_['id'])}, true); __model.finishAll()")
+        k = ck()
+        if max(abs(a - b) for a, b in zip(k['eye'], st_['oog'])) > EPS:
+            bad.append(f"{st_['id']}: oog {k['eye']}")
+        r = pg.evaluate(f"[[0,1,0],[0,-1,0],[0,0,1],[0,0,-1],[1,0,0],[-1,0,0]].map(d => __CK.ray({json.dumps(st_['oog'])}, d))")
+        up, down = r[0], r[1]
+        roof = up and any(w in up[1] for w in ('dak', 'Dak', 'Hemel', 'hemel'))
+        seat = down and ('/' + st_['knoop'] + '/') in ('/' + down[1] + '/')
+        near = min((x[0] for x in r if x), default=9)
+        if not (roof and seat and near > 0.08 and up[0] < 0.6 and down[0] < 1.0):
+            bad.append(f"{st_['id']}: omhoog {up}, omlaag {down}, dichtstbij {near:.3f}")
+    check(f'23 cockpit: elk van de {len(seats)} oogpunten binnen de cabine (omhoog dak of hemel, omlaag de eigen stoel, niets binnen 8 cm)', not bad, ' | '.join(bad[:3]))
+    # (3) grenzen: draaien, schuiven en gezichtsveld
+    pg.evaluate("__model.setCockpit('bestuurder', true); __model.finishAll()")
+    a = pg.evaluate('__model.lookAt(500, 200)'); b = pg.evaluate('__model.lookAt(-500, -200)')
+    check('23 cockpit: lookAt begrensd op yaw ±150 en pitch -60 tot +60', abs(a['yaw'] - 150) < EPS and abs(a['pitch'] - 60) < EPS and abs(b['yaw'] + 150) < EPS and abs(b['pitch'] + 60) < EPS, f"{a['yaw']} {a['pitch']} / {b['yaw']} {b['pitch']}")
+    # omkijken: de eigen rugleuning met hoofdsteun (auto.json verberg) verdwijnt voorbij 90 graden en komt terug
+    hv = pg.evaluate("""(() => { const L = __model, n = L.byPath('Interieur/Stoelen/Bestuurdersstoel/Rugleuning'), r = [];
+      for (const y of [0, 89, 120, 150, -150, 0]) { L.lookAt(y, 0); L.drawCalls(); r.push(n.obj.visible && n.ev); } return r; })()""")
+    check('23 cockpit: omkijken verbergt de eigen rugleuning en hoofdsteun (voorbij 90 graden) en toont ze weer', hv == [True, True, False, False, False, True], json.dumps(hv))
+    pg.evaluate('__model.lookAt(0, 0)')
+    pg.mouse.move(500, 400); pg.mouse.down(); pg.mouse.move(520, 410, steps=2)
+    k = ck(); pg.mouse.move(4500, 3000, steps=8); pg.mouse.up(); settle(pg, 60)
+    k2 = ck()
+    check('23 cockpit: slepen draait het hoofd (de scène volgt de muis) en blijft binnen de grenzen', k['yaw'] > 0 and k['pitch'] > 0 and abs(k2['yaw'] - 150) < EPS and abs(k2['pitch'] - 60) < EPS and k2['off'] == [0, 0, 0], f"{k['yaw']:.2f} {k['pitch']:.2f} dan {k2['yaw']} {k2['pitch']}")
+    pg.evaluate("document.activeElement && document.activeElement.blur && document.activeElement.blur(); __model.lookAt(0, 0)")
+    for key, n in (('ArrowUp', 30), ('ArrowLeft', 30), ('w', 20)):
+        for _ in range(n):
+            pg.keyboard.press(key)
+    k = ck()
+    for key, n in (('ArrowDown', 60), ('ArrowRight', 60), ('s', 40)):
+        for _ in range(n):
+            pg.keyboard.press(key)
+    k2 = ck()
+    # +x is links in de auto: pijl links schuift het oog naar +x (met de blik recht vooruit)
+    ok = abs(k['off'][2] - 0.15) < EPS and abs(k['off'][0] - 0.15) < EPS and abs(k['off'][1] - 0.08) < EPS and abs(k2['off'][2] + 0.15) < EPS and abs(k2['off'][0] + 0.15) < EPS and abs(k2['off'][1] + 0.10) < EPS
+    check('23 cockpit: pijltjes en W/S schuiven het oog binnen ±0,15 m opzij en voor/achter en -0,10 tot +0,08 m in hoogte', ok, f"{k['off']} en {k2['off']}")
+    pg.keyboard.press('c'); k = ck()
+    check('23 cockpit: C zet de blik en het hoofd terug', abs(k['yaw'] - seats[0]['kijk'][0]) < EPS and abs(k['pitch'] - seats[0]['kijk'][1]) < EPS and k['off'] == [0, 0, 0], json.dumps(k))
+    pg.mouse.move(500, 400); pg.mouse.down(button='right'); pg.mouse.move(480, 380, steps=3); k = ck(); pg.mouse.move(-3000, -3000, steps=6); pg.mouse.up(button='right'); settle(pg, 60)
+    k2 = ck()
+    check('23 cockpit: rechts slepen buigt voorover en opzij (binnen de doos), de kijkrichting blijft', k['off'][2] > 0 and k['off'][0] > 0 and abs(k2['off'][2] - 0.15) < EPS and abs(k2['off'][0] - 0.15) < EPS and abs(k2['yaw'] - k['yaw']) < EPS, f"{k['off']} dan {k2['off']}")
+    pg.keyboard.press('c')
+    pg.mouse.move(500, 400)
+    for _ in range(25):
+        pg.mouse.wheel(0, -200)
+    pg.wait_for_timeout(100); f1 = ck()['fov']
+    for _ in range(25):
+        pg.mouse.wheel(0, 200)
+    pg.wait_for_timeout(100); f2 = ck()['fov']
+    check('23 cockpit: scrollen zoomt binnen 40 tot 90 graden', abs(f1 - 40) < EPS and abs(f2 - 90) < EPS, f'{f1} en {f2}')
+    # (4) klik opent het dashboardkastje (passagiersplaats), toont de kaart en klapt niets uit; hover geeft de tip
+    pg.evaluate("__model.setCockpit('passagier', true); __model.finishAll()")
+    pt = pg.evaluate("__CK.pointOn('Handschoenenkastklep')")
+    if check('23 cockpit: punt op het dashboardkastje vanaf de passagiersplaats', pt, str(pt)):
+        pg.mouse.move(pt[0] + 3, pt[1] + 2); pg.mouse.move(pt[0], pt[1]); pg.wait_for_timeout(250)
+        tip = pg.evaluate("document.getElementById('tip').hidden ? '' : document.getElementById('tip').textContent")
+        pg.mouse.click(pt[0], pt[1]); settle(pg, 120)
+        o = pg.evaluate("__model.openers().find(q => q.name === 'Handschoenenkastklep')")
+        st = pg.evaluate('__model.state()')
+        name = pg.evaluate("document.getElementById('selName').textContent")
+        check('23 cockpit: klik opent het dashboardkastje (zonder eerst een portier: needs geldt niet van binnen) en toont de kaart, er klapt niets uit, de camera blijft op de stoel',
+              o['target'] == 1 and o['open'] > 0.99 and not st['open'] and st['openers'] == ['Handschoenenkastklep'] and name == 'Handschoenenkastklep' and st['cockpit'] == 'passagier' and max(abs(a - b) for a, b in zip(cam()['p'], seats[1]['oog'])) < EPS,
+              f"kastje {o['open']}, open {st['openers']}, uitgeklapt {st['open'][:3]}, kaart {name}")
+        check('23 cockpit: aanwijzen geeft de tip (klik om te openen)', 'Handschoenenkast' in tip and 'klik om te openen' in tip, tip)
+        pt2 = pg.evaluate("__CK.pointOn('Handschoenenkastklep')")
+        if pt2:
+            pg.mouse.click(pt2[0], pt2[1]); settle(pg, 120)
+        o = pg.evaluate("__model.openers().find(q => q.name === 'Handschoenenkastklep')")
+        check('23 cockpit: tweede klik sluit het kastje weer', pt2 and o['target'] == 0, json.dumps(o))
+    # dubbelklik zet de blik terug (op een plek waar een klik niets opent)
+    pg.evaluate('__model.lookAt(35, 12)')
+    qp = pg.evaluate('__CK.quietPoint()')
+    if check('23 cockpit: punt zonder opener voor de dubbelklik', qp, str(qp)):
+        pg.mouse.dblclick(qp[0], qp[1]); settle(pg, 80)
+        k = ck()
+        check('23 cockpit: dubbelklik zet de blik terug', abs(k['yaw'] - seats[1]['kijk'][0]) < EPS and abs(k['pitch'] - seats[1]['kijk'][1]) < EPS and not pg.evaluate('__model.state().open'), json.dumps(k))
+    # (5) Esc, K en O
+    pg.evaluate("document.activeElement && document.activeElement.blur && document.activeElement.blur()")
+    pg.keyboard.press('Escape'); settle(pg, 120)
+    e1 = [pg.evaluate('__model.state().cockpit'), cam()['on']]
+    pg.keyboard.press('k'); settle(pg, 120)
+    e2 = pg.evaluate('__model.state().cockpit')
+    pg.keyboard.press('o'); settle(pg, 120)
+    e3 = [pg.evaluate('__model.state().cockpit'), pg.evaluate('__model.state().openMode')]
+    check('23 cockpit: Esc stapt uit, K stapt in (laatste zitplaats), O stapt uit en wisselt naar Openen', e1 == [None, True] and e2 == 'passagier' and e3 == [None, True], f'{e1} {e2} {e3}')
+    pg.evaluate("__model.setOpenMode(false)")
+    # zitplaats kiezen in de keuzelijst
+    pg.evaluate("__model.setCockpit('bestuurder', true); __model.finishAll()")
+    pg.select_option('#ckSeat', 'achter-midden'); settle(pg, 120)
+    check('23 cockpit: de keuzelijst wisselt van zitplaats', ck()['seat'] == 'achter-midden' and max(abs(a - b) for a, b in zip(cam()['p'], seats[3]['oog'])) < EPS, json.dumps(ck()))
+    hlp = pg.evaluate("(() => { __model.setCockpit(null, true); document.getElementById('help').click(); const d = document.getElementById('helpDlg'); const t = d.textContent; const vis = [...d.querySelectorAll('.ckhelp')].every(e => !e.hidden); document.getElementById('helpClose').click(); return [t.includes('Cockpit'), /K\\s*·\\s*C/.test(t), vis]; })()")
+    check('23 cockpit: de hulp (?) noemt de cockpit en de toetsen K en C', all(hlp), json.dumps(hlp))
+    pg.close()
+    # (6) URL bij het laden
+    pq = s.page(1280, 800, query='?cockpit=achter-links&open=Handschoenenkastklep')
+    r = pq.evaluate("[__model.state().cockpit, __model.state().openers, camera.position.toArray(), __model.cockpitSeats().find(x => x.id === 'achter-links').oog]")
+    check('23 cockpit: ?cockpit=achter-links&open=... laadt die zitplaats met het kastje open', r[0] == 'achter-links' and 'Handschoenenkastklep' in r[1] and max(abs(a - b) for a, b in zip(r[2], r[3])) < EPS, json.dumps(r[:2]))
+    pq.close()
+    # (7) reduced motion: geen overgang
+    tmo = int(os.environ.get('MODEL_TIMEOUT_MS', 120000))
+    pr = s.page(1280, 800, wait=False)
+    pr.emulate_media(reduced_motion='reduce')
+    pr.reload(wait_until='load', timeout=tmo)
+    pr.wait_for_function('window.__model && window.__model.ready !== false', timeout=tmo)
+    r = pr.evaluate("(() => { const L = __model; L.setCockpit('passagier'); const a = [!!uiCkAnim, camera.position.toArray()]; L.setCockpit(null); return [REDUCED, a, !!uiCkAnim, controls.enabled]; })()")
+    check('23 cockpit: reduced motion: in- en uitstappen zonder overgang', r[0] and not r[1][0] and max(abs(a - b) for a, b in zip(r[1][1], seats[1]['oog'])) < EPS and not r[2] and r[3], json.dumps(r))
+    pr.close()
+    # (8) telefoon staand en liggend: zitplaats en Uitstappen zichtbaar, passen, geen horizontale scroll; slepen met een vinger en knijpen
+    for w, h in ((390, 844), (360, 780), (844, 390), (568, 320)):
+        pp = s.page(w, h, scale=2, touch=True)
+        pp.evaluate(JS_CK)
+        pp.tap('#openSeg [data-ckmode="cockpit"]'); settle(pp, 300)
+        r = pp.evaluate("""(() => { const vw = innerWidth, vh = innerHeight, rc = e => e.getBoundingClientRect();
+          const els = ['ckSeat', 'btnCkOut', 'openSeg'].map(id => document.getElementById(id));
+          const vis = els.every(e => { const b = rc(e); return b.width > 0 && b.left >= 0 && b.right <= vw && b.top >= 0 && b.bottom <= vh; });
+          const over = [...document.querySelectorAll('#ckCtl, #ckCtl *, #openSeg, #openSeg *')].filter(e => rc(e).width > 0 && e.scrollWidth > e.clientWidth + 1).map(e => e.id || e.tagName);
+          const a = rc(els[0]), b = rc(els[1]), s = rc(els[2]), t = document.querySelector('.title').getBoundingClientRect();
+          const hit = (p, q) => p.left < q.right && q.left < p.right && p.top < q.bottom && q.top < p.bottom;
+          return { vis, over, hs: document.documentElement.scrollWidth > vw, overlap: hit(a, b) || hit(a, s) || hit(b, s), titleSeg: hit(s, t) && innerHeight > 520, free: __model.freeView().h, seat: __model.cockpit() && __model.cockpit().seat }; })()""")
+        check(f'23 cockpit: telefoon {w} x {h}: zitplaats en Uitstappen zichtbaar en passend, geen overloop of horizontale scroll',
+              r['vis'] and not r['over'] and not r['hs'] and not r['overlap'] and r['seat'] == 'bestuurder' and r['free'] >= 0.35 * h, json.dumps(r))
+        if (w, h) == (390, 844):
+            cdp = pp.context.new_cdp_session(pp)
+            y0 = pp.evaluate('__model.cockpit().yaw')
+            cdp.send('Input.dispatchTouchEvent', {'type': 'touchStart', 'touchPoints': [{'x': 150, 'y': 400, 'id': 1}]})
+            for i in range(1, 6):
+                cdp.send('Input.dispatchTouchEvent', {'type': 'touchMove', 'touchPoints': [{'x': 150 + 20 * i, 'y': 400, 'id': 1}]})
+            cdp.send('Input.dispatchTouchEvent', {'type': 'touchEnd', 'touchPoints': []})
+            y1 = pp.evaluate('__model.cockpit().yaw')
+            f0 = pp.evaluate('__model.cockpit().fov')
+            cdp.send('Input.dispatchTouchEvent', {'type': 'touchStart', 'touchPoints': [{'x': 170, 'y': 400, 'id': 1}, {'x': 220, 'y': 400, 'id': 2}]})
+            for i in range(1, 6):
+                cdp.send('Input.dispatchTouchEvent', {'type': 'touchMove', 'touchPoints': [{'x': 170 - 12 * i, 'y': 400, 'id': 1}, {'x': 220 + 12 * i, 'y': 400, 'id': 2}]})
+            cdp.send('Input.dispatchTouchEvent', {'type': 'touchEnd', 'touchPoints': []})
+            f1 = pp.evaluate('__model.cockpit().fov')
+            check('23 cockpit: telefoon: een vinger slepen draait het hoofd, knijpen (uit elkaar) verkleint het gezichtsveld', y1 > y0 + 1 and f1 < f0 - 1 and pp.evaluate('__model.state().cockpit') == 'bestuurder', f'yaw {y0} dan {y1}, fov {f0} dan {f1}')
+        shot(pp, f'itest_cockpit_{w}x{h}')
+        pp.tap('#btnCkOut'); settle(pp, 200)
+        check(f'23 cockpit: telefoon {w} x {h}: Uitstappen', pp.evaluate('__model.state().cockpit') is None and pp.evaluate('controls.enabled'), '')
+        pp.close()
+    check('23 cockpit: geen console-fouten of -waarschuwingen', not s.logs, '; '.join(l[:200] for l in s.logs[:5]))
+
+
 with session() as s:
     run_view(s, 'desktop', 1280, 800, False)
     run_view(s, 'telefoon', 390, 844, True)
@@ -1345,6 +1611,7 @@ with session() as s:
     pq.close()
     check18(s)
     run_golf5c(s)
+    run_cockpit(s)
     errs = s.errors()  # fouten en waarschuwingen (harness.errors telt beide)
     check('10 geen console-fouten of -waarschuwingen', not s.logs, '; '.join(l[:200] for l in s.logs[:5]))
     s.report()

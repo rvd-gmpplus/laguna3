@@ -38,5 +38,16 @@
   "hintVersie": "v2",
   "pnToelichting": false,
   "docshots": [["gemonteerd", "assembled"], ["hoofdgroepen", "main"], ["alles-uit-elkaar", "everything"], ["motor-f4rt", "engine"], ["automaat", "gearbox"], ["rontgen", "xray"], ["openen-motorruimte", "openHood"], ["openen-instappen", "openDoors"], ["openen-bagageruimte", "openTrunk"], ["openen-panoramadak", "openRoof"], ["openen-alles", "openAll"]],
+  "cockpit": {
+    "_uitleg": "Cockpit (optioneel; zonder dit veld geen knop Cockpit): zitplaatsen met de oogpositie in het autoframe (meter: x naar links, y omhoog, z naar voren) en de standaard kijkrichting [yaw, pitch] in graden (yaw 0 is recht vooruit, positief naar links; pitch positief omhoog). knoop: de groep van de stoel (tests). verberg: delen van de eigen stoel die verdwijnen zodra je verder dan 90 graden omkijkt (anders vult de eigen hoofdsteun het beeld). binnen: groepen waarvan de ingesloten onderdelen in de cockpit getekend worden; leeg, want volgens de interieuraudit van golf 5l is geen van de 32 ingesloten interieurdelen van binnen te zien. Oogpunten voor uit de interieuraudit (0,14 m voor de hoofdsteun, hemel op 1,397); achter 3 cm verder naar voren dan de audit (z -1,16 in plaats van -1,19): op -1,19 raakt een straal omhoog op de buitenplaatsen eerst het klepscharnier en omlaag de gordelband, op -1,16 de hemelrand en de rugleuning.",
+    "stoelen": [
+      {"id": "bestuurder", "label": "Bestuurder", "knoop": "Bestuurdersstoel", "oog": [0.37, 1.12, -0.30], "kijk": [0, -8], "verberg": ["Interieur/Stoelen/Bestuurdersstoel/Rugleuning"]},
+      {"id": "passagier", "label": "Passagier", "knoop": "Passagiersstoel", "oog": [-0.37, 1.12, -0.30], "kijk": [0, -8], "verberg": ["Interieur/Stoelen/Passagiersstoel/Rugleuning"]},
+      {"id": "achter-links", "label": "Achterbank links", "knoop": "Achterbank", "oog": [0.42, 1.13, -1.16], "kijk": [0, -6], "verberg": ["Hoofdsteun achter links", "Rugleuning klein deel"]},
+      {"id": "achter-midden", "label": "Achterbank midden", "knoop": "Achterbank", "oog": [0, 1.13, -1.16], "kijk": [0, -6], "verberg": ["Hoofdsteun achter midden", "Rugleuning groot deel"]},
+      {"id": "achter-rechts", "label": "Achterbank rechts", "knoop": "Achterbank", "oog": [-0.42, 1.13, -1.16], "kijk": [0, -6], "verberg": ["Hoofdsteun achter rechts", "Rugleuning groot deel"]}
+    ],
+    "binnen": []
+  },
   "verboden": ["Laguna", "laguna", "LAGUNA", "F4R", "AJ0", "Initiale", "zilvergrijs"]
 }

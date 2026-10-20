@@ -44,6 +44,18 @@ const CFG = Object.freeze({
     treffers: 80,        // zoektreffers in de onderdelenlijst
     herkaderPx: 24,      // het vrije beeld verandert meer dan dit in hoogte: opnieuw inpassen
   }),
+  // cockpit (golf 5l): rondkijken vanaf een zitplaats; hoeken in graden, afstanden in meter (de zitplaatsen staan in auto.json)
+  cockpit: Object.freeze({
+    fov: 70, fovMin: 40, fovMax: 90,          // verticaal gezichtsveld: standaard, kleinste en grootste
+    yawMax: 150, pitchMin: -60, pitchMax: 60, // hoofd draaien: opzij (beide kanten) en omlaag of omhoog
+    opzij: 0.15, voor: 0.15, omlaag: 0.10, omhoog: 0.08, // vooroverbuigen: het oog blijft binnen deze doos rond de zitplaats
+    near: 0.02, far: 80,                      // dieptebereik van de camera in de cockpit (terug naar de oude waarden bij verlaten)
+    overgangS: 0.6,                           // overgang naar de stoel en terug (bij minder beweging direct)
+    verbergYaw: 90,                           // verder omkijken: de delen in verberg van de eigen zitplaats (auto.json) verdwijnen
+    stapM: 0.02,                              // pijltjes en W/S: zoveel meter per toetsaanslag
+    schuifMPx: 0.0006,                        // rechts slepen, Shift+slepen of twee vingers: meter per pixel
+    zoomWiel: 0.0012,                         // scrollen: gezichtsveld maal exp(deltaY x dit)
+  }),
 });
 /* ---------- teksten van de app (golf 5c-2, K6) ---------- */
 // Elke tekst die de code zelf op de pagina zet, staat in deze tabel; een vertaling vervangt alleen de tabel. Een functie is
@@ -137,6 +149,9 @@ const TXT = Object.freeze({
   probeerTik: 'Probeer: tik op de motorkap', probeerKlik: 'Probeer: klik op de motorkap',
   hulpCats: cats => `${cats.length} categorieën (${cats.join(', ')}) met kant-en-klare standen, ook de rondleiding.`,
   hulpToetsen: (van, tot) => `<kbd>${van}</kbd> tot <kbd>${tot}</kbd>`,
+  // cockpit (golf 5l)
+  ckUitleg: stoel => 'Cockpit: je zit op de plaats ' + stoel.toLowerCase() + ' en kijkt rond. Slepen draait het hoofd, scrollen of knijpen zoomt, rechts slepen, Shift+slepen, twee vingers of de pijltjes en W/S buigen voorover of opzij; dubbelklik of C zet de blik terug. Een klik opent of sluit een opener (dashboardkastje, portier, zonnescherm). Uitstappen of Esc brengt de camera terug.',
+  segZonderCockpit: 'Wat doet een klik: uitklappen of openen', // de segmentknop bovenin bij een auto zonder cockpit
   // labels
   labelAria: (nr, naam) => `${nr}. ${naam}`,
   meer: n => `+${n} meer`,
