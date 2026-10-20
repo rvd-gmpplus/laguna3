@@ -1,5 +1,74 @@
 # Handomdraai laguna3
 
+## Overdracht voor de volgende sessie (20 oktober 2026, na versie 19)
+
+### Waar alles staat
+- **Gepubliceerd:** versie 19.
+  - `main` op `4709b13`, tag `v19` op `3bd5b51`.
+  - Pages: https://rvd-gmpplus.github.io/laguna3/ (md5 `2c4461ba5340c8a0a324b02df772148a`).
+  - Artefact versie 21: https://claude.ai/artifact/4qJq7YUk5nGSFmexY7WkZR.
+- **Werkplek van de vorige sessie:** worktree `.claude/worktrees/g5h`, tak `golf-5m`, gelijk aan `main`.
+  - `VERSION` staat nog op 19; zet hem op 20 bij de start van de volgende golf.
+- **Let op, de hoofdcheckout** (`laguna3/`, tak `main`) staat nog op `87d3dc7` (versie 13) en heeft niet-gecommitte wijzigingen in `src/app2-controls.js`, `app2-input.js`, `app2-labels.js`, `app2-loop.js` en `app2-panel.js`.
+  - Die wijzigingen zijn ouder dan deze sessie en niet van mij; ze zitten niet in een tak.
+  - Niet weggooien zonder de gebruiker te vragen. Werk in een eigen worktree vanaf `origin/main`.
+- **Takken en worktrees:**
+  - Takken van golf 5l en 5m die volledig zijn samengevoegd: `golf-5l*`, `golf-5m`, `golf-5m-app`, `golf-5m-pn`.
+  - Worktrees die daarbij horen: `g5l-app`, `g5l-dash`, `g5l-cab`, `g5l-body`, `g5l-route`, `g5m-app`, `g5m-pn`.
+  - Opruimen mag na een vergelijking met `main` (`git ls-remote --heads origin`, daarna per tak `git log main..tak`).
+- **Linux-tests:** `tools/lag3-vm.sh test --repo "$PWD"`, met een tijdelijke container per run.
+  - Uitvoer in `~/.cache/explosietekening/lag3-vm/out/ft-laguna3-<commit>`.
+  - Containers van andere sessies (`s26u-linux:1`, `explosie-test:1`) niet aanraken.
+
+### Wat golf 5m deed
+- **Paneel slepen op de telefoon:** standen peek, open en vol, met vegen en tikken; itest-controle 24.
+- **Openen in de cockpit:** je blijft zitten en Uitstappen heet dan "Naar buiten"; itest-controle 23.
+- **Onderdeelnummers:** zes plakken `data/pn/units/G5m-*.json`.
+  - Een verifieerder wees 18 van 18 lokvogels af; 20 nummers zijn geschrapt.
+  - Advisor: pass na één correctie.
+  - Dekking per pad: past 618, kies op VIN 464, gekozen 104, niet gevonden 1.118, niet onderzocht 886.
+- **Besluiten:** `docs/onderzoek/beslissingen.md` (golf 5m) en `docs/onderzoek/databankenrecht.md` paragraaf 12.
+  - Alleen los verkrijgbare onderdelen.
+  - Het Renault-nummer plus hooguit één merknummer.
+  - Bewijs D alleen bij `vin`.
+  - De headless-route is toegestaan en vastgelegd; er staat geen nummer meer van in de gegevens.
+  - Renault-catalogus op VIN (partsouq) later.
+  - T4 is 1,7 MB raw en 450 kB gzip; de gebruiker: "mag groter indien nodig".
+- **Bronnen voor nummers:**
+  - Jina en Firecrawl hebben geen tegoed.
+  - curl op autodoc.parts geeft 403.
+  - Wat werkt: curl op spareto.com (`Crawl-delay: 1`, geen `?brand=` en geen `?per_page=`), Exa, en de OEM-pagina's van autodoc.parts via Exa.
+  - Het werkplaatshandboek (MR 415) is de pdf `Renault_Laguna-III_2007-2014_[EN-FR-ES].pdf` in OneDrive (`Documenten/PDF/HANDLEIDING/`). Het bevat ongeveer 40 Renault-nummers, vooral producten.
+  - Het kenteken leidt in Autodoc naar TecDoc-type 23370. Kenteken en chassisnummer komen nooit in de repo.
+
+### Open punten (in volgorde van waarde)
+1. **De nightly-workflow faalde** op `3216616` (20 oktober, 07:44 UTC). Niet onderzocht; eerst `gh run view` voor de log.
+2. **App:**
+   - `#openSeg` heeft in de cockpit met Openen twee radio's op `aria-checked` (`src/app2-controls.js:455`);
+   - "Naar buiten" is niet te zien als het paneel open staat in de cockpit op een staande telefoon (`src/head.html:315`);
+   - slepen met de muis zonder pointer capture (`src/app2-panel.js` circa r.536);
+   - in de cockpit gaat pijl links en dan rechts in het segment terug naar de blik van de zitplaats (`app2-controls.js:420`).
+3. **Nummers:**
+   - de distributiekappen hangen als `set` aan TCOVER, met een zwakke grond;
+   - partsouq op VIN voor de varianten (de gebruiker typt het chassisnummer zelf of geeft toestemming);
+   - interieur, uitlaat, koeling en elektra zijn dun: de catalogi voor type 23370 hebben weinig.
+4. **Cockpit naar espace5** met `python3 tools/framework.py export`. Vraag het eerst, en publiceer espace5 pas na toestemming.
+5. **Open uit golf 5k en 5l:** `docs/masterplan.md`, de secties golf 5k en golf 5l, met als belangrijkste:
+   - de rugschaal van de voorstoelen is vanaf de achterbank vlak zwart;
+   - de gordelband in het midden achter vult het beeld;
+   - de achterlichtlens schemert rood bij achteroverleunen.
+
+### Afspraken die in deze sessie golden
+- Elke versie wordt direct na een groene poort gepubliceerd. Daarna Pages en het artefact byte voor byte teruglezen, tag `vN` zetten en de docs bijwerken: CHANGELOG, deze handomdraai, masterplan en cijfers.
+- Advisor:
+  - Opus 5.5 high voor gewone golven;
+  - Fable 5.1 xhigh voor het interieur en waar de gebruiker erom vraagt;
+  - "doe het eerst zelf, lukt het niet goed, raadpleeg Fable 5.1 xhigh".
+- Ruis:
+  - een `Page.goto: Timeout 120000ms` in itest of shots op de Mac kwam deze sessie door een load average boven 8; de test los opnieuw draaien was groen;
+  - visdiff op de Mac telt niet.
+- Een golf zonder geometriewijziging (alleen app, tekst of nummers) heeft geen zwaaimeting nodig. Controleer dat met `git diff --stat vN HEAD -- src/`.
+
 Stand 20 oktober 2026, golf 5m: versie 19 (paneel slepen, Openen in de cockpit, onderdeelnummers) is gepubliceerd (`main` fast-forward `6192326..3bd5b51`, tag `v19`, artefactversie 21, Pages byte voor byte teruggelezen). Open punten: zie `docs/masterplan.md`, golf 5m.
 
 Stand 20 oktober 2026, golf 5l: versie 18 (cockpitmodus en interieur Dark Carbon) is gepubliceerd (`main` fast-forward `3216616..2410431`, tag `v18`, artefactversie 20, Pages byte voor byte teruggelezen). Open punten: zie `docs/masterplan.md`, golf 5l. Volgende: sleepgreep van het paneel op de telefoon werkend maken en de onderdeelnummers aanvullen (golf 5m).
