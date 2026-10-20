@@ -109,11 +109,19 @@ function uiBufferSize() {
   }
   renderer.setDrawingBufferSize(W, H, uiDpr);
 }
+// Lak met clearcoat: elk basismateriaal van de auto met een clearcoat (de lak en de varianten die een domein ervan kloont), één
+// keer verzameld met de oorspronkelijke waarde. Lichte weergave zet ze op 0, volle kwaliteit zet de oorspronkelijke waarde terug.
+let uiLakMats = null;
+function uiLakList() {
+  if (!uiLakMats) { uiLakMats = new Map(); for (const m of MESHES) { const b = m.userData.base; if (b && b.clearcoat > 0 && !uiLakMats.has(b)) uiLakMats.set(b, b.clearcoat); } }
+  return uiLakMats;
+}
 function uiSetLite(on) {
   uiAdapted = true; uiLite = on;
-  const cc = on ? 0 : 1;
-  MAT.paint.clearcoat = cc; MAT.paint.needsUpdate = true;
-  for (const m of [uiHV.get(MAT.paint), uiSL.get(MAT.paint)]) if (m) { m.clearcoat = on ? 0 : 0.2; m.needsUpdate = true; }
+  for (const [b, cc] of uiLakList()) {
+    b.clearcoat = on ? 0 : cc; b.needsUpdate = true;
+    for (const m of [uiHV.get(b), uiSL.get(b)]) if (m) { m.clearcoat = on ? 0 : 0.2; m.needsUpdate = true; }
+  }
   els.qualityRow.hidden = false; els.qualityNote.hidden = !on; els.quality.checked = !on;
   uiSetDpr(uiPickDpr(false));
   requestRender();

@@ -43,7 +43,9 @@ Controles (zie de app-brief):
   23 cockpit (golf 5l): in- en uitstappen herstelt camera, doel, gezichtsveld en near/far exact (tolerantie), elk oogpunt binnen
      de cabine (stralen omhoog en omlaag), grenzen van draaien, schuiven en zoomen, een klik opent het dashboardkastje, Esc, K, O en
      Uitstappen, de adresbalk, reduced motion, telefoon staand en liggend (passen, slepen, knijpen), geen consolemeldingen; ronde 2:
-     buitenwereld en lichtstand alleen in de cockpit en na het uitstappen exact terug (beide thema's), openersregel bij uitstappen
+     buitenwereld en lichtstand alleen in de cockpit en na het uitstappen exact terug (beide thema's), openersregel bij uitstappen;
+     ronde 3: leungrens achteruit (hoofdsteun minstens 8 cm achter het oog), verticaal gezichtsveld op de telefoon hoogstens 95
+     graden, lichte weergave zet elke lak met clearcoat uit en terug
 """
 import sys, os, random, json, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -1472,8 +1474,20 @@ def run_cockpit(s):
             pg.keyboard.press(key)
     k2 = ck()
     # +x is links in de auto: pijl links schuift het oog naar +x (met de blik recht vooruit)
-    ok = abs(k['off'][2] - 0.15) < EPS and abs(k['off'][0] - 0.15) < EPS and abs(k['off'][1] - 0.08) < EPS and abs(k2['off'][2] + 0.15) < EPS and abs(k2['off'][0] + 0.15) < EPS and abs(k2['off'][1] + 0.10) < EPS
-    check('23 cockpit: pijltjes en W/S schuiven het oog binnen ±0,15 m opzij en voor/achter en -0,10 tot +0,08 m in hoogte', ok, f"{k['off']} en {k2['off']}")
+    # achteruit maar 0,05 m (ronde 3): achteroverleunen liep anders tegen de eigen hoofdsteun
+    ok = abs(k['off'][2] - 0.15) < EPS and abs(k['off'][0] - 0.15) < EPS and abs(k['off'][1] - 0.08) < EPS and abs(k2['off'][2] + 0.05) < EPS and abs(k2['off'][0] + 0.15) < EPS and abs(k2['off'][1] + 0.10) < EPS
+    check('23 cockpit: pijltjes en W/S schuiven het oog binnen ±0,15 m opzij, 0,15 m voor en 0,05 m achter en -0,10 tot +0,08 m in hoogte', ok, f"{k['off']} en {k2['off']}")
+    # ronde 3: op de verste stand achterover en omhoog ligt de eigen hoofdsteun nog minstens 8 cm achter het oog, op elke zitplaats
+    lean = []
+    for st_ in seats:
+        r = pg.evaluate(f"""(() => {{ const L = __model; L.setCockpit({json.dumps(st_['id'])}, true); L.finishAll(); L.lookAt(0, 0);
+          uiCkShift(0, -1, 1); L.finishAll(); const k = L.cockpit(); const back = __CK.ray(k.eye, [0, 0, -1]);
+          return [k.off, back]; }})()""")
+        hr = r[1]
+        if not (abs(r[0][2] + 0.05) < EPS and abs(r[0][1] - 0.08) < EPS and hr and hr[0] >= 0.08 - 1e-6):
+            lean.append(f"{st_['id']}: oog {r[0]}, achter {hr}")
+    check('23 cockpit: achterover en omhoog (0,05 m en 0,08 m) blijft de eigen hoofdsteun minstens 8 cm achter het oog', not lean, ' | '.join(lean[:3]))
+    pg.evaluate("__model.setCockpit('bestuurder', true); __model.finishAll(); __model.lookAt(0, 0)")
     pg.keyboard.press('c'); k = ck()
     check('23 cockpit: C zet de blik en het hoofd terug', abs(k['yaw'] - seats[0]['kijk'][0]) < EPS and abs(k['pitch'] - seats[0]['kijk'][1]) < EPS and k['off'] == [0, 0, 0], json.dumps(k))
     pg.mouse.move(500, 400); pg.mouse.down(button='right'); pg.mouse.move(480, 380, steps=3); k = ck(); pg.mouse.move(-3000, -3000, steps=6); pg.mouse.up(button='right'); settle(pg, 60)
@@ -1528,6 +1542,11 @@ def run_cockpit(s):
     pg.evaluate("__model.setCockpit('bestuurder', true); __model.finishAll()")
     pg.select_option('#ckSeat', 'achter-midden'); settle(pg, 120)
     check('23 cockpit: de keuzelijst wisselt van zitplaats', ck()['seat'] == 'achter-midden' and max(abs(a - b) for a, b in zip(cam()['p'], seats[3]['oog'])) < EPS, json.dumps(ck()))
+    # ronde 3: lichte weergave zet de clearcoat van elke lak (ook de gekloonde varianten) op 0 en volle kwaliteit zet hem terug
+    lk = pg.evaluate("""(() => { const bases = [...new Set(__model.MESHES.map(m => m.userData.base))].filter(b => b && b.clearcoat > 0);
+      const v0 = bases.map(b => b.clearcoat); uiSetLite(true); const v1 = bases.map(b => b.clearcoat); uiSetLite(false); const v2 = bases.map(b => b.clearcoat);
+      return { n: bases.length, names: bases.map(b => b.name).slice(0, 8), off: v1.every(v => v === 0), back: v2.every((v, i) => Math.abs(v - v0[i]) < 1e-9) }; })()""")
+    check('23 lichte weergave: alle lakmaterialen met clearcoat (ook de klonen van de lak) uit, en bij volle kwaliteit exact terug', lk['n'] >= 2 and lk['off'] and lk['back'], json.dumps(lk))
     hlp = pg.evaluate("(() => { __model.setCockpit(null, true); document.getElementById('help').click(); const d = document.getElementById('helpDlg'); const t = d.textContent; const vis = [...d.querySelectorAll('.ckhelp')].every(e => !e.hidden); document.getElementById('helpClose').click(); return [t.includes('Cockpit'), /K\\s*·\\s*C/.test(t), vis]; })()")
     check('23 cockpit: de hulp (?) noemt de cockpit en de toetsen K en C', all(hlp), json.dumps(hlp))
     pg.close()
@@ -1559,6 +1578,10 @@ def run_cockpit(s):
           return { vis, over, hs: document.documentElement.scrollWidth > vw, overlap: hit(a, b) || hit(a, s) || hit(b, s), titleSeg: hit(s, t) && innerHeight > 520, free: __model.freeView().h, seat: __model.cockpit() && __model.cockpit().seat }; })()""")
         check(f'23 cockpit: telefoon {w} x {h}: zitplaats en Uitstappen zichtbaar en passend, geen overloop of horizontale scroll',
               r['vis'] and not r['over'] and not r['hs'] and not r['overlap'] and r['seat'] == 'bestuurder' and r['free'] >= 0.35 * h, json.dumps(r))
+        # ronde 3: staand rekent het gezichtsveld op de korte kant om, verticaal hoogstens 95 graden (was 113 bij 390 x 844)
+        fv = pp.evaluate('[camera.fov, camera.aspect, __model.cockpit().fov]')
+        check(f'23 cockpit: telefoon {w} x {h}: verticaal gezichtsveld hoogstens 95 graden, liggend gelijk aan het gekozen gezichtsveld',
+              fv[0] <= 95 + 1e-9 and (fv[0] > fv[2] if fv[1] < 1 else abs(fv[0] - fv[2]) < 1e-9), json.dumps(fv))
         if (w, h) == (390, 844):
             cdp = pp.context.new_cdp_session(pp)
             y0 = pp.evaluate('__model.cockpit().yaw')

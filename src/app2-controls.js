@@ -221,7 +221,7 @@ function uiCkPose(pos, quat) {
 // het gezichtsveld geldt voor de korte kant van het beeld: liggend verticaal, staand (telefoon) horizontaal; camera.fov is verticaal
 function uiCkVfov() {
   const a = camera.aspect, f = uiCk.fov;
-  return a >= 1 ? f : Math.min(150, 2 * Math.atan(Math.tan(f * UI_D2R / 2) / a) / UI_D2R);
+  return a >= 1 ? f : Math.min(CFG.cockpit.vfovMax, 2 * Math.atan(Math.tan(f * UI_D2R / 2) / a) / UI_D2R);
 }
 function uiCkApply() {
   if (!COCKPIT || uiCkAnim) return;
@@ -238,7 +238,7 @@ function uiCkApply() {
 function uiCkClamp() {
   const c = CFG.cockpit;
   uiCk.yaw = clamp(uiCk.yaw, -c.yawMax, c.yawMax); uiCk.pitch = clamp(uiCk.pitch, c.pitchMin, c.pitchMax);
-  uiCk.off.set(clamp(uiCk.off.x, -c.opzij, c.opzij), clamp(uiCk.off.y, -c.omlaag, c.omhoog), clamp(uiCk.off.z, -c.voor, c.voor));
+  uiCk.off.set(clamp(uiCk.off.x, -c.opzij, c.opzij), clamp(uiCk.off.y, -c.omlaag, c.omhoog), clamp(uiCk.off.z, -c.achter, c.voor));
   uiCk.fov = clamp(uiCk.fov, c.fovMin, c.fovMax);
 }
 function uiCkLook(yaw, pitch) { uiCk.yaw = +yaw || 0; uiCk.pitch = +pitch || 0; uiCkClamp(); uiCkApply(); }
