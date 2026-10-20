@@ -55,6 +55,14 @@ const CFG = Object.freeze({
     stapM: 0.02,                              // pijltjes en W/S: zoveel meter per toetsaanslag
     schuifMPx: 0.0006,                        // rechts slepen, Shift+slepen of twee vingers: meter per pixel
     zoomWiel: 0.0012,                         // scrollen: gezichtsveld maal exp(deltaY x dit)
+    // lichtstand in de cockpit: zon lager en zachter, meer hemellicht, een zwak cabinelicht (plaats: auto.json cockpit.licht)
+    licht: Object.freeze({ zon: 0.75, zonPos: Object.freeze([4, 4.5, 7]), hemiPlus: 0.3, cabine: 0.55, cabineDonker: 0.7 }),
+    // buitenwereld rond de auto in de cockpit: lucht (zenit naar horizon) en een grondvlak (bij de auto naar de horizon)
+    wereldR: 55,
+    wereld: Object.freeze({
+      licht: Object.freeze({ zenit: 0x7f97b0, horizon: 0xdde3e8, grond: 0x6c7075, grondVer: 0xb4bbc1 }),
+      donker: Object.freeze({ zenit: 0x141c27, horizon: 0x3e4a57, grond: 0x2b2f34, grondVer: 0x39424c }),
+    }),
   }),
 });
 /* ---------- teksten van de app (golf 5c-2, K6) ---------- */
@@ -224,11 +232,20 @@ scene.add(sun);
 const rim = new THREE.DirectionalLight(0xdfe8ff, 0.35);
 rim.position.set(-6, 3, -5);
 scene.add(rim);
+// cabinelicht van de cockpit (golf 5l): staat altijd in de scène, met sterkte 0 buiten de cockpit. Zo verandert het aantal lichten
+// nooit en hoeft geen shader opnieuw te compileren bij het instappen; 0 draagt niets bij, het gewone beeld blijft gelijk.
+const uiCabin = new THREE.PointLight(0xfff0dc, 0, 2.8, 1.5);
+scene.add(uiCabin);
+let uiCkLightOn = false;   // de lichtstand van de cockpit (uiCkLights in app2-controls.js) staat aan
+// Alle lichten uit het thema; in de cockpit daarna de lichtstand van de cockpit. Elke aanroep zet alles opnieuw, dus na het
+// uitstappen (uiCkLightOn uit) staan de lichten exact zoals het thema ze wil.
 // donkere modus: meer omgevings- en randlicht, zodat zwarte en donkergrijze onderdelen loskomen van de achtergrond
 function uiThemeLights() {
   const dark = getComputedStyle(document.documentElement).getPropertyValue('color-scheme').trim() === 'dark';
   uiHemi.intensity = dark ? 0.75 : 0.35; rim.intensity = dark ? 0.75 : 0.35;
   uiHemi.groundColor.setHex(dark ? 0x5a636d : 0x3c434b);
+  sun.intensity = 1.2; sun.position.set(4, 9, 6); uiCabin.intensity = 0;
+  if (uiCkLightOn) uiCkLights(dark);
 }
 uiThemeLights();
 

@@ -266,6 +266,54 @@ function uiCkHideOf(seat) {
   }
   return set.size ? set : null;
 }
+// Buitenwereld van de cockpit: een luchtkoepel en een grondvlak met kleurverlopen (CFG.cockpit.wereld, per thema), lui gebouwd en
+// alleen zichtbaar zolang de cockpit aanstaat. Daarbuiten blijven de achtergrond van de pagina en het raster (ground) zoals ze waren.
+// Vlak getekend (geen licht, geen toonafbeelding): de kleuren zijn wat er staat. De vertexkleuren zijn lineair, Color.setHex rekent om.
+let uiCkWorld = null;
+function uiCkWorldMake() {
+  const R = CFG.cockpit.wereldR, g = new THREE.Group(); g.name = 'uiCockpitWereld'; g.visible = false;
+  const mat = side => new THREE.MeshBasicMaterial({ vertexColors: true, side, toneMapped: false, depthWrite: false });
+  const sky = new THREE.Mesh(new THREE.SphereGeometry(R, 32, 16), mat(THREE.BackSide)); sky.renderOrder = -4;
+  const gr = new THREE.Mesh(new THREE.RingGeometry(0.01, R * 0.98, 48, 12), mat(THREE.FrontSide)); gr.rotation.x = -HALF; gr.renderOrder = -3;
+  for (const m of [sky, gr]) m.geometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(m.geometry.attributes.position.count * 3), 3));
+  g.add(sky, gr); scene.add(g);
+  return (uiCkWorld = { g, sky, gr });
+}
+function uiCkWorldColors(dark) {
+  const w = uiCkWorld; if (!w) return;
+  const c = CFG.cockpit.wereld[dark ? 'donker' : 'licht'], R = CFG.cockpit.wereldR, A = new THREE.Color(), B = new THREE.Color(), C = new THREE.Color();
+  const fill = (mesh, f) => { const p = mesh.geometry.attributes.position, col = mesh.geometry.attributes.color; for (let i = 0; i < p.count; i++) { f(p.getX(i), p.getY(i), p.getZ(i), C); col.setXYZ(i, C.r, C.g, C.b); } col.needsUpdate = true; };
+  // lucht: van de horizon naar het zenit (wortel: het licht blijft lang aan de horizon); onder de horizon de verre grond
+  fill(w.sky, (x, y, z, out) => { const t = y / R; if (t >= 0) out.copy(A.setHex(c.horizon)).lerp(B.setHex(c.zenit), Math.sqrt(t)); else out.setHex(c.grondVer); });
+  // grond (RingGeometry ligt in x, y voor het draaien): bij de auto vlak grijs, vanaf een kwart van de straal naar de vage horizon
+  fill(w.gr, (x, y, z, out) => { const t = clamp((Math.hypot(x, y) / R - 0.12) / 0.88, 0, 1); out.copy(A.setHex(c.grond)).lerp(B.setHex(c.grondVer), Math.pow(t, 0.6)); });
+}
+// lichtstand van de cockpit (vanuit uiThemeLights in core.js, dat eerst de lichten van het thema zet): zon lager en zachter,
+// meer hemellicht, het cabinelicht aan; de kleuren van de buitenwereld volgen het thema
+function uiCkLights(dark) {
+  const L = CFG.cockpit.licht;
+  sun.intensity = L.zon; sun.position.set(...L.zonPos);
+  uiHemi.intensity += L.hemiPlus;
+  uiCabin.intensity = dark ? L.cabineDonker : L.cabine;
+  uiCkWorldColors(dark);
+}
+// cockpit aan of uit voor de omgeving: buitenwereld, raster en lichten
+function uiCkEnv(on) {
+  if (on && !uiCkWorld) uiCkWorldMake();
+  if (uiCkWorld) uiCkWorld.g.visible = on;
+  ground.visible = !on;
+  if (on) uiCabin.position.set(...(UI_CK.licht || [0, 1, 0]));
+  uiCkLightOn = on; uiThemeLights();
+  requestRender();
+}
+// Uitstappen: een opener die alleen van binnen open kon (needs dicht, zoals het dashboardkastje achter een dicht portier) gaat
+// weer dicht, zodat buiten de regel van needs weer klopt; al het andere blijft zoals het in de cockpit stond
+function uiCkCloseInside(instant) {
+  for (let more = true; more;) {
+    more = false;
+    for (const n of OPENERS) if (n.ot > 0 && n.opn.needN && n.opn.needN.ot === 0) { uiSetOpen(n, 0, instant); more = true; }
+  }
+}
 // de ingesloten knopen die in de cockpit zichtbaar zijn: alles met inner onder de groepen van AUTO.cockpit.binnen
 function uiCkInner() {
   const set = new Set();
@@ -327,6 +375,7 @@ function uiSetCockpit(id, opt = {}) {
   }
   if (!uiCkShow) uiCkShow = uiCkInner();
   COCKPIT = seat; uiCk.last = seat.id;
+  if (first) uiCkEnv(true);
   uiCk.off.set(0, 0, 0); const k = seat.kijk || [0, 0]; uiCk.yaw = k[0]; uiCk.pitch = k[1]; uiCkClamp();
   camera.near = CFG.cockpit.near; camera.far = CFG.cockpit.far; camera.updateProjectionMatrix();
   // alles gemonteerd en zonder isolatie, dimmen of röntgen; de openers en de klikmodus blijven (de camera staat al vast)
@@ -341,6 +390,7 @@ function uiCkExit(instant) {
   if (!COCKPIT) return false;
   uiStopTour(); hideHint();
   COCKPIT = null; uiCkShow = null; uiCkHide = null; applyVisibility();
+  uiCkEnv(false); uiCkCloseInside(instant);
   const sv = uiCkSave;
   if (sv) uiCkStart(sv.pos.clone(), sv.quat.clone(), sv.fov, true, instant); else uiCkAnim = null;
   uiAfterAction();
