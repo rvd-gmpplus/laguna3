@@ -7,15 +7,11 @@
   - `main` op `4709b13`, tag `v19` op `3bd5b51`.
   - Pages: https://rvd-gmpplus.github.io/laguna3/ (md5 `2c4461ba5340c8a0a324b02df772148a`).
   - Artefact versie 21: https://claude.ai/artifact/4qJq7YUk5nGSFmexY7WkZR.
-- **Werkplek van de vorige sessie:** worktree `.claude/worktrees/g5h`, tak `golf-5m`, gelijk aan `main`.
-  - `VERSION` staat nog op 19; zet hem op 20 bij de start van de volgende golf.
-- **Let op, de hoofdcheckout** (`laguna3/`, tak `main`) staat nog op `87d3dc7` (versie 13) en heeft niet-gecommitte wijzigingen in `src/app2-controls.js`, `app2-input.js`, `app2-labels.js`, `app2-loop.js` en `app2-panel.js`.
-  - Die wijzigingen zijn ouder dan deze sessie en niet van mij; ze zitten niet in een tak.
-  - Niet weggooien zonder de gebruiker te vragen. Werk in een eigen worktree vanaf `origin/main`.
-- **Takken en worktrees:**
-  - Takken van golf 5l en 5m die volledig zijn samengevoegd: `golf-5l*`, `golf-5m`, `golf-5m-app`, `golf-5m-pn`.
-  - Worktrees die daarbij horen: `g5l-app`, `g5l-dash`, `g5l-cab`, `g5l-body`, `g5l-route`, `g5m-app`, `g5m-pn`.
-  - Opruimen mag na een vergelijking met `main` (`git ls-remote --heads origin`, daarna per tak `git log main..tak`).
+- **Werkplek:** de hoofdcheckout `laguna3/` staat op `main` en is schoon.
+  - Op 20 oktober 2026 na versie 19 opgeruimd: alle 70 worktrees en 97 lokale takken, allemaal volledig in `main`.
+  - De vijf `src/app2-*.js` die in de hoofdcheckout als gewijzigd stonden, verschilden alleen in regeleinden (CRLF) en zijn teruggezet.
+  - Op GitHub staan alleen `main` en `gh-pages`.
+  - `VERSION` staat nog op 19; zet hem op 20 bij de start van de volgende golf, in een eigen worktree vanaf `origin/main`.
 - **Linux-tests:** `tools/lag3-vm.sh test --repo "$PWD"`, met een tijdelijke container per run.
   - Uitvoer in `~/.cache/explosietekening/lag3-vm/out/ft-laguna3-<commit>`.
   - Containers van andere sessies (`s26u-linux:1`, `explosie-test:1`) niet aanraken.
