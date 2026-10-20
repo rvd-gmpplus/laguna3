@@ -5169,6 +5169,11 @@
   "deel",
   "Onderdeel van het stuurwiel"
  ],
+ "Onderstel/Vooras en stuurinrichting/Stuurinrichting/Stuurwiel/Sierlijst onderste spaak": [
+  "S3a-vooras-aandrijving:U_WHEEL",
+  "deel",
+  "Onderdeel van het stuurwiel"
+ ],
  "Onderstel/Vooras en stuurinrichting/Stuurinrichting/Stuurwiel/Stuurwielnaaf": [
   "S3a-vooras-aandrijving:U_WHEEL",
   "deel",
@@ -5185,6 +5190,16 @@
   "Geen bron"
  ],
  "Onderstel/Vooras en stuurinrichting/Stuurinrichting/Stuurwiel/Airbagmodule bestuurder/Airbagdeksel": [
+  "S3a-vooras-aandrijving:U_AIRBAG",
+  "deel",
+  "Onderdeel van de airbagmodule"
+ ],
+ "Onderstel/Vooras en stuurinrichting/Stuurinrichting/Stuurwiel/Airbagmodule bestuurder/Stuurwiellogo": [
+  "S3a-vooras-aandrijving:U_AIRBAG",
+  "deel",
+  "Onderdeel van de airbagmodule"
+ ],
+ "Onderstel/Vooras en stuurinrichting/Stuurinrichting/Stuurwiel/Airbagmodule bestuurder/Naafkap": [
   "S3a-vooras-aandrijving:U_AIRBAG",
   "deel",
   "Onderdeel van de airbagmodule"
