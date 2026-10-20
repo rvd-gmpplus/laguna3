@@ -41,6 +41,11 @@ verwerkt zijn:
   van het panoramadak zijn vervangen door een eigen omschrijving. 252 verschillende teksten in 400 records. Niet aangepast: `note`
   en de regels in `map.json`, onderzoeksaantekeningen die de categorie van de bron noemen (zie `docs/onderdeelnummers-schema.md`).
 
+- G5M (golf 5m, 20 oktober 2026): zes nieuwe plakken `G5m-A-motor` tot `G5m-F-systemen`. Waar een pad van een oude
+  `nietgevonden`-eenheid naar een nieuwe eenheid ging, is de oude eenheid zonder nummers vervallen (22 records). De
+  ophaalwijze en de besluiten staan in `docs/onderzoek/databankenrecht.md`, paragraaf 12. Elk nummer is gecontroleerd door
+  een verifieerder, met drie lokvogels per plak ondergemengd.
+
 ## Een nieuwe ronde toevoegen
 
 1. Nieuwe eenheden in een nieuw plakbestand `units/<plak>.json` (sleutel `plak:ID`), met per nummer een bewijsniveau en per eenheid minstens één https-bron; wat niet geverifieerd is, krijgt geen record (blijft "niet onderzocht").

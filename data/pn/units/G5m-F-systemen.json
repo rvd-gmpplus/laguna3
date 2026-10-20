@@ -1,0 +1,59 @@
+{
+ "G5m-F-systemen:U_DEGAS": {
+  "n": "Ontluchtingsslang (expansievat naar radiateur)",
+  "st": "past",
+  "oe": [
+   [
+    "215150007R",
+    "Verwijzing 'voor OE-nummer' bij SASIC 3404128; zelfde OE bij ORIGINAL IMPERIUM 224507, Metalcaucho 07772, GOOM RH-1246.",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "SASIC",
+    "3404128",
+    "slang tussen expansievat en radiateur",
+    "A"
+   ]
+  ],
+  "per": "stuk",
+  "note": "SASIC 3404128 staat in de lijst koelslangen van type 23370 (autook.by) met kenmerk 'van radiateur naar expansievat'. Op de Autodoc-pagina van het OE-nummer heet het 'van expansievat naar radiateur'. De korte slang (ongeveer 0,1 kg) is dus de ontluchtingsslang en niet de bovenste radiateurslang. FARE SA 15672 ('Upper Right') bij hetzelfde OE niet gebruikt: positie spreekt de andere bronnen tegen. Eerdere nietgevonden (U_DEGAS in S2) opnieuw beoordeeld.",
+  "src": [
+   [
+    "https://www.autook.by/ccatalogs/totalcatalog/RENAULT(566)/LAGUNA_III_(BT0%7C1)(6430)/2.0_16V_Turbo(0%5E23370)/%D0%A8%D0%BB%D0%B0%D0%BD%D0%B3%D0%B8_%7C%D0%BF%D1%80%D0%BE%D0%B2%D0%BE%D0%B4_%D0%BE%D1%85%D0%BB%D0%B0%D0%B6%D0%B4%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%B2%D0%BE%D0%B4%D1%8B(100100)/",
+    "autook.by"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/215150007r",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-F-systemen:U_WASHPUMP": {
+  "n": "Sproeierpomp ruitensproeier (elektrisch, 12 V)",
+  "st": "vin",
+  "oe": [],
+  "am": [
+   [
+    "RIDEX",
+    "794W0003",
+    "dubbele pomp, 2 aansluitingen",
+    "A"
+   ]
+  ],
+  "var": "Dubbele pomp (voor en achter) of enkele pomp (CASCO CWP74004AS, AIC 55511 staan als enkele pomp in dezelfde lijst). De OE-lijst van RIDEX hoort bij meerdere modellen (Clio, Megane, Scenic); welk Renault-nummer op deze Laguna past, is niet vast te stellen zonder VIN of Renault-catalogus.",
+  "per": "stuk",
+  "note": "Autodoc zet RIDEX 794W0003 in de categorie ruitensproeierpomp voor type 23370. Het Laguna III-nummer van de pomp is niet los bevestigd. Verificatie golf 5m: 289200004R geschrapt (onzeker: 289200004R staat in de OE-lijst van RIDEX 794W0003 (universele dubbele pomp met circa 18 Renault-nummers, ook 286200851R); RIDEX staat op de); 286200851R geschrapt (onzeker: 286200851R staat in de OE-lijst van RIDEX 794W0003 naast circa 17 andere Renault-nummers (o.a. 289200004R); geen bron koppelt dit specifieke); 286202746R geschrapt (onzeker: 286202746R staat letterlijk in de OE-lijst van RIDEX 794W0003, maar dat is een universele pomp met tientallen OE's van veel merken en modell); 7700428336 geschrapt (onzeker: 7700428336 staat in de OE-lijst van de universele RIDEX 794W0003 en op de autodoc oem-pagina, zonder koppeling aan Laguna III. Oud 77004-num); 286207097R geschrapt (onzeker: 286207097R staat in de OE-lijst van de universele RIDEX 794W0003 en op de autodoc oem-pagina, zonder koppeling aan Laguna III. Drie Renault-)",
+  "src": [
+   [
+    "https://www.autodoc.co.uk/ridex/13463552",
+    "autodoc.co.uk"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/x-10235/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
+    "autodoc.parts"
+   ]
+  ]
+ }
+}

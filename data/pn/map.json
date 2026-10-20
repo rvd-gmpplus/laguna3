@@ -380,8 +380,8 @@
   ""
  ],
  "Onderstel/Vooras en stuurinrichting/Wielophanging linksvoor/Aandrijfasmoer": [
-  "pilot:U_AXLENUT",
-  "set",
+  "G5m-C-onderstel:U_DRIVENUT",
+  "zelf",
   ""
  ],
  "Onderstel/Vooras en stuurinrichting/Wielophanging linksvoor/Borgkraag": [
@@ -495,12 +495,12 @@
   ""
  ],
  "Onderstel/Vooras en stuurinrichting/Wielophanging linksvoor/Draagarm/Voorste armbout": [
-  "pilot:U_ARMBOLT",
+  "G5m-C-onderstel:U_ARMBOLTS",
   "set",
   ""
  ],
  "Onderstel/Vooras en stuurinrichting/Wielophanging linksvoor/Draagarm/Achterste armbout": [
-  "pilot:U_ARMBOLT",
+  "G5m-C-onderstel:U_ARMBOLTS",
   "set",
   ""
  ],
@@ -555,7 +555,7 @@
   ""
  ],
  "Onderstel/Vooras en stuurinrichting/Wielophanging linksvoor/Veerpoot linksvoor": [
-  "pilot:U_STRUT",
+  "G5m-C-onderstel:U_STRUT_COMPL",
   "zelf",
   ""
  ],
@@ -735,8 +735,8 @@
   ""
  ],
  "Onderstel/Vooras en stuurinrichting/Wielophanging linksvoor/Remklauw linksvoor/Ontluchtingsnippel": [
-  "pilot:U_BLEED",
-  "set",
+  "G5m-C-onderstel:U_BLEEDER",
+  "zelf",
   ""
  ],
  "Onderstel/Vooras en stuurinrichting/Wielophanging linksvoor/Remklauw linksvoor/Nippeldop": [
@@ -890,14 +890,14 @@
   "Autodoc Camshaft seal: \"Required quantity 2\", zelfde artikel voor beide nokkenassen."
  ],
  "Aandrijflijn/Motor F4Rt/Cilinderkop/Afdichting nokkenassen/Afdichtdop nokkenas inlaat": [
-  "S1-motor-service:U_CAMPLUG",
+  "G5m-A-motor:CAMPLUG",
   "zelf",
-  "Gelijke dop (2x); eigen eenheid, niet gevonden."
+  "Zijde (inlaat of uitlaat) niet vastgesteld."
  ],
  "Aandrijflijn/Motor F4Rt/Cilinderkop/Afdichting nokkenassen/Afdichtdop nokkenas uitlaat": [
-  "S1-motor-service:U_CAMPLUG",
+  "G5m-A-motor:CAMPLUG",
   "zelf",
-  "Gelijke dop (2x); eigen eenheid, niet gevonden."
+  "Zijde (inlaat of uitlaat) niet vastgesteld."
  ],
  "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppendeksel": [
   "S1-motor-service:U_VCOVER",
@@ -1190,9 +1190,9 @@
   "Eigen onderdeel, niet gevonden."
  ],
  "Aandrijflijn/Motor F4Rt/Distributie/Nokkenaswiel uitlaat": [
-  "S1-motor-service:U_CAMGEAR",
+  "G5m-A-motor:CAMGEAR_EX",
   "zelf",
-  "Autodoc Camshaft gear toont geen uitlaatzijde."
+  "Aanname op grond van 38 tanden."
  ],
  "Aandrijflijn/Motor F4Rt/Distributie/Moer nokkenaswiel uitlaat": [
   "S1-motor-service:U_CAMGEARNUT",
@@ -1235,9 +1235,9 @@
   "Eigen onderdeel, niet gevonden (kit noemt algemeen \"mounting material\")."
  ],
  "Aandrijflijn/Motor F4Rt/Distributie/Distributiekappen": [
-  "S1-motor-service:U_TCOVER_TOP",
+  "G5m-A-motor:TCOVER",
   "set",
-  "Groep van 3 kappen; hoofdonderdeel bovenkap."
+  "Groep; kap-positie niet vastgesteld."
  ],
  "Aandrijflijn/Motor F4Rt/Distributie/Distributiekappen/Distributiekap boven": [
   "S1-motor-service:U_TCOVER_TOP",
@@ -1890,14 +1890,14 @@
   "Eigen onderdeel, niet gevonden."
  ],
  "Aandrijflijn/Motor F4Rt/Koelcircuit motor/Waterstuk en thermostaat": [
-  "S1-motor-service:U_HOUSING",
+  "G5m-A-motor:FLANGE",
   "set",
-  "Groep; hoofdonderdeel waterstuk (niet gevonden), thermostaat, pakking en sensor zijn eigen eenheden."
+  "Groep; hoofdonderdeel waterstuk."
  ],
  "Aandrijflijn/Motor F4Rt/Koelcircuit motor/Waterstuk en thermostaat/Waterstuk": [
-  "S1-motor-service:U_HOUSING",
+  "G5m-A-motor:FLANGE",
   "zelf",
-  "Eigen onderdeel; niet gevonden (Autodoc Thermostat toont alleen losse thermostaten)."
+  ""
  ],
  "Aandrijflijn/Motor F4Rt/Koelcircuit motor/Waterstuk en thermostaat/Thermostaat": [
   "S1-motor-service:U_THERMO",
@@ -2995,12 +2995,12 @@
   "Geen artikel gevonden"
  ],
  "Koeling en luchtinlaat/Koelslangen/Ontluchtingsslang": [
-  "S2-lucht-uitlaat-brandstof:U_DEGAS",
+  "G5m-F-systemen:U_DEGAS",
   "zelf",
-  "Geen aparte vermelding gevonden"
+  "Hervat: SASIC-kenmerk 'van radiateur naar expansievat' met OE 215150007R"
  ],
  "Koeling en luchtinlaat/Koelslangen/Ontluchtingsslang/Slang": [
-  "S2-lucht-uitlaat-brandstof:U_DEGAS",
+  "G5m-F-systemen:U_DEGAS",
   "deel",
   "Slang is de slang zelf"
  ],
@@ -3655,24 +3655,24 @@
   "Geen artikel gevonden"
  ],
  "Aandrijflijn/Automaatversnellingsbak/Bediening en sensoren": [
-  "S3a-vooras-aandrijving:G_BED",
-  "zelf",
-  "Groep in de modelboom, geen eigen verkoopeenheid"
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  "Groep op de bak"
  ],
  "Aandrijflijn/Automaatversnellingsbak/Bediening en sensoren/Keuzeas met hendel": [
-  "S3a-vooras-aandrijving:U_SELSHAFT",
-  "zelf",
-  "Eigen onderdeel van de automaat, niet in de Autodoc-lijsten voor type 23370"
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
  ],
  "Aandrijflijn/Automaatversnellingsbak/Bediening en sensoren/Kabelbeugel": [
-  "S3a-vooras-aandrijving:U_CABLEBRKT",
-  "zelf",
-  "Eigen kleinmateriaal, niet in Autodoc-lijsten"
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
  ],
  "Aandrijflijn/Automaatversnellingsbak/Bediening en sensoren/Standenschakelaar": [
-  "S3a-vooras-aandrijving:U_PNP",
+  "G5m-B-automaat:U_PNP",
   "zelf",
-  "Eigen onderdeel, niet in Autodoc-lijsten"
+  ""
  ],
  "Aandrijflijn/Automaatversnellingsbak/Bediening en sensoren/Ingaande-toerentalsensor": [
   "S3a-vooras-aandrijving:U_SPD_IN",
@@ -3680,14 +3680,14 @@
   "Autodoc 23370: RPM sensor automatic transmission, positie Inlet."
  ],
  "Aandrijflijn/Automaatversnellingsbak/Bediening en sensoren/Uitgaande-toerentalsensor": [
-  "S3a-vooras-aandrijving:U_SPD_OUT",
+  "G5m-B-automaat:U_SPD_OUT",
   "zelf",
-  "Niet apart in Autodoc-lijst; zie U_SPD_IN"
+  ""
  ],
  "Aandrijflijn/Automaatversnellingsbak/Bediening en sensoren/Stekker interne kabelboom": [
-  "S3a-vooras-aandrijving:U_TERMINAL",
-  "zelf",
-  "Intern bakonderdeel, niet in Autodoc-lijsten"
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  "Interne kabelboom van de verdeler (MR 415)"
  ],
  "Aandrijflijn/Automaatversnellingsbak/Startmotor": [
   "S3a-vooras-aandrijving:U_START",
@@ -3925,9 +3925,9 @@
   "Intern deel van de magneetschakelaar; Autodoc 23370 levert die alleen compleet"
  ],
  "Aandrijflijn/Automaatversnellingsbak/Startmotor/Schakelvork": [
-  "S3a-vooras-aandrijving:U_FORK",
-  "zelf",
-  "Eigen onderdeel, niet in Autodoc-lijsten"
+  "S3a-vooras-aandrijving:U_START",
+  "deel",
+  "Zit in de startmotor"
  ],
  "Aandrijflijn/Aandrijfassen": [
   "S3a-vooras-aandrijving:G_AS",
@@ -4330,9 +4330,9 @@
   "RIDEX 654W0316 (\"with bolts\") en GSP 9327071K (\"with accessories\") leveren de bouten mee"
  ],
  "Onderstel/Vooras en stuurinrichting/Wielophanging rechtsvoor/Aandrijfasmoer": [
-  "S3a-vooras-aandrijving:U_AXLENUT",
+  "G5m-C-onderstel:U_DRIVENUT",
   "zelf",
-  "Aandrijfasmoer voor; de moeren in de lijst 23370 zijn voor de achteras of zonder positie, daarom geen nummer."
+  ""
  ],
  "Onderstel/Vooras en stuurinrichting/Wielophanging rechtsvoor/Borgkraag": [
   "S3a-vooras-aandrijving:U_AXLECOLLAR",
@@ -4400,14 +4400,14 @@
   "Autodoc 23370 Arm bushes, Rear"
  ],
  "Onderstel/Vooras en stuurinrichting/Wielophanging rechtsvoor/Draagarm/Voorste armbout": [
-  "S3a-vooras-aandrijving:U_ARMBOLT",
-  "zelf",
-  "Eigen bevestigingsmateriaal"
+  "G5m-C-onderstel:U_ARMBOLTS",
+  "set",
+  ""
  ],
  "Onderstel/Vooras en stuurinrichting/Wielophanging rechtsvoor/Draagarm/Achterste armbout": [
-  "S3a-vooras-aandrijving:U_ARMBOLT",
+  "G5m-C-onderstel:U_ARMBOLTS",
   "set",
-  "Zelfde soort bout, set"
+  ""
  ],
  "Onderstel/Vooras en stuurinrichting/Wielophanging rechtsvoor/Draagarm/Fuseekogel": [
   "S3a-vooras-aandrijving:U_BJOINT",
@@ -4640,9 +4640,9 @@
   "Autodoc Guide sleeve kit, brake caliper: pennen en hoezen als set"
  ],
  "Onderstel/Vooras en stuurinrichting/Wielophanging rechtsvoor/Remklauw rechtsvoor/Ontluchtingsnippel": [
-  "S3a-vooras-aandrijving:U_BLEED",
+  "G5m-C-onderstel:U_BLEEDER",
   "zelf",
-  "Geen bevestigd artikel"
+  ""
  ],
  "Onderstel/Vooras en stuurinrichting/Wielophanging rechtsvoor/Remklauw rechtsvoor/Nippeldop": [
   "S3a-vooras-aandrijving:U_BLEED",
@@ -5215,9 +5215,9 @@
   "Onderdeel van de airbagmodule"
  ],
  "Onderstel/Vooras en stuurinrichting/Stuurinrichting/Stuurwiel/Wikkelcontact": [
-  "S3a-vooras-aandrijving:U_CLOCKSPRING",
+  "G5m-C-onderstel:U_CLOCKSPRING",
   "zelf",
-  "Geen bevestigd artikel voor type 23370"
+  ""
  ],
  "Onderstel/Achteras": [
   "S3b-achteras-remmen-wielen:B_G_ACHTERAS",
@@ -5635,14 +5635,14 @@
   "Autodoc: brake caliper piston 38 mm Rear Axle (LTD-063)."
  ],
  "Onderstel/Achteras/Wielophanging linksachter/Remklauw linksachter/Zuigerafdichting": [
-  "S3b-achteras-remmen-wielen:B_REPAIRKIT_L",
-  "set",
-  "Reparatieset per klauw; de gevonden RIDEX-set is \"Rear Axle, Right\", links niet gevonden."
+  "G5m-C-onderstel:B_REPAIRKIT_ATE38",
+  "deel",
+  "set bevat zuigerafdichting en stofhoes"
  ],
  "Onderstel/Achteras/Wielophanging linksachter/Remklauw linksachter/Stofhoes zuiger": [
-  "S3b-achteras-remmen-wielen:B_REPAIRKIT_L",
-  "set",
-  "Reparatieset per klauw; de gevonden RIDEX-set is \"Rear Axle, Right\", links niet gevonden."
+  "G5m-C-onderstel:B_REPAIRKIT_ATE38",
+  "deel",
+  "set bevat zuigerafdichting en stofhoes"
  ],
  "Onderstel/Achteras/Wielophanging linksachter/Remklauw linksachter/Geleidepen boven": [
   "S3b-achteras-remmen-wielen:B_GUIDEPIN",
@@ -5665,9 +5665,9 @@
   "Autodoc: bellow brake caliper guide (RIDEX 1165G0100)."
  ],
  "Onderstel/Achteras/Wielophanging linksachter/Remklauw linksachter/Ontluchtingsnippel": [
-  "S3b-achteras-remmen-wielen:B_BLEED",
+  "G5m-C-onderstel:U_BLEEDER",
   "zelf",
-  "Los nippel, eigen eenheid, niet gevonden."
+  ""
  ],
  "Onderstel/Achteras/Wielophanging linksachter/Remklauw linksachter/Nippeldop": [
   "S3b-achteras-remmen-wielen:B_BLEEDCAP",
@@ -5955,9 +5955,9 @@
   "Autodoc: bellow brake caliper guide (RIDEX 1165G0100)."
  ],
  "Onderstel/Achteras/Wielophanging rechtsachter/Remklauw rechtsachter/Ontluchtingsnippel": [
-  "S3b-achteras-remmen-wielen:B_BLEED",
+  "G5m-C-onderstel:U_BLEEDER",
   "zelf",
-  "Los nippel, eigen eenheid, niet gevonden."
+  ""
  ],
  "Onderstel/Achteras/Wielophanging rechtsachter/Remklauw rechtsachter/Nippeldop": [
   "S3b-achteras-remmen-wielen:B_BLEEDCAP",
@@ -6340,29 +6340,29 @@
   "Groepsknoop, geen verkoopeenheid."
  ],
  "Onderstel/Remsysteem/Rembekrachtiger": [
-  "S3b-achteras-remmen-wielen:B_BOOSTER",
+  "G5m-C-onderstel:U_BOOSTER",
   "zelf",
-  "Bekrachtiger als geheel; het enige artikel in de lijst is voor auto's zonder ESP, niet overgenomen."
+  ""
  ],
  "Onderstel/Remsysteem/Rembekrachtiger/Bekrachtigerhuis": [
-  "S3b-achteras-remmen-wielen:B_BOOSTER",
+  "G5m-C-onderstel:U_BOOSTER",
   "deel",
-  "Deel van de bekrachtiger, niet los verkocht."
+  "aanname: alleen compleet leverbaar"
  ],
  "Onderstel/Remsysteem/Rembekrachtiger/Membraan": [
-  "S3b-achteras-remmen-wielen:B_BOOSTER",
+  "G5m-C-onderstel:U_BOOSTER",
   "deel",
-  "Deel van de bekrachtiger, niet los verkocht."
+  "aanname: alleen compleet leverbaar"
  ],
  "Onderstel/Remsysteem/Rembekrachtiger/Duwstang": [
-  "S3b-achteras-remmen-wielen:B_BOOSTER",
+  "G5m-C-onderstel:U_BOOSTER",
   "deel",
-  "Deel van de bekrachtiger, niet los verkocht."
+  "aanname: alleen compleet leverbaar"
  ],
  "Onderstel/Remsysteem/Rembekrachtiger/Vacuumaansluiting": [
-  "S3b-achteras-remmen-wielen:B_BOOSTER",
+  "G5m-C-onderstel:U_BOOSTER",
   "deel",
-  "Deel van de bekrachtiger, niet los verkocht."
+  "aanname: alleen compleet leverbaar"
  ],
  "Onderstel/Remsysteem/Rembekrachtiger/Bekrachtigermoer 1": [
   "S3b-achteras-remmen-wielen:B_BOOSTERMOER",
@@ -6625,9 +6625,9 @@
   "Losse bout, eigen eenheid, niet gevonden."
  ],
  "Onderstel/Remsysteem/Parkeerrem/Parkeerremkabel links": [
-  "S3b-achteras-remmen-wielen:B_PARKCABLE",
-  "set",
-  "Kabelset links en rechts; de gevonden sets zijn voor auto's zonder elektrische parkeerrem, niet overgenomen."
+  "G5m-C-onderstel:U_PARKCABLE_L",
+  "zelf",
+  ""
  ],
  "Onderstel/Remsysteem/Parkeerrem/Parkeerremkabel rechts": [
   "S3b-achteras-remmen-wielen:B_PARKCABLE",
@@ -6635,9 +6635,9 @@
   "Kabelset links en rechts; de gevonden sets zijn voor auto's zonder elektrische parkeerrem, niet overgenomen."
  ],
  "Onderstel/Remsysteem/Parkeerrem/Kabelhuls links": [
-  "S3b-achteras-remmen-wielen:B_PARKCABLE",
+  "G5m-C-onderstel:U_PARKCABLE_L",
   "deel",
-  "Huls hoort bij de kabel in de set."
+  "aanname: alleen compleet leverbaar"
  ],
  "Onderstel/Remsysteem/Parkeerrem/Kabelhuls rechts": [
   "S3b-achteras-remmen-wielen:B_PARKCABLE",
@@ -6735,14 +6735,14 @@
   "De sproeierkop is het verkochte artikel"
  ],
  "Carrosserie/Motorkap/Ruitensproeier links/Sproeierslang": [
-  "S4-carrosserie-elektra-interieur:U_WHOSE",
+  "G5m-D-carrosserie:U_SPROEISLANG",
   "zelf",
-  "Slang wordt als universele slang verkocht"
+  ""
  ],
  "Carrosserie/Motorkap/Ruitensproeier rechts/Sproeierslang": [
-  "S4-carrosserie-elektra-interieur:U_WHOSE",
+  "G5m-D-carrosserie:U_SPROEISLANG",
   "zelf",
-  "Slang wordt als universele slang verkocht"
+  ""
  ],
  "Carrosserie/Voorbumper/Koplampsproeiers/Koplampsproeier links": [
   "S4-carrosserie-elektra-interieur:U_HWASH_L",
@@ -7665,29 +7665,29 @@
   "Groepsknoop zonder eigen verkoopeenheid"
  ],
  "Carrosserie/Voorbumper/Mistlampen voor/Mistlamp links": [
-  "S4-carrosserie-elektra-interieur:U_FOG",
+  "G5m-D-carrosserie:U_MISTLAMP",
   "zelf",
-  "Mistlamp: links en rechts hetzelfde nummer (Renault-catalogus). Na verificatie leeg: nummer kwam uit een catalogus van een fase-1-auto"
+  ""
  ],
  "Carrosserie/Voorbumper/Mistlampen voor/Mistlamp links/Mistlamphuis": [
-  "S4-carrosserie-elektra-interieur:U_FOG",
+  "G5m-D-carrosserie:U_MISTLAMP",
   "deel",
-  "Mistlamp is een geheel. Na verificatie leeg: nummer kwam uit een catalogus van een fase-1-auto"
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto (categorie hulplampen)"
  ],
  "Carrosserie/Voorbumper/Mistlampen voor/Mistlamp links/Mistlampreflector": [
-  "S4-carrosserie-elektra-interieur:U_FOG",
+  "G5m-D-carrosserie:U_MISTLAMP",
   "deel",
-  "Mistlamp is een geheel. Na verificatie leeg: nummer kwam uit een catalogus van een fase-1-auto"
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto (categorie hulplampen)"
  ],
  "Carrosserie/Voorbumper/Mistlampen voor/Mistlamp links/Mistlamplens": [
-  "S4-carrosserie-elektra-interieur:U_FOG",
+  "G5m-D-carrosserie:U_MISTLAMP",
   "deel",
-  "Mistlamp is een geheel. Na verificatie leeg: nummer kwam uit een catalogus van een fase-1-auto"
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto (categorie hulplampen)"
  ],
  "Carrosserie/Voorbumper/Mistlampen voor/Mistlamp links/Mistlampje": [
-  "S4-carrosserie-elektra-interieur:U_H11",
+  "G5m-D-carrosserie:U_H11B",
   "zelf",
-  "H11-lamp. Na verificatie leeg: nummer kwam uit een catalogus van een fase-1-auto"
+  ""
  ],
  "Carrosserie/Voorbumper/Mistlampen voor/Chroomwenkbrauw links": [
   "S4-carrosserie-elektra-interieur:U_FBROW_L",
@@ -7705,29 +7705,29 @@
   "Niet in de Autodoc-lijst"
  ],
  "Carrosserie/Voorbumper/Mistlampen voor/Mistlamp rechts": [
-  "S4-carrosserie-elektra-interieur:U_FOG",
+  "G5m-D-carrosserie:U_MISTLAMP",
   "zelf",
-  "Mistlamp: links en rechts hetzelfde nummer (Renault-catalogus). Na verificatie leeg: nummer kwam uit een catalogus van een fase-1-auto"
+  ""
  ],
  "Carrosserie/Voorbumper/Mistlampen voor/Mistlamp rechts/Mistlamphuis": [
-  "S4-carrosserie-elektra-interieur:U_FOG",
+  "G5m-D-carrosserie:U_MISTLAMP",
   "deel",
-  "Mistlamp is een geheel. Na verificatie leeg: nummer kwam uit een catalogus van een fase-1-auto"
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto (categorie hulplampen)"
  ],
  "Carrosserie/Voorbumper/Mistlampen voor/Mistlamp rechts/Mistlampreflector": [
-  "S4-carrosserie-elektra-interieur:U_FOG",
+  "G5m-D-carrosserie:U_MISTLAMP",
   "deel",
-  "Mistlamp is een geheel. Na verificatie leeg: nummer kwam uit een catalogus van een fase-1-auto"
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto (categorie hulplampen)"
  ],
  "Carrosserie/Voorbumper/Mistlampen voor/Mistlamp rechts/Mistlamplens": [
-  "S4-carrosserie-elektra-interieur:U_FOG",
+  "G5m-D-carrosserie:U_MISTLAMP",
   "deel",
-  "Mistlamp is een geheel. Na verificatie leeg: nummer kwam uit een catalogus van een fase-1-auto"
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto (categorie hulplampen)"
  ],
  "Carrosserie/Voorbumper/Mistlampen voor/Mistlamp rechts/Mistlampje": [
-  "S4-carrosserie-elektra-interieur:U_H11",
+  "G5m-D-carrosserie:U_H11B",
   "zelf",
-  "H11-lamp. Na verificatie leeg: nummer kwam uit een catalogus van een fase-1-auto"
+  ""
  ],
  "Carrosserie/Voorbumper/Mistlampen voor/Chroomwenkbrauw rechts": [
   "S4-carrosserie-elektra-interieur:U_FBROW_R",
@@ -8318,5 +8318,3205 @@
   "S2-lucht-uitlaat-brandstof:U_FILLNECK",
   "deel",
   "Ring om de vulklep, onderdeel van de capless vulhals met klepje; de vulhals is niet als artikel gevonden"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Cilinderkopbouten": [
+  "G5m-A-motor:HBOLT",
+  "set",
+  "Groep; alleen als boutenset leverbaar."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Cilinderkopbouten/Cilinderkopbout 1": [
+  "G5m-A-motor:HBOLT",
+  "set",
+  "Bout uit de boutenset van 10."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Cilinderkopbouten/Cilinderkopbout 10": [
+  "G5m-A-motor:HBOLT",
+  "set",
+  "Bout uit de boutenset van 10."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Cilinderkopbouten/Cilinderkopbout 2": [
+  "G5m-A-motor:HBOLT",
+  "set",
+  "Bout uit de boutenset van 10."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Cilinderkopbouten/Cilinderkopbout 3": [
+  "G5m-A-motor:HBOLT",
+  "set",
+  "Bout uit de boutenset van 10."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Cilinderkopbouten/Cilinderkopbout 4": [
+  "G5m-A-motor:HBOLT",
+  "set",
+  "Bout uit de boutenset van 10."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Cilinderkopbouten/Cilinderkopbout 5": [
+  "G5m-A-motor:HBOLT",
+  "set",
+  "Bout uit de boutenset van 10."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Cilinderkopbouten/Cilinderkopbout 6": [
+  "G5m-A-motor:HBOLT",
+  "set",
+  "Bout uit de boutenset van 10."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Cilinderkopbouten/Cilinderkopbout 7": [
+  "G5m-A-motor:HBOLT",
+  "set",
+  "Bout uit de boutenset van 10."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Cilinderkopbouten/Cilinderkopbout 8": [
+  "G5m-A-motor:HBOLT",
+  "set",
+  "Bout uit de boutenset van 10."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Cilinderkopbouten/Cilinderkopbout 9": [
+  "G5m-A-motor:HBOLT",
+  "set",
+  "Bout uit de boutenset van 10."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 1a/Hydraulische klepstoter": [
+  "G5m-A-motor:TAPPET",
+  "zelf",
+  "16 gelijke klepstoters."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 1a/Hydraulische klepstoter/Huis": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 1a/Hydraulische klepstoter/Plunjer": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 1a/Hydraulische klepstoter/Terugslagkogel met veer": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 1a/Inlaatklep": [
+  "G5m-A-motor:IVALVE",
+  "zelf",
+  "8 gelijke kleppen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 1a/Klepspie 1": [
+  "G5m-A-motor:KEEPER",
+  "zelf",
+  "Klepspie; aantal per klep niet vastgesteld."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 1a/Klepspie 2": [
+  "G5m-A-motor:KEEPER",
+  "zelf",
+  "Klepspie; aantal per klep niet vastgesteld."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 1a/Klepsteelafdichting": [
+  "G5m-A-motor:VSEAL",
+  "zelf",
+  "16 gelijke afdichtingen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 1a/Rolzwenkarm": [
+  "G5m-A-motor:ROCKER",
+  "zelf",
+  "16 gelijke rolzwenkarmen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 1a/Rolzwenkarm/Arm": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 1a/Rolzwenkarm/Rol met naaldlager": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 1a/Rolzwenkarm/Rolas": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 1b/Hydraulische klepstoter": [
+  "G5m-A-motor:TAPPET",
+  "zelf",
+  "16 gelijke klepstoters."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 1b/Hydraulische klepstoter/Huis": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 1b/Hydraulische klepstoter/Plunjer": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 1b/Hydraulische klepstoter/Terugslagkogel met veer": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 1b/Inlaatklep": [
+  "G5m-A-motor:IVALVE",
+  "zelf",
+  "8 gelijke kleppen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 1b/Klepspie 1": [
+  "G5m-A-motor:KEEPER",
+  "zelf",
+  "Klepspie; aantal per klep niet vastgesteld."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 1b/Klepspie 2": [
+  "G5m-A-motor:KEEPER",
+  "zelf",
+  "Klepspie; aantal per klep niet vastgesteld."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 1b/Klepsteelafdichting": [
+  "G5m-A-motor:VSEAL",
+  "zelf",
+  "16 gelijke afdichtingen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 1b/Rolzwenkarm": [
+  "G5m-A-motor:ROCKER",
+  "zelf",
+  "16 gelijke rolzwenkarmen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 1b/Rolzwenkarm/Arm": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 1b/Rolzwenkarm/Rol met naaldlager": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 1b/Rolzwenkarm/Rolas": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 2a/Hydraulische klepstoter": [
+  "G5m-A-motor:TAPPET",
+  "zelf",
+  "16 gelijke klepstoters."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 2a/Hydraulische klepstoter/Huis": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 2a/Hydraulische klepstoter/Plunjer": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 2a/Hydraulische klepstoter/Terugslagkogel met veer": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 2a/Inlaatklep": [
+  "G5m-A-motor:IVALVE",
+  "zelf",
+  "8 gelijke kleppen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 2a/Klepspie 1": [
+  "G5m-A-motor:KEEPER",
+  "zelf",
+  "Klepspie; aantal per klep niet vastgesteld."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 2a/Klepspie 2": [
+  "G5m-A-motor:KEEPER",
+  "zelf",
+  "Klepspie; aantal per klep niet vastgesteld."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 2a/Klepsteelafdichting": [
+  "G5m-A-motor:VSEAL",
+  "zelf",
+  "16 gelijke afdichtingen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 2a/Rolzwenkarm": [
+  "G5m-A-motor:ROCKER",
+  "zelf",
+  "16 gelijke rolzwenkarmen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 2a/Rolzwenkarm/Arm": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 2a/Rolzwenkarm/Rol met naaldlager": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 2a/Rolzwenkarm/Rolas": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 2b/Hydraulische klepstoter": [
+  "G5m-A-motor:TAPPET",
+  "zelf",
+  "16 gelijke klepstoters."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 2b/Hydraulische klepstoter/Huis": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 2b/Hydraulische klepstoter/Plunjer": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 2b/Hydraulische klepstoter/Terugslagkogel met veer": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 2b/Inlaatklep": [
+  "G5m-A-motor:IVALVE",
+  "zelf",
+  "8 gelijke kleppen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 2b/Klepspie 1": [
+  "G5m-A-motor:KEEPER",
+  "zelf",
+  "Klepspie; aantal per klep niet vastgesteld."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 2b/Klepspie 2": [
+  "G5m-A-motor:KEEPER",
+  "zelf",
+  "Klepspie; aantal per klep niet vastgesteld."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 2b/Klepsteelafdichting": [
+  "G5m-A-motor:VSEAL",
+  "zelf",
+  "16 gelijke afdichtingen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 2b/Rolzwenkarm": [
+  "G5m-A-motor:ROCKER",
+  "zelf",
+  "16 gelijke rolzwenkarmen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 2b/Rolzwenkarm/Arm": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 2b/Rolzwenkarm/Rol met naaldlager": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 2b/Rolzwenkarm/Rolas": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 3a/Hydraulische klepstoter": [
+  "G5m-A-motor:TAPPET",
+  "zelf",
+  "16 gelijke klepstoters."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 3a/Hydraulische klepstoter/Huis": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 3a/Hydraulische klepstoter/Plunjer": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 3a/Hydraulische klepstoter/Terugslagkogel met veer": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 3a/Inlaatklep": [
+  "G5m-A-motor:IVALVE",
+  "zelf",
+  "8 gelijke kleppen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 3a/Klepspie 1": [
+  "G5m-A-motor:KEEPER",
+  "zelf",
+  "Klepspie; aantal per klep niet vastgesteld."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 3a/Klepspie 2": [
+  "G5m-A-motor:KEEPER",
+  "zelf",
+  "Klepspie; aantal per klep niet vastgesteld."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 3a/Klepsteelafdichting": [
+  "G5m-A-motor:VSEAL",
+  "zelf",
+  "16 gelijke afdichtingen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 3a/Rolzwenkarm": [
+  "G5m-A-motor:ROCKER",
+  "zelf",
+  "16 gelijke rolzwenkarmen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 3a/Rolzwenkarm/Arm": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 3a/Rolzwenkarm/Rol met naaldlager": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 3a/Rolzwenkarm/Rolas": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 3b/Hydraulische klepstoter": [
+  "G5m-A-motor:TAPPET",
+  "zelf",
+  "16 gelijke klepstoters."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 3b/Hydraulische klepstoter/Huis": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 3b/Hydraulische klepstoter/Plunjer": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 3b/Hydraulische klepstoter/Terugslagkogel met veer": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 3b/Inlaatklep": [
+  "G5m-A-motor:IVALVE",
+  "zelf",
+  "8 gelijke kleppen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 3b/Klepspie 1": [
+  "G5m-A-motor:KEEPER",
+  "zelf",
+  "Klepspie; aantal per klep niet vastgesteld."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 3b/Klepspie 2": [
+  "G5m-A-motor:KEEPER",
+  "zelf",
+  "Klepspie; aantal per klep niet vastgesteld."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 3b/Klepsteelafdichting": [
+  "G5m-A-motor:VSEAL",
+  "zelf",
+  "16 gelijke afdichtingen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 3b/Rolzwenkarm": [
+  "G5m-A-motor:ROCKER",
+  "zelf",
+  "16 gelijke rolzwenkarmen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 3b/Rolzwenkarm/Arm": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 3b/Rolzwenkarm/Rol met naaldlager": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 3b/Rolzwenkarm/Rolas": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 4a/Hydraulische klepstoter": [
+  "G5m-A-motor:TAPPET",
+  "zelf",
+  "16 gelijke klepstoters."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 4a/Hydraulische klepstoter/Huis": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 4a/Hydraulische klepstoter/Plunjer": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 4a/Hydraulische klepstoter/Terugslagkogel met veer": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 4a/Inlaatklep": [
+  "G5m-A-motor:IVALVE",
+  "zelf",
+  "8 gelijke kleppen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 4a/Klepspie 1": [
+  "G5m-A-motor:KEEPER",
+  "zelf",
+  "Klepspie; aantal per klep niet vastgesteld."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 4a/Klepspie 2": [
+  "G5m-A-motor:KEEPER",
+  "zelf",
+  "Klepspie; aantal per klep niet vastgesteld."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 4a/Klepsteelafdichting": [
+  "G5m-A-motor:VSEAL",
+  "zelf",
+  "16 gelijke afdichtingen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 4a/Rolzwenkarm": [
+  "G5m-A-motor:ROCKER",
+  "zelf",
+  "16 gelijke rolzwenkarmen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 4a/Rolzwenkarm/Arm": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 4a/Rolzwenkarm/Rol met naaldlager": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 4a/Rolzwenkarm/Rolas": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 4b/Hydraulische klepstoter": [
+  "G5m-A-motor:TAPPET",
+  "zelf",
+  "16 gelijke klepstoters."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 4b/Hydraulische klepstoter/Huis": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 4b/Hydraulische klepstoter/Plunjer": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 4b/Hydraulische klepstoter/Terugslagkogel met veer": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 4b/Inlaatklep": [
+  "G5m-A-motor:IVALVE",
+  "zelf",
+  "8 gelijke kleppen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 4b/Klepspie 1": [
+  "G5m-A-motor:KEEPER",
+  "zelf",
+  "Klepspie; aantal per klep niet vastgesteld."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 4b/Klepspie 2": [
+  "G5m-A-motor:KEEPER",
+  "zelf",
+  "Klepspie; aantal per klep niet vastgesteld."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 4b/Klepsteelafdichting": [
+  "G5m-A-motor:VSEAL",
+  "zelf",
+  "16 gelijke afdichtingen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 4b/Rolzwenkarm": [
+  "G5m-A-motor:ROCKER",
+  "zelf",
+  "16 gelijke rolzwenkarmen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 4b/Rolzwenkarm/Arm": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 4b/Rolzwenkarm/Rol met naaldlager": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen inlaatzijde/Inlaatklep 4b/Rolzwenkarm/Rolas": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 1a/Hydraulische klepstoter": [
+  "G5m-A-motor:TAPPET",
+  "zelf",
+  "16 gelijke klepstoters."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 1a/Hydraulische klepstoter/Huis": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 1a/Hydraulische klepstoter/Plunjer": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 1a/Hydraulische klepstoter/Terugslagkogel met veer": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 1a/Klepspie 1": [
+  "G5m-A-motor:KEEPER",
+  "zelf",
+  "Klepspie; aantal per klep niet vastgesteld."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 1a/Klepspie 2": [
+  "G5m-A-motor:KEEPER",
+  "zelf",
+  "Klepspie; aantal per klep niet vastgesteld."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 1a/Klepsteelafdichting": [
+  "G5m-A-motor:VSEAL",
+  "zelf",
+  "16 gelijke afdichtingen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 1a/Rolzwenkarm": [
+  "G5m-A-motor:ROCKER",
+  "zelf",
+  "16 gelijke rolzwenkarmen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 1a/Rolzwenkarm/Arm": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 1a/Rolzwenkarm/Rol met naaldlager": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 1a/Rolzwenkarm/Rolas": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 1a/Uitlaatklep": [
+  "G5m-A-motor:EVALVE",
+  "zelf",
+  "8 gelijke kleppen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 1b/Hydraulische klepstoter": [
+  "G5m-A-motor:TAPPET",
+  "zelf",
+  "16 gelijke klepstoters."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 1b/Hydraulische klepstoter/Huis": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 1b/Hydraulische klepstoter/Plunjer": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 1b/Hydraulische klepstoter/Terugslagkogel met veer": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 1b/Klepspie 1": [
+  "G5m-A-motor:KEEPER",
+  "zelf",
+  "Klepspie; aantal per klep niet vastgesteld."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 1b/Klepspie 2": [
+  "G5m-A-motor:KEEPER",
+  "zelf",
+  "Klepspie; aantal per klep niet vastgesteld."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 1b/Klepsteelafdichting": [
+  "G5m-A-motor:VSEAL",
+  "zelf",
+  "16 gelijke afdichtingen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 1b/Rolzwenkarm": [
+  "G5m-A-motor:ROCKER",
+  "zelf",
+  "16 gelijke rolzwenkarmen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 1b/Rolzwenkarm/Arm": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 1b/Rolzwenkarm/Rol met naaldlager": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 1b/Rolzwenkarm/Rolas": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 1b/Uitlaatklep": [
+  "G5m-A-motor:EVALVE",
+  "zelf",
+  "8 gelijke kleppen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 2a/Hydraulische klepstoter": [
+  "G5m-A-motor:TAPPET",
+  "zelf",
+  "16 gelijke klepstoters."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 2a/Hydraulische klepstoter/Huis": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 2a/Hydraulische klepstoter/Plunjer": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 2a/Hydraulische klepstoter/Terugslagkogel met veer": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 2a/Klepspie 1": [
+  "G5m-A-motor:KEEPER",
+  "zelf",
+  "Klepspie; aantal per klep niet vastgesteld."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 2a/Klepspie 2": [
+  "G5m-A-motor:KEEPER",
+  "zelf",
+  "Klepspie; aantal per klep niet vastgesteld."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 2a/Klepsteelafdichting": [
+  "G5m-A-motor:VSEAL",
+  "zelf",
+  "16 gelijke afdichtingen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 2a/Rolzwenkarm": [
+  "G5m-A-motor:ROCKER",
+  "zelf",
+  "16 gelijke rolzwenkarmen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 2a/Rolzwenkarm/Arm": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 2a/Rolzwenkarm/Rol met naaldlager": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 2a/Rolzwenkarm/Rolas": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 2a/Uitlaatklep": [
+  "G5m-A-motor:EVALVE",
+  "zelf",
+  "8 gelijke kleppen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 2b/Hydraulische klepstoter": [
+  "G5m-A-motor:TAPPET",
+  "zelf",
+  "16 gelijke klepstoters."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 2b/Hydraulische klepstoter/Huis": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 2b/Hydraulische klepstoter/Plunjer": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 2b/Hydraulische klepstoter/Terugslagkogel met veer": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 2b/Klepspie 1": [
+  "G5m-A-motor:KEEPER",
+  "zelf",
+  "Klepspie; aantal per klep niet vastgesteld."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 2b/Klepspie 2": [
+  "G5m-A-motor:KEEPER",
+  "zelf",
+  "Klepspie; aantal per klep niet vastgesteld."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 2b/Klepsteelafdichting": [
+  "G5m-A-motor:VSEAL",
+  "zelf",
+  "16 gelijke afdichtingen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 2b/Rolzwenkarm": [
+  "G5m-A-motor:ROCKER",
+  "zelf",
+  "16 gelijke rolzwenkarmen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 2b/Rolzwenkarm/Arm": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 2b/Rolzwenkarm/Rol met naaldlager": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 2b/Rolzwenkarm/Rolas": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 2b/Uitlaatklep": [
+  "G5m-A-motor:EVALVE",
+  "zelf",
+  "8 gelijke kleppen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 3a/Hydraulische klepstoter": [
+  "G5m-A-motor:TAPPET",
+  "zelf",
+  "16 gelijke klepstoters."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 3a/Hydraulische klepstoter/Huis": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 3a/Hydraulische klepstoter/Plunjer": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 3a/Hydraulische klepstoter/Terugslagkogel met veer": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 3a/Klepspie 1": [
+  "G5m-A-motor:KEEPER",
+  "zelf",
+  "Klepspie; aantal per klep niet vastgesteld."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 3a/Klepspie 2": [
+  "G5m-A-motor:KEEPER",
+  "zelf",
+  "Klepspie; aantal per klep niet vastgesteld."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 3a/Klepsteelafdichting": [
+  "G5m-A-motor:VSEAL",
+  "zelf",
+  "16 gelijke afdichtingen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 3a/Rolzwenkarm": [
+  "G5m-A-motor:ROCKER",
+  "zelf",
+  "16 gelijke rolzwenkarmen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 3a/Rolzwenkarm/Arm": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 3a/Rolzwenkarm/Rol met naaldlager": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 3a/Rolzwenkarm/Rolas": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 3a/Uitlaatklep": [
+  "G5m-A-motor:EVALVE",
+  "zelf",
+  "8 gelijke kleppen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 3b/Hydraulische klepstoter": [
+  "G5m-A-motor:TAPPET",
+  "zelf",
+  "16 gelijke klepstoters."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 3b/Hydraulische klepstoter/Huis": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 3b/Hydraulische klepstoter/Plunjer": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 3b/Hydraulische klepstoter/Terugslagkogel met veer": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 3b/Klepspie 1": [
+  "G5m-A-motor:KEEPER",
+  "zelf",
+  "Klepspie; aantal per klep niet vastgesteld."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 3b/Klepspie 2": [
+  "G5m-A-motor:KEEPER",
+  "zelf",
+  "Klepspie; aantal per klep niet vastgesteld."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 3b/Klepsteelafdichting": [
+  "G5m-A-motor:VSEAL",
+  "zelf",
+  "16 gelijke afdichtingen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 3b/Rolzwenkarm": [
+  "G5m-A-motor:ROCKER",
+  "zelf",
+  "16 gelijke rolzwenkarmen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 3b/Rolzwenkarm/Arm": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 3b/Rolzwenkarm/Rol met naaldlager": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 3b/Rolzwenkarm/Rolas": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 3b/Uitlaatklep": [
+  "G5m-A-motor:EVALVE",
+  "zelf",
+  "8 gelijke kleppen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 4a/Hydraulische klepstoter": [
+  "G5m-A-motor:TAPPET",
+  "zelf",
+  "16 gelijke klepstoters."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 4a/Hydraulische klepstoter/Huis": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 4a/Hydraulische klepstoter/Plunjer": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 4a/Hydraulische klepstoter/Terugslagkogel met veer": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 4a/Klepspie 1": [
+  "G5m-A-motor:KEEPER",
+  "zelf",
+  "Klepspie; aantal per klep niet vastgesteld."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 4a/Klepspie 2": [
+  "G5m-A-motor:KEEPER",
+  "zelf",
+  "Klepspie; aantal per klep niet vastgesteld."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 4a/Klepsteelafdichting": [
+  "G5m-A-motor:VSEAL",
+  "zelf",
+  "16 gelijke afdichtingen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 4a/Rolzwenkarm": [
+  "G5m-A-motor:ROCKER",
+  "zelf",
+  "16 gelijke rolzwenkarmen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 4a/Rolzwenkarm/Arm": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 4a/Rolzwenkarm/Rol met naaldlager": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 4a/Rolzwenkarm/Rolas": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 4a/Uitlaatklep": [
+  "G5m-A-motor:EVALVE",
+  "zelf",
+  "8 gelijke kleppen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 4b/Hydraulische klepstoter": [
+  "G5m-A-motor:TAPPET",
+  "zelf",
+  "16 gelijke klepstoters."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 4b/Hydraulische klepstoter/Huis": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 4b/Hydraulische klepstoter/Plunjer": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 4b/Hydraulische klepstoter/Terugslagkogel met veer": [
+  "G5m-A-motor:TAPPET",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 4b/Klepspie 1": [
+  "G5m-A-motor:KEEPER",
+  "zelf",
+  "Klepspie; aantal per klep niet vastgesteld."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 4b/Klepspie 2": [
+  "G5m-A-motor:KEEPER",
+  "zelf",
+  "Klepspie; aantal per klep niet vastgesteld."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 4b/Klepsteelafdichting": [
+  "G5m-A-motor:VSEAL",
+  "zelf",
+  "16 gelijke afdichtingen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 4b/Rolzwenkarm": [
+  "G5m-A-motor:ROCKER",
+  "zelf",
+  "16 gelijke rolzwenkarmen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 4b/Rolzwenkarm/Arm": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 4b/Rolzwenkarm/Rol met naaldlager": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 4b/Rolzwenkarm/Rolas": [
+  "G5m-A-motor:ROCKER",
+  "deel",
+  "aanname: alleen compleet leverbaar"
+ ],
+ "Aandrijflijn/Motor F4Rt/Cilinderkop/Kleppen uitlaatzijde/Uitlaatklep 4b/Uitlaatklep": [
+  "G5m-A-motor:EVALVE",
+  "zelf",
+  "8 gelijke kleppen."
+ ],
+ "Aandrijflijn/Motor F4Rt/Distributie/Nokkenaswiel inlaat": [
+  "G5m-A-motor:CAMGEAR_IN",
+  "zelf",
+  "Versteller met wiel."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 1/Drijfstanglagerschaal boven": [
+  "G5m-A-motor:BIGEND",
+  "set",
+  "Schaal uit de drijfstanglagerset."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 1/Drijfstanglagerschaal onder": [
+  "G5m-A-motor:BIGEND",
+  "set",
+  "Schaal uit de drijfstanglagerset."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 1/Zuigerveren": [
+  "G5m-A-motor:RINGS",
+  "zelf",
+  "Set voor een zuiger."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 1/Zuigerveren/Compressieveer 1": [
+  "G5m-A-motor:RINGS",
+  "deel",
+  "Zit in de ringenset van de zuiger."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 1/Zuigerveren/Compressieveer 2": [
+  "G5m-A-motor:RINGS",
+  "deel",
+  "Zit in de ringenset van de zuiger."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 1/Zuigerveren/Olieschraapveer": [
+  "G5m-A-motor:RINGS",
+  "deel",
+  "Zit in de ringenset van de zuiger."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 1/Zuigerveren/Olieschraapveer/Schraaplamel boven": [
+  "G5m-A-motor:RINGS",
+  "deel",
+  "Zit in de ringenset van de zuiger."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 1/Zuigerveren/Olieschraapveer/Schraaplamel onder": [
+  "G5m-A-motor:RINGS",
+  "deel",
+  "Zit in de ringenset van de zuiger."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 1/Zuigerveren/Olieschraapveer/Spreidveer": [
+  "G5m-A-motor:RINGS",
+  "deel",
+  "Zit in de ringenset van de zuiger."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 2/Drijfstanglagerschaal boven": [
+  "G5m-A-motor:BIGEND",
+  "set",
+  "Schaal uit de drijfstanglagerset."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 2/Drijfstanglagerschaal onder": [
+  "G5m-A-motor:BIGEND",
+  "set",
+  "Schaal uit de drijfstanglagerset."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 2/Zuigerveren": [
+  "G5m-A-motor:RINGS",
+  "zelf",
+  "Set voor een zuiger."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 2/Zuigerveren/Compressieveer 1": [
+  "G5m-A-motor:RINGS",
+  "deel",
+  "Zit in de ringenset van de zuiger."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 2/Zuigerveren/Compressieveer 2": [
+  "G5m-A-motor:RINGS",
+  "deel",
+  "Zit in de ringenset van de zuiger."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 2/Zuigerveren/Olieschraapveer": [
+  "G5m-A-motor:RINGS",
+  "deel",
+  "Zit in de ringenset van de zuiger."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 2/Zuigerveren/Olieschraapveer/Schraaplamel boven": [
+  "G5m-A-motor:RINGS",
+  "deel",
+  "Zit in de ringenset van de zuiger."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 2/Zuigerveren/Olieschraapveer/Schraaplamel onder": [
+  "G5m-A-motor:RINGS",
+  "deel",
+  "Zit in de ringenset van de zuiger."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 2/Zuigerveren/Olieschraapveer/Spreidveer": [
+  "G5m-A-motor:RINGS",
+  "deel",
+  "Zit in de ringenset van de zuiger."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 3/Drijfstanglagerschaal boven": [
+  "G5m-A-motor:BIGEND",
+  "set",
+  "Schaal uit de drijfstanglagerset."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 3/Drijfstanglagerschaal onder": [
+  "G5m-A-motor:BIGEND",
+  "set",
+  "Schaal uit de drijfstanglagerset."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 3/Zuigerveren": [
+  "G5m-A-motor:RINGS",
+  "zelf",
+  "Set voor een zuiger."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 3/Zuigerveren/Compressieveer 1": [
+  "G5m-A-motor:RINGS",
+  "deel",
+  "Zit in de ringenset van de zuiger."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 3/Zuigerveren/Compressieveer 2": [
+  "G5m-A-motor:RINGS",
+  "deel",
+  "Zit in de ringenset van de zuiger."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 3/Zuigerveren/Olieschraapveer": [
+  "G5m-A-motor:RINGS",
+  "deel",
+  "Zit in de ringenset van de zuiger."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 3/Zuigerveren/Olieschraapveer/Schraaplamel boven": [
+  "G5m-A-motor:RINGS",
+  "deel",
+  "Zit in de ringenset van de zuiger."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 3/Zuigerveren/Olieschraapveer/Schraaplamel onder": [
+  "G5m-A-motor:RINGS",
+  "deel",
+  "Zit in de ringenset van de zuiger."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 3/Zuigerveren/Olieschraapveer/Spreidveer": [
+  "G5m-A-motor:RINGS",
+  "deel",
+  "Zit in de ringenset van de zuiger."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 4/Drijfstanglagerschaal boven": [
+  "G5m-A-motor:BIGEND",
+  "set",
+  "Schaal uit de drijfstanglagerset."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 4/Drijfstanglagerschaal onder": [
+  "G5m-A-motor:BIGEND",
+  "set",
+  "Schaal uit de drijfstanglagerset."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 4/Zuigerveren": [
+  "G5m-A-motor:RINGS",
+  "zelf",
+  "Set voor een zuiger."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 4/Zuigerveren/Compressieveer 1": [
+  "G5m-A-motor:RINGS",
+  "deel",
+  "Zit in de ringenset van de zuiger."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 4/Zuigerveren/Compressieveer 2": [
+  "G5m-A-motor:RINGS",
+  "deel",
+  "Zit in de ringenset van de zuiger."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 4/Zuigerveren/Olieschraapveer": [
+  "G5m-A-motor:RINGS",
+  "deel",
+  "Zit in de ringenset van de zuiger."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 4/Zuigerveren/Olieschraapveer/Schraaplamel boven": [
+  "G5m-A-motor:RINGS",
+  "deel",
+  "Zit in de ringenset van de zuiger."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 4/Zuigerveren/Olieschraapveer/Schraaplamel onder": [
+  "G5m-A-motor:RINGS",
+  "deel",
+  "Zit in de ringenset van de zuiger."
+ ],
+ "Aandrijflijn/Motor F4Rt/Krukmechanisme/Zuiger en drijfstang 4/Zuigerveren/Olieschraapveer/Spreidveer": [
+  "G5m-A-motor:RINGS",
+  "deel",
+  "Zit in de ringenset van de zuiger."
+ ],
+ "Aandrijflijn/Motor F4Rt/Motorafdekkap/Afdekkap": [
+  "G5m-A-motor:COVER",
+  "zelf",
+  ""
+ ],
+ "Aandrijflijn/Motor F4Rt/Motorblok/Hoofdlager 1/Lagerschaal boven": [
+  "G5m-A-motor:MAINBRG",
+  "set",
+  "Schaal uit de hoofdlagerset."
+ ],
+ "Aandrijflijn/Motor F4Rt/Motorblok/Hoofdlager 1/Lagerschaal onder": [
+  "G5m-A-motor:MAINBRG",
+  "set",
+  "Schaal uit de hoofdlagerset."
+ ],
+ "Aandrijflijn/Motor F4Rt/Motorblok/Hoofdlager 2/Aanloopring distributiezijde": [
+  "G5m-A-motor:THRUST",
+  "zelf",
+  ""
+ ],
+ "Aandrijflijn/Motor F4Rt/Motorblok/Hoofdlager 2/Aanloopring vliegwielzijde": [
+  "G5m-A-motor:THRUST",
+  "zelf",
+  ""
+ ],
+ "Aandrijflijn/Motor F4Rt/Motorblok/Hoofdlager 2/Lagerschaal boven": [
+  "G5m-A-motor:MAINBRG",
+  "set",
+  "Schaal uit de hoofdlagerset."
+ ],
+ "Aandrijflijn/Motor F4Rt/Motorblok/Hoofdlager 2/Lagerschaal onder": [
+  "G5m-A-motor:MAINBRG",
+  "set",
+  "Schaal uit de hoofdlagerset."
+ ],
+ "Aandrijflijn/Motor F4Rt/Motorblok/Hoofdlager 3/Lagerschaal boven": [
+  "G5m-A-motor:MAINBRG",
+  "set",
+  "Schaal uit de hoofdlagerset."
+ ],
+ "Aandrijflijn/Motor F4Rt/Motorblok/Hoofdlager 3/Lagerschaal onder": [
+  "G5m-A-motor:MAINBRG",
+  "set",
+  "Schaal uit de hoofdlagerset."
+ ],
+ "Aandrijflijn/Motor F4Rt/Motorblok/Hoofdlager 4/Lagerschaal boven": [
+  "G5m-A-motor:MAINBRG",
+  "set",
+  "Schaal uit de hoofdlagerset."
+ ],
+ "Aandrijflijn/Motor F4Rt/Motorblok/Hoofdlager 4/Lagerschaal onder": [
+  "G5m-A-motor:MAINBRG",
+  "set",
+  "Schaal uit de hoofdlagerset."
+ ],
+ "Aandrijflijn/Motor F4Rt/Motorblok/Hoofdlager 5/Lagerschaal boven": [
+  "G5m-A-motor:MAINBRG",
+  "set",
+  "Schaal uit de hoofdlagerset."
+ ],
+ "Aandrijflijn/Motor F4Rt/Motorblok/Hoofdlager 5/Lagerschaal onder": [
+  "G5m-A-motor:MAINBRG",
+  "set",
+  "Schaal uit de hoofdlagerset."
+ ],
+ "Aandrijflijn/Automaatversnellingsbak": [
+  "G5m-B-automaat:U_AJ0",
+  "zelf",
+  "Complete bak; alleen als geheel of revisiebak, geen los nummer gevonden"
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/ATF-oliepomp": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  "Intern deel van de bak"
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/ATF-oliepomp/Binnenrotor": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/ATF-oliepomp/Buitenrotor": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/ATF-oliepomp/Dichtringen ingaande as": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/ATF-oliepomp/O-ring zeef": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/ATF-oliepomp/Oliezeef": [
+  "G5m-B-automaat:U_ATFSET",
+  "set",
+  "Onderhoudspakket; of de zeef erin zit, staat niet vast"
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/ATF-oliepomp/Pompbus": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/ATF-oliepomp/Pompdeksel": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/ATF-oliepomp/Pomphuis": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/ATF-oliepomp/Zeefmagneet": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Differentieel": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  "Intern deel van de bak"
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Differentieel/Afstelplaatje differentieel": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Differentieel/Borgpen satellietas": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Differentieel/Conisch lager links": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Differentieel/Conisch lager rechts": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Differentieel/Differentieelhuis": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Differentieel/Dikteringen satellietwielen": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Differentieel/Dikteringen zijwielen": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Differentieel/Kroonwiel": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Differentieel/Kroonwielbouten": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Differentieel/Satellietas": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Differentieel/Satellietwiel boven": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Differentieel/Satellietwiel onder": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Differentieel/Zijwiel links": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Differentieel/Zijwiel rechts": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Ingaande as": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  "Intern deel van de bak"
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Keerring links": [
+  "G5m-B-automaat:U_DIFFSEAL_L",
+  "zelf",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Keerring rechts": [
+  "G5m-B-automaat:U_DIFFSEAL_R",
+  "zelf",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  "Zit in de hydraulische verdeler"
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Accumulatoren": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Accumulatoren/Accumulator 1": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Accumulatoren/Accumulator 2": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Accumulatoren/Accumulator 3": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Accumulatoren/Accumulator 4": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Drukschakelaars": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Drukschakelaars/Drukschakelaar 1": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Drukschakelaars/Drukschakelaar 2": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Drukschakelaars/Drukschakelaar 3": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Drukschakelaars/Drukschakelaar 4": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Drukschakelaars/Drukschakelaar 5": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Interne kabelboom": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Kleplichaam": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Kleplichaam/Bovenste klepblok": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Kleplichaam/Klepblokbouten": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Kleplichaam/Onderste klepblok": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Kleplichaam/Pakking boven": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Kleplichaam/Pakking onder": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Kleplichaam/Tussenplaat": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Schuifkleppen": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Schuifkleppen/Detentplaat": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Schuifkleppen/Detentveer": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Schuifkleppen/Drukregelklep": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Schuifkleppen/Handklep": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Schuifkleppen/Lock-up-regelklep": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Schuifkleppen/Omvormer-regelklep": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Schuifkleppen/Pilootklep": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Schuifkleppen/Terugslagkogeltjes": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Solenoïdes": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Solenoïdes/Aan/uit-solenoïde 1": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Solenoïdes/Aan/uit-solenoïde 2": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Solenoïdes/Lineaire solenoïde 1": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Solenoïdes/Lineaire solenoïde 2": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Solenoïdes/Lineaire solenoïde 3": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Solenoïdes/Lineaire solenoïde 4": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Solenoïdes/Lineaire solenoïde 5": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Solenoïdes/Lineaire solenoïde 6": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblok/Temperatuursensor ATF": [
+  "G5m-B-automaat:U_HYDR",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblokdeksel": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblokdeksel/Deksel klepblok": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblokdeksel/Dekselbouten": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Klepblokdeksel/Pakking klepblokdeksel": [
+  "G5m-B-automaat:U_HYDRSEAL",
+  "zelf",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  "Intern deel van de bak"
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/2-6-rem": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/2-6-rem/Borgring": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/2-6-rem/Drukplaat": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/2-6-rem/Frictieplaat 1": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/2-6-rem/Frictieplaat 2": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/2-6-rem/Frictieplaat 3": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/2-6-rem/Frictieplaat 4": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/2-6-rem/Stalen plaat 1": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/2-6-rem/Stalen plaat 2": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/2-6-rem/Stalen plaat 3": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/2-6-rem/Terugdrukveren": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/2-6-rem/Veerhouder 2-6-rem": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/2-6-rem/Zuiger": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/2-6-rem/Zuigerafdichtingen": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/3-5-achteruitkoppeling": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/3-5-achteruitkoppeling/Borgring": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/3-5-achteruitkoppeling/Drukplaat": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/3-5-achteruitkoppeling/Frictieplaat 1": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/3-5-achteruitkoppeling/Frictieplaat 2": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/3-5-achteruitkoppeling/Frictieplaat 3": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/3-5-achteruitkoppeling/Frictieplaat 4": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/3-5-achteruitkoppeling/Frictieplaat 5": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/3-5-achteruitkoppeling/Stalen plaat 1": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/3-5-achteruitkoppeling/Stalen plaat 2": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/3-5-achteruitkoppeling/Stalen plaat 3": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/3-5-achteruitkoppeling/Stalen plaat 4": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/3-5-achteruitkoppeling/Stalen plaat 5": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/3-5-achteruitkoppeling/Terugdrukveren": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/3-5-achteruitkoppeling/Trommel 3-5-R": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/3-5-achteruitkoppeling/Zuiger": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/3-5-achteruitkoppeling/Zuigerafdichtingen": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Hoge koppeling": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Hoge koppeling/Borgring": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Hoge koppeling/Drukplaat": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Hoge koppeling/Frictieplaat 1": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Hoge koppeling/Frictieplaat 2": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Hoge koppeling/Frictieplaat 3": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Hoge koppeling/Frictieplaat 4": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Hoge koppeling/Frictieplaat 5": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Hoge koppeling/Frictieplaat 6": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Hoge koppeling/Stalen plaat 1": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Hoge koppeling/Stalen plaat 2": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Hoge koppeling/Stalen plaat 3": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Hoge koppeling/Stalen plaat 4": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Hoge koppeling/Stalen plaat 5": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Hoge koppeling/Stalen plaat 6": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Hoge koppeling/Terugdrukveren": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Hoge koppeling/Trommel hoge koppeling": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Hoge koppeling/Zuiger": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Hoge koppeling/Zuigerafdichtingen": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Lage koppeling": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Lage koppeling/Borgring": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Lage koppeling/Drukplaat": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Lage koppeling/Frictieplaat 1": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Lage koppeling/Frictieplaat 2": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Lage koppeling/Frictieplaat 3": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Lage koppeling/Frictieplaat 4": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Lage koppeling/Frictieplaat 5": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Lage koppeling/Stalen plaat 1": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Lage koppeling/Stalen plaat 2": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Lage koppeling/Stalen plaat 3": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Lage koppeling/Stalen plaat 4": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Lage koppeling/Terugdrukveren": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Lage koppeling/Trommel lage koppeling": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Lage koppeling/Zuiger": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Lage koppeling/Zuigerafdichtingen": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Lage/achteruitrem": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Lage/achteruitrem/Borgring": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Lage/achteruitrem/Drukplaat": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Lage/achteruitrem/Frictieplaat 1": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Lage/achteruitrem/Frictieplaat 2": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Lage/achteruitrem/Frictieplaat 3": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Lage/achteruitrem/Frictieplaat 4": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Lage/achteruitrem/Stalen plaat 1": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Lage/achteruitrem/Stalen plaat 2": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Lage/achteruitrem/Stalen plaat 3": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Lage/achteruitrem/Stalen plaat 4": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Lage/achteruitrem/Terugdrukveren": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Lage/achteruitrem/Zuiger": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Lage/achteruitrem/Zuigerafdichtingen": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Lage/achteruitrem/Zuigerhuis L/R-rem": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Vrijloop": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Vrijloop/Borgring vrijloop": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Vrijloop/Vrijloop binnenring": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Vrijloop/Vrijloop buitenring": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelingen en remmen/Vrijloop/Vrijloop klemlichamen": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelomvormer": [
+  "G5m-B-automaat:U_CONV",
+  "zelf",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelomvormer/Leidwiel met vrijloop": [
+  "G5m-B-automaat:U_CONV",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelomvormer/Leidwiel met vrijloop/Axiaal lager achter": [
+  "G5m-B-automaat:U_CONV",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelomvormer/Leidwiel met vrijloop/Axiaal lager voor": [
+  "G5m-B-automaat:U_CONV",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelomvormer/Leidwiel met vrijloop/Leidwiel (stator)": [
+  "G5m-B-automaat:U_CONV",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelomvormer/Leidwiel met vrijloop/Vrijloop binnenring": [
+  "G5m-B-automaat:U_CONV",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelomvormer/Leidwiel met vrijloop/Vrijloop buitenring": [
+  "G5m-B-automaat:U_CONV",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelomvormer/Leidwiel met vrijloop/Vrijloop klemlichamen": [
+  "G5m-B-automaat:U_CONV",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelomvormer/Omvormerbouten": [
+  "G5m-B-automaat:U_CONV",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelomvormer/Omvormerdeksel": [
+  "G5m-B-automaat:U_CONV",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelomvormer/Omvormernokken": [
+  "G5m-B-automaat:U_CONV",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelomvormer/Overbruggingskoppeling": [
+  "G5m-B-automaat:U_CONV",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelomvormer/Overbruggingskoppeling/Frictievoering": [
+  "G5m-B-automaat:U_CONV",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelomvormer/Overbruggingskoppeling/Overbruggingszuiger": [
+  "G5m-B-automaat:U_CONV",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelomvormer/Pompwiel": [
+  "G5m-B-automaat:U_CONV",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelomvormer/Pompwiel/Pompwielschaal": [
+  "G5m-B-automaat:U_CONV",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelomvormer/Pompwiel/Pompwielschoepen": [
+  "G5m-B-automaat:U_CONV",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelomvormer/Torsiedemper": [
+  "G5m-B-automaat:U_CONV",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelomvormer/Torsiedemper/Demperplaat": [
+  "G5m-B-automaat:U_CONV",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelomvormer/Torsiedemper/Demperring": [
+  "G5m-B-automaat:U_CONV",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelomvormer/Torsiedemper/Demperveren": [
+  "G5m-B-automaat:U_CONV",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelomvormer/Turbinewiel": [
+  "G5m-B-automaat:U_CONV",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelomvormer/Turbinewiel/Turbineschaal": [
+  "G5m-B-automaat:U_CONV",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Koppelomvormer/Turbinewiel/Turbineschoepen": [
+  "G5m-B-automaat:U_CONV",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Omvormerhuis": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Omvormerhuis/Bouten motorflens": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Omvormerhuis/Keerring omvormerhuis": [
+  "G5m-B-automaat:U_CONVSEAL",
+  "zelf",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Omvormerhuis/O-ring omvormerhuis": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Omvormerhuis/Omvormerhuis (klok)": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Parkeerblokkering": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  "Intern deel van de bak"
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Parkeerblokkering/Palas": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Parkeerblokkering/Parkeernok": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Parkeerblokkering/Parkeerpal": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Parkeerblokkering/Parkeerstang": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Parkeerblokkering/Retourveer parkeerpal": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tandwielsets": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  "Intern deel van de bak"
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tandwielsets/Achterste planetaire set": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tandwielsets/Achterste planetaire set/Achterste drager": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tandwielsets/Achterste planetaire set/Holwiel achterste set": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tandwielsets/Achterste planetaire set/Korte planeet 1": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tandwielsets/Achterste planetaire set/Korte planeet 2": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tandwielsets/Achterste planetaire set/Korte planeet 3": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tandwielsets/Achterste planetaire set/Lange planeet 1": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tandwielsets/Achterste planetaire set/Lange planeet 2": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tandwielsets/Achterste planetaire set/Lange planeet 3": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tandwielsets/Achterste planetaire set/Naaldlagers planeetwielen": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tandwielsets/Achterste planetaire set/Zonnewiel achter": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tandwielsets/Achterste planetaire set/Zonnewiel voor": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tandwielsets/Reductieset": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tandwielsets/Reductieset/Holwiel": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tandwielsets/Reductieset/Naaldlagers planeetwielen": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tandwielsets/Reductieset/Planeetdrager": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tandwielsets/Reductieset/Planeetwiel 1": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tandwielsets/Reductieset/Planeetwiel 2": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tandwielsets/Reductieset/Planeetwiel 3": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tandwielsets/Reductieset/Zonnewiel": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tandwielsets/Voorste planetaire set": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tandwielsets/Voorste planetaire set/Holwiel": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tandwielsets/Voorste planetaire set/Naaldlagers planeetwielen": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tandwielsets/Voorste planetaire set/Planeetdrager": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tandwielsets/Voorste planetaire set/Planeetwiel 1": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tandwielsets/Voorste planetaire set/Planeetwiel 2": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tandwielsets/Voorste planetaire set/Planeetwiel 3": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tandwielsets/Voorste planetaire set/Planeetwiel 4": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tandwielsets/Voorste planetaire set/Zonnewiel": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Transmissiehuis": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  "Intern deel van de bak"
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Transmissiehuis/Aftapplug": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  "Los niet bevestigd; de FAST-plug in de catalogus is niet aantoonbaar voor de automaat"
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Transmissiehuis/Bouten huisverbinding": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Transmissiehuis/Ontluchtingsnippel": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Transmissiehuis/Ontluchtingsslang": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Transmissiehuis/Transmissiehuis (carter)": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Transmissiehuis/Vulplug": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  "Los niet bevestigd; de FAST-plug in de catalogus is niet aantoonbaar voor de automaat"
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tussenas eindoverbrenging": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  "Intern deel van de bak"
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tussenas eindoverbrenging/Afstelplaatje reductie-as": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tussenas eindoverbrenging/Conisch lager reductie-as achter": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tussenas eindoverbrenging/Conisch lager reductie-as voor": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tussenas eindoverbrenging/Reductie-as": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tussenas eindoverbrenging/Rondsel 21 tanden": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Tussenas eindoverbrenging/Tandwiel 45 tanden": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Uitgaand tandwiel en parkeerrad": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  "Intern deel van de bak"
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Uitgaand tandwiel en parkeerrad/Conisch lager uitgaand tandwiel": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Uitgaand tandwiel en parkeerrad/Parkeerrad": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Uitgaand tandwiel en parkeerrad/Uitgaand tandwiel": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Zijdeksel": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Zijdeksel/Holle bout IN": [
+  "G5m-B-automaat:U_COOLER",
+  "deel",
+  "Koelleiding of bout van de koeleraansluiting"
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Zijdeksel/Holle bout UIT": [
+  "G5m-B-automaat:U_COOLER",
+  "deel",
+  "Koelleiding of bout van de koeleraansluiting"
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Zijdeksel/Koelleiding IN": [
+  "G5m-B-automaat:U_COOLER",
+  "deel",
+  "Koelleiding of bout van de koeleraansluiting"
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Zijdeksel/Koelleiding UIT": [
+  "G5m-B-automaat:U_COOLER",
+  "deel",
+  "Koelleiding of bout van de koeleraansluiting"
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Zijdeksel/Water-ATF-koeler": [
+  "G5m-B-automaat:U_COOLER",
+  "zelf",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Zijdeksel/Zijdeksel (deksel)": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Aandrijflijn/Automaatversnellingsbak/Zijdeksel/Zijdekselbouten": [
+  "G5m-B-automaat:U_AJ0",
+  "deel",
+  ""
+ ],
+ "Carrosserie/Portier linksvoor/Raambediening": [
+  "G5m-D-carrosserie:U_RAAMMECH_LV",
+  "zelf",
+  ""
+ ],
+ "Carrosserie/Portier linksvoor/Raambediening/Bedieningskabels": [
+  "G5m-D-carrosserie:U_RAAMMECH_LV",
+  "deel",
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto-categorie raamregelaar"
+ ],
+ "Carrosserie/Portier linksvoor/Raambediening/Geleiderail achter": [
+  "G5m-D-carrosserie:U_RAAMMECH_LV",
+  "deel",
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto-categorie raamregelaar"
+ ],
+ "Carrosserie/Portier linksvoor/Raambediening/Geleiderail voor": [
+  "G5m-D-carrosserie:U_RAAMMECH_LV",
+  "deel",
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto-categorie raamregelaar"
+ ],
+ "Carrosserie/Portier linksvoor/Raambediening/Ruitdrager": [
+  "G5m-D-carrosserie:U_RAAMMECH_LV",
+  "deel",
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto-categorie raamregelaar"
+ ],
+ "Carrosserie/Portier linksvoor/Raambediening/Raammotor": [
+  "G5m-D-carrosserie:U_NG_RAAMMOTOR",
+  "zelf",
+  ""
+ ],
+ "Carrosserie/Portier rechtsvoor/Raambediening": [
+  "G5m-D-carrosserie:U_RAAMMECH_RV",
+  "zelf",
+  ""
+ ],
+ "Carrosserie/Portier rechtsvoor/Raambediening/Bedieningskabels": [
+  "G5m-D-carrosserie:U_RAAMMECH_RV",
+  "deel",
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto-categorie raamregelaar"
+ ],
+ "Carrosserie/Portier rechtsvoor/Raambediening/Geleiderail achter": [
+  "G5m-D-carrosserie:U_RAAMMECH_RV",
+  "deel",
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto-categorie raamregelaar"
+ ],
+ "Carrosserie/Portier rechtsvoor/Raambediening/Geleiderail voor": [
+  "G5m-D-carrosserie:U_RAAMMECH_RV",
+  "deel",
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto-categorie raamregelaar"
+ ],
+ "Carrosserie/Portier rechtsvoor/Raambediening/Ruitdrager": [
+  "G5m-D-carrosserie:U_RAAMMECH_RV",
+  "deel",
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto-categorie raamregelaar"
+ ],
+ "Carrosserie/Portier rechtsvoor/Raambediening/Raammotor": [
+  "G5m-D-carrosserie:U_NG_RAAMMOTOR",
+  "zelf",
+  ""
+ ],
+ "Carrosserie/Portier linksachter/Raambediening": [
+  "G5m-D-carrosserie:U_RAAMMECH_LA",
+  "zelf",
+  ""
+ ],
+ "Carrosserie/Portier linksachter/Raambediening/Bedieningskabels": [
+  "G5m-D-carrosserie:U_RAAMMECH_LA",
+  "deel",
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto-categorie raamregelaar"
+ ],
+ "Carrosserie/Portier linksachter/Raambediening/Geleiderail achter": [
+  "G5m-D-carrosserie:U_RAAMMECH_LA",
+  "deel",
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto-categorie raamregelaar"
+ ],
+ "Carrosserie/Portier linksachter/Raambediening/Geleiderail voor": [
+  "G5m-D-carrosserie:U_RAAMMECH_LA",
+  "deel",
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto-categorie raamregelaar"
+ ],
+ "Carrosserie/Portier linksachter/Raambediening/Ruitdrager": [
+  "G5m-D-carrosserie:U_RAAMMECH_LA",
+  "deel",
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto-categorie raamregelaar"
+ ],
+ "Carrosserie/Portier linksachter/Raambediening/Raammotor": [
+  "G5m-D-carrosserie:U_NG_RAAMMOTOR",
+  "zelf",
+  ""
+ ],
+ "Carrosserie/Portier rechtsachter/Raambediening": [
+  "G5m-D-carrosserie:U_RAAMMECH_RA",
+  "zelf",
+  ""
+ ],
+ "Carrosserie/Portier rechtsachter/Raambediening/Bedieningskabels": [
+  "G5m-D-carrosserie:U_RAAMMECH_RA",
+  "deel",
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto-categorie raamregelaar"
+ ],
+ "Carrosserie/Portier rechtsachter/Raambediening/Geleiderail achter": [
+  "G5m-D-carrosserie:U_RAAMMECH_RA",
+  "deel",
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto-categorie raamregelaar"
+ ],
+ "Carrosserie/Portier rechtsachter/Raambediening/Geleiderail voor": [
+  "G5m-D-carrosserie:U_RAAMMECH_RA",
+  "deel",
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto-categorie raamregelaar"
+ ],
+ "Carrosserie/Portier rechtsachter/Raambediening/Ruitdrager": [
+  "G5m-D-carrosserie:U_RAAMMECH_RA",
+  "deel",
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto-categorie raamregelaar"
+ ],
+ "Carrosserie/Portier rechtsachter/Raambediening/Raammotor": [
+  "G5m-D-carrosserie:U_NG_RAAMMOTOR",
+  "zelf",
+  ""
+ ],
+ "Carrosserie/Portier linksvoor/Deurbekleding/Raamschakelaars": [
+  "G5m-D-carrosserie:U_SW_BESTUURDER",
+  "zelf",
+  ""
+ ],
+ "Carrosserie/Portier linksachter/Deurbekleding/Raamschakelaar": [
+  "G5m-D-carrosserie:U_SW_ACHTER",
+  "zelf",
+  ""
+ ],
+ "Carrosserie/Portier rechtsachter/Deurbekleding/Raamschakelaar": [
+  "G5m-D-carrosserie:U_SW_ACHTER",
+  "zelf",
+  ""
+ ],
+ "Carrosserie/Portier linksvoor/Deurvanger": [
+  "G5m-D-carrosserie:U_VANGER_V",
+  "zelf",
+  ""
+ ],
+ "Carrosserie/Portier rechtsvoor/Deurvanger": [
+  "G5m-D-carrosserie:U_VANGER_V",
+  "zelf",
+  ""
+ ],
+ "Carrosserie/Portier linksachter/Deurvanger": [
+  "G5m-D-carrosserie:U_VANGER_A",
+  "zelf",
+  ""
+ ],
+ "Carrosserie/Portier rechtsachter/Deurvanger": [
+  "G5m-D-carrosserie:U_VANGER_A",
+  "zelf",
+  ""
+ ],
+ "Carrosserie/Portier linksvoor/Deurslot": [
+  "G5m-D-carrosserie:U_SLOT_LV",
+  "zelf",
+  ""
+ ],
+ "Carrosserie/Portier linksvoor/Deurslot/Bedieningsstang": [
+  "G5m-D-carrosserie:U_SLOT_LV",
+  "deel",
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto (categorie sloten) en winkelpagina"
+ ],
+ "Carrosserie/Portier linksvoor/Deurslot/Slotkast": [
+  "G5m-D-carrosserie:U_SLOT_LV",
+  "deel",
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto (categorie sloten) en winkelpagina"
+ ],
+ "Carrosserie/Portier linksvoor/Deurslot/Slotmotor": [
+  "G5m-D-carrosserie:U_SLOT_LV",
+  "deel",
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto (categorie sloten) en winkelpagina"
+ ],
+ "Carrosserie/Portier rechtsvoor/Deurslot": [
+  "G5m-D-carrosserie:U_SLOT_RV",
+  "zelf",
+  ""
+ ],
+ "Carrosserie/Portier rechtsvoor/Deurslot/Bedieningsstang": [
+  "G5m-D-carrosserie:U_SLOT_RV",
+  "deel",
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto (categorie sloten) en winkelpagina"
+ ],
+ "Carrosserie/Portier rechtsvoor/Deurslot/Slotkast": [
+  "G5m-D-carrosserie:U_SLOT_RV",
+  "deel",
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto (categorie sloten) en winkelpagina"
+ ],
+ "Carrosserie/Portier rechtsvoor/Deurslot/Slotmotor": [
+  "G5m-D-carrosserie:U_SLOT_RV",
+  "deel",
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto (categorie sloten) en winkelpagina"
+ ],
+ "Carrosserie/Portier linksachter/Deurslot": [
+  "G5m-D-carrosserie:U_SLOT_LA",
+  "zelf",
+  ""
+ ],
+ "Carrosserie/Portier linksachter/Deurslot/Bedieningsstang": [
+  "G5m-D-carrosserie:U_SLOT_LA",
+  "deel",
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto (categorie sloten) en winkelpagina"
+ ],
+ "Carrosserie/Portier linksachter/Deurslot/Slotkast": [
+  "G5m-D-carrosserie:U_SLOT_LA",
+  "deel",
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto (categorie sloten) en winkelpagina"
+ ],
+ "Carrosserie/Portier linksachter/Deurslot/Slotmotor": [
+  "G5m-D-carrosserie:U_SLOT_LA",
+  "deel",
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto (categorie sloten) en winkelpagina"
+ ],
+ "Carrosserie/Portier rechtsachter/Deurslot": [
+  "G5m-D-carrosserie:U_SLOT_RA",
+  "zelf",
+  ""
+ ],
+ "Carrosserie/Portier rechtsachter/Deurslot/Bedieningsstang": [
+  "G5m-D-carrosserie:U_SLOT_RA",
+  "deel",
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto (categorie sloten) en winkelpagina"
+ ],
+ "Carrosserie/Portier rechtsachter/Deurslot/Slotkast": [
+  "G5m-D-carrosserie:U_SLOT_RA",
+  "deel",
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto (categorie sloten) en winkelpagina"
+ ],
+ "Carrosserie/Portier rechtsachter/Deurslot/Slotmotor": [
+  "G5m-D-carrosserie:U_SLOT_RA",
+  "deel",
+  "aanname: alleen compleet leverbaar; samenstel gezocht in Spareto (categorie sloten) en winkelpagina"
+ ],
+ "Carrosserie/Achterklep/Achterklepslot": [
+  "G5m-D-carrosserie:U_KLEPSLOT",
+  "zelf",
+  ""
+ ],
+ "Carrosserie/Achterklep/Achterklepslot/Slotkast achterklep": [
+  "G5m-D-carrosserie:U_KLEPSLOT",
+  "deel",
+  "aanname: alleen compleet leverbaar; samenstel gezocht"
+ ],
+ "Carrosserie/Achterklep/Achterklepslot/Slotmotor achterklep": [
+  "G5m-D-carrosserie:U_KLEPMOTOR",
+  "zelf",
+  ""
+ ],
+ "Carrosserie/Carrosseriekooi/Voorkop/Motorkapslot": [
+  "G5m-D-carrosserie:U_MOTORKAPSLOT",
+  "zelf",
+  ""
+ ],
+ "Carrosserie/Carrosseriekooi/Voorkop/Frontmodule": [
+  "G5m-D-carrosserie:U_FRONTPANEEL",
+  "zelf",
+  ""
+ ],
+ "Carrosserie/Carrosseriekooi/Voorkop/Bumperbalk voor": [
+  "G5m-D-carrosserie:U_BUMPERBALK",
+  "zelf",
+  ""
+ ],
+ "Carrosserie/Carrosseriekooi/Wielkuipschermen/Wielkuipscherm linksvoor": [
+  "G5m-D-carrosserie:U_WIELKUIP_LV",
+  "zelf",
+  ""
+ ],
+ "Carrosserie/Carrosseriekooi/Wielkuipschermen/Wielkuipscherm rechtsvoor": [
+  "G5m-D-carrosserie:U_WIELKUIP_RV",
+  "zelf",
+  ""
+ ],
+ "Carrosserie/Carrosseriekooi/Wielkuipschermen/Wielkuipscherm linksachter": [
+  "G5m-D-carrosserie:U_NG_WIELKUIP_ACHTER",
+  "zelf",
+  ""
+ ],
+ "Carrosserie/Carrosseriekooi/Wielkuipschermen/Wielkuipscherm rechtsachter": [
+  "G5m-D-carrosserie:U_NG_WIELKUIP_ACHTER",
+  "zelf",
+  ""
+ ],
+ "Carrosserie/Motorkap/Sproeierslang naar koppeling": [
+  "G5m-D-carrosserie:U_SPROEISLANG",
+  "zelf",
+  ""
+ ],
+ "Carrosserie/Motorkap/T-stuk sproeierslang": [
+  "G5m-D-carrosserie:U_SPROEISLANG",
+  "set",
+  "verbinders zitten in de reparatieset"
+ ],
+ "Carrosserie/Portier linksvoor/Portierrubber": [
+  "G5m-D-carrosserie:U_NG_PORTIERRUBBER",
+  "zelf",
+  ""
+ ],
+ "Carrosserie/Portier rechtsvoor/Portierrubber": [
+  "G5m-D-carrosserie:U_NG_PORTIERRUBBER",
+  "zelf",
+  ""
+ ],
+ "Carrosserie/Portier linksachter/Portierrubber": [
+  "G5m-D-carrosserie:U_NG_PORTIERRUBBER",
+  "zelf",
+  ""
+ ],
+ "Carrosserie/Portier rechtsachter/Portierrubber": [
+  "G5m-D-carrosserie:U_NG_PORTIERRUBBER",
+  "zelf",
+  ""
+ ],
+ "Interieur/Pedalen/Remlichtschakelaar": [
+  "G5m-E-interieur:U_REMLICHT",
+  "zelf",
+  ""
+ ],
+ "Interieur/Pedalen/Gaspedaalarm": [
+  "G5m-E-interieur:U_GASPEDAAL",
+  "zelf",
+  "Pedaalarm en sensor als module"
+ ],
+ "Interieur/Pedalen/Gaspedaalsensor": [
+  "G5m-E-interieur:U_GASPEDAAL",
+  "deel",
+  "Sensor is ingebouwd in de pedaalmodule"
+ ],
+ "Interieur/Pedalen/Gaspedaalpad": [
+  "G5m-E-interieur:U_GASPEDAAL",
+  "deel",
+  "Pad zit op de arm; los pad niet gevonden"
+ ],
+ "Interieur/Pedalen/Rempedaalpad": [
+  "G5m-E-interieur:U_REMPEDAALRUBBER",
+  "zelf",
+  ""
+ ],
+ "Interieur/Dashboard/Klimaatunit/Aanjagermotor": [
+  "G5m-E-interieur:U_AANJAGER",
+  "zelf",
+  ""
+ ],
+ "Interieur/Dashboard/Klimaatunit/Aanjagerwaaier": [
+  "G5m-E-interieur:U_AANJAGER",
+  "deel",
+  "Waaier zit vast op de motoras; niet los gevonden"
+ ],
+ "Interieur/Dashboard/Klimaatunit/Kachelradiateur": [
+  "G5m-E-interieur:U_KACHELRAD",
+  "zelf",
+  ""
+ ],
+ "Interieur/Bekleding/Dakbekleding/Zonneklep links": [
+  "G5m-E-interieur:U_ZONNEKLEP_L",
+  "zelf",
+  ""
+ ],
+ "Interieur/Bekleding/Dakbekleding/Zonneklep links/Make-upspiegel": [
+  "G5m-E-interieur:U_ZONNEKLEP_L",
+  "deel",
+  "Zit in de zonneklep; niet los gevonden"
+ ],
+ "Interieur/Bekleding/Dakbekleding/Zonneklep links/Spiegelklepje": [
+  "G5m-E-interieur:U_ZONNEKLEP_L",
+  "deel",
+  "Zit in de zonneklep; niet los gevonden"
+ ],
+ "Interieur/Bekleding/Dakbekleding/Zonneklep links/Zonneklepas": [
+  "G5m-E-interieur:U_ZONNEKLEP_L",
+  "deel",
+  "Zit in de zonneklep; niet los gevonden"
+ ],
+ "Interieur/Bekleding/Dakbekleding/Zonneklep links/Zonnekleppaneel": [
+  "G5m-E-interieur:U_ZONNEKLEP_L",
+  "deel",
+  "Zit in de zonneklep; niet los gevonden"
+ ],
+ "Interieur/Bekleding/Dakbekleding/Zonneklep rechts": [
+  "G5m-E-interieur:U_ZONNEKLEP_R",
+  "zelf",
+  ""
+ ],
+ "Interieur/Bekleding/Dakbekleding/Zonneklep rechts/Make-upspiegel": [
+  "G5m-E-interieur:U_ZONNEKLEP_R",
+  "deel",
+  "Zit in de zonneklep; niet los gevonden"
+ ],
+ "Interieur/Bekleding/Dakbekleding/Zonneklep rechts/Spiegelklepje": [
+  "G5m-E-interieur:U_ZONNEKLEP_R",
+  "deel",
+  "Zit in de zonneklep; niet los gevonden"
+ ],
+ "Interieur/Bekleding/Dakbekleding/Zonneklep rechts/Zonneklepas": [
+  "G5m-E-interieur:U_ZONNEKLEP_R",
+  "deel",
+  "Zit in de zonneklep; niet los gevonden"
+ ],
+ "Interieur/Bekleding/Dakbekleding/Zonneklep rechts/Zonnekleppaneel": [
+  "G5m-E-interieur:U_ZONNEKLEP_R",
+  "deel",
+  "Zit in de zonneklep; niet los gevonden"
+ ],
+ "Interieur/Stoelen/Veiligheidsgordels/Gordel voor links": [
+  "G5m-E-interieur:U_GORDEL_VL",
+  "zelf",
+  ""
+ ],
+ "Interieur/Stoelen/Veiligheidsgordels/Gordel voor links/Gordelband voor links": [
+  "G5m-E-interieur:U_GORDEL_VL",
+  "deel",
+  "Band zit op de rolautomaat; niet los gevonden"
+ ],
+ "Interieur/Stoelen/Veiligheidsgordels/Gordel voor links/Gordelrolautomaat voor links": [
+  "G5m-E-interieur:U_GORDEL_VL",
+  "deel",
+  "Rolautomaat is het hart van de gordel"
+ ],
+ "Interieur/Stoelen/Veiligheidsgordels/Gordel voor links/Gordeltong voor links": [
+  "G5m-E-interieur:U_GORDEL_VL",
+  "deel",
+  "Tong zit op de band"
+ ],
+ "Interieur/Stoelen/Veiligheidsgordels/Gordel voor rechts": [
+  "G5m-E-interieur:U_GORDEL_VR",
+  "zelf",
+  ""
+ ],
+ "Interieur/Stoelen/Veiligheidsgordels/Gordel voor rechts/Gordelband voor rechts": [
+  "G5m-E-interieur:U_GORDEL_VR",
+  "deel",
+  "Band zit op de rolautomaat; niet los gevonden"
+ ],
+ "Interieur/Stoelen/Veiligheidsgordels/Gordel voor rechts/Gordelrolautomaat voor rechts": [
+  "G5m-E-interieur:U_GORDEL_VR",
+  "deel",
+  "Rolautomaat is het hart van de gordel"
+ ],
+ "Interieur/Stoelen/Veiligheidsgordels/Gordel voor rechts/Gordeltong voor rechts": [
+  "G5m-E-interieur:U_GORDEL_VR",
+  "deel",
+  "Tong zit op de band"
+ ],
+ "Interieur/Stoelen/Bestuurdersstoel/Gordelslot met spanner": [
+  "G5m-E-interieur:U_GORDELSLOT_V",
+  "zelf",
+  ""
+ ],
+ "Interieur/Stoelen/Bestuurdersstoel/Gordelslot met spanner/Ontgrendelknop": [
+  "G5m-E-interieur:U_GORDELSLOT_V",
+  "deel",
+  "Onderdeel van het gordelslot met spanner; niet los gevonden"
+ ],
+ "Interieur/Stoelen/Bestuurdersstoel/Gordelslot met spanner/Slotbehuizing": [
+  "G5m-E-interieur:U_GORDELSLOT_V",
+  "deel",
+  "Onderdeel van het gordelslot met spanner; niet los gevonden"
+ ],
+ "Interieur/Stoelen/Bestuurdersstoel/Gordelslot met spanner/Slotkabel": [
+  "G5m-E-interieur:U_GORDELSLOT_V",
+  "deel",
+  "Onderdeel van het gordelslot met spanner; niet los gevonden"
+ ],
+ "Interieur/Stoelen/Bestuurdersstoel/Gordelslot met spanner/Slotspanner": [
+  "G5m-E-interieur:U_GORDELSLOT_V",
+  "deel",
+  "Onderdeel van het gordelslot met spanner; niet los gevonden"
+ ],
+ "Interieur/Stoelen/Passagiersstoel/Gordelslot met spanner": [
+  "G5m-E-interieur:U_GORDELSLOT_V",
+  "zelf",
+  ""
+ ],
+ "Interieur/Stoelen/Passagiersstoel/Gordelslot met spanner/Ontgrendelknop": [
+  "G5m-E-interieur:U_GORDELSLOT_V",
+  "deel",
+  "Onderdeel van het gordelslot met spanner; niet los gevonden"
+ ],
+ "Interieur/Stoelen/Passagiersstoel/Gordelslot met spanner/Slotbehuizing": [
+  "G5m-E-interieur:U_GORDELSLOT_V",
+  "deel",
+  "Onderdeel van het gordelslot met spanner; niet los gevonden"
+ ],
+ "Interieur/Stoelen/Passagiersstoel/Gordelslot met spanner/Slotkabel": [
+  "G5m-E-interieur:U_GORDELSLOT_V",
+  "deel",
+  "Onderdeel van het gordelslot met spanner; niet los gevonden"
+ ],
+ "Interieur/Stoelen/Passagiersstoel/Gordelslot met spanner/Slotspanner": [
+  "G5m-E-interieur:U_GORDELSLOT_V",
+  "deel",
+  "Onderdeel van het gordelslot met spanner; niet los gevonden"
+ ],
+ "Interieur/Dashboard/Handschoenenkastje": [
+  "G5m-E-interieur:U_HANDSCHOENENKAST",
+  "zelf",
+  ""
+ ],
+ "Interieur/Dashboard/Handschoenenkastje/Handschoenenkastbak": [
+  "G5m-E-interieur:U_HANDSCHOENENKAST",
+  "deel",
+  "Niet los gevonden; onderdeel van het kastje"
+ ],
+ "Interieur/Dashboard/Handschoenenkastje/Handschoenenkastdemper": [
+  "G5m-E-interieur:U_HANDSCHOENENKAST",
+  "deel",
+  "Niet los gevonden; onderdeel van het kastje"
+ ],
+ "Interieur/Dashboard/Handschoenenkastje/Handschoenenkastklep": [
+  "G5m-E-interieur:U_HANDSCHOENENKAST",
+  "deel",
+  "Niet los gevonden; onderdeel van het kastje"
+ ],
+ "Interieur/Dashboard/Handschoenenkastje/Handschoenenkastslot": [
+  "G5m-E-interieur:U_HANDSCHOENENKAST",
+  "deel",
+  "Niet los gevonden; onderdeel van het kastje"
+ ],
+ "Interieur/Dashboard/Instrumentenpaneel": [
+  "G5m-E-interieur:U_CLUSTER",
+  "zelf",
+  ""
+ ],
+ "Interieur/Dashboard/Instrumentenpaneel/Brandstofmeter": [
+  "G5m-E-interieur:U_CLUSTER",
+  "deel",
+  "Zit in het instrumentenpaneel; niet los gevonden"
+ ],
+ "Interieur/Dashboard/Instrumentenpaneel/Informatiedisplay": [
+  "G5m-E-interieur:U_CLUSTER",
+  "deel",
+  "Zit in het instrumentenpaneel; niet los gevonden"
+ ],
+ "Interieur/Dashboard/Instrumentenpaneel/Instrumentenbehuizing": [
+  "G5m-E-interieur:U_CLUSTER",
+  "deel",
+  "Zit in het instrumentenpaneel; niet los gevonden"
+ ],
+ "Interieur/Dashboard/Instrumentenpaneel/Instrumentenglas": [
+  "G5m-E-interieur:U_CLUSTER",
+  "deel",
+  "Zit in het instrumentenpaneel; niet los gevonden"
+ ],
+ "Interieur/Dashboard/Instrumentenpaneel/Instrumentenkap": [
+  "G5m-E-interieur:U_CLUSTER",
+  "deel",
+  "Zit in het instrumentenpaneel; niet los gevonden"
+ ],
+ "Interieur/Dashboard/Instrumentenpaneel/Sierringen": [
+  "G5m-E-interieur:U_CLUSTER",
+  "deel",
+  "Zit in het instrumentenpaneel; niet los gevonden"
+ ],
+ "Interieur/Dashboard/Instrumentenpaneel/Snelheidsmeter": [
+  "G5m-E-interieur:U_CLUSTER",
+  "deel",
+  "Zit in het instrumentenpaneel; niet los gevonden"
+ ],
+ "Interieur/Dashboard/Instrumentenpaneel/Temperatuurmeter": [
+  "G5m-E-interieur:U_CLUSTER",
+  "deel",
+  "Zit in het instrumentenpaneel; niet los gevonden"
+ ],
+ "Interieur/Dashboard/Instrumentenpaneel/Toerenteller": [
+  "G5m-E-interieur:U_CLUSTER",
+  "deel",
+  "Zit in het instrumentenpaneel; niet los gevonden"
+ ],
+ "Interieur/Dashboard/Instrumentenpaneel/Wijzernaven": [
+  "G5m-E-interieur:U_CLUSTER",
+  "deel",
+  "Zit in het instrumentenpaneel; niet los gevonden"
+ ],
+ "Interieur/Dashboard/Instrumentenpaneel/Wijzers": [
+  "G5m-E-interieur:U_CLUSTER",
+  "deel",
+  "Zit in het instrumentenpaneel; niet los gevonden"
+ ],
+ "Interieur/Dashboard/Bedieningspanelen/Klimaatbediening": [
+  "G5m-E-interieur:U_KLIMAATBED",
+  "zelf",
+  ""
+ ],
+ "Interieur/Dashboard/Bedieningspanelen/Klimaatbediening/Klimaatdisplay": [
+  "G5m-E-interieur:U_KLIMAATBED",
+  "deel",
+  "Onderdeel van het bedieningspaneel; niet los gevonden"
+ ],
+ "Interieur/Dashboard/Bedieningspanelen/Klimaatbediening/Klimaatomlijsting": [
+  "G5m-E-interieur:U_KLIMAATBED",
+  "deel",
+  "Onderdeel van het bedieningspaneel; niet los gevonden"
+ ],
+ "Interieur/Dashboard/Bedieningspanelen/Klimaatbediening/Klimaatpaneel": [
+  "G5m-E-interieur:U_KLIMAATBED",
+  "deel",
+  "Onderdeel van het bedieningspaneel; niet los gevonden"
+ ],
+ "Interieur/Dashboard/Bedieningspanelen/Klimaatbediening/Klimaattoetsen": [
+  "G5m-E-interieur:U_KLIMAATBED",
+  "deel",
+  "Onderdeel van het bedieningspaneel; niet los gevonden"
+ ],
+ "Interieur/Dashboard/Bedieningspanelen/Klimaatbediening/Opschriften klimaat": [
+  "G5m-E-interieur:U_KLIMAATBED",
+  "deel",
+  "Onderdeel van het bedieningspaneel; niet los gevonden"
+ ],
+ "Interieur/Middenconsole/Parkeerremschakelaar": [
+  "G5m-E-interieur:U_PARKEERREM",
+  "zelf",
+  ""
+ ],
+ "Interieur/Binnenspiegel": [
+  "G5m-E-interieur:U_BINNENSPIEGEL",
+  "zelf",
+  ""
+ ],
+ "Interieur/Binnenspiegel/Sensorhuis": [
+  "G5m-E-interieur:U_BINNENSPIEGEL",
+  "deel",
+  "Onderdeel van de binnenspiegel; niet los gevonden"
+ ],
+ "Interieur/Binnenspiegel/Spiegelarm": [
+  "G5m-E-interieur:U_BINNENSPIEGEL",
+  "deel",
+  "Onderdeel van de binnenspiegel; niet los gevonden"
+ ],
+ "Interieur/Binnenspiegel/Spiegelglas binnen": [
+  "G5m-E-interieur:U_BINNENSPIEGEL",
+  "deel",
+  "Onderdeel van de binnenspiegel; niet los gevonden"
+ ],
+ "Interieur/Binnenspiegel/Spiegelhuis binnen": [
+  "G5m-E-interieur:U_BINNENSPIEGEL",
+  "deel",
+  "Onderdeel van de binnenspiegel; niet los gevonden"
+ ],
+ "Interieur/Binnenspiegel/Spiegelvoet binnen": [
+  "G5m-E-interieur:U_BINNENSPIEGEL",
+  "deel",
+  "Onderdeel van de binnenspiegel; niet los gevonden"
+ ],
+ "Interieur/Dashboard/Navigatiescherm": [
+  "G5m-E-interieur:U_NAVISCHERM",
+  "zelf",
+  ""
+ ],
+ "Interieur/Dashboard/Navigatiescherm/Schermbehuizing": [
+  "G5m-E-interieur:U_NAVISCHERM",
+  "deel",
+  "Onderdeel van het scherm; niet los gevonden"
+ ],
+ "Interieur/Dashboard/Navigatiescherm/Schermglas": [
+  "G5m-E-interieur:U_NAVISCHERM",
+  "deel",
+  "Onderdeel van het scherm; niet los gevonden"
+ ],
+ "Interieur/Dashboard/Navigatiescherm/Schermkap": [
+  "G5m-E-interieur:U_NAVISCHERM",
+  "deel",
+  "Onderdeel van het scherm; niet los gevonden"
+ ],
+ "Elektrisch systeem/Ruitensproeierinstallatie/Sproeierpomp": [
+  "G5m-F-systemen:U_WASHPUMP",
+  "zelf",
+  ""
+ ],
+ "Koeling en luchtinlaat/Expansievat/Niveaustrepen": [
+  "S2-lucht-uitlaat-brandstof:U_EXPT",
+  "deel",
+  "Strepen zijn in het vat gegoten (afleiding, geen bron); vat wordt als geheel verkocht"
+ ],
+ "Koeling en luchtinlaat/Expansievat/Vulopening expansievat": [
+  "S2-lucht-uitlaat-brandstof:U_EXPT",
+  "deel",
+  "Vulhals zit aan het vat (afleiding, geen bron); de dop is een eigen eenheid (Expansiedop)"
+ ],
+ "Interieur/Middenconsole/Keuzehendelmodule/Keuzekabel": [
+  "G5m-B-automaat:U_SELCABLE",
+  "zelf",
+  ""
  ]
 }

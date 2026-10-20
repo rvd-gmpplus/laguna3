@@ -1,0 +1,309 @@
+{
+ "G5m-C-onderstel:U_BOOSTER": {
+  "n": "Rembekrachtiger (vacuüm, Bosch)",
+  "st": "vin",
+  "oe": [
+   [
+    "472100031R",
+    "OE-lijst BOSCH 0 204 125 891 (A-artikel).",
+    "B"
+   ],
+   [
+    "472100032R",
+    "OE-lijst BOSCH 0 204 125 892 (A-artikel).",
+    "B"
+   ],
+   [
+    "472100033R",
+    "OE-lijst BOSCH 0 204 125 893 (A-artikel).",
+    "B"
+   ],
+   [
+    "472100034R",
+    "OE-lijst BOSCH 0 204 125 894 (A-artikel).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "BOSCH",
+    "0 204 125 891",
+    "Spareto-lijst voor Laguna III 2.0 16V Turbo (125 kW).",
+    "A"
+   ]
+  ],
+  "var": "Spareto noemt vier Bosch-bekrachtigers (0 204 125 891 t/m 894) voor dit type, elk met een eigen Renault-nummer 472100031R tot 472100034R. Het verschil (ESP, stuurzijde, bak) staat niet op de bron; kies op VIN.",
+  "per": "1 stuk",
+  "note": "Samenstel gezocht in de Spareto-categorie Brake Booster; de huis, duwstang, membraan en vacuümaansluiting zijn niet los te koop gevonden (aanname: alleen compleet leverbaar).",
+  "src": [
+   [
+    "https://spareto.com/products/bosch-brake-booster/0-204-125-891",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/bosch-brake-booster/0-204-125-891/fitment?manufacturer_id=123&model_name=LAGUNA",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/bosch-brake-booster/0-204-125-892",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/bosch-brake-booster/0-204-125-893",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/bosch-brake-booster/0-204-125-894",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/t/vehicles/renault/renau-laguna-iii-bt0-slash-1-2-dot-0-16v-turbo/brake-system/brake-booster",
+    "spareto.com"
+   ]
+  ]
+ },
+ "G5m-C-onderstel:U_PARKCABLE_L": {
+  "n": "Parkeerremkabel achter links (936 mm)",
+  "st": "past",
+  "oe": [
+   [
+    "360105917R",
+    "OE-lijst NTY HLR-RE-025 (A-artikel).",
+    "B"
+   ],
+   [
+    "360100002N",
+    "OE-lijst NTY HLR-RE-025 (A-artikel); staat ook bij de rechterkabel HLR-RE-028.",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "NTY",
+    "HLR-RE-025",
+    "Spareto-lijst voor 2.0 16V Turbo, links achter, 936 mm.",
+    "A"
+   ]
+  ],
+  "per": "1 stuk",
+  "note": "Spareto noemt voor dit type alleen de linkerkabel; de rechterkabel NTY HLR-RE-028 (1026 mm) staat niet in de lijst voor dit type en krijgt daarom geen eenheid. De overige kabels in de lijst (2224/1295 mm, Renault-nummer 365300001N) zijn langer en niet gekozen.",
+  "src": [
+   [
+    "https://spareto.com/products/nty-cable-pull-parking-brake/hlr-re-025",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/nty-cable-pull-parking-brake/hlr-re-025/fitment?manufacturer_id=123&model_name=LAGUNA",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/t/vehicles/renault/renau-laguna-iii-bt0-slash-1-2-dot-0-16v-turbo/brake-system/control-levers-cables",
+    "spareto.com"
+   ]
+  ]
+ },
+ "G5m-C-onderstel:U_BLEEDER": {
+  "n": "Ontluchtingsnippel remklauw (universeel artikel)",
+  "st": "vin",
+  "oe": [
+   [
+    "7701209198",
+    "OE-lijst QUICK BRAKE 0015 en TRISCAN 8105 3663 (A-artikelen).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "QUICK BRAKE",
+    "0015",
+    "Spareto-lijst voor 2.0 16V Turbo; positie en maat niet vermeld.",
+    "A"
+   ]
+  ],
+  "var": "Universeel artikel, maat of positie controleren. Spareto noemt bij dit type geen aparte nippel voor voor- en achterklauw.",
+  "per": "1 stuk",
+  "note": "Ook TRISCAN 8105 3663 staat in de lijst met hetzelfde Renault-nummer.",
+  "src": [
+   [
+    "https://spareto.com/products/quick-brake-brake-vent/qb0015",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/quick-brake-brake-vent/qb0015/fitment?manufacturer_id=123&model_name=LAGUNA",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/triscan-breather-screw-valve/8105-3663",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/t/vehicles/renault/renau-laguna-iii-bt0-slash-1-2-dot-0-16v-turbo/brake-system/brake-calipers",
+    "spareto.com"
+   ]
+  ]
+ },
+ "G5m-C-onderstel:B_REPAIRKIT_ATE38": {
+  "n": "Reparatieset remklauw achter Ø38 (zuigerafdichting en stofhoes)",
+  "st": "past",
+  "oe": [
+   [
+    "7701049108",
+    "OE-lijst AUTOFREN SEINSA D4612 (A-artikel).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "AUTOFREN SEINSA",
+    "D4612",
+    "Spareto-lijst voor 2.0 16V Turbo; Ø38 mm, ATE; zijde niet vermeld.",
+    "A"
+   ]
+  ],
+  "per": "1 stuk",
+  "note": "Ø38 is de achterklauw; de bron noemt geen linker- of rechterzijde. De rechtse set heeft al een eigen eenheid in plak S3b.",
+  "src": [
+   [
+    "https://spareto.com/products/autofren-seinsa-repair-kit-brake-caliper/d4612",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/autofren-seinsa-repair-kit-brake-caliper/d4612/fitment?manufacturer_id=123&model_name=LAGUNA",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/t/vehicles/renault/renau-laguna-iii-bt0-slash-1-2-dot-0-16v-turbo/brake-system/brake-calipers",
+    "spareto.com"
+   ]
+  ]
+ },
+ "G5m-C-onderstel:U_CLOCKSPRING": {
+  "n": "Wikkelcontact stuurwiel (airbag-contactrol)",
+  "st": "vin",
+  "oe": [
+   [
+    "255670019R",
+    "OE-lijst STORM QUALITY PARTS 8102021 en STARKIT PERFORMANCE ST2615 (A-artikelen).",
+    "B"
+   ],
+   [
+    "255670017R",
+    "OE-lijst STARKIT PERFORMANCE ST2615 (A-artikel).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "STORM QUALITY PARTS",
+    "8102021",
+    "Toepassingslijst noemt Laguna 3 2.0 16V Turbo; 27 pennen.",
+    "A"
+   ]
+  ],
+  "var": "STORM 8102021 heeft 27 pennen; STARKIT ST2615 heeft 28 aansluitingen (linksgestuurd) en noemt ook 255670017R. Aantal pennen volgt uit de uitrusting; kies op VIN.",
+  "per": "1 stuk",
+  "note": "Alleen in de lijst Steering Column Switch van Autodoc gevonden; de contactrol is geen deel van de stuurkolomschakelaar.",
+  "src": [
+   [
+    "https://www.autodoc.parts/storm-quality-parts/18943789",
+    "autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/starkit-performance/25307618",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-C-onderstel:U_STRUT_COMPL": {
+  "n": "Veerpoot compleet voor (demper, topsteun gemonteerd, beide zijden)",
+  "st": "past",
+  "oe": [],
+  "am": [
+   [
+    "GH",
+    "GH-353968C02",
+    "Toepassingslijst noemt Laguna 3 2.0 16V Turbo; voorzijde rechts en links, gasdruk, voorgemonteerd.",
+    "A"
+   ]
+  ],
+  "per": "1 stuk (per as paarsgewijs vervangen)",
+  "note": "De OE-lijst van de bron bevat veel Renault-nummers (onder andere 543200001N en 543200002R) voor delen van de veerpoot; ze zijn niet aan een zijde of onderdeel toe te wijzen en zijn niet overgenomen. Zelfde artikel als bij de rechterveerpoot in plak S3a.",
+  "src": [
+   [
+    "https://www.autodoc.parts/gh/17569061",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-C-onderstel:U_ARMBOLTS": {
+  "n": "Draagarmbouten voor (set Magneti Marelli)",
+  "st": "vin",
+  "oe": [
+   [
+    "401600004R",
+    "OE-verwijzing bij MAGNETI MARELLI 301191619580 (A-artikel); hetzelfde nummer staat bij de fuseekogel in plak S3b.",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "MAGNETI MARELLI",
+    "301191619580",
+    "Toepassingslijst noemt Laguna 3 2.0 16V Turbo; voorzijde, draagarm.",
+    "A"
+   ]
+  ],
+  "var": "De bron noemt \"Control arm bolts, Front Axle\". Of de set de voorste en achterste scharnierbout dekt en of 401600004R de bouten of de kogel aanduidt, volgt niet uit de bron.",
+  "per": "set",
+  "src": [
+   [
+    "https://www.autodoc.parts/magneti-marelli/14765854",
+    "autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-C-onderstel:U_DRIVENUT": {
+  "n": "Aandrijfasmoer M24 x 2,0 (flensmoer)",
+  "st": "past",
+  "oe": [
+   [
+    "7703034194",
+    "OE-lijst METZGER 6111506 en AIC 58844 (A-artikelen).",
+    "B"
+   ],
+   [
+    "7703034275",
+    "OE-lijst METZGER 6111506 en AIC 58844 (A-artikelen).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "METZGER",
+    "6111506",
+    "Spareto-lijst voor 2.0 16V Turbo; M24 x 2,0, flenskraag.",
+    "A"
+   ]
+  ],
+  "per": "1 stuk",
+  "note": "Bron noemt \"Nut, stub axle\" voor de voorzijde. De borgkraag staat niet apart in de lijst.",
+  "src": [
+   [
+    "https://spareto.com/products/metzger-nut-stub-axle/6111506",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/metzger-nut-stub-axle/6111506/fitment?manufacturer_id=123&model_name=LAGUNA",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/aic-nut-stub-axle/58844",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/t/vehicles/renault/renau-laguna-iii-bt0-slash-1-2-dot-0-16v-turbo/axle-mounting-steering-wheels/wheel-hub-mounting",
+    "spareto.com"
+   ]
+  ]
+ }
+}

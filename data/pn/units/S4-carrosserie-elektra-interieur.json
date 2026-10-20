@@ -503,15 +503,6 @@
    ]
   ]
  },
- "S4-carrosserie-elektra-interieur:U_WHOSE": {
-  "n": "Sproeierslang (toevoer sproeiers onder de motorkap)",
-  "st": "nietgevonden",
-  "oe": [],
-  "am": [],
-  "per": "stuk",
-  "note": "Niet in de Autodoc-lijst voor 23370: de categorie Windscreen washer reservoir/hoses bevat alleen universele slangen en T-stukken van Autodoc-merken zonder voertuigkoppeling. Geen nummer overgenomen.",
-  "src": []
- },
  "S4-carrosserie-elektra-interieur:U_HWASH_L": {
   "n": "Koplampsproeier links (uitschuifbaar)",
   "st": "vin",
@@ -2352,15 +2343,6 @@
   "note": "Niet in de Autodoc-lijst voor 23370.",
   "src": []
  },
- "S4-carrosserie-elektra-interieur:U_FOG": {
-  "n": "Mistlamp voor (links en rechts hetzelfde nummer, H11)",
-  "st": "nietgevonden",
-  "oe": [],
-  "am": [],
-  "per": "stuk",
-  "note": "Het nummer van de zoeker kwam uit een PartSouq-catalogus van een fase-1-auto (1.5 dCi K9K780, 04/2008) en is geschrapt; de fase 2 heeft een andere voorbumper.",
-  "src": []
- },
  "S4-carrosserie-elektra-interieur:U_FBROW_L": {
   "n": "Chroomwenkbrauw mistlamp links (met rubberlijnen)",
   "st": "nietgevonden",
@@ -2404,15 +2386,6 @@
   "am": [],
   "per": "stuk",
   "note": "Het enige Autodoc-artikel (BLIC) heeft productiedatum 04.2003 tot 01.2008 en past niet bij deze auto; het Renault-nummer kwam van dat artikel en uit een catalogus van een fase-1-auto. Geschrapt.",
-  "src": []
- },
- "S4-carrosserie-elektra-interieur:U_H11": {
-  "n": "Mistlamp H11 (12 V 55 W)",
-  "st": "nietgevonden",
-  "oe": [],
-  "am": [],
-  "per": "stuk",
-  "note": "Het nummer van de zoeker kwam uit een PartSouq-catalogus van een fase-1-auto (1.5 dCi K9K780, 04/2008) en is geschrapt; ook het lamptype van de fase-2-mistlamp is niet bevestigd.",
   "src": []
  },
  "S4-carrosserie-elektra-interieur:U_RBUMPER": {

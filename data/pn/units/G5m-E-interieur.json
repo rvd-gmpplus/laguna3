@@ -1,0 +1,395 @@
+{
+ "G5m-E-interieur:U_REMLICHT": {
+  "n": "Remlichtschakelaar (4 polen, bij het rempedaal)",
+  "st": "past",
+  "oe": [
+   [
+    "253200003R",
+    "Staat bij NTY ECWRE015 in de lijst 23370 en als eigen Renault-artikel op Autodoc met 2.0 16V Turbo.",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "NTY",
+    "ECWRE015",
+    "lijst 23370, 4 polen, mechanisch",
+    "A"
+   ]
+  ],
+  "per": "1 stuk",
+  "note": "De lijst 23370 noemt ook uitvoeringen met 2 polen (andere OE-nummers, o.a. 93851952); die horen bij andere auto's. 4 polen is de uitvoering met het Renault-nummer.",
+  "src": [
+   [
+    "https://www.nimark.com/cars/renault/renault_laguna_iii_bt0_1_2.0_16v_turbo_light_switch__lever-6430-23370-100509/",
+    "www.nimark.com"
+   ],
+   [
+    "https://www.autodoc.co.uk/renault/27022589",
+    "www.autodoc.co.uk"
+   ]
+  ]
+ },
+ "G5m-E-interieur:U_GASPEDAAL": {
+  "n": "Gaspedaal met pedaalsensor (pedaalmodule)",
+  "st": "vin",
+  "oe": [
+   [
+    "180050001R",
+    "Webwinkel voor gebruikte delen: pedaal met ingebouwde sensor, Laguna III 2007-2015 benzine en diesel; kruisverwijzing Bosch 0 280 755 085.",
+    "D"
+   ],
+   [
+    "180050003R",
+    "Webwinkel (nieuw), op een lijst voor 2.0 16V Turbo 125 kW met de aantekening dat passendheid niet automatisch bevestigd is.",
+    "D"
+   ]
+  ],
+  "am": [],
+  "var": "Twee Renault-nummers; welke bij de F4Rt 811 met automaat hoort, is niet vastgesteld. Per VIN controleren.",
+  "per": "1 stuk",
+  "note": "Sensor zit in de pedaalmodule. Geen aftermarketartikel voor type 23370 gevonden, dus geen merknummer.",
+  "src": [
+   [
+    "https://www.autoparts-24.com/oem/180050001R/",
+    "www.autoparts-24.com"
+   ],
+   [
+    "https://eurofrance.de/autoteile/renault-laguna-iii-bt0-1-2-0-16v-turbo-125kw-23370-cid/page_22.html",
+    "eurofrance.de"
+   ]
+  ]
+ },
+ "G5m-E-interieur:U_REMPEDAALRUBBER": {
+  "n": "Rempedaalrubber",
+  "st": "vin",
+  "oe": [
+   [
+    "465315707R",
+    "OE-verwijzing op de Autodoc-pagina van STC T457809 (Laguna 3; 2.0 16V Turbo staat daar niet bij de motoren).",
+    "C"
+   ]
+  ],
+  "am": [],
+  "var": "Rubber verschilt tussen handbak en automaat; welk Renault-nummer bij de automaat past, is niet vastgesteld.",
+  "per": "1 stuk",
+  "note": "Geen merknummer voor type 23370 bevestigd.",
+  "src": [
+   [
+    "https://www.autodoc.co.uk/stc/14131146",
+    "www.autodoc.co.uk"
+   ]
+  ]
+ },
+ "G5m-E-interieur:U_AANJAGER": {
+  "n": "Aanjagermotor interieur (automatische klimaatregeling)",
+  "st": "vin",
+  "oe": [
+   [
+    "272100001R",
+    "Webwinkel (nieuw origineel); passendheidslijst noemt Laguna III 2.0 16V Turbo 125 kW; uitvoering automatische klimaatregeling.",
+    "D"
+   ]
+  ],
+  "am": [],
+  "var": "Bij handbediende airco kan het nummer anders zijn; per VIN controleren.",
+  "per": "1 stuk",
+  "note": "Aftermarketartikelen voor type 23370 niet gevonden. De weerstand/regelaar is een apart artikel en hier niet onderzocht.",
+  "src": [
+   [
+    "https://eurofrance24.com/heater-fan-blower-motor-new-original-renault-laguna-iii-272100001r-a10357a8400000.html",
+    "eurofrance24.com"
+   ]
+  ]
+ },
+ "G5m-E-interieur:U_KACHELRAD": {
+  "n": "Kachelradiateur (warmtewisselaar interieur)",
+  "st": "past",
+  "oe": [
+   [
+    "271150001R",
+    "OE-verwijzing bij NISSENS 73342 voor Laguna III BT0/1.",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "NISSENS",
+    "73342",
+    "lijst 23370, geen bijverwarming, zonder leiding",
+    "A"
+   ]
+  ],
+  "per": "1 stuk",
+  "note": "Naast NISSENS 73342 staan in de lijst 23370 ook NRF 54443 en VALEO 811543 (zelfde maat 175 x 186 x 26 mm). Kachelradiateurs met 260 mm kern horen bij andere uitvoeringen.",
+  "src": [
+   [
+    "https://www.naburalsom.sk/kategoria/autodiely/renault/laguna-iii-bt0-1/23370/100104",
+    "www.naburalsom.sk"
+   ],
+   [
+    "https://www.niparts.com/Fac/0E25DC/NISSENS/73342.html",
+    "www.niparts.com"
+   ]
+  ]
+ },
+ "G5m-E-interieur:U_ZONNEKLEP_L": {
+  "n": "Zonneklep links",
+  "st": "vin",
+  "oe": [
+   [
+    "964010003R",
+    "Gebruikt-aanbiedingen voor Laguna III, positie links.",
+    "D"
+   ]
+  ],
+  "am": [],
+  "var": "Kleur en uitvoering (met of zonder make-upspiegel, panoramadak) niet vastgesteld.",
+  "per": "1 stuk",
+  "note": "Geen aftermarketartikel gevonden.",
+  "src": [
+   [
+    "https://www.autoparts24.dk/renault-laguna/solskaerm/1/",
+    "www.autoparts24.dk"
+   ],
+   [
+    "https://www.autoparts24.fr/oem/MRE5424CR997/",
+    "www.autoparts24.fr"
+   ]
+  ]
+ },
+ "G5m-E-interieur:U_ZONNEKLEP_R": {
+  "n": "Zonneklep rechts",
+  "st": "vin",
+  "oe": [
+   [
+    "964004114R",
+    "Gebruikt-aanbiedingen voor Laguna III; de zijde staat niet op de bron, rechts is afgeleid uit het aparte linkernummer.",
+    "D"
+   ]
+  ],
+  "am": [],
+  "var": "Zijde niet op de bron vermeld; kleur en uitvoering niet vastgesteld.",
+  "per": "1 stuk",
+  "note": "Geen aftermarketartikel gevonden.",
+  "src": [
+   [
+    "https://www.autoparts24.dk/renault-laguna/solskaerm/1/",
+    "www.autoparts24.dk"
+   ]
+  ]
+ },
+ "G5m-E-interieur:U_GORDEL_VL": {
+  "n": "Veiligheidsgordel voor links (met rolautomaat)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "var": "Uitvoering (met pyrotechnische spanner, kleur) niet vastgesteld; per VIN controleren.",
+  "per": "1 stuk",
+  "note": "Gordels met spanner worden als geheel geleverd. Verificatie golf 5m: 878161497R geschrapt (fout: Autoparts24.pl: 878161497R staat bij \"Klamry pasow bezpieczenstwa\" (gordelsluitingen) met positie \"Przod, po prawej\" (voor rechts). Geen gor)",
+  "src": [
+   [
+    "https://www.autoparts24.pl/oem/426005056778/",
+    "www.autoparts24.pl"
+   ]
+  ]
+ },
+ "G5m-E-interieur:U_GORDEL_VR": {
+  "n": "Veiligheidsgordel voor rechts (met rolautomaat)",
+  "st": "vin",
+  "oe": [
+   [
+    "868840031R",
+    "Gebruikt-aanbiedingen Laguna III, positie voor rechts.",
+    "D"
+   ]
+  ],
+  "am": [],
+  "var": "Uitvoering niet vastgesteld; per VIN controleren.",
+  "per": "1 stuk",
+  "note": "Gordels met spanner worden als geheel geleverd.",
+  "src": [
+   [
+    "https://www.autoparts-24.com/oem/868840031R/",
+    "www.autoparts-24.com"
+   ]
+  ]
+ },
+ "G5m-E-interieur:U_GORDELSLOT_V": {
+  "n": "Gordelslot voor (links en rechts hetzelfde nummer)",
+  "st": "vin",
+  "oe": [
+   [
+    "868430001R",
+    "Gebruikt-aanbiedingen Laguna III, voor links en voor rechts met dit nummer.",
+    "D"
+   ]
+  ],
+  "am": [],
+  "var": "Uitvoering met schakelaar of spanner niet vastgesteld.",
+  "per": "1 stuk",
+  "note": "",
+  "src": [
+   [
+    "https://www.autoparts24.pl/renault/klamry-pasow-bezpieczenstwa/1/",
+    "www.autoparts24.pl"
+   ]
+  ]
+ },
+ "G5m-E-interieur:U_HANDSCHOENENKAST": {
+  "n": "Handschoenenkastje (bak met klep)",
+  "st": "vin",
+  "oe": [
+   [
+    "685000001R",
+    "Gebruikt-aanbiedingen Laguna III.",
+    "D"
+   ],
+   [
+    "685000047R",
+    "Gebruikt-aanbiedingen Laguna III.",
+    "D"
+   ],
+   [
+    "682520002R",
+    "Gebruikt-aanbiedingen Laguna III.",
+    "D"
+   ]
+  ],
+  "am": [],
+  "var": "Meer nummers in omloop (o.a. 685000023R, 969100036R); uitvoering hangt af van o.a. koeling en kleur. Niet vastgesteld welke bij deze auto hoort.",
+  "per": "1 stuk",
+  "note": "Geen aftermarketartikel gevonden.",
+  "src": [
+   [
+    "https://www.autoparts24.dk/renault-laguna/handskerum/1/",
+    "www.autoparts24.dk"
+   ]
+  ]
+ },
+ "G5m-E-interieur:U_CLUSTER": {
+  "n": "Instrumentenpaneel (kombinatie-instrument)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "var": "Per motor en uitvoering verschillende panelen; moet na vervanging op het voertuig gecodeerd worden. Nummer voor de F4Rt 811 niet vastgesteld.",
+  "per": "1 stuk",
+  "note": "Niet als aftermarketartikel gevonden. Verificatie golf 5m: 248100006R geschrapt (onzeker: Autoparts24: 248100006R = instrumentenpaneel Laguna III (BT0/1, KT0/1), maar de pagina zegt dat het paneel per motorvariant verschilt en noe)",
+  "src": [
+   [
+    "https://www.autoparts-24.com/oem/248100006R/",
+    "www.autoparts-24.com"
+   ]
+  ]
+ },
+ "G5m-E-interieur:U_KLIMAATBED": {
+  "n": "Klimaatbediening (paneel met toetsen en display)",
+  "st": "vin",
+  "oe": [
+   [
+    "275100002R",
+    "Gebruikt-aanbiedingen Laguna III (diesel, automaat AJ0).",
+    "D"
+   ],
+   [
+    "275100001R",
+    "Gebruikt-aanbieding Laguna III 2.0 dCi 131 pk.",
+    "D"
+   ]
+  ],
+  "am": [],
+  "var": "Twee nummers gezien bij andere motoren; uitvoering voor de F4Rt 811 niet vastgesteld.",
+  "per": "1 stuk",
+  "note": "Niet als aftermarketartikel gevonden.",
+  "src": [
+   [
+    "https://www.autoparts24.nl/renault-laguna/kachel-bedieningspaneel/1/",
+    "www.autoparts24.nl"
+   ],
+   [
+    "https://www.b-parts.co.uk/auto-parts/electrical-and-electronic/climate-control-renault-laguna-iii-bt01-2007-2008-2009-2010-2011-2012-2013-2014-2015-35403365",
+    "www.b-parts.co.uk"
+   ]
+  ]
+ },
+ "G5m-E-interieur:U_PARKEERREM": {
+  "n": "Parkeerremschakelaar (elektrische parkeerrem)",
+  "st": "vin",
+  "oe": [
+   [
+    "363210001R",
+    "Webwinkels (nieuw origineel), Laguna III.",
+    "D"
+   ]
+  ],
+  "am": [],
+  "var": "Alleen de uitvoering met elektrische parkeerrem; per VIN controleren.",
+  "per": "1 stuk",
+  "note": "Geen typelijst en geen aftermarketartikel gevonden.",
+  "src": [
+   [
+    "https://eurofrance24.fr/pieces-auto/systeme-electronique/interrupteurs-boutons/renault-laguna_3.html",
+    "eurofrance24.fr"
+   ],
+   [
+    "https://eurofrance.co.uk/car-parts/electrical-system/switches-buttons/page_13.html",
+    "eurofrance.co.uk"
+   ]
+  ]
+ },
+ "G5m-E-interieur:U_BINNENSPIEGEL": {
+  "n": "Binnenspiegel (complete spiegel)",
+  "st": "vin",
+  "oe": [
+   [
+    "963293106R",
+    "Gebruikte spiegel uit een Laguna III 1.5 dCi 2009.",
+    "D"
+   ]
+  ],
+  "am": [],
+  "var": "Drie nummers; uitvoering met of zonder regensensor, dimfunctie of kleur niet vastgesteld.",
+  "per": "1 stuk",
+  "note": "Geen aftermarketartikel voor type 23370 gevonden. Verificatie golf 5m: 963210814R geschrapt (onzeker: Avtopro Laguna 3-pagina toont 963210814R als \"ANALOGO\" (vervanger), een advertentie zelfs \"para renault clio iv\". Geen bevestiging als origi); 963210021R geschrapt (fout: 963210021R staat op geen van beide bronpagina's (avtopro toont 963210814R en 8200030802; europodbor toont o.a. 963293106R, 8200000509, 82000)",
+  "src": [
+   [
+    "https://avtopro.es/catalog/renault/laguna/retrovisor-interior-m26385/",
+    "avtopro.es"
+   ],
+   [
+    "https://europodbor.ru/parts/renault/laguna-3/zerkalo-salona",
+    "europodbor.ru"
+   ]
+  ]
+ },
+ "G5m-E-interieur:U_NAVISCHERM": {
+  "n": "Navigatiescherm (multischerm Carminat)",
+  "st": "vin",
+  "oe": [
+   [
+    "259153753R",
+    "Gebruikt-aanbiedingen Laguna III, ook met TomTom-verwijzing.",
+    "D"
+   ],
+   [
+    "280340027R",
+    "Gebruikt-aanbiedingen Laguna III; mogelijk het informatiescherm zonder navigatie.",
+    "D"
+   ]
+  ],
+  "am": [],
+  "var": "Twee soorten scherm in omloop; welke bij deze auto hoort, is niet vastgesteld.",
+  "per": "1 stuk",
+  "note": "Niet als aftermarketartikel gevonden.",
+  "src": [
+   [
+    "https://www.autoparts24.eu/oem/259153753R/",
+    "www.autoparts24.eu"
+   ],
+   [
+    "https://www.autoparts-24.com/oem/280340027R/",
+    "www.autoparts-24.com"
+   ]
+  ]
+ }
+}

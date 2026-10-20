@@ -1,0 +1,766 @@
+{
+ "G5m-D-carrosserie:U_RAAMMECH_LV": {
+  "n": "Raammechaniek portier linksvoor (zonder motor, dubbele rail)",
+  "st": "past",
+  "oe": [
+   [
+    "807010002R",
+    "Staat op de OE-lijst van het artikel; Autodoc OEM-pagina noemt het origineel Renault-nummer.",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "ELECTRIC LIFE",
+    "ZR RN714 L",
+    "Spareto, lijst 2.0 16V Turbo, linksvoor, zonder elektromotor, met comfortfunctie.",
+    "A"
+   ]
+  ],
+  "per": "stuk",
+  "note": "Raamlift zonder elektromotor. Geleiderails, ruitdrager en kabels zijn niet los gezocht (Spareto toont de mechaniek als geheel). Raammotor apart: zie niet gevonden.",
+  "src": [
+   [
+    "https://spareto.com/products/electric-life-window-regulator/zr-rn714-l",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/electric-life-window-regulator/zr-rn714-l/fitment?manufacturer_id=123&model_name=LAGUNA",
+    "spareto.com"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/807010002r",
+    "www.autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-D-carrosserie:U_RAAMMECH_RV": {
+  "n": "Raammechaniek portier rechtsvoor (zonder motor, dubbele rail)",
+  "st": "past",
+  "oe": [
+   [
+    "807000002R",
+    "Staat op de OE-lijst van het artikel; Autodoc OEM-pagina noemt het origineel Renault-nummer.",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "ELECTRIC LIFE",
+    "ZR RN714 R",
+    "Spareto, lijst 2.0 16V Turbo, rechtsvoor, zonder elektromotor, met comfortfunctie.",
+    "A"
+   ]
+  ],
+  "per": "stuk",
+  "note": "Raamlift zonder elektromotor. Geleiderails, ruitdrager en kabels zijn niet los gezocht (Spareto toont de mechaniek als geheel). Raammotor apart: zie niet gevonden.",
+  "src": [
+   [
+    "https://spareto.com/products/electric-life-window-regulator/zr-rn714-r",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/electric-life-window-regulator/zr-rn714-r/fitment?manufacturer_id=123&model_name=LAGUNA",
+    "spareto.com"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/807000002r",
+    "www.autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-D-carrosserie:U_RAAMMECH_LA": {
+  "n": "Raammechaniek portier linksachter (zonder motor, enkele rail)",
+  "st": "past",
+  "oe": [
+   [
+    "827010001R",
+    "Staat op de OE-lijst van het artikel; Autodoc OEM-pagina noemt het origineel Renault-nummer.",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "ELECTRIC LIFE",
+    "ZR RN715 L",
+    "Spareto, lijst 2.0 16V Turbo, linksachter, zonder elektromotor, met comfortfunctie.",
+    "A"
+   ]
+  ],
+  "per": "stuk",
+  "note": "Raamlift zonder elektromotor. Geleiderails, ruitdrager en kabels zijn niet los gezocht (Spareto toont de mechaniek als geheel). Raammotor apart: zie niet gevonden.",
+  "src": [
+   [
+    "https://spareto.com/products/electric-life-window-regulator/zr-rn715-l",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/electric-life-window-regulator/zr-rn715-l/fitment?manufacturer_id=123&model_name=LAGUNA",
+    "spareto.com"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/827010001r",
+    "www.autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-D-carrosserie:U_RAAMMECH_RA": {
+  "n": "Raammechaniek portier rechtsachter (zonder motor, enkele rail)",
+  "st": "past",
+  "oe": [
+   [
+    "827000001R",
+    "Staat op de OE-lijst van het artikel; Autodoc OEM-pagina noemt het origineel Renault-nummer.",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "ELECTRIC LIFE",
+    "ZR RN715 R",
+    "Spareto, lijst 2.0 16V Turbo, rechtsachter, zonder elektromotor, met comfortfunctie.",
+    "A"
+   ]
+  ],
+  "per": "stuk",
+  "note": "Raamlift zonder elektromotor. Geleiderails, ruitdrager en kabels zijn niet los gezocht (Spareto toont de mechaniek als geheel). Raammotor apart: zie niet gevonden.",
+  "src": [
+   [
+    "https://spareto.com/products/electric-life-window-regulator/zr-rn715-r",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/electric-life-window-regulator/zr-rn715-r/fitment?manufacturer_id=123&model_name=LAGUNA",
+    "spareto.com"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/827000001r",
+    "www.autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-D-carrosserie:U_NG_RAAMMOTOR": {
+  "n": "Raammotor portier (los)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Spareto (categorie raamregelaar, 5 pagina's) toont de mechaniek zonder elektromotor en schakelaars, geen losse raammotor voor dit type. Niet verder gezocht.",
+  "src": []
+ },
+ "G5m-D-carrosserie:U_SW_BESTUURDER": {
+  "n": "Raamschakelaar bestuurdersdeur (schakelmodule links voor)",
+  "st": "vin",
+  "oe": [
+   [
+    "254000015R",
+    "13 polen; OE-lijst NTY EWS-RE-035.",
+    "B"
+   ],
+   [
+    "809610006R",
+    "OE-lijst NTY EWS-RE-035 en RIDEX 1761S0077.",
+    "B"
+   ],
+   [
+    "254000008R",
+    "19 polen; OE-lijst ABAKUS, FAST en VEMO.",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "NTY",
+    "EWS-RE-035",
+    "Spareto: links voor, 13 polen.",
+    "A"
+   ]
+  ],
+  "var": "Twee uitvoeringen voor 2.0 16V Turbo op Spareto: 13 polen (OE 254000015R, 809610006R, 809610007R; NTY EWS-RE-035) en 19 polen (OE 254000008R, 254000014R; o.a. FAST FT00470, VEMO V46-73-0066 met spiegelverstelling). Kies op de stekker of de VIN.",
+  "per": "stuk",
+  "note": "Welke uitvoering de Initiale Paris heeft is niet vastgesteld.",
+  "src": [
+   [
+    "https://spareto.com/products/nty-switch-window-regulator/ews-re-035",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/nty-switch-window-regulator/ews-re-035/fitment?manufacturer_id=123&model_name=LAGUNA",
+    "spareto.com"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/254000015r",
+    "www.autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/809610006r",
+    "www.autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/254000008r",
+    "www.autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-D-carrosserie:U_SW_ACHTER": {
+  "n": "Raamschakelaar achterportier (links en rechts, 4 polen)",
+  "st": "past",
+  "oe": [
+   [
+    "254010003R",
+    "OE-lijst NTY EWS-RE-041; ook ABAKUS, MAGNETI MARELLI.",
+    "B"
+   ],
+   [
+    "809600004R",
+    "OE-lijst NTY EWS-RE-041; ook ABAKUS en ESEN SKV.",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "NTY",
+    "EWS-RE-041",
+    "Spareto: links achter en rechts achter, hetzelfde artikel.",
+    "A"
+   ]
+  ],
+  "per": "stuk",
+  "note": "Op de OE-lijst staan nog 809600018R en 809600750R (niet gecontroleerd op merk).",
+  "src": [
+   [
+    "https://spareto.com/products/nty-switch-window-regulator/ews-re-041",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/nty-switch-window-regulator/ews-re-041/fitment?manufacturer_id=123&model_name=LAGUNA",
+    "spareto.com"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/254010003r",
+    "www.autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/809600004r",
+    "www.autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-D-carrosserie:U_VANGER_V": {
+  "n": "Deurvanger voor (links en rechts hetzelfde)",
+  "st": "past",
+  "oe": [
+   [
+    "804310001R",
+    "Staat bij het artikel als OE-nummer; Autodoc OEM-pagina noemt het origineel Renault-nummer.",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "NTY",
+    "EZC-RE-041",
+    "Autodoc-artikelpagina: toepassingslijst Laguna 3 met 2.0 16V Turbo; voor.",
+    "A"
+   ]
+  ],
+  "per": "stuk",
+  "note": "Autodoc toont ook andere vangers met ander OE-nummer (niet uitgezocht).",
+  "src": [
+   [
+    "https://www.autodoc.parts/nty/17107820",
+    "www.autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/804310001r",
+    "www.autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-D-carrosserie:U_VANGER_A": {
+  "n": "Deurvanger achter (links en rechts hetzelfde)",
+  "st": "past",
+  "oe": [
+   [
+    "824310001R",
+    "Staat bij het artikel als OE-nummer; Autodoc OEM-pagina noemt het origineel Renault-nummer.",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "BUGIAD",
+    "BDC12485",
+    "Autodoc-artikelpagina: toepassingslijst Laguna 3 met 2.0 16V Turbo; achter.",
+    "A"
+   ]
+  ],
+  "per": "stuk",
+  "note": "Autodoc toont ook andere vangers met ander OE-nummer (niet uitgezocht).",
+  "src": [
+   [
+    "https://www.autodoc.parts/bugiad/19346392",
+    "www.autodoc.parts"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/824310001r",
+    "www.autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-D-carrosserie:U_SLOT_LV": {
+  "n": "Deurslot linksvoor (slotkast met vergrendelmotor)",
+  "st": "vin",
+  "oe": [
+   [
+    "805010004R",
+    "Renault-artikel in de lijst voor Laguna 3 met 2.0 16V Turbo.",
+    "A"
+   ],
+   [
+    "805010001R",
+    "Winkelpagina voor type 23370: links voor, ander nummer.",
+    "D"
+   ]
+  ],
+  "am": [],
+  "var": "Per zijde meer dan een Renault-nummer (verschil in stekker: 4 of 6 polen, met of zonder centrale vergrendeling). Kies op de stekker of de VIN.",
+  "per": "stuk",
+  "note": "Geen artikel van een andere fabrikant met toepassingslijst gevonden via Spareto (alleen kofferslot). Slotkast, slotmotor en stang zijn niet los gezocht. Verificatie golf 5m: 805000004R geschrapt (fout: 805000004R staat op de lijst zonder kant, maar de reeks 80500 is rechts (805000001R = prawy przod). Linksvoor is 805010001R/805010004R (auto)",
+  "src": [
+   [
+    "https://www.autodoc.parts/renault/27023148",
+    "www.autodoc.parts"
+   ],
+   [
+    "https://www.eurofrance.pl/autoczesci/system-zamykania/zamki/renault-laguna-iii-bt0-1-2-0-16v-turbo-125kw-23370-cid.html",
+    "www.eurofrance.pl"
+   ]
+  ]
+ },
+ "G5m-D-carrosserie:U_SLOT_RV": {
+  "n": "Deurslot rechtsvoor (slotkast met vergrendelmotor)",
+  "st": "vin",
+  "oe": [
+   [
+    "805000001R",
+    "Renault-artikel in de lijst voor Laguna 3 met 2.0 16V Turbo.",
+    "A"
+   ],
+   [
+    "805020011R",
+    "Winkelpagina voor type 23370: rechts voor, 6 polen.",
+    "D"
+   ],
+   [
+    "805000004R",
+    "Winkelpagina voor type 23370: 4 polen, zonder zijde.",
+    "D"
+   ]
+  ],
+  "am": [],
+  "var": "Per zijde meer dan een Renault-nummer (verschil in stekker: 4 of 6 polen, met of zonder centrale vergrendeling). Kies op de stekker of de VIN.",
+  "per": "stuk",
+  "note": "Geen artikel van een andere fabrikant met toepassingslijst gevonden via Spareto (alleen kofferslot). Slotkast, slotmotor en stang zijn niet los gezocht.",
+  "src": [
+   [
+    "https://www.autodoc.parts/renault/27023260",
+    "www.autodoc.parts"
+   ],
+   [
+    "https://www.eurofrance.pl/autoczesci/system-zamykania/zamki/renault-laguna-iii-bt0-1-2-0-16v-turbo-125kw-23370-cid.html",
+    "www.eurofrance.pl"
+   ]
+  ]
+ },
+ "G5m-D-carrosserie:U_SLOT_LA": {
+  "n": "Deurslot linksachter (slotkast met vergrendelmotor)",
+  "st": "vin",
+  "oe": [
+   [
+    "825010003R",
+    "Winkelpagina voor type 23370: links achter.",
+    "D"
+   ]
+  ],
+  "am": [],
+  "var": "Per zijde meer dan een Renault-nummer (verschil in stekker: 4 of 6 polen, met of zonder centrale vergrendeling). Kies op de stekker of de VIN.",
+  "per": "stuk",
+  "note": "Geen artikel van een andere fabrikant met toepassingslijst gevonden via Spareto (alleen kofferslot). Slotkast, slotmotor en stang zijn niet los gezocht.",
+  "src": [
+   [
+    "https://www.eurofrance.pl/autoczesci/system-zamykania/zamki/renault-laguna-iii-bt0-1-2-0-16v-turbo-125kw-23370-cid.html",
+    "www.eurofrance.pl"
+   ]
+  ]
+ },
+ "G5m-D-carrosserie:U_SLOT_RA": {
+  "n": "Deurslot rechtsachter (slotkast met vergrendelmotor)",
+  "st": "vin",
+  "oe": [
+   [
+    "825000003R",
+    "Winkelpagina voor type 23370: rechts achter, 5-deurs.",
+    "D"
+   ]
+  ],
+  "am": [],
+  "var": "Per zijde meer dan een Renault-nummer (verschil in stekker: 4 of 6 polen, met of zonder centrale vergrendeling). Kies op de stekker of de VIN.",
+  "per": "stuk",
+  "note": "Geen artikel van een andere fabrikant met toepassingslijst gevonden via Spareto (alleen kofferslot). Slotkast, slotmotor en stang zijn niet los gezocht.",
+  "src": [
+   [
+    "https://www.eurofrance.pl/autoczesci/system-zamykania/zamki/renault-laguna-iii-bt0-1-2-0-16v-turbo-125kw-23370-cid.html",
+    "www.eurofrance.pl"
+   ]
+  ]
+ },
+ "G5m-D-carrosserie:U_KLEPSLOT": {
+  "n": "Achterklepslot (slotkast)",
+  "st": "past",
+  "oe": [
+   [
+    "8200948107",
+    "Renault-artikel achterklepslot in de lijst voor Laguna 3 met 2.0 16V Turbo.",
+    "A"
+   ]
+  ],
+  "am": [
+   [
+    "NTY",
+    "EZC-RE-374",
+    "Spareto: kofferslot, lijst 2.0 16V Turbo.",
+    "A"
+   ]
+  ],
+  "per": "stuk",
+  "note": "Op de OE-lijst van NTY en VEMO V46-85-0061 staat ook 8200747429. Winkelpagina meldt verschillende uitvoeringen; controleer op VIN.",
+  "src": [
+   [
+    "https://www.autodoc.parts/renault/27024078",
+    "www.autodoc.parts"
+   ],
+   [
+    "https://spareto.com/products/nty-boot-lock/ezc-re-374",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/nty-boot-lock/ezc-re-374/fitment?manufacturer_id=123&model_name=LAGUNA",
+    "spareto.com"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/8200948107",
+    "www.autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-D-carrosserie:U_KLEPMOTOR": {
+  "n": "Slotmotor achterklep (centrale vergrendeling, stelmotor)",
+  "st": "past",
+  "oe": [
+   [
+    "7701039465",
+    "Staat bij NTY EZC-RE-144 en BLIC; Autodoc OEM-pagina noemt het origineel Renault-nummer.",
+    "B"
+   ]
+  ],
+  "am": [],
+  "per": "stuk",
+  "note": "BLIC 6010-09-049449P heeft hetzelfde OE-nummer. Verificatie golf 5m: EZC-RE-144 geschrapt (onzeker: NTY EZC-RE-144 (OE 7701039465) is een generieke 'Control valve, central locking' met BT-Turbo-fitment, maar de pagina noemt geen positie. Ni)",
+  "src": [
+   [
+    "https://spareto.com/products/nty-control-valve-central-locking/ezc-re-144",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/nty-control-valve-central-locking/ezc-re-144/fitment?manufacturer_id=123&model_name=LAGUNA",
+    "spareto.com"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/7701039465",
+    "www.autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-D-carrosserie:U_MOTORKAPSLOT": {
+  "n": "Motorkapslot",
+  "st": "vin",
+  "oe": [
+   [
+    "656010007R",
+    "Winkelpagina voor type 23370: motorkapslot, voorzijde.",
+    "D"
+   ]
+  ],
+  "am": [],
+  "var": "Alleen een winkelpagina als bron; geen artikel met toepassingslijst gevonden.",
+  "per": "stuk",
+  "note": "Slotbeugel en kabel niet gezocht.",
+  "src": [
+   [
+    "https://www.eurofrance.pl/autoczesci/system-zamykania/zamki/renault-laguna-iii-bt0-1-2-0-16v-turbo-125kw-23370-cid.html",
+    "www.eurofrance.pl"
+   ]
+  ]
+ },
+ "G5m-D-carrosserie:U_FRONTPANEEL": {
+  "n": "Voorpaneel (slampaneel / frontmodule, kaal plaatwerk)",
+  "st": "past",
+  "oe": [
+   [
+    "625100001R",
+    "Staat op de OE-lijst van BLIC, DEPO en KLOKKERHOLM; Autodoc OEM-pagina noemt het origineel Renault-nummer.",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "BLIC",
+    "6502-08-6056200P",
+    "Spareto: voorpaneel, lijst 2.0 16V Turbo, vanaf 10.2007.",
+    "A"
+   ]
+  ],
+  "per": "stuk",
+  "note": "Kaal plaatwerkdeel zonder koelerframe of aanbouwdelen.",
+  "src": [
+   [
+    "https://spareto.com/products/blic-front-cowling/6502-08-6056200p",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/blic-front-cowling/6502-08-6056200p/fitment?manufacturer_id=123&model_name=LAGUNA",
+    "spareto.com"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/625100001r",
+    "www.autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-D-carrosserie:U_BUMPERBALK": {
+  "n": "Bumperbalk voor (aluminium dwarsbalk)",
+  "st": "vin",
+  "oe": [
+   [
+    "752100002R",
+    "OE-lijst BLIC 5502-00-6056940P en VAN WEZEL 4356681; Autodoc OEM-pagina noemt Renault.",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "BLIC",
+    "5502-00-6056940P",
+    "Spareto: voor, aluminium, vanaf 10.2007.",
+    "A"
+   ]
+  ],
+  "var": "Twee Renault-nummers voor de bumperbalk voor; welk past hangt mogelijk af van de bouwdatum. Niet vastgesteld.",
+  "per": "stuk",
+  "note": "Crashboxen niet los gezocht. Verificatie golf 5m: 612002466R geschrapt (onzeker: 612002466R \"Bumper reinforcement for Renault Laguna 3\", lijst noemt 2.0 16V Turbo, maar voor of achter staat niet op de pagina. De aluminium)",
+  "src": [
+   [
+    "https://www.autodoc.parts/renault/27022927",
+    "www.autodoc.parts"
+   ],
+   [
+    "https://spareto.com/products/blic-support-bumper/5502-00-6056940p",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/blic-support-bumper/5502-00-6056940p/fitment?manufacturer_id=123&model_name=LAGUNA",
+    "spareto.com"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/752100002r",
+    "www.autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-D-carrosserie:U_WIELKUIP_LV": {
+  "n": "Wielkuipscherm linksvoor (binnenscherm, kunststof)",
+  "st": "past",
+  "oe": [
+   [
+    "638230005R",
+    "Staat bij het artikel op de OE-lijst; Autodoc OEM-pagina noemt origineel Renault-nummer en de positie.",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "KLOKKERHOLM",
+    "6056387",
+    "Spareto: lijst 2.0 16V Turbo; positie volgt uit het OE-nummer.",
+    "A"
+   ]
+  ],
+  "per": "stuk",
+  "note": "De Spareto-pagina noemt de zijde niet; de zijde is afgeleid uit de OEM-pagina.",
+  "src": [
+   [
+    "https://spareto.com/products/klokkerholm-panelling-mudguard/6056387",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/klokkerholm-panelling-mudguard/6056387/fitment?manufacturer_id=123&model_name=LAGUNA",
+    "spareto.com"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/638230005r",
+    "www.autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-D-carrosserie:U_WIELKUIP_RV": {
+  "n": "Wielkuipscherm rechtsvoor (binnenscherm, kunststof)",
+  "st": "past",
+  "oe": [
+   [
+    "638320004R",
+    "Staat bij het artikel op de OE-lijst; Autodoc OEM-pagina noemt origineel Renault-nummer en de positie.",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "KLOKKERHOLM",
+    "6056388",
+    "Spareto: lijst 2.0 16V Turbo; positie volgt uit het OE-nummer.",
+    "A"
+   ]
+  ],
+  "per": "stuk",
+  "note": "De Spareto-pagina noemt de zijde niet; de zijde is afgeleid uit de OEM-pagina.",
+  "src": [
+   [
+    "https://spareto.com/products/klokkerholm-panelling-mudguard/6056388",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/klokkerholm-panelling-mudguard/6056388/fitment?manufacturer_id=123&model_name=LAGUNA",
+    "spareto.com"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/638320004r",
+    "www.autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-D-carrosserie:U_NG_WIELKUIP_ACHTER": {
+  "n": "Wielkuipscherm achter",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "Spareto toont alleen de voorste wielkuipschermen voor dit type.",
+  "src": []
+ },
+ "G5m-D-carrosserie:U_MISTLAMP": {
+  "n": "Mistlamp voor (links en rechts, H11)",
+  "st": "vin",
+  "oe": [
+   [
+    "8200074008",
+    "Staat op de OE-lijst van alle gecontroleerde mistlampen; ook origineel nummer van andere merken.",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "VALEO",
+    "088358",
+    "Spareto: links en rechts, H11, lijst 2.0 16V Turbo.",
+    "A"
+   ]
+  ],
+  "var": "OE-lijsten bevatten nummers van meerdere voertuigen (ook 8200002469 bij ALKAR en DEPO). Of dit de mistlamp van fase 2 met chroomwenkbrauw is, is niet vastgesteld.",
+  "per": "stuk",
+  "note": "Vervangt het eerdere niet-gevonden record.",
+  "src": [
+   [
+    "https://spareto.com/products/valeo-fog-light/088358",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/valeo-fog-light/088358/fitment?manufacturer_id=123&model_name=LAGUNA",
+    "spareto.com"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/8200074008",
+    "www.autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-D-carrosserie:U_H11B": {
+  "n": "Mistlamplamp H11 12 V 55 W",
+  "st": "past",
+  "oe": [
+   [
+    "7701049263",
+    "Autodoc OEM-pagina: H11 12 V 55 W, origineel Renault-nummer (ook van andere merken).",
+    "B"
+   ]
+  ],
+  "am": [
+   [
+    "BOSCH",
+    "1 987 302 084",
+    "Spareto: H11 12 V 55 W PGJ19-2, lijst 2.0 16V Turbo.",
+    "A"
+   ]
+  ],
+  "per": "stuk",
+  "note": "Vervangt het eerdere niet-gevonden record.",
+  "src": [
+   [
+    "https://spareto.com/products/bosch-bulb-fog-light/1-987-302-084",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/bosch-bulb-fog-light/1-987-302-084/fitment?manufacturer_id=123&model_name=LAGUNA",
+    "spareto.com"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/7701049263",
+    "www.autodoc.parts"
+   ]
+  ]
+ },
+ "G5m-D-carrosserie:U_SPROEISLANG": {
+  "n": "Reparatieset sproeierleiding (slang 4,5 mm met verbinders)",
+  "st": "vin",
+  "oe": [],
+  "am": [
+   [
+    "HERTH+BUSS ELPARTS",
+    "54271026066",
+    "Spareto: set, 500 mm, met verbindingsstuk.",
+    "A"
+   ]
+  ],
+  "var": "universeel artikel, maat of positie controleren",
+  "per": "set",
+  "note": "Geen Renault-nummer gevonden; de OE-lijst van het langere HERTH+BUSS-artikel noemt andere merken.",
+  "src": [
+   [
+    "https://spareto.com/products/herth-plus-buss-elparts-repair-set-wash-water-line/54271026066",
+    "spareto.com"
+   ],
+   [
+    "https://spareto.com/products/herth-plus-buss-elparts-repair-set-wash-water-line/54271026066/fitment?manufacturer_id=123&model_name=LAGUNA",
+    "spareto.com"
+   ]
+  ]
+ },
+ "G5m-D-carrosserie:U_NG_PORTIERRUBBER": {
+  "n": "Portier- en naadrubbers",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "per": "stuk",
+  "note": "De Spareto-categorielijst voor het type (117 categorieen) heeft geen rubber- of afdichtingcategorie. Niet verder gezocht.",
+  "src": []
+ }
+}
