@@ -678,3 +678,30 @@ Open voor later:
 - rood onderdeel zichtbaar in de voorste wielboog;
 - de aanzuigslang loopt pas vanaf het deksel hoog;
 - `uiCut` en `tilt.rise` naar espace5 met `framework.py export`.
+
+## Golf 5k: exterieurpunten uit S7 van versie 16 (versie 17)
+
+Open punten uit golf 5j: vouwlijnen op de motorkap, kenteken op een zwart vlak (kenmerk 6), gaas in de onderste inlaat, chroomlijn op de bovengrille, een vlekkerige achterbumperrand, en het rode onderdeel in de voorste wielboog (de pluskabel van de accu). Niet gedaan: dubbele zijlijsten (besluit: een sierlijst per portier) en een lagere kap.
+
+Gedaan, door de carrosserieagent (`golf-5k-body`):
+- vouwlijnen als scherpe trede van 9 mm over 1,6 cm, in een fijner net van 46 rijen; de kap is nergens hoger;
+- zwart trapezium achter het voorkenteken, aansluitend op de inlaat; de middelste parkeersensoren naast het vlak;
+- ruitgaas van schuine staven met vaste normalen, zonder naad op de hartlijn;
+- chroomlijn met zwarte rubberlijn onder de sleuf;
+- bumperschalen, onderschort en Achterscherm rechts met `bodCreaseWeld` (lassen op positie, knikken blijven); oorzaak van de vlekken was `bodWeld`, dat op positie en normaal laste;
+- voorste wielkuipscherm met staande binnenrand, zodat de motorruimte niet door de wielkast te zien is.
+
+T4 naar 395 kB (pagina 385.770 bytes gzip).
+
+Rondes (UTC 20 oktober):
+- **Ronde 1:** advisor (Opus 5.5 high) bijsturen. Reden 1: het nieuwe onderdeel stond niet in de boom en de onderdeelnummers. Verder een streep onder de koplamphoek en commentaar.
+- **Ronde 2:** advisor pass.
+
+S7 op ronde 1: 9, 9 en 9 van 9, kenmerk 6 bij alle drie ja.
+
+Open voor later:
+- twee zwarte wiggen op de chromen onderrand van de inlaat (al in B0);
+- de lichte vlek van de tankklep boven de achterwielboog (systemen);
+- de vage omtrek van het sluitvlak boven het achterkenteken;
+- de staart in bovenaanzicht wat stomp (kenmerk 8, een beoordelaar);
+- de Renault-ruit op de neus (kenmerk 5, buiten de telling).
