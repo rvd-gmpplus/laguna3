@@ -157,3 +157,10 @@ De gebruiker besliste op 18 oktober 2026 bij de start en tijdens golf 5c-2 (tak 
 | Budget Koeling en luchtinlaat | 30.000 driehoeken (was 25.000): de radiateurplaat en het grotere expansievat brengen de groep op 26.672. | Afspraak van de gebruiker: budgetten mogen omhoog waar nodig. | Besloten |
 | Opentest | De botsingstoets straalt nu met de openers die nodig zijn (needs, zoals de motorkap) open; eerder werden de stralen tegen een dichte motorkap getrokken. | Testfout gevonden in golf 5j. | Besloten |
 
+## Besluiten van 20 oktober 2026 (golf 5k, versie 17)
+
+| Onderwerp | Beslissing | Grond | Status in tekst |
+|---|---|---|---|
+| T4 | Gzip-grens 395 kB (was 385 kB): golf 5k (gaas in de inlaat, fijner net van de motorkap) brengt de pagina op 384.749 bytes, 251 bytes onder de oude grens. | De gebruiker op 19 oktober 2026: "als je meer nodig hebt dan 385 kB, neem die ruimte, dat is prima". | Besloten |
+| Zijlijsten | Blijft een sierlijst per portier; een S7-beoordelaar vroeg om een dubbele strip. | Eerder besluit (Sierlijst per portier, hierboven): de "dubbele strip" was op foto's de lichtrand en schaduw van een lijst. | Besloten |
+
