@@ -9,13 +9,15 @@
 // sterk getint glas: bij de auto van de gebruiker van buiten zo goed als zwart (keuze van de gebruiker, 15 oktober 2026);
 // de zonneschermen zijn van buiten daardoor nauwelijks te zien, van binnen blijven glas en lucht zichtbaar
 // De plaat heeft boven- en onderzijde met dezelfde wikkeling (beide normalen omhoog): vanaf het dak zijn het voorzijden (gang FrontSide), vanaf de
-// cabine achterzijden (gang BackSide, FLIP_SIDED). Alleen in die tweede gang krijgt het glas een lichtere, blauwgrijze kleur: van binnen leest het
-// glas als een donkergrijs vlak met een zwakke weerspiegeling van de hemel, van buiten blijft het zo goed als zwart met dekking 0,92.
+// cabine achterzijden (gang BackSide, FLIP_SIDED; gemeten, golf 5l). Alleen in die tweede gang krijgt het glas een lichtere, blauwgrijze kleur en
+// een lagere dekking: van binnen leest het als getint glas met een zwakke weerspiegeling, van buiten blijft het zo goed als zwart met dekking 0,92.
+// Golf 5l (cockpitmodus): van binnen ook doorzichtig. Dekking per vlak 0,92 maal 0,2446 = 0,225; van binnen kijk je door onder- en bovenvlak
+// (allebei achterzijden), samen 1 - (1 - 0,225)^2 = 0,40, zoals de binnenkant van de voorruit (0,45). Van buiten blijft het 0,92 per vlak.
 function panGlassIn(m) {
   // van binnen (FLIP_SIDED): blauwgrijze tint plus een zwakke weerspiegeling (randglans en een schuine lichtband in beeldruimte), zodat het glas als vlak
   // leest tegen de lichte lucht van de open opening; de buitenkant blijft ongewijzigd
   m.onBeforeCompile = sh => {
-    sh.fragmentShader = sh.fragmentShader.replace('#include <alphamap_fragment>', '#include <alphamap_fragment>\n#ifdef FLIP_SIDED\n\tdiffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.15, 0.19, 0.25), 0.9);\n#endif')
+    sh.fragmentShader = sh.fragmentShader.replace('#include <alphamap_fragment>', '#include <alphamap_fragment>\n#ifdef FLIP_SIDED\n\tdiffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.15, 0.19, 0.25), 0.9);\n\tdiffuseColor.a *= 0.2446;\n#endif')
       .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n#ifdef FLIP_SIDED\n\t{ vec3 pv = normalize(vViewPosition); float fr = pow(1.0 - abs(dot(pv, normal)), 2.0); float bd = dot(vViewPosition.xy, vec2(0.7071, 0.7071)); float st = smoothstep(0.17, 0.0, abs(bd - 0.1)) * 0.07;\n\ttotalEmissiveRadiance += vec3(0.07, 0.10, 0.14) * (fr * 0.9 + st); }\n#endif');
   };
   m.clone = function () { return panGlassIn(THREE.MeshPhysicalMaterial.prototype.clone.call(this)); };
