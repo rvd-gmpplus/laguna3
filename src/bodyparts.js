@@ -40,6 +40,53 @@ for (const [nm, fl] of [['bodGlassSide', false], ['bodGlassSideR', true]]) {
   const m = MAT[nm] = bodGlassSideIn(THREE.MeshPhysicalMaterial.prototype.clone.call(MAT.glass), fl); m.name = nm; m.opacity = 0.50;
   m.color.setHex(0x222930); m.envMapIntensity = 0.9; m.specularIntensity = 0.5;
 }
+// gelakte carrosseriedelen met een donkere binnenkant (golf 5l ronde 2, cockpit): dakpaneel, dakrails, A-stijl, buitenvlak van de B-stijl en
+// C-stijl. Van binnen zag je tussen de bekleding van het interieur en de ruiten de lak van die panelen als witte strook rond de zijruiten; de
+// binnenkant leest nu als zwart (antidreunlaag en afdichting, schematisch). Welke kant je ziet, volgt niet uit de wikkeling (die wisselt per helft
+// en klapt in de stijlvoeten om) maar uit de plaats: de normaal naar de kijker wijst bij de binnenkant naar de lengteas van de auto (x 0, y 0,75).
+// De lichte modus zet de blanke lak van MAT.paint uit, niet die van dit materiaal (open punt).
+const bodDarkGlsl = 'if (bodDk) { diffuseColor.rgb = vec3(0.022, 0.023, 0.025); metalnessFactor = 0.0; roughnessFactor = 0.9; }';
+function bodPaintKasIn(m) {
+  m.customProgramCacheKey = () => 'bodPaintKas';
+  m.onBeforeCompile = sh => {
+    sh.vertexShader = 'varying vec3 vBodWP;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\n\tvBodWP = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+    sh.fragmentShader = 'varying vec3 vBodWP;\n' + sh.fragmentShader
+      .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n\tvec3 bodWn = inverseTransformDirection(normal, viewMatrix);\n\tbool bodDk = dot(bodWn, normalize(vec3(vBodWP.x, vBodWP.y - 0.75, 0.0))) < -0.15;\n\t' + bodDarkGlsl)
+      .replace('#include <lights_physical_fragment>', '#include <lights_physical_fragment>\n#ifdef USE_CLEARCOAT\n\tif (bodDk) material.clearcoat = 0.0;\n#endif');
+  };
+  m.clone = function () { return bodPaintKasIn(THREE.MeshPhysicalMaterial.prototype.clone.call(this)); };
+  return m;
+}
+MAT.bodPaintKas = bodPaintKasIn(THREE.MeshPhysicalMaterial.prototype.clone.call(MAT.paint)); MAT.bodPaintKas.name = 'bodPaintKas';
+// B-stijlprofiel: een gesloten blok, dus alle voorkanten wijzen naar buiten; donker zijn de vlakken waarvan de normaal (in wereldcoordinaten)
+// naar de cabine, naar achteren of omhoog wijst. Zichtbaar gelakt blijft alleen wat je bij een open voorportier ziet (voorvlak met de sluitplaat
+// en het vlak naar buiten). sx = +1 voor het linkerprofiel (cabine bij -x), -1 voor het rechter.
+function bodPaintBoxIn(m, sx) {
+  const key = 'bodPaintBox' + sx, c = '(wn.x * ' + (sx > 0 ? '-1.0' : '1.0') + ' > 0.5 || wn.z < -0.5 || wn.y > 0.5)';
+  m.customProgramCacheKey = () => key;
+  m.onBeforeCompile = sh => {
+    sh.fragmentShader = sh.fragmentShader
+      .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n\tvec3 wn = inverseTransformDirection(normal, viewMatrix);\n\tbool bodDk = ' + c + ';\n\tif (bodDk) { diffuseColor.rgb = vec3(0.022, 0.023, 0.025); metalnessFactor = 0.0; roughnessFactor = 0.9; }')
+      .replace('#include <lights_physical_fragment>', '#include <lights_physical_fragment>\n#ifdef USE_CLEARCOAT\n\tif (bodDk) material.clearcoat = 0.0;\n#endif');
+  };
+  m.clone = function () { return bodPaintBoxIn(THREE.MeshPhysicalMaterial.prototype.clone.call(this), sx); };
+  return m;
+}
+for (const [nm, sx] of [['bodPaintBoxL', 1], ['bodPaintBoxR', -1]]) { const m = MAT[nm] = bodPaintBoxIn(THREE.MeshPhysicalMaterial.prototype.clone.call(MAT.paint), sx); m.name = nm; }
+// buitenpaneel van de achterklep: de vlakken waarvan de normaal in het assenstelsel van de klep naar voren wijst (de cabinekant, ook bij een open
+// klep) zijn donker; van de achterbank zag je daar onder de bekleding de lak. De normaal komt als varying uit de vertexshader (objectNormal).
+function bodPaintTgIn(m) {
+  m.customProgramCacheKey = () => 'bodPaintTg';
+  m.onBeforeCompile = sh => {
+    sh.vertexShader = 'varying vec3 vBodON;\n' + sh.vertexShader.replace('#include <beginnormal_vertex>', '#include <beginnormal_vertex>\n\tvBodON = objectNormal;');
+    sh.fragmentShader = 'varying vec3 vBodON;\n' + sh.fragmentShader
+      .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n\tvec3 bodOn = normalize(vBodON) * (gl_FrontFacing ? 1.0 : -1.0);\n\tbool bodDk = bodOn.z > 0.35;\n\tif (bodDk) { diffuseColor.rgb = vec3(0.022, 0.023, 0.025); metalnessFactor = 0.0; roughnessFactor = 0.9; }')
+      .replace('#include <lights_physical_fragment>', '#include <lights_physical_fragment>\n#ifdef USE_CLEARCOAT\n\tif (bodDk) material.clearcoat = 0.0;\n#endif');
+  };
+  m.clone = function () { return bodPaintTgIn(THREE.MeshPhysicalMaterial.prototype.clone.call(this)); };
+  return m;
+}
+MAT.bodPaintTg = bodPaintTgIn(THREE.MeshPhysicalMaterial.prototype.clone.call(MAT.paint)); MAT.bodPaintTg.name = 'bodPaintTg';
 // portierkaart (golf 5l): donker kunststof van de drager, Dark Carbon-leder van inzet en armsteun, pianozwarte lijsten, zwart vilt in de raamschacht
 std('bodDoorCard', 0x1c1d20, 0, 0.74);
 std('bodDoorLeather', 0x2b2d30, 0, 0.58);
@@ -47,6 +94,7 @@ std('bodPiano', 0x060708, 0.1, 0.14, { envMapIntensity: 0.5 });
 // raamlijst bovenop de kaart: zijdeglans zwart; met pianozwart gaf de smalle ronde rand een zaagtandhooglicht langs de diagonalen van de vlakken
 std('bodSatinBlack', 0x0d0e10, 0.05, 0.5, { envMapIntensity: 0.5 });
 std('bodFelt', 0x0b0c0d, 0, 1.0, { envMapIntensity: 0.1 });
+std('bodTgTrim', 0x34363a, 0, 0.8);                                     // donkergrijze bekleding van de achterklep (golf 5l ronde 2)
 // nieuwe carrosseriematerialen: zwart mat voor stijlen en raamkaders, helder chroom voor lijsten en sierstrips, spiegelglas
 std('bodPillar', 0x060607, 0, 0.8, { envMapIntensity: 0.12 });
 std('bodBright', 0xf4f6f8, 0.6, 0.16, { envMapIntensity: 1.5 });
@@ -354,23 +402,26 @@ function buildDoor(s, isFront) {
   // De bovenrand blijft 6 cm binnen de bovenkant van het buitenpaneel (xb): de zakkende ruit staat op de gordel tot 5,4 cm naar binnen
   // (achterportier helemaal omlaag, gemeten), dus een rand die tot tegen het glas liep, zou door de ruit zwaaien. Waarden in meter, linkerhelft.
   const cz0 = z0 + 0.02, cz1 = z1 - (isFront ? 0.10 : 0.02), cardY0 = z => Math.max(lo(z) + 0.03, 0.36);
-  // uiteinden per hoogte: de kaart eindigt 4 mm voor of achter het verstevigde profiel in de B-stijl (blok 5 x 10 cm, x 0,71 tot 0,76, 12 graden
-  // gekanteld; zie 'B-stijl' in de carrosseriekooi), dat binnen de portiernaad staat; het voorportier boven de armsteunhoogte ook 1 cm voor de
-  // zijkant van het dashboard (vanaf z 0,45, gemeten; het dashboard dekt daar het portier af). Onder 0,58 m (achterportier 0,69 m, de rijen van het
-  // oude paneel) loopt de kaart door tot de oude uiteinden.
-  const bpF = y => -0.1596 - 0.2133 * (y - 0.611) + 0.0511, bpR = y => bpF(y) - 0.1022;
-  const cardZr = (y, row) => isFront ? [Math.max(cz0, bpF(y) + 0.004), row > 4 ? Math.min(cz1, Math.max(0.44, 0.56 - (y - 0.5) * 0.6)) : cz1] : [cz0, row > 6 ? Math.min(cz1, bpR(y) - 0.004) : cz1];
+  // uiteinden per hoogte: de kaart eindigt 4 mm voor of achter het verstevigde profiel in de B-stijl (blok x 0,71 tot 0,76, 12 graden gekanteld,
+  // achter met het deurrubber; zie 'B-stijl' in de carrosseriekooi), dat binnen de portiernaad staat. Onder 0,58 m (achterportier 0,69 m, de rijen
+  // van het oude paneel) loopt de kaart door tot de oude uiteinden; daarboven tot 3 mm van de achterrand, binnen de gevouwen portierrand
+  // (golf 5l ronde 2: daar keek je in het portier) en vooraan tot het oude uiteinde, vanaf z 0,40 teruggeweken naar 4,4 cm binnen xb (zie cardW), buiten de
+  // zijkant van het dashboard (x 0,750 vanaf z 0,45, eindkap 0,763 vanaf z 0,57, gemeten)
+  const bpF = y => -0.1596 - 0.2133 * (y - 0.611) + 0.0511, bpR = y => bpF(y) - 0.0997;
+  const cardZr = (y, row) => isFront ? [row > 6 ? Math.max(z0 + 0.003, bpF(y) + 0.004) : cz0, cz1] : [row > 6 ? z0 + 0.003 : cz0, row > 6 ? Math.min(cz1, bpR(y) - 0.004) : cz1];
   // achterportier: vooraan (vanaf z -0,355 naar voren) wijkt de schouder terug naar 5,8 cm binnen xb; daar hangt de veiligheidsgordel van de voorstoel.
   // Onder ca. 0,58 m de eerste vijf rijen en de stations van het oude paneel (12,5 cm langs de normaal van de huid, twaalf rijen tot S4 - 0,03),
   // zodat de botsingsmeting daar dezelfde punten ziet als in B0
-  const cardW = z => isFront ? 1 : sstep((-0.305 - z) / 0.05);
+  // voorportier: vanaf z 0,40 naar voren wijkt de schouder terug naar 4,4 cm binnen xb, achter de zijkant van het dashboard
+  const cardW = z => isFront ? sstep((0.44 - z) / 0.04) : sstep((-0.305 - z) / 0.05), cardDm = isFront ? 0.044 : 0.058;
   let cardZ = NaN, cardP = null;
   const cardPts = z => {
     if (z === cardZ) return cardP;
-    const xb = bodSec(z).xe, yb = YT(z), y0 = cardY0(z), w = cardW(z), d = dx => xb - (w * dx + (1 - w) * Math.min(dx, 0.058));
+    const xb = bodSec(z).xe, yb = YT(z), y0 = cardY0(z), w = cardW(z), d = dx => xb - (w * dx + (1 - w) * Math.min(dx, cardDm));
     // achterportier vooraan (vanaf z -0,40): tot ca. 0,69 m de rijen van het oude paneel, want de gordelrolautomaat van de voorstoel staat
-    // daar binnen de draaicirkel van het portier (al in B0); dieper naar binnen zwaaide het paneel er bij het openen verder doorheen
-    const wf = isFront ? 0 : sstep((z + 0.45) / 0.05), sa = sAtY(z, y0), old = k => bodLow(z, lerp(sa, S4 - 0.03, k / 12), 0.125);
+    // daar binnen de draaicirkel van het portier (al in B0); dieper naar binnen zwaaide het paneel er bij het openen verder doorheen.
+    // Voorportier achteraan (vanaf z -0,04, golf 5l ronde 2): idem, zodat de kaart buiten het B-stijlprofiel tot de oude achterrand doorloopt
+    const wf = isFront ? sstep((-0.04 - z) / 0.04) : sstep((z + 0.45) / 0.05), sa = sAtY(z, y0), old = k => bodLow(z, lerp(sa, S4 - 0.03, k / 12), 0.125);
     const f = (dx, y, k) => { const o = old(k); return wf > 0 ? [lerp(d(dx), o[0], wf), lerp(y, o[1], wf), lerp(z, o[2], wf)] : [d(dx), y]; };
     const raw = [0, 1, 2, 3, 4].map(old).concat([f(0.060, 0.60, 5), f(0.0605, 0.645, 6), [d(0.061), 0.68], [d(0.071), 0.692], [d(0.074), 0.715],
       [d(0.074), yb - 0.042], [d(0.0735), yb - 0.022], [d(0.071), yb - 0.011], [d(0.066), yb - 0.006], [d(0.0615), yb - 0.008], [d(0.0595), yb - 0.014], [d(0.0595), yb - 0.03]]);
@@ -538,7 +589,10 @@ function buildDoor(s, isFront) {
   })();
   // vilt in de raamschacht: 2 mm binnen het buitenpaneel, maar nooit verder naar buiten dan 3 cm buiten xb, zodat het vóór de toppen van de
   // geleiderails (tot 0,90 m, x 0,844 tot 0,86) en de kabels langs loopt; de ruit blijft er in elke stand minstens 2 cm binnen
-  const felt = patch((z, v) => { const xb = bodSec(z).xe, y = YT(z) - 0.045 + 0.041 * v; return [s * Math.min(surfX(z, y) - 0.002, xb + 0.03), y, z]; }, cz0, cz1, 14, () => [0, 1], 4, br.filter(b => b > cz0 && b < cz1));
+  // golf 5l ronde 2: van onder 0,875 m of 7 cm onder de gordel tot 6 mm erboven (boven de gordel 4 mm binnen xb, langs de onderrand van de
+  // dichte ruit) en tot 3 mm van de portierranden; vanaf de achterbank
+  // keek je anders onder het vilt door en tussen vilt en ruit door op de lak. De ruitdrager staat dicht tot 0,863 m.
+  const feltZ0 = z0 + 0.003, feltZ1 = isFront ? cz1 : z1 - 0.003, feltDy = [-0.07, -0.05, -0.03, -0.016, -0.009, -0.005, -0.0025, 0, 0.003, 0.006], felt = patch((z, j) => { const xb = bodSec(z).xe, yb = YT(z), dy = feltDy[Math.round(j)], y = dy < 0 ? Math.max(yb + dy, 0.875 + 0.001 * j) : yb + dy; return [s * (y > yb ? xb - 0.004 : Math.min(surfX(z, y) - 0.002, xb + 0.03)), y, z]; }, feltZ0, feltZ1, 14, () => [0, 9], 9, br.filter(b => b > feltZ0 && b < feltZ1));
   const kids = [
     P('Buitenpaneel', outer, MAT.paint, { d: `Geperste plaatstalen buitenhuid van het ${pos}portier, zilvergrijs metallic gelakt.`, ex: [s * 0.4, 0.14, 0.5] }),
     P('Portierrand', doorEdge, MAT.paintIn, { d: 'Gevouwen rand rondom het portier (onderkant en zijkanten) die buitenpaneel en binnenpaneel verbindt; zo heeft de sluitrand dikte.', ex: [-s * 0.1, -0.06, 0] }),
@@ -560,7 +614,7 @@ function buildDoor(s, isFront) {
     P('Gordelsierlijst', beltGeo, MAT.bodChrome, { d: 'Verchroomde sierlijst op de gordellijn, met het buitenste raamrubber.', ex: [s * 0.08, 0.05, 0] }),
     P('Gordelrubber buiten', beltRub, MAT.bodPillar, { d: 'Buitenste raamschachtrubber: een smalle zwarte lip tussen de gordelsierlijst en de ruit en een schaduwlijn onder de lijst.', ex: [s * 0.07, 0.03, 0] }),
     // golf 5l: het binnenste rubber ligt op de raamlijst van de portierkaart (was 3 cm binnen de gordelsierlijst, los in de lucht boven de kaart)
-    P('Gordelrubber binnen', tube((([za, zb]) => [za + 0.006].concat(bodDense(za + 0.006, zb - 0.006, 16), [zb - 0.006]))(cardZr(YT((cz0 + cz1) / 2) - 0.006, 13)).map(z => { const q = cardPts(z); return [s * (q[13][0] + q[14][0]) / 2, YT(z) - 0.0025, z]; }), 0.003, 20, 6), MAT.rubber, { d: 'Binnenste raamschachtrubber op de bovenrand van de portierkaart, langs de raamschacht.', ex: [-s * 0.06, 0.04, 0] }),
+    P('Gordelrubber binnen', tube((([za, zb]) => [za + 0.006].concat(bodDense(za + 0.006, zb - 0.006, 16), [zb - 0.006]))((([a, b]) => [a, isFront ? Math.min(b, 0.43) : b])(cardZr(YT((cz0 + cz1) / 2) - 0.006, 13))).map(z => { const q = cardPts(z); return [s * (q[13][0] + q[14][0]) / 2, YT(z) - 0.0025, z]; }), 0.003, 20, 6), MAT.rubber, { d: 'Binnenste raamschachtrubber op de bovenrand van de portierkaart, langs de raamschacht.', ex: [-s * 0.06, 0.04, 0] }),
     // zwart vilt aan de binnenkant van de bovenrand van het buitenpaneel: van binnen kijk je door de raamschacht op vilt in plaats van op lak.
     P('Raamschachtvilt', felt, MAT.bodFelt, { d: 'Zwart gevlokt vilt aan de binnenkant van de bovenrand van het buitenpaneel, waarlangs de ruit in de raamschacht glijdt.', ex: [s * 0.03, 0.05, 0] }),
     A('Sierlijst', { d: `Verhoogde beschermlijst van ca. 38 mm op het ${pos}portier in carrosseriekleur, met afgeronde uiteinden en een dunne aluminium inzet langs de bovenrand.`, ex: [s * 0.1, 0, 0] }, [
@@ -996,21 +1050,26 @@ function buildBody() {
   ]);
   const bodGsPt = bodGsSolve(), bodGsA = bodGsPt.a, bodGsB = bodGsPt.b;
   const sideRoof = A('Zijwanden en dak', { d: 'Stijlen, dakrails, dak met dakbogen, de vaste kwartsruiten en de dakantenne.', ex: [0, 0.32, 0] }, [
-    P('Dakpaneel panoramadak', panRoofGeo(), MAT.paint, { d: 'Dakplaat van staal met twee openingen voor het panoramadak (optie), gelast op de dakrails. Tussen de openingen en rondom loopt een smalle plaatstrook.', ex: [0, 0.16, 0] }),
+    P('Dakpaneel panoramadak', panRoofGeo(), MAT.bodPaintKas, { d: 'Dakplaat van staal met twee openingen voor het panoramadak (optie), gelast op de dakrails. Tussen de openingen en rondom loopt een smalle plaatstrook.', ex: [0, 0.16, 0] }),
     A('Dakbogen', { d: 'Drie dwarsliggers onder het dakpaneel. Door de twee openingen van het panoramadak liggen ze onder de plaatstroken voor, tussen en achter de glaspanelen (onder de dwarsbalk en boven de hemelbekleding).', ex: [0, 0.1, 0] }, [[0.285, 'voor'], [-0.54, 'midden'], [-1.14, 'achter']].map(([z, nm]) => P(`Dakboog ${nm}`, (() => { const pts = []; for (let i = 0; i <= 12; i++) { const w = bodQR / 2 + (1 - bodQR) * i / 12; const p = ghPt(z, w); pts.push([p[0] * 0.97, p[1] - 0.005, z]); } return tube(pts, 0.0045, 24, 6); })(), MAT.paintIn, { d: 'Dwarsligger onder het dakpaneel.', ex: [0, -0.04, z * 0.05] }))),
     buildPanorama(),
-    ...both(s => P(`Dakrail ${sn(s)}`, bodGhSide(s, -0.95, WS1, 30, () => [bodQG + 0.03, bodQR], 10), MAT.paint, { d: 'Zijdelingse dakligger boven de portieren.', ex: [s * 0.08, 0.04, 0] })),
-    ...both(s => P(`A-stijl ${sn(s)}`, bodGhSide(s, WS1, WS0, 24, z => [aPillarLo(z), bodQR], 8, bodDense(0.78, 0.95, 6).concat(bodDense(WS0 - bodAPL, WS0, 9))), MAT.paint, { d: 'Voorste dakstijl langs de voorruit.', ex: [s * 0.08, 0.04, 0.04] })),
+    ...both(s => P(`Dakrail ${sn(s)}`, bodGhSide(s, -0.95, WS1, 30, () => [bodQG + 0.03, bodQR], 10), MAT.bodPaintKas, { d: 'Zijdelingse dakligger boven de portieren.', ex: [s * 0.08, 0.04, 0] })),
+    ...both(s => P(`A-stijl ${sn(s)}`, bodGhSide(s, WS1, WS0, 24, z => [aPillarLo(z), bodQR], 8, bodDense(0.78, 0.95, 6).concat(bodDense(WS0 - bodAPL, WS0, 9))), MAT.bodPaintKas, { d: 'Voorste dakstijl langs de voorruit.', ex: [s * 0.08, 0.04, 0.04] })),
     // B-stijl: profiel onder (tot 1,06 m) en boven de gordel het gelakte buitenvlak van de stijl tot de bovenrand van de ruiten, 4 mm onder de
     // twee zwarte afdekkingen van de portierkaders (de onderste 10 cm dieper, binnen de zakkende voorste zijruit; zie bodBPillarFace). Dicht blijft het vlak achter die afdekkingen (16 mm van de glasranden, zodat het niet
     // door de ruiten te zien is); bij een open portier leest de stijl zo als stijl. Zonder dit vlak keek je daar langs de afdekking van het
     // andere portier recht op de crème stoelrug (poort ronde 2, beelden 06 en 09)
     // Het profiel eindigt op de gordel (0,70 m lang langs zijn eigen as, onderkant en voorvlak met de sluitplaat op dezelfde plaats): tot 1,06 m stak
     // het 6 cm achter de afdekking uit en las het door een gezakte achterruit als licht blok tussen ruit en stijl (beeld 15)
-    ...both(s => P(`B-stijl ${sn(s)}`, merge([xf(G.box(0.05, 0.7, 0.1), [s * 0.735, 0.66 - 0.05 * Math.cos(0.21), -0.17 + 0.05 * Math.sin(0.21)], [-0.21, 0, 0]), bodBPillarFace(s)]), MAT.paint, { d: 'Verstevigd profiel in de middenstijl, in carrosseriekleur gelakt. Boven de gordel ligt het gelakte buitenvlak van de stijl onder de zwarte afdekkingen van de portierkaders. Het deel onder de gordellijn is zichtbaar als het voorportier open staat: de sluitplaat met de slotbeugel zit op de voorkant van het profiel.', ex: [s * 0.05, 0, 0] })),
+    // golf 5l ronde 2: het profiel is achter 6 mm smaller (binnen de breedte van de B-stijlbekleding van het interieur) en draagt achter het zwarte
+    // deurrubber van het achterportier; van de achterbank las het gelakte achtervlak als witte strook naast de stijlbekleding. Het buitenvlak boven
+    // de gordel is een eigen deel met een donkere binnenkant (bodPaintKas), zodat het tussen de ruiten van binnen niet als lak leest.
+    ...both(s => P(`B-stijl ${sn(s)}`, xf(xf(G.box(0.05, 0.7, 0.094), [0, 0, 0.003]), [s * 0.735, 0.66 - 0.05 * Math.cos(0.21), -0.17 + 0.05 * Math.sin(0.21)], [-0.21, 0, 0]), s > 0 ? MAT.bodPaintBoxL : MAT.bodPaintBoxR, { d: 'Verstevigd profiel in de middenstijl, in carrosseriekleur gelakt. Het deel onder de gordellijn is zichtbaar als het voorportier open staat: de sluitplaat met de slotbeugel zit op de voorkant van het profiel; achter zit het deurrubber van het achterportier.', ex: [s * 0.05, 0, 0] })),
+    ...both(s => P(`Buitenvlak B-stijl ${sn(s)}`, bodBPillarFace(s), MAT.bodPaintKas, { d: 'Gelakt buitenvlak van de B-stijl boven de gordel, onder de zwarte afdekkingen van de portierkaders; de binnenkant is donker (bodPaintKas).', ex: [s * 0.07, 0.03, 0] })),
+    ...both(s => P(`Deurrubber B-stijl ${sn(s)}`, xf(merge([xf(G.box(0.056, 0.55, 0.003), [-s * 0.0035, -0.075, -0.046]), xf(G.box(0.047, 0.15, 0.003), [-s * 0.008, 0.275, -0.046])]), [s * 0.735, 0.66 - 0.05 * Math.cos(0.21), -0.17 + 0.05 * Math.sin(0.21)], [-0.21, 0, 0]), MAT.rubber, { d: 'Zwart afdichtingsrubber op de achterkant van het B-stijlprofiel, waartegen de voorrand van het dichte achterportier valt; loopt tot de binnenkant van de stijlbekleding door (bovenaan smaller, buiten het bereik van de zakkende achterruit).', ex: [s * 0.05, 0, -0.06] })),
     // sluitplaat en U-beugel op de voorkant van de B-stijl (zelfde plaats en kanteling als het profiel); donker staal tegen de lak, zodat hij als eigen deel leest
     ...both(s => P(`Slotbeugel B-stijl ${sn(s)}`, merge([xf(G.rbox(0.05, 0.16, 0.01, 0.002), [-s * 0.002, -0.05, 0.055]), tube([[s * 0.018, -0.05, 0.05], [s * 0.018, -0.05, 0.115], [-s * 0.018, -0.05, 0.115], [-s * 0.018, -0.05, 0.05]], 0.009, 16, 6)]), MAT.darkSteel, { d: 'Sluitplaat met U-beugel op de B-stijl waar het slot van het voorportier in grijpt (plaats geschat). Zit op de voorkant van de stijl, dus alleen te zien bij open voorportier.', p: [s * 0.735, 0.66, -0.17], r: [-0.21, 0, 0], ex: [s * 0.09, 0, 0.05] })),
-    ...both(s => P(`C-stijl ${sn(s)}`, bodGhSide(s, SP, -0.95, 34, z => [cPillarLo(z), z < RW0 ? qScr(z) : bodQR], 16, bodDense(-1.27, -1.15, 6)), MAT.paint, { d: 'Achterste dakstijl met de karakteristieke kromming boven de kwartsruit.', ex: [s * 0.1, 0.04, -0.04] })),
+    ...both(s => P(`C-stijl ${sn(s)}`, bodGhSide(s, SP, -0.95, 34, z => [cPillarLo(z), z < RW0 ? qScr(z) : bodQR], 16, bodDense(-1.27, -1.15, 6)), MAT.bodPaintKas, { d: 'Achterste dakstijl met de karakteristieke kromming boven de kwartsruit.', ex: [s * 0.1, 0.04, -0.04] })),
     ...both(quarter),
     // het plaatje reikt tot 5 mm boven de kogelpen en 25 mm eronder (was 25 mm erboven): bij een open klep wijst de veer omhoog en
     // liep de cilinder (32 mm) door de bovenhelft van het plaatje (golf 5b-3, ronde 4; onderrand en afstand tot de lakhuid ongewijzigd)
@@ -1403,10 +1462,18 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   const tgZ0 = SP + 0.04, tgZ1 = RW0 - 0.06;
   const tgRing = [patch(tgInP, tgZ0, tgZ1, 14, z => [tgWo(z), tgWi(z)], 2), patch(tgInP, tgZ0, tgZ1, 14, z => [1 - tgWi(z), 1 - tgWo(z)], 2),
     patch(tgInP, tgZ0, tgZ0 + 0.06, 2, z => [tgWo(z), 1 - tgWo(z)], 8), patch(tgInP, tgZ1 - 0.05, tgZ1, 2, z => [tgWo(z), 1 - tgWo(z)], 8)];
+  // bekleding van de achterklep (golf 5l ronde 2, cockpit): donkergrijs kunststof 8 mm binnen het binnenpaneel en de lijmrand; van de
+  // achterbank zag je bij omkijken de lak van het binnenframe
+  const tgInT = (z, w) => { const p = tgInP(z, w); return [p[0], p[1] - 0.008, z]; };
+  // onderaan blijft de bekleding binnen |x| 0,60: daar staan de steunen van de bagageruimteafdekking (x 0,635 tot 0,685), waar het binnenframe al in B0 in stak
+  const tgWx = (z, ax) => { let lo = tgWo(z), hi = 0.5; for (let k = 0; k < 26; k++) { const m = (lo + hi) / 2; if (Math.abs(tgInP(z, m)[0]) > ax) lo = m; else hi = m; } return (lo + hi) / 2; };
+  const tgTrim = merge([bodTailGeo(-0.56, 0.56, 0.68, ydT - 0.02, -0.048, 4, 12), patch(tgInT, tgZ0 + 0.07, tgZ1, 13, z => [tgWo(z), tgWi(z)], 2), patch(tgInT, tgZ0 + 0.07, tgZ1, 13, z => [1 - tgWi(z), 1 - tgWo(z)], 2),
+    patch(tgInT, tgZ0, tgZ0 + 0.07, 2, z => [tgWx(z, 0.60), 1 - tgWx(z, 0.60)], 8), patch(tgInT, tgZ1 - 0.05, tgZ1, 2, z => [tgWo(z), 1 - tgWo(z)], 8)]);
   const tailgate = A('Achterklep', { d: 'Grote achterklep met de hele achterruit, typerend voor de vijfdeurs hatchback, met spoilerlip, derde remlicht en achterruitenwisser. Scharniert aan de dakrand en wordt door twee gasveren omhooggehouden.', ex: [0, 0.42, -0.5],
     open: hinge(bodTgPv, [1, 0, 0], bodTgAng, { min: 60 * PI / 180, label: 'Achterklep', look: { dir: [0.6, 0.6, -1], nodes: ['Achterklep', 'Gasveer links', 'Gasveer rechts'] } }) }, [
-    P('Buitenpaneel achterklep', merge([tgOuter, bodSPweb(1, bodQScr(SP), 1, 0.003, 16), bodSPweb(-1, bodQScr(SP), 1, 0.003, 16)]), MAT.paint, { d: 'Plaatwerk van de achterklep onder en achter de ruit.', ex: [0, 0, -0.08] }),
+    P('Buitenpaneel achterklep', merge([tgOuter, bodSPweb(1, bodQScr(SP), 1, 0.003, 16), bodSPweb(-1, bodQScr(SP), 1, 0.003, 16)]), MAT.bodPaintTg, { d: 'Plaatwerk van de achterklep onder en achter de ruit.', ex: [0, 0, -0.08] }),
     P('Binnenpaneel achterklep', merge([bodTailGeo(-0.36, 0.36, 0.68, ydT - 0.02, -0.04, 4, 8), ...tgRing]), MAT.paintIn, { d: 'Binnenframe van de achterklep met scharnier- en slotversteviging. Rond de achterruit loopt een smalle rand van 7 cm (de lijmrand), zodat de ruit van binnen als donker glas te zien is.', ex: [0, 0, 0] }),
+    P('Bekleding achterklep', tgTrim, MAT.bodTgTrim, { d: 'Donkergrijze kunststof bekleding aan de binnenkant van de achterklep, over het binnenframe onder de ruit en de rand rond de achterruit.', ex: [0, -0.06, 0.08] }),
     P('Achterruit', scr, MAT.bodGlassSide, { d: 'Verwarmde achterruit van gehard glas, zeer vlak geplaatst (ca. 14 graden).', ex: [0, 0.14, 0.02] }),
     P('Spoilerlip', lip, MAT.paint, { d: 'Kleine spoilerlip (eendenstaartje) aan de onderrand van de achterruit: een dun, licht opkrullend blad van ca. 3,5 cm met een scherpe achterrand, zo breed als de ruit en aan de uiteinden in het plaatwerk weglopend.', ex: [0, 0.1, -0.06] }),
     // achter het glas, net onder de dakrand: steekt in zijaanzicht niet boven de daklijn uit en schemert door de getinte ruit

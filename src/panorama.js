@@ -28,7 +28,7 @@ function panGlassIn(m) {
 panGlassIn(phys('bodPanoGlass', { color: 0x030405, metalness: 0.05, roughness: 0.2, specularIntensity: 0.3, transparent: true, opacity: 0.92, depthWrite: false, envMapIntensity: 0.4 }));
 std('bodPanoFrit', 0x040405, 0, 0.35);                  // zwarte keramische rand (frit) op het glas
 std('bodPanoBar', 0x15161a, 0.3, 0.5);                  // dwarsbalk: donkergrijs tot zwart gelakt
-std('bodPanoCass', 0xa49c8a, 0, 0.9);                   // cassette van het zonnescherm: donkerder taupe dan de hemel, zodat het huis en het opgerolde scherm zich aftekenen
+std('bodPanoCass', 0x9a9d9e, 0, 0.9);                   // cassette van het zonnescherm: iets donkerder grijs dan de lichtgrijze hemel (0xb6b8b7), zodat het huis zich aftekent (golf 5l ronde 2; was taupe)
 const PAN_X = 0.47, PAN_XO = 0.50, PAN_XR = 0.52;       // glas, opening in de dakplaat, buitenrand van omlijsting en rails
 const PAN_GF = [0.20, -0.50], PAN_GR = [-0.58, -1.11];  // z-bereik van het voorste en achterste glas
 const PAN_OF = [0.22, -0.50], PAN_OR = [-0.58, -1.11];  // z-bereik van de openingen in de dakplaat
@@ -182,8 +182,14 @@ function buildPanorama() {
   const harness = P('Kabelboom dakmotor', tube([panP(0.255, 0.27, -0.0145), panP(0.255, 0.15, -0.0145), panP(0.255, 0.05, -0.0145), panP(0.255, 0.0, -0.0145)], 0.0035, 16, 5), MAT.rubber, { d: 'Kabelboom van de dakmotor langs de voorste dakstrook naar de hemelconsole.', ex: [0, -0.1, 0.1] });
   const hose = (pts, nm, s) => P(`Afvoerslang ${nm}`, tube(pts, 0.006, 40, 6), MAT.rubber, { d: 'Afvoerslang die regenwater uit de goot van het dakframe door de stijl naar de wielkast leidt (verloop geschat).', ex: [s * 0.1, -0.1, 0] });
   const pillar = (z, q, s, dy) => { const h = bodGhHalf(z, q); return [s * (h[0] - 0.026), h[1] - 0.028 + dy, z]; };
+  // voorste slang (golf 5l ronde 2): in de A-stijl ligt hij tegen de stijl, het hart 7,5 mm binnen het plaatwerk (straal 6 mm) op het punt van de
+  // stijl dat het dichtst bij het oude verloop ligt; zo hoeft de A-stijlbekleding er niet meer omheen te bollen
+  const hug = (z, q, s, dy) => { const o = pillar(z, q, 1, dy); let qb = q, db = Infinity;
+    for (let k = 0; k <= 160; k++) { const qq = 0.40 + 0.4 * k / 160, h = bodGhHalf(z, qq), dd = (h[0] - o[0]) ** 2 + (h[1] - o[1]) ** 2; if (dd < db) { db = dd; qb = qq; } }
+    const h0 = bodGhHalf(z, qb), h1 = bodGhHalf(z, qb + 0.004), tl = Math.hypot(h1[0] - h0[0], h1[1] - h0[1]), n = [-(h1[1] - h0[1]) / tl, (h1[0] - h0[0]) / tl], sg = n[0] > 0 ? -1 : 1;
+    return [s * (h0[0] + sg * n[0] * 0.0075), h0[1] + sg * n[1] * 0.0075, z]; };
   const hoses = [1, -1].flatMap(s => [
-    hose([panP(0.205, s * 0.535, -0.006), panP(0.27, s * 0.585, -0.03), pillar(0.4, 0.68, s, 0), pillar(0.62, 0.66, s, -0.04), pillar(0.85, 0.65, s, -0.12)], `voor ${s > 0 ? 'links' : 'rechts'}`, s),
+    hose([panP(0.205, s * 0.535, -0.006), panP(0.27, s * 0.585, -0.03), hug(0.4, 0.68, s, 0), hug(0.62, 0.66, s, -0.04), hug(0.85, 0.65, s, -0.12)], `voor ${s > 0 ? 'links' : 'rechts'}`, s),
     hose([panP(-1.095, s * 0.535, -0.006), panP(-1.13, s * 0.585, -0.03), pillar(-1.17, 0.68, s, -0.02), pillar(-1.2, 0.66, s, -0.1), pillar(-1.23, 0.64, s, -0.2)], `achter ${s > 0 ? 'links' : 'rechts'}`, s)]);
   const gutter = (z0, z1, nm) => P(`Afvoergoot ${nm}`, merge([panSlab(z1, z0, 0.545, 0.575, -0.0085, -0.0005, 14, 1), panSlab(z1, z0, -0.575, -0.545, -0.0085, -0.0005, 14, 1), panSlab(z0, z0 + 0.04, -0.575, 0.575, -0.0085, -0.0005, 1, 16), panSlab(z1 - 0.04, z1, -0.575, 0.575, -0.0085, -0.0005, 1, 16)]), MAT.plastic, { d: `Kunststof afvoergoot rond de ${nm}e opening; vangt water dat langs de afdichting komt en voert het naar de afvoerslangen op de vier hoeken.`, ex: [0, -0.1, nm === 'voor' ? 0.06 : -0.06] });
   const water = A('Waterafvoer', { d: 'Twee goten rond de dakopeningen en vier afvoerslangen door de stijlen. Verstopte afvoeren zijn een bekend probleem bij panoramadaken (schematisch weergegeven, verloop geschat).', ex: [0, -0.2, 0] }, [gutter(PAN_OF[0] + 0.01, PAN_OF[1], 'voor'), gutter(PAN_OR[0], PAN_OR[1] - 0.01, 'achter'), ...hoses]);
