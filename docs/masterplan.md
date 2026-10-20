@@ -705,3 +705,29 @@ Open voor later:
 - de vage omtrek van het sluitvlak boven het achterkenteken;
 - de staart in bovenaanzicht wat stomp (kenmerk 8, een beoordelaar);
 - de Renault-ruit op de neus (kenmerk 5, buiten de telling).
+
+## Golf 5l: cockpit en interieur (versie 18)
+
+Verzoek van de gebruiker: in de auto kunnen zitten en rondkijken vanaf elke zitplaats, en het interieur naar de echte auto (Initiale Paris, leder Dark Carbon, Carminat TomTom, panoramadak). Besluiten: zie `docs/onderzoek/beslissingen.md`, golf 5l.
+
+Gedaan, in vijf takken naast elkaar:
+- **app** (`golf-5l-app`): derde modus Cockpit naast Uitklappen en Openen, met keuze van de zitplaats, Uitstappen, rondkijken en beperkt vooroverbuigen (0,15 m) en achteroverleunen (0,05 m). Een klik opent een opener en toont de kaart. Daarnaast een buitenwereld (lucht en grond) en een lichtstand in de cockpit; openers gaan dicht bij uitstappen. Het gezichtsveld op een staande telefoon is begrensd op 95°. `?cockpit=` in de URL, testhaken `setCockpit`, `cockpit`, `lookAt`, `cockpitSeats`. Instellingen in `auto.json` (`cockpit`) en `CFG.cockpit`. De lichte weergave zet de clearcoat van alle lakmaterialen uit.
+- **dashboard** (`golf-5l-dash`): stuur, instrumenten (snelheidsmeter 10, 30 tot 270 zoals op de foto van de gebruiker), roosters, middenpaneel met Carminat TomTom, console, onderdashboard, sierband pianozwart.
+- **carrosserie** (`golf-5l-body`): portierkaarten tot de raamschacht, zijruiten en panoramadak van binnen, geen lak meer zichtbaar in de cockpit rond ruiten, B-stijl, portieren en achterklep; derde remlicht van binnen zwart; zonneschermen zonder lichte naden.
+- **route** (`golf-5l-route`): kabelboom in de cabine, remleidingen achter uit de voetruimtes.
+- **cabine** (`golf-5l-cab`): Dark Carbon leer (0x141518, geperforeerd 0x101114) en dashboard (0x1f2124) met minder omgevingsreflectie, hemel tot het raamrubber, brede stijlbekleding, gevormde stoelen en gordels, bekleding van de bagageruimte, een lip aan de C-stijlbekleding over de gasveer, verzonken scharnierpennen van de hoedenplank, nerf die blijft bij aanwijzen.
+
+Rondes (20 oktober, lokale tijd):
+- **Ronde 1** (12:27 tot 13:29): vijf takken samengevoegd; voetwand passagier dicht, T4 naar 1,6 MB raw en 430 kB gzip, budget Carrosserie 200.000.
+- **Ronde 2** (13:48 tot 14:57): buitenwereld en lichtstand, lak uit de cockpit, A-stijl, bagageruimte. Advisor (Fable 5.1 xhigh) bijsturen op twaalf punten, interieur 7 van 10.
+- **Ronde 3** (16:04 tot 16:14): alle twaalf punten; advisor pass, interieur 8 (voor) en 7 (achter). Dashboard op circa sRGB 55 volgens de advisor goed genoeg voor Dark Carbon.
+
+Poort op `b7ea1b8`: zwaai van alle openers tegen `main` ECHT 0; Mac en Linux alles groen op visdiff na (itest 286 van 286); visdiff 42 van 42 na de vernieuwde basislijn (`de023ae`, 19 beelden inhoudelijk: interieur, cockpitknop, onderdeeltellingen). Cijfers: `docs/cijfers.md`.
+
+Open voor later:
+- rugschaal en kaartvak van de voorstoelen vanaf de achterbank vlak zwart (sRGB 7 tot 10); optie intTrimDark;
+- kleine donkere punt aan de voorkant van de lip bij z -1,30 (`stY[0]` als sentinel 9);
+- achterlichtlens schemert rood tussen sponning en klepbekleding bij achteroverleunen vanaf achter links;
+- middelste gordelband vult het beeld bij omkijken vanaf achter midden;
+- cockpit naar espace5 met `framework.py export`;
+- open punten uit golf 5k blijven staan.

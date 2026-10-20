@@ -173,4 +173,7 @@ De gebruiker besliste op 18 oktober 2026 bij de start en tijdens golf 5c-2 (tak 
 | T4 | 1,6 MB raw en 430 kB gzip (was 1,5 MB en 395 kB): de cockpitmodus en het interieur brengen de pagina op ruim 1,5 MB raw en 415 kB gzip. | De gebruiker gaf de ruimte ("neem die ruimte, dat is prima"). | Besloten |
 | Budget Carrosserie | 200.000 driehoeken (was 190.000): de portierkaarten brengen de groep op 189.763. | Afspraak van de gebruiker: budgetten mogen omhoog waar nodig. | Besloten |
 | Toerenteller | Schaal 0 tot 8 (x1000 tpm), rood gebied geschat; de referentiefoto toont een dieselteller. | Geen bron voor de 2.0T-teller gevonden. | Geschat |
+| Sierband dashboard | Pianozwart. | Keuze van de gebruiker. | Besloten |
+| Snelheidsmeter | Cijfers 10, 30 tot 270, streepje per 10 km/h. | Foto van de gebruiker (eigen auto). | Besloten |
+| Helderheid Dark Carbon | Leder en dashboard donkerder (zijwang zitting circa sRGB 40, dashboard circa 55); het cockpitlicht blijft. | Advisor Fable 5.1 xhigh ronde 3: goed genoeg, niet verder verdonkeren. | Besloten |
 
