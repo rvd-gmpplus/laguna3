@@ -151,42 +151,6 @@
    ]
   ]
  },
- "G5m-B-automaat:U_ATFSET": {
-  "n": "ATF-onderhoudspakket automaat (oliewissel met toebehoren)",
-  "st": "vin",
-  "oe": [
-   [
-    "7701067666",
-    "OE-lijst van beide TCMATIC-pakketten",
-    "B"
-   ]
-  ],
-  "am": [
-   [
-    "TCMATIC",
-    "105.107.0005",
-    "pakket voor bak JF613E / AJ0 / AJ8, standaard wissel (5 liter olie)",
-    "A"
-   ]
-  ],
-  "var": "Twee pakketten in de catalogus voor type 23370, beide voor bak JF613E / AJ0 / AJ8 en met hetzelfde Renault-nummer: standaard wissel (5 liter olie, het genoemde fabrikantnummer) en uitgebreide wissel (7 liter olie). De inhoud noemt de catalogus niet; of er een filter of zeef in zit, is niet vastgesteld.",
-  "per": "set",
-  "note": "Dit is het enige artikel in de categorie 'Automatic transmission filter' en in 'Parts kit, automatic transmission oil change' voor type 23370. MR 415 (23A, Automatic gearbox oil: Draining - Filling) noemt geen filterwissel, wel aftappen via overloopbuis en peilplug (totaal 7,6 l, na aftappen 3,5 l). Koppeling aan de Oliezeef in map.json is een aanname.",
-  "src": [
-   [
-    "https://www.autodoc.parts/car-parts/parts-kit-automatic-transmission-oil-change-13575/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
-    "autodoc.parts"
-   ],
-   [
-    "https://www.autodoc.parts/tcmatic/14779778",
-    "autodoc.parts"
-   ],
-   [
-    "https://www.autodoc.parts/tcmatic/14779780",
-    "autodoc.parts"
-   ]
-  ]
- },
  "G5m-B-automaat:U_SELCABLE": {
   "n": "Keuzekabel (schakelkabel) automaat",
   "st": "nietgevonden",
@@ -194,7 +158,7 @@
   "am": [],
   "var": "De catalogus voor type 23370 heeft vier keuzekabels (categorie 'kabel handgeschakelde bak') en onderscheidt de automaat AJ0 niet van de handbak (PK4). Welk van de twee Renault-nummers bij de automaat hoort, is niet vastgesteld; kabellengte en VIN controleren.",
   "per": "1 stuk",
-  "note": "Knoop 'Keuzekabel' staat onder Interieur/Middenconsole/Keuzehendelmodule, niet in deze kandidatenlijst; daarom niet gekoppeld (voor de plak interieur). Verificatie golf 5m: 554831 geschrapt (fout: SEIM 554831 staat op de 23370-pagina, maar in de categorie \"Cable, manual transmission\" en als \"Double Cable Pull\" (1345/970 mm): een schake); 8200930211 geschrapt (fout: 8200930211 is volgens de autodoc-categorie voor 23370 een schakelkabel voor de 6-bak handgeschakeld PK4 (dubbele kabel, Transmission Type: 6); 8200743570 geschrapt (fout: 8200743570 staat alleen als tweede OE bij 8200930211 en Maxgear 32-1934 (dubbele schakelkabel PK4 handbak). Hoort bij de handgeschakelde bak)",
+  "note": "Gekoppeld aan Interieur/Middenconsole/Keuzehendelmodule/Keuzekabel. Verificatie golf 5m: 554831 geschrapt (fout: SEIM 554831 staat op de 23370-pagina, maar in de categorie \"Cable, manual transmission\" en als \"Double Cable Pull\" (1345/970 mm): een schake); 8200930211 geschrapt (fout: 8200930211 is volgens de autodoc-categorie voor 23370 een schakelkabel voor de 6-bak handgeschakeld PK4 (dubbele kabel, Transmission Type: 6); 8200743570 geschrapt (fout: 8200743570 staat alleen als tweede OE bij 8200930211 en Maxgear 32-1934 (dubbele schakelkabel PK4 handbak). Hoort bij de handgeschakelde bak)",
   "src": [
    [
     "https://www.autodoc.parts/car-parts/cable-manual-transmission-15187/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",

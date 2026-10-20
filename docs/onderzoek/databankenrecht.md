@@ -192,7 +192,7 @@ Bij de nummerronde van golf 5m (plakken `G5m-*` in `data/pn/units/`) zijn de bro
 - winkel- en advertentiepagina's (bewijs D);
 - in plak `G5m-B-automaat`: autodoc.parts met headless Chrome via Playwright, waarbij de automatiseringsvlag gemaskeerd was en de controle van Cloudflare werd afgewacht.
 
-Dat laatste is wat maatregel 1 in paragraaf 8 afraadt. Het gaat om het omzeilen van een technische voorziening, zie Databankenwet artikel 5a en paragraaf 3.8. De gebruiker heeft op 20 oktober 2026 besloten deze route toe te staan en vast te leggen in plaats van de nummers te schrappen. Het risico uit paragraaf 3.8 is daarmee bewust aanvaard. Van die route is na de verificatie één eenheid met nummers overgebleven, het ATF-onderhoudspakket. De ATF vervalt omdat de boom er geen knoop voor heeft. Bij de keuzekabel bleken de nummers bij de handbak PK4 te horen en zijn ze geschrapt.
+Dat laatste is wat maatregel 1 in paragraaf 8 afraadt. Het gaat om het omzeilen van een technische voorziening, zie Databankenwet artikel 5a en paragraaf 3.8. De gebruiker heeft op 20 oktober 2026 besloten deze route toe te staan en vast te leggen in plaats van de nummers te schrappen. Het risico uit paragraaf 3.8 is daarmee bewust aanvaard. Na de verificatie en het advisor-oordeel staat van die route geen nummer meer in de gegevens. De ATF vervalt omdat de boom er geen knoop voor heeft. Het ATF-onderhoudspakket vervalt omdat de koppeling aan de oliezeef een aanname was. Bij de keuzekabel bleken de nummers bij de handbak PK4 te horen en zijn ze geschrapt.
 
 Besluiten van de gebruiker voor nieuwe plakken:
 
