@@ -241,6 +241,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
 #app.ckmode #btnExplodeAll,#app.ckmode #btnCollapseAll,#app.ckmode label[for="spread"],#app.ckmode #spread{display:none}
 #ckSeat{border:1px solid var(--line);background:var(--chip);color:var(--chip-ink);border-radius:999px;height:32px;padding:0 10px;font-size:13px;font-weight:700;min-width:0;max-width:100%;cursor:pointer}
 #ckCtl #btnCkOut{flex:0 0 auto;border-radius:999px;padding:6px 14px;font-size:13px;white-space:nowrap}
+#ckCtl #btnCkOut[data-hl="1"]{background:var(--accent);color:var(--on-accent);box-shadow:0 0 0 2px var(--accent)}
 .dlg dl>div{display:contents}
 /* ---------- onderdeelnummers ---------- */
 .pn{margin:0 0 14px}
@@ -298,7 +299,14 @@ input[type=range]{width:100%;accent-color:var(--ink)}
   #sheet[data-state="peek"]{height:auto}
   #sheet[data-state="peek"] .tabs,#sheet[data-state="peek"] .tabpanels{display:none}
   #sheet[data-state="open"]{height:64%}
-  .grab{display:block;border:0;background:none;width:100%;height:22px;padding:0;margin:0}
+  .grab{display:block;border:0;background:none;width:100%;height:22px;padding:0;margin:0;touch-action:none;-webkit-user-select:none;user-select:none}
+  /* slepen van het paneel (app2-panel.js): vol is open tot de max-height; de kop sleept alleen in peek; drag=1 tijdens het slepen
+     (geen overgang), drag=snap tijdens het klikken naar de stand (overgang aan); het dock volgt de bovenrand, ook als de stand open heet */
+  #sheet[data-state="open"][data-size="vol"]{height:100%}
+  #sheet[data-state="peek"] .sel-head{touch-action:none;-webkit-user-select:none;user-select:none}
+  #sheet[data-drag]{overflow:hidden;-webkit-user-select:none;user-select:none}
+  #sheet[data-drag="1"]{transition:none}
+  #sheet[data-state="open"][data-drag="1"]~#dock{display:flex}
   .grab span{display:block;width:42px;height:5px;border-radius:9px;background:var(--line);margin:8px auto 0}
   .sel-head{padding:0 16px 10px}
   #selName{font-size:20px}
@@ -647,7 +655,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
       <dt>Eén vinger · twee vingers</dt><dd>Draaien · knijpen om te zoomen en schuiven.</dd></dl></div>
     <h3>Bediening onderin</h3><dl>
       <dt>Uitklappen · Openen</dt><dd>Bovenin: Uitklappen haalt groepen uit elkaar, Openen laat portieren, kap, klep en andere openers draaien of schuiven. Bij Openen opent een klik de buitenste dichte opener op het onderdeel, daarna de volgende naar binnen; zijn ze open, dan sluit de binnenste. Rechtsklik, Shift+klik of vasthouden sluit de binnenste open opener. Het dock heeft dan Alles open, Alles dicht en een lijst van alle openers. Wat open staat, blijft open als je naar Uitklappen wisselt: open de motorkap en klap daarna de motor uit.</dd>
-      <div class="ckhelp"><dt>Cockpit</dt><dd>Bovenin, naast Uitklappen en Openen (sneltoets <kbd>K</kbd>): je zit in de auto op de gekozen zitplaats en kijkt rond. Slepen draait het hoofd, scrollen of knijpen zoomt, rechts slepen, Shift+slepen of twee vingers buigen voorover of opzij, dubbelklik zet de blik terug. Een klik opent of sluit een opener (dashboardkastje, portier, zonnescherm) en toont het onderdeel; er klapt niets uit. Uitstappen of <kbd>Esc</kbd> zet de camera terug waar hij was. Wat je binnen open hebt gezet, blijft open; alleen wat van buiten pas na een portier open kan (zoals het dashboardkastje bij een dicht portier), gaat bij het uitstappen weer dicht.</dd></div>
+      <div class="ckhelp"><dt>Cockpit</dt><dd>Bovenin, naast Uitklappen en Openen (sneltoets <kbd>K</kbd>): je zit in de auto op de gekozen zitplaats en kijkt rond. Slepen draait het hoofd, scrollen of knijpen zoomt, rechts slepen, Shift+slepen of twee vingers buigen voorover of opzij, dubbelklik zet de blik terug. Een klik opent of sluit een opener (dashboardkastje, portier, zonnescherm) en toont het onderdeel; er klapt niets uit. Openen aantikken in de cockpit laat je zitten: de klikmodus wordt Openen en de knop Uitstappen heet dan Naar buiten (accentkleur); die brengt je terug naar het standaardaanzicht in de stand Openen. Uitklappen aantikken stapt uit naar Uitklappen. Uitstappen of <kbd>Esc</kbd> zet de camera terug waar hij was. Wat je binnen open hebt gezet, blijft open; alleen wat van buiten pas na een portier open kan (zoals het dashboardkastje bij een dicht portier), gaat bij het uitstappen weer dicht.</dd></div>
       <dt>Klik: …</dt><dd>Onderdeel (standaard), Laag voor laag (van buiten naar binnen), Inklappen of alleen Info.</dd>
       <dt>Explosie</dt><dd>Schuif om de gekozen groep laag voor laag uit elkaar te halen; Demonteren en Monteren spelen dat af.</dd>
       <dt>Presets</dt><dd id="helpCats"></dd>
@@ -658,7 +666,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
       <dt><kbd>Backspace</kbd></dt><dd>Stap terug.</dd>
       <dt><kbd>&uarr;</kbd> <kbd>&darr;</kbd> <kbd>&larr;</kbd> <kbd>&rarr;</kbd></dt><dd>Door de onderdelen lopen: bovenliggende groep, eerste deel, vorige of volgende op hetzelfde niveau.</dd>
       <dt><kbd>O</kbd></dt><dd>Wisselt tussen Uitklappen en Openen. In Openen opent <kbd>Enter</kbd> de opener van de selectie en sluit <kbd>Shift</kbd>+<kbd>Enter</kbd> hem.</dd>
-      <div class="ckhelp"><dt><kbd>K</kbd> · <kbd>C</kbd></dt><dd>Cockpit aan of uit (<kbd>O</kbd> en <kbd>Esc</kbd> stappen ook uit) · in de cockpit de blik terugzetten (ook met dubbelklik).</dd></div>
+      <div class="ckhelp"><dt><kbd>K</kbd> · <kbd>C</kbd></dt><dd>Cockpit aan of uit (<kbd>Esc</kbd> stapt ook uit; <kbd>O</kbd> wisselt in de cockpit alleen de klikmodus Openen) · in de cockpit de blik terugzetten (ook met dubbelklik).</dd></div>
       <div class="ckhelp"><dt><kbd>&larr;</kbd> <kbd>&rarr;</kbd> <kbd>&uarr;</kbd> <kbd>&darr;</kbd> <kbd>W</kbd> <kbd>S</kbd></dt><dd>In de cockpit: opzij, voorover of achterover, omhoog of omlaag buigen (binnen een kleine ruimte rond de zitplaats).</dd></div>
       <dt><kbd>Esc</kbd></dt><dd>Menu sluiten of de hele auto selecteren.</dd>
       <dt id="helpKeysT"></dt><dd id="helpKeys"></dd>

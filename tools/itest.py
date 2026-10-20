@@ -46,6 +46,12 @@ Controles (zie de app-brief):
      buitenwereld en lichtstand alleen in de cockpit en na het uitstappen exact terug (beide thema's), openersregel bij uitstappen;
      ronde 3: leungrens achteruit (hoofdsteun minstens 8 cm achter het oog), verticaal gezichtsveld op de telefoon hoogstens 95
      graden, lichte weergave zet elke lak met clearcoat uit en terug
+     golf 5m: Openen tikken in de cockpit laat je zitten (Cockpit en Openen allebei actief), Uitstappen heet dan Naar buiten en is
+     gemarkeerd, brengt je naar het buitenaanzicht met Openen actief; Uitklappen tikken stapt uit; O in de cockpit wisselt alleen de klikmodus
+  24 paneel slepen (golf 5m, telefoon staand 390 x 844, echte aanraking via CDP): de greep en de kop in peek slepen het onderpaneel,
+     loslaten klikt naar de dichtstbijzijnde stand (peek, open, vol), een snelle veeg beslist op richting, een tik wisselt nog,
+     Enter en spatie werken, de overgang staat tijdens het slepen uit, --sheet-h en het dock volgen, de kop sleept niet vanaf knoppen
+     en niet buiten peek, draaien midden in het slepen laat niets hangen
 """
 import sys, os, random, json, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -1321,6 +1327,37 @@ def cam_diff(a, b):
     return d
 
 
+def ck_openen(pg, tag, tap):
+    """23 (golf 5m): in de cockpit op Openen tikken laat je zitten; Uitstappen is dan gemarkeerd (Naar buiten) en brengt je naar het
+    buitenaanzicht met Openen actief. Uitklappen tikken stapt uit naar Uitklappen. tap(selector) is een klik of een tik."""
+    st = lambda: pg.evaluate("""(() => { const L = __model, k = L.cockpit(), b = document.getElementById('btnCkOut'), seg = [...document.querySelectorAll('#openSeg [role=radio]')];
+      return { cockpit: L.state().cockpit, openMode: L.state().openMode, openers: L.state().openers.slice().sort(), yaw: k && k.yaw, pitch: k && k.pitch, eye: k && k.eye,
+        aria: seg.map(x => x.getAttribute('aria-checked')), tab: seg.map(x => x.tabIndex), hl: b.dataset.hl || '', txt: b.textContent, title: b.title, bg: getComputedStyle(b).backgroundColor,
+        accent: (() => { const t = document.createElement('i'); t.style.background = 'var(--accent)'; document.body.appendChild(t); const c = getComputedStyle(t).backgroundColor; t.remove(); return c; })(),
+        vis: b.getBoundingClientRect().width > 0, orbit: controls.enabled }; })()""")
+    pg.evaluate("__model.setOpenMode(false); __model.preset('assembled'); __model.setCockpit('bestuurder', true); __model.finishAll()"); settle(pg, 150)
+    pg.evaluate("__model.setOpen('Portier linksvoor', 1, true); __model.finishAll()"); settle(pg, 100)
+    a = st()
+    check(f'23 [{tag}] cockpit zonder Openen: alleen Cockpit actief, Uitstappen gewoon (geen markering)', a['cockpit'] == 'bestuurder' and not a['openMode'] and a['aria'] == ['false', 'false', 'true'] and not a['hl'] and a['txt'] == 'Uitstappen' and a['bg'] != a['accent'], json.dumps(a))
+    tap('#openSeg [data-omode="open"]'); settle(pg, 200)
+    b = st()
+    check(f'23 [{tag}] Openen tikken in de cockpit: je blijft zitten (zitplaats, kijkrichting, oog en open portier ongewijzigd), de klikmodus is Openen',
+          b['cockpit'] == 'bestuurder' and b['openMode'] and b['yaw'] == a['yaw'] and b['pitch'] == a['pitch'] and b['eye'] == a['eye'] and b['openers'] == a['openers'] and not b['orbit'], json.dumps([a, b]))
+    check(f'23 [{tag}] Openen en Cockpit zijn allebei actief (aria-checked), de tabstop blijft op Cockpit', b['aria'] == ['false', 'true', 'true'] and b['tab'] == [-1, -1, 0], json.dumps([b['aria'], b['tab']]))
+    check(f'23 [{tag}] Uitstappen is gemarkeerd: accentkleur, tekst Naar buiten, title noemt het standaardaanzicht in de stand Openen',
+          b['hl'] == '1' and b['txt'] == 'Naar buiten' and b['bg'] == b['accent'] and 'standaardaanzicht' in b['title'] and 'Openen' in b['title'] and b['vis'], json.dumps({k: b[k] for k in ('hl', 'txt', 'bg', 'accent', 'title', 'vis')}))
+    tap('#btnCkOut'); settle(pg, 300); pg.wait_for_timeout(300); settle(pg, 100)
+    c = st()
+    check(f'23 [{tag}] Naar buiten: buitenaanzicht (orbit weer aan) met de klikmodus Openen actief; Uitklappen en Cockpit niet; markering weg; het open portier blijft open',
+          c['cockpit'] is None and c['openMode'] and c['orbit'] and c['aria'] == ['false', 'true', 'false'] and not c['hl'] and 'Portier linksvoor' in c['openers'], json.dumps(c))
+    # Uitklappen tikken in de cockpit stapt uit naar Uitklappen (zoals voorheen)
+    pg.evaluate("__model.setCockpit('bestuurder', true); __model.finishAll()"); settle(pg, 150)
+    tap('#openSeg [data-omode="open"]'); settle(pg, 150)
+    tap('#openSeg [data-omode="expand"]'); settle(pg, 300)
+    d = st()
+    check(f'23 [{tag}] Uitklappen tikken in de cockpit stapt uit naar Uitklappen', d['cockpit'] is None and not d['openMode'] and d['aria'] == ['true', 'false', 'false'] and not d['hl'] and d['orbit'], json.dumps(d))
+
+
 def run_cockpit(s):
     """23 cockpit (golf 5l): in- en uitstappen herstelt de camera, oogpunten binnen de cabine, grenzen van draaien en schuiven,
     klik opent het dashboardkastje, Esc en Uitstappen, toetsen, URL, reduced motion, telefoon staand en liggend."""
@@ -1535,8 +1572,12 @@ def run_cockpit(s):
     pg.keyboard.press('k'); settle(pg, 120)
     e2 = pg.evaluate('__model.state().cockpit')
     pg.keyboard.press('o'); settle(pg, 120)
-    e3 = [pg.evaluate('__model.state().cockpit'), pg.evaluate('__model.state().openMode')]
-    check('23 cockpit: Esc stapt uit, K stapt in (laatste zitplaats), O stapt uit en wisselt naar Openen', e1 == [None, True] and e2 == 'passagier' and e3 == [None, True], f'{e1} {e2} {e3}')
+    e3 = [pg.evaluate('__model.state().cockpit'), pg.evaluate('__model.state().openMode'), pg.evaluate("document.querySelector('#btnCkOut').dataset.hl")]
+    pg.keyboard.press('o'); settle(pg, 120)
+    e4 = [pg.evaluate('__model.state().cockpit'), pg.evaluate('__model.state().openMode'), pg.evaluate("document.querySelector('#btnCkOut').dataset.hl")]
+    check('23 cockpit: Esc stapt uit, K stapt in (laatste zitplaats), O wisselt in de cockpit alleen de klikmodus Openen (aan met markering, uit zonder; je blijft zitten)',
+          e1 == [None, True] and e2 == 'passagier' and e3 == ['passagier', True, '1'] and e4 == ['passagier', False, ''], f'{e1} {e2} {e3} {e4}')
+    pg.keyboard.press('k'); settle(pg, 120)
     pg.evaluate("__model.setOpenMode(false)")
     # zitplaats kiezen in de keuzelijst
     pg.evaluate("__model.setCockpit('bestuurder', true); __model.finishAll()")
@@ -1601,7 +1642,139 @@ def run_cockpit(s):
         pp.tap('#btnCkOut'); settle(pp, 200)
         check(f'23 cockpit: telefoon {w} x {h}: Uitstappen', pp.evaluate('__model.state().cockpit') is None and pp.evaluate('controls.enabled'), '')
         pp.close()
+    # golf 5m: Openen tikken in de cockpit, op de telefoon staand en op het bureaublad
+    pp = s.page(390, 844, scale=2, touch=True)
+    pp.evaluate(JS_CK)
+    ck_openen(pp, 'telefoon 390 x 844', lambda sel: pp.tap(sel))
+    pp.close()
+    pd = s.page(1280, 800)
+    pd.evaluate(JS_CK)
+    ck_openen(pd, 'desktop', lambda sel: pd.click(sel))
+    pd.close()
     check('23 cockpit: geen console-fouten of -waarschuwingen', not s.logs, '; '.join(l[:200] for l in s.logs[:5]))
+
+
+def run_sheetdrag(s):
+    """24. Het onderpaneel slepen op de telefoon staand (golf 5m); echte aanraking via CDP, met tijd tussen de punten voor de snelheid."""
+    pp = s.page(390, 844, scale=2, touch=True)
+    cdp = pp.context.new_cdp_session(pp)
+    pp.evaluate(JS_HELPERS)
+    pp.evaluate("__model.preset('assembled'); __model.finishAll()"); pp.wait_for_timeout(400)
+    info = lambda: pp.evaluate("""(() => { const sh = document.getElementById('sheet'), tg = document.getElementById('sheetToggle'), r = sh.getBoundingClientRect(), dk = document.getElementById('dock');
+      return { state: sh.dataset.state, size: sh.dataset.size || '', drag: sh.dataset.drag || '', h: Math.round(r.height * 10) / 10, top: r.top, inline: sh.style.height,
+        sheetH: parseFloat(document.getElementById('app').style.getPropertyValue('--sheet-h')), exp: tg.getAttribute('aria-expanded'), label: tg.getAttribute('aria-label'),
+        dock: getComputedStyle(dk).display, dockO: getComputedStyle(dk).opacity, tr: getComputedStyle(sh).transitionDuration, innerH: innerHeight }; })()""")
+    ctr = lambda sel: pp.evaluate(f"(() => {{ const r = document.querySelector({json.dumps(sel)}).getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; }})()")
+    # De testbrowser tekent traag (SwiftShader, enkele honderden ms per beeld) en levert aanrakingen pas per beeld af; de snelheid van een
+    # veeg komt daarom uit de tijdstempels die we zelf meegeven (CDP: timestamp), niet uit de muurklok.
+    clk = [time.time()]
+    def touch(kind, pts, dt=0.0):
+        if kind == 'touchStart': clk[0] = time.time()
+        clk[0] += dt
+        cdp.send('Input.dispatchTouchEvent', {'type': kind, 'touchPoints': [{'x': px, 'y': py, 'id': 1} for px, py in pts], 'timestamp': clk[0]})
+    def drag(x, y0, dy, stap=25, wacht=30, rust=0, los=True):
+        """vinger neer op (x, y0), in stappen van `stap` px met `wacht` ms tussen de punten naar y0 + dy, `rust` ms stil, dan los"""
+        touch('touchStart', [(x, y0)])
+        n = max(1, int(abs(dy) // stap))
+        for i in range(1, n + 1): touch('touchMove', [(x, y0 + dy * i / n)], wacht / 1000)
+        if los: touch('touchEnd', [], (rust + 2) / 1000)
+    def na():
+        # de overgang loopt op beeldvernieuwingen en SwiftShader is traag: wacht tot het paneel klaar is met klikken (data-drag weg)
+        pp.wait_for_function("!document.getElementById('sheet').dataset.drag", timeout=10000)
+        pp.wait_for_timeout(250)
+        return info()
+    g = ctr('#sheetToggle'); x = g[0]
+    i0 = info(); peek = i0['h']
+    open_h = 0.64 * i0['innerH']; vol_h = i0['innerH'] - 140
+    check('24 start: peek, aria-expanded false, geen resten van het slepen', i0['state'] == 'peek' and i0['exp'] == 'false' and not i0['drag'] and not i0['inline'] and i0['sheetH'] > 0, json.dumps(i0))
+    # a. langzaam omhoog tot ongeveer de stand open: het paneel volgt de vinger, overgang uit, dock en --sheet-h volgen
+    touch('touchStart', [(x, g[1])])
+    for i in range(1, 7): touch('touchMove', [(x, g[1] - 25 * i)], 0.03); pp.wait_for_timeout(30)
+    pp.wait_for_function("document.getElementById('sheet').style.height === '%dpx'" % round(peek + 150), timeout=5000)
+    m = info()
+    check('24 midden in het slepen volgt het paneel de vinger (150 px omhoog), de overgang staat uit en data-drag=1', m['drag'] == '1' and abs(m['h'] - (peek + 150)) <= 2 and m['tr'] == '0s', json.dumps(m))
+    check('24 midden in het slepen volgt --sheet-h de bovenrand en staat het dock zichtbaar en deels doorzichtig', abs(m['sheetH'] - m['h']) <= 2 and m['dock'] != 'none' and float(m['dockO']) < 1, json.dumps(m))
+    for i in range(7, 18): touch('touchMove', [(x, g[1] - 25 * i)], 0.03); pp.wait_for_timeout(30)
+    pp.wait_for_timeout(200); touch('touchEnd', [], 0.2)
+    a = na()
+    check('24 langzaam omhoog en loslaten bij ~443 px klikt naar open (niet vol), hoogte 64 procent, aria-expanded true, label Paneel kleiner maken',
+          a['state'] == 'open' and a['size'] == '' and abs(a['h'] - open_h) <= 2 and a['exp'] == 'true' and a['label'] == 'Paneel kleiner maken', json.dumps(a))
+    check('24 na het klikken: data-drag en inline hoogte weg, overgang weer aan, --sheet-h 0 en dock verborgen zoals bij open', not a['drag'] and not a['inline'] and a['tr'] != '0s' and a['sheetH'] == 0 and a['dock'] == 'none', json.dumps(a))
+    # b. langzaam omlaag terug naar peek
+    g2 = ctr('#sheetToggle')
+    drag(x, g2[1], 330, rust=150)
+    b = na()
+    check('24 langzaam omlaag (330 px, boven de helft van de weg) klikt terug naar peek met dock en --sheet-h op de peekhoogte', b['state'] == 'peek' and abs(b['h'] - peek) <= 2 and b['exp'] == 'false' and b['label'] == 'Paneel groter maken' and abs(b['sheetH'] - b['h']) <= 2 and b['dock'] != 'none', json.dumps(b))
+    # c. korte, langzame sleep blijft bij de dichtstbijzijnde stand (peek)
+    drag(x, g[1], -60, stap=20, rust=150)
+    c = na()
+    check('24 korte langzame sleep (60 px omhoog) valt terug op peek (dichtstbijzijnde stand)', c['state'] == 'peek' and abs(c['h'] - peek) <= 2, json.dumps(c))
+    # d. flick: 48 px in ~35 ms beslist op richting, ook ver onder de helft van de weg
+    drag(x, g[1], -48, stap=12, wacht=8)
+    d1 = na()
+    drag(x, ctr('#sheetToggle')[1], -48, stap=12, wacht=8)
+    d2 = na()
+    check('24 snelle veeg omhoog (48 px) gaat van peek naar open en daarna naar vol, ook ver onder de helft van de weg', d1['state'] == 'open' and d1['size'] == '' and d2['state'] == 'open' and d2['size'] == 'vol' and abs(d2['h'] - vol_h) <= 2 and d2['exp'] == 'true', json.dumps([d1, d2]))
+    gv = ctr('#sheetToggle')
+    drag(x, gv[1], 48, stap=12, wacht=8)
+    d3 = na()
+    drag(x, ctr('#sheetToggle')[1], 48, stap=12, wacht=8)
+    d4 = na()
+    check('24 snelle veeg omlaag (48 px) gaat van vol naar open en daarna naar peek', d3['state'] == 'open' and d3['size'] == '' and abs(d3['h'] - open_h) <= 2 and d4['state'] == 'peek' and abs(d4['h'] - peek) <= 2, json.dumps([d3, d4]))
+    # e. vol: langzaam omhoog tot de bovenrand
+    drag(x, g[1], -600, stap=40, rust=150)
+    e1 = na()
+    check('24 langzaam helemaal omhoog (600 px, dichter bij vol dan bij open) geeft vol: hoogte gelijk aan de max-height (hoogte min 140 px)', e1['state'] == 'open' and e1['size'] == 'vol' and abs(e1['h'] - vol_h) <= 2, json.dumps(e1))
+    # f. een tik op de greep wisselt nog: vol naar peek, dan naar open (kleine maat), de sleep laat geen klik achter
+    pp.touchscreen.tap(*ctr('#sheetToggle')); f1 = na()
+    pp.touchscreen.tap(*ctr('#sheetToggle')); f2 = na()
+    pp.touchscreen.tap(*ctr('#sheetToggle')); f3 = na()
+    check('24 een tik zonder beweging wisselt: vol naar peek, peek naar open, open naar peek (geen klik na een sleep)', [f1['state'], f2['state'], f2['size'], f3['state']] == ['peek', 'open', '', 'peek'], json.dumps([f1['state'], f2['state'], f2['size'], f3['state']]))
+    # g. toetsenbord: Enter en spatie op de greep
+    pp.focus('#sheetToggle'); pp.keyboard.press('Enter'); k1 = na(); pp.keyboard.press('Space'); k2 = na()
+    check('24 Enter op de greep opent, spatie sluit; aria-expanded en aria-label kloppen', k1['state'] == 'open' and k1['exp'] == 'true' and k1['label'] == 'Paneel kleiner maken' and k2['state'] == 'peek' and k2['exp'] == 'false' and k2['label'] == 'Paneel groter maken', json.dumps([k1, k2]))
+    pp.evaluate("document.activeElement.blur()")
+    # h. de kop sleept in peek (op de titel), niet vanaf een knop en niet in open
+    t = ctr('#selName')
+    drag(t[0], t[1], -330, rust=150); h1 = na()
+    check('24 slepen vanaf de kop (titel) in peek opent het paneel', h1['state'] == 'open' and abs(h1['h'] - open_h) <= 2, json.dumps(h1))
+    pp.evaluate("document.getElementById('sheetToggle').click()"); na()
+    bt = ctr('#actToggle'); lbl0 = pp.evaluate("document.getElementById('actToggle').textContent")
+    drag(bt[0], bt[1], -330, rust=150); h2 = na()
+    lbl1 = pp.evaluate("document.getElementById('actToggle').textContent")
+    check('24 slepen vanaf een knop (Uitklappen) in de kop sleept het paneel niet en voert de knop niet uit', h2['state'] == 'peek' and abs(h2['h'] - peek) <= 2 and lbl0 == lbl1, json.dumps([h2, lbl0, lbl1]))
+    # i. in open: slepen in het tabpaneel scrolt en verplaatst het paneel niet; slepen van de greep omlaag brengt het naar peek
+    pp.evaluate("document.getElementById('sheetToggle').click()"); na()
+    tp = ctr('.tabpanels')
+    drag(tp[0], tp[1], -150, rust=100); i1 = na()
+    check('24 in open verplaatst slepen in het tabpaneel het paneel niet', i1['state'] == 'open' and i1['size'] == '' and abs(i1['h'] - open_h) <= 2, json.dumps(i1))
+    drag(x, ctr('#sheetToggle')[1], 400, rust=150); i2 = na()
+    check('24 in open brengt slepen van de greep omlaag het paneel naar peek (tabpaneel scrolt gewoon)', i2['state'] == 'peek' and abs(i2['h'] - peek) <= 2, json.dumps(i2))
+    # j. de kop sleept niet in open: slepen vanaf de titel in open laat het paneel staan
+    pp.evaluate("document.getElementById('sheetToggle').click()"); na()
+    t = ctr('#selName'); drag(t[0], t[1], 300, rust=100); j1 = na()
+    check('24 in open sleept de kop niet (alleen de greep)', j1['state'] == 'open' and abs(j1['h'] - open_h) <= 2, json.dumps(j1))
+    pp.evaluate("document.getElementById('sheetToggle').click()"); na()
+    # k. openmodus: dezelfde sleep werkt en de bediening blijft heel
+    pp.evaluate("__model.setOpenMode(true)"); pp.wait_for_timeout(300); settle(pp, 100)
+    gk = ctr('#sheetToggle'); drag(x, gk[1], -330, rust=150); k3 = na()
+    drag(x, ctr('#sheetToggle')[1], 400, rust=150); k4 = na()
+    check('24 openmodus: slepen omhoog geeft open en omlaag peek', k3['state'] == 'open' and k4['state'] == 'peek', json.dumps([k3['state'], k4['state']]))
+    pp.evaluate("__model.setOpenMode(false)"); pp.wait_for_timeout(300)
+    # l. draaien midden in het slepen: de zijkolom neemt het over, niets blijft hangen
+    gl = ctr('#sheetToggle'); touch('touchStart', [(x, gl[1])])
+    for i in range(1, 5): touch('touchMove', [(x, gl[1] - 25 * i)], 0.03); pp.wait_for_timeout(30)
+    pp.set_viewport_size({'width': 844, 'height': 390}); pp.wait_for_timeout(500)
+    touch('touchEnd', [])
+    l1 = na()
+    check('24 draaien midden in het slepen: zijkolom open, geen data-drag, geen inline hoogte, geen maat blijft staan', l1['state'] == 'open' and not l1['drag'] and not l1['inline'] and l1['size'] == '' , json.dumps(l1))
+    pp.set_viewport_size({'width': 390, 'height': 844}); pp.wait_for_timeout(600); settle(pp, 200)
+    l2 = info()
+    check('24 terug naar staand: peek en het slepen werkt weer', l2['state'] == 'peek' and not l2['drag'] and not l2['inline'], json.dumps(l2))
+    g3 = ctr('#sheetToggle'); drag(x, g3[1], -330, rust=150); l3 = na()
+    check('24 na het draaien werkt slepen weer (open)', l3['state'] == 'open' and abs(l3['h'] - open_h) <= 2, json.dumps(l3))
+    shot(pp, 'itest_sheet_open')
+    pp.close()
 
 
 with session() as s:
@@ -1702,6 +1875,7 @@ with session() as s:
     check18(s)
     run_golf5c(s)
     run_cockpit(s)
+    run_sheetdrag(s)
     errs = s.errors()  # fouten en waarschuwingen (harness.errors telt beide)
     check('10 geen console-fouten of -waarschuwingen', not s.logs, '; '.join(l[:200] for l in s.logs[:5]))
     s.report()

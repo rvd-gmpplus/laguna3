@@ -162,6 +162,8 @@ const TXT = Object.freeze({
   hulpToetsen: (van, tot) => `<kbd>${van}</kbd> tot <kbd>${tot}</kbd>`,
   // cockpit (golf 5l)
   ckUitleg: stoel => 'Cockpit: je zit op de plaats ' + stoel.toLowerCase() + ' en kijkt rond. Slepen draait het hoofd, scrollen of knijpen zoomt, rechts slepen, Shift+slepen, twee vingers of de pijltjes en W/S buigen voorover of opzij; dubbelklik of C zet de blik terug. Een klik opent of sluit een opener (dashboardkastje, portier, zonnescherm). Uitstappen of Esc brengt de camera terug.',
+  ckUit: 'Uitstappen', ckUitOpen: 'Naar buiten', ckUitTitel: 'De cockpit verlaten; de camera gaat terug naar waar hij was (Esc)',
+  ckUitTitelOpen: 'Naar buiten: de cockpit verlaten en terug naar het standaardaanzicht in de stand Openen (Esc)',
   segZonderCockpit: 'Wat doet een klik: uitklappen of openen', // de segmentknop bovenin bij een auto zonder cockpit
   // labels
   labelAria: (nr, naam) => `${nr}. ${naam}`,

@@ -482,9 +482,14 @@ function showTab(id) {
   b.addEventListener('click', () => showTab(t));
   b.addEventListener('keydown', e => { if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return; const j = (i + (e.key === 'ArrowRight' ? 1 : arr.length - 1)) % arr.length; showTab(arr[j]); $('tabbtn-' + arr[j]).focus(); e.preventDefault(); });
 });
-function setSheet(state) {
+// Standen van het onderpaneel: peek, open en vol. Vol is data-state="open" met data-size="vol" (hoogte tot de max-height); zo blijft elke
+// plek die op "open" test (dock, vrij beeld, Esc, knoppen) ongewijzigd. size: 'vol' of 'open' kiest de maat, weglaten laat haar staan.
+function setSheet(state, size) {
   if (uiSide()) state = 'open'; // zijkolom: altijd de volle inhoud, geen peek en geen lade
+  if (!uiSheetBottom()) uiSheetAbort();
   els.sheet.dataset.state = state;
+  if (state === 'open' && uiSheetBottom() && size === 'vol') els.sheet.dataset.size = 'vol';
+  else if (state !== 'open' || size !== undefined) delete els.sheet.dataset.size;
   $('sheetToggle').setAttribute('aria-expanded', String(state === 'open'));
   $('sheetToggle').setAttribute('aria-label', state === 'open' ? TXT.paneelKleiner : TXT.paneelGroter);
   $('btnParts').setAttribute('aria-pressed', String(state === 'open' && !$('tab-tree').hidden));
@@ -498,5 +503,101 @@ $('sheetToggle').onclick = () => setSheet(els.sheet.dataset.state === 'open' ? '
 $('btnParts').onclick = () => { const open = els.sheet.dataset.state === 'open' && !$('tab-tree').hidden; showTab('tree'); setSheet(open ? 'peek' : 'open'); };
 $('btnView').onclick = () => { const open = els.sheet.dataset.state === 'open' && !$('tab-view').hidden; showTab('view'); setSheet(open ? 'peek' : 'open'); };
 function syncSheetHeight() {
-  if (uiSheetBottom()) document.getElementById('app').style.setProperty('--sheet-h', (els.sheet.dataset.state === 'open' ? 0 : els.sheet.offsetHeight) + 'px');
+  // tijdens het slepen volgt het dock de bovenrand van het paneel, ook als de stand al open heet
+  if (uiSheetBottom()) document.getElementById('app').style.setProperty('--sheet-h', (els.sheet.dataset.state === 'open' && !uiSheetDragging() ? 0 : els.sheet.offsetHeight) + 'px');
 }
+
+/* ---------- onderpaneel slepen (telefoon staand) ---------- */
+// Het paneel volgt de vinger (pointer events) vanaf de greep en, in de peek-stand, vanaf de kop. Bij loslaten klikt het naar de
+// dichtstbijzijnde stand (peek, open of vol); een snelle veeg beslist op richting, ongeacht de afstand. Een tik zonder beweging
+// blijft de klik van de greep (wisselen tussen peek en open). Tijdens het slepen staat de overgang uit (data-drag="1"), tijdens het
+// klikken naar de stand aan (data-drag="snap"). Alleen voor het onderpaneel: uiSheetBottom() bewaakt elke stap.
+const UI_SLEEP = { drempel: 6, flick: 0.45, flickMin: 10, venster: 100, rust: 80, tussen: 12, dichtbij: 24, vangMs: 1200 }; // px, px/ms, px, ms, ms, px, px, ms (vangMs: terugvaller als transitionend uitblijft)
+let uiSheetDrag = null, uiSheetNoClick = false, uiSheetSnapDone = null;
+const uiSheetDragging = () => !!(uiSheetDrag && uiSheetDrag.drag);
+// hoogte in px van elke stand, gemeten met de overgang even uit; geen verfstap ertussen, dus geen flits
+function uiSheetStands() {
+  const sh = els.sheet, st = sh.dataset.state, sz = sh.dataset.size, ih = sh.style.height;
+  sh.style.transition = 'none';
+  const m = (state, size) => { sh.dataset.state = state; if (size) sh.dataset.size = size; else delete sh.dataset.size; sh.style.height = ''; return sh.offsetHeight; };
+  const peek = m('peek'), open = m('open'), vol = m('open', 'vol');
+  sh.dataset.state = st; if (sz) sh.dataset.size = sz; else delete sh.dataset.size; sh.style.height = ih;
+  void sh.offsetHeight; sh.style.transition = '';
+  const out = [{ n: 'peek', h: peek }];
+  if (open - peek >= UI_SLEEP.dichtbij) out.push({ n: 'open', h: open });
+  if (vol - out[out.length - 1].h >= UI_SLEEP.dichtbij) out.push({ n: 'vol', h: vol });
+  return out;
+}
+function uiSheetUnlisten() { for (const t of ['pointermove', 'pointerup', 'pointercancel']) window.removeEventListener(t, uiSheetEvt); }
+function uiSheetEvt(e) {
+  const d = uiSheetDrag; if (!d || e.pointerId !== d.id) return;
+  if (e.type === 'pointermove') uiSheetMove(e, d); else uiSheetUp(e, d);
+}
+function uiSheetDown(e, kop) {
+  if (!uiSheetBottom() || uiSheetDrag || (e.pointerType === 'mouse' && e.button !== 0)) return;
+  if (kop && (els.sheet.dataset.state !== 'peek' || e.target.closest('button, a, input, select, textarea, label'))) return; // de kop sleept alleen in peek en niet vanaf knoppen
+  if (uiSheetSnapDone) uiSheetSnapDone();
+  uiSheetDrag = { id: e.pointerId, y0: e.clientY, h0: els.sheet.offsetHeight, h: els.sheet.offsetHeight, pts: [[e.timeStamp, e.clientY]], drag: false, stands: null };
+  for (const t of ['pointermove', 'pointerup', 'pointercancel']) window.addEventListener(t, uiSheetEvt);
+}
+function uiSheetMove(e, d) {
+  if (!uiSheetBottom()) { uiSheetAbort(); return; }
+  const dy = e.clientY - d.y0;
+  if (!d.drag) {
+    if (Math.abs(dy) < UI_SLEEP.drempel) return;
+    d.drag = true; d.stands = uiSheetStands();
+    els.sheet.dataset.drag = '1';
+    els.sheet.dataset.state = 'open'; // de inhoud van open staat al klaar terwijl het paneel groeit; de kop in peek-opmaak springt hier eenmalig
+    els.sheet.style.height = d.h0 + 'px';
+    if (treeVisible()) renderTree();
+  }
+  d.pts.push([e.timeStamp, e.clientY]);
+  while (d.pts.length > 2 && e.timeStamp - d.pts[0][0] > UI_SLEEP.venster) d.pts.shift();
+  const st = d.stands, h = Math.max(st[0].h, Math.min(st[st.length - 1].h, d.h0 - dy));
+  d.h = h; els.sheet.style.height = h + 'px';
+  // het dock beweegt mee met de bovenrand en vervaagt naar de stand open, waar het ook zonder slepen verdwijnt
+  const o = st.length > 1 ? Math.max(0, Math.min(1, 1 - (h - st[0].h) / (st[1].h - st[0].h))) : 1;
+  els.dock.style.opacity = o < 1 ? o.toFixed(2) : ''; els.dock.style.pointerEvents = o < 0.5 ? 'none' : '';
+  syncSheetHeight();
+}
+function uiSheetUp(e, d) {
+  uiSheetUnlisten(); uiSheetDrag = null;
+  if (!d.drag) return; // een tik: de klik van de greep doet zijn werk
+  uiSheetNoClick = true; setTimeout(() => { uiSheetNoClick = false; }, 60);
+  const a = d.pts[0], b = d.pts[d.pts.length - 1], st = d.stands, cur = d.h;
+  let v = 0; // px/ms, negatief is omhoog; een vinger die stilhield voor het loslaten telt als langzaam
+  if (e.type === 'pointerup' && e.timeStamp - b[0] < UI_SLEEP.rust && b[0] > a[0]) v = (b[1] - a[1]) / (b[0] - a[0]);
+  let t;
+  if (Math.abs(v) >= UI_SLEEP.flick && Math.abs(b[1] - a[1]) >= UI_SLEEP.flickMin) {
+    t = v < 0 ? (st.find(s => s.h > cur + UI_SLEEP.tussen) || st[st.length - 1]) : ([...st].reverse().find(s => s.h < cur - UI_SLEEP.tussen) || st[0]);
+  } else t = st.reduce((p, s) => (Math.abs(s.h - cur) < Math.abs(p.h - cur) ? s : p));
+  uiSheetSnap(t, cur);
+}
+function uiSheetSnap(t, cur) {
+  const sh = els.sheet;
+  sh.dataset.drag = 'snap'; sh.style.height = t.h + 'px';
+  els.dock.style.opacity = ''; els.dock.style.pointerEvents = '';
+  setSheet(t.n === 'peek' ? 'peek' : 'open', t.n);
+  let timer = 0;
+  const done = () => {
+    if (!uiSheetSnapDone) return;
+    uiSheetSnapDone = null; clearTimeout(timer); sh.removeEventListener('transitionend', onEnd);
+    sh.style.height = ''; delete sh.dataset.drag; syncSheetHeight(); layoutView();
+  };
+  const onEnd = ev => { if (ev.target === sh && ev.propertyName === 'height') done(); };
+  uiSheetSnapDone = done;
+  if (Math.abs(t.h - cur) < 1 || !parseFloat(getComputedStyle(sh).transitionDuration)) done();
+  else { sh.addEventListener('transitionend', onEnd); timer = setTimeout(done, UI_SLEEP.vangMs); }
+}
+// afbreken zonder stand te kiezen: draaien naar de zijkolom, een formaatwissel of een geannuleerde aanraking mid-slepen
+function uiSheetAbort() {
+  if (uiSheetSnapDone) uiSheetSnapDone();
+  if (!uiSheetDrag) { delete els.sheet.dataset.drag; els.sheet.style.height = ''; return; }
+  uiSheetUnlisten(); uiSheetDrag = null;
+  delete els.sheet.dataset.drag; els.sheet.style.height = '';
+  els.dock.style.opacity = ''; els.dock.style.pointerEvents = '';
+}
+$('sheetToggle').addEventListener('pointerdown', e => uiSheetDown(e, false));
+document.querySelector('#sheet .sel-head').addEventListener('pointerdown', e => uiSheetDown(e, true));
+// na een sleep volgt er nog een klik op de greep: die mag de stand niet wisselen
+els.sheet.addEventListener('click', e => { if (uiSheetNoClick) { uiSheetNoClick = false; e.stopPropagation(); e.preventDefault(); } }, true);

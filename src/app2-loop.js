@@ -83,7 +83,7 @@ function resize() {
 window.addEventListener('resize', () => { resize(); uiRefitSoon(); });
 if (window.ResizeObserver) {
   let lastH = 0;
-  new ResizeObserver(() => { syncSheetHeight(); layoutView(); const h = els.sheet.offsetHeight; if (uiSheetBottom() && Math.abs(h - lastH) > CFG.indeling.herkaderPx) uiRefitSoon(); lastH = h; }).observe(els.sheet);
+  new ResizeObserver(() => { syncSheetHeight(); layoutView(); const h = els.sheet.offsetHeight; if (uiSheetBottom() && !uiSheetDragging() && Math.abs(h - lastH) > CFG.indeling.herkaderPx) uiRefitSoon(); /* niet tijdens het slepen: setSheet herkadreert na het loslaten */ lastH = h; }).observe(els.sheet);
   new ResizeObserver(() => layoutView()).observe(els.dock);
 }
 

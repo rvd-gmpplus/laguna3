@@ -181,9 +181,13 @@ function uiOpenAllTo(v) {
   if (v) uiOpenFrame([ROOT], DIRS.iso, 1.04);
   uiAfterAction();
 }
-function uiSetOpenMode(on) {
+// inCk: vanuit de bediening in de cockpit (knop Openen, sneltoets O). Dan blijf je zitten en wisselt alleen de klikmodus: de cockpit
+// klikt al als Openen, en bij het uitstappen staat de modus zoals hij nu is gezet (Uitstappen is dan gemarkeerd, uiSyncOpenUi).
+// Zonder inCk (Uitklappen, de testhaak setOpenMode) stapt dit eerst uit de cockpit.
+function uiSetOpenMode(on, inCk) {
   on = !!on;
-  if (COCKPIT) uiCkExit(); // Uitklappen of Openen kiezen stapt eerst uit de cockpit
+  if (COCKPIT && inCk) { if (on !== OPENMODE) { OPENMODE = on; uiUiChanged(); uiAfterAction(); } return; }
+  if (COCKPIT) uiCkExit(); // Uitklappen kiezen stapt eerst uit de cockpit
   if (on === OPENMODE) return;
   uiStopPlay(); uiStopTour();
   uiPush();
@@ -413,7 +417,7 @@ document.querySelectorAll('.ckhelp').forEach(e => { e.hidden = !UI_CK; });
 // (data-ckmode): data-omode blijft de klikstand van Uitklappen of Openen, zoals de tests en de adresbalk die kennen.
 const uiOpenBtns = [...document.querySelectorAll('#openSeg [role="radio"]')];
 const uiViewModeOf = b => (b.dataset.ckmode ? 'cockpit' : b.dataset.omode);
-function uiSetViewMode(m) { if (m === 'cockpit') uiSetCockpit(COCKPIT ? COCKPIT.id : uiCk.last); else uiSetOpenMode(m === 'open'); }
+function uiSetViewMode(m) { if (m === 'cockpit') uiSetCockpit(COCKPIT ? COCKPIT.id : uiCk.last); else if (m === 'open') uiSetOpenMode(true, true); else uiSetOpenMode(false); } // Openen blijft in de cockpit zitten, Uitklappen stapt uit
 uiOpenBtns.forEach((b, i) => {
   b.addEventListener('click', () => { hideHint(); uiSetViewMode(uiViewModeOf(b)); });
   b.addEventListener('keydown', e => { if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return; const j = (i + (e.key === 'ArrowRight' ? 1 : uiOpenBtns.length - 1)) % uiOpenBtns.length; uiSetViewMode(uiViewModeOf(uiOpenBtns[j])); uiOpenBtns[j].focus(); e.preventDefault(); });
@@ -447,7 +451,11 @@ function uiSyncOpenUi() {
   $('app').classList.toggle('omode', OPENMODE && !COCKPIT);
   $('app').classList.toggle('ckmode', !!COCKPIT);
   const cur = COCKPIT ? 'cockpit' : OPENMODE ? 'open' : 'expand';
-  uiOpenBtns.forEach(b => { const on = uiViewModeOf(b) === cur; b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1; });
+  // in de cockpit staat Cockpit aan en, als de klikmodus Openen is, ook Openen; de tabstop blijft op Cockpit (een radiogroep, één tabstop)
+  uiOpenBtns.forEach(b => { const m = uiViewModeOf(b), on = m === cur || (!!COCKPIT && m === 'open' && OPENMODE); b.setAttribute('aria-checked', String(on)); b.tabIndex = m === cur ? 0 : -1; });
+  // Uitstappen krijgt de accentkleur en wordt "Naar buiten" zolang je in de cockpit in de stand Openen zit: dat is dan de weg terug naar het standaardaanzicht
+  const uit = !!COCKPIT && OPENMODE, bUit = $('btnCkOut');
+  if ((bUit.dataset.hl === '1') !== uit) { bUit.dataset.hl = uit ? '1' : ''; bUit.textContent = uit ? TXT.ckUitOpen : TXT.ckUit; bUit.title = uit ? TXT.ckUitTitelOpen : TXT.ckUitTitel; }
   if (UI_CK) { const v = COCKPIT ? COCKPIT.id : uiCk.last; if (uiCkSel.value !== v) uiCkSel.value = v; }
   let open = 0;
   for (const [n, b] of uiOpenChips) { const on = n.ot > 0; if (on) open++; if (b.getAttribute('aria-pressed') !== String(on)) b.setAttribute('aria-pressed', String(on)); }
