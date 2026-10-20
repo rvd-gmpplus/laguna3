@@ -164,3 +164,13 @@ De gebruiker besliste op 18 oktober 2026 bij de start en tijdens golf 5c-2 (tak 
 | T4 | Gzip-grens 395 kB (was 385 kB): golf 5k (gaas in de inlaat, fijner net van de motorkap) brengt de pagina op 385.770 bytes, net boven de oude grens van 385 kB. | De gebruiker op 19 oktober 2026: "als je meer nodig hebt dan 385 kB, neem die ruimte, dat is prima". | Besloten |
 | Zijlijsten | Blijft een sierlijst per portier; een S7-beoordelaar vroeg om een dubbele strip. | Eerder besluit (Sierlijst per portier, hierboven): de "dubbele strip" was op foto's de lichtrand en schaduw van een lijst. | Besloten |
 
+## Besluiten van 20 oktober 2026 (golf 5l, versie 18)
+
+| Onderwerp | Beslissing | Grond | Status in tekst |
+|---|---|---|---|
+| Cockpit | Derde modus Cockpit naast Uitklappen en Openen: vast oogpunt per zitplaats (bestuurder, passagier, achter links, midden en rechts), rondkijken met hoofd draaien en beperkt vooroverbuigen of opzij leunen; een klik opent een opener en toont de kaart, er klapt niets uit. Oogpunten en zitplaatsen staan in `auto.json` (optioneel veld `cockpit`). | Verzoek van de gebruiker; keuzes: "Ook vooroverbuigen", "Openen en info". | Besloten |
+| Interieur | Alles uit de audit van Fable 5.1 xhigh (blokkerend, belangrijk en nice-to-have) in deze golf; leder Dark Carbon; navigatie Carminat TomTom. | Keuzes van de gebruiker. | Besloten |
+| T4 | 1,6 MB raw en 430 kB gzip (was 1,5 MB en 395 kB): de cockpitmodus en het interieur brengen de pagina op ruim 1,5 MB raw en 415 kB gzip. | De gebruiker gaf de ruimte ("neem die ruimte, dat is prima"). | Besloten |
+| Budget Carrosserie | 200.000 driehoeken (was 190.000): de portierkaarten brengen de groep op 189.763. | Afspraak van de gebruiker: budgetten mogen omhoog waar nodig. | Besloten |
+| Toerenteller | Schaal 0 tot 8 (x1000 tpm), rood gebied geschat; de referentiefoto toont een dieselteller. | Geen bron voor de 2.0T-teller gevonden. | Geschat |
+

@@ -570,7 +570,7 @@ function intDashboard() {
   const under = A('Onderdashboard', { d: 'Knieplaat, afdekkingen onder het dashboard en zijbekleding van de voetruimte: van boven en van opzij zijn kabelboom, pedaalbok en tussenas niet te zien (vorm geschat).', ex: [0, -0.12, 0] }, [
     knee,
     intPart('Afdekking voetruimte bestuurder', footPlate(0.135, 0.742, [[0.378, 0.422, 0.742, 0.781], [0.212, 0.248, 0.782, 0.811]]), MAT.dash, 'Afdekking onder het dashboard aan bestuurderszijde, schuin van de onderrand naar voren, met openingen voor rem- en gaspedaalarm en een voetwand voor het schutbord tot net boven de vloer.', { ex: [0, -0.1, 0.06] }),
-    intPart('Afdekking voetruimte passagier', footPlate(-0.742, -0.135, [], [[-0.325, -0.25]]), MAT.dash, 'Afdekking onder het dashboard aan passagierszijde, schuin van de onderrand naar voren met een voetwand voor het schutbord; dekt de klimaatunit van onderen af. In de voetwand zit een opening waar de remleidingen naar achteren lopen.', { ex: [0, -0.1, 0.06] }),
+    intPart('Afdekking voetruimte passagier', footPlate(-0.742, -0.135, []), MAT.dash, 'Afdekking onder het dashboard aan passagierszijde, schuin van de onderrand naar voren met een voetwand voor het schutbord; dekt de klimaatunit van onderen af.', { ex: [0, -0.1, 0.06] }),
     kick(1), kick(-1),
   ]);
   return A('Dashboard', { d: 'Zwart dashboard met instrumentenpaneel onder een kap, verzonken navigatiescherm, pianozwarte sierband, klimaat- en audiobediening, kaartlezer en startknop, luchtroosters, handschoenenkastje, passagiersairbag, onderdashboard, klimaatunit en dwarsbalk.', ex: [0, 0.16, 0.6] }, [
