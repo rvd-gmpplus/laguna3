@@ -42,7 +42,8 @@ Controles (zie de app-brief):
   22 zoeken: KLEPSPIE en klepspie gelijk; klépspie, solenoide en vacuum vinden klepspie, Solenoïde en Vacuüm (audit U17)
   23 cockpit (golf 5l): in- en uitstappen herstelt camera, doel, gezichtsveld en near/far exact (tolerantie), elk oogpunt binnen
      de cabine (stralen omhoog en omlaag), grenzen van draaien, schuiven en zoomen, een klik opent het dashboardkastje, Esc, K, O en
-     Uitstappen, de adresbalk, reduced motion, telefoon staand en liggend (passen, slepen, knijpen), geen consolemeldingen
+     Uitstappen, de adresbalk, reduced motion, telefoon staand en liggend (passen, slepen, knijpen), geen consolemeldingen; ronde 2:
+     buitenwereld en lichtstand alleen in de cockpit en na het uitstappen exact terug (beide thema's), openersregel bij uitstappen
 """
 import sys, os, random, json, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -1281,6 +1282,13 @@ window.__CK = {
     }
     return null;
   },
+  // omgeving: lichten, raster, buitenwereld en achtergrond van de renderer (ronde 2 van de cockpit)
+  env() {
+    const w = typeof uiCkWorld !== 'undefined' && uiCkWorld ? uiCkWorld.g.visible : false;
+    return { hemi: [uiHemi.intensity, uiHemi.color.getHex(), uiHemi.groundColor.getHex()], sun: [sun.intensity, ...sun.position.toArray(), sun.color.getHex()],
+      rim: [rim.intensity, ...rim.position.toArray()], cabin: uiCabin.intensity, grid: ground.visible, world: w, bg: scene.background === null,
+      clear: [renderer.getClearAlpha(), renderer.getClearColor(new THREE.Color()).getHex()], exposure: renderer.toneMappingExposure };
+  },
   // een punt in het vrije beeld waar een klik niets opent (voor de dubbelklik)
   quietPoint() {
     const L = this.L(), v = L.freeView();
@@ -1367,6 +1375,58 @@ def run_cockpit(s):
     check('23 cockpit: stap terug na het uitstappen geeft de stand van voor de cockpit (preset Motor, camera buiten de auto)',
           'Motor F4Rt' in st['open'] and st['cockpit'] is None and cam_diff(c0, cam()) < 0.05, json.dumps(st['open'][:3]))
     pg.evaluate("__model.preset('assembled'); __model.openAll(0, true); __model.finishAll()"); settle(pg, 120)
+    # (1b) ronde 2: buitenwereld en lichtstand alleen in de cockpit, na het uitstappen exact terug (licht en donker thema, ook
+    # met een themawissel in de cockpit)
+    def env_diff(a, b):
+        bad = []
+        for k in a:
+            x, y = a[k], b[k]
+            xs, ys = (x if isinstance(x, list) else [x]), (y if isinstance(y, list) else [y])
+            if any((abs(p - q) > 1e-9) if isinstance(p, (int, float)) and not isinstance(p, bool) else p != q for p, q in zip(xs, ys)):
+                bad.append(f'{k}: {x} / {y}')
+        return bad
+    res = {}
+    for theme in ('light', 'dark'):
+        pg.evaluate(f"__model.setTheme('{theme}')"); settle(pg, 120)
+        e0 = pg.evaluate('__CK.env()')
+        pg.evaluate("__model.setCockpit('bestuurder')"); pg.wait_for_timeout(80)
+        e1 = pg.evaluate('__CK.env()')
+        settle(pg, 80)
+        pg.click('#btnCkOut'); settle(pg, 150)
+        e2 = pg.evaluate('__CK.env()')
+        res[theme] = (e0, e1, env_diff(e0, e2))
+        check(f'23 cockpit ({theme}): in de cockpit lucht en grond zichtbaar, raster weg, zon lager en zachter, meer hemellicht, cabinelicht aan',
+              e1['world'] and not e1['grid'] and e1['sun'][0] < e0['sun'][0] and e1['sun'][2] < e0['sun'][2] and e1['hemi'][0] > e0['hemi'][0] and e1['cabin'] > 0 and not e0['world'] and e0['grid'] and e0['cabin'] == 0,
+              json.dumps({'voor': e0, 'in': e1}))
+        check(f'23 cockpit ({theme}): na het uitstappen lichten, raster, buitenwereld en achtergrond exact terug (tolerantie 1e-9)', not res[theme][2], '; '.join(res[theme][2]))
+    # themawissel in de cockpit: het thema telt mee, het uitstappen geeft de lichten van het nieuwe thema
+    pg.evaluate("__model.setTheme('light')"); settle(pg, 120)
+    e_light = pg.evaluate('__CK.env()')
+    pg.evaluate("__model.setTheme('dark')"); settle(pg, 120)
+    pg.evaluate("__model.setCockpit('passagier', true)"); settle(pg, 60)
+    ed = pg.evaluate('__CK.env()')
+    pg.evaluate("__model.setTheme('light')"); settle(pg, 120)
+    el = pg.evaluate('__CK.env()')
+    pg.evaluate("__model.setCockpit(null, true)"); settle(pg, 120)
+    bad = env_diff(e_light, pg.evaluate('__CK.env()'))
+    check('23 cockpit: themawissel in de cockpit houdt de lichtstand (cabinelicht per thema) en na het uitstappen staan de lichten van het nieuwe thema',
+          ed['cabin'] > 0 and el['cabin'] > 0 and ed['hemi'][0] != el['hemi'][0] and el['world'] and not bad, '; '.join(bad) + f" cabine {ed['cabin']} / {el['cabin']}")
+    pg.evaluate("__model.setTheme('system')"); settle(pg, 120)
+    modes = []
+    for js in ("__model.setOpenMode(true)", "__model.setOpenMode(false)", "__model.preset('engine')", "__model.preset('assembled')"):
+        pg.evaluate(js); settle(pg, 60); modes.append(pg.evaluate('__CK.env().world'))
+    check('23 cockpit: de buitenwereld is buiten de cockpit nergens zichtbaar (Openen, Uitklappen, presets)', not any(modes), json.dumps(modes))
+    # (1c) ronde 2: openers bij het uitstappen. Wat alleen van binnen open kon (needs dicht) gaat dicht, de rest blijft staan
+    pg.evaluate("__model.openAll(0, true); __model.setCockpit('bestuurder', true); __model.finishAll()")
+    r = pg.evaluate("""(() => { const L = __model, kast = L.byName('Handschoenenkastklep'), need = kast.opn.needN;
+      const pair = L.ALL.find(n => n.opn && n.opn.needN && n.opn.needN !== need);   // een opener met een ander portier als needs
+      L.setOpen(kast, 1, true); L.setOpen(pair.opn.needN, 1, true); L.setOpen(pair, 1, true); L.finishAll();
+      const inside = L.state().openers.slice();
+      document.getElementById('btnCkOut').click(); L.finishAll();
+      return { need: need.name, pair: pair.name, pairNeed: pair.opn.needN.name, inside, after: L.state().openers }; })()""")
+    check('23 cockpit: uitstappen sluit het dashboardkastje (portier dicht), een opener met open portier en dat portier blijven open',
+          set(r['inside']) == {'Handschoenenkastklep', r['pair'], r['pairNeed']} and set(r['after']) == {r['pair'], r['pairNeed']}, json.dumps(r))
+    pg.evaluate("__model.openAll(0, true); __model.finishAll()")
     # (2) elke zitplaats: oog binnen de cabine; een straal omhoog raakt eerst het dak of de hemel, omlaag eerst de eigen stoel
     bad = []
     for st_ in seats:
