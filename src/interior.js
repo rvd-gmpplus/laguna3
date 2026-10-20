@@ -25,13 +25,16 @@ roughnessFactor = clamp(roughnessFactor + ${amp.toFixed(3)} * intG, 0.0, 1.0);
 diffuseColor.rgb *= 1.0 + ${(amp * 0.5).toFixed(3)} * intG;`);
   };
   m.customProgramCacheKey = () => `intGrain${amp}|${k}`;
+  // klonen (aanwijzen, selecteren, vervagen) houden de nerf, zoals bodGlassSideIn in bodyparts.js
+  m.clone = function () { return intGrain(THREE.MeshStandardMaterial.prototype.clone.call(this), amp, k); };
   return m;
 }
-MAT.leather.color.setHex(0x26282b); MAT.leather.roughness = 0.58; intGrain(MAT.leather, 0.05, 600);
+MAT.leather.color.setHex(0x141518); MAT.leather.roughness = 0.72; MAT.leather.envMapIntensity = 0.25; intGrain(MAT.leather, 0.05, 600);
 MAT.fabric.color.setHex(0xa3a5a4); MAT.fabric.roughness = 1; MAT.fabric.envMapIntensity = 0.3;   // lichtgrijze, matte hemelstof (ook de zonneschermen van het dak)
-intGrain(std('intLeatherPerf', 0x232528, 0, 0.72), 0.07, 600);   // middenbaan van de zittingen en rugleuningen: matter, leest als geperforeerd
+intGrain(std('intLeatherPerf', 0x101114, 0, 0.8, { envMapIntensity: 0.25 }), 0.07, 600);   // middenbaan van de zittingen en rugleuningen: matter, leest als geperforeerd
 std('intSeam', 0x6a6d72, 0, 0.6);    // stiksel: iets lichter dan het leder
-std('intTrimDark', 0x2a2c30, 0, 0.74);   // donker kunststof van de zijbekleding achter en de afdekking onder de voorstoelen
+std('intTrimDark', 0x1f2124, 0, 0.85, { envMapIntensity: 0.28 });
+MAT.dash.color.setHex(0x1f2124); MAT.dash.roughness = 0.85; MAT.dash.envMapIntensity = 0.28;   // dashboard en donkere bekleding een stap donkerder dan core.js (Dark Carbon; km77-foto dashboard circa sRGB 30)   // donker kunststof van de zijbekleding achter en de afdekking onder de voorstoelen
 // INITIALE op de voorste instaplijsten (foto eigenaar): canvastextuur zoals engLogoTex; breedte eerst gemeten (lettertype op Linux)
 function intSillTex() {
   const c = document.createElement('canvas'); c.width = 512; c.height = 64;
@@ -333,19 +336,21 @@ function intDashTex() {
   k.textAlign = 'center'; k.textBaseline = 'middle';
   const txt = (s, x, y, px, col, b) => { k.font = F(px, b); k.fillStyle = col || W; let f = px; while (k.measureText(s).width > px * 3.2 && f > 6) { f -= 1; k.font = F(f, b); } k.fillText(s, x, y); };
   // wijzerplaat: schaal van -135 tot 135 graden (met de klok vanaf boven), n stappen met sub tussenstreepjes, rood vanaf fractie red
-  const dial = (R, labels, sub, red, unit) => {
-    const cx = (R[0] + R[2]) / 2, cy = (R[1] + R[3]) / 2, r = (R[2] - R[0]) / 2 - 1, n = (labels.length - 1) * sub, ang = t => (-135 + 270 * t) * PI / 180;
+  // t0, t1: plaats van het eerste en laatste label op de schaal (standaard aan de uiteinden); de streepjes lopen over de hele schaal
+  const dial = (R, labels, sub, red, unit, t0 = 0, t1 = 1) => {
+    const cx = (R[0] + R[2]) / 2, cy = (R[1] + R[3]) / 2, r = (R[2] - R[0]) / 2 - 1, n = Math.round((labels.length - 1) * sub / (t1 - t0)), ang = t => (-135 + 270 * t) * PI / 180, i0 = Math.round(t0 * n);
     k.fillStyle = '#121418'; k.beginPath(); k.arc(cx, cy, r, 0, PI * 2); k.fill();
     for (let i = 0; i <= n; i++) {
-      const t = i / n, a = ang(t), big = i % sub === 0, r0 = r * (big ? 0.8 : 0.87);
+      const t = i / n, a = ang(t), big = (i - i0) % sub === 0, r0 = r * (big ? 0.8 : 0.87);
       k.strokeStyle = red != null && t > red - 1e-6 ? '#e0302a' : W; k.lineWidth = big ? 3.5 : 1.6;
       k.beginPath(); k.moveTo(cx + Math.sin(a) * r0, cy - Math.cos(a) * r0); k.lineTo(cx + Math.sin(a) * r * 0.95, cy - Math.cos(a) * r * 0.95); k.stroke();
     }
-    labels.forEach((s, i) => { const a = ang(i / (labels.length - 1)); txt(s, cx + Math.sin(a) * r * 0.62, cy - Math.cos(a) * r * 0.62, r * (s.length > 2 ? 0.13 : 0.17)); });
+    labels.forEach((s, i) => { const a = ang(t0 + (t1 - t0) * i / (labels.length - 1)); txt(s, cx + Math.sin(a) * r * 0.62, cy - Math.cos(a) * r * 0.62, r * (s.length > 2 ? 0.105 : 0.17)); });
     if (unit) txt(unit, cx, cy + r * 0.36, r * 0.09);
   };
   dial(intTexR.tach, ['0', '1', '2', '3', '4', '5', '6', '7', '8'], 2, 6.5 / 8, 'x1000 /min');
-  dial(intTexR.speedo, ['0', '20', '40', '60', '80', '100', '120', '140', '160', '180', '200', '220', '240', '260'], 2, null, 'km/h');
+  // snelheidsmeter 0 tot 280 km/h met de cijfers 10, 30, ... 270 (foto van de eigenaar, IMG_0005), een streepje per 10 km/h
+  dial(intTexR.speedo, Array.from({ length: 14 }, (_, i) => String(10 + 20 * i)), 2, null, 'km/h', 10 / 280, 270 / 280);
   // kleine meters: boog van -60 tot 60 graden, temperatuur (C tot H) en brandstof (0 tot 1)
   const small = (R, l, r2) => {
     const cx = (R[0] + R[2]) / 2, cy = (R[1] + R[3]) / 2, r = (R[2] - R[0]) / 2 - 1;
@@ -873,7 +878,7 @@ function intTrim() {
       intPart('Lamphuis voor', G.rbox(0.3, 0.02, 0.08, 0.008), MAT.plasticGrey, 'Behuizing van het plafonnier.', { ex: [0, 0.04, 0] }),
       ...[1, -1].map(s => intPart(`Leeslampje ${sideName(s)}`, G.cyl('y', 0.025, 0.025, 0.004, 16), MAT.lensClear, 'Leeslampje met lens boven de voorstoel aan deze kant.', { p: [s * 0.1, -0.011, 0], ex: [0, -0.06, 0] })),
     ]),
-    intPart('Plafonnier achter', G.rbox(0.12, 0.016, 0.045, 0.006), MAT.plasticGrey, 'Middenlamp achter met lens, onder in de afwerklijst langs de achterrand van de hemel.', { p: [0, hdrTop(0) - 0.014 - 0.0085, -1.137], r: [0, 0, 0], ex: [0, 0.2, 0] }),
+    intPart('Plafonnier achter', G.rbox(0.12, 0.016, 0.045, 0.006), MAT.fabric, 'Middenlamp achter in een huis in hemelkleur, onder in de afwerklijst langs de achterrand van de hemel.', { p: [0, hdrTop(0) - 0.014 - 0.0085, -1.137], r: [0, 0, 0], ex: [0, 0.2, 0] }),
     curtain(1), curtain(-1),
     pillarCover(1), pillarCover(-1),
     ]),
@@ -888,7 +893,10 @@ function intTrim() {
     ]),
     A('Bagageruimte', { d: 'Bekleding van de bagageruimte met hoedenplank, vloerplaat, zijbekleding over de wielkasten, de luidsprekers van de achterplank en de versterker.', ex: [0, 0.0, -0.3] }, [
     intUit(intPart('Hoedenplank', intPlankGeo(), MAT.carpet, 'Afdekplaat achter de achterbank boven de bagageruimte; hangt met koordjes aan de achterklep en komt mee omhoog als die opent (geschat 52 graden), met twee scharnierpennen in de zijbekleding aan de voorrand, die in een kleine sparing in de voorhoeken van de plank liggen, en een uitsparing voor de middelste gordelrolautomaat.', Object.assign({ p: [0, 1.0, -1.85], ex: [0, 0.3, -0.2] }, intPlankOpen()))),
-    ...[1, -1].map(s => intPart(`Plankscharnierpen ${sideName(s)}`, merge([xf(G.cyl('x', 0.011, 0.011, 0.09, 12), [0, 0, 0]), xf(G.rbox(0.014, 0.08, 0.09, 0.004), [s * 0.04, 0, 0.0]), xf(G.cyl('x', 0.017, 0.017, 0.008, 14), [-s * 0.045, 0, 0])]), MAT.steel, 'Scharnierpen van de hoedenplank in de zijbekleding bij de voorhoek: de plank draait om deze twee pennen omhoog als de achterklep opent.', { p: [s * 0.655, 1.0, -1.575], ex: [s * 0.14, 0, 0] })).map(intUit),
+    // scharnierpen: de draagplaat zit achter de zijbekleding (buiten |x| 0,635, onder de bovenrand); zichtbaar blijven een afgeronde kop
+    // in donker kunststof (dekt de kier tussen zijbekleding en C-stijlbekleding), de korte pen en de kraag
+    ...[1, -1].map(s => intPart(`Plankscharnierpen ${sideName(s)}`, merge([xf(G.cyl('x', 0.011, 0.011, 0.059, 12), [-s * 0.0195, 0, 0]), xf(G.cyl('x', 0.017, 0.017, 0.008, 14), [-s * 0.045, 0, 0]),
+      intBox(0.012, 0.06, 0.04, [0, -0.045, 0]), xf(G.rbox(0.05, 0.05, 0.04, 0.008), [s * 0.02, -0.005, 0])]), MAT.plastic, 'Scharnierpen van de hoedenplank met een kop in donker kunststof; de draagplaat zit achter de zijbekleding van de bagageruimte. De plank draait om deze twee pennen omhoog als de achterklep opent.', { p: [s * 0.655, 1.0, -1.575], ex: [s * 0.14, 0, 0] })).map(intUit),
     ...intPlankCords().map(intUit),
     ...[1, -1].map(s => intPart(`Achterplankluidspreker ${sideName(s)}`, merge([xf(G.cyl('y', 0.065, 0.065, 0.008, 24), [0, 0, 0]), xf(G.cyl('y', 0.04, 0.025, 0.02, 20), [0, -0.012, 0])]), MAT.darkSteel, 'Luidspreker in de achterplank (Bose, positie geschat).', Object.assign({ p: [s * 0.45, 1.01, -1.7], ex: [s * 0.1, 0.2, 0] }, intPlankOpen()))).map(intUit),
     intPart('Bagageruimtevloer', intBootPlate(), MAT.carpet, 'Vloerplaat van de bagageruimte (450 tot 1377 liter), tussen de achterwielkasten en naast de veerkokers smaller. Het tapijtdeel klapt om de voorrand omhoog (geschat 62 graden, de achterklep opent eerst) en laat het opbergvak eronder zien.', { p: [0, 0.46, -1.8275], ex: [0, -0.12, -0.3],
@@ -1079,6 +1087,14 @@ const intCTop = z => { const T = [[-1.185, 1.262], [-1.262, 1.262], [-1.285, 1.2
   return z > T[0][0] ? T[0][1] : T[T.length - 1][1]; };
 // z van de achterrand van de kwartsruit op hoogte y (bodQtop is de bovenrand van de ruit als functie van z)
 const intQuarterZ = y => { let lo = -1.25, hi = -1.14; if (bodQtop(lo) >= y) return lo; for (let i = 0; i < 30; i++) { const m = (lo + hi) / 2; if (bodQtop(m) >= y) hi = m; else lo = m; } return lo; };
+// lip langs de bovenrand van de C-stijlbekleding (z -1,30 tot -1,60): van de bovenkant naar binnen onder de gasveer door (4 mm eronder)
+// en schuin omhoog tot 6 mm onder de sponning van de klepopening, zodat de veer bij een dichte klep vanaf de achterbank achter de
+// bekleding en de sponning verdwijnt. Gemeten per z: binnenkant en onderkant van de sponning, onderkant van de veer (de veer zwaait
+// bij het openen omhoog, van de lip af).
+const intCLip = { z: [-1.30, -1.33, -1.36, -1.40, -1.45, -1.50, -1.55, -1.60], spX: [0.6086, 0.6106, 0.6146, 0.6205, 0.6263, 0.6309, 0.6344, 0.637],
+  spY: [1.2395, 1.2307, 1.2225, 1.2116, 1.1991, 1.1865, 1.1731, 1.1587], stY: [9, 1.2168, 1.2108, 1.2028, 1.1929, 1.183, 1.173, 1.1728],
+  stX: [0.645, 0.6482, 0.6495, 0.6515, 0.654, 0.6564, 0.6589, 0.6709] };
+const intCLipAt = (z, k) => { const Z = intCLip.z, V = intCLip[k]; for (let i = 0; i < Z.length - 1; i++) if (z <= Z[i] + 1e-9 && z >= Z[i + 1] - 1e-9) return lerp(V[i], V[i + 1], (Z[i] - z) / (Z[i] - Z[i + 1])); return null; };
 function intCPillar(s) {
   const zs = [-1.258, -1.27, -1.30, -1.33, -1.36, -1.40, -1.45, -1.50, -1.55, -1.60, -1.65, -1.70, -1.75, -1.80, -1.85, -1.90, -1.95, -2.0], m = 7;
   const loops = zs.map((z0, i) => {
@@ -1087,7 +1103,11 @@ function intCPillar(s) {
     for (let j = 0; j <= m; j++) yo.push(0.985 + (yt - 0.985) * j / m);
     for (let j = 0; j <= m; j++) yi.push(yt - 0.003 - (yt - 0.003 - 0.995) * j / m);
     const sx = (y, o) => surfX(zAt(y), y) - o, tip = Math.max(0.688, Math.min(0.705, sx(0.995, 0.019) - 0.008));   // richel tot |x| 0,705, achteraan korter
-    const pts = [[tip, 0.985], ...yo.map(y => [sx(y, 0.007), y]), ...yi.map(y => [sx(y, 0.019), y]), [tip + 0.004, 0.995], [tip, 0.992]];
+    const a = [sx(yt, 0.007), yt], b = [sx(yi[0], 0.019), yi[0]], spX = intCLipAt(z0, 'spX'), spY = intCLipAt(z0, 'spY'), stY = intCLipAt(z0, 'stY');
+    const stX = intCLipAt(z0, 'stX');
+    const lip = i > 0 && spX !== null ? (() => { const ya = Math.min(yt + 0.004, stY - 0.005, spY - 0.012), xa = 0.69, xs = stX - 0.004, ys = Math.min(stY - 0.005, spY - 0.006);
+      return [[xa, ya], [xs, ys], [spX + 0.006, spY - 0.006], [spX + 0.006, spY - 0.012], [xs, ys - 0.006], [xa, ya - 0.006]]; })() : [1, 2, 3, 4, 5, 6].map(f => [lerp(a[0], b[0], f / 7), lerp(a[1], b[1], f / 7)]);
+    const pts = [[tip, 0.985], ...yo.map(y => [sx(y, 0.007), y]), ...lip, ...yi.map(y => [sx(y, 0.019), y]), [tip + 0.004, 0.995], [tip, 0.992]];
     return pts.map(([x, y]) => [s * x, y, zAt(y)]);
   });
   return intLoft(loops);
