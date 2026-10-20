@@ -1,5 +1,7 @@
 # Handomdraai laguna3
 
+Stand 20 oktober 2026, golf 5m: versie 19 (paneel slepen, Openen in de cockpit, onderdeelnummers) is gepubliceerd (`main` fast-forward `6192326..3bd5b51`, tag `v19`, artefactversie 21, Pages byte voor byte teruggelezen). Open punten: zie `docs/masterplan.md`, golf 5m.
+
 Stand 20 oktober 2026, golf 5l: versie 18 (cockpitmodus en interieur Dark Carbon) is gepubliceerd (`main` fast-forward `3216616..2410431`, tag `v18`, artefactversie 20, Pages byte voor byte teruggelezen). Open punten: zie `docs/masterplan.md`, golf 5l. Volgende: sleepgreep van het paneel op de telefoon werkend maken en de onderdeelnummers aanvullen (golf 5m).
 
 Stand 20 oktober 2026, golf 5k: versie 17 (exterieurpunten: vouwlijnen kap, zwart kentekenvlak, gaas in de inlaat, chroomlijn bovengrille, gladde bumpers, wielkast dicht) is gepubliceerd (`main` fast-forward `a2d4e97..dc80af5`, tag `v17`, artefactversie 19, Pages byte voor byte teruggelezen). espace5 versie 7 is ook gepubliceerd. Open punten: zie `docs/masterplan.md`, golf 5k.
