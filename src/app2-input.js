@@ -274,7 +274,7 @@ window.addEventListener('keydown', e => {
   if (e.key === 'Enter') { if (onCtl) return; e.preventDefault(); uiStopPlay(); uiStopTour(); hideHint(); uiEnter(e.shiftKey); return; }
   if (e.key === 'Backspace') { e.preventDefault(); if (COCKPIT) return; uiStopPlay(); uiStopTour(); uiUndo(); return; } // in de cockpit geen stap terug: die zou uitklappen terwijl je in de auto zit
   if (e.key === '?') { e.preventDefault(); uiHelp(true); return; }
-  if (e.key === 'o' || e.key === 'O') { e.preventDefault(); hideHint(); uiSetOpenMode(!OPENMODE); return; } // vanuit de cockpit: uitstappen en wisselen
+  if (e.key === 'o' || e.key === 'O') { e.preventDefault(); hideHint(); uiSetOpenMode(!OPENMODE, true); return; } // in de cockpit wisselt O alleen de klikmodus (je blijft zitten)
   // K: cockpit aan of uit (alleen als de auto een cockpit heeft)
   if ((e.key === 'k' || e.key === 'K') && UI_CK) { e.preventDefault(); hideHint(); COCKPIT ? uiCkExit() : uiSetCockpit(uiCk.last); return; }
   // in de cockpit: pijltjes en W/S buigen voorover, opzij en omhoog; C zet de blik terug; cijfers (presets) doen niets
