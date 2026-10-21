@@ -502,9 +502,17 @@ if (uiMqSide) { const f = () => { setSheet(uiSide() ? 'open' : 'peek'); }; uiMqS
 $('sheetToggle').onclick = () => setSheet(els.sheet.dataset.state === 'open' ? 'peek' : 'open');
 $('btnParts').onclick = () => { const open = els.sheet.dataset.state === 'open' && !$('tab-tree').hidden; showTab('tree'); setSheet(open ? 'peek' : 'open'); };
 $('btnView').onclick = () => { const open = els.sheet.dataset.state === 'open' && !$('tab-view').hidden; showTab('view'); setSheet(open ? 'peek' : 'open'); };
+// uiInRO: true binnen een ResizeObserver-melding (app2-loop.js). Daar mag --dock-h niet veranderen: het wijzigt in de cockpit de max-height en dus
+// de maat van het paneel, en een maat die tijdens de melding verandert geeft "ResizeObserver loop completed with undelivered notifications".
+// De melding plant daarom een beeld later een nieuwe meting (uiDockLater).
+let uiInRO = false;
 function syncSheetHeight() {
+  if (!uiSheetBottom()) return;
+  const app = document.getElementById('app');
+  // --dock-h eerst: in de cockpit hangt de max-height van het paneel eraan (head.html), dus daarna pas de hoogte van het paneel lezen
+  if (!uiInRO) app.style.setProperty('--dock-h', els.dock.offsetHeight + 'px');
   // tijdens het slepen volgt het dock de bovenrand van het paneel, ook als de stand al open heet
-  if (uiSheetBottom()) document.getElementById('app').style.setProperty('--sheet-h', (els.sheet.dataset.state === 'open' && !uiSheetDragging() ? 0 : els.sheet.offsetHeight) + 'px');
+  app.style.setProperty('--sheet-h', (els.sheet.dataset.state === 'open' && !uiSheetDragging() && !COCKPIT ? 0 : els.sheet.offsetHeight) + 'px');
 }
 
 /* ---------- onderpaneel slepen (telefoon staand) ---------- */
@@ -529,6 +537,11 @@ function uiSheetStands() {
   return out;
 }
 function uiSheetUnlisten() { for (const t of ['pointermove', 'pointerup', 'pointercancel']) window.removeEventListener(t, uiSheetEvt); }
+// Pointer capture (golf 5n): zonder vangt de muis het slepen alleen zolang hij boven de pagina blijft; met capture op de greep of kop
+// komen move en up daar altijd binnen, ook buiten de greep en buiten het venster. Aanraking heeft impliciete capture, dit is voor de muis.
+// Een mislukte aanroep (pointer al weg, element losgekoppeld) is geen fout: window luistert nog steeds mee.
+function uiSheetCapture(d) { if (!d.el || d.cap) return; try { d.el.setPointerCapture(d.id); d.cap = true; } catch (_) { } }
+function uiSheetRelease(d) { if (!d || !d.cap) return; d.cap = false; try { if (d.el.hasPointerCapture(d.id)) d.el.releasePointerCapture(d.id); } catch (_) { } }
 function uiSheetEvt(e) {
   const d = uiSheetDrag; if (!d || e.pointerId !== d.id) return;
   if (e.type === 'pointermove') uiSheetMove(e, d); else uiSheetUp(e, d);
@@ -537,7 +550,9 @@ function uiSheetDown(e, kop) {
   if (!uiSheetBottom() || uiSheetDrag || (e.pointerType === 'mouse' && e.button !== 0)) return;
   if (kop && (els.sheet.dataset.state !== 'peek' || e.target.closest('button, a, input, select, textarea, label'))) return; // de kop sleept alleen in peek en niet vanaf knoppen
   if (uiSheetSnapDone) uiSheetSnapDone();
-  uiSheetDrag = { id: e.pointerId, y0: e.clientY, h0: els.sheet.offsetHeight, h: els.sheet.offsetHeight, pts: [[e.timeStamp, e.clientY]], drag: false, stands: null };
+  uiSheetDrag = { id: e.pointerId, y0: e.clientY, h0: els.sheet.offsetHeight, h: els.sheet.offsetHeight, pts: [[e.timeStamp, e.clientY]], drag: false, stands: null, el: e.currentTarget, cap: false };
+  // de greep vangt de aanwijzer bij pointerdown; de kop pas als het slepen echt begint, zodat een tik op iets in de kop zijn klik houdt
+  if (!kop) uiSheetCapture(uiSheetDrag);
   for (const t of ['pointermove', 'pointerup', 'pointercancel']) window.addEventListener(t, uiSheetEvt);
 }
 function uiSheetMove(e, d) {
@@ -545,7 +560,7 @@ function uiSheetMove(e, d) {
   const dy = e.clientY - d.y0;
   if (!d.drag) {
     if (Math.abs(dy) < UI_SLEEP.drempel) return;
-    d.drag = true; d.stands = uiSheetStands();
+    d.drag = true; d.stands = uiSheetStands(); uiSheetCapture(d);
     els.sheet.dataset.drag = '1';
     els.sheet.dataset.state = 'open'; // de inhoud van open staat al klaar terwijl het paneel groeit; de kop in peek-opmaak springt hier eenmalig
     els.sheet.style.height = d.h0 + 'px';
@@ -555,13 +570,13 @@ function uiSheetMove(e, d) {
   while (d.pts.length > 2 && e.timeStamp - d.pts[0][0] > UI_SLEEP.venster) d.pts.shift();
   const st = d.stands, h = Math.max(st[0].h, Math.min(st[st.length - 1].h, d.h0 - dy));
   d.h = h; els.sheet.style.height = h + 'px';
-  // het dock beweegt mee met de bovenrand en vervaagt naar de stand open, waar het ook zonder slepen verdwijnt
-  const o = st.length > 1 ? Math.max(0, Math.min(1, 1 - (h - st[0].h) / (st[1].h - st[0].h))) : 1;
+  // het dock beweegt mee met de bovenrand en vervaagt naar de stand open, waar het ook zonder slepen verdwijnt (in de cockpit blijft het staan)
+  const o = st.length > 1 && !COCKPIT ? Math.max(0, Math.min(1, 1 - (h - st[0].h) / (st[1].h - st[0].h))) : 1;
   els.dock.style.opacity = o < 1 ? o.toFixed(2) : ''; els.dock.style.pointerEvents = o < 0.5 ? 'none' : '';
   syncSheetHeight();
 }
 function uiSheetUp(e, d) {
-  uiSheetUnlisten(); uiSheetDrag = null;
+  uiSheetUnlisten(); uiSheetDrag = null; uiSheetRelease(d);
   if (!d.drag) return; // een tik: de klik van de greep doet zijn werk
   uiSheetNoClick = true; setTimeout(() => { uiSheetNoClick = false; }, 60);
   const a = d.pts[0], b = d.pts[d.pts.length - 1], st = d.stands, cur = d.h;
@@ -593,7 +608,7 @@ function uiSheetSnap(t, cur) {
 function uiSheetAbort() {
   if (uiSheetSnapDone) uiSheetSnapDone();
   if (!uiSheetDrag) { delete els.sheet.dataset.drag; els.sheet.style.height = ''; return; }
-  uiSheetUnlisten(); uiSheetDrag = null;
+  uiSheetUnlisten(); uiSheetRelease(uiSheetDrag); uiSheetDrag = null;
   delete els.sheet.dataset.drag; els.sheet.style.height = '';
   els.dock.style.opacity = ''; els.dock.style.pointerEvents = '';
 }

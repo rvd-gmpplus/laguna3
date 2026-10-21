@@ -416,11 +416,27 @@ document.querySelectorAll('.ckhelp').forEach(e => { e.hidden = !UI_CK; });
 // De segmentknop bovenin is één radiogroep: Uitklappen, Openen en Cockpit. De knop Cockpit heeft een eigen attribuut
 // (data-ckmode): data-omode blijft de klikstand van Uitklappen of Openen, zoals de tests en de adresbalk die kennen.
 const uiOpenBtns = [...document.querySelectorAll('#openSeg [role="radio"]')];
+let uiAlsoWas = false, uiCkWas = false;
+const uiOpenAanTxt = 'Openen aan: je blijft in de cockpit zitten en een klik opent of sluit een opener', uiOpenUitTxt = 'Openen uit: je blijft in de cockpit zitten';
+const uiOpenAlsoTxt = 'Staat ook aan: je blijft in de cockpit zitten en een klik opent of sluit een opener';
 const uiViewModeOf = b => (b.dataset.ckmode ? 'cockpit' : b.dataset.omode);
-function uiSetViewMode(m) { if (m === 'cockpit') uiSetCockpit(COCKPIT ? COCKPIT.id : uiCk.last); else if (m === 'open') uiSetOpenMode(true, true); else uiSetOpenMode(false); } // Openen blijft in de cockpit zitten, Uitklappen stapt uit
+// Openen blijft in de cockpit zitten, Uitklappen stapt uit. Cockpit kiezen terwijl je al zit is geen wissel: uiSetCockpit zet bij elke aanroep
+// oog en blik terug op de zitplaats, dus een pijl rechts van Openen naar Cockpit (of een klik op Cockpit) mag hem niet aanroepen (golf 5n).
+function uiSetViewMode(m) { if (m === 'cockpit') { if (!COCKPIT) uiSetCockpit(uiCk.last); } else if (m === 'open') uiSetOpenMode(true, true); else uiSetOpenMode(false); }
+// Pijltoetsen: in de cockpit is Cockpit de aangevinkte radio en de enige tabstop; de focus blijft daar (anders zou hij op Openen staan, dat
+// niet aangevinkt is terwijl de toets het wel aanzet). Links zet Openen aan, rechts zet Openen uit; een melding via de statusregio zegt wat
+// er gebeurde. Links met Openen aan en rechts zonder Openen lopen verder naar Uitklappen (uitstappen), zoals elke radiogroep rondloopt (golf 5n).
+function uiOpenKey(e, b, i) {
+  const n = uiOpenBtns.length, dir = e.key === 'ArrowRight' ? 1 : -1;
+  // In de cockpit telt elke radio behalve Uitklappen als "in de cockpit": na een muisklik op Openen staat de focus daar (tabindex -1, niet aangevinkt),
+  // en dan moet dezelfde toets hetzelfde doen als op Cockpit. De focus gaat dan terug naar de aangevinkte radio Cockpit.
+  const inCk = COCKPIT && uiViewModeOf(b) !== 'expand';
+  if (inCk && (dir < 0) !== OPENMODE) { uiSetOpenMode(dir < 0, true); uiOpenBtns.find(x => x.dataset.ckmode).focus(); return; }
+  const j = inCk ? 0 : (i + (dir > 0 ? 1 : n - 1)) % n; uiSetViewMode(uiViewModeOf(uiOpenBtns[j])); uiOpenBtns[j].focus();
+}
 uiOpenBtns.forEach((b, i) => {
   b.addEventListener('click', () => { hideHint(); uiSetViewMode(uiViewModeOf(b)); });
-  b.addEventListener('keydown', e => { if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return; const j = (i + (e.key === 'ArrowRight' ? 1 : uiOpenBtns.length - 1)) % uiOpenBtns.length; uiSetViewMode(uiViewModeOf(uiOpenBtns[j])); uiOpenBtns[j].focus(); e.preventDefault(); });
+  b.addEventListener('keydown', e => { if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return; e.preventDefault(); uiOpenKey(e, b, i); });
 });
 $('btnOpenAll').onclick = () => uiOpenAllTo(true);
 $('btnCloseAll').onclick = () => uiOpenAllTo(false);
@@ -451,8 +467,17 @@ function uiSyncOpenUi() {
   $('app').classList.toggle('omode', OPENMODE && !COCKPIT);
   $('app').classList.toggle('ckmode', !!COCKPIT);
   const cur = COCKPIT ? 'cockpit' : OPENMODE ? 'open' : 'expand';
-  // in de cockpit staat Cockpit aan en, als de klikmodus Openen is, ook Openen; de tabstop blijft op Cockpit (een radiogroep, één tabstop)
-  uiOpenBtns.forEach(b => { const m = uiViewModeOf(b), on = m === cur || (!!COCKPIT && m === 'open' && OPENMODE); b.setAttribute('aria-checked', String(on)); b.tabIndex = m === cur ? 0 : -1; });
+  // Een radiogroep heeft precies één aangevinkte knop (aria-checked): de weergave, dus in de cockpit Cockpit, ook als de klikmodus Openen is.
+  // Dat Openen dan óók aan staat, laat data-also zien (zelfde opmaak als aangevinkt, zie head.html) en leest een schermlezer voor (aria-description).
+  const alsoNu = !!COCKPIT && OPENMODE;
+  // wie met toetsen of de O-toets Openen in de cockpit wisselt, hoort het: de aangevinkte radio (Cockpit) verandert niet
+  if (alsoNu !== uiAlsoWas && uiCkWas && COCKPIT) $('srMelding').textContent = alsoNu ? uiOpenAanTxt : uiOpenUitTxt;
+  uiAlsoWas = alsoNu; uiCkWas = !!COCKPIT;
+  uiOpenBtns.forEach(b => {
+    const m = uiViewModeOf(b), on = m === cur, also = !!COCKPIT && m === 'open' && OPENMODE;
+    b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1;
+    if ((b.dataset.also === '1') !== also) { if (also) { b.dataset.also = '1'; b.setAttribute('aria-description', uiOpenAlsoTxt); } else { delete b.dataset.also; b.removeAttribute('aria-description'); } }
+  });
   // Uitstappen krijgt de accentkleur en wordt "Naar buiten" zolang je in de cockpit in de stand Openen zit: dat is dan de weg terug naar het standaardaanzicht
   const uit = !!COCKPIT && OPENMODE, bUit = $('btnCkOut');
   if ((bUit.dataset.hl === '1') !== uit) { bUit.dataset.hl = uit ? '1' : ''; bUit.textContent = uit ? TXT.ckUitOpen : TXT.ckUit; bUit.title = uit ? TXT.ckUitTitelOpen : TXT.ckUitTitel; }
@@ -463,7 +488,7 @@ function uiSyncOpenUi() {
   if ($('openCount').textContent !== txt) $('openCount').textContent = txt;
   const showList = OPENMODE && !COCKPIT && uiOpenListOn;
   if ($('openList').hidden === showList) $('openList').hidden = !showList;
-  if (uiOpenWas !== cur) { uiOpenWas = cur; uiUiChanged(); layoutView(); }
+  if (uiOpenWas !== cur) { uiOpenWas = cur; uiUiChanged(); syncSheetHeight(); layoutView(); }
 }
 
 /* ---------- weergave-bediening ---------- */
