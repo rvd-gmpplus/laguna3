@@ -188,7 +188,7 @@ De gebruiker besliste op 18 oktober 2026 bij de start en tijdens golf 5c-2 (tak 
 | Bewijs D | Alleen bij `vin`, nooit als gekozen uitvoering, hooguit drie per eenheid, eerst opwaarderen via een OEM-pagina. | Keuze van de gebruiker op advies van Fable 5.1 xhigh. | Besloten |
 | Headless-route | Toegestaan en vastgelegd in `docs/onderzoek/databankenrecht.md` paragraaf 12; na de verificatie staat er geen nummer van die route meer in de gegevens. | Keuze van de gebruiker. | Besloten |
 | Renault-catalogus op VIN | Later. | Keuze van de gebruiker. | Uitgesteld |
-| T4 | 1,7 MB raw en 450 kB gzip (was 1,6 MB en 430 kB): de onderdeelnummers brengen de pagina op 1,62 MB raw en 440 kB gzip. | De gebruiker: "mag groter indien nodig". | Besloten |
+| T4 | 1,8 MB raw en 490 kB gzip (was 1,7 MB en 450 kB): na ronde 2 van golf 5n (voorkant, logo's, portierkaarten, stuur, velgen, dashboard) is de pagina 1,71 MB raw en 468 kB gzip. | Besluit van de gebruiker op 21 oktober 2026 (gekozen uit 1,75 MB / 470 kB, 1,8 MB / 490 kB of inkorten). | Besloten |
 
 
 ## Besluiten van 21 oktober 2026 (golf 5n, versie 20)
@@ -200,4 +200,6 @@ De gebruiker besliste op 18 oktober 2026 bij de start en tijdens golf 5c-2 (tak 
 | Motorcode | F4R 813 (zie de rij Motorcode hierboven). | Typeplaatje BT15 en de Renault-catalogus. | Besloten |
 | Typeplaatje | Typegoedkeuring e2*2001/116*0363; toegestane maximummassa 2.017 kg, treinmassa 3.317 kg, vooras 1.160 kg, achteras 1.030 kg; lakcode TED69 (D69 Gris Platine), bekleding CUIR11 (volleder), harmonie HARM01, technisch land TLHOLL (Nederland). Het chassisnummer en het fabricagenummer staan nergens in de repo. | Foto van de gebruiker; betekenis van de codes uit Renault-documentatie en forums (zie `docs/specificaties-en-bronnen.md`). | Besloten |
 | Foto's van de eigen auto | Portierkaarten, stoelen, panoramadak, dashboard, stuur, velg en voorkant naar de foto's van 21 oktober 2026. | Foto's van de gebruiker. | Besloten |
+| T4 | 1,8 MB raw en 490 kB gzip (zie de rij T4 hierboven). | Besluit van de gebruiker. | Besloten |
+| Glasmarkering | Zijruit rechtsvoor: AGC Automotive, E6 43R-00049 (gespiegeld leesbaar op de foto van de passagiersportierkaart). Zijruiten achterportieren: Renault Pilkington AS2 M3236 DOT682, E1 43R-001582. | Foto's van de gebruiker; de plaats van de Pilkington-ruit volgens de gebruiker. | Besloten |
 | Golf 6 | Migratie naar three.js 0.186.1 als ES-module (versie 21). Oude browsers zonder importmap krijgen een melding; publiceren direct na een groene poort en een advisor-pass; de advisor beslist of het beeld gelijkwaardig is; faalt het artefact als kanaal, dan alleen Pages. | Keuzes van de gebruiker. | Besloten |
