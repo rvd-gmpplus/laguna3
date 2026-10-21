@@ -384,12 +384,19 @@ function buildFuel() {
   // klep: schaal die de huid volgt (2 mm over de rand van de opening), met een binnenvlak en vier randen
   const flapZ0 = bodTkZ[0] - 0.002, flapZ1 = bodTkZ[1] + 0.002, flapY0 = bodTkY[0] - 0.002, flapY1 = bodTkY[1] + 0.002, fo = 0.0015, fi = -0.004;
   const flapCrown = (z, t) => 0.005 * Math.sin(PI * (z - flapZ0) / (flapZ1 - flapZ0)) * Math.sin(PI * t);   // licht bol, zoals het scherm
+  // buitenvlak (golf 5n): volgt de huid zonder extra bolling en krijgt de normalen van de huid (bodN, gespiegeld naar rechts). Met de bolling
+  // van 5 mm weken de normalen tot ca. 8 graden af van het scherm eromheen, en de blanke lak spiegelde daardoor een andere strook van de
+  // omgeving: een lichte rechthoek boven de achterwielboog. De binnenzijde houdt de halve bolling (alleen te zien bij een open klep), zodat
+  // de klep in het midden 3 mm dik blijft.
+  const flapSkin = () => { const g = patch((z, t) => tkSkin(z, lerp(flapY0, flapY1, t), fo), flapZ0, flapZ1, 14, () => [0, 1], 12), P3 = g.attributes.position, N = g.attributes.normal;
+    for (let i = 0; i < P3.count; i++) { const e = bodNormalAt(P3.getZ(i), P3.getY(i)), q = [-e[0], e[1], e[2]], o = Math.sign(q[0] * N.getX(i) + q[1] * N.getY(i) + q[2] * N.getZ(i)) || 1; N.setXYZ(i, o * q[0], o * q[1], o * q[2]); }
+    return g; };
   const flapOut = cache('sysFlapRo', () => merge([
-    patch((z, t) => tkSkin(z, lerp(flapY0, flapY1, t), fo + flapCrown(z, t)), flapZ0, flapZ1, 14, () => [0, 1], 12),
+    flapSkin(),
     ...[flapZ0, flapZ1].map(zz => patch((y, t) => tkSkin(zz, y, lerp(fo, fi, t)), flapY0, flapY1, 8, () => [0, 1], 1)),
     ...[flapY0, flapY1].map(yy => patch((z, t) => tkSkin(z, yy, lerp(fo, fi, t)), flapZ0, flapZ1, 10, () => [0, 1], 1)),
   ]));
-  const flapIn = cache('sysFlapRi', () => patch((z, t) => tkSkin(z, lerp(flapY0, flapY1, t), fi + flapCrown(z, t)), flapZ0, flapZ1, 14, () => [0, 1], 12));
+  const flapIn = cache('sysFlapRi', () => patch((z, t) => tkSkin(z, lerp(flapY0, flapY1, t), fi + 0.5 * flapCrown(z, t)), flapZ0, flapZ1, 14, () => [0, 1], 12));
   // tankkom: vier wanden van de rand van de opening naar de bodem en een bodem met de hals
   const tkBowl = cache('sysTankkom', () => merge([
     ...[bodTkZ[0], bodTkZ[1]].map(zz => patch((y, t) => [-lerp(-tkSkin(zz, y, -0.004)[0], tkFloor, t), y, zz], bodTkY[0], bodTkY[1], 8, () => [0, 1], 4)),

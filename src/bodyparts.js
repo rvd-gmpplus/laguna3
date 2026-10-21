@@ -101,6 +101,22 @@ function bodLens3In(m) {
   return m;
 }
 MAT.bodLens3 = bodLens3In(THREE.MeshPhysicalMaterial.prototype.clone.call(MAT.lensRed)); MAT.bodLens3.name = 'bodLens3';
+// lens van het buitendeel van de achterlichten (golf 5n): vanaf de achterbank zag je bij achteroverleunen en opzij buigen de achterkant van
+// de rode lens door de kier tussen hoedenplanksteun, C-stijlbekleding en achterscherm (straalmeting: 10 treffers vanaf achter links, op
+// x 0,71 tot 0,76, y 0,94 tot 0,96, z -2,08 tot -2,16). Wie de lens van binnen ziet, ziet nu het zwarte kunststof lamphuis. Binnen of buiten
+// volgt uit de plaats: de normaal naar de kijker (in beide gangen van het transparante dubbelzijdige materiaal) wijst bij de binnenkant in
+// bovenaanzicht naar een punt op de hartlijn voor de lampen (x 0, z -1,5). Van buiten blijft de lens ongewijzigd rood.
+function bodLensTlIn(m) {
+  m.customProgramCacheKey = () => 'bodLensTl';
+  m.onBeforeCompile = sh => {
+    sh.vertexShader = 'varying vec3 vBodW;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\n\tvBodW = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+    sh.fragmentShader = 'varying vec3 vBodW;\n' + sh.fragmentShader
+      .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n\tvec3 bodNw = (vec4(normal, 0.0) * viewMatrix).xyz;\n\tif (dot(bodNw.xz, vBodW.xz - vec2(0.0, -1.5)) < 0.0) { diffuseColor = vec4(0.03, 0.032, 0.036, 1.0); metalnessFactor = 0.0; roughnessFactor = 0.75; }');
+  };
+  m.clone = function () { return bodLensTlIn(THREE.MeshPhysicalMaterial.prototype.clone.call(this)); };
+  return m;
+}
+MAT.bodLensTl = bodLensTlIn(THREE.MeshPhysicalMaterial.prototype.clone.call(MAT.lensRed)); MAT.bodLensTl.name = 'bodLensTl';
 // portierkaart (golf 5l): donker kunststof van de drager, Dark Carbon-leder van inzet en armsteun, pianozwarte lijsten, zwart vilt in de raamschacht
 std('bodDoorCard', 0x1c1d20, 0, 0.74);
 std('bodDoorLeather', 0x2b2d30, 0, 0.58);
@@ -829,7 +845,7 @@ function buildTaillight(s, deel = 'buiten') {
     P('Lampdrager binnendeel', face(xin + 0.03, xs - 0.03, f0, f3, -0.018, 8, 0.02), MAT.ecu, { d: 'Lampdrager met fittingen en stekker.', ex: [0, 0, 0.1] }),
   ]);
   return A(`Achterlicht ${n}`, { d: 'Slank horizontaal achterlicht in twee delen, verdeeld over de klepnaad. Dit is het vaste deel op het achterscherm met achterlicht, remlicht en knipperlicht (LED-uitstraling): loopt om de afgeronde hoek de flank in en onder de schouder in een punt naar voren. Het deel in de achterklep hangt onder Achterklep als Achterlicht binnendeel en draait met de klep mee.', ex: [s * 0.3, 0.1, -0.5] }, [
-    P('Lens buitendeel', merge([side(-0.003, f2, f3), side(-0.003, f0, f1), face(xs + 0.003, xo, f2, f3, 0.003), face(xs + 0.003, xo, f0, f1, 0.003)]), MAT.lensRed, { d: 'Rode afdeklens met een brede bovenband en een smalle onderstrook, van het staartvlak om de hoek de flank in.', ex: [s * 0.05, 0, -0.06] }),
+    P('Lens buitendeel', merge([side(-0.003, f2, f3), side(-0.003, f0, f1), face(xs + 0.003, xo, f2, f3, 0.003), face(xs + 0.003, xo, f0, f1, 0.003)]), MAT.bodLensTl, { d: 'Rode afdeklens met een brede bovenband en een smalle onderstrook, van het staartvlak om de hoek de flank in.', ex: [s * 0.05, 0, -0.06] }),
     P('Heldere band buitendeel', merge([side(-0.0035, f1, f2), face(xs + 0.003, xo, f1, f2, 0.0035)]), MAT.lensClear, { d: 'Heldere horizontale band in de lens waarachter de knipperlichtunit zit; geeft de witte LED-streep van het fase 2-achterlicht.', ex: [s * 0.07, 0, -0.08] }),
     P('Lichthuis buitendeel', merge([side(0.05, f0, f3), face(xs + 0.01, xo, f0, f3, -0.05, 8, 0.008)]), MAT.plastic, { d: 'Kunststof behuizing met bevestigingsbouten in het achterscherm.', ex: [-s * 0.04, 0, 0.06] }),
     P('LED-print buitendeel', merge([side(0.035, 0.15, 0.85), face(xs + 0.02, xo, f0, f3, -0.035, 8, 0.02)]), MAT.ecu, { d: 'Printplaat met de lampen van achter-, rem- en knipperlicht.', ex: [0, 0, 0.1] }),
@@ -1229,6 +1245,7 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   const fbBr = bodDense(1.752, 1.82, 4).concat(bodDense(2.15, ZF, 16), bodDense(2.235, bodHoodZ1, 8), bodHoodTip);
   // onderste inlaat als echte opening in de bumperschaal (binnen de chromen U), met wanden naar een verzonken rooster
   const inX = 0.462, inY0 = 0.316, inY1 = 0.436, inD = 0.03;
+  const bodLipTop = 0.303;   // hoogste punt van de onderlip: in de rubberlijn onder de chromen inlaatlijst, net onder het chroom (zie Onderlip)
   // stations naar doorbuiging (koorde hoogstens 1 mm, golf 5b-2): de stations voor de neus van de kap en de knikken van de bovenrand
   // (koplamp en kapvoorrand) blijven vast, de overige stations uit fbBr zijn kandidaten; was 56 x 30 gelijke stappen plus fbBr
   const shF = bodSagSide(1.752, ZF, z => [fbLo(z), fbHi(z)], 0.001, { keep: bodHoodTip.concat([bodHLZ0, bodHLZ1, bodHoodZ1]), extra: fbBr, nuF: 240, nvF: 128 });
@@ -1332,8 +1349,13 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     // lip in twee banden: de vlakke onderkant (s 0 tot S1) en de onderste ronding tot 2,2 cm hoog met vier rijen. Eerder vier gelijke rijen
     // over het geheel, waarvan hoogstens één over de ronding: die koorde zakte tot ca. 6 mm, dieper dan de 3 mm afstand tot de huid, zodat
     // de bumperschaal er in de beelden van voren gekarteld wit-zwart doorheen stak (S7, golf 5f ronde 2)
+    // golf 5n: de ronding houdt onder y bodLipTop (0,303) op, met een zacht minimum (breedte 1,5 mm), zodat de bovenrand geen knik krijgt
+    // en op de neus in de zwarte rubberlijn eindigt (lager liet een zilveren strook van de bumperschaal zien).
+    // Op de neus stijgt de onderkant van de bumper steil (YB 0,268 op z 2,30 tot 0,31 op ZF), en de bovenrand YB + 2,2 cm kwam daar tot
+    // y 0,332, door de chromen inlaatlijst (onderkant 0,300) en de rubberlijn eronder (tot 0,294): van voren twee zwarte wiggen op de
+    // chromen onderrand, op x ca. +/-0,06 en +/-0,11
     P('Onderlip', merge([L, R].flatMap(sd => [lowSide(sd, 1.80, ZF, 60, () => [0, S1], 2, bodDense(2.2, ZF, 16), -0.003),
-      lowSide(sd, 1.80, ZF, 60, z => [S1, Math.max(S1 + 1e-4, bodSY(z, YB(z) + 0.022))], 4, bodDense(2.2, ZF, 16), -0.003)])), MAT.plastic, { d: 'Zwarte spoilerlip onder de bumper.', ex: [0, -0.08, 0.06] }),
+      lowSide(sd, 1.80, ZF, 60, z => [S1, Math.max(S1 + 1e-4, bodSY(z, bodLipTop - 0.0015 * Math.log(Math.exp((bodLipTop - YB(z) - 0.022) / 0.0015) + 1)))], 4, bodDense(2.2, ZF, 16), -0.003)])), MAT.plastic, { d: 'Zwarte spoilerlip onder de bumper.', ex: [0, -0.08, 0.06] }),
     // strip 2,5 mm boven de huid met 32 stations (was 14, de randen lazen als zaagtand) en een punt van 6 cm naar voren toe, zodat het
     // voorste eind niet als los wit blokje van de bumper afstaat
     ...both(s => P(`Sierstrip onderlip ${sn(s)}`, lowSide(s, 1.76, 2.15, 32, z => { const w = 0.009 * (0.15 + 0.85 * sstep((2.15 - z) / 0.06)); return [bodSY(z, YB(z) + 0.037 - w), bodSY(z, YB(z) + 0.037 + w)]; }, 1, [], -0.0025), MAT.bodBright, { d: 'Zilveren strip langs de bumperzijde die doorloopt in de dorpelsierlijst.', ex: [s * 0.06, -0.03, 0] })),
