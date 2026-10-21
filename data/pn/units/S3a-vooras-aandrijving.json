@@ -104,7 +104,7 @@
    ],
    [
     "8200929534",
-    "Renault; Bosch 1 986 S00 679 (OE-lijst 8200186148, 8200792969, 8200929534) noemt motorcode F4R 813 en 1,1 kW; een handelaarspagina noemt dit nummer bij Laguna III 2.0 Turbo F4R 813",
+    "Renault; een handelaarspagina noemt dit nummer bij Laguna III 2.0 Turbo F4R 813; vermogen volgens de bronnen 0,9 of 1,1 kW",
     "B"
    ]
   ],
@@ -188,10 +188,10 @@
     "8200929534"
    ],
    "a": [],
-   "v": "Startmotor Bosch 1,1 kW voor F4R 813 (wijkt af van de 0,9 kW van de eenheidsnaam)",
+   "v": "Startmotor Renault 8200929534 (vermogen 0,9 of 1,1 kW: de bronnen verschillen)",
    "b": "B",
    "z": "laag",
-   "g": "Voertuigtype BT15 met motor F4R 813 en bak AJ0 (besluit van de gebruiker van 21 oktober 2026, uit het typeplaatje en de Renault-catalogus). Bosch 1 986 S00 679 (1,1 kW, OE 8200186148, 8200792969 en 8200929534) en Bosch 0 001 107 476 (1,1 kW) noemen motorcode F4R 813 uitdrukkelijk; de 0,9 kW-startmotoren (VALEO 438415 en andere) noemen alleen oudere F4R-codes. Een handelaarspagina koppelt 8200929534 aan Laguna III 2.0 Turbo met F4R 813. Dit is de zwakste keuze: de twee andere nummers van dezelfde Bosch-lijst zijn niet uitgesloten.",
+   "g": "Voertuigtype BT15 met motor F4R 813 en bak AJ0 (besluit van de gebruiker van 21 oktober 2026, uit het typeplaatje en de Renault-catalogus). Bosch 0 001 107 476 (1,1 kW) noemt motorcode F4R 813 uitdrukkelijk (een Bosch-lijst 1 986 S00 679 met dezelfde strekking is gezien, maar niet als bron bewaard); een andere bron geeft voor 8200929534 zelf 0,9 kW; de 0,9 kW-startmotoren (VALEO 438415 en andere) noemen alleen oudere F4R-codes. Een handelaarspagina koppelt 8200929534 aan Laguna III 2.0 Turbo met F4R 813. Dit is de zwakste keuze: de twee andere nummers van dezelfde Bosch-lijst zijn niet uitgesloten.",
    "s": [
     "https://www.autoparts24.fr/oem/0001106024/",
     "https://www.motochemia.pl/czesci/rozrusznik-bosch-0-001-107-476_0030_0001107476.html",

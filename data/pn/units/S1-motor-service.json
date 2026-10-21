@@ -2074,7 +2074,7 @@
     "8200513668"
    ],
    "a": [],
-   "v": "Krukaspositiesensor Renault 8200513668 (Hall of inductief niet vastgesteld)",
+   "v": "Krukaspositiesensor Renault 8200513668, inductief (2-polig) volgens VALEO 366654 en MEYLE 16-14 810 0000; RIDEX noemt een hallsensor",
    "b": "B",
    "z": "middel",
    "g": "Voertuigtype BT15 met motor F4R 813 en bak AJ0 (besluit van de gebruiker van 21 oktober 2026, uit het typeplaatje en de Renault-catalogus). Een toepassingslijst bij Bosch 0 986 280 795 noemt voor Laguna (DT0/1) 2.0 16V Turbo de motorcodes F4R 811 en F4R 813 met OE 8200513668; bij de Laguna III-regels staat alleen 8200513668, niet 8200260327. Of de sensor Hall of inductief is, is niet vastgesteld, dus geen merknummer gekozen.",

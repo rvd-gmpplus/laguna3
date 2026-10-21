@@ -1,5 +1,5 @@
 name: nightly
-# De lange set: itest met poorten, opentest --strikt-min, ui_inner --open --strict en pubsmoke. Richting 1 tot 2 uur op een
+# De lange set: itest met poorten, opentest --strikt-min, de dichte botsingsmeting (opendicht), ui_inner --open --strict en pubsmoke. Richting 1 tot 2 uur op een
 # gedeelde runner met software-rendering. Een rode nachtrun is een melding (issue of bericht), geen stop voor het werk.
 on:
   schedule:

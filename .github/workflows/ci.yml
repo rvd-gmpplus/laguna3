@@ -1,6 +1,6 @@
 name: ci
 # Push-job: lint, index.html hoort bij src/, rooktest, integriteit, silhouet en de budgetpoort. Richting 5 tot 10 minuten.
-# De lange set (itest met poorten, opentest, ui_inner --strict, pubsmoke) draait in nightly.yml.
+# De lange set (itest met poorten, opentest, opendicht, ui_inner --strict, pubsmoke) draait in nightly.yml.
 on:
   push:
     branches: ['**']
