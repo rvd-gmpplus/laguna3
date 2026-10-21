@@ -201,13 +201,13 @@ function uiSetOpenMode(on, inCk) {
 }
 
 /* ---------- cockpit: rondkijken vanaf een zitplaats (golf 5l) ---------- */
-// AUTO.cockpit is optioneel (auto.json): { stoelen: [{ id, label, knoop, oog: [x, y, z], kijk: [yaw, pitch], verberg: [knopen] }],
+// AUTO['cockpit'] is optioneel (auto.json): { stoelen: [{ id, label, knoop, oog: [x, y, z], kijk: [yaw, pitch], verberg: [knopen] }],
 // binnen: [groepen] }.
 // Het veld wordt met haken gelezen: tools/framework.py eist elk veld dat als AUTO-punt-naam in de generieke laag staat, en een auto
 // zonder cockpit toont gewoon geen knop Cockpit. Hoeken in graden: yaw 0 is recht vooruit (+z), positief naar links (+x); pitch
 // positief omhoog. Het oog beweegt binnen de doos uit CFG.cockpit rond de zitplaats (uiCk.off, in het autoframe).
 // Ingang: alles gemonteerd (preset assembled met keepOpen: openers blijven), geen isolatie, dimmen of röntgen; de ingesloten
-// delen onder AUTO.cockpit.binnen worden getekend (uiCkShow, app1.js). In de cockpit geldt needs niet (uiSetOpen, app1.js): het
+// delen onder AUTO['cockpit'].binnen worden getekend (uiCkShow, app1.js). In de cockpit geldt needs niet (uiSetOpen, app1.js): het
 // dashboardkastje gaat open zonder eerst een portier. Uitgang: camera, doel, gezichtsveld en near/far exact terug.
 const UI_CK = (() => { const c = AUTO['cockpit']; return c && Array.isArray(c.stoelen) && c.stoelen.length ? c : null; })();
 const uiCkSeats = UI_CK ? UI_CK.stoelen : [];
@@ -318,7 +318,7 @@ function uiCkCloseInside(instant) {
     for (const n of OPENERS) if (n.ot > 0 && n.opn.needN && n.opn.needN.ot === 0) { uiSetOpen(n, 0, instant); more = true; }
   }
 }
-// de ingesloten knopen die in de cockpit zichtbaar zijn: alles met inner onder de groepen van AUTO.cockpit.binnen
+// de ingesloten knopen die in de cockpit zichtbaar zijn: alles met inner onder de groepen van AUTO['cockpit'].binnen
 function uiCkInner() {
   const set = new Set();
   for (const ref of UI_CK.binnen || []) {

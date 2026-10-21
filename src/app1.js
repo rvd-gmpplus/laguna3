@@ -445,7 +445,7 @@ function uiInScope(a) { return !ISO.length || ISO.some(r => isUnder(a, r)); }
 // een open opener (de ouder zelf of een broer) legt de ingesloten delen van die ouder bloot
 const uiOpenNear = (p, fin) => (fin ? p.ot : p.ou) > 0 || p.kids.some(k => k.opn && (fin ? (k.opn.lead ? k.opn.lead.ot : k.ot) : k.ou) > 0);
 // fin: in de eindstand (na alle lopende animaties; voor camera en kaders), anders de stand van nu (golf 5c-2, K3: was ook uiPredHidden)
-// in de cockpit zie je de cabine van binnen: de ingesloten knopen onder AUTO.cockpit.binnen (uiCkShow) blijven dan zichtbaar
+// in de cockpit zie je de cabine van binnen: de ingesloten knopen onder AUTO['cockpit'].binnen (uiCkShow) blijven dan zichtbaar
 function uiInnerHidden(n, fin = false) { const p = n.parent; return !!(n.inner && p && p.target === 0 && (fin || p.amt < 1e-4) && uiInScope(p) && !uiOpenNear(p, fin) && !(uiCkShow && uiCkShow.has(n))); }
 function applyVisibility() {
   const onPath = new Set();
