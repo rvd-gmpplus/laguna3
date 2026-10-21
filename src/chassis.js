@@ -5,7 +5,8 @@
 const chsMF = TRACK_F + 0.047, chsMR = TRACK_R + 0.047;
 std('chsCaliper', 0x5c6168, 0.55, 0.5);
 std('chsSpring', 0x25272a, 0.55, 0.5);
-std('chsRimFace', 0xd3d7dc, 0.92, 0.2, { envMapIntensity: 1.2 });
+// velgster: grijs zilvermetallic, iets donkerder en minder spiegelend dan blank aluminium (foto van de auto, reparatieronde 2 golf 5n)
+std('chsRimFace', 0xa2a7ad, 0.85, 0.3, { envMapIntensity: 1.1 });
 std('chsRimWell', 0x6b7077, 0.65, 0.5);
 const chsSP = V3(0.64, 0.40, AXF), chsSD = V3(-0.2, 0.975, -0.03).normalize();   // veerpoot: fuseeklem en richting
 function chsMat(p, r) { return new THREE.Matrix4().compose(V3(...p), new THREE.Quaternion().setFromEuler(new THREE.Euler(...r)), V3(1, 1, 1)); }
@@ -22,6 +23,28 @@ function chsDiamond(h, w, k, t) {
     const g = new THREE.ExtrudeGeometry(o, { depth: t - 2 * b, bevelEnabled: true, bevelThickness: b, bevelSize: b * 0.7, bevelSegments: 1, curveSegments: 1 });
     g.computeBoundingBox(); g.translate(0, 0, -g.boundingBox.min.z);
     return g;
+  });
+}
+// verchroomde Renault-ruit op het airbagdeksel (foto van de auto: spiegelend chroom, zoals de ruit voor op de kap)
+std('chsBadge', 0xd0d6dc, 1, 0.04, { envMapIntensity: 2.0 });
+// Renault-ruit met holle vlakken: elke zijde heeft twee schuine vlakken van de buiten- en binnenrand (hoogte t) naar een lagere
+// middellijn (hoogte t * 0,55), met een buiten- en binnenwand en een achtervlak op z = 0 (gesloten). Zo vangt elk vlak een ander deel
+// van de omgevingskaart en leest de ruit als chroom; een vlak voorvlak spiegelt overal hetzelfde en oogt mat. h hoogte, w breedte,
+// k verhouding van de binnenrand.
+function chsLosange(h, w, k, t) {
+  return cache(`chsLos${h}|${w}|${k}|${t}`, () => {
+    const R4 = f => [[0, h / 2 * f], [-w / 2 * f, 0], [0, -h / 2 * f], [w / 2 * f, 0]];   // tegen de klok in
+    const O = R4(1), I = R4(k), M = R4((1 + k) / 2), tm = t * 0.55, pos = [];
+    const quad = (p, q, r, u) => pos.push(...p, ...q, ...r, ...p, ...r, ...u);
+    for (let i = 0; i < 4; i++) {
+      const j = (i + 1) % 4, L = (Q, i0, z) => [Q[i0][0], Q[i0][1], z];
+      quad(L(O, i, t), L(O, j, t), L(M, j, tm), L(M, i, tm));
+      quad(L(M, i, tm), L(M, j, tm), L(I, j, t), L(I, i, t));
+      quad(L(O, i, 0), L(O, j, 0), L(O, j, t), L(O, i, t));
+      quad(L(I, i, t), L(I, j, t), L(I, j, 0), L(I, i, 0));
+      quad(L(O, i, 0), L(I, i, 0), L(I, j, 0), L(O, j, 0));
+    }
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.computeVertexNormals(); return g;
   });
 }
 // spaakarm met hol, gefacetteerd profiel: stations {c: middelpunt in het wielvlak, n: eenheidsvector dwars op de arm, w: breedte}.
@@ -403,7 +426,7 @@ function buildFrontAxle() {
         sh.moveTo(q[0].x, q[0].y); sh.splineThru([...q.slice(1), q[0]]);
         const g = new THREE.ExtrudeGeometry(sh, { depth: 0.004, bevelEnabled: true, bevelThickness: 0.006, bevelSize: 0.005, bevelSegments: 3, curveSegments: 3 });
         g.translate(0, 0, -0.002); g.deleteAttribute('normal'); g.deleteAttribute('uv'); return creasedWeld(g, 0.6); }), MAT.chsWheelLeather, { d: 'Scheurdeksel van de airbag: een groot, bol kussen van circa 20 x 15 cm, bovenaan breed en afgerond, onderaan smaller, zwart met de Renault-ruit in het midden (foto van de auto); drukken erop bedient de claxon.', p: [0, 0, 0.034], ex: [0, 0, 0.1] }),
-      P('Stuurwiellogo', chsDiamond(0.046, 0.036, 0.42, 0.006), MAT.chrome, { d: 'Verchroomde Renault-ruit in reliëf midden op het airbagdeksel, circa 4,6 cm hoog (foto van de auto).', p: [0, -0.004, 0.0415], ex: [0, 0, 0.16] }),
+      P('Stuurwiellogo', chsLosange(0.046, 0.036, 0.42, 0.006), MAT.chsBadge, { d: 'Verchroomde, spiegelende Renault-ruit in reliëf midden op het airbagdeksel, circa 4,6 cm hoog, met holle vlakken (foto van de auto).', p: [0, -0.004, 0.0415], ex: [0, 0, 0.16] }),
       P('Naafkap', cache('chsHubWall', () => { const sh = shapeOf(wShield.map(([x, y]) => [x * 0.95, y * 0.95])); sh.holes.push(new THREE.Path(wShield.map(([x, y]) => new THREE.Vector2(x * 0.88, y * 0.88)))); return front(sh, 0.03); }), MAT.chsWheelLeather, { d: 'Wand van de naaf achter het airbagdeksel; daarbinnen zitten de airbag en de gasgenerator.', p: [0, 0, 0.012], ex: [0, 0, 0.07] }),
       P('Airbag', chsRb(0.13, 0.095, 0.026, 0.01), MAT.fabric, { d: 'Opgevouwen nylon airbag die bij een ongeval opblaast.', p: [0, -0.004, 0.012], ex: [0, 0, 0.05] }),
       P('Gasgenerator', G.cyl('z', 0.036, 0.036, 0.028, 18), MAT.darkSteel, { d: 'Gasgenerator met twee ontstekers.', p: [0, -0.012, -0.012], ex: [0, 0, -0.02] })]),
@@ -454,9 +477,11 @@ function buildWheel(s, front) {
   const tire = G.lathe('x', [[0.2286, -0.103], [0.248, -0.111], [0.29, -0.1135], [0.312, -0.109], [0.324, -0.098], [0.329, -0.083], [0.33, -0.078], [0.33, -0.058], [0.3265, -0.058], [0.3265, -0.046], [0.33, -0.046],
     [0.33, -0.016], [0.3265, -0.016], [0.3265, -0.006], [0.33, -0.006], [0.33, 0.006], [0.3265, 0.006], [0.3265, 0.016], [0.33, 0.016], [0.33, 0.046], [0.3265, 0.046], [0.3265, 0.058], [0.33, 0.058], [0.33, 0.078], [0.329, 0.083], [0.324, 0.098], [0.312, 0.109], [0.29, 0.1135], [0.248, 0.111], [0.2286, 0.103]], 64, 'chsTire');
   const rimB = cache('chsRimBarrel', () => yTo(new THREE.LatheGeometry([[0.2286, -0.106], [0.236, -0.108], [0.236, -0.103], [0.229, -0.098], [0.222, -0.088], [0.205, -0.07], [0.205, 0.04], [0.214, 0.085], [0.226, 0.092], [0.236, 0.098], [0.236, 0.106], [0.2286, 0.106]].map(p => new THREE.Vector2(...p)), 72), 'x'));
-  // sterwerk (foto van de auto): tien dubbele spaken. Elk paar vertrekt als één voet uit de naafzone (vijf voeten in het verlengde van
-  // de bouten, vijf ertussen) en splitst in twee holle, gefacetteerde armen die naar de velgrand uit elkaar lopen en daar iets
-  // verbreden. Het achtervlak volgt dezelfde schotel als de vorige spaken (zb: achtervlak 0,064 op straal 0,06, 16 procent oplopend).
+  // sterwerk (foto van de auto): tien V-spaken. Elk paar vertrekt als één brede voet uit de naafzone (vijf voeten in het verlengde van
+  // de bouten, vijf ertussen) en splitst in twee holle, gefacetteerde armen die naar de velgrand uit elkaar lopen en daar verbreden.
+  // Reparatieronde 2 golf 5n (advisor, naar de foto): armen van 2,5 cm aan de voet tot 4,0 cm bij de rand en 5,0 cm in de rand (was 1,8
+  // tot 3,1 en 4,0), uiteinden 0,12 rad naast de as van het paar (was 0,1), groef 6 mm diep (was 4). Bij de velgrand (straal 0,2) is
+  // de wig binnen een V circa 1 cm breed en de driehoek tussen twee V's circa 3,5 cm, zodat de tien V's als groepen lezen. Het achtervlak volgt dezelfde schotel als de vorige spaken (zb: achtervlak 0,064 op straal 0,06, 16 procent oplopend).
   // Gemeten met clash.py (golf 5n): de armen zelf houden achter minstens 12,3 mm en voor 18,3 mm tot het remklauwhuis; de kleinste
   // afstand van de velgster tot het remklauwhuis achter zit aan de rand van de naafplaat (straal 0,08); de plaat begint daarom op
   // z 0,059, net boven de centreerkraag, op een bodem van 12 mm op het montagevlak (daarvoor 0,056: 6,2 mm marge).
@@ -475,19 +500,19 @@ function buildWheel(s, front) {
       const th = p * PI / 5, u = [-Math.sin(th), Math.cos(th)], m = [-Math.cos(th), -Math.sin(th)];   // as van het paar en dwarsrichting (tegen de klok in)
       for (const s of [-1, 1]) {
         const r0 = p % 2 ? 0.046 : 0.074;   // tussen de bouten loopt de voet door tot bij de naafdop, in het verlengde van een bout begint hij voorbij de put
-        const ph = th + s * 0.1, R0 = [r0 * u[0] + s * 0.004 * m[0], r0 * u[1] + s * 0.004 * m[1]], T = [-0.224 * Math.sin(ph), 0.224 * Math.cos(ph)];
+        const ph = th + s * 0.12, R0 = [r0 * u[0] + s * 0.004 * m[0], r0 * u[1] + s * 0.004 * m[1]], T = [-0.224 * Math.sin(ph), 0.224 * Math.cos(ph)];
         const dx = T[0] - R0[0], dy = T[1] - R0[1], l = Math.hypot(dx, dy), n = [-dy / l, dx / l];
-        list.push(chsArm([[0, 0.018], [0.3, 0.021], [0.88, 0.031], [1, 0.04]].map(([f, w]) => ({ c: [R0[0] + dx * f, R0[1] + dy * f], n, w })), 0.018, 0.004, zb));
+        list.push(chsArm([[0, 0.025], [0.3, 0.031], [0.88, 0.04], [1, 0.05]].map(([f, w]) => ({ c: [R0[0] + dx * f, R0[1] + dy * f], n, w })), 0.018, 0.006, zb));
       }
     }
     return zTo(merge(list), 'x');
   });
   const a = 0.7, wa = [2.1, 4.3];
-  return A(`Wiel ${n}`, { d: 'Lichtmetalen velg met tien dubbele spaken (twintig armen in V-paren, foto van de auto) en een Michelin-band 225/45 R18. Maat: 18 inch met 225/45 R18, zoals op de auto van de gebruiker (waargenomen); in Nederland bij de Initiale een optie, onder meer in het Pack Lumière (panoramadak plus 18 inch, tot 31 januari 2011), standaard was 17 inch. Het velgontwerp is aannemelijk de 18 inch Celsium (7,5J x 18, ET 47), maar voor deze auto niet bevestigd.', p: [s * tr, AY, z], s: [s, 1, 1], spec: [['Band', '225/45 R18'], ['Steekcirkel', '5 × 114,3 mm'], ['Bevestiging', '5 wielbouten M14 × 1,5'], ['Middengat', 'Ø66,1 mm'], ['Bandenspanningssensor', 'in het ventiel']], ex: [s * 1.05, -0.1, front ? 0.55 : -0.65] }, [
+  return A(`Wiel ${n}`, { d: 'Lichtmetalen velg in grijs zilvermetallic met tien brede V-spaken (twintig armen in V-paren, foto van de auto) en een Michelin-band 225/45 R18. Maat: 18 inch met 225/45 R18, zoals op de auto van de gebruiker (waargenomen); in Nederland bij de Initiale een optie, onder meer in het Pack Lumière (panoramadak plus 18 inch, tot 31 januari 2011), standaard was 17 inch. Het velgontwerp is aannemelijk de 18 inch Celsium (7,5J x 18, ET 47), maar voor deze auto niet bevestigd.', p: [s * tr, AY, z], s: [s, 1, 1], spec: [['Band', '225/45 R18'], ['Steekcirkel', '5 × 114,3 mm'], ['Bevestiging', '5 wielbouten M14 × 1,5'], ['Middengat', 'Ø66,1 mm'], ['Bandenspanningssensor', 'in het ventiel']], ex: [s * 1.05, -0.1, front ? 0.55 : -0.65] }, [
     P('Band', tire, MAT.rubber, { d: 'Radiaalband 225/45 R18 met vier lengtegroeven in het loopvlak (profiel schematisch, gladde schouder; het opschrift op de wang is niet gemodelleerd). Merk Michelin: gelezen op de wang van één wiel op de foto van de auto; voor de andere drie wielen aangenomen.', spec: [['Merk', 'Michelin (waargenomen op één wiel)'], ['Maat', '225/45 R18']], ex: [-0.07, 0, 0] }),
     P('Velgbed', rimB, MAT.chsRimWell, { d: 'Velgbed (ton) van gegoten aluminium met de wulpen waarop de band zit.', ex: [0.02, 0, 0] }),
-    P('Velgster', star, MAT.chsRimFace, { d: 'Sterwerk met tien dubbele spaken: elk paar vertrekt als één voet uit de naafzone en splitst in twee holle, gefacetteerde armen die naar de velgrand uit elkaar lopen, met grote driehoekige openingen tussen de paren en smalle wiggen binnen een paar. De vijf wielbouten zitten verzonken in ronde putten in de naafzone (foto van de auto; twintig armen waargenomen, profiel geschat).', ex: [0.1, 0, 0] }),
-    ...[0, 1, 2, 3, 4].map(k => P(`Wielbout ${k + 1}`, hexBolt(0.05, 0.0145, '-x'), MAT.steel, { d: 'Wielbout M14 × 1,5 met conische zitting, verzonken in een put van de velg; klemt het wiel en de schijf op de naaf.', p: [0.059, 0.0572 * Math.cos(k * PI * 0.4), 0.0572 * Math.sin(k * PI * 0.4)], ex: [0.26, 0, 0] })),
+    P('Velgster', star, MAT.chsRimFace, { d: 'Sterwerk in grijs zilvermetallic met tien brede V-spaken: elk paar vertrekt als één voet uit de naafzone en splitst in twee holle, gefacetteerde armen die naar de velgrand uit elkaar lopen en daar verbreden, met driehoekige openingen tussen de V\'s en smalle wiggen binnen een V. De vijf wielbouten zitten verzonken in ronde putten in de naafzone (foto van de auto; twintig armen waargenomen, profiel geschat).', ex: [0.1, 0, 0] }),
+    ...[0, 1, 2, 3, 4].map(k => P(`Wielbout ${k + 1}`, hexBolt(0.011, 0.0145, '-x'), MAT.steel, { d: 'Wielbout M14 × 1,5 met conische zitting, verzonken in een put van de velg; klemt het wiel en de schijf op de naaf. De steel is getoond tot net boven het montagevlak: schijf en naaf hebben in het model geen draadgaten.', p: [0.059, 0.0572 * Math.cos(k * PI * 0.4), 0.0572 * Math.sin(k * PI * 0.4)], ex: [0.26, 0, 0] })),
     // naafdop als kapje: kraag Ø62 mm (foto) rust op het voorvlak van de naafplaat (z 0,078) en dekt de rand van het gat (Ø60) af,
     // de klemrand (Ø53 mm, 0,5 mm vrij van de gatwand) steekt 12 mm in het gat; van binnen hol, vrij van de asmoer
     P('Naafdop', G.lathe('x', [[0, 0.0815], [0.029, 0.0815], [0.031, 0.0795], [0.031, 0.078], [0.0265, 0.078], [0.0265, 0.066], [0.0245, 0.066], [0.0245, 0.0795], [0, 0.0795]], 32, 'chsCap3'), MAT.satin, { d: 'Vlakke zilverkleurige afdekkap van het velgcentrum, circa Ø62 mm, met een klemrand in het gat van de naafplaat (foto van de auto; bevestiging geschat).', ex: [0.36, 0, 0] }),
