@@ -260,9 +260,17 @@ De kolom "Na golf 1" is de tussenstand van 13 oktober 2026 rond 11:30 UTC, ongew
 | `ui_inner.py` | bestond nog niet | 0 eerste treffers op 256 ingesloten knopen (na golf 2 waren het er 52) | 0 eerste treffers op 256 ingesloten knopen | 0 eerste treffers op 253 ingesloten knopen (39.200 stralen op de hele auto, 20.000 per hoofdgroep). Op `ff42dbd` hetzelfde |
 | URL na publicatie gelijk aan `index.html` | niet van toepassing | Gelijk. Versie 2 van de URL, teruggelezen op 13 oktober om 17:00 UTC, bevat `index.html` van `8095a3e` (618.341 bytes, md5 `dc2bc3b0…`) precies één keer en aaneengesloten. Daaromheen staan alleen het vaste paginaskelet van de host (531 bytes: doctype, charset, viewport en basisstijl tot en met `<body>`) en de afsluiting `</body></html>` (15 bytes). | Gelijk. Versie 3 van de URL, teruggelezen op 13 oktober om 17:37 UTC, bevat `index.html` van `60909fe` (620.025 bytes, md5 `d92a8bb2…`) precies één keer en aaneengesloten, met hetzelfde paginaskelet ervoor (531 bytes) en dezelfde afsluiting erna (15 bytes). | Gelijk. Versie 4 van de URL bevat `index.html` uit `ec92a53` (commit `9c03015`, 663.654 bytes, md5 `70b2e62a426312ec788fc851086ab4c6`) precies één keer, met alleen het paginaskelet van de host eromheen (531 bytes ervoor, 15 erna). Versie 5, gepubliceerd op 14 oktober en teruggelezen om 00:02 UTC, bevat `index.html` uit `ff42dbd` (commit `5b6cefa`, 678.887 bytes, md5 `649cbf95397d877f6a361600c42a4afd`) precies één keer en byte voor byte gelijk, met hetzelfde skelet (531 bytes ervoor, 15 erna) |
 
-## Resultaten golf 5n (21 oktober 2026), tak `golf-5n` (versie 20, gebouwd, nog niet gepubliceerd)
+## Resultaten golf 5n (21 oktober 2026), tak `golf-5n` (versie 20, gepubliceerd)
 
-Stand: tip `cee8ac3`. Wat er in de testlaag is veranderd staat hierboven: de dichte botsingsmeting `opendicht` als vaste poort (sectie `opentest.py` en `finaltests.sh`), itest-controle 25 en de uitbreiding van controle 23, en de vier robuustere itest-controles (14, 18, 20 en 24). De uitslag van de strikte set op macOS en in de Linux-VM (inclusief visdiff en de dichte botsingsmeting), de zwaaimeting en het advisor-oordeel op de eindstand staan hier nog niet: de orkestrator vult ze aan bij de publicatie van versie 20. De kerncijfers (boom, driehoeken, tekenopdrachten, paginagrootte van de testbouw) staan in [cijfers.md](cijfers.md).
+Stand: tip `cee8ac3`. Wat er in de testlaag is veranderd staat hierboven: de dichte botsingsmeting `opendicht` als vaste poort (sectie `opentest.py` en `finaltests.sh`), itest-controle 25 en de uitbreiding van controle 23, en de vier robuustere itest-controles (14, 18, 20 en 24). Uitslag op de eindstand: De kerncijfers (boom, driehoeken, tekenopdrachten, paginagrootte van de testbouw) staan in [cijfers.md](cijfers.md).
+
+| Test | Uitslag |
+|---|---|
+| Volledige set in de Linux-VM op `cee8ac3` | alles groen behalve visdiff (bedoelde veranderingen van interieur, onderstel en voorkant): itest 355 van 355, `opendicht` 0 doordringingen (316 s), ankerpoort ok |
+| Linux-basislijn | vernieuwd in `84c9179` uit de VM-presets van `cee8ac3`: 42 van 42 binnen de drempel |
+| Volledige set op macOS op `84c9179` | alles groen behalve visdiff tegen de Linux-basislijn (0 van 42, bekende ruis, zie hierboven): itest 355 van 355, `opendicht` 0 |
+| Advisor | Fable 5.1 xhigh (interieur en carrosserie): pass in ronde 1 en 2, basislijn goedgekeurd; Opus 5.5 high (app en nummers): licht bijsturen, verwerkt in `6990467` |
+| Publicatie | `cfbed99`, Pages en artefact (versie 22) byte voor byte teruggelezen, tag `v20` |
 
 
 ## Resultaten golf 5c-2 (18 en 19 oktober 2026), tak `golf-5c2` (versie 11, gebouwd)

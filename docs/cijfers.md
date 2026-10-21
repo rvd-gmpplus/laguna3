@@ -53,7 +53,7 @@ Gegenereerd door `tools/orkestratie/cijfers.py` uit `stats.json` op 2026-10-21, 
 
 Deze tijden zeggen niets over een echt apparaat; zie `docs/telefoontest.md`.
 
-## Pagina (testbouw van `cee8ac3`, versie 20, nog niet gepubliceerd)
+## Pagina (versie 20, gepubliceerd)
 
 Deze sectie komt niet uit `cijfers.py` en is met de hand toegevoegd; bij het opnieuw genereren moet ze terug. Gemeten met `python3 build.py --test-only MAP`, dus zonder `index.html` te overschrijven. De publicatiecijfers (de echte bouw met stempel) vult de orkestrator na de publicatie aan in `CHANGELOG.md`.
 
@@ -61,4 +61,6 @@ Deze sectie komt niet uit `cijfers.py` en is met de hand toegevoegd; bij het opn
 |---|---|
 | `index.html` (testbouw), raw | 1.720.061 bytes |
 | `index.html` (testbouw), `gzip -6` | 471.958 bytes |
+| `index.html` (gepubliceerd, stempel "20 (bron 30d1c8a)"), raw | 1.720.222 bytes |
+| `index.html` (gepubliceerd), `gzip -6` | 471.968 bytes |
 | Grens T4 | 1,8 MB raw en 490 kB gzip (MB = 10^6 bytes; zie `docs/masterplan.md`, struikeldraad T4) |

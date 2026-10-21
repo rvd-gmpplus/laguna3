@@ -1,29 +1,21 @@
 # Handomdraai laguna3
 
-## Overdracht voor de volgende sessie (21 oktober 2026, na golf 5n; versie 20 is gebouwd en nog niet gepubliceerd)
+## Overdracht voor de volgende sessie (21 oktober 2026, na golf 5n; versie 20 is gepubliceerd)
 
 ### Waar alles staat
-- **Gepubliceerd:** nog steeds versie 19.
-  - Tag `v19` op `3bd5b51`; daarna alleen docs op `main`.
-  - Pages: https://rvd-gmpplus.github.io/laguna3/ (md5 `2c4461ba5340c8a0a324b02df772148a`).
-  - Artefact versie 21: https://claude.ai/artifact/4qJq7YUk5nGSFmexY7WkZR.
-- **Versie 20 (golf 5n):** gebouwd op de tak `golf-5n` (`VERSION` 20, tip van de code `cee8ac3`, daarna deze docs-commit) en **nog niet gepubliceerd**.
-  - Publicatie, terugleescontrole (Pages en artefact byte voor byte) en tag `v20` volgen.
-  - De orkestrator vult na de publicatie aan: de commit, het tijdstip, de md5, de artefactversie en de rij in `CHANGELOG.md`.
-  - `index.html` in de tak is nog de bouw van versie 19 (stempel "19 (bron aa7048c)"). Herbouw met `python3 build.py` na de laatste samenvoeging en de volledige set, dan pas publiceren.
-  - De paginagrootte van de testbouw staat in `docs/cijfers.md`, sectie Pagina.
+- **Gepubliceerd:** versie 20 (golf 5n), 21 oktober 2026 om 18:08 UTC.
+  - `main` fast-forward `8d3a028..cfbed99`, tag `v20` op `cfbed99`, stempel "20 (bron 30d1c8a)".
+  - Pages: https://rvd-gmpplus.github.io/laguna3/ (1.720.222 bytes, md5 `0a78fa2fd6c1b320371462df24900e02`), byte voor byte teruggelezen.
+  - Artefact versie 22: https://claude.ai/artifact/4qJq7YUk5nGSFmexY7WkZR (kale pagina 1.720.046 bytes, md5 `495033add1d929880cad98b5af61a51e`, 531 bytes geraamte ervoor en 15 erna), byte voor byte teruggelezen.
+  - De nightly op `main` moet na de publicatie opnieuw draaien; een rode nightly is een melding, geen stop.
 - **Werkplek:** de worktree `.claude/worktrees/golf-5n`; de domeintakken `golf-5n-app`, `-pn`, `-int`, `-dash`, `-carr`, `-deur` en `-chs` zijn samengevoegd in `golf-5n`. Begin met `git ls-remote --heads origin` en een vergelijking van elke tak met `main`.
 - **Linux-tests:** `tools/lag3-vm.sh test --repo "$PWD"`, met een tijdelijke container per run.
   - Uitvoer in `~/.cache/explosietekening/lag3-vm/out/ft-laguna3-<commit>`.
   - Containers van andere sessies (`s26u-linux:1`, `explosie-test:1`) niet aanraken.
 
 ### Volgende stappen (in deze volgorde)
-1. **Publicatie van versie 20.**
-   - Eindstand: `index.html` herbouwen, de volledige set op macOS en Linux (nu met de poort `opendicht`), visdiff op Linux, zwaaimeting van de openers tegen `main`, advisor-oordeel pass.
-   - Visdiff: de beelden van interieur, onderstel en voorkant zijn inhoudelijk veranderd; beoordeel de verschillen en vernieuw de Linux-basislijn waar ze bedoeld zijn. Niet beoordeeld in deze docs-ronde.
-   - Daarna `main` fast-forward, Pages en artefact teruglezen, tag `v20`, en `CHANGELOG.md`, deze handomdraai en `docs/cijfers.md` aanvullen.
-2. **espace5:** `python3 tools/framework.py export` van de cockpit en van de testpoort `opendicht`, de volledige set draaien en publiceren. Eerdere afspraak: vraag eerst toestemming voor het publiceren van espace5.
-3. **Golf 6:** three.js 0.186.1 als ES-module, versie 21. De besluiten staan in `docs/onderzoek/beslissingen.md`, rij Golf 6, en in `docs/masterplan.md`, sectie Golf 6. Het plan van de spike stond in het scratchpad en is niet in de repo bewaard.
+1. **espace5:** `python3 tools/framework.py export` van de cockpit en van de testpoort `opendicht`, de volledige set draaien en publiceren. Eerdere afspraak: vraag eerst toestemming voor het publiceren van espace5.
+2. **Golf 6:** three.js 0.186.1 als ES-module, versie 21. De besluiten staan in `docs/onderzoek/beslissingen.md`, rij Golf 6, en in `docs/masterplan.md`, sectie Golf 6. Het plan van de spike stond in het scratchpad en is niet in de repo bewaard.
 
 ### Wat golf 5n deed
 - **Foto's van de eigen auto:** portierkaarten, raamkader binnen, stoelen, hoofdsteunnaden, schermgreep van het panoramadak, dashboard en console (twaalf punten), zijroosters, keuzehendel, dakgrepen, stuur, velg met tien Y-spaken, naafdop, band, voorkant, achterlichtlens en tankklep. Per onderdeel: `CHANGELOG.md` (versie 20) en `docs/masterplan.md`, sectie Golf 5n.
@@ -72,7 +64,7 @@
 - Een golf zonder geometriewijziging (alleen app, tekst of nummers) heeft geen zwaaimeting nodig. Controleer dat met `git diff --stat vN HEAD -- src/`.
 - Na elke commit van een agent: `git diff --stat` om te zien dat geen bestand leeg of afgekapt is.
 
-Stand 21 oktober 2026, golf 5n: versie 20 (foto's van de eigen auto, Renault-ruit, F4R 813 zeker, poort `opendicht`) is gebouwd op de tak `golf-5n` en nog niet gepubliceerd; publicatie, terugleescontrole en tag `v20` volgen. Open punten: zie `docs/masterplan.md`, golf 5n. Volgende: publicatie van versie 20, espace5, dan golf 6 (three.js 0.186.1, versie 21).
+Stand 21 oktober 2026, golf 5n: versie 20 (foto's van de eigen auto, Renault-ruit, F4R 813 zeker, poort `opendicht`) is gepubliceerd (`main` fast-forward `8d3a028..cfbed99`, tag `v20`, artefactversie 22, Pages byte voor byte teruggelezen). Open punten: zie `docs/masterplan.md`, golf 5n. Volgende: espace5, dan golf 6 (three.js 0.186.1, versie 21).
 
 Stand 20 oktober 2026, golf 5m: versie 19 (paneel slepen, Openen in de cockpit, onderdeelnummers) is gepubliceerd (`main` fast-forward `6192326..3bd5b51`, tag `v19`, artefactversie 21, Pages byte voor byte teruggelezen). Open punten: zie `docs/masterplan.md`, golf 5m.
 
@@ -112,7 +104,7 @@ Stand van de live versie, 17 oktober 2026: versie 10 (golf 5b-3) is gepubliceerd
 
 ## Wat werkt
 
-- Golf 5n (21 oktober 2026; versie 20, gebouwd op de tak `golf-5n`, nog niet gepubliceerd; details in [docs/masterplan.md](docs/masterplan.md), sectie Golf 5n, en [CHANGELOG.md](CHANGELOG.md)): het model naar de foto's van de eigen auto (portierkaarten, stoelen, dashboard, stuur, velg, voorkant), de Renault-ruit op neus, achterklep, stuur en naafdoppen, F4R 813 zeker, doordringingen bij het openen opgelost en de dichte botsingsmeting `opendicht` als vaste poort.
+- Golf 5n (21 oktober 2026; versie 20, gepubliceerd, tag `v20`; details in [docs/masterplan.md](docs/masterplan.md), sectie Golf 5n, en [CHANGELOG.md](CHANGELOG.md)): het model naar de foto's van de eigen auto (portierkaarten, stoelen, dashboard, stuur, velg, voorkant), de Renault-ruit op neus, achterklep, stuur en naafdoppen, F4R 813 zeker, doordringingen bij het openen opgelost en de dichte botsingsmeting `opendicht` als vaste poort.
 - Boom, driehoeken per hoofdgroep, tekenopdrachten en ingesloten knopen: zie [docs/cijfers.md](docs/cijfers.md) (sinds fase 3 van golf 5b-3 opnieuw gemeten; de opstarttijden komen van de Mac, niet van de container). Sinds golf 5b-2 heeft de Carrosserie weer marge (G1).
 - Vervolgronde 5g (19 oktober 2026; versie 13, gepubliceerd op 19 oktober 2026, tag `v13`; details in [docs/masterplan.md](docs/masterplan.md), sectie Vervolgronde 5g): de accu links achter in de motorruimte boven de automaat met de zekeringkast op de accubak (`src/systems.js`; luchtfilterhuis 3 cm naar voren en ingekort, aanzuigslang, resonator, hete laadluchtslang, brandstofleiding, accukabels verlegd (stuurslangen: alleen tekst)), de velgtekst en de multiriemtekst naar de waarnemingen en de catalogus, de motorkapcommentaar, `VERSION` 13.
 - Golf 5f en 5e (19 oktober 2026; versie 12, gepubliceerd; details in [docs/masterplan.md](docs/masterplan.md), sectie Golf 5f en 5e): carrosserie in drie rondes en een advisor-ronde (B-stijl mat zwart en breder, staartvlak dat naar voren helt, bumperpunt afgerond, uitlaateinden in een inham in de bumper, randen voor zonder kartels, achterste dakglas zonder lichtvlek, spiegelvoet, afgeronde binnendelen van het achterlicht, klepscharnierblad achter het scharnierblok, rechte zijnaden van de achterklep), kaartlezer en startknop in het dashboard, voorportier 67 graden, velgtekst, ATF Elfmatic J6, de uitklapanimatie met een begrensde trap (`CFG.tijd.staffel*`), en `LAG3_GPU=1` in de harness voor beelden op de echte GPU.
