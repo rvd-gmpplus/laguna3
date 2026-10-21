@@ -8,7 +8,7 @@
   - Pages: https://rvd-gmpplus.github.io/laguna3/ (1.720.222 bytes, md5 `0a78fa2fd6c1b320371462df24900e02`), byte voor byte teruggelezen.
   - Artefact versie 22: https://claude.ai/artifact/4qJq7YUk5nGSFmexY7WkZR (kale pagina 1.720.046 bytes, md5 `495033add1d929880cad98b5af61a51e`, 531 bytes geraamte ervoor en 15 erna), byte voor byte teruggelezen.
   - De nightly op `main` moet na de publicatie opnieuw draaien; een rode nightly is een melding, geen stop.
-- **Werkplek:** de worktree `.claude/worktrees/golf-5n`; de domeintakken `golf-5n-app`, `-pn`, `-int`, `-dash`, `-carr`, `-deur` en `-chs` zijn samengevoegd in `golf-5n`. Begin met `git ls-remote --heads origin` en een vergelijking van elke tak met `main`.
+- **Werkplek:** de hoofdcheckout op `main`; de worktree `.claude/worktrees/export-e5` (tak `export-e5`). De worktrees en takken van golf 5n zijn opgeruimd. Begin met `git ls-remote --heads origin` en een vergelijking van elke tak met `main`.
 - **espace5:** versie 8 gepubliceerd op 21 oktober 2026 (tag `v8`): framework uit laguna3 na versie 20 (`ffc673b`, tak `export-e5`) met de poort `opendicht`; die vond 7 doordringingen in de carrosserie van espace5, opgelost in drie rondes. De cockpit voor de Espace (zitplaatsen in `auto.json`) is een eigen golf, later. Zie de CHANGELOG van espace5.
 - **Tak `export-e5`:** de framework-fix (`AUTO['cockpit']` met haken in commentaar) en het besluit over de zijroosters; gaat bij de start van golf 6 naar `main`.
 - **Linux-tests:** `tools/lag3-vm.sh test --repo "$PWD"`, met een tijdelijke container per run.
