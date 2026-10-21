@@ -123,7 +123,9 @@ std('bodDoorCard', 0x1c1d20, 0, 0.74);
 // Het eigen middengrijze leder (0x2b2d30) las op de foto's veel te licht: inzet en armsteun zijn even zwart als de kaart, alleen de nerf verschilt.
 std('bodStitch', 0xb4ac9b, 0, 0.7);                                       // dubbel licht (beige) stiksel op de armsteun
 std('bodGripCup', 0x2c2e32, 0, 0.82, { envMapIntensity: 0.3 });          // matte donkergrijze greepkom
-std('bodDoorLamp', 0xc8141c, 0, 0.3, { emissive: 0x8a0a10 });           // rood portierlicht onderin de voorportieren (brandt als het portier open is)
+// rode lens van het portierlicht onderin de voorportieren, onverlicht: het echte licht brandt alleen bij een open portier, en een vaste emissive
+// liet hem ook dicht (Cockpit) gloeien. Een koppeling aan de openstand vraagt een haak in de app-laag (geen per-frame-haak in dit domein).
+std('bodDoorLamp', 0xa8121d, 0, 0.18, { envMapIntensity: 0.9 });
 // pianozwart (golf 5n ronde 2): blanke lak (clearcoat) en meer omgevingsreflectie (was std, ruwheid 0,14, omgeving 0,5); zo leest de lijst
 // zoals op de foto's als spiegelend zwart met lichte strepen in plaats van als mat zwart vlak tussen kaart en leder
 phys('bodPiano', { color: 0x030405, metalness: 0, roughness: 0.08, clearcoat: 1, clearcoatRoughness: 0.03, envMapIntensity: 2.2 });
@@ -587,7 +589,12 @@ function buildDoor(s, isFront) {
   // luidspreker vooraan laag in het voorportier (rooster ca. 18 cm, golf 5n ronde 2 naar de foto's), achter in het midden van het portier
   const spR = 0.09, spZ = isFront ? cz1 - 0.12 : zm, spY = Math.max(0.46, cardY0(spZ) + spR + 0.006);
   // de luidspreker zelf (achter de kaart) blijft op 0,42 m: hoger stak hij dieper door waterscherm en raammotor (clash), en het rooster dekt hem ook zo.
-  // Voor 0,1 mm dieper in het portier, zodat hij op de nieuwe plaats niet verder door waterscherm en binnenpaneel steekt dan op de oude (B0)
+  // Hij zit in een gat van binnenpaneel en waterscherm (korf naar de kaart, magneet in de portierholte): de 4 cm dikke korf past niet in de 3 cm
+  // tussen binnenpaneel (9,5 cm) en kaart (12,5 cm), dus beide platen gaan erdoor; die doordringing staat zo al in main (binnenpaneel ca. 14,7 mm,
+  // waterscherm ca. 5,9 mm). Daarom volgt zijn x het binnenpaneel zelf, met de afstand die hij in main had (gemeten: voor 4,75 mm, achter
+  // 4,88 mm buiten het binnenpaneel), in plaats van surfX min een vaste maat: zo blijft zijn ligging ten opzichte van beide platen gelijk
+  // waar hij ook langs het portier staat, en staat de luidspreker achter (die niet verschoof) op dezelfde plek als in main.
+  const spkX = bodLow(spZ, sAtY(spZ, 0.42), 0.095)[0] + (isFront ? 0.00475 : 0.00488);
   // onderdelen van de portierkaart (vorm naar foto's van een fase 2 Initiale; kleur Dark Carbon): inzet tussen armsteun en lijst,
   // pianozwarte lijst onder de schouder die voor de greep in een boog naar de armsteun afbuigt, greep in een kom vooraan, armsteun met
   // schakelpaneel, onderin een portiervak, het luidsprekerrooster en (voor) het portierlicht. De armsteun hecht onderaan op het kaartvlak (6 cm binnen xb).
@@ -660,6 +667,10 @@ function buildDoor(s, isFront) {
     const vak = patch((z, j) => { const k = Math.round(j), w = sstep((z - vA) / kA) * sstep((vB - z) / kB2), [dx, y] = vP[k]; return [s * (cardX(z, y) - 0.001 - (dx - 0.001) * w), y, z]; }, vA, vB, 16, () => [0, vP.length - 1], vP.length - 1);
     // portierlicht (alleen voorportieren, foto's): ovale rode lens van 10 x 3 cm laag achterin, onder het portiervak
     const lZ = z0 + 0.25, lY = 0.384;
+    // rooster gekanteld naar de helling van de kaart over zijn hoogte (onder 0,60 m volgt de kaart de huid op 12,5 cm, ca. 2 graden): vlak
+    // en recht stond de onderrand 3,5 mm in de kaart en zweefde de bovenrand 2,7 tot 3,2 mm ervoor (stralen, ronde 2). De kaart is hier licht hol
+    // (ca. 1,6 mm onder de koorde), dus het vlak ligt halverwege koorde en midden: rand en midden hoogstens ca. 0,8 mm van de kaart
+    const gT = cardX(spZ, spY + spR), gB = cardX(spZ, spY - spR), gK = (gT - gB) / (2 * spR), gX = (gT + gB) / 4 + cardX(spZ, spY) / 2;
     const lamp = isFront && patch((th, j) => { const r = j / 3, z = lZ + 0.05 * r * Math.cos(th), y = lY + 0.015 * r * Math.sin(th); return [s * (cardX(z, y) - 0.001 - 0.003 * Math.sqrt(Math.max(0, 1 - r * r))), y, z]; }, 0, 2 * PI, 20, () => [0, 3], 3);
     return [
       P('Bekledingspaneel', trimP, MAT.bodDoorCard, { d: 'Gespoten kunststof drager van de portierkaart, van de onderrand tot de raamschacht; dekt binnenpaneel, raammechaniek en geleiderails af.', ex: [0, 0, 0] }),
@@ -669,14 +680,14 @@ function buildDoor(s, isFront) {
       P('Greepkom', kom, MAT.bodGripCup, { d: 'Matte donkergrijze kom met een afgeronde trapeziumvorm (achter hoger dan voor) in de lederen inzet, waarin de binnengreep ligt.', ex: [-s * 0.05, 0, 0] }),
       P('Binnendeurgreep', merge([hendel, draaipunt]), MAT.bodChrome, { d: 'Gebogen verchroomde trekhendel in de kom met een rond draaipunt vooraan, met bowdenkabel naar het slot.', ex: [-s * 0.08, 0, 0] }),
       P('Armsteun', arm, MAT.leather, { d: 'Armsteun in zwart leder met nerf: een in de portierkaart opgenomen schuine rol over de volle lengte van de inzet.', ex: [-s * 0.06, 0, 0] }),
-      P('Naden armsteun', naden, MAT.bodStitch, { d: 'Dubbel licht stiksel over het voorvlak van de armsteun, over de hele lengte.', ex: [-s * 0.07, 0, 0] }),
+      P('Naden armsteun', naden, MAT.bodStitch, { d: 'Dubbel licht stiksel over het voorvlak van de armsteun, over bijna de hele lengte: de laatste 4 cm achter en 3 cm voor, waar de armsteun naar het kaartvlak afloopt, blijven vrij.', ex: [-s * 0.07, 0, 0] }),
       P('Schakelpaneel', xf(G.box(0.04, 0.006, pL), onTop(0, pZ, 0), [0, 0, s * aTl]), drv ? MAT.bodPiano : MAT.bodSatinBlack, { d: drv ? 'Pianozwart schakelpaneel vooraan op de armsteun van de bestuurder, met de schakelaars voor alle ramen, de buitenspiegels en de raamvergrendeling.' : pas ? 'Lange satijnzwarte schakelbak op de armsteun, met vooraan de raamschakelaar.' : 'Satijnzwart schakelpaneel vooraan op de armsteun.', ex: [-s * 0.02, 0.05, 0] }),
       P(drv ? 'Raamschakelaars' : 'Raamschakelaar', swGeo, MAT.plastic, { d: drv ? 'Vier tuimelschakelaars voor de elektrische ramen voor en achter.' : 'Tuimelschakelaar van de elektrische ruit in dit portier.', ex: [0, 0.07, 0] }),
       drv && P('Spiegelverstelling', xf(G.cyl('y', 0.0105, 0.012, 0.008, 16), onTop(0, kF - 0.02, 0.007), [0, 0, s * aTl]), MAT.bodChrome, { d: 'Draaiknop voor het verstellen en inklappen van de buitenspiegels.', ex: [0, 0.08, 0.02] }),
       drv && P('Raamvergrendeling', xf(G.box(0.014, 0.007, 0.014), onTop(0, kF - 0.122, 0.0065), [0, 0, s * aTl]), MAT.plastic, { d: 'Drukschakelaar die de raamschakelaars en de elektrische kinderbeveiliging van de achterportieren vergrendelt.', ex: [0, 0.08, -0.02] }),
-      P('Portiervak', vak, MAT.bodDoorCard, { d: 'Open opbergvak onderin de portierkaart, met een holle afgeronde achterrand; ' + (isFront ? 'loopt vooraan tot tegen de luidspreker.' : 'loopt achteraan tot tegen de luidspreker.'), ex: [-s * 0.08, -0.04, 0] }),
-      P('Luidsprekerrooster', G.lathe('x', [[0, 0.004], [spR - 0.005, 0.004], [spR, 0], [0, 0]], 24, 'bodGrill3'), MAT.bodGrille, { d: 'Rond rooster van ca. 18 cm met fijn zwart gaas voor de luidspreker laag in de portierkaart.', p: X(cardX(spZ, spY) - 0.0012, spY, spZ), r: [0, 0, s > 0 ? PI : 0], ex: [-s * 0.05, 0, 0] }),
-      lamp && P('Portierlicht', lamp, MAT.bodDoorLamp, { d: 'Ovale rode lens laag achterin de portierkaart, onder het portiervak; brandt als het portier open staat en waarschuwt achteropkomend verkeer.', ex: [-s * 0.05, -0.03, 0] }),
+      P('Portiervak', vak, MAT.bodDoorCard, { d: 'Open opbergvak onderin de portierkaart, ' + (isFront ? 'met een holle afgeronde achterrand; loopt vooraan tot tegen de luidspreker.' : 'met een holle afgeronde voorrand (naar de B-stijl); loopt achteraan tot tegen de luidspreker.'), ex: [-s * 0.08, -0.04, 0] }),
+      P('Luidsprekerrooster', G.lathe('x', [[0, 0.004], [spR - 0.005, 0.004], [spR, 0], [0, 0]], 24, 'bodGrill3'), MAT.bodGrille, { d: 'Rond rooster van ca. 18 cm met fijn zwart gaas voor de luidspreker laag in de portierkaart.', p: X(gX, spY, spZ), r: [0, 0, (s > 0 ? PI : 0) - s * Math.atan(gK)], ex: [-s * 0.05, 0, 0] }),
+      lamp && P('Portierlicht', lamp, MAT.bodDoorLamp, { d: 'Ovale rode lens van het portierlicht laag achterin de portierkaart, onder het portiervak. Het licht brandt alleen als het portier open staat (waarschuwing voor achteropkomend verkeer); het model toont de lens onverlicht.', ex: [-s * 0.05, -0.03, 0] }),
     ].filter(Boolean);
   })();
   // vilt in de raamschacht: 2 mm binnen het buitenpaneel, maar nooit verder naar buiten dan 3 cm buiten xb, zodat het vóór de toppen van de
@@ -734,8 +745,8 @@ function buildDoor(s, isFront) {
       P('Chroomaccent greep', G.rbox(0.006, 0.006, 0.18, 0.002), MAT.chrome, { d: 'Verchroomde sierstrip op de greep.', ...bodPose(s, [hp[0] + hn[0] * 0.013, hp[1] + 0.012, hp[2]], hn), ex: [0, 0.03, 0] }),
       P('Greepdrager', G.rbox(0.03, 0.05, 0.24, 0.006), MAT.plastic, { d: 'Kunststof drager achter de buitenhuid waarin de greep scharniert.', ...bodPose(s, bodAt(handleZ, handleY, -0.02), hn), ex: [-s * 0.05, 0, 0] }),
     ]),
-    A('Deurbekleding', { d: 'Portierkaart tot aan de raamschacht: kunststof drager met een inzet in Dark Carbon-leder, pianozwarte sierlijst, chromen binnengreep, armsteun met schakelpaneel, portiervak en luidsprekerrooster.', ex: [-s * 0.52, 0, -0.68] }, cardKids),
-    P('Luidspreker', G.lathe('x', [[0, 0.02], [0.03, 0.018], [0.07, 0.002], [0.08, 0], [0.08, -0.02], [0.03, -0.02], [0, -0.02]], 20, 'bodSpk'), MAT.plastic, { d: 'Luidspreker van het audiosysteem in het portier.', p: [s * (surfX(spZ, 0.42) - (isFront ? 0.0901 : 0.09)), 0.42, spZ], r: [0, 0, s > 0 ? PI : 0], ex: [-s * 0.26, 0, 0] }),
+    A('Deurbekleding', { d: 'Portierkaart tot aan de raamschacht: kunststof drager met een inzet en armsteun in zwart leder met nerf (dubbel licht stiksel op de armsteun), brede pianozwarte sierlijst met een holle boog voor de greep, gebogen chromen binnengreep in een matte donkergrijze kom, schakelpaneel op de armsteun, portiervak en luidsprekerrooster' + (isFront ? ', en laag achterin de rode lens van het portierlicht.' : '.'), ex: [-s * 0.52, 0, -0.68] }, cardKids),
+    P('Luidspreker', G.lathe('x', [[0, 0.02], [0.03, 0.018], [0.07, 0.002], [0.08, 0], [0.08, -0.02], [0.03, -0.02], [0, -0.02]], 20, 'bodSpk'), MAT.plastic, { d: 'Luidspreker van het audiosysteem in het portier.', p: [s * spkX, 0.42, spZ], r: [0, 0, s > 0 ? PI : 0], ex: [-s * 0.26, 0, 0] }),
     P('Portierrubber', merge([...seams, tube(bodSealPts(isFront, z0, z1).map(([z, y]) => P3(z, y, 0.05)), 0.008, 72, 6)]), MAT.rubber, { d: 'Rubber afdichting rondom de portieropening; in de sluitnaden van buiten zichtbaar als dunne donkere lijn.', ex: [-s * 0.26, -0.1, -0.46] }),
     P('Deurvanger', G.rbox(0.012, 0.03, 0.2, 0.004), MAT.darkSteel, { d: 'Vanger die het portier in twee standen openhoudt.', p: [s * (surfX(z1 - 0.1, 0.62) - 0.022), 0.62, z1 - 0.1], ex: [-s * 0.05, 0, 0.06] }),
     A('Scharnieren', { d: 'Twee portierscharnieren aan de voorrand met elk twee bouten.', ex: [-s * 0.04, 0, 0.1] }, [doorHinge('boven', hPins[0]), doorHinge('onder', hPins[1])]),
