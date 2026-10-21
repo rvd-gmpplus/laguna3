@@ -681,7 +681,7 @@ function intDashboard() {
   // golf 5n: van buiten is de bovenkant aan passagierszijde glad en naadloos (foto van de eigenaar); de klep zit verborgen onder de
   // wenkbrauw van de dashboardkop en is alleen in de uitklapweergave te zien
   const airbag = A('Passagiersairbag', { d: 'Airbag aan passagierszijde, uit te schakelen met de sleutelschakelaar, achter een onzichtbare klep in de bovenkant van het dashboard; van buiten is de dashboardkop glad en naadloos.', p: [-0.38, 0, 0.7], ex: [0, 0.22, 0] }, [
-    intPart('Airbagklep', G.rbox(0.3, 0.008, 0.2, 0.003), MAT.dash, 'Klep met verborgen scheurnaad onder de gladde huid van de dashboardkop, die bij ontsteking openklapt; van buiten niet te zien.', { p: [0, intDashTop(0.7) - 0.0015, 0], inner: true, ex: [0, 0.1, 0] }),
+    intPart('Airbagklep', G.rbox(0.3, 0.008, 0.2, 0.003), MAT.dash, 'Klep met verborgen scheurnaad onder de gladde huid van de dashboardkop, die bij ontsteking openklapt; van buiten niet te zien.', { p: [0, intDashTop(0.7) - 0.0015, 0], ex: [0, 0.1, 0] }),
     intPart('Airbagbehuizing', G.rbox(0.28, 0.1, 0.18, 0.012), MAT.plastic, 'Behuizing van de airbagmodule.', { p: [0, 0.89, 0], inner: true, ex: [0, 0.04, 0] }),
     intPart('Airbaggasgenerator', xf(G.cyl('x', 0.025, 0.025, 0.24, 14), [0, 0.88, 0.0]), MAT.darkSteel, 'Gasgenerator die de airbag vult.', { inner: true, ex: [0, -0.02, 0.06] }),
     intPart('Airbagkussen', G.rbox(0.22, 0.04, 0.14, 0.012), MAT.fabric, 'Opgevouwen kussen van de passagiersairbag; bij een botsing blaast de gasgenerator het op en breekt het door de klep.', { p: [0, 0.93, 0], inner: true, ex: [0, 0.06, 0] }),
