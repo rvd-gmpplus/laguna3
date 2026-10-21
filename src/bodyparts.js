@@ -1751,7 +1751,13 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   const tgInT = (z, w) => { const p = tgInP(z, w); return [p[0], p[1] - 0.008, z]; };
   // onderaan blijft de bekleding binnen |x| 0,60: daar staan de steunen van de bagageruimteafdekking (x 0,635 tot 0,685), waar het binnenframe al in B0 in stak
   const tgWx = (z, ax) => { let lo = tgWo(z), hi = 0.5; for (let k = 0; k < 26; k++) { const m = (lo + hi) / 2; if (Math.abs(tgInP(z, m)[0]) > ax) lo = m; else hi = m; } return (lo + hi) / 2; };
-  const tgTrim = merge([bodTailGeo(-0.56, 0.56, 0.68, ydT - 0.02, -0.048, 4, 12), patch(tgInT, tgZ0 + 0.07, tgZ1, 13, z => [tgWo(z), tgWi(z)], 2), patch(tgInT, tgZ0 + 0.07, tgZ1, 13, z => [1 - tgWi(z), 1 - tgWo(z)], 2),
+  // golf 5n reparatieronde 1: op het staartvlak blijven de bekleding en de binnenbekleding binnen |x| 0,414, binnen de sponningbuis rond de
+  // opening (bodTGPath(0,045): hart op |x| 0,432 tot 0,444, straal 12 mm, 3,3 tot 5,7 cm binnen de huid). Tot |x| 0,56 (bekleding) en 0,48
+  // (binnenbekleding) lagen hun zijranden achter de buitendelen van de achterlichten en het achterscherm (vanaf |x| 0,475) en zwaaiden bij
+  // het openen tot 13,9 en 17,7 mm door die delen; binnen de naad (0,472) maar 5 cm diep liepen ze 17,9 mm door de sponning (dichte opentest).
+  // De klep draait om x, dus wat binnen de sponning blijft, blijft bij het openen vrij van alles daarbuiten
+  const tgXs = 0.414;
+  const tgTrim = merge([bodTailGeo(-tgXs, tgXs, 0.68, ydT - 0.02, -0.048, 4, 12), patch(tgInT, tgZ0 + 0.07, tgZ1, 13, z => [tgWo(z), tgWi(z)], 2), patch(tgInT, tgZ0 + 0.07, tgZ1, 13, z => [1 - tgWi(z), 1 - tgWo(z)], 2),
     patch(tgInT, tgZ0, tgZ0 + 0.07, 2, z => [tgWx(z, 0.60), 1 - tgWx(z, 0.60)], 8), patch(tgInT, tgZ1 - 0.05, tgZ1, 2, z => [tgWo(z), 1 - tgWo(z)], 8)]);
   const tailgate = A('Achterklep', { d: 'Grote achterklep met de hele achterruit, typerend voor de vijfdeurs hatchback, met spoilerlip, derde remlicht en achterruitenwisser. Scharniert aan de dakrand en wordt door twee gasveren omhooggehouden.', ex: [0, 0.42, -0.5],
     open: hinge(bodTgPv, [1, 0, 0], bodTgAng, { min: 60 * PI / 180, label: 'Achterklep', look: { dir: [0.6, 0.6, -1], nodes: ['Achterklep', 'Gasveer links', 'Gasveer rechts'] } }) }, [
@@ -1804,7 +1810,7 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     // plus een donkere strook van 8 mm, 2 mm onder de huid achter de zijnaden in het staartvlak (onder en boven het achterlicht): door de spleet van
     // 3 mm zag je eerst de lichte bovenkant van de bumperrichel, zodat de naad als onregelmatige witte lijn las in plaats van als donkere naad
     P('Klepafdichting', merge([tube(bodTGPath(0.03), 0.008, 80, 5), ...[L, R].flatMap(sd => [[bodYLEDGE + 0.004, bodTLY(bodZT, 0)], [bodTLY(bodZT, 1), ydT - 0.002]].map(([y0, y1]) => bodMirX(bodTailGeo(bodTGseam(y0) - 0.0025, bodTGseam(y0) + 0.0055, y0, y1, -0.002, 8, 1), sd)))]), MAT.rubber, { d: 'Rubber afdichting tussen klep en sponning, op de sponning van de carrosserie; blijft staan als de klep opent. In de zijnaden van het staartvlak van buiten te zien als donkere lijn.', stay: true, ex: [0, 0, 0.06] }),
-    P('Binnenbekleding achterklep', bodTailGeo(-0.48, 0.48, 0.7, ydT - 0.04, -0.055, 4, 8), MAT.dash, { d: 'Kunststof binnenbekleding met greep om de klep te sluiten.', ex: [0, 0, 0.12] }),
+    P('Binnenbekleding achterklep', bodTailGeo(-tgXs, tgXs, 0.7, ydT - 0.04, -0.055, 4, 8), MAT.dash, { d: 'Kunststof binnenbekleding met greep om de klep te sluiten.', ex: [0, 0, 0.12] }),
   ]);
 
   /* ================= voorruit en wissers ================= */
