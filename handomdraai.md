@@ -9,13 +9,14 @@
   - Artefact versie 22: https://claude.ai/artifact/4qJq7YUk5nGSFmexY7WkZR (kale pagina 1.720.046 bytes, md5 `495033add1d929880cad98b5af61a51e`, 531 bytes geraamte ervoor en 15 erna), byte voor byte teruggelezen.
   - De nightly op `main` moet na de publicatie opnieuw draaien; een rode nightly is een melding, geen stop.
 - **Werkplek:** de worktree `.claude/worktrees/golf-5n`; de domeintakken `golf-5n-app`, `-pn`, `-int`, `-dash`, `-carr`, `-deur` en `-chs` zijn samengevoegd in `golf-5n`. Begin met `git ls-remote --heads origin` en een vergelijking van elke tak met `main`.
+- **espace5:** versie 8 gepubliceerd op 21 oktober 2026 (tag `v8`): framework uit laguna3 na versie 20 (`ffc673b`, tak `export-e5`) met de poort `opendicht`; die vond 7 doordringingen in de carrosserie van espace5, opgelost in drie rondes. De cockpit voor de Espace (zitplaatsen in `auto.json`) is een eigen golf, later. Zie de CHANGELOG van espace5.
+- **Tak `export-e5`:** de framework-fix (`AUTO['cockpit']` met haken in commentaar) en het besluit over de zijroosters; gaat bij de start van golf 6 naar `main`.
 - **Linux-tests:** `tools/lag3-vm.sh test --repo "$PWD"`, met een tijdelijke container per run.
   - Uitvoer in `~/.cache/explosietekening/lag3-vm/out/ft-laguna3-<commit>`.
   - Containers van andere sessies (`s26u-linux:1`, `explosie-test:1`) niet aanraken.
 
 ### Volgende stappen (in deze volgorde)
-1. **espace5:** `python3 tools/framework.py export` van de cockpit en van de testpoort `opendicht`, de volledige set draaien en publiceren. Eerdere afspraak: vraag eerst toestemming voor het publiceren van espace5.
-2. **Golf 6:** three.js 0.186.1 als ES-module, versie 21. De besluiten staan in `docs/onderzoek/beslissingen.md`, rij Golf 6, en in `docs/masterplan.md`, sectie Golf 6. Het plan van de spike stond in het scratchpad en is niet in de repo bewaard. Mee in deze golf: de zijroosters van het dashboard 5 tot 8 cm hoger, tot de bovenrand van de klokken, met het dashboard daar mee verhoogd (besluit van de gebruiker, rij Zijroosters dashboard).
+1. **Golf 6:** three.js 0.186.1 als ES-module, versie 21. De besluiten staan in `docs/onderzoek/beslissingen.md`, rij Golf 6, en in `docs/masterplan.md`, sectie Golf 6. Het plan van de spike stond in het scratchpad en is niet in de repo bewaard. Mee in deze golf: de zijroosters van het dashboard 5 tot 8 cm hoger, tot de bovenrand van de klokken, met het dashboard daar mee verhoogd (besluit van de gebruiker, rij Zijroosters dashboard).
 
 ### Wat golf 5n deed
 - **Foto's van de eigen auto:** portierkaarten, raamkader binnen, stoelen, hoofdsteunnaden, schermgreep van het panoramadak, dashboard en console (twaalf punten), zijroosters, keuzehendel, dakgrepen, stuur, velg met tien Y-spaken, naafdop, band, voorkant, achterlichtlens en tankklep. Per onderdeel: `CHANGELOG.md` (versie 20) en `docs/masterplan.md`, sectie Golf 5n.

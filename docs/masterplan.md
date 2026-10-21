@@ -729,7 +729,7 @@ Open voor later:
 - kleine donkere punt aan de voorkant van de lip bij z -1,30 (`stY[0]` als sentinel 9);
 - achterlichtlens schemert rood tussen sponning en klepbekleding bij achteroverleunen vanaf achter links;
 - middelste gordelband vult het beeld bij omkijken vanaf achter midden;
-- cockpit naar espace5 met `framework.py export`;
+- cockpit naar espace5 met `framework.py export`: de code is mee (espace5 versie 8, 21 oktober 2026); zitplaatsen voor de Espace volgen in een eigen golf;
 - open punten uit golf 5k blijven staan.
 
 ## Golf 5m: paneel slepen, Openen in de cockpit, onderdeelnummers (versie 19)
