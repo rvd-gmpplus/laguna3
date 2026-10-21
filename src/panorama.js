@@ -163,10 +163,11 @@ function buildPanorama() {
     // door (hij ligt 1,2 mm hoger). De belichte randen en de kiertjes naar het lichte glas lazen van binnen als contrastrijke lichte lijnen
     const strip = l => panBand(l.zb, l.za + (l.i > 0 ? 0.005 : 0), -0.435, 0.435, l.lev - 0.0005, 1, 8);
         const lead = lam[0];
-    const leader = A(`Zonnescherm ${nm}`, { d: `Handbediend rolgordijn onder het ${nm}e glaspaneel, in dit model een stapel lamellen die in de cassette schuift (schematisch). Met de zwarte greep open of dicht; het dak werkt alleen met geopend scherm.`, ex: [0, -0.12, nm === 'voor' ? 0.1 : -0.1],
+    const leader = A(`Zonnescherm ${nm}`, { d: `Handbediend rolgordijn onder het ${nm}e glaspaneel, in dit model een stapel lamellen die in de cassette schuift (schematisch). Met de greep in hemelkleur open of dicht; het dak werkt alleen met geopend scherm.`, ex: [0, -0.12, nm === 'voor' ? 0.1 : -0.1],
       open: { ...lead.open, min: 0.82 * panTravel(lead), label: `Zonnescherm ${nm}`, look } }, [
       P(`Schermdoek ${nm} 1`, strip(lead), MAT.fabric, { d: 'Eerste lamel van het zonnescherm, met de greep.', ex: [0, -0.04, 0] }),
-      P(`Schermgreep ${nm}`, G.rbox(0.08, 0.006, 0.018, 0.003), MAT.bodPillar, { d: 'Kleine zwarte greep onder de voorrand van het zonnescherm om het te openen en te sluiten; blijft bij een geopend scherm aan de achterrand van de opening zichtbaar, net voor de afwerkring.', p: panP(lead.za - 0.0045, 0, lead.lev - 0.0035), ex: [0, -0.06, 0] }),
+      // greep in hemelkleur (golf 5n ronde 2, foto van het dak binnen): zwart las hij als donker vlak in de lichte middenbalk
+      P(`Schermgreep ${nm}`, G.rbox(0.08, 0.006, 0.018, 0.003), MAT.fabric, { d: 'Kleine lichtgrijze greep in hemelkleur onder de voorrand van het zonnescherm om het te openen en te sluiten; blijft bij een geopend scherm aan de achterrand van de opening zichtbaar, net voor de afwerkring.', p: panP(lead.za - 0.0045, 0, lead.lev - 0.0035), ex: [0, -0.06, 0] }),
     ]);
     const rest = lam.slice(1).map(l => P(`Schermdoek ${nm} ${l.i + 1}`, strip(l), MAT.fabric, { d: l.steps ? 'Lamel van het zonnescherm; schuift naar de cassette en stapelt zich daar.' : 'Laatste lamel van het zonnescherm, vast in de cassette (de rol).', ex: [0, -0.05, 0],
       open: l.steps ? { ...l.open, follow: `Zonnescherm ${nm}` } : undefined }));
