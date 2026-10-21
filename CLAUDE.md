@@ -37,6 +37,7 @@ taal van code-commentaar, beschrijvingen, docs en commits. Geen em-dashes in tek
   beslislijst en de verwachte rondes geven (zie `~/.claude/CLAUDE.md`, Lange orkestraties); max 6 reparatierondes per golf,
   daarna een beslisnotitie aan de gebruiker in plaats van nog een ronde.
 - Ruis op macOS: GPU-prestatiehints van ANGLE (zoals `GPU stall due to ReadPixels`) in de lokale smoketest. Melden, niet blokkeren.
+- Ruis op macOS: `visdiff` tegen de Linux-basislijn is sinds golf 5n op alle 42 beelden rood (8 tot 36 procent): de app meet de dockhoogte en het dock is op de Mac door andere lettermaten breder, dus de camera kadert anders. Alleen visdiff op Linux telt.
 
 ## Werkwijze
 
