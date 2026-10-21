@@ -60,7 +60,7 @@ Bron voor typeopgaven: Renault dossier de presse augustus 2007 (https://www.plan
 | Schakelpaddles | Geen. Handmatig schakelen via de keuzehendel (naar links, voor = op, achter = af) | Bevestigd | Renault-handboek fase 2 "Automatic gearbox 2/3" |
 | Onder-stuurmodule | Stuurhoeksensor, wisser-/lichtschakelaar en wikkelcontact vormen een niet te scheiden geheel (1519) | Bevestigd | Dialogys-doc |
 
-## 3. Remmen (2.0 turbo 170, F4Rt 813 waarschijnlijk, zie beslissingen)
+## 3. Remmen (2.0 turbo 170, F4Rt 813, voertuigtype BT15, zie beslissingen)
 
 Alle waarden uit de Renault-persmap augustus 2007, bevestigd door de Franse brochure 2008 en onderdelenlijsten.
 

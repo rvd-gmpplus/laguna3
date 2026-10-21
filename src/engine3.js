@@ -1,4 +1,4 @@
-/* ===================== motor F4Rt 813 (waarschijnlijk, zie beslissingen): dynamo, aircocompressor, sensoren, kabelboom, flexplaat, afdekkap ===================== */
+/* ===================== motor F4Rt 813: dynamo, aircocompressor, sensoren, kabelboom, flexplaat, afdekkap ===================== */
 // Dynamo en aircocompressor: lokaal frame met x langs de as; de poelie ligt in het multiriemvlak (lokaal x = XA - p[0]).
 std('engStatorLam', 0x5b6168, 0.6, 0.46);
 // statorplaat: ringGear (core) met 36 sleuven, maar met een fijnere buitenrand (48 segmenten) zodat de buitenkant rond leest

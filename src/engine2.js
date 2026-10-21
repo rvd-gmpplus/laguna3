@@ -1,4 +1,4 @@
-/* ===================== motor F4Rt 813 (waarschijnlijk, zie beslissingen): distributie, hulpaandrijving, inlaat, turbo, smering, koeling ===================== */
+/* ===================== motor F4Rt 813: distributie, hulpaandrijving, inlaat, turbo, smering, koeling ===================== */
 // distributievlak (z, y) bij x = XT; looprichting van de riem; poelies met tandkopstraal
 const TIM = [[0, 0, 0.0281, 1], [0.099, 0.093, 0.0255, 1], [CAMZ, CAMY, 0.0569, 1], [-CAMZ, CAMY, 0.0569, 1], [-0.11, 0.249, 0.028, 1], [-0.086, 0.089, 0.03, 1]];
 // hulpaandrijvingsvlak (z, y) bij x = XA, in looprichting: krukaspoelie, aircocompressor, stuurpomp, dynamo, geleiderol, spanner (tegen de rug)
@@ -322,8 +322,8 @@ function buildEngineCooling() {
 
 function buildEngine() {
   return A('Motor F4Rt', {
-    d: 'Renault F4Rt 813 (waarschijnlijk, zie beslissingen; de RDW toont Euro 5 en onderdelencatalogi noemen de reeks F4R 811): 2,0-liter viercilinder-turbomotor met gietijzeren blok, aluminium kop, 16 kleppen met rolzwenkarmen (zoals bij de F4R-familie), vaste kleptiming zonder faseversteller (de persmap van 2007 noemt de 811; voor de 813 niet apart bevestigd), distributieriem en meerpuntsinjectie. Dwars voorin; inlaatzijde naar voren en turbo achter (aannemelijk). Ontsteekvolgorde 1-3-4-2 (aannemelijk, niet bevestigd).',
-    spec: [['Motorcode', 'F4Rt 813 (waarschijnlijk, zie beslissingen)'], ['Opbouw', '4 in lijn, 16V DOHC'], ['Cilinderinhoud', '1.998 cm³'], ['Boring × slag', '82,7 × 93,0 mm'], ['Compressie', '9,5 : 1 (Renault-persmap 2007, bij de 811; L\'argus noemt 9,0 : 1)'], ['Kleptiming', 'vast, geen faseversteller'], ['Toerenbegrenzer', '6.250 tpm'], ['Brandstofsysteem', 'meerpuntsinjectie'], ['Inductie', 'Mitsubishi TD04 + intercooler'], ['Vermogen', '125 kW (170 pk) bij 5.000 tpm'], ['Koppel', '270 Nm bij 3.250 tpm'], ['Nokkenasaandrijving', 'distributieriem']],
+    d: 'Renault F4Rt 813 (de Renault-catalogus koppelt het voertuigtype BT15 van het typeplaatje aan de F4R 813 met automaat AJ0): 2,0-liter viercilinder-turbomotor met gietijzeren blok, aluminium kop, 16 kleppen met rolzwenkarmen (zoals bij de F4R-familie), vaste kleptiming zonder faseversteller (de persmap van 2007 noemt de 811; voor de 813 niet apart bevestigd), distributieriem en meerpuntsinjectie. Dwars voorin; inlaatzijde naar voren en turbo achter (aannemelijk). Ontsteekvolgorde 1-3-4-2 (aannemelijk, niet bevestigd).',
+    spec: [['Motorcode', 'F4Rt 813 (voertuigtype BT15)'], ['Opbouw', '4 in lijn, 16V DOHC'], ['Cilinderinhoud', '1.998 cm³'], ['Boring × slag', '82,7 × 93,0 mm'], ['Compressie', '9,5 : 1 (Renault-persmap 2007, bij de 811; L\'argus noemt 9,0 : 1)'], ['Kleptiming', 'vast, geen faseversteller'], ['Toerenbegrenzer', '6.250 tpm'], ['Brandstofsysteem', 'meerpuntsinjectie'], ['Inductie', 'Mitsubishi TD04 + intercooler'], ['Vermogen', '125 kW (170 pk) bij 5.000 tpm'], ['Koppel', '270 Nm bij 3.250 tpm'], ['Nokkenasaandrijving', 'distributieriem']],
     ex: [0, 0.25, 0],
   }, [
     buildBlock(), buildCrank(), buildHead(), buildTiming(), buildAccessory(), buildIntake(), buildTurbo(), buildLube(), buildEngineCooling(),

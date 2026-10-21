@@ -1,6 +1,6 @@
 # Kennisbasis Renault Laguna III 2.0T 170 automaat (F4Rt 813 waarschijnlijk, AJ0)
 
-Deze kennisbasis gaat over de auto achter het model: een Renault Laguna III hatchback uit 2011 (fase 2), 2.0 16V Turbo met 125 kW (170 pk), motor F4Rt 813 (waarschijnlijk, zie beslissingen), zestraps automaat AJ0, uitvoering Initiale Paris.
+Deze kennisbasis gaat over de auto achter het model: een Renault Laguna III hatchback uit 2011 (fase 2), 2.0 16V Turbo met 125 kW (170 pk), motor F4Rt 813 (voertuigtype BT15, zie beslissingen), zestraps automaat AJ0, uitvoering Initiale Paris.
 
 De basis is het onderzoeksrapport dat de gebruiker op 14 oktober 2026 aanleverde ("Renault Laguna III 2.0 16V Turbo (F4R 811) automaat, hatchback 2011: geverifieerde kennisbasis en verrijkingsplan"). Op dezelfde dag is het rapport naast de repo gelegd, met gericht onderzoek aangevuld en waar nodig gecorrigeerd. De belangrijkste nieuwe bron is de Renault-persmap van augustus 2007 met de technische tabellen per motor. Die tabellen gelden voor fase 1 (Euro 4, bij de F4Rt 811). De auto van de gebruiker is fase 2 met Euro 5 en waarschijnlijk een F4Rt 813; gelijke waarden zijn voor de 813 Aannemelijk en niet apart bevestigd.
 
@@ -75,7 +75,7 @@ Waar een feit uit het rapport is overgenomen zonder dat de bron opnieuw is gelez
 | CO2 | 210 g/km | Bevestigd | Persmap |
 | Toerental bij 220 km/h | Circa 4.840 tpm in de 6e (45,44 km/h per 1000 tpm) | Geschat (berekend uit de persmap) | Persmap |
 
-## 5. Motor F4Rt 813 (waarschijnlijk, zie beslissingen)
+## 5. Motor F4Rt 813 (voertuigtype BT15, zie beslissingen)
 
 Motorcode van de auto van de gebruiker (bijgewerkt op 15 oktober 2026): waarschijnlijk F4Rt 813, zekerheid middel; het motorplaatje beslist. Volgens de RDW is de auto een Renault Laguna hatchback met eerste toelating op 18 februari 2011, 125 kW, EURO 5 A (715/2007*692/2008A), 201 g/km CO2 en 8,7 l/100 km. De RDW-typegoedkeuringsgegevens noemen voor deze uitvoering de motorcode "F4R J8", dezelfde code als bij de Euro 4-uitvoeringen; het driecijferige suffix staat er dus niet in. Het Renault-werkplaatshandboek MR 415 geeft voor de hatchback bij F4R 811 alleen Euro 4 en bij F4R 813 Euro 3, 4 en 5 (beide met automaat AJ0). Omdat de auto Euro 5 is, is de 813 de waarschijnlijkste code. Onderdelencatalogi noemen voor de hele reeks alleen "F4R 811"; ze voegen de suffixen samen en zeggen niets over de Euronorm. Beweringen die een bron alleen voor de 811 noemt (zoals het ontbreken van een faseversteller in de persmap van 2007) blijven staan; voor de 813 zijn ze niet apart bevestigd. De onderbouwing staat in `docs/onderzoek/beslissingen.md`.
 

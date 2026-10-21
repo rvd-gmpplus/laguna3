@@ -47,13 +47,13 @@ Onderzoek in twee rondes: 12 oktober 2026 voor het eerste model, 13 oktober 2026
 | Emissienorm | Euro 5 (EURO 5 A, 715/2007*692/2008A) | RDW | Bevestigd |
 | Kleur | Gris Platine D69 (Mercury), zilvergrijs metallic. Kleurwaarde uit persfoto's ongeveer #B3B6BA; het model gebruikt #AEB2B7 | UK-brochure kleurtabel, carross.eu, 50 nuances de teintes Renault | Bevestigd (naam en code); Geschat (kleurwaarde) |
 
-## Motor F4Rt 813 (waarschijnlijk, zie beslissingen)
+## Motor F4Rt 813 (voertuigtype BT15, zie beslissingen)
 
 Motorcode van de auto van de gebruiker (bijgewerkt op 15 oktober 2026): waarschijnlijk F4Rt 813, zekerheid middel; het motorplaatje beslist. Volgens de RDW is de auto een Renault Laguna hatchback met eerste toelating op 18 februari 2011, 125 kW, EURO 5 A (715/2007*692/2008A), 201 g/km CO2 en 8,7 l/100 km. De RDW-typegoedkeuringsgegevens noemen voor deze uitvoering de motorcode "F4R J8", dezelfde code als bij de Euro 4-uitvoeringen; het driecijferige suffix staat er dus niet in. Het Renault-werkplaatshandboek MR 415 geeft voor de hatchback bij F4R 811 alleen Euro 4 en bij F4R 813 Euro 3, 4 en 5 (beide met automaat AJ0). Omdat de auto Euro 5 is, is de 813 de waarschijnlijkste code. Onderdelencatalogi noemen voor de hele reeks alleen "F4R 811"; ze voegen de suffixen samen en zeggen niets over de Euronorm. Beweringen die een bron alleen voor de 811 noemt (zoals het ontbreken van een faseversteller in de persmap van 2007) blijven staan; voor de 813 zijn ze niet apart bevestigd. De onderbouwing staat in `docs/onderzoek/beslissingen.md`.
 
 | Gegeven | Waarde | Bron | Status |
 |---|---|---|---|
-| Motorcode | F4Rt 813 (waarschijnlijk, zie beslissingen). Onderdelencatalogi noemen de reeks "F4R 811"; de RDW noemt "F4R J8" | RDW (Euro 5 A, eerste toelating 18 februari 2011), Renault MR 415 (PDF-pagina 5, 01A-2), Verordening (EG) 715/2007 artikel 10; catalogi: Autodoc, Alfi-Turbo, Europe Turbo, IDF Moteurs | Aannemelijk (zekerheid middel); 811 als catalogusnaam Bevestigd |
+| Motorcode | F4Rt 813 (voertuigtype BT15, zie beslissingen). Onderdelencatalogi noemen de reeks "F4R 811"; de RDW noemt "F4R J8" | RDW (Euro 5 A, eerste toelating 18 februari 2011), Renault MR 415 (PDF-pagina 5, 01A-2), Verordening (EG) 715/2007 artikel 10; catalogi: Autodoc, Alfi-Turbo, Europe Turbo, IDF Moteurs | Aannemelijk (zekerheid middel); 811 als catalogusnaam Bevestigd |
 | Familie | Renault F-motor; F staat voor *fonte* (gietijzer) | mymotorlist, Wikipedia, Planète Renault | Bevestigd |
 | Opbouw | 4 cilinders in lijn, 16 kleppen, twee bovenliggende nokkenassen, kleppen in V-opstelling | fastcarcheck, L'argus, mymotorlist | Bevestigd |
 | Cilinderinhoud | 1998 cm³ | AutoScout24, fastcarcheck | Bevestigd |
@@ -279,3 +279,19 @@ De hoeken van de openers zijn grotendeels geschat uit foto's, het instructieboek
 - [forumlaguna3, Initiale Paris Estate](https://www.forumlaguna3.com/t7717-sarti-laguna-iii-3-estate-2-0-dci-175-bva-initiale-paris-4control)
 - [auto-infos.fr, collectie 2013 (alleen zoekresultaat)](https://www.auto-infos.fr/article/renault-laguna-2013-tarifs-gammes-et-equipements.194249)
 - [eBay, originele Celsium 7,5 × 18 ET 47](https://www.ebay.fr/itm/318494502413)
+
+## Typeplaatje en markeringen van de eigen auto (21 oktober 2026)
+
+Foto's van de gebruiker. Het chassisnummer en het fabricagenummer staan bewust niet in de repo.
+
+| Gegeven | Waarde | Bron |
+|---|---|---|
+| Typegoedkeuring | e2*2001/116*0363 (e2 = Frankrijk, richtlijn 2001/116) | typeplaatje; https://www.autoregulations.ie/legislation/members-states/authorities/ |
+| Voertuigtype | BT15: hatchback, in de Renault-catalogus (Laguna III, PR 1491) alleen met motor F4R813 en automaat AJ0 | typeplaatje; Renault-catalogus op partsouq |
+| Massa's | toegestane maximummassa 2.017 kg, treinmassa 3.317 kg, vooras 1.160 kg, achteras 1.030 kg | typeplaatje; https://www.user-manual.renault.com/nl/informatie-over-de-auto/identificatieplaatjes-auto-14 |
+| Lak | TED69: metallic, D69 Gris Platine | typeplaatje; https://www.50nuancesdeteintesrenault.fr/teintes-par-couleur/teintes-en-dxx/d69-gris-platine/ |
+| Bekleding en harmonie | CUIR11 (volleder), HARM01 | typeplaatje; http://excesstext.com/2016/03/25/renault-oval-plate-decoding-general-information/ |
+| Technisch land | TLHOLL: Nederland | typeplaatje |
+| Overige codes | EA3, SAN913, SAN513, BCNC, Z345: betekenis niet zeker vastgesteld | typeplaatje |
+| Zijruit | Renault, Pilkington, AS2, M3236, DOT682, E1 43R-001582, CCC E000199 | foto van de ruit |
+| Banden | Michelin 225/45 R18 | foto van de band |

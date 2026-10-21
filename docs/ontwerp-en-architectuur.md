@@ -449,7 +449,7 @@ Open: de motor-ECU staat nog rechts tegen het schot (MR 415 zet hem op de accuba
 
 ## Bewuste keuzes
 
-- Geen merklogo's, typebadges of exacte kopie van het carrosseriedesign; het model volgt wel de hoofdmaten en het gemeten silhouet. De Renault-ruit op de neus is daarom niet getekend.
+- Geen exacte kopie van het carrosseriedesign; het model volgt de hoofdmaten, het gemeten silhouet en foto's van de eigen auto. Het logoverbod is op 21 oktober 2026 door de gebruiker opgeheven: de Renault-ruit staat als geometrie op de neus, de achterklep, het stuur en de naafdoppen.
 - Kentekenplaten zonder kenteken.
 - Eén bouwbestand per domein en een contract met namen, in plaats van één groot bestand: agents kunnen parallel werken en samenvoegen is bijna vrij van conflicten.
 - Geen opvulling om een onderdelendoel te halen. Geen groep met meer dan 12 identieke onderdelen die in werkelijkheid niet zo vaak voorkomen.

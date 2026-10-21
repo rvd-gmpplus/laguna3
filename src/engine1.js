@@ -1,4 +1,4 @@
-/* ===================== motor F4Rt 813 (waarschijnlijk, zie beslissingen): maten, aansluitpunten, blok, krukmechanisme, cilinderkop ===================== */
+/* ===================== motor F4Rt 813: maten, aansluitpunten, blok, krukmechanisme, cilinderkop ===================== */
 // Motorframe: oorsprong op de krukas-as, x langs de krukas (+x = vliegwiel- en versnellingsbakzijde = links in de auto),
 // y langs de cilinderas omhoog, z naar de inlaatzijde (die naar de voorkant van de auto wijst).
 // Renault telt cilinder, hoofdlager en kruktap 1 vanaf de vliegwielzijde; XC[0] is dus cilinder 1.

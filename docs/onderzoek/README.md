@@ -5,7 +5,7 @@ Werknotities uit de bouwsessie van 13 oktober 2026. Ze zijn de bron voor maten, 
 | Bestand | Inhoud |
 |---|---|
 | `exterieur.md` | Carrosserie fase 2: hoofdmaten, zijprofiel en bovenaanzicht in getallen, sleutelpunten (z, y), voor- en achterkant, Initiale Paris-details en de tien herkenbaarste kenmerken (sectie 7). Dit is de basis voor een volgende carrosserieronde. |
-| `motor-f4rt.md` | Motor F4Rt 813 (waarschijnlijk, zie beslissingen): opbouw, maten, distributie, hulpaandrijving, turbo en een onderdelenlijst. |
+| `motor-f4rt.md` | Motor F4Rt 813 (voertuigtype BT15, zie beslissingen): opbouw, maten, distributie, hulpaandrijving, turbo en een onderdelenlijst. |
 | `automaat.md` | Automaat AJ0 (Jatco JF613E) en de voorste aandrijfassen. |
 | `onderstel-interieur.md` | Onderstel, remmen, wielen, besturing, interieur en uitrusting. |
 | `kennisbasis.md` | Kennisbasis uit de verwerking van het gebruikersrapport (14 oktober 2026). |

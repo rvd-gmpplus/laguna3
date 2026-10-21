@@ -109,7 +109,7 @@ Modelassen zoals in het project: x = links(+)/rechts(-) van de auto, y = omhoog,
 
 Conventie: `niveau-nummer. Naam - aantal - opmerking [markering]`. Het niveau volgt uit de inspringing. "n.b." = aantal niet bekend, schatting staat erbij. Schroefdraadmaten zijn alleen genoemd als bron ze geeft.
 
-### 1. Motor F4Rt 813 (waarschijnlijk, zie beslissingen) (1x)
+### 1. Motor F4Rt 813 (voertuigtype BT15, zie beslissingen) (1x)
 
 #### 1.1 Motorblok (onderblok)
 
