@@ -453,7 +453,7 @@ Poort: `pncheck` groen (reproduceerbaar, bronnen per nummer niet gedaald); dekki
 | Keuze | Wanneer | Wat |
 |---|---|---|
 | three.js blijft op r147 | standaard | Geen werk. r147 is de laatste versie met `examples/js`. Risico: geen beveiligings- of browserfixes meer. |
-| Migratie naar ES-modules en een actuele three.js (0.186) | als er een functie nodig is die r147 mist | Aanleidingen: `THREE.BatchedMesh` (r159+) kan de eigen bundelcode in `app1.js:699-857` vervangen; `transmission` voor echt glas; WebGPU als terugval. Spike van een dag in een worktree: `build.py` bouwt een `<script type="module">` met een importmap naar jsDelivr-ESM, de bron blijft één naamruimte via een wrapper; `pubsmoke.py` en de CDN-controle mee. Doorzetten alleen als de spike de volledige itest haalt. |
+| Migratie naar ES-modules en een actuele three.js (0.186) | besloten op 21 oktober 2026: three.js 0.186.1 als versie 21, na versie 20 en espace5 (zie `docs/onderzoek/beslissingen.md`, rij Golf 6). Oorspronkelijk: als er een functie nodig is die r147 mist | Aanleidingen: `THREE.BatchedMesh` (r159+) kan de eigen bundelcode in `app1.js:699-857` vervangen; `transmission` voor echt glas; WebGPU als terugval. Spike van een dag in een worktree: `build.py` bouwt een `<script type="module">` met een importmap naar jsDelivr-ESM, de bron blijft één naamruimte via een wrapper; `pubsmoke.py` en de CDN-controle mee. Doorzetten alleen als de spike de volledige itest haalt. |
 | Een tweede bestand naast de pagina | als de pagina echt kleiner moet | Nummergegevens als los JSON op Pages laden scheelt 565 kB, maar breekt "dezelfde bytes" op het artefact: een beslispunt over het aantal kanalen, geen techniekvraag. |
 | Offline | na R5 | Service worker die three.js en de lettertypes cachet. |
 | Engelse versie | na K6 | Alleen de teksttabel en de presetnotities; de 1.600 Nederlandse beschrijvingen blijven Nederlands tot er vraag naar is. |
@@ -520,7 +520,7 @@ Nog open:
 1. **Afstemming met de sessie op `ccr-bd755431-1qfniw`**: dit plan wacht op de geplande check (23:09 UTC) en begint pas als die tak rust; daarna gebeurt alles vanaf `main`.
 2. **Telefoonsessie** met het protocol van A7, zodra versie 7 staat.
 3. **Metingen aan de auto** (F2): hoeken van kap, portieren en klep; velgmaat; accuzijde; startknop. Na golf 5f en 5e zijn velgmaat en startknop beantwoord; in vervolgronde 5g ook de accuzijde, de motorkap en de achterklep (waarnemingen van de gebruiker). Open blijft de hoek van het achterportier.
-4. **Golf 6**: wel of geen spike naar ES-modules en een actuele three.js; standaardadvies is nee tot er een aanleiding is. Een tweede bestand naast de pagina alleen als het artefact als kanaal mag vervallen.
+4. **Golf 6**: beantwoord op 21 oktober 2026: ja, three.js 0.186.1 als ES-module (versie 21); de keuzes staan in `docs/onderzoek/beslissingen.md`. Eerder stond hier: wel of geen spike naar ES-modules en een actuele three.js; standaardadvies was nee tot er een aanleiding is. Een tweede bestand naast de pagina alleen als het artefact als kanaal mag vervallen.
 5. **Prioriteit** als er maar één spoor tegelijk kan: de volgorde hierboven (zichtbaar eerst, geometrie en schuld daarna). Wie liever de nummers eerst wil, schuift 5d naar stap 3; dat kan, want 5d hangt alleen aan A10.
 
 ## Verificatie van het hele plan
@@ -780,3 +780,40 @@ Open voor later:
 - 21 eenheden met meer Renault-nummers (varianten of opvolgers), toegestaan tenzij de gebruiker anders beslist;
 - de Renault-catalogus op VIN (partsouq) voor de varianten, uitgesteld door de gebruiker;
 - interieur, uitlaat, koeling en elektra blijven dun, omdat ze in de catalogi nauwelijks voor dit type staan.
+
+## Golf 5n: de eigen auto naar de foto's (versie 20)
+
+Verzoek van de gebruiker: het model naar de foto's van de eigen auto (interieur, onderstel, voorkant), met het logoverbod opgeheven. Besluiten: zie `docs/onderzoek/beslissingen.md`, "Besluiten van 21 oktober 2026".
+
+Gedaan, in zeven takken naast elkaar (`golf-5n-app`, `-pn`, `-int`, `-dash`, `-carr`, `-deur`, `-chs`):
+- **Interieur en dashboard** (`-int`, `-dash`):
+  - portierkaarten met pianolak-boog, rood portierlicht, armsteunstiksel, greepkom en luidspreker;
+  - stoelen met lichtere naden, vollere zijwangen, rugschaal en kaartvak; hoofdsteunnaden; de middelste achtergordel komt uit de rugleuning;
+  - dashboard en console naar de foto's (twaalf punten), zijroosters verzonken in het voorvlak met chromen rand, de keuzehendel als grote knop, dakgrepen in een kom;
+  - toerenteller 0 tot 7 volgens de foto.
+- **Carrosserie en portieren** (`-carr`, `-deur`):
+  - voorkant: grille-trapezium met vier golvende lamellen, mistlampkassen, sensoren en sproeierdoppen; achterlichtlens en tankklep;
+  - raamkader binnen, schermgreep van het panoramadak;
+  - glasmarkering: AGC rechtsvoor, Pilkington op de zijruiten van de achterportieren;
+  - doordringingen bij het openen opgelost: raamkader binnen, armsteun en slotbeugel, bekledingspaneel van het achterportier, achterklepbekleding binnen de sponning.
+- **Onderstel** (`-chs`): stuur (airbagkussen, zilveren U-spaak, knoppen, chromen ruit), velg met tien Y-spaken en donkere binnenvelg, naafdop met ruit, band Michelin 225/45 R18, wielbouten ingekort.
+- **Logo's:** de Renault-ruit staat op de neus, de achterklep, het stuur en de naafdoppen (verbod opgeheven door de gebruiker).
+- **Nummers** (`-pn`): motor F4R 813 zeker (typeplaatje BT15). Vier nieuwe keuzes na blinde verificatie (turbo, startmotor, krukaspositiesensor, aandrijfas rechts); 17 eenheden hebben een gekozen uitvoering. Afgewezen en teruggedraaid: dynamo, stofhoes en aanslagrubber 18 inch, montageset remblokken 18 inch. `data/pn/meta.json` is bijgewerkt.
+- **App** (`-app`): `#openSeg` met een aangevinkte radio (en `data-also` voor Openen in de cockpit), "Naar buiten" zichtbaar bij een open paneel, pointer capture bij het slepen met de muis, pijltoetsen in de cockpit, gemeten dockhoogte. Itest-controle 23 aangepast en 25 nieuw.
+- **Testlaag:** de dichte botsingsmeting `opendicht` is een vaste poort in `finaltests.sh`, de nightly en de CI-testlijst, omdat de gewone opentest doordringingen tot 35,8 mm miste (uitleg in `docs/testen.md`). Itest-controles 14, 18, 20 en 24 wachten ruimer op de trage runner; de nightly faalde daardoor van 17 tot en met 20 oktober.
+
+T4 naar 1,8 MB raw en 490 kB gzip (besluit van de gebruiker); de paginagrootte van de testbouw staat in `docs/cijfers.md`. Carrosserie en Onderstel zitten dicht tegen hun driehoekenbudget (zie `docs/cijfers.md`); in ronde 2 moest Carrosserie weer onder het budget.
+
+Rondes (21 oktober): twee rondes, daarna reparatieronde 1 (advisor) en reparatieronde 2 (fotopunten). De strikte set op de eindstand, het advisor-oordeel en de zwaaimeting staan er nog niet bij: die volgen met de publicatie van versie 20.
+
+Open voor later:
+- zijrooster iets lager dan op de foto, en de bestuurderszijde staat verder van de instrumentenkap dan op de foto;
+- remschijf licht (gedeeld materiaal in `core.js`, dus via de orkestrator);
+- spleet in de carrosserie tussen voorruitglas en voorruitrubber (x 0,63 tot 0,66);
+- de rand van de achterklepbekleding rond de onderhoeken van de achterruit zwaait 13 tot 23 mm door de sponning, in een stand die de opentest als contact in dichte stand negeert;
+- raamkader van het achterportier ligt in hetzelfde vlak als de B-stijl (mogelijk flikkeren);
+- onderdeelnummers `U_ALT`, `U_BUMP`, `U_PADKIT` en `U_START` blijven open;
+- app-advisor A1 tot A3: `aria-description`, Openen uitzetten in de cockpit met de muis, en pijltoetsen omhoog en omlaag in de radiogroep;
+- bumpersteun voor rechts tegen de steunhouder van de motorkapsteun: -3,0 mm;
+- staartsilhouet: herzien kan met een foto van de achterkant van de auto (besluit van de gebruiker, geaccepteerd zoals het is);
+- de rest van de open punten uit golf 5k, 5l en 5m blijft staan.

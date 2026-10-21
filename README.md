@@ -21,7 +21,7 @@ De eerste keer toont de pagina een korte hint. Die verdwijnt na de eerste handel
 - Onderkant: voorste langsliggers boven de aandrijfassen, achterste langsliggers naar binnen, bodemplaat met opkant boven de torsiebalk, tank en koolstoffilter voor de balk, ATF-koeler lager, multiriem 1.672 mm.
 - Telefoon: staand een schuivende presetrij en een compacte kaart, de openerlijst sluit na een keuze, het kader volgt de echte hoogte van kaart en dock; liggend een zijkolom. Op alle schermen dimt de rest van de auto bij het duiken naar een onderdeel (U19).
 - Onderdeelnummers: voor 13 verkoopeenheden staat de uitvoering voor deze auto vast (blok Gekozen voor deze auto, volgens de RDW en het chassisnummer van de gebruiker); 58 varianten blijven open.
-- Gegevens van de auto volgens de RDW (Euro 5 A, 125 kW, 8,7 l/100 km, 201 g/km, eerste toelating 18 februari 2011); de motor is waarschijnlijk een F4Rt 813.
+- Gegevens van de auto volgens de RDW (Euro 5 A, 125 kW, 8,7 l/100 km, 201 g/km, eerste toelating 18 februari 2011); de motor is een F4Rt 813 (zeker sinds golf 5n, volgens het typeplaatje van de eigen auto).
 
 ## Nieuw in golf 5b-3 (versie 10)
 

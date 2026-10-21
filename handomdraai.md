@@ -1,69 +1,78 @@
 # Handomdraai laguna3
 
-## Overdracht voor de volgende sessie (20 oktober 2026, na versie 19)
+## Overdracht voor de volgende sessie (21 oktober 2026, na golf 5n; versie 20 is gebouwd en nog niet gepubliceerd)
 
 ### Waar alles staat
-- **Gepubliceerd:** versie 19.
+- **Gepubliceerd:** nog steeds versie 19.
   - Tag `v19` op `3bd5b51`; daarna alleen docs op `main`.
   - Pages: https://rvd-gmpplus.github.io/laguna3/ (md5 `2c4461ba5340c8a0a324b02df772148a`).
   - Artefact versie 21: https://claude.ai/artifact/4qJq7YUk5nGSFmexY7WkZR.
-- **Werkplek:** de hoofdcheckout `laguna3/` staat op `main` en is schoon.
-  - Op 20 oktober 2026 na versie 19 opgeruimd: alle 70 worktrees en 97 lokale takken, allemaal volledig in `main`.
-  - De vijf `src/app2-*.js` die in de hoofdcheckout als gewijzigd stonden, verschilden alleen in regeleinden (CRLF) en zijn teruggezet.
-  - Op GitHub staan alleen `main` en `gh-pages`.
-  - `VERSION` staat nog op 19; zet hem op 20 bij de start van de volgende golf, in een eigen worktree vanaf `origin/main`.
+- **Versie 20 (golf 5n):** gebouwd op de tak `golf-5n` (`VERSION` 20, tip van de code `cee8ac3`, daarna deze docs-commit) en **nog niet gepubliceerd**.
+  - Publicatie, terugleescontrole (Pages en artefact byte voor byte) en tag `v20` volgen.
+  - De orkestrator vult na de publicatie aan: de commit, het tijdstip, de md5, de artefactversie en de rij in `CHANGELOG.md`.
+  - `index.html` in de tak is nog de bouw van versie 19 (stempel "19 (bron aa7048c)"). Herbouw met `python3 build.py` na de laatste samenvoeging en de volledige set, dan pas publiceren.
+  - De paginagrootte van de testbouw staat in `docs/cijfers.md`, sectie Pagina.
+- **Werkplek:** de worktree `.claude/worktrees/golf-5n`; de domeintakken `golf-5n-app`, `-pn`, `-int`, `-dash`, `-carr`, `-deur` en `-chs` zijn samengevoegd in `golf-5n`. Begin met `git ls-remote --heads origin` en een vergelijking van elke tak met `main`.
 - **Linux-tests:** `tools/lag3-vm.sh test --repo "$PWD"`, met een tijdelijke container per run.
   - Uitvoer in `~/.cache/explosietekening/lag3-vm/out/ft-laguna3-<commit>`.
   - Containers van andere sessies (`s26u-linux:1`, `explosie-test:1`) niet aanraken.
 
-### Wat golf 5m deed
-- **Paneel slepen op de telefoon:** standen peek, open en vol, met vegen en tikken; itest-controle 24.
-- **Openen in de cockpit:** je blijft zitten en Uitstappen heet dan "Naar buiten"; itest-controle 23.
-- **Onderdeelnummers:** zes plakken `data/pn/units/G5m-*.json`.
-  - Een verifieerder wees 18 van 18 lokvogels af; 20 nummers zijn geschrapt.
-  - Advisor: pass na één correctie.
-  - Dekking per pad: past 618, kies op VIN 464, gekozen 104, niet gevonden 1.118, niet onderzocht 886.
-- **Besluiten:** `docs/onderzoek/beslissingen.md` (golf 5m) en `docs/onderzoek/databankenrecht.md` paragraaf 12.
-  - Alleen los verkrijgbare onderdelen.
-  - Het Renault-nummer plus hooguit één merknummer.
-  - Bewijs D alleen bij `vin`.
-  - De headless-route is toegestaan en vastgelegd; er staat geen nummer meer van in de gegevens.
-  - Renault-catalogus op VIN (partsouq) later.
-  - T4 is 1,7 MB raw en 450 kB gzip; de gebruiker: "mag groter indien nodig".
-- **Bronnen voor nummers:**
-  - Jina en Firecrawl hebben geen tegoed.
-  - curl op autodoc.parts geeft 403.
-  - Wat werkt: curl op spareto.com (`Crawl-delay: 1`, geen `?brand=` en geen `?per_page=`), Exa, en de OEM-pagina's van autodoc.parts via Exa.
-  - Het werkplaatshandboek (MR 415) is de pdf `Renault_Laguna-III_2007-2014_[EN-FR-ES].pdf` in OneDrive (`Documenten/PDF/HANDLEIDING/`). Het bevat ongeveer 40 Renault-nummers, vooral producten.
+### Volgende stappen (in deze volgorde)
+1. **Publicatie van versie 20.**
+   - Eindstand: `index.html` herbouwen, de volledige set op macOS en Linux (nu met de poort `opendicht`), visdiff op Linux, zwaaimeting van de openers tegen `main`, advisor-oordeel pass.
+   - Visdiff: de beelden van interieur, onderstel en voorkant zijn inhoudelijk veranderd; beoordeel de verschillen en vernieuw de Linux-basislijn waar ze bedoeld zijn. Niet beoordeeld in deze docs-ronde.
+   - Daarna `main` fast-forward, Pages en artefact teruglezen, tag `v20`, en `CHANGELOG.md`, deze handomdraai en `docs/cijfers.md` aanvullen.
+2. **espace5:** `python3 tools/framework.py export` van de cockpit en van de testpoort `opendicht`, de volledige set draaien en publiceren. Eerdere afspraak: vraag eerst toestemming voor het publiceren van espace5.
+3. **Golf 6:** three.js 0.186.1 als ES-module, versie 21. De besluiten staan in `docs/onderzoek/beslissingen.md`, rij Golf 6, en in `docs/masterplan.md`, sectie Golf 6. Het plan van de spike stond in het scratchpad en is niet in de repo bewaard.
+
+### Wat golf 5n deed
+- **Foto's van de eigen auto:** portierkaarten, raamkader binnen, stoelen, hoofdsteunnaden, schermgreep van het panoramadak, dashboard en console (twaalf punten), zijroosters, keuzehendel, dakgrepen, stuur, velg met tien Y-spaken, naafdop, band, voorkant, achterlichtlens en tankklep. Per onderdeel: `CHANGELOG.md` (versie 20) en `docs/masterplan.md`, sectie Golf 5n.
+- **Logoverbod opgeheven** (besluit van de gebruiker): de Renault-ruit staat op de neus, de achterklep, het stuur en de naafdoppen.
+- **Middelste achtergordel** uit de rugleuning.
+- **Motor F4R 813 is zeker** (typeplaatje BT15). Onderdeelnummers: vier nieuwe keuzes na blinde verificatie, 17 eenheden met een keuze; `data/pn/meta.json` bijgewerkt.
+- **Glasmarkering** per ruit: AGC rechtsvoor, Pilkington op de zijruiten van de achterportieren.
+- **Doordringingen bij het openen** opgelost; de gewone opentest had ze gemist (tot 35,8 mm).
+- **Testlaag:** poort `opendicht` in `finaltests.sh`, de nightly en de CI-testlijst; itest-fixes voor de trage CI-runner (controles 14, 18, 20 en 24); itest 23 aangepast en 25 nieuw. Aantallen: `docs/testen.md`.
+- **App:** `#openSeg` met een aangevinkte radio, "Naar buiten" zichtbaar bij een open paneel, pointer capture, pijltoetsen in de cockpit, gemeten dockhoogte.
+- **Besluiten van de gebruiker** (`docs/onderzoek/beslissingen.md`, "Besluiten van 21 oktober 2026"): T4 naar 1,8 MB raw en 490 kB gzip, glasmarkering, RDW-gegevens blijven staan, staartsilhouet zoals het is, toerenteller 0 tot 7, golf 6.
+- **Bronnen voor nummers** (stand 20 oktober, niet opnieuw getoetst):
+  - Jina en Firecrawl hadden geen tegoed; curl op autodoc.parts gaf 403.
+  - Wat werkte: curl op spareto.com (`Crawl-delay: 1`, geen `?brand=` en geen `?per_page=`), Exa, en de OEM-pagina's van autodoc.parts via Exa.
+  - Het werkplaatshandboek (MR 415) is de pdf `Renault_Laguna-III_2007-2014_[EN-FR-ES].pdf` in OneDrive (`Documenten/PDF/HANDLEIDING/`).
   - Het kenteken leidt in Autodoc naar TecDoc-type 23370. Kenteken en chassisnummer komen nooit in de repo.
 
 ### Open punten (in volgorde van waarde)
-1. **De nightly-workflow faalde** op `3216616` (20 oktober, 07:44 UTC). Niet onderzocht; eerst `gh run view` voor de log.
-2. **App:**
-   - `#openSeg` heeft in de cockpit met Openen twee radio's op `aria-checked` (`src/app2-controls.js:455`);
-   - "Naar buiten" is niet te zien als het paneel open staat in de cockpit op een staande telefoon (`src/head.html:315`);
-   - slepen met de muis zonder pointer capture (`src/app2-panel.js` circa r.536);
-   - in de cockpit gaat pijl links en dan rechts in het segment terug naar de blik van de zitplaats (`app2-controls.js:420`).
+1. **De nightly:** de itest-fixes van golf 5n horen de nachtelijke fouten (reload in controle 18, resize in 20, de overgang in 24, een tik in 14) te verhelpen. Of de eerstvolgende nightly groen is, is niet gecontroleerd; zie eerst `gh run list` en de log.
+2. **Geometrie uit golf 5n** (details: `docs/masterplan.md`, sectie Golf 5n):
+   - zijrooster iets lager dan op de foto, en de bestuurderszijde staat verder van de instrumentenkap;
+   - remschijf licht (gedeeld materiaal in `core.js`; via de orkestrator);
+   - spleet in de carrosserie tussen voorruitglas en voorruitrubber (x 0,63 tot 0,66);
+   - de rand van de achterklepbekleding rond de onderhoeken van de achterruit zwaait 13 tot 23 mm door de sponning, in een stand die de opentest als contact in dichte stand negeert;
+   - raamkader van het achterportier in hetzelfde vlak als de B-stijl (mogelijk flikkeren);
+   - bumpersteun voor rechts tegen de steunhouder van de motorkapsteun: -3,0 mm;
+   - staartsilhouet: herzien kan met een foto van de achterkant (besluit: nu zoals het is).
 3. **Nummers:**
+   - `U_ALT`, `U_BUMP`, `U_PADKIT` en `U_START` blijven open;
    - de distributiekappen hangen als `set` aan TCOVER, met een zwakke grond;
    - partsouq op VIN voor de varianten (de gebruiker typt het chassisnummer zelf of geeft toestemming);
    - interieur, uitlaat, koeling en elektra zijn dun: de catalogi voor type 23370 hebben weinig.
-4. **Cockpit naar espace5** met `python3 tools/framework.py export`. Vraag het eerst, en publiceer espace5 pas na toestemming.
-5. **Open uit golf 5k en 5l:** `docs/masterplan.md`, de secties golf 5k en golf 5l, met als belangrijkste:
-   - de rugschaal van de voorstoelen is vanaf de achterbank vlak zwart;
-   - de gordelband in het midden achter vult het beeld;
-   - de achterlichtlens schemert rood bij achteroverleunen.
+4. **App-advisor A1 tot A3:** `aria-description`, Openen uitzetten in de cockpit met de muis, en pijltoetsen omhoog en omlaag in de radiogroep.
+5. **Open uit golf 5k, 5l en 5m:** `docs/masterplan.md`, de secties van die golven. Rugschaal en kaartvak van de voorstoelen, de middelste gordelband en de achterlichtlens zijn in golf 5n aangepakt maar niet opnieuw vanuit de cockpit beoordeeld.
 
 ### Afspraken die in deze sessie golden
 - Elke versie wordt direct na een groene poort gepubliceerd. Daarna Pages en het artefact byte voor byte teruglezen, tag `vN` zetten en de docs bijwerken: CHANGELOG, deze handomdraai, masterplan en cijfers.
+- Klaar is: volledige set groen op macOS en Linux, inclusief de dichte botsingsmeting `opendicht`; visdiff groen op Linux; zwaaimeting zonder nieuwe doordringingen; advisor pass.
 - Advisor:
   - Opus 5.5 high voor gewone golven;
   - Fable 5.1 xhigh voor het interieur en waar de gebruiker erom vraagt;
   - "doe het eerst zelf, lukt het niet goed, raadpleeg Fable 5.1 xhigh".
 - Ruis:
-  - een `Page.goto: Timeout 120000ms` in itest of shots op de Mac kwam deze sessie door een load average boven 8; de test los opnieuw draaien was groen;
+  - een `Page.goto: Timeout 120000ms` in itest of shots op de Mac kwam door een load average boven 8; de test los opnieuw draaien was groen;
   - visdiff op de Mac telt niet.
 - Een golf zonder geometriewijziging (alleen app, tekst of nummers) heeft geen zwaaimeting nodig. Controleer dat met `git diff --stat vN HEAD -- src/`.
+- Na elke commit van een agent: `git diff --stat` om te zien dat geen bestand leeg of afgekapt is.
+
+Stand 21 oktober 2026, golf 5n: versie 20 (foto's van de eigen auto, Renault-ruit, F4R 813 zeker, poort `opendicht`) is gebouwd op de tak `golf-5n` en nog niet gepubliceerd; publicatie, terugleescontrole en tag `v20` volgen. Open punten: zie `docs/masterplan.md`, golf 5n. Volgende: publicatie van versie 20, espace5, dan golf 6 (three.js 0.186.1, versie 21).
 
 Stand 20 oktober 2026, golf 5m: versie 19 (paneel slepen, Openen in de cockpit, onderdeelnummers) is gepubliceerd (`main` fast-forward `6192326..3bd5b51`, tag `v19`, artefactversie 21, Pages byte voor byte teruggelezen). Open punten: zie `docs/masterplan.md`, golf 5m.
 
@@ -98,11 +107,12 @@ Stand van de live versie, 17 oktober 2026: versie 10 (golf 5b-3) is gepubliceerd
 
 - Renault Laguna III hatchback, Initiale Paris, fase 2, zilvergrijs, 2.0 Turbo 125 kW met zestraps automaat AJ0, panoramadak, geen 4Control (opgave van de gebruiker).
 - Volgens de RDW: eerste toelating 18 februari 2011, benzine 1998 cc, EURO 5 A, 8,7 l/100 km, 201 g/km, spoor voor 156 cm en achter 151 cm. De RDW geeft geen bandenmaat en geen motorsuffix.
-- Motor waarschijnlijk F4Rt 813: MR 415 geeft bij de hatchback de F4R 811 alleen Euro 4 en de 813 ook Euro 5. Het motorplaatje beslist. Zie `docs/onderzoek/beslissingen.md`.
+- Motor F4Rt 813, zeker sinds 21 oktober 2026 (typeplaatje BT15; eerder waarschijnlijk: MR 415 geeft bij de hatchback de F4R 811 alleen Euro 4 en de 813 ook Euro 5). Zie `docs/onderzoek/beslissingen.md`.
 - Kenteken en chassisnummer zijn bekend in de sessie maar staan bewust niet in de repo (openbaar). De docs zeggen "volgens de RDW" of "volgens het chassisnummer van de gebruiker".
 
 ## Wat werkt
 
+- Golf 5n (21 oktober 2026; versie 20, gebouwd op de tak `golf-5n`, nog niet gepubliceerd; details in [docs/masterplan.md](docs/masterplan.md), sectie Golf 5n, en [CHANGELOG.md](CHANGELOG.md)): het model naar de foto's van de eigen auto (portierkaarten, stoelen, dashboard, stuur, velg, voorkant), de Renault-ruit op neus, achterklep, stuur en naafdoppen, F4R 813 zeker, doordringingen bij het openen opgelost en de dichte botsingsmeting `opendicht` als vaste poort.
 - Boom, driehoeken per hoofdgroep, tekenopdrachten en ingesloten knopen: zie [docs/cijfers.md](docs/cijfers.md) (sinds fase 3 van golf 5b-3 opnieuw gemeten; de opstarttijden komen van de Mac, niet van de container). Sinds golf 5b-2 heeft de Carrosserie weer marge (G1).
 - Vervolgronde 5g (19 oktober 2026; versie 13, gepubliceerd op 19 oktober 2026, tag `v13`; details in [docs/masterplan.md](docs/masterplan.md), sectie Vervolgronde 5g): de accu links achter in de motorruimte boven de automaat met de zekeringkast op de accubak (`src/systems.js`; luchtfilterhuis 3 cm naar voren en ingekort, aanzuigslang, resonator, hete laadluchtslang, brandstofleiding, accukabels verlegd (stuurslangen: alleen tekst)), de velgtekst en de multiriemtekst naar de waarnemingen en de catalogus, de motorkapcommentaar, `VERSION` 13.
 - Golf 5f en 5e (19 oktober 2026; versie 12, gepubliceerd; details in [docs/masterplan.md](docs/masterplan.md), sectie Golf 5f en 5e): carrosserie in drie rondes en een advisor-ronde (B-stijl mat zwart en breder, staartvlak dat naar voren helt, bumperpunt afgerond, uitlaateinden in een inham in de bumper, randen voor zonder kartels, achterste dakglas zonder lichtvlek, spiegelvoet, afgeronde binnendelen van het achterlicht, klepscharnierblad achter het scharnierblok, rechte zijnaden van de achterklep), kaartlezer en startknop in het dashboard, voorportier 67 graden, velgtekst, ATF Elfmatic J6, de uitklapanimatie met een begrensde trap (`CFG.tijd.staffel*`), en `LAG3_GPU=1` in de harness voor beelden op de echte GPU.
@@ -119,6 +129,8 @@ Stand van de live versie, 17 oktober 2026: versie 10 (golf 5b-3) is gepubliceerd
 - Na het samenvoegpunt van PR #3 (`b529ac1`) voegde de parallelle sessie nog toe en publiceerde als versie 7: zijbekleding van de bagageruimte in donker vilt over de wielkasten en de vulpijp, een lichte onderzijde aan de klapbare bagagevloer (volger), een grotere schermgreep en een taupe schermcassette, nieuwe camera's voor handschoenenkastje, zonnekleppen, middenarmsteun achter en bagagevloer, en een poortcamera van 70 graden voor het dak. Die commits zitten via de samenvoeging van 16 oktober in deze tak.
 
 ## Tests
+
+Golf 5n (tak `golf-5n`, versie 20): de uitslag van de strikte set op macOS en Linux, de zwaaimeting en het advisor-oordeel op de eindstand staan hier nog niet; ze volgen met de publicatie. Wat er aan de testlaag veranderd is (poort `opendicht`, itest 23 tot 25 en de robuustere controles 14, 18, 20 en 24): [docs/testen.md](docs/testen.md), "Resultaten golf 5n".
 
 Golf 5c-2 (tak `golf-5c2`): Mac: op `84b9adc` (19 oktober 2026, 05:02 tot 05:14 UTC) alles groen in één run: 13 van 13 tests, itest 232 van 232, visdiff 42 van 42 tegen een eigen Mac-meting van `ca0e159`, anchor ok; ruis: alleen `GPU stall due to ReadPixels`. VM (Linux) en visdiff: op `84b9adc` (05:14 tot 05:32 UTC) alles groen behalve visdiff, 40 van 42 tegen de basislijn van versie 10: 33-tailgate (2,52 procent, K9) en 38-openDoors (1,53 procent, K11), beide bedoeld en bekeken; daarna de Linux-basislijn vernieuwd in `922f416` (42 van 42 binnen de drempel, anchorcheck.json ongewijzigd). Wat gemeten is: de zwaai van achterklep en expansiedop gaf 0 nieuwe doordringingen (ECHT 0), S7 voor K11 is voor 0,92 en 0,80 elk 8 van 9, en advisor ronde 1 gaf PASS onder voorwaarden. Details en de regel over de rustende lus in het bevroren contract: [docs/testen.md](docs/testen.md).
 
@@ -160,12 +172,12 @@ Op volgorde van wat de gebruiker het eerst ziet; de lijst van de parallelle sess
 
 10. Dekking: ongeveer 1.120 onderdelen niet onderzocht (Aandrijflijn 578, Carrosserie 269, Interieur 267 volgens de inventaris van golf 5) en 750 onderzocht zonder nummer. Aanpak: een vervolgronde in plakken met de verificatiepoort, Firecrawl heeft weer tegoed (ander account) en Exa werkt ook (komt langs Cloudflare).
 11. Varianten: 58 eenheden open. Beslissend: het typeplaatje op de B-stijl, de bandenmaat en het motorplaatje (811 of 813). De dynamo is bewust weer open: bij de 813 geeft MR 415 een vrijloopriemschijf.
-12. Artikelen die in de bron "F4R 811" noemen (injector, inlaatluchttemperatuursensor, katalysator) moeten opnieuw bekeken worden als het motorplaatje 813 zegt.
+12. Artikelen die in de bron "F4R 811" noemen (injector, inlaatluchttemperatuursensor, katalysator) moeten opnieuw bekeken worden als het motorplaatje 813 zegt (gedaan: het is de 813, sinds golf 5n zeker).
 13. Renault-catalogus op VIN: geen bron gevonden die het chassisnummer kent (partsouq kende het niet). Een uitrustingsblad van een dealer geeft alles in een keer.
 
 ### Feiten en model
 
-14. Motorcode 811 of 813: waarschijnlijk 813, zekerheid middel. "Geen faseversteller" is alleen voor de 811 bewezen (persmap 2007).
+14. Motorcode 811 of 813: de 813, zeker sinds golf 5n (typeplaatje BT15). "Geen faseversteller" is alleen voor de 811 bewezen (persmap 2007).
 15. ATF: gesloten in golf 5e (19 oktober 2026). Elfmatic J6, 7,6 l totaal, 3,5 l na aftappen; ELF MATIC S6 is een tabelnaam of drukfout (zie `docs/onderzoek/beslissingen.md`).
 16. Hoeken en slagen van de openers zijn geschat, op één na: het voorportier staat sinds golf 5f op 67 graden (RiDC, gradenboog op een Laguna Grandtour Initiale 2011; Aannemelijk, mogelijk een plafond van het protocol). De gebruiker kan de rest aan de eigen auto meten (zie Meetlijst). Afgehandeld in vervolgronde 5g (19 oktober 2026, waarnemingen van de gebruiker): de achterklep blijft op 66 graden (de gebruiker vindt de stand goed; het open punt H1 over de brochuremaat "Height with boot open 1 900" mm is gesloten, al is het hoogste punt van de open klep in het model 2,36 m), de motorkap van 65 graden past bij de geschatte 60 tot 75 graden, de velg is 18 inch met 225/45 R18 en de accu staat links achter boven de automaat (in het model verplaatst). Open: de hoek van het achterportier en de motor-ECU (MR 415 zet hem op de accubak; het model heeft hem nog rechts tegen het schot).
 17. Oud en bekend: de kabelboom in de cabine raakt de nieuwe opkant in de bodemplaat; achterarm en veerrubber liggen aan de binnenkant van de wielkast boven de vloerplaat; de tank is schematisch kleiner dan 66 liter; 84 van de 345 labelankers liggen achter een ander deel; de spoilerlip leest van opzij als losse zwarte wig (S7). De donkere spikkels op motorkap, dak en portieren in het bovenaanzicht zijn een SwiftShader-artefact (gemeten in golf 5f). Op de echte GPU van de Mac (ANGLE Metal, Apple M5 Pro) zijn er geen spikkels, en `ready` is 0,67 s (mediaan van 5) tegen 2 tot 7 s met SwiftShader. Opnames voor oordelen op het oog (S7, galerij) gaan sindsdien met `LAG3_GPU=1` op de echte GPU; de testset, visdiff en de basislijnen blijven op SwiftShader. Een controle op een echt toestel blijft nuttig (stap 7 van [docs/telefoontest.md](docs/telefoontest.md)).
@@ -208,8 +220,8 @@ Plan en tabel: [docs/masterplan.md](docs/masterplan.md), sectie "Vervolgronde 5g
 
 Wat de gebruiker met een rolmaat, een hoekmeter (telefoon) en een blik kan vaststellen; elk gegeven vervangt een schatting.
 
-1. Motorplaatje op het blok: F4R 811 of F4R 813.
-2. Typeplaatje op de B-stijl aan de bestuurderskant: type en uitrustingscode.
+1. Motorplaatje op het blok: gedaan, F4R 813 (typeplaatje BT15, golf 5n).
+2. Typeplaatje op de B-stijl aan de bestuurderskant: gedaan in golf 5n (zie `docs/onderzoek/beslissingen.md`, rij Typeplaatje).
 3. Bandenmaat op de band: gedaan, 225/45 R18 (vervolgronde 5g).
 4. Openingshoek van de motorkap op de steunstang, en de lengte van de steunstang (de gebruiker schatte 60 tot 75 graden; het model heeft 65 graden; een meting kan dat verfijnen).
 5. Openingshoek van een voorportier en een achterportier in de eerste en de laatste stand (het voorportier staat op 67 graden volgens RiDC; het achterportier is nog niet bevestigd).
