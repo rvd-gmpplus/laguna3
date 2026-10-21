@@ -1681,6 +1681,8 @@ def run_sheetdrag(s):
     def na():
         # de overgang loopt op beeldvernieuwingen en SwiftShader is traag: wacht tot het paneel klaar is met klikken (data-drag weg)
         pp.wait_for_function("!document.getElementById('sheet').dataset.drag", timeout=10000)
+        # op de CI-runner vuurt de vangtimer (vangMs) soms voor transitionend: de hoogte loopt dan nog; wacht tot de overgang klaar is
+        pp.wait_for_function("document.getElementById('sheet').getAnimations().length === 0", timeout=10000)
         pp.wait_for_timeout(250)
         return info()
     g = ctr('#sheetToggle'); x = g[0]
