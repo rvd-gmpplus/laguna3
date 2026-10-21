@@ -646,7 +646,8 @@ def run_view(s, tag, w, h, touch):
     preset(pg, 'assembled'); pg.evaluate("__model.setOpenMode(true)"); settle(pg, 250)
     n_open = pg.evaluate('__model.openers().length')
     def press(sel):
-        pg.tap(sel) if touch else pg.click(sel)
+        # op de CI-runner (SwiftShader) wacht een tik soms langer dan 30 s op een beeld (nightly 39620342740, #btnCloseAll)
+        pg.tap(sel, timeout=90000) if touch else pg.click(sel, timeout=90000)
         settle(pg, 120)
     press('#btnOpenAll')
     a = pg.evaluate('__model.openers().every(o => o.target === 1 && o.open > 0.99)')
