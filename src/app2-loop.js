@@ -8,6 +8,7 @@ let uiRefitCheck = false;
 const uiViewPrev = { l: -99, r: -99, t: -99, b: -99 };
 let uiViewW = 0, uiViewH = 0;
 function layoutView() {
+  syncSheetHeight(); // --sheet-h en --dock-h kloppen na elke meting, ook na een formaatwissel of draaiing in de cockpit (golf 5n)
   const wide = !uiSheetBottom(); // bureaublad of telefoon liggend: het paneel staat als kolom rechts
   const title = els.topbar.querySelector('.title').getBoundingClientRect();
   const acts = els.topbar.querySelector('.top-actions').getBoundingClientRect();
@@ -81,10 +82,20 @@ function resize() {
   requestRender(); // P4: de lus kan stilstaan; een nieuwe buffermaat is leeg tot de volgende weergave
 }
 window.addEventListener('resize', () => { resize(); uiRefitSoon(); });
+// Binnen een ResizeObserver-melding blijft --dock-h staan (zie uiInRO in app2-panel.js); een beeld later wordt hij bijgewerkt als het dock een andere hoogte kreeg.
+let uiDockRaf = 0;
+function uiDockLater() {
+  if (uiDockRaf) return;
+  uiDockRaf = requestAnimationFrame(() => {
+    uiDockRaf = 0;
+    if (uiSheetBottom() && document.getElementById('app').style.getPropertyValue('--dock-h') !== els.dock.offsetHeight + 'px') { syncSheetHeight(); layoutView(); }
+  });
+}
+function uiRoMelding(fn) { uiInRO = true; try { fn(); } finally { uiInRO = false; } uiDockLater(); }
 if (window.ResizeObserver) {
   let lastH = 0;
-  new ResizeObserver(() => { syncSheetHeight(); layoutView(); const h = els.sheet.offsetHeight; if (uiSheetBottom() && !uiSheetDragging() && Math.abs(h - lastH) > CFG.indeling.herkaderPx) uiRefitSoon(); /* niet tijdens het slepen: setSheet herkadreert na het loslaten */ lastH = h; }).observe(els.sheet);
-  new ResizeObserver(() => layoutView()).observe(els.dock);
+  new ResizeObserver(() => uiRoMelding(() => { syncSheetHeight(); layoutView(); const h = els.sheet.offsetHeight; if (uiSheetBottom() && !uiSheetDragging() && Math.abs(h - lastH) > CFG.indeling.herkaderPx) uiRefitSoon(); /* niet tijdens het slepen: setSheet herkadreert na het loslaten */ lastH = h; })).observe(els.sheet);
+  new ResizeObserver(() => uiRoMelding(layoutView)).observe(els.dock);
 }
 
 /* ---------- thema ---------- */

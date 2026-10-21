@@ -53,11 +53,12 @@ Controles (zie de app-brief):
      Enter en spatie werken, de overgang staat tijdens het slepen uit, --sheet-h en het dock volgen, de kop sleept niet vanaf knoppen
      en niet buiten peek, draaien midden in het slepen laat niets hangen
   25 golf 5n (app): (a) precies één radio aria-checked in #openSeg in elke combinatie van modus en cockpit, met één tabstop op die radio;
-     (b) Uitstappen en Naar buiten zichtbaar, vrij van de segmentknop en klikbaar in peek, open en vol op de telefoon staand (390 x 844);
-     (c) paneel slepen met de muis met pointer capture op de greep (en op de kop zodra het slepen begint), losgelaten bij loslaten of
-     annuleren, en het slepen werkt buiten de greep en buiten het venster; (d) pijltoetsen in het modussegment in de cockpit laten de
-     blik staan zolang de zitplaats niet wisselt. Oorzaak van (d): uiSetViewMode('cockpit') riep uiSetCockpit aan terwijl je al zat, en
-     die zet bij elke aanroep oog en blik terug op de zitplaats; pijl links (Openen) en weer rechts (Cockpit) trof dat
+     (b) Uitstappen en Naar buiten zichtbaar, vrij van de segmentknop en klikbaar in peek, open en vol op de telefoon staand (390 x 844,
+     360 x 780, 320 x 568, ook met een gewikkelde #ckCtl); (c) paneel slepen met de muis met pointer capture (doel van de pointermove is de
+     greep, ook ver ervan en buiten het venster; got- en lostpointercapture; kop pas bij het slepen); (d) pijltoetsen in de cockpit: de
+     focus blijft op de aangevinkte radio, de blik blijft staan en #srMelding meldt Openen aan of uit; (e) het paneel in vol bij in- en
+     uitstappen; (f) kinderen van de kop na een korte sleep; (g) --sheet-h en --dock-h na formaatwissel en draaien in de cockpit.
+     Oorzaak van (d): uiSetViewMode('cockpit') riep uiSetCockpit aan terwijl je al zat, en die zet bij elke aanroep oog en blik terug op de zitplaats
 """
 import sys, os, random, json, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -1819,10 +1820,12 @@ def run_golf5n(s):
     pg.click('#btnCkOut'); settle(pg, 400); pg.wait_for_timeout(300); settle(pg, 100)
     een('Naar buiten: Openen buiten', 'Openen')
     pg.close()
-    # (d) pijltoetsen in het modussegment laten de cockpitblik staan zolang de zitplaats niet wisselt
+    # (d) pijltoetsen in het modussegment in de cockpit: de focus blijft op de aangevinkte radio (Cockpit), de blik blijft staan en een
+    # statusregio zegt wat er met Openen gebeurde; alleen uit- en instappen wisselt de zitplaats
     pg = s.page(1280, 800)
     pg.evaluate(JS_CK)
     ck = lambda: pg.evaluate("(() => { const k = __model.cockpit(); return k && { seat: k.seat, yaw: k.yaw, pitch: k.pitch, fov: k.fov, eye: k.eye, off: k.off, moving: k.moving, om: __model.state().openMode }; })()")
+    foc = lambda: pg.evaluate("(() => { const a = document.activeElement; return { id: a && (a.dataset.ckmode ? 'cockpit' : a.dataset.omode || a.id), checked: a && a.getAttribute('aria-checked'), melding: document.getElementById('srMelding').textContent }; })()")
     same = lambda a, b: a and b and a['seat'] == b['seat'] and all(abs(a[k] - b[k]) < EPS for k in ('yaw', 'pitch', 'fov')) and all(abs(x - y) < EPS for k in ('eye', 'off') for x, y in zip(a[k], b[k]))
     pg.evaluate("__model.setOpenMode(false); __model.preset('assembled'); __model.setCockpit('bestuurder', true); __model.finishAll()"); settle(pg, 200)
     seat = next(x for x in pg.evaluate('__model.cockpitSeats()') if x['id'] == 'bestuurder')
@@ -1831,98 +1834,230 @@ def run_golf5n(s):
     check('25 d voorwaarde: de blik is gedraaid en staat niet op de blik van de zitplaats', k0 and (abs(k0['yaw'] - seat['kijk'][0]) > 1 or abs(k0['pitch'] - seat['kijk'][1]) > 1), json.dumps([k0, seat['kijk']]))
     pg.focus('#openSeg [data-ckmode="cockpit"]')
     pg.keyboard.press('ArrowLeft'); settle(pg, 250)
-    k1 = ck()
-    check('25 d pijl links (Cockpit naar Openen): je blijft zitten met de blik van nu en de klikmodus Openen', same(k0, k1) and k1['om'] and not k1['moving'], json.dumps([k0, k1]))
+    k1, f1 = ck(), foc()
+    check('25 d pijl links in de cockpit: Openen gaat aan, je blijft zitten met de blik van nu, geen overgang', same(k0, k1) and k1['om'] and not k1['moving'], json.dumps([k0, k1]))
+    check('25 d pijl links: de focus blijft op de aangevinkte radio (Cockpit) en een melding zegt dat Openen aan staat', f1['id'] == 'cockpit' and f1['checked'] == 'true' and 'Openen aan' in f1['melding'], json.dumps(f1))
     pg.keyboard.press('ArrowRight'); pg.wait_for_timeout(300); settle(pg, 250)
-    k2 = ck()
-    check('25 d pijl rechts (Openen naar Cockpit): de blik, het oog en het gezichtsveld blijven, geen overgang', same(k0, k2) and not k2['moving'], json.dumps([k0, k2]))
+    k2, f2 = ck(), foc()
+    check('25 d pijl rechts: Openen gaat uit, de blik, het oog en het gezichtsveld blijven, geen overgang', same(k0, k2) and not k2['om'] and not k2['moving'], json.dumps([k0, k2]))
+    check('25 d pijl rechts: de focus blijft op Cockpit (aangevinkt) en een melding zegt dat Openen uit staat', f2['id'] == 'cockpit' and f2['checked'] == 'true' and 'Openen uit' in f2['melding'], json.dumps(f2))
     pg.click('#openSeg [data-ckmode="cockpit"]'); pg.wait_for_timeout(300); settle(pg, 250)
     k3 = ck()
     check('25 d een klik op Cockpit terwijl je al zit laat de blik staan', same(k0, k3) and not k3['moving'], json.dumps([k0, k3]))
-    # de modus wisselt wel echt: Uitklappen en weer Cockpit (pijl rechts, pijl rechts) zet je op de blik van de zitplaats
+    # de modus wisselt wel echt: links (Openen aan), links (Uitklappen: uitstappen); rechts, rechts zet je op de blik van de zitplaats
     pg.focus('#openSeg [data-ckmode="cockpit"]')
     pg.keyboard.press('ArrowLeft'); settle(pg, 150); pg.keyboard.press('ArrowLeft'); settle(pg, 300)
     out = [pg.evaluate('__model.state().cockpit'), pg.evaluate('__model.state().openMode')]
+    f3 = foc()
+    check('25 d twee keer links: eerst Openen aan, dan Uitklappen (uitstappen); de focus staat op de aangevinkte radio Uitklappen', out == [None, False] and f3['id'] == 'expand' and f3['checked'] == 'true', json.dumps([out, f3]))
     pg.keyboard.press('ArrowRight'); settle(pg, 150); pg.keyboard.press('ArrowRight'); pg.wait_for_timeout(300); settle(pg, 300)
-    k4 = ck()
-    check('25 d twee keer links stapt uit naar Uitklappen; twee keer rechts zit je weer op de blik van de zitplaats', out == [None, False] and k4 and k4['seat'] == 'bestuurder' and abs(k4['yaw'] - seat['kijk'][0]) < EPS and abs(k4['pitch'] - seat['kijk'][1]) < EPS, json.dumps([out, k4, seat['kijk']]))
+    k4, f4 = ck(), foc()
+    check('25 d twee keer rechts vanaf Uitklappen zet je weer op de blik van de zitplaats, met de focus op Cockpit',
+          k4 and k4['seat'] == 'bestuurder' and abs(k4['yaw'] - seat['kijk'][0]) < EPS and abs(k4['pitch'] - seat['kijk'][1]) < EPS and f4['id'] == 'cockpit' and f4['checked'] == 'true', json.dumps([k4, seat['kijk'], f4]))
+    # op elk moment is de gefocuste radio de aangevinkte (nooit "Openen, niet aangevinkt" terwijl de toets het aanzette)
+    bad = []
+    for key in ('ArrowLeft', 'ArrowRight', 'ArrowRight', 'ArrowLeft', 'ArrowLeft'):
+        if pg.evaluate('__model.state().cockpit') is None:
+            pg.evaluate("__model.setCockpit('bestuurder', true); __model.finishAll()"); settle(pg, 200); pg.focus('#openSeg [data-ckmode="cockpit"]')
+        pg.keyboard.press(key); settle(pg, 150)
+        f = foc()
+        if f['checked'] != 'true':
+            bad.append([key, f])
+    check('25 d vijf pijlen na elkaar: de gefocuste radio is steeds de aangevinkte', not bad, json.dumps(bad))
     pg.close()
-    # (b) Uitstappen en Naar buiten blijven zichtbaar en klikbaar bij peek, open en vol (telefoon staand, aanraking)
+    # (b) Uitstappen en Naar buiten blijven zichtbaar en klikbaar bij peek, open en vol (telefoon staand, aanraking), op drie formaten,
+    # ook met een gewikkelde #ckCtl (de dockhoogte komt uit de meting, --dock-h, niet uit een vast getal)
+    GEO = """(() => { const b = document.getElementById('btnCkOut'), r = b.getBoundingClientRect(), sh = document.getElementById('sheet'), sr = sh.getBoundingClientRect(), sg = document.getElementById('openSeg').getBoundingClientRect(),
+      dk = document.getElementById('dock').getBoundingClientRect(), st = document.getElementById('app').style, cx = r.left + r.width / 2, cy = r.top + r.height / 2, hit = document.elementFromPoint(cx, cy);
+      return { state: sh.dataset.state, size: sh.dataset.size || '', vis: r.width > 0 && r.height > 0, inView: r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight, hit: !!hit && hit.closest('#btnCkOut') === b,
+        overSeg: dk.top < sg.bottom || r.top < sg.bottom, overSheet: dk.bottom > sr.top + 1 || r.bottom > sr.top + 1, gap: Math.round(dk.top - sg.bottom), dockH: Math.round(dk.height), dockVar: parseFloat(st.getPropertyValue('--dock-h')),
+        sheetH: Math.round(sr.height), sheetVar: parseFloat(st.getPropertyValue('--sheet-h')), txt: b.textContent, ck: __model.state().cockpit }; })()"""
+    WRAP = '#app.ckmode #ckCtl{flex-wrap:wrap;width:100%;box-sizing:border-box}#app.ckmode #ckSeat{flex:1 1 100% !important}'  # zitplaatskeuze op een eigen regel: het dock wordt ruim 38 px hoger
+    fails = []
+    for (w, h, wrap) in ((390, 844, False), (360, 780, False), (320, 568, False), (390, 844, True), (320, 568, True)):
+        pp = s.page(w, h, scale=2, touch=True)
+        pp.add_style_tag(content='#sheet{transition:none!important}' + (WRAP if wrap else ''))
+        pp.evaluate(JS_CK)
+        for omode in (True, False):
+            pp.evaluate("__model.setOpenMode(false); __model.preset('assembled'); __model.setCockpit('bestuurder', true); __model.finishAll()"); pp.wait_for_timeout(300)
+            if omode:
+                pp.tap('#openSeg [data-omode="open"]'); settle(pp, 250)
+            res = []
+            for st, sz in (('peek', None), ('open', ''), ('open', 'vol')):
+                pp.evaluate(f"setSheet({json.dumps(st)}, {json.dumps(sz) if sz is not None else 'undefined'})")
+                waited = True
+                try:
+                    pp.wait_for_function("(() => { const b = document.getElementById('btnCkOut').getBoundingClientRect(), s = document.getElementById('sheet').getBoundingClientRect(); return b.width > 0 && b.bottom <= s.top + 1; })()", timeout=2500)
+                except Exception:
+                    waited = False  # een knop die niet boven het paneel komt is een fout, geen reden om door te gaan
+                pp.wait_for_timeout(200)
+                g = pp.evaluate(GEO); g['waited'] = waited
+                res.append(g)
+            want_txt = 'Naar buiten' if omode else 'Uitstappen'
+            ok = all(g['waited'] and g['vis'] and g['inView'] and g['hit'] and not g['overSeg'] and not g['overSheet'] and g['txt'] == want_txt and g['ck'] == 'bestuurder'
+                     and abs(g['dockVar'] - g['dockH']) <= 1 and g['gap'] >= 3 for g in res)
+            if not ok:
+                fails.append([w, h, wrap, omode, res])
+            if (w, h, wrap, omode) == (390, 844, False, True):
+                shot(pp, 'itest_cockpit_vol_naar_buiten')
+        pp.close()
+    check('25 b telefoon 390 x 844, 360 x 780 en 320 x 568, ook met een gewikkelde #ckCtl (390 en 320), cockpit met en zonder Openen: Uitstappen of Naar buiten zichtbaar, onder de vinger, minstens 3 px onder de segmentknop en boven het paneel in peek, open en vol; --dock-h is de dockhoogte', not fails, json.dumps(fails)[:1500])
+    # in vol echt tikken: Uitstappen brengt je naar buiten (een mislukte tik is een fout)
     pp = s.page(390, 844, scale=2, touch=True)
     pp.add_style_tag(content='#sheet{transition:none!important}')
     pp.evaluate(JS_CK)
-    geo = lambda: pp.evaluate("""(() => { const b = document.getElementById('btnCkOut'), r = b.getBoundingClientRect(), sh = document.getElementById('sheet'), sr = sh.getBoundingClientRect(), sg = document.getElementById('openSeg').getBoundingClientRect(),
-      cx = r.left + r.width / 2, cy = r.top + r.height / 2, hit = document.elementFromPoint(cx, cy);
-      return { state: sh.dataset.state, size: sh.dataset.size || '', vis: r.width > 0 && r.height > 0, inView: r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight, hit: !!hit && hit.closest('#btnCkOut') === b,
-        overSeg: r.top < sg.bottom && sg.top < r.bottom, overSheet: r.bottom > sr.top + 1, txt: b.textContent, ck: __model.state().cockpit }; })()""")
-    for omode in (True, False):
-        pp.evaluate("__model.setOpenMode(false); __model.preset('assembled'); __model.setCockpit('bestuurder', true); __model.finishAll()"); pp.wait_for_timeout(300)
-        if omode:
-            pp.tap('#openSeg [data-omode="open"]'); settle(pp, 250)
-        res = []
-        for st, sz in (('peek', None), ('open', ''), ('open', 'vol')):
-            pp.evaluate(f"setSheet({json.dumps(st)}, {json.dumps(sz) if sz is not None else 'undefined'})")
-            try:
-                pp.wait_for_function("(() => { const b = document.getElementById('btnCkOut').getBoundingClientRect(), s = document.getElementById('sheet').getBoundingClientRect(); return b.width > 0 && b.bottom <= s.top + 1; })()", timeout=2500)
-            except Exception:
-                pass
-            pp.wait_for_timeout(200)
-            res.append(geo())
-        want_txt = 'Naar buiten' if omode else 'Uitstappen'
-        ok = all(g['vis'] and g['inView'] and g['hit'] and not g['overSeg'] and not g['overSheet'] and g['txt'] == want_txt and g['ck'] == 'bestuurder' for g in res)
-        check(f'25 b telefoon 390 x 844, cockpit {"met" if omode else "zonder"} Openen: {want_txt} zichtbaar, vrij van segmentknop en paneel en onder de vinger in peek, open en vol', ok, json.dumps(res))
-        if omode:
-            shot(pp, 'itest_cockpit_vol_naar_buiten')
-    # in vol echt tikken: Uitstappen brengt je naar buiten
+    pp.evaluate("__model.setOpenMode(false); __model.preset('assembled'); __model.setCockpit('bestuurder', true); __model.finishAll()"); pp.wait_for_timeout(300)
+    pp.evaluate("setSheet('open', 'vol')"); pp.wait_for_timeout(300)
+    tapok, tapinfo = True, ''
     try:
         pp.tap('#btnCkOut', timeout=4000)
-    except Exception as ex:  # een onzichtbare knop is een testfout, geen crash van de hele set
-        print('info 25 b tik op Uitstappen mislukt:', str(ex).splitlines()[0][:120])
+    except Exception as ex:
+        tapok, tapinfo = False, str(ex).splitlines()[0][:160]
     settle(pp, 300); pp.wait_for_timeout(300); settle(pp, 100)
-    check('25 b tikken op Uitstappen in de stand vol verlaat de cockpit', pp.evaluate('__model.state().cockpit') is None and pp.evaluate('controls.enabled'), '')
+    check('25 b tikken op Uitstappen in de stand vol lukt en verlaat de cockpit', tapok and pp.evaluate('__model.state().cockpit') is None and pp.evaluate('controls.enabled'), tapinfo)
     pp.close()
-    # (c) paneel slepen met de muis: pointer capture op de greep, losgelaten bij loslaten en annuleren, slepen buiten greep en venster
+    # (e) vol in de cockpit is een dockhoogte lager dan buiten: in- en uitstappen met het paneel in vol; --sheet-h en --dock-h kloppen steeds
+    fails = []
+    for (w, h) in ((390, 844), (360, 780), (320, 568)):
+        pp = s.page(w, h, scale=2, touch=True)
+        pp.add_style_tag(content='#sheet{transition:none!important}')
+        pp.evaluate(JS_CK)
+        pp.evaluate("__model.setOpenMode(false); __model.preset('assembled'); __model.finishAll()"); pp.wait_for_timeout(300)
+        pp.evaluate("setSheet('open', 'vol')"); pp.wait_for_timeout(300)
+        a = pp.evaluate(GEO)
+        pp.evaluate("__model.setCockpit('bestuurder', true); __model.finishAll()"); pp.wait_for_timeout(500)
+        b = pp.evaluate(GEO)
+        dock = b['dockH']
+        pp.tap('#btnCkOut'); settle(pp, 300); pp.wait_for_timeout(400)
+        c = pp.evaluate(GEO)
+        okv = (a['state'] == 'open' and a['size'] == 'vol' and b['state'] == 'open' and b['size'] == 'vol' and c['state'] == 'open' and c['size'] == 'vol' and a['ck'] is None and b['ck'] == 'bestuurder' and c['ck'] is None
+               and abs((a['sheetH'] - b['sheetH']) - (dock + 4)) <= 2 and abs(c['sheetH'] - a['sheetH']) <= 1
+               and not b['overSeg'] and not b['overSheet'] and abs(b['sheetVar'] - b['sheetH']) <= 1 and abs(b['dockVar'] - dock) <= 1 and c['sheetVar'] == 0 and a['sheetVar'] == 0)
+        if not okv:
+            fails.append([w, h, a, b, c])
+        pp.close()
+    check('25 e vol in de cockpit is een dockhoogte (plus 4 px lucht) lager dan buiten; in- en uitstappen met het paneel in vol laat stand, hoogte en --sheet-h kloppen (buiten 0, in de cockpit de paneelhoogte)', not fails, json.dumps(fails)[:1500])
+    # (g) formaatwissel en draaien in de cockpit: --sheet-h en --dock-h blijven de gemeten waarden
+    pp = s.page(390, 844, scale=2, touch=True)
+    pp.add_style_tag(content='#sheet{transition:none!important}')
+    pp.evaluate(JS_CK)
+    pp.evaluate("__model.setOpenMode(false); __model.preset('assembled'); __model.setCockpit('bestuurder', true); __model.finishAll()"); pp.wait_for_timeout(400)
+    pp.evaluate("setSheet('open', 'vol')"); pp.wait_for_timeout(300)
+    fails = []
+
+    def meet(tag):
+        g = pp.evaluate(GEO)
+        if not (abs(g['sheetVar'] - g['sheetH']) <= 1 and abs(g['dockVar'] - g['dockH']) <= 1 and not g['overSeg'] and not g['overSheet'] and g['ck'] == 'bestuurder'):
+            fails.append([tag, g])
+    for (w, h) in ((360, 780), (320, 568), (390, 844)):
+        pp.set_viewport_size({'width': w, 'height': h}); settle(pp, 500)  # settle geeft de pagina een beeld, anders lopen resize en ResizeObserver niet
+        meet(f'formaatwissel naar {w} x {h}')
+    pp.set_viewport_size({'width': 844, 'height': 390}); settle(pp, 600)   # liggend: het paneel is een zijkolom
+    pp.set_viewport_size({'width': 390, 'height': 844}); settle(pp, 600)   # weer staand: setSheet zet peek
+    meet('terug van liggend (peek)')
+    pp.evaluate("setSheet('open', 'vol')"); pp.wait_for_timeout(300)
+    meet('vol na het draaien')
+    pp.set_viewport_size({'width': 360, 'height': 780}); settle(pp, 500)
+    meet('vol na het draaien en een formaatwissel')
+    # het dock wordt hoger terwijl het paneel in vol staat (de ResizeObserver op het dock): --dock-h volgt en het paneel krimpt mee
+    d0 = pp.evaluate(GEO)['dockH']
+    # zonder settle: alleen de ResizeObserver op het dock kan --dock-h bijwerken (een beeld later, buiten de melding zelf: anders geeft de
+    # browser "ResizeObserver loop completed with undelivered notifications"); de consolecontrole aan het eind van 25 vangt die melding
+    pp.add_style_tag(content=WRAP)
+    try:  # een beeld duurt in de testbrowser honderden ms; meet() hieronder faalt als --dock-h niet bijgewerkt is
+        pp.wait_for_function("(() => { const a = document.getElementById('app').style.getPropertyValue('--dock-h'), d = document.getElementById('dock').offsetHeight; return d > 70 && parseFloat(a) === d; })()", timeout=8000)
+    except Exception:
+        pass
+    pp.wait_for_timeout(300)
+    meet('gewikkeld dock in vol')
+    if pp.evaluate(GEO)['dockH'] < d0 + 30:
+        fails.append(['het dock is niet gewikkeld', d0, pp.evaluate(GEO)['dockH']])
+    pp.tap('#btnCkOut'); settle(pp, 300); pp.wait_for_timeout(400)
+    g = pp.evaluate(GEO)
+    if g['sheetVar'] != 0 or g['ck'] is not None:
+        fails.append(['uitstappen na formaatwissel', g])
+    check('25 g formaatwissel (360 x 780, 320 x 568) en draaien (liggend en terug) in de cockpit met het paneel in vol: --sheet-h is de paneelhoogte, --dock-h de dockhoogte, het dock vrij van segmentknop en paneel; na uitstappen is --sheet-h 0', not fails, json.dumps(fails)[:1500])
+    pp.close()
+    # (c) paneel slepen met de muis: pointer capture op de greep, losgelaten bij loslaten en annuleren, slepen buiten greep en venster.
+    # Playwright stuurt muisgebeurtenissen ook zonder capture naar window; daarom kijkt de test naar wat alleen capture geeft: e.target van de
+    # pointermove is de gevangen greep (of kop) ook als de muis boven iets anders staat, en gotpointercapture en lostpointercapture komen.
     pm = s.page(390, 844, scale=1)
     pm.evaluate(JS_HELPERS)
     pm.evaluate("__model.preset('assembled'); __model.finishAll()"); pm.wait_for_timeout(300)
-    inf = lambda: pm.evaluate("""(() => { const sh = document.getElementById('sheet'), g = document.getElementById('sheetToggle'), k = document.querySelector('#sheet .sel-head');
-      return { state: sh.dataset.state, size: sh.dataset.size || '', drag: sh.dataset.drag || '', inline: sh.style.height, h: Math.round(sh.getBoundingClientRect().height), capG: g.hasPointerCapture(1), capK: k.hasPointerCapture(1), exp: g.getAttribute('aria-expanded') }; })()""")
-    ctr = lambda sel: pm.evaluate(f"(() => {{ const r = document.querySelector({json.dumps(sel)}).getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; }})()")
+    pm.evaluate("""(() => { const nm = t => !t || !t.closest ? 'venster' : t.closest('#sheetToggle') ? 'greep' : t.closest('.sel-head') ? 'kop' : t.closest('#sheet') ? 'paneel' : t.closest('#topbar') ? 'topbar' : t.closest('#dock') ? 'dock' : t.tagName.toLowerCase();
+      window.__pc = { ev: [], clicks: [] };
+      for (const t of ['pointerdown', 'pointermove', 'pointerup', 'pointercancel', 'gotpointercapture', 'lostpointercapture'])
+        window.addEventListener(t, e => window.__pc.ev.push({ t, id: e.pointerId, tg: nm(e.target) }), true);
+      window.addEventListener('click', e => window.__pc.clicks.push({ tg: nm(e.target), id: e.target.id || '' }), true); })()""")
     pm.add_style_tag(content='#sheet{transition:none!important}')
+    pc = lambda: pm.evaluate("(() => { const e = window.__pc.ev; window.__pc.ev = []; return e; })()")
+    inf = lambda pid: pm.evaluate("""(pid) => { const sh = document.getElementById('sheet'), g = document.getElementById('sheetToggle'), k = document.querySelector('#sheet .sel-head');
+      return { state: sh.dataset.state, size: sh.dataset.size || '', drag: sh.dataset.drag || '', inline: sh.style.height, h: Math.round(sh.getBoundingClientRect().height), capG: g.hasPointerCapture(pid), capK: k.hasPointerCapture(pid), exp: g.getAttribute('aria-expanded') }; }""", pid)
+    ctr = lambda sel: pm.evaluate(f"(() => {{ const r = document.querySelector({json.dumps(sel)}).getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; }})()")
     g = ctr('#sheetToggle')
-    pm.mouse.move(g[0], g[1]); pm.mouse.down()
-    a0 = inf()
-    check('25 c muis neer op de greep: de greep heeft pointer capture, nog geen sleep', a0['capG'] and not a0['drag'], json.dumps(a0))
-    pm.mouse.move(g[0], g[1] - 30, steps=3); pm.mouse.move(g[0] - 120, g[1] - 160, steps=4)  # ver naast de greep en hoog boven het paneel
-    a1 = inf()
-    check('25 c muis midden in het slepen, ver van de greep: de greep houdt de capture en het paneel volgt (drag=1, hoger dan peek)', a1['capG'] and a1['drag'] == '1' and a1['h'] > a0['h'] + 100, json.dumps([a0, a1]))
+    pc()
+    pm.mouse.move(g[0], g[1]); pm.mouse.down(); settle(pm, 100)  # got- en lostpointercapture komen asynchroon, bij het volgende beeld
+    e0 = pc(); pid = next((x['id'] for x in e0 if x['t'] == 'pointerdown'), -1)
+    a0 = inf(pid)
+    check('25 c muis neer op de greep: de greep heeft de capture (aanwijzer-id uit de gebeurtenis), nog geen sleep', pid >= 0 and a0['capG'] and not a0['drag'], json.dumps([e0, a0]))
+    pm.mouse.move(g[0], g[1] - 30, steps=3); e0b = pc(); pm.mouse.move(g[0] - 120, g[1] - 160, steps=4)  # ver naast de greep, boven de topbar of de scène
+    e1 = pc(); a1 = inf(pid)
+    # gotpointercapture wordt voor de eerstvolgende pointergebeurtenis verstuurd: hij staat dus in e0b (of e0)
+    check('25 c gotpointercapture is op de greep verstuurd', any(x['t'] == 'gotpointercapture' and x['tg'] == 'greep' for x in e0 + e0b), json.dumps([e0, e0b]))
+    mv1 = [x['tg'] for x in e1 if x['t'] == 'pointermove']
+    check('25 c muis ver van de greep: elke pointermove heeft de greep als doel (alleen capture geeft dat), het paneel volgt (drag=1, hoger)', mv1 and all(t == 'greep' for t in mv1) and a1['capG'] and a1['drag'] == '1' and a1['h'] > a0['h'] + 100, json.dumps([mv1, a0, a1]))
     pm.mouse.move(g[0] + 400, g[1] - 330, steps=4)  # buiten het venster (rechts van de pagina)
-    a2 = inf()
-    check('25 c muis buiten het venster: het slepen volgt nog (paneel groeit mee, capture blijft)', a2['capG'] and a2['drag'] == '1' and a2['h'] >= a1['h'], json.dumps([a1, a2]))
+    e2 = pc(); a2 = inf(pid)
+    mv2 = [x['tg'] for x in e2 if x['t'] == 'pointermove']
+    check('25 c muis buiten het venster: de pointermoves komen nog bij de greep binnen, het paneel groeit mee', mv2 and all(t == 'greep' for t in mv2) and a2['capG'] and a2['drag'] == '1' and a2['h'] >= a1['h'], json.dumps([mv2, a1, a2]))
     pm.mouse.up()
     pm.wait_for_function("!document.getElementById('sheet').dataset.drag", timeout=10000); pm.wait_for_timeout(200)
-    a3 = inf()
-    check('25 c loslaten buiten het venster klikt naar een stand (open of vol), capture losgelaten, geen resten', a3['state'] == 'open' and not a3['drag'] and not a3['inline'] and not a3['capG'] and a3['exp'] == 'true', json.dumps(a3))
+    e3 = pc(); a3 = inf(pid)
+    check('25 c loslaten buiten het venster: pointerup bij de greep, lostpointercapture, een stand (open of vol), geen resten',
+          any(x['t'] == 'pointerup' and x['tg'] == 'greep' for x in e3) and any(x['t'] == 'lostpointercapture' for x in e3) and a3['state'] == 'open' and not a3['drag'] and not a3['inline'] and not a3['capG'] and a3['exp'] == 'true', json.dumps([e3, a3]))
     # annuleren (pointercancel) midden in het slepen: capture en slepen opgeruimd
     pm.evaluate("setSheet('peek')"); pm.wait_for_timeout(300)
-    g = ctr('#sheetToggle')
+    g = ctr('#sheetToggle'); pc()
     pm.mouse.move(g[0], g[1]); pm.mouse.down(); pm.mouse.move(g[0], g[1] - 60, steps=3)
-    b0 = inf()
-    pm.evaluate("window.dispatchEvent(new PointerEvent('pointercancel', { pointerId: 1, pointerType: 'mouse' }))"); pm.wait_for_timeout(100)
-    b1 = inf()
-    check('25 c pointercancel midden in het slepen: capture en slepen opgeruimd, het paneel valt op een stand', b0['capG'] and b0['drag'] == '1' and not b1['capG'] and not b1['drag'] and b1['state'] in ('peek', 'open'), json.dumps([b0, b1]))
-    pm.mouse.up(); pm.wait_for_timeout(100)
-    pm.evaluate("setSheet('peek')"); pm.wait_for_timeout(300)
+    b0 = inf(pid); pc()
+    pm.evaluate("(pid) => window.dispatchEvent(new PointerEvent('pointercancel', { pointerId: pid, pointerType: 'mouse' }))", pid); settle(pm, 100)
+    eb = pc(); b1 = inf(pid)
+    pm.mouse.up(); settle(pm, 100)
+    eb += pc()  # lostpointercapture volgt voor de eerstvolgende pointergebeurtenis (de muis omhoog)
+    check('25 c pointercancel midden in het slepen: capture en slepen opgeruimd, het paneel valt op een stand, lostpointercapture komt',
+          b0['capG'] and b0['drag'] == '1' and any(x['t'] == 'lostpointercapture' for x in eb) and not b1['capG'] and not b1['drag'] and b1['state'] in ('peek', 'open'), json.dumps([b0, eb, b1]))
+    pm.evaluate("setSheet('peek')"); pm.wait_for_timeout(300); pc()
     # de kop in peek: capture zodra het slepen begint (niet bij een tik)
     kp = ctr('#sheet .sel-head')
     pm.mouse.move(kp[0], kp[1]); pm.mouse.down()
-    c0 = inf()
-    pm.mouse.move(kp[0], kp[1] - 40, steps=4)
-    c1 = inf()
+    c0 = inf(pid); pc()
+    pm.mouse.move(kp[0], kp[1] - 40, steps=4); settle(pm, 100)
+    c1 = inf(pid); ec1 = pc()
     pm.mouse.move(kp[0] + 150, kp[1] - 330, steps=4)
-    pm.mouse.up(); pm.wait_for_function("!document.getElementById('sheet').dataset.drag", timeout=10000); pm.wait_for_timeout(200)
-    c2 = inf()
-    check('25 c de kop in peek: geen capture bij een tik, wel zodra het slepen begint, losgelaten aan het eind; paneel open', not c0['capK'] and c1['capK'] and c1['drag'] == '1' and not c2['capK'] and c2['state'] == 'open' and not c2['drag'], json.dumps([c0, c1, c2]))
+    ec2 = pc()
+    pm.mouse.up(); pm.wait_for_function("!document.getElementById('sheet').dataset.drag", timeout=10000); settle(pm, 200)
+    c2 = inf(pid); ec3 = pc()
+    mvk = [x['tg'] for x in ec2 if x['t'] == 'pointermove']
+    check('25 c de kop in peek: geen capture bij het neerzetten, wel zodra het slepen begint (gotpointercapture op de kop, daarna elke move op de kop), losgelaten aan het eind; paneel open',
+          not c0['capK'] and c1['capK'] and c1['drag'] == '1' and any(x['t'] == 'gotpointercapture' and x['tg'] == 'kop' for x in ec1) and mvk and all(t == 'kop' for t in mvk)
+          and not c2['capK'] and any(x['t'] == 'lostpointercapture' for x in ec3) and c2['state'] == 'open' and not c2['drag'], json.dumps([c0, c1, mvk, c2]))
+    # (f) kinderen van de kop: een tik met kleine beweging houdt zijn klik; na een korte sleep (kop gevangen) werken klikken op kinderen weer
+    pm.evaluate("setSheet('peek')"); pm.wait_for_timeout(300)
+    pm.evaluate("(() => { window.__hit = 0; document.getElementById('actToggle').addEventListener('click', () => { window.__hit++; }); })()")
+    hn = ctr('#selName'); pc(); pm.evaluate('window.__pc.clicks = []')
+    pm.mouse.move(hn[0], hn[1]); pm.mouse.down(); pm.mouse.move(hn[0], hn[1] - 3, steps=2); pm.mouse.up(); pm.wait_for_timeout(150)
+    ef = pc(); cl = pm.evaluate('window.__pc.clicks'); af = inf(pid)
+    check('25 f kop: een tik met 3 px beweging (onder de drempel) vangt niet en geeft zijn klik aan het kind (#selName)', not any(x['t'] == 'gotpointercapture' for x in ef) and cl and cl[-1]['id'] == 'selName' and af['state'] == 'peek' and not af['drag'], json.dumps([ef, cl, af]))
+    pm.evaluate('window.__pc.clicks = []')
+    pm.mouse.move(hn[0], hn[1]); pm.mouse.down(); pm.mouse.move(hn[0], hn[1] - 12, steps=3); pm.mouse.up()
+    pm.wait_for_function("!document.getElementById('sheet').dataset.drag", timeout=10000); pm.wait_for_timeout(200)
+    cl2 = pm.evaluate('window.__pc.clicks'); h2 = pm.evaluate('window.__hit')
+    check('25 f kop: een korte sleep (12 px) vanaf #selName: de klik die erop volgt gaat naar de kop en geen kind-actie wordt geraakt', all(x['tg'] in ('kop', 'paneel') for x in cl2) and h2 == 0, json.dumps([cl2, h2]))
+    pm.evaluate("setSheet('peek')"); pm.wait_for_timeout(300)
+    ai = ctr('#actToggle'); pm.evaluate('window.__pc.clicks = []')
+    pm.mouse.move(ai[0], ai[1]); pm.mouse.down(); pm.mouse.up(); pm.wait_for_timeout(150)
+    cl3 = pm.evaluate('window.__pc.clicks'); h3 = pm.evaluate('window.__hit')
+    check('25 f kop: direct na de sleep is een klik op een kind (#actToggle) gewoon een klik: de knop krijgt hem en de capture is weg', cl3 and cl3[-1]['id'] == 'actToggle' and h3 == 1 and not inf(pid)['capK'], json.dumps([cl3, h3]))
     pm.close()
     check('25 geen console-fouten of -waarschuwingen', not s.logs, '; '.join(l[:200] for l in s.logs[:5]))
 

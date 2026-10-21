@@ -502,9 +502,17 @@ if (uiMqSide) { const f = () => { setSheet(uiSide() ? 'open' : 'peek'); }; uiMqS
 $('sheetToggle').onclick = () => setSheet(els.sheet.dataset.state === 'open' ? 'peek' : 'open');
 $('btnParts').onclick = () => { const open = els.sheet.dataset.state === 'open' && !$('tab-tree').hidden; showTab('tree'); setSheet(open ? 'peek' : 'open'); };
 $('btnView').onclick = () => { const open = els.sheet.dataset.state === 'open' && !$('tab-view').hidden; showTab('view'); setSheet(open ? 'peek' : 'open'); };
+// uiInRO: true binnen een ResizeObserver-melding (app2-loop.js). Daar mag --dock-h niet veranderen: het wijzigt in de cockpit de max-height en dus
+// de maat van het paneel, en een maat die tijdens de melding verandert geeft "ResizeObserver loop completed with undelivered notifications".
+// De melding plant daarom een beeld later een nieuwe meting (uiDockLater).
+let uiInRO = false;
 function syncSheetHeight() {
+  if (!uiSheetBottom()) return;
+  const app = document.getElementById('app');
+  // --dock-h eerst: in de cockpit hangt de max-height van het paneel eraan (head.html), dus daarna pas de hoogte van het paneel lezen
+  if (!uiInRO) app.style.setProperty('--dock-h', els.dock.offsetHeight + 'px');
   // tijdens het slepen volgt het dock de bovenrand van het paneel, ook als de stand al open heet
-  if (uiSheetBottom()) document.getElementById('app').style.setProperty('--sheet-h', (els.sheet.dataset.state === 'open' && !uiSheetDragging() && !COCKPIT ? 0 : els.sheet.offsetHeight) + 'px');
+  app.style.setProperty('--sheet-h', (els.sheet.dataset.state === 'open' && !uiSheetDragging() && !COCKPIT ? 0 : els.sheet.offsetHeight) + 'px');
 }
 
 /* ---------- onderpaneel slepen (telefoon staand) ---------- */
