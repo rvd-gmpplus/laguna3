@@ -1204,18 +1204,21 @@ def run_golf5c(s):
     stappen = [(390, 844, 'lade'), (1280, 800, 'kolom'), (844, 390, 'kolom'), (1024, 768, 'kolom'), (1280, 800, 'kolom')]
     for w, h, want in stappen:
         n_log = len(s.logs); n_rs = pg.evaluate('window.__rs')
+        t_rs = time.time()
         pg.set_viewport_size({'width': w, 'height': h})
+        # op een drukke CI-runner liep de wachttijd een keer boven 15 s (nightly 39590622172); de wachttijd staat in de melding
         try:
-            pg.wait_for_function(f'window.__rs > {n_rs}', timeout=15000); event = True
+            pg.wait_for_function(f'window.__rs > {n_rs}', timeout=40000); event = True
         except Exception:
             event = False
+        t_rs = time.time() - t_rs
         stabiel()
         lay = layout()
         ok_l, n, errs = T(pg, 'labelCheck()')
         f = pg.evaluate("__model.frameOf('Motor F4Rt')")
         check(f'20 {w}x{h}: indeling {want}, geen horizontale scroll, labels en het kader van de selectie in het vrije beeld, geen consolefout',
               event and lay['indeling'] == want and not lay['hscroll'] and ok_l and n >= 1 and f['inside'] and f['cover'] >= 0.12 and len(s.logs) == n_log,
-              f"resize-event {event}, indeling {lay['indeling']}, hscroll {lay['hscroll']}, {n} labels {errs}, kader binnen {f['inside']} dekking {f['cover']}, nieuwe meldingen {len(s.logs) - n_log}")
+              f"resize-event {event} na {t_rs:.1f} s, indeling {lay['indeling']}, hscroll {lay['hscroll']}, {n} labels {errs}, kader binnen {f['inside']} dekking {f['cover']}, nieuwe meldingen {len(s.logs) - n_log}")
 
     # 21. stap terug tot 50 stappen. Zou de fouten I5 en I6 (golf 2, commit bc35c25: Röntgen, systeemkleuren en spreiding volgden
     # stap terug niet) over de volle diepte gevangen hebben; de README belooft 50 stappen en controle 5 toetst er maar een.
@@ -1685,6 +1688,9 @@ def run_sheetdrag(s):
         pp.wait_for_function("document.getElementById('sheet').getAnimations().length === 0", timeout=10000)
         pp.wait_for_timeout(250)
         return info()
+    def wacht_stand(stand, ms=20000):
+        try: pp.wait_for_function("document.getElementById('sheet').dataset.state === %s" % json.dumps(stand), timeout=ms)
+        except Exception: pass  # de controle erna meldt de stand die er wel is
     g = ctr('#sheetToggle'); x = g[0]
     i0 = info(); peek = i0['h']
     open_h = 0.64 * i0['innerH']; vol_h = i0['innerH'] - 140
@@ -1766,12 +1772,13 @@ def run_sheetdrag(s):
     # l. draaien midden in het slepen: de zijkolom neemt het over, niets blijft hangen
     gl = ctr('#sheetToggle'); touch('touchStart', [(x, gl[1])])
     for i in range(1, 5): touch('touchMove', [(x, gl[1] - 25 * i)], 0.03); pp.wait_for_timeout(30)
-    pp.set_viewport_size({'width': 844, 'height': 390}); pp.wait_for_timeout(500)
+    # wachten tot de app de draai verwerkt heeft (matchMedia en resize komen op de CI-runner pas na enkele seconden)
+    pp.set_viewport_size({'width': 844, 'height': 390}); pp.wait_for_timeout(500); wacht_stand('open')
     touch('touchEnd', [])
     l1 = na()
     check('24 draaien midden in het slepen: zijkolom open, geen data-drag, geen inline hoogte, geen maat blijft staan', l1['state'] == 'open' and not l1['drag'] and not l1['inline'] and l1['size'] == '' , json.dumps(l1))
-    pp.set_viewport_size({'width': 390, 'height': 844}); pp.wait_for_timeout(600); settle(pp, 200)
-    l2 = info()
+    pp.set_viewport_size({'width': 390, 'height': 844}); pp.wait_for_timeout(600); wacht_stand('peek'); settle(pp, 200)
+    l2 = na()
     check('24 terug naar staand: peek en het slepen werkt weer', l2['state'] == 'peek' and not l2['drag'] and not l2['inline'], json.dumps(l2))
     g3 = ctr('#sheetToggle'); drag(x, g3[1], -330, rust=150); l3 = na()
     check('24 na het draaien werkt slepen weer (open)', l3['state'] == 'open' and abs(l3['h'] - open_h) <= 2, json.dumps(l3))
