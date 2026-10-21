@@ -807,7 +807,7 @@ T4 naar 1,8 MB raw en 490 kB gzip (besluit van de gebruiker); de paginagrootte v
 Rondes (21 oktober): twee rondes, daarna reparatieronde 1 (advisor) en reparatieronde 2 (fotopunten). De strikte set op de eindstand, het advisor-oordeel en de zwaaimeting staan er nog niet bij: die volgen met de publicatie van versie 20.
 
 Open voor later:
-- zijrooster iets lager dan op de foto, en de bestuurderszijde staat verder van de instrumentenkap dan op de foto;
+- zijrooster 5 tot 8 cm lager dan op de foto (bovenkant tot de onderrand van de klokken, op de foto tot de bovenrand), en de bestuurderszijde staat verder van de instrumentenkap dan op de foto; besluit: goed maken in golf 6 (versie 21), met het dashboard daar mee verhoogd (`docs/onderzoek/beslissingen.md`, rij Zijroosters dashboard);
 - remschijf licht (gedeeld materiaal in `core.js`, dus via de orkestrator);
 - spleet in de carrosserie tussen voorruitglas en voorruitrubber (x 0,63 tot 0,66);
 - de rand van de achterklepbekleding rond de onderhoeken van de achterruit zwaait 13 tot 23 mm door de sponning, in een stand die de opentest als contact in dichte stand negeert;

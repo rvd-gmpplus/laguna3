@@ -15,7 +15,7 @@
 
 ### Volgende stappen (in deze volgorde)
 1. **espace5:** `python3 tools/framework.py export` van de cockpit en van de testpoort `opendicht`, de volledige set draaien en publiceren. Eerdere afspraak: vraag eerst toestemming voor het publiceren van espace5.
-2. **Golf 6:** three.js 0.186.1 als ES-module, versie 21. De besluiten staan in `docs/onderzoek/beslissingen.md`, rij Golf 6, en in `docs/masterplan.md`, sectie Golf 6. Het plan van de spike stond in het scratchpad en is niet in de repo bewaard.
+2. **Golf 6:** three.js 0.186.1 als ES-module, versie 21. De besluiten staan in `docs/onderzoek/beslissingen.md`, rij Golf 6, en in `docs/masterplan.md`, sectie Golf 6. Het plan van de spike stond in het scratchpad en is niet in de repo bewaard. Mee in deze golf: de zijroosters van het dashboard 5 tot 8 cm hoger, tot de bovenrand van de klokken, met het dashboard daar mee verhoogd (besluit van de gebruiker, rij Zijroosters dashboard).
 
 ### Wat golf 5n deed
 - **Foto's van de eigen auto:** portierkaarten, raamkader binnen, stoelen, hoofdsteunnaden, schermgreep van het panoramadak, dashboard en console (twaalf punten), zijroosters, keuzehendel, dakgrepen, stuur, velg met tien Y-spaken, naafdop, band, voorkant, achterlichtlens en tankklep. Per onderdeel: `CHANGELOG.md` (versie 20) en `docs/masterplan.md`, sectie Golf 5n.
