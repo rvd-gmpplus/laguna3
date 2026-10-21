@@ -344,8 +344,13 @@ function intBelts() {
     if (x === 0) {
       const gx = -0.15, c = Math.cos(intRB.tilt), sn = Math.sin(intRB.tilt), rbW = (ly, lz, lx = gx) => [lx, intRB.y + ly * c - lz * sn, intRB.z + ly * sn + lz * c];
       const fol = () => follow('Rugleuning groot deel', [0, intRBP.y, intRBP.z], [1, 0, 0], intRBP.ang, { min: 1.456 }), r = [intRB.tilt, 0, 0];
-      // band: over de bovenrand en de afgeronde voorrand (normaal per stuk loodrecht op de band, van de rugleuning af)
-      const band = [rbW(0.5675, 0.004), rbW(0.5665, 0.03), rbW(0.553, 0.0525), rbW(0.53, 0.058), rbW(0.3, 0.0565)];
+      // band: over de geleider, dan langs de raaklijn op de afronding van de bekleding (roundPlate: middelpunt ly 0,53, lz 0,025, straal
+      // 0,03) en langs de voorkant omlaag. Hart van de band 1,5 mm buiten de boog (halve dikte 0,75 mm, plus de koorden van de band
+      // en van de afronding in vier stukken; gemeten 0,35 mm vrij). De raaklijn komt van de voorrand van de geleider (lz 0,013) en raakt
+      // de boog ongeveer 20 graden voorbij de top. Normaal per stuk loodrecht op de band, van de rugleuning af.
+      const bc = [0.53, 0.025], br = 0.0315, p1 = [0.5675, 0.013], dl = Math.hypot(p1[0] - bc[0], p1[1] - bc[1]);
+      const t0 = Math.atan2(p1[1] - bc[1], p1[0] - bc[0]) + Math.acos(br / dl);
+      const band = [rbW(0.5675, 0.004), rbW(...p1), ...[0, 1, 2, 3, 4].map(k => { const a = t0 + (HALF - t0) * k / 4; return rbW(bc[0] + br * Math.cos(a), bc[1] + br * Math.sin(a)); }), rbW(0.3, 0.0561)];
       grp.push(
         intPart(`Gordelrolautomaat achter ${n}`, G.rbox(0.07, 0.05, 0.04, 0.008), MAT.plastic, 'Oprolautomaat van de middelste achtergordel, in het grote deel van de rugleuning naast de middelste hoofdsteun (plaats geschat).', { p: rbW(0.5, -0.02), r, inner: true, ex: [0, 0.1, -0.1], open: fol() }),
         intPart(`Gordelgeleider achter ${n}`, G.box(0.064, 0.006, 0.026), MAT.plastic, 'Kunststof geleider in de bovenrand van de rugleuning, waar de middelste gordel uit de rugleuning komt.', { p: rbW(0.5635, 0), r, ex: [0, 0.16, 0], open: fol() }),
@@ -752,10 +757,6 @@ function intPlankCords() {
   });
 }
 // hoedenplank: voor 1,3 m breed, achter smaller (de C-stijlen komen naar elkaar toe), afgeronde achterhoeken
-// halve breedte en diepte (vanaf de voorrand) van de uitsparing voor de middelste gordelrolautomaat; de automaat is 0,06 breed en
-// reikt 4,5 cm achter de voorrand; de plank draait om het punt in de automaat, dus de diepte moet ook de hoek van de automaat
-// (5,4 cm van het draaipunt) in elke stand vrijhouden
-const intPlankNotch = { hw: 0.04, d: 0.06 };
 // sparing in elke voorhoek voor de scharnierpen (r 11 mm, x 0,61 tot 0,70) en de kraag aan het eind (r 17 mm, x 0,606 tot 0,614):
 // de pen ligt op de draaias van de plank, dus zonder sparing zat het midden van de voorrand in elke stand 10,6 mm diep in de pen
 // (de inradius van de twaalfhoek). Ondiep deel a over de pen, diep deel b over de kraag; 1,5 tot 4 mm speling rondom. De zijrand
@@ -767,14 +768,14 @@ function intPlankGeo() {
   const arc = (cx, cz, a0) => { for (let i = 0; i <= n; i++) { const a = a0 + i / n * HALF; pts.push([cx + r * Math.cos(a), cz + r * Math.sin(a)]); } };
   // tegen de klok in in (x, z): rechtsachter (x min), linksachter (x plus), linksvoor, rechtsvoor
   arc(-hw1 + r, z1 + r, PI); arc(hw1 - r, z1 + r, PI * 1.5);
-  // uitsparing van 8 cm in de voorrand voor de middelste gordelrolautomaat (die is 6 cm breed, z -1,54 tot -1,62): zonder uitsparing
-  // sneed de plank daar door de automaat (B0 29,06 mm bij open klep; de plank draait om een punt in de automaat)
+  // voorrand recht van pensparing tot pensparing: de uitsparing voor de middelste gordelrolautomaat is weg, want die automaat zit
+  // sinds golf 5n ronde 2 in de rugleuning (besluit van de gebruiker); het draaipunt van de plank blijft waar het was
   const { a, b, xa, xc, xv } = intPlankPen, n0 = pts.length;
-  pts.push([xv, z0 - a], [xa, z0 - a], [xa, z0 - b], [xc, z0 - b], [xc, z0], [intPlankNotch.hw, z0], [intPlankNotch.hw, z0 - intPlankNotch.d], [-intPlankNotch.hw, z0 - intPlankNotch.d], [-intPlankNotch.hw, z0],
+  pts.push([xv, z0 - a], [xa, z0 - a], [xa, z0 - b], [xc, z0 - b], [xc, z0],
     [-xc, z0], [-xc, z0 - b], [-xa, z0 - b], [-xa, z0 - a], [-xv, z0 - a]);
-  // de hoeken van de pensparingen (eerste vijf en laatste vijf punten van de voorrand) met afronding 4 mm; de rest van de omtrek
-  // houdt de afronding van roundPlate
-  const klein = new Set([0, 1, 2, 3, 4, 9, 10, 11, 12, 13].map(i => n0 + i));
+  // de hoeken van de pensparingen (alle tien punten van de voorrand) met afronding 4 mm; de rest van de omtrek houdt de afronding
+  // van roundPlate
+  const klein = new Set([0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => n0 + i));
   return roundPlate(pts, 0.012, 0.004, 0.025, 4, i => klein.has(i)).rotateX(HALF);
 }
 // De hemelbekleding hangt 3,4 cm onder het dakvlak. Het dakframe van het panoramadak (src/panorama.js) hangt tot 2,85 cm eronder; bij 2,8 cm
@@ -842,12 +843,21 @@ function intTrim() {
   // 19 cm met schuin uitlopende benen van bijna 3 cm (zo zijn de benen ook van onderen te zien); de greep volgt de helling van de hemel
   // in lengte en dwars (zoals de zonneklep). Ongeveer 150 driehoeken in plaats van 900 voor de drie afgeronde blokken.
   const gripSec = [[-0.016, -0.004], [-0.012, -0.006], [0.012, -0.006], [0.016, -0.004], [0.016, 0.004], [0.012, 0.006], [-0.012, 0.006], [-0.016, 0.004]];
-  const gripPath = [[-0.095, 0.006], [-0.093, -0.008], [-0.087, -0.019], [-0.075, -0.026], [-0.045, -0.029], [0.045, -0.029], [0.075, -0.026], [0.087, -0.019], [0.093, -0.008], [0.095, 0.006]];
-  const gripGeo = intLoft(gripPath.map(([z, y], i) => { const a = gripPath[Math.max(0, i - 1)], b = gripPath[Math.min(gripPath.length - 1, i + 1)], tz = b[0] - a[0], ty = b[1] - a[1], l = Math.hypot(tz, ty);
+  // De benen eindigen per greep en per been tegen de hemel: de vlakke eindrand 0,8 mm onder het laagste punt van intHemY onder de voet
+  // van het been (in het kader van de greep); de hemelmesh ligt daar tot 0,5 mm onder intHemY (gestraald). Met een vaste beenhoogte
+  // stak een been door de bolling van de hemel in lengte en dwars 3 tot 6 mm in de hemel.
+  const gripPath = top => [[-0.095, top[0]], [-0.093, -0.008], [-0.087, -0.019], [-0.075, -0.026], [-0.045, -0.029], [0.045, -0.029], [0.075, -0.026], [0.087, -0.019], [0.093, -0.008], [0.095, top[1]]];
+  const gripGeo = path => intLoft(path.map(([z, y], i) => { const a = path[Math.max(0, i - 1)], b = path[Math.min(path.length - 1, i + 1)], tz = b[0] - a[0], ty = b[1] - a[1], l = Math.hypot(tz, ty);
     const nz = ty / l, ny = -tz / l;   // normaal in het zijvlak, onder de balk naar beneden
+    // de eindranden van de benen liggen vlak (alleen langs z verschoven), anders reikt het schuine profiel 2 mm boven het hart
+    if (i === 0 || i === path.length - 1) return gripSec.map(([u, v]) => [u, y, z + v * Math.sign(nz)]);
     return gripSec.map(([u, v]) => [u, y + v * ny, z + v * nz]); }));
-  const handle = (s, z, n) => { const rz = s * Math.atan((hl(z, 0.63) - hl(z, 0.57)) / 0.06);
-    return intPart(`Dakgreep ${n} ${sideName(s)}`, gripGeo, MAT.intHemPlast, 'Brede, platte klapgreep in hemelkleur boven het portier, met twee benen in de hemel (vorm geschat naar de foto van de eigenaar).', { p: [s * 0.6, hl(z, 0.6), z], r: [-hlSlope(z, 0.6), 0, rz], ex: [s * 0.1, -0.08, 0] }); };
+  // hoogte van de hemel in het kader van de greep (p, r) boven lokaal (u, w); vier stappen volstaan, de greep staat bijna recht
+  const gripHem = (p, r, u, w) => { const m = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(...r)); let y = 0;
+    for (let i = 0; i < 4; i++) { const q = V3(u, y, w).applyMatrix4(m).add(V3(...p)); y += intHemY(q.z, Math.abs(q.x)) - q.y; } return y; };
+  const handle = (s, z, n) => { const rz = s * Math.atan((hl(z, 0.63) - hl(z, 0.57)) / 0.06), p = [s * 0.6, hl(z, 0.6), z], r = [-hlSlope(z, 0.6), 0, rz];
+    const top = [-1, 1].map(k => Math.min(...[-0.016, 0, 0.016].flatMap(u => [-0.007, 0, 0.007].map(dw => gripHem(p, r, u, k * 0.095 + dw)))) - 0.0008);
+    return intPart(`Dakgreep ${n} ${sideName(s)}`, gripGeo(gripPath(top)), MAT.intHemPlast, 'Brede, platte klapgreep in hemelkleur boven het portier, met twee benen tot tegen de hemel (vorm geschat naar de foto van de eigenaar).', { p, r, ex: [s * 0.1, -0.08, 0] }); };
   // zonneklep: draait om de voorrand omlaag tegen de voorruit. Gevoerd paneel 14 mm, 2,6 mm onder de hemel; spiegel met klepje aan de
   // bovenkant; de arm loopt van de scharniervoet tot de haak, die vast in de hemel zitten
   const visorPanel = (() => { const P = [], c = [[0.17, 0.055, 0.03, 0], [-0.165, 0.07, 0.015, HALF], [-0.165, -0.07, 0.015, PI], [0.15, -0.035, 0.05, 1.5 * PI]];
@@ -984,7 +994,7 @@ function intTrim() {
     ...[1, -1].flatMap(s => sill(s, -0.27, 0.83, 'voor', 0.3, 0.33, -0.03, 0.78)), ...[1, -1].flatMap(s => sill(s, -0.8, -0.29, 'achter', 0.294, 0.326, -0.78, -0.29)),
     ]),
     A('Bagageruimte', { d: 'Bekleding van de bagageruimte met hoedenplank, vloerplaat, zijbekleding over de wielkasten, de luidsprekers van de achterplank en de versterker.', ex: [0, 0.0, -0.3] }, [
-    intUit(intPart('Hoedenplank', intPlankGeo(), MAT.carpet, 'Afdekplaat achter de achterbank boven de bagageruimte; hangt met koordjes aan de achterklep en komt mee omhoog als die opent (geschat 52 graden), met twee scharnierpennen in de zijbekleding aan de voorrand, die in een kleine sparing in de voorhoeken van de plank liggen, en een uitsparing voor de middelste gordelrolautomaat.', Object.assign({ p: [0, 1.0, -1.85], ex: [0, 0.3, -0.2] }, intPlankOpen()))),
+    intUit(intPart('Hoedenplank', intPlankGeo(), MAT.carpet, 'Afdekplaat achter de achterbank boven de bagageruimte; hangt met koordjes aan de achterklep en komt mee omhoog als die opent (geschat 52 graden), met twee scharnierpennen in de zijbekleding aan de voorrand, die in een kleine sparing in de voorhoeken van de plank liggen.', Object.assign({ p: [0, 1.0, -1.85], ex: [0, 0.3, -0.2] }, intPlankOpen()))),
     // scharnierpen: de draagplaat zit achter de zijbekleding (buiten |x| 0,635, onder de bovenrand); zichtbaar blijven een afgeronde kop
     // in donker kunststof (dekt de kier tussen zijbekleding en C-stijlbekleding), de korte pen en de kraag
     ...[1, -1].map(s => intPart(`Plankscharnierpen ${sideName(s)}`, merge([xf(G.cyl('x', 0.011, 0.011, 0.059, 12), [-s * 0.0195, 0, 0]), xf(G.cyl('x', 0.017, 0.017, 0.008, 14), [-s * 0.045, 0, 0]),

@@ -45,7 +45,7 @@
       {"id": "passagier", "label": "Passagier", "knoop": "Passagiersstoel", "oog": [-0.37, 1.12, -0.30], "kijk": [0, -8], "verberg": ["Interieur/Stoelen/Passagiersstoel/Rugleuning"]},
       {"id": "achter-links", "label": "Achterbank links", "knoop": "Achterbank", "oog": [0.42, 1.13, -1.16], "kijk": [0, -6], "verberg": ["Hoofdsteun achter links", "Rugleuning klein deel"]},
       {"id": "achter-midden", "label": "Achterbank midden", "knoop": "Achterbank", "oog": [0, 1.13, -1.16], "kijk": [0, -6], "verberg": ["Hoofdsteun achter midden", "Rugleuning groot deel", "Gordelband achter midden", "Gordeltong achter midden", "Gordelgeleider achter midden"]},
-      {"id": "achter-rechts", "label": "Achterbank rechts", "knoop": "Achterbank", "oog": [-0.42, 1.13, -1.16], "kijk": [0, -6], "verberg": ["Hoofdsteun achter rechts", "Rugleuning groot deel"]}
+      {"id": "achter-rechts", "label": "Achterbank rechts", "knoop": "Achterbank", "oog": [-0.42, 1.13, -1.16], "kijk": [0, -6], "verberg": ["Hoofdsteun achter rechts", "Rugleuning groot deel", "Gordelband achter midden", "Gordeltong achter midden", "Gordelgeleider achter midden"]}
     ],
     "binnen": [],
     "licht": [0, 1.02, 0.0]
