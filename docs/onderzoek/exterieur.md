@@ -51,6 +51,8 @@ Conclusie: 225/45 R18 is een echte, leverbare maat voor deze auto (UK Initiale L
 
 Wieldesign (fase 2, 18"): de persfoto van de zwarte fase 2 hatchback toont **10 spaken**, taps toelopend (breed bij de velgrand, smal bij de naaf), zilver gepolijst, geen lakverschil. Dit komt overeen met de beschrijving van de Celsium, maar de koppeling naam-foto is niet bevestigd (de foto heeft geen onderschrift). Interlagos is een ander ontwerp (multispaak, chrome shadow of zwart, 5 dubbele spaken volgens foto's). **Aannemelijk: 10 spaken, taps; naam Celsium niet bevestigd voor deze foto.**
 
+Aanvulling golf 5n (21 oktober 2026): de foto van de velg van de auto van de gebruiker toont geen tien taps toelopende spaken, maar tien dubbele spaken: twintig holle armen in V-paren, met de vijf wielbouten verzonken in ronde putten en een vlakke zilveren naafdop met de Renault-ruit. Het model volgt die foto (`src/chassis.js`, Velgster); de waarneming van de persfoto hierboven geldt dus niet voor deze auto. Het spaakaantal is waargenomen, het profiel geschat. Op de band van dat wiel staat Michelin.
+
 Visuele afmetingen van het wiel op de foto: velgvlak (zichtbare velg) is 0,71 x bandbuitendiameter, dus past bij 18" (0,457 / 0,660 = 0,69).
 
 ### Tegenstrijdigheid met bestaande doc en `body.js`

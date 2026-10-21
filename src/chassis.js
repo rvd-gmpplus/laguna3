@@ -13,6 +13,75 @@ const chsPt = (M, p) => V3(...p).applyMatrix4(M).toArray();
 // afgeronde doos alleen voor grote, goed zichtbare delen; kleine delen blijven gewone dozen (driehoekenbudget)
 const chsRb = (w, h, d, r) => (Math.min(w, h, d) >= 0.045 && r >= 0.01 ? G.rbox(w, h, d, r) : G.box(w, h, d));
 const chsFlip = g => xf(g, [0, 0, 0], [PI, 0, 0]);                     // bout met kop boven, steel omlaag
+// Renault-ruit als ring met afgeschuinde randen (de schuine vlakken vangen het licht zoals bij het verchroomde embleem): hoogte h,
+// breedte w, binnenruit k maal zo groot, dikte t langs z; achtervlak op z = 0, voorvlak op z = t
+function chsDiamond(h, w, k, t) {
+  return cache(`chsDiamond${h}|${w}|${k}|${t}`, () => {
+    const o = shapeOf([[0, -h / 2], [w / 2, 0], [0, h / 2], [-w / 2, 0]]), b = t * 0.4;
+    o.holes.push(new THREE.Path([[0, -h * k / 2], [-w * k / 2, 0], [0, h * k / 2], [w * k / 2, 0]].map(p => new THREE.Vector2(...p))));
+    const g = new THREE.ExtrudeGeometry(o, { depth: t - 2 * b, bevelEnabled: true, bevelThickness: b, bevelSize: b * 0.7, bevelSegments: 1, curveSegments: 1 });
+    g.computeBoundingBox(); g.translate(0, 0, -g.boundingBox.min.z);
+    return g;
+  });
+}
+// spaakarm met hol, gefacetteerd profiel: stations {c: middelpunt in het wielvlak, n: eenheidsvector dwars op de arm, w: breedte}.
+// Het achtervlak volgt de schotel zb(straal), het voorvlak ligt t hoger met in het midden een groef van g diep; de voorkant is
+// 1,5 mm smaller dan de achterkant (lossing). Vlakke normalen, gesloten mesh (kappen aan beide uiteinden).
+function chsArm(st, t, g, zb) {
+  const R = st.map(({ c, n, w }) => {
+    const h = w / 2, e = h - 0.0015;
+    const at = (u, dz) => { const x = c[0] + n[0] * u, y = c[1] + n[1] * u; return V3(x, y, zb(Math.hypot(x, y)) + dz); };
+    return [at(-h, 0), at(-e, t), at(0, t - g), at(e, t), at(h, 0)];
+  });
+  const pos = [], mid = r => r.reduce((s, v) => s.add(v), V3(0, 0, 0)).multiplyScalar(1 / r.length);
+  const push = (a, b, c, ref) => { if (b.clone().sub(a).cross(c.clone().sub(a)).dot(ref) < 0) [b, c] = [c, b]; for (const v of [a, b, c]) pos.push(v.x, v.y, v.z); };
+  for (let i = 0; i + 1 < R.length; i++) {
+    const m = mid(R[i]).add(mid(R[i + 1])).multiplyScalar(0.5);
+    for (let j = 0; j < 5; j++) {
+      const a = R[i][j], b = R[i][(j + 1) % 5], c = R[i + 1][(j + 1) % 5], d = R[i + 1][j], ref = a.clone().add(b).add(c).add(d).multiplyScalar(0.25).sub(m);
+      push(a, b, c, ref); push(a, c, d, ref);
+    }
+  }
+  const ax = mid(R[R.length - 1]).sub(mid(R[0]));
+  for (const [r, sg] of [[R[0], -1], [R[R.length - 1], 1]]) { const ref = ax.clone().multiplyScalar(sg); push(r[2], r[3], r[4], ref); push(r[2], r[4], r[0], ref); push(r[2], r[0], r[1], ref); }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); geo.computeVertexNormals();
+  return geo;
+}
+// toetsenkastjes op het stuur (foto van de auto): canvastextuur van 256 x 192 pixels, links het kastje met de kantelknop +/- en het
+// symbool van de snelheidsregelaar, rechts het kastje met R (boven) en 0 (onder). Alleen lijnen, geen lettertype (gelijk op elk platform).
+function chsKeyTex() {
+  const c = document.createElement('canvas'); c.width = 256; c.height = 192;
+  const k = c.getContext('2d');
+  k.fillStyle = '#16181b'; k.fillRect(0, 0, 256, 192);
+  const knop = (x0, y0, x1, y1) => { k.fillStyle = '#2a2d31'; k.fillRect(x0, y0, x1 - x0, y1 - y0); k.strokeStyle = '#3a3e43'; k.lineWidth = 3; k.strokeRect(x0 + 1.5, y0 + 1.5, x1 - x0 - 3, y1 - y0 - 3); };
+  knop(17, 15, 111, 177); knop(145, 13, 239, 90); knop(145, 102, 239, 179);
+  k.strokeStyle = '#c9ccd0'; k.lineWidth = 5; k.lineCap = 'round';
+  const lijn = pts => { k.beginPath(); pts.forEach(([x, y], i) => (i ? k.lineTo(x, y) : k.moveTo(x, y))); k.stroke(); };
+  lijn([[50, 42], [78, 42]]); lijn([[64, 28], [64, 56]]);                       // +
+  lijn([[50, 150], [78, 150]]);                                                 // -
+  k.lineWidth = 4; k.beginPath(); k.arc(64, 102, 14, PI * 1.1, PI * 1.9); k.stroke(); lijn([[64, 102], [72, 92]]);   // snelheidsregelaar
+  k.lineWidth = 5;
+  lijn([[184, 66], [184, 36], [196, 36]]); k.beginPath(); k.arc(196, 44, 8, -HALF, HALF); k.stroke(); lijn([[196, 52], [184, 52]]); lijn([[192, 52], [204, 66]]);   // R
+  k.beginPath(); k.ellipse(192, 141, 9, 14, 0, 0, PI * 2); k.stroke();         // 0
+  const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.anisotropy = 4;
+  return t;
+}
+std('chsKeys', 0xffffff, 0, 0.55, { map: chsKeyTex() });
+// kastje (b x h x d) met toetsen; u0: linkerrand van het paneel in de textuur (0 of 0,5); keys: [x, y, b, h] in meter op het kastje.
+// Het voorvlak van kastje en toetsen krijgt het bijbehorende stuk textuur, de andere vlakken een donkere pixel.
+function chsKeyBox(u0, b, h, d, keys) {
+  const uvOf = (x, y) => [u0 + (x / b + 0.5) * 0.5, y / h + 0.5];
+  const box = (w, hh, dd, x, y, z) => {
+    const g = new THREE.BoxGeometry(w, hh, dd), uv = g.attributes.uv;
+    for (let i = 0; i < uv.count; i++) {
+      if (i >= 16 && i < 20) { const [u, v] = uvOf(x + (uv.getX(i) - 0.5) * w, y + (uv.getY(i) - 0.5) * hh); uv.setXY(i, u, v); }
+      else uv.setXY(i, u0 + 0.004, 0.004);
+    }
+    g.translate(x, y, z); return g;
+  };
+  return THREE.BufferGeometryUtils.mergeBufferGeometries([box(b, h, d, 0, 0, d / 2), ...keys.map(([x, y, w, hh]) => box(w, hh, 0.003, x, y, d + 0.0015))]);
+}
 
 function discGeo(rIn, rOut, vented, key, hatH) {
   return cache('chsDisc' + key, () => {
@@ -295,24 +364,48 @@ function buildFrontAxle() {
   std('chsWheelLeather', 0x1d1e21, 0, 0.62);   // zwart leder van stuur en spaken; eigen materiaal, los van de leerkleur van de stoelen
   const wheelPos = V3(0.372, 0.915, 0.36), wR = 0.1725, wr = 0.015;   // krans: buitenmaat 375 mm, greep 30 mm (geschat; verhouding greep/diameter 1 op 12,5 zoals op de persfoto)
   const wPlate = (pts, t, z) => xf(front(shapeOf(pts), t), [0, 0, z]);   // vlakke vorm in het wielvlak, dikte t langs z
-  const wShield = [[-0.045, -0.062], [0.045, -0.062], [0.06, -0.02], [0.065, 0.036], [-0.065, 0.036], [-0.06, -0.02]];   // omtrek van airbagdeksel en naaf
-  const wSpokeL = [[-0.062, 0.010], [-0.158, 0.004], [-0.158, -0.030], [-0.062, -0.042]];
-  const wKeys = sx => merge([[-0.081, -0.003], [-0.097, -0.003], [-0.081, -0.018], [-0.097, -0.018]].map(([x, y]) => xf(G.box(0.012, 0.010, 0.004), [sx * x, y, 0.0045])));
-  const wDiamond = (() => { const o = shapeOf([[0, -0.022], [0.016, 0], [0, 0.022], [-0.016, 0]]); o.holes.push(new THREE.Path([[0, -0.013], [-0.0095, 0], [0, 0.013], [0.0095, 0]].map(p => new THREE.Vector2(...p)))); return front(o, 0.002); })();
-  const wheel = A('Stuurwiel', { d: 'Met zwart leder bekleed driespaaks stuurwiel met bestuurdersairbag en claxon in een kleine naaf met de Renault-ruit. Op de linker- en de rechterspaak zitten de toetsen van de snelheidsregelaar en -begrenzer (indeling schematisch); de audiobediening zit op een satelliet achter het stuur.', p: wheelPos.toArray(), r: [PI + 0.332, 0, PI], ex: [0, 0.25, -0.35] }, [
+  // airbagkussen (foto van de auto): circa 20 x 15 cm, bovenkant breed en bol, onderkant smaller en rond. Tegen de klok in, vanaf
+  // linksboven; de eerste vijftien punten (linksboven via de onderkant naar rechtsboven) dragen ook de zilveren U eromheen.
+  const wShield = [[-0.098, 0.045], [-0.1, 0.025], [-0.098, -0.005], [-0.09, -0.032], [-0.075, -0.055], [-0.055, -0.071], [-0.028, -0.079], [0, -0.08],
+    [0.028, -0.079], [0.055, -0.071], [0.075, -0.055], [0.09, -0.032], [0.098, -0.005], [0.1, 0.025], [0.098, 0.045], [0.084, 0.062], [0.045, 0.069], [0, 0.07], [-0.045, 0.069], [-0.084, 0.062]];
+  const wSpokeL = [[-0.0946, 0.018], [-0.158, 0.012], [-0.158, -0.036], [-0.078, -0.042], [-0.0909, -0.012]];   // binnenrand volgt de naafwand
+  // zilveren U langs de onderste helft van het kussen (buitenwaartse normaal van een omtrek tegen de klok in). Buitenrand 11 mm buiten
+  // de kussenomtrek. Drie lagen die elkaar en de buren alleen raken: voor (z 0,026 tot 0,035) sluit aan op de bolle zijkant van het
+  // deksel (deksel met afronding 5 mm plus 1,3 mm voor de spline en de verstekhoeken), midden (z 0,012 tot 0,026) op de naafwand (0,95 maal de omtrek)
+  // en staat onderaan op de onderste spaak (bovenvlak z 0,012), de flanken (z 0,002 tot 0,012, alleen boven y = -0,04) staan op de
+  // linker- en rechterspaak (bovenvlak z 0,002). Zo zweeft de band nergens en blijft er geen spleet naar de naafwand.
+  const wU = (() => {
+    const S = wShield.slice(0, 15), nrm = (a, b) => { const dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy); return [dy / l, -dx / l]; };
+    const off = (L, d) => L.map((p, i) => { const a = i ? nrm(L[i - 1], p) : nrm(p, L[1]), b = i < L.length - 1 ? nrm(p, L[i + 1]) : a, nx = a[0] + b[0], ny = a[1] + b[1], l = Math.hypot(nx, ny); return [p[0] + d * nx / l, p[1] + d * ny / l]; });
+    const out = off(S, 0.011), lid = off(S.map(([x, y]) => [x * 0.95, y * 0.95 - 0.00025]), 0.0063), wall = S.map(([x, y]) => [x * 0.95, y * 0.95]);
+    const ring = (inn, z0, z1, i0 = 0, i1 = 15) => wPlate(out.slice(i0, i1).concat(inn.slice(i0, i1).reverse()), z1 - z0, (z0 + z1) / 2);
+    return merge([ring(lid, 0.026, 0.035), ring(wall, 0.012, 0.026), ring(wall, 0.002, 0.012, 0, 4), ring(wall, 0.002, 0.012, 11, 15)]);
+  })();
+  // onderste spaak: satijnzilveren plaat van onder het kussen tot in de krans, met een trapeziumvormige uitsparing van circa 4 x 2,5 cm
+  const wLower = (() => {
+    const s = shapeOf([[-0.06, -0.07], [0.06, -0.07], [0.072, -0.1], [0.08, -0.143], [0.04, -0.16], [0, -0.165], [-0.04, -0.16], [-0.08, -0.143], [-0.072, -0.1]]);
+    s.holes.push(new THREE.Path([[-0.019, -0.09], [-0.009, -0.113], [0.009, -0.113], [0.019, -0.09]].map(p => new THREE.Vector2(...p))));
+    const g = new THREE.ExtrudeGeometry(s, { depth: 0.01, bevelEnabled: true, bevelThickness: 0.003, bevelSize: 0.0025, bevelSegments: 2, curveSegments: 1 });
+    g.computeBoundingBox(); g.translate(0, 0, -g.boundingBox.min.z - 0.004); return g;
+  })();
+  const wheel = A('Stuurwiel', { d: 'Met zwart leder bekleed driespaaks stuurwiel (foto van de auto): een groot airbagkussen van circa 20 x 15 cm met de verchroomde Renault-ruit vult het midden; de onderste spaak is satijnzilver en omarmt de onderkant van het kussen als een U, met een trapeziumvormige uitsparing eronder. Op de linkerspaak zit het toetsenkastje van de snelheidsregelaar en -begrenzer met een kantelknop + en -, op de rechterspaak dat met R (hervatten) en 0 (onderbreken); de audiobediening zit op een satelliet achter het stuur.', p: wheelPos.toArray(), r: [PI + 0.332, 0, PI], ex: [0, 0.25, -0.35] }, [
     P('Stuurwielkrans', G.torus('z', wR, wr, 64, 10), MAT.chsWheelLeather, { d: 'Krans met stalen kern, bekleed met zwart leder; buitenmaat circa 37,5 cm met een greep van 30 mm (geschat: de foto\'s geven geen maat, wel de verhouding greep tot diameter van ongeveer 1 op 12,5).', ex: [0, 0, -0.12] }),
-    P('Spaak links', wPlate(wSpokeL, 0.016, -0.006), MAT.chsWheelLeather, { d: 'Brede linkerspaak, bekleed met zwart leder, met de toetsen van de snelheidsregelaar.', ex: [-0.12, 0, -0.06] }),
-    P('Spaak rechts', wPlate(wSpokeL.map(([x, y]) => [-x, y]).reverse(), 0.016, -0.006), MAT.chsWheelLeather, { d: 'Brede rechterspaak, bekleed met zwart leder, met de tweede groep toetsen.', ex: [0.12, 0, -0.06] }),
-    P('Spaak onder', wPlate([[-0.03, -0.06], [0.03, -0.06], [0.046, -0.158], [-0.046, -0.158]], 0.016, -0.006), MAT.chsWheelLeather, { d: 'Brede onderste spaak, bekleed met zwart leder.', ex: [0, -0.12, -0.06] }),
-    P('Sierlijst onderste spaak', wPlate([[-0.012, -0.068], [0.012, -0.068], [0.02, -0.146], [-0.02, -0.146]], 0.002, 0.0032), MAT.satin, { d: 'Sierlijst in satijnchroom op de onderste spaak.', ex: [0, -0.14, 0.02] }),
-    P('Toetsen snelheidsregelaar links', wKeys(1), MAT.plasticGrey, { d: 'Toetsen op de linkerspaak voor de snelheidsregelaar en -begrenzer (instellen, verhogen, verlagen, hervatten; indeling schematisch).', ex: [-0.14, 0, 0.04] }),
-    P('Toetsen snelheidsregelaar rechts', wKeys(-1), MAT.plasticGrey, { d: 'Toetsen op de rechterspaak (indeling schematisch).', ex: [0.14, 0, 0.04] }),
+    P('Spaak links', wPlate(wSpokeL, 0.016, -0.006), MAT.chsWheelLeather, { d: 'Linkerspaak, bekleed met zwart leder, van de krans tot de naafwand naast het kussen; draagt het toetsenkastje van de snelheidsregelaar.', ex: [-0.12, 0, -0.06] }),
+    P('Spaak rechts', wPlate(wSpokeL.map(([x, y]) => [-x, y]).reverse(), 0.016, -0.006), MAT.chsWheelLeather, { d: 'Rechterspaak, bekleed met zwart leder, met het tweede toetsenkastje.', ex: [0.12, 0, -0.06] }),
+    P('Spaak onder', wLower, MAT.satin, { d: 'Brede onderste spaak in satijnzilver, van onder het airbagkussen tot in de krans, met een trapeziumvormige uitsparing van circa 4 x 2,5 cm vlak onder het kussen (foto van de auto).', ex: [0, -0.12, -0.06] }),
+    P('Sierlijst onderste spaak', wU, MAT.satin, { d: 'Satijnzilveren U-band van circa 1 cm breed (van voren gezien) die de onderste helft van het airbagkussen omarmt, van de linker- tot de rechterspaak; de zilveren flank loopt door tot op de lederen spaken en onderaan tot op de onderste spaak, zodat band en spaak één zilveren U vormen (foto van de auto).', ex: [0, -0.14, 0.02] }),
+    P('Toetsen snelheidsregelaar links', chsKeyBox(0, 0.03, 0.045, 0.01, [[0, 0, 0.022, 0.038]]), MAT.chsKeys, { d: 'Verhoogd toetsenkastje op de linkerspaak met één kantelknop: + verhoogt en - verlaagt de ingestelde snelheid, met het symbool van de snelheidsregelaar ertussen (foto van de auto).', p: [-0.127, -0.006, 0.002], ex: [-0.14, 0, 0.04] }),
+    P('Toetsen snelheidsregelaar rechts', chsKeyBox(0.5, 0.03, 0.045, 0.01, [[0, 0.0105, 0.022, 0.018], [0, -0.0105, 0.022, 0.018]]), MAT.chsKeys, { d: 'Verhoogd toetsenkastje op de rechterspaak met twee toetsen boven elkaar: R hervat de opgeslagen snelheid, 0 onderbreekt de regeling (foto van de auto; functie volgens de gebruikelijke Renault-indeling).', p: [0.127, -0.006, 0.002], ex: [0.14, 0, 0.04] }),
     P('Stuurwielnaaf', G.cyl('z', 0.03, 0.03, 0.05, 16), MAT.darkSteel, { d: 'Naaf met spiebaan op de stuuras.', p: [0, 0, -0.03], ex: [0, 0, -0.18] }),
     A('Airbagmodule bestuurder', { d: 'Bestuurdersairbag in het stuurwielcentrum (twee ontstekingsstanden); in het deksel zit de claxon.', ex: [0, 0, 0.12] }, [
-      P('Airbagdeksel', cache('chsBagLid', () => roundPlate(wShield, 0.012, 0.004)), MAT.chsWheelLeather, { d: 'Scheurdeksel van de airbag in de vorm van een schild, zwart met de Renault-ruit; drukken erop bedient de claxon.', p: [0, -0.004, 0.034], ex: [0, 0, 0.1] }),
-      P('Stuurwiellogo', wDiamond, MAT.chrome, { d: 'Verchroomde Renault-ruit op het airbagdeksel.', p: [0, -0.008, 0.0415], ex: [0, 0, 0.16] }),
-      P('Naafkap', cache('chsHubWall', () => { const sh = shapeOf(wShield.map(([x, y]) => [x * 0.95, y * 0.95])); sh.holes.push(new THREE.Path(wShield.map(([x, y]) => new THREE.Vector2(x * 0.88, y * 0.88)))); return front(sh, 0.03); }), MAT.chsWheelLeather, { d: 'Wand van de naaf achter het airbagdeksel; daarbinnen zitten de airbag en de gasgenerator.', p: [0, -0.004, 0.012], ex: [0, 0, 0.07] }),
-      P('Airbag', chsRb(0.08, 0.06, 0.028, 0.01), MAT.fabric, { d: 'Opgevouwen nylon airbag die bij een ongeval opblaast.', p: [0, -0.012, 0.012], ex: [0, 0, 0.05] }),
+      P('Airbagdeksel', cache('chsBagLid', () => {   // gladde omtrek (spline door de punten), rondom 6 mm afgerond: een bol kussen
+        const sh = new THREE.Shape(), q = wShield.map(([x, y]) => new THREE.Vector2(x * 0.95, (y + 0.005) * 0.95 - 0.005));
+        sh.moveTo(q[0].x, q[0].y); sh.splineThru([...q.slice(1), q[0]]);
+        const g = new THREE.ExtrudeGeometry(sh, { depth: 0.004, bevelEnabled: true, bevelThickness: 0.006, bevelSize: 0.005, bevelSegments: 3, curveSegments: 3 });
+        g.translate(0, 0, -0.002); g.deleteAttribute('normal'); g.deleteAttribute('uv'); return creasedWeld(g, 0.6); }), MAT.chsWheelLeather, { d: 'Scheurdeksel van de airbag: een groot, bol kussen van circa 20 x 15 cm, bovenaan breed en afgerond, onderaan smaller, zwart met de Renault-ruit in het midden (foto van de auto); drukken erop bedient de claxon.', p: [0, 0, 0.034], ex: [0, 0, 0.1] }),
+      P('Stuurwiellogo', chsDiamond(0.046, 0.036, 0.42, 0.006), MAT.chrome, { d: 'Verchroomde Renault-ruit in reliëf midden op het airbagdeksel, circa 4,6 cm hoog (foto van de auto).', p: [0, -0.004, 0.0415], ex: [0, 0, 0.16] }),
+      P('Naafkap', cache('chsHubWall', () => { const sh = shapeOf(wShield.map(([x, y]) => [x * 0.95, y * 0.95])); sh.holes.push(new THREE.Path(wShield.map(([x, y]) => new THREE.Vector2(x * 0.88, y * 0.88)))); return front(sh, 0.03); }), MAT.chsWheelLeather, { d: 'Wand van de naaf achter het airbagdeksel; daarbinnen zitten de airbag en de gasgenerator.', p: [0, 0, 0.012], ex: [0, 0, 0.07] }),
+      P('Airbag', chsRb(0.13, 0.095, 0.026, 0.01), MAT.fabric, { d: 'Opgevouwen nylon airbag die bij een ongeval opblaast.', p: [0, -0.004, 0.012], ex: [0, 0, 0.05] }),
       P('Gasgenerator', G.cyl('z', 0.036, 0.036, 0.028, 18), MAT.darkSteel, { d: 'Gasgenerator met twee ontstekers.', p: [0, -0.012, -0.012], ex: [0, 0, -0.02] })]),
     P('Wikkelcontact', annulus(0.028, 0.052, 0.02, 'z', 28), MAT.plasticGrey, { d: 'Spiraalvormig wikkelcontact dat de airbag en de claxon met de kabelboom verbindt terwijl het stuur draait.', p: [0, 0, -0.065], ex: [0, 0, -0.28] }),
     P('Centrale bout', hexBolt(0.06, 0.014, 'z'), MAT.steel, { d: 'Bout die het stuurwiel op de stuuras trekt.', p: [0, 0, -0.1], ex: [0, 0, -0.4] })]);
@@ -361,28 +454,44 @@ function buildWheel(s, front) {
   const tire = G.lathe('x', [[0.2286, -0.103], [0.248, -0.111], [0.29, -0.1135], [0.312, -0.109], [0.324, -0.098], [0.329, -0.083], [0.33, -0.078], [0.33, -0.058], [0.3265, -0.058], [0.3265, -0.046], [0.33, -0.046],
     [0.33, -0.016], [0.3265, -0.016], [0.3265, -0.006], [0.33, -0.006], [0.33, 0.006], [0.3265, 0.006], [0.3265, 0.016], [0.33, 0.016], [0.33, 0.046], [0.3265, 0.046], [0.3265, 0.058], [0.33, 0.058], [0.33, 0.078], [0.329, 0.083], [0.324, 0.098], [0.312, 0.109], [0.29, 0.1135], [0.248, 0.111], [0.2286, 0.103]], 64, 'chsTire');
   const rimB = cache('chsRimBarrel', () => yTo(new THREE.LatheGeometry([[0.2286, -0.106], [0.236, -0.108], [0.236, -0.103], [0.229, -0.098], [0.222, -0.088], [0.205, -0.07], [0.205, 0.04], [0.214, 0.085], [0.226, 0.092], [0.236, 0.098], [0.236, 0.106], [0.2286, 0.106]].map(p => new THREE.Vector2(...p)), 72), 'x'));
-  // sterwerk: tien taps toelopende spaken (breed bij de velgrand, smal bij de naaf) op een naafplaat; de spaken lopen van de naaf
-  // schuin naar buiten tot vlak achter de buitenste velgrand (zoals op de persfoto), zodat er geen kale velgring zichtbaar is
+  // sterwerk (foto van de auto): tien dubbele spaken. Elk paar vertrekt als één voet uit de naafzone (vijf voeten in het verlengde van
+  // de bouten, vijf ertussen) en splitst in twee holle, gefacetteerde armen die naar de velgrand uit elkaar lopen en daar iets
+  // verbreden. Het achtervlak volgt dezelfde schotel als de vorige spaken (zb: achtervlak 0,064 op straal 0,06, 16 procent oplopend).
+  // Gemeten met clash.py (golf 5n): de armen zelf houden achter minstens 12,3 mm en voor 18,3 mm tot het remklauwhuis; de kleinste
+  // afstand van de velgster tot het remklauwhuis achter zit aan de rand van de naafplaat (straal 0,08); de plaat begint daarom op
+  // z 0,059, net boven de centreerkraag, op een bodem van 12 mm op het montagevlak (daarvoor 0,056: 6,2 mm marge).
+  // Naafzone: plaat met vijf ronde putten waarin de bouten verzonken zitten, op een bodem op het montagevlak. Opbouw in het vlak x-y met
+  // de wielas langs z (buiten +), daarna naar x.
   const star = cache('chsRimStar', () => {
-    const list = [];
-    const pad = yTo(new THREE.LatheGeometry([[0.0335, 0.047], [0.072, 0.047], [0.072, 0.064], [0.06, 0.068], [0.0335, 0.068]].map(p => new THREE.Vector2(...p)), 40), 'z');
-    list.push(pad);
-    for (let k = 0; k < 10; k++) {
-      const sp = extrude(shapeOf([[-0.011, 0.06], [0.011, 0.06], [0.016, 0.12], [0.028, 0.222], [-0.028, 0.222], [-0.016, 0.12]]), 0.018);
-      sp.applyMatrix4(new THREE.Matrix4().set(1, 0, 0, 0, 0, 1, 0, 0, 0, 0.16, 1, -0.0096, 0, 0, 0, 1));
-      sp.translate(0, 0, 0.064);
-      sp.rotateZ(k * PI / 5);
-      list.push(sp);
+    const zb = r => 0.064 + 0.16 * (r - 0.06);
+    const list = [yTo(new THREE.LatheGeometry([[0.0335, 0.047], [0.072, 0.047], [0.072, 0.059], [0.0335, 0.059]].map(p => new THREE.Vector2(...p)), 24), 'z')];
+    const hub = shapeOf([...Array(24)].map((_, i) => [0.08 * Math.cos(i * PI / 12), 0.08 * Math.sin(i * PI / 12)]));
+    hub.holes.push(circlePath(0, 0, 0.030));   // gat voor de naafdop; de plaat begint boven de centreerkraag (z 0,059), dus die blijft vrij
+    for (let k = 0; k < 5; k++) hub.holes.push(circlePath(-0.0572 * Math.sin(k * PI * 0.4), 0.0572 * Math.cos(k * PI * 0.4), 0.019));
+    const plate = new THREE.ExtrudeGeometry(hub, { depth: 0.013, bevelEnabled: true, bevelThickness: 0.003, bevelSize: 0.0025, bevelSegments: 1, curveSegments: 8 });
+    plate.computeBoundingBox(); plate.translate(0, 0, 0.059 - plate.boundingBox.min.z);
+    list.push(plate);
+    for (let p = 0; p < 10; p++) {
+      const th = p * PI / 5, u = [-Math.sin(th), Math.cos(th)], m = [-Math.cos(th), -Math.sin(th)];   // as van het paar en dwarsrichting (tegen de klok in)
+      for (const s of [-1, 1]) {
+        const r0 = p % 2 ? 0.046 : 0.074;   // tussen de bouten loopt de voet door tot bij de naafdop, in het verlengde van een bout begint hij voorbij de put
+        const ph = th + s * 0.1, R0 = [r0 * u[0] + s * 0.004 * m[0], r0 * u[1] + s * 0.004 * m[1]], T = [-0.224 * Math.sin(ph), 0.224 * Math.cos(ph)];
+        const dx = T[0] - R0[0], dy = T[1] - R0[1], l = Math.hypot(dx, dy), n = [-dy / l, dx / l];
+        list.push(chsArm([[0, 0.018], [0.3, 0.021], [0.88, 0.031], [1, 0.04]].map(([f, w]) => ({ c: [R0[0] + dx * f, R0[1] + dy * f], n, w })), 0.018, 0.004, zb));
+      }
     }
     return zTo(merge(list), 'x');
   });
   const a = 0.7, wa = [2.1, 4.3];
-  return A(`Wiel ${n}`, { d: 'Lichtmetalen velg met tien taps toelopende spaken en band 225/45 R18. Maat: 18 inch met 225/45 R18, zoals op de auto van de gebruiker (waargenomen); in Nederland bij de Initiale een optie, onder meer in het Pack Lumière (panoramadak plus 18 inch, tot 31 januari 2011), standaard was 17 inch. De naam van het velgontwerp (Celsium) is voor deze auto niet bevestigd.', p: [s * tr, AY, z], s: [s, 1, 1], spec: [['Band', '225/45 R18'], ['Steekcirkel', '5 × 114,3 mm'], ['Bevestiging', '5 wielbouten M14 × 1,5'], ['Middengat', 'Ø66,1 mm'], ['Bandenspanningssensor', 'in het ventiel']], ex: [s * 1.05, -0.1, front ? 0.55 : -0.65] }, [
-    P('Band', tire, MAT.rubber, { d: 'Radiaalband 225/45 R18 met vier lengtegroeven in het loopvlak.', ex: [-0.07, 0, 0] }),
+  return A(`Wiel ${n}`, { d: 'Lichtmetalen velg met tien dubbele spaken (twintig armen in V-paren, foto van de auto) en een Michelin-band 225/45 R18. Maat: 18 inch met 225/45 R18, zoals op de auto van de gebruiker (waargenomen); in Nederland bij de Initiale een optie, onder meer in het Pack Lumière (panoramadak plus 18 inch, tot 31 januari 2011), standaard was 17 inch. Het velgontwerp is aannemelijk de 18 inch Celsium (7,5J x 18, ET 47), maar voor deze auto niet bevestigd.', p: [s * tr, AY, z], s: [s, 1, 1], spec: [['Band', '225/45 R18'], ['Steekcirkel', '5 × 114,3 mm'], ['Bevestiging', '5 wielbouten M14 × 1,5'], ['Middengat', 'Ø66,1 mm'], ['Bandenspanningssensor', 'in het ventiel']], ex: [s * 1.05, -0.1, front ? 0.55 : -0.65] }, [
+    P('Band', tire, MAT.rubber, { d: 'Radiaalband 225/45 R18 met vier lengtegroeven in het loopvlak (profiel schematisch, gladde schouder; het opschrift op de wang is niet gemodelleerd). Merk Michelin: gelezen op de wang van één wiel op de foto van de auto; voor de andere drie wielen aangenomen.', spec: [['Merk', 'Michelin (waargenomen op één wiel)'], ['Maat', '225/45 R18']], ex: [-0.07, 0, 0] }),
     P('Velgbed', rimB, MAT.chsRimWell, { d: 'Velgbed (ton) van gegoten aluminium met de wulpen waarop de band zit.', ex: [0.02, 0, 0] }),
-    P('Velgster', star, MAT.chsRimFace, { d: 'Sterwerk met tien taps toelopende spaken en naafplaat met vijf boutgaten.', ex: [0.1, 0, 0] }),
-    ...[0, 1, 2, 3, 4].map(k => P(`Wielbout ${k + 1}`, hexBolt(0.062, 0.0145, '-x'), MAT.steel, { d: 'Wielbout M14 × 1,5 met conische zitting; klemt het wiel en de schijf op de naaf.', p: [0.068, 0.0572 * Math.cos(k * PI * 0.4), 0.0572 * Math.sin(k * PI * 0.4)], ex: [0.26, 0, 0] })),
-    P('Naafdop', G.lathe('x', [[0, 0.082], [0.02, 0.08], [0.032, 0.074], [0.036, 0.066], [0, 0.066]], 32, 'chsCap'), MAT.chrome, { d: 'Aluminium afdekkap van het velgcentrum; het ontwerp is niet gevonden en is schematisch.', ex: [0.36, 0, 0] }),
+    P('Velgster', star, MAT.chsRimFace, { d: 'Sterwerk met tien dubbele spaken: elk paar vertrekt als één voet uit de naafzone en splitst in twee holle, gefacetteerde armen die naar de velgrand uit elkaar lopen, met grote driehoekige openingen tussen de paren en smalle wiggen binnen een paar. De vijf wielbouten zitten verzonken in ronde putten in de naafzone (foto van de auto; twintig armen waargenomen, profiel geschat).', ex: [0.1, 0, 0] }),
+    ...[0, 1, 2, 3, 4].map(k => P(`Wielbout ${k + 1}`, hexBolt(0.05, 0.0145, '-x'), MAT.steel, { d: 'Wielbout M14 × 1,5 met conische zitting, verzonken in een put van de velg; klemt het wiel en de schijf op de naaf.', p: [0.059, 0.0572 * Math.cos(k * PI * 0.4), 0.0572 * Math.sin(k * PI * 0.4)], ex: [0.26, 0, 0] })),
+    // naafdop als kapje: kraag Ø62 mm (foto) rust op het voorvlak van de naafplaat (z 0,078) en dekt de rand van het gat (Ø60) af,
+    // de klemrand (Ø53 mm, 0,5 mm vrij van de gatwand) steekt 12 mm in het gat; van binnen hol, vrij van de asmoer
+    P('Naafdop', G.lathe('x', [[0, 0.0815], [0.029, 0.0815], [0.031, 0.0795], [0.031, 0.078], [0.0265, 0.078], [0.0265, 0.066], [0.0245, 0.066], [0.0245, 0.0795], [0, 0.0795]], 32, 'chsCap3'), MAT.satin, { d: 'Vlakke zilverkleurige afdekkap van het velgcentrum, circa Ø62 mm, met een klemrand in het gat van de naafplaat (foto van de auto; bevestiging geschat).', ex: [0.36, 0, 0] }),
+    P('Naafdoplogo', zTo(chsDiamond(0.034, 0.026, 0.4, 0.004).clone(), 'x'), MAT.chrome, { d: 'Verchroomde Renault-ruit in reliëf op de naafdop, circa 3,4 cm hoog (foto van de auto).', p: [0.0815, 0, 0], ex: [0.42, 0, 0] }),
     P('Ventielsteel', G.cyl('y', 0.005, 0.0045, 0.036, 10), MAT.alu, { d: 'Ventielsteel met geïntegreerde sensor: loopt door het velgbed naar binnen.', p: [-0.04, 0.188 * Math.cos(a), 0.188 * Math.sin(a)], r: [a, 0, 0], ex: [-0.12, -0.0, 0] }),
     P('Ventieldop', G.cyl('y', 0.0055, 0.0055, 0.012, 10), MAT.plastic, { d: 'Stofdop die het ventiel tegen vuil beschermt.', p: [-0.04, 0.17 * Math.cos(a), 0.17 * Math.sin(a)], r: [a, 0, 0], ex: [-0.2, 0, 0] }),
     P('Bandenspanningssensor', chsRb(0.03, 0.015, 0.04, 0.005), MAT.ecu, { d: 'Zender op de ventielvoet in de band (433 MHz, aannemelijk); meldt de bandenspanning via de UCH.', p: [-0.04, 0.2145 * Math.cos(a), 0.2145 * Math.sin(a)], r: [a, 0, 0], ex: [-0.1, 0.0, 0], inner: true }),

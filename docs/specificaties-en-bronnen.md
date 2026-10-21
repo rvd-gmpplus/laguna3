@@ -124,8 +124,8 @@ Motorcode van de auto van de gebruiker (bijgewerkt op 15 oktober 2026): waarschi
 | Stuurinrichting | Tandheugel, hydraulisch met variabele (snelheidsafhankelijke) assistentie; 2,9 slagen tussen de aanslagen | Renault-persmap 2007 | Bevestigd |
 | Stuurpomp | Vleugelpomp aangedreven door de multiriem (Autodoc-catalogus) met apart reservoir en slangen | Autodoc; Caradisiac-forum, toppiecesvoiture.fr | Bevestigd (aandrijving), Aannemelijk (uitvoering) |
 | Stuurkolom | In hoogte en diepte verstelbaar met hendel, elektrisch kolomslot | Renault-handboek fase 2 | Bevestigd |
-| Velg | 18 inch met band 225/45 R18 (maat van de auto van de gebruiker), 7,5 J × 18, ET 47, tien taps toelopende spaken (ontwerp "Celsium" is niet bevestigd voor de foto) | Waarneming gebruiker (maat); UK-brochure (Initiale Lux), eBay-advertentie, persfoto (J, ET en spaken) | Bevestigd (maat, waarneming gebruiker), Aannemelijk (J, ET en spaken) |
-| Band | 225/45 R18 95W, buitendiameter 0,660 m | UK-brochure, koleso.ee | Bevestigd als leverbare maat |
+| Velg | 18 inch met band 225/45 R18 (maat van de auto van de gebruiker), 7,5 J × 18, ET 47, tien dubbele spaken (twintig armen in V-paren) met verzonken wielbouten en een vlakke naafdop met de Renault-ruit (ontwerp "Celsium" is niet bevestigd) | Waarneming gebruiker (maat); foto van de velg van de auto (spaken, naafdop); UK-brochure (Initiale Lux), eBay-advertentie (J en ET) | Bevestigd (maat, waarneming gebruiker), Bevestigd door waarneming (spaken en naafdop, één foto; profiel geschat), Aannemelijk (J en ET) |
+| Band | 225/45 R18 95W, buitendiameter 0,660 m; merk Michelin | UK-brochure, koleso.ee; foto van de auto (merk, gelezen op één wiel) | Bevestigd als leverbare maat, Bevestigd door waarneming (merk, één wiel; voor de andere drie aangenomen) |
 | Wielbevestiging | 5 × 114,3, centreergat 66,1, wielbouten M14 × 1,5 | koleso.ee, auto-doc.be | Bevestigd (steek en draad), Aannemelijk (centreergat) |
 | Bandenspanningssensor | In het ventiel van elk wiel | Renault-handboek fase 1, Franse brochure 2008 | Bevestigd (principe) |
 | Reservewiel | Standaard geen (bandenreparatieset) | UK-brochure, Renault-persmap | Bevestigd |
