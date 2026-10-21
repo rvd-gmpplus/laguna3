@@ -240,7 +240,7 @@ Voorbereiding, alle scripts en de resultaten staan in [docs/testen.md](docs/test
 
 ## Bekende beperkingen
 
-- Het is een schematisch model. Vormen, maten en posities van onderdelen zijn benaderd en niet geschikt als montagevoorschrift. De carrosserie volgt de officiële hoofdmaten en het gemeten silhouet, maar is een eigen vorm zonder merklogo's of typebadges.
+- Het is een schematisch model. Vormen, maten en posities van onderdelen zijn benaderd en niet geschikt als montagevoorschrift. De carrosserie volgt de officiële hoofdmaten, het gemeten silhouet en foto's van de eigen auto, maar is geen exacte kopie van het ontwerp. Het logoverbod is op 21 oktober 2026 door de gebruiker opgeheven: de Renault-ruit staat als geometrie op de neus van de motorkap en op de achterklep (plaats en maat op de klep geschat). Typebadges zijn er niet.
 - Het inwendige van de automaat volgt de zusterbak (Mitsubishi F6AJA) en de literatuur over de Jatco JF613E. Voor de Renault AJ0 zelf zijn geen werkplaatstekeningen gevonden, dus de koppeling tussen de planetaire sets is schematisch.
 - De velgen zijn 18 inch met band 225/45 R18; de gebruiker heeft dat aan de eigen auto vastgesteld. Zie [docs/specificaties-en-bronnen.md](docs/specificaties-en-bronnen.md).
 - Niet in het model: 4Control (vierwielbesturing). Dat was een optie en de auto van de gebruiker heeft het niet.
