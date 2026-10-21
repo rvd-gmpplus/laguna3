@@ -428,8 +428,10 @@ function uiSetViewMode(m) { if (m === 'cockpit') { if (!COCKPIT) uiSetCockpit(ui
 // er gebeurde. Links met Openen aan en rechts zonder Openen lopen verder naar Uitklappen (uitstappen), zoals elke radiogroep rondloopt (golf 5n).
 function uiOpenKey(e, b, i) {
   const n = uiOpenBtns.length, dir = e.key === 'ArrowRight' ? 1 : -1;
-  const inCk = COCKPIT && uiViewModeOf(b) === 'cockpit';
-  if (inCk && (dir < 0) !== OPENMODE) { uiSetOpenMode(dir < 0, true); return; }
+  // In de cockpit telt elke radio behalve Uitklappen als "in de cockpit": na een muisklik op Openen staat de focus daar (tabindex -1, niet aangevinkt),
+  // en dan moet dezelfde toets hetzelfde doen als op Cockpit. De focus gaat dan terug naar de aangevinkte radio Cockpit.
+  const inCk = COCKPIT && uiViewModeOf(b) !== 'expand';
+  if (inCk && (dir < 0) !== OPENMODE) { uiSetOpenMode(dir < 0, true); uiOpenBtns.find(x => x.dataset.ckmode).focus(); return; }
   const j = inCk ? 0 : (i + (dir > 0 ? 1 : n - 1)) % n; uiSetViewMode(uiViewModeOf(uiOpenBtns[j])); uiOpenBtns[j].focus();
 }
 uiOpenBtns.forEach((b, i) => {

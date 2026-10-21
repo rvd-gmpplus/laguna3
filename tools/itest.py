@@ -1854,6 +1854,24 @@ def run_golf5n(s):
     k4, f4 = ck(), foc()
     check('25 d twee keer rechts vanaf Uitklappen zet je weer op de blik van de zitplaats, met de focus op Cockpit',
           k4 and k4['seat'] == 'bestuurder' and abs(k4['yaw'] - seat['kijk'][0]) < EPS and abs(k4['pitch'] - seat['kijk'][1]) < EPS and f4['id'] == 'cockpit' and f4['checked'] == 'true', json.dumps([k4, seat['kijk'], f4]))
+    # na een muisklik op Openen in de cockpit staat de focus op Openen (niet aangevinkt): dezelfde toets doet hetzelfde als op Cockpit en de focus gaat terug
+    pg.evaluate("__model.setCockpit('bestuurder', true); __model.finishAll()"); settle(pg, 200)
+    k5 = ck()
+    pg.click('#openSeg [data-omode="open"]'); settle(pg, 200)
+    fo = foc()
+    pg.keyboard.press('ArrowRight'); settle(pg, 200)
+    k6, f6 = ck(), foc()
+    check('25 d focus op Openen na een muisklik, pijl rechts: Openen gaat uit, je blijft zitten, de focus gaat naar de aangevinkte radio Cockpit en de melding zegt Openen uit',
+          fo['id'] == 'open' and k6 and not k6['om'] and k6['seat'] == 'bestuurder' and f6['id'] == 'cockpit' and f6['checked'] == 'true' and 'Openen uit' in f6['melding'], json.dumps([fo, k5, k6, f6]))
+    pg.click('#openSeg [data-omode="open"]'); settle(pg, 200)
+    pg.keyboard.press('o'); settle(pg, 200)
+    om_uit = ck()
+    pg.keyboard.press('ArrowLeft'); settle(pg, 200)
+    k7, f7 = ck(), foc()
+    check('25 d focus op Openen (Openen uit via O), pijl links: Openen gaat aan, je blijft zitten, de focus staat op Cockpit',
+          om_uit and not om_uit['om'] and k7 and k7['om'] and k7['seat'] == 'bestuurder' and f7['id'] == 'cockpit' and f7['checked'] == 'true' and 'Openen aan' in f7['melding'], json.dumps([om_uit, k7, f7]))
+    pg.evaluate("__model.setOpenMode(false)"); settle(pg, 150)
+    pg.evaluate("__model.setCockpit('bestuurder', true); __model.finishAll()"); settle(pg, 200); pg.focus('#openSeg [data-ckmode=\"cockpit\"]')
     # op elk moment is de gefocuste radio de aangevinkte (nooit "Openen, niet aangevinkt" terwijl de toets het aanzette)
     bad = []
     for key in ('ArrowLeft', 'ArrowRight', 'ArrowRight', 'ArrowLeft', 'ArrowLeft'):
@@ -1963,7 +1981,7 @@ def run_golf5n(s):
     d0 = pp.evaluate(GEO)['dockH']
     # zonder settle: alleen de ResizeObserver op het dock kan --dock-h bijwerken (een beeld later, buiten de melding zelf: anders geeft de
     # browser "ResizeObserver loop completed with undelivered notifications"); de consolecontrole aan het eind van 25 vangt die melding
-    pp.add_style_tag(content=WRAP)
+    wrapst = pp.add_style_tag(content=WRAP)
     try:  # een beeld duurt in de testbrowser honderden ms; meet() hieronder faalt als --dock-h niet bijgewerkt is
         pp.wait_for_function("(() => { const a = document.getElementById('app').style.getPropertyValue('--dock-h'), d = document.getElementById('dock').offsetHeight; return d > 70 && parseFloat(a) === d; })()", timeout=8000)
     except Exception:
@@ -1972,6 +1990,15 @@ def run_golf5n(s):
     meet('gewikkeld dock in vol')
     if pp.evaluate(GEO)['dockH'] < d0 + 30:
         fails.append(['het dock is niet gewikkeld', d0, pp.evaluate(GEO)['dockH']])
+    # zonder beeld (verborgen tabblad): de terugvaltimer meet --dock-h toch bij; requestAnimationFrame staat hier uit en komt na afloop terug
+    pp.evaluate("window.__rafOrig = window.requestAnimationFrame; window.requestAnimationFrame = () => 0")
+    wrapst.evaluate('e => e.remove()')
+    try:
+        pp.wait_for_function("(() => { const a = document.getElementById('app').style.getPropertyValue('--dock-h'), d = document.getElementById('dock').offsetHeight; return d < 90 && parseFloat(a) === d; })()", timeout=4000)
+    except Exception:
+        fails.append(['zonder beeld volgt --dock-h het dock niet (terugvaltimer)', pp.evaluate(GEO)])
+    pp.evaluate("window.requestAnimationFrame = window.__rafOrig; requestRender()"); settle(pp, 300)
+    meet('dock weer één rij, zonder beeld bijgewerkt')
     pp.tap('#btnCkOut'); settle(pp, 300); pp.wait_for_timeout(400)
     g = pp.evaluate(GEO)
     if g['sheetVar'] != 0 or g['ck'] is not None:
@@ -2052,7 +2079,7 @@ def run_golf5n(s):
     pm.mouse.move(hn[0], hn[1]); pm.mouse.down(); pm.mouse.move(hn[0], hn[1] - 12, steps=3); pm.mouse.up()
     pm.wait_for_function("!document.getElementById('sheet').dataset.drag", timeout=10000); pm.wait_for_timeout(200)
     cl2 = pm.evaluate('window.__pc.clicks'); h2 = pm.evaluate('window.__hit')
-    check('25 f kop: een korte sleep (12 px) vanaf #selName: de klik die erop volgt gaat naar de kop en geen kind-actie wordt geraakt', all(x['tg'] in ('kop', 'paneel') for x in cl2) and h2 == 0, json.dumps([cl2, h2]))
+    check('25 f kop: een korte sleep (12 px) vanaf #selName: de klik die erop volgt gaat naar de kop en geen kind-actie wordt geraakt', cl2 and all(x['tg'] in ('kop', 'paneel') for x in cl2) and h2 == 0, json.dumps([cl2, h2]))
     pm.evaluate("setSheet('peek')"); pm.wait_for_timeout(300)
     ai = ctr('#actToggle'); pm.evaluate('window.__pc.clicks = []')
     pm.mouse.move(ai[0], ai[1]); pm.mouse.down(); pm.mouse.up(); pm.wait_for_timeout(150)

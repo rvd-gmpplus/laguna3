@@ -83,13 +83,17 @@ function resize() {
 }
 window.addEventListener('resize', () => { resize(); uiRefitSoon(); });
 // Binnen een ResizeObserver-melding blijft --dock-h staan (zie uiInRO in app2-panel.js); een beeld later wordt hij bijgewerkt als het dock een andere hoogte kreeg.
-let uiDockRaf = 0;
+// Een beeld later (requestAnimationFrame), en als terugval een timer: in een verborgen tabblad komt er geen beeld, dan blijft --dock-h anders
+// verouderd. Wie het eerst komt doet de meting; de ander wordt geannuleerd.
+let uiDockRaf = 0, uiDockTm = 0;
+function uiDockMeet() {
+  cancelAnimationFrame(uiDockRaf); clearTimeout(uiDockTm); uiDockRaf = uiDockTm = 0;
+  if (uiSheetBottom() && document.getElementById('app').style.getPropertyValue('--dock-h') !== els.dock.offsetHeight + 'px') { syncSheetHeight(); layoutView(); }
+}
 function uiDockLater() {
-  if (uiDockRaf) return;
-  uiDockRaf = requestAnimationFrame(() => {
-    uiDockRaf = 0;
-    if (uiSheetBottom() && document.getElementById('app').style.getPropertyValue('--dock-h') !== els.dock.offsetHeight + 'px') { syncSheetHeight(); layoutView(); }
-  });
+  if (uiDockRaf || uiDockTm) return;
+  uiDockRaf = requestAnimationFrame(uiDockMeet);
+  uiDockTm = setTimeout(uiDockMeet, 50);
 }
 function uiRoMelding(fn) { uiInRO = true; try { fn(); } finally { uiInRO = false; } uiDockLater(); }
 if (window.ResizeObserver) {
