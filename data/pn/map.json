@@ -1235,9 +1235,9 @@
   "Eigen onderdeel, niet gevonden (kit noemt algemeen \"mounting material\")."
  ],
  "Aandrijflijn/Motor F4Rt/Distributie/Distributiekappen": [
-  "G5m-A-motor:TCOVER",
+  "G5n-A-motor:TCOVER",
   "set",
-  "Groep; kap-positie niet vastgesteld."
+  "Groep; geen nummer voor boven- en middenkap."
  ],
  "Aandrijflijn/Motor F4Rt/Distributie/Distributiekappen/Distributiekap boven": [
   "S1-motor-service:U_TCOVER_TOP",
@@ -1250,9 +1250,9 @@
   "Eigen onderdeel, niet gevonden."
  ],
  "Aandrijflijn/Motor F4Rt/Distributie/Distributiekappen/Distributiekap onder": [
-  "S1-motor-service:U_TCOVER_BOT",
+  "G5n-A-motor:TCOVER_BOT",
   "zelf",
-  "Eigen onderdeel, niet gevonden."
+  ""
  ],
  "Aandrijflijn/Motor F4Rt/Hulpaandrijving": [
   "S1-motor-service:U_VRIB",
