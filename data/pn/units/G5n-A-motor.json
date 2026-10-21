@@ -1,0 +1,46 @@
+{
+ "G5n-A-motor:TCOVER": {
+  "n": "Distributiekappen (groep)",
+  "st": "nietgevonden",
+  "oe": [],
+  "am": [],
+  "var": "",
+  "per": "",
+  "note": "Golf 5n: het nummer 8200922001 (met BGA FC7300 en andere merken) is geschrapt. Het is een stalen distributiekap voor de 2.0 dCi (M9R, diesel); Autodoc noemt hem wel bij type 23370, maar TOPRAN 209 316 en handelaarspagina's geven alleen dCi-motoren. Voor de bovenkap en de middenkap is geen nummer voor de F4Rt gevonden.",
+  "src": []
+ },
+ "G5n-A-motor:TCOVER_BOT": {
+  "n": "Distributiekap onder (kunststof)",
+  "st": "vin",
+  "oe": [
+   [
+    "8200260315",
+    "Renault; handelaarsadvertentie: Laguna III en Espace IV 2.0 T, motor 2.0 16V Turbo, plaats onder",
+    "D"
+   ],
+   [
+    "8200677922",
+    "Renault; hoort bij dezelfde advertentie; Autodoc heeft een OEM-pagina voor dit nummer (Renault-artikel, zonder type)",
+    "D"
+   ]
+  ],
+  "am": [],
+  "var": "Volgens de advertentie bestaan er voor dit model uitvoeringen met andere specificaties; per VIN controleren.",
+  "per": "1 stuk",
+  "note": "Eén advertentie (EuroFrance) met drie nummers voor de onderkap van de 2.0 Turbo; geen aftermarketartikel voor dit type gevonden. Opwaarderen naar B niet gelukt: Autodoc-OEM-pagina 8200677922 heeft geen typekoppeling; 8200260315 en 7700115826 hebben geen OEM-pagina. 7700115826 is geschrapt: EuroFrance.pl (zelfde nummer) zet het onder plaats midden voor F4P/F4R 1.8/2.0, dus onder is tegengesproken.",
+  "src": [
+   [
+    "https://eurofrance.es/carcasa-protector-de-la-distribucion-nueva-original-renault-laguna-iii-espace-iv-20-t-8200677922-7700115826.html",
+    "eurofrance.es"
+   ],
+   [
+    "https://eurofrance.co.uk/car-parts/engine-and-accessories/timing-mechanisms/covers-housings/renault.html",
+    "eurofrance.co.uk"
+   ],
+   [
+    "https://www.autodoc.parts/car-parts/oem/8200677922",
+    "autodoc.parts"
+   ]
+  ]
+ }
+}

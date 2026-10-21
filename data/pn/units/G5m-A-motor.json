@@ -566,37 +566,5 @@
     "autodoc.parts"
    ]
   ]
- },
- "G5m-A-motor:TCOVER": {
-  "n": "Distributiekap (kunststof, \"Timing cover\")",
-  "st": "vin",
-  "oe": [
-   [
-    "8200922001",
-    "Renault; Autodoc-OEM-pagina (BGA en andere merken)",
-    "C"
-   ]
-  ],
-  "am": [
-   [
-    "BGA",
-    "FC7300",
-    "timing cover",
-    "A"
-   ]
-  ],
-  "var": "Autodoc noemt alleen \"Timing cover\"; of dit de boven-, midden- of onderkap is, is niet vastgesteld.",
-  "per": "1 stuk",
-  "note": "Nieuw record voor U_TCOVER_*. Autodoc-lijst: ook METZGER 2386005, LCC LCCM01029, TOPRAN 209 316 001.",
-  "src": [
-   [
-    "https://www.autodoc.parts/car-parts/timing-belt-cover-12115/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
-    "autodoc.parts"
-   ],
-   [
-    "https://www.autodoc.parts/car-parts/oem/8200922001",
-    "autodoc.parts"
-   ]
-  ]
  }
 }

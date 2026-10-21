@@ -757,7 +757,26 @@
     "https://www.autodoc.parts/car-parts/turbocharger-10972/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
     "autodoc.parts"
    ]
-  ]
+  ],
+  "kz": {
+   "o": [
+    "7701478861"
+   ],
+   "a": [
+    [
+     "BR Turbo",
+     "4937707303RS"
+    ]
+   ],
+   "v": "Mitsubishi TD04, 49377-07303 (Renault 7701478861)",
+   "b": "B",
+   "z": "middel",
+   "g": "Voertuigtype BT15 met motor F4R 813 en bak AJ0 (besluit van de gebruiker van 21 oktober 2026, uit het typeplaatje en de Renault-catalogus). Autodoc noemt BR Turbo 4937707303RS (en 4937707343RS) uitdrukkelijk voor motorcode F4R811 en F4R813 en voor typecode BT06, BT0H, BT0Y, BT15 en BT18. De uitvoeringen 49377-07300 (RTC, LUCAS, ELSTOCK) noemen alleen F4R 811 en geen typecode. 7701478861 staat in de OE-lijsten bij 49377-07303. De overige Mitsubishi-nummers (07301, 07310, 07311, 07313, 07320, 07325) zijn niet uitgesloten, maar bij geen ervan is een BT15-vermelding gevonden.",
+   "s": [
+    "https://www.autodoc.parts/br-turbo/16875308",
+    "https://www.autodoc.parts/car-parts/turbocharger-10972/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo"
+   ]
+  }
  },
  "S2-lucht-uitlaat-brandstof:U_TURBOKIT": {
   "n": "Montageset turbo (pakkingen, tapeinden, moeren)",
