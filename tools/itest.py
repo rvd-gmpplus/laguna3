@@ -1707,7 +1707,8 @@ def run_sheetdrag(s):
     # a. langzaam omhoog tot ongeveer de stand open: het paneel volgt de vinger, overgang uit, dock en --sheet-h volgen
     touch('touchStart', [(x, g[1])])
     for i in range(1, 7): touch('touchMove', [(x, g[1] - 25 * i)], 0.03); pp.wait_for_timeout(30)
-    pp.wait_for_function("document.getElementById('sheet').style.height === '%dpx'" % round(peek + 150), timeout=5000)
+    # op de CI-runner komen de aanrakingen per beeld binnen en duurt dat soms langer dan 5 s (nightly 39636906790)
+    pp.wait_for_function("document.getElementById('sheet').style.height === '%dpx'" % round(peek + 150), timeout=30000)
     m = info()
     check('24 midden in het slepen volgt het paneel de vinger (150 px omhoog), de overgang staat uit en data-drag=1', m['drag'] == '1' and abs(m['h'] - (peek + 150)) <= 2 and m['tr'] == '0s', json.dumps(m))
     check('24 midden in het slepen volgt --sheet-h de bovenrand en staat het dock zichtbaar en deels doorzichtig', abs(m['sheetH'] - m['h']) <= 2 and m['dock'] != 'none' and float(m['dockO']) < 1, json.dumps(m))
