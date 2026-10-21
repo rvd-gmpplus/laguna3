@@ -49,7 +49,7 @@ jobs:
         run: python3 tools/tri.py --gate
       - name: testlijst van finaltests.sh
         run: |
-          grep -q 'TESTS="lint smoke integ sil inner opentest itest tri pub stats shots visdiff anchor"' tools/orkestratie/finaltests.sh || { echo "::error::de testlijst in finaltests.sh wijkt af van de verwachting"; exit 1; }
+          grep -q 'TESTS="lint smoke integ sil inner opentest opendicht itest tri pub stats shots visdiff anchor"' tools/orkestratie/finaltests.sh || { echo "::error::de testlijst in finaltests.sh wijkt af van de verwachting"; exit 1; }
       - name: haak voor extra tests in finaltests.sh
         run: |
           grep -qF 'framework.py extra-namen' tools/orkestratie/finaltests.sh || { echo "::error::finaltests.sh mist de haak voor extra tests (framework.py extra-namen)"; exit 1; }

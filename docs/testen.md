@@ -117,6 +117,8 @@ Toetst elke opener van de modus Openen (26 stuks). `--only` beperkt de run tot d
 | 5 | Prestaties met alle openers open: tekenopdrachten tegen 3.000, frametijd p95 bij `openAll(1)` en `openAll(0)` tegen 8 ms. |
 | 6 | Spookbatchproef: de batchopbouw wordt onderbroken door een opener; daarna worden alle getoonde batches vergeleken met een verse opbouw. |
 
+De gewone dichtheid (400 punten in 16 stappen) is een steekproef: in golf 5n miste hij doordringingen tot 35,8 mm (raamkader binnen in de dakrail), en of een diepe doordringing rood werd, hing af van welke punten toevallig gekozen waren. Daarom draait `finaltests.sh` (en de nightly) ook de dichte meting `opendicht`: `python3 tools/opentest.py --strikt-min --skip 4,5,6 --pts 20000 --steps 32`, alleen de controles 1 tot en met 3. Die moet 0 doordringingen geven; het Klaar-criterium "open stand zonder nieuwe doordringingen" leunt op deze meting, niet op de gewone.
+
 De uitzonderingen in `tools/open_allow.json` zijn contacten die bij de echte auto bestaan. Ze zijn voor domeineigenaars alleen-lezen. Voorbeelden: de slotbeugel van de motorkap die in het motorkapslot grijpt, en de raamsleuf, de ruitgeleiders en het portierrubber waar het glas van een zijruit doorheen zakt.
 
 ### `python3 tools/pubsmoke.py`
@@ -170,7 +172,7 @@ Dezelfde controle met alles open: welke ingesloten knopen worden zichtbaar als d
 
 ### `tools/orkestratie/finaltests.sh UITVOERMAP`
 
-Draait de volledige testset in twee parallelle reeksen: lint, smoke, integrity, silhouette, `ui_inner.py --open --strict` en `opentest.py --strikt-min` in de ene reeks; `itest.py` met poorten, `tri.py --gate`, pubsmoke en stats in de andere. De uitvoer per test staat in de map, met per test de duur en de exitcode op de laatste regel, en `start.txt` en `einde.txt`. Het script geeft exitcode 1 zodra één test faalt en weigert zonder uitvoermap. De lijst van tests staat in `tests.txt`, zodat CI kan zien of er een test uit de set is gevallen.
+Draait de volledige testset in twee parallelle reeksen: lint, smoke, integrity, silhouette, `ui_inner.py --open --strict`, `opentest.py --strikt-min` en de dichte botsingsmeting `opendicht` (20.000 punten, 32 stappen, controles 1 tot 3) in de ene reeks; `itest.py` met poorten, `tri.py --gate`, pubsmoke en stats in de andere. De uitvoer per test staat in de map, met per test de duur en de exitcode op de laatste regel, en `start.txt` en `einde.txt`. Het script geeft exitcode 1 zodra één test faalt en weigert zonder uitvoermap. De lijst van tests staat in `tests.txt`, zodat CI kan zien of er een test uit de set is gevallen.
 
 Een auto kan extra tests aanmelden met het optionele veld `extraTests` in `auto.json` (regels en voorbeeld: [framework.md](framework.md), sectie Extra tests per auto). Die draaien als derde parallelle reeks naast de twee vaste, elk met een eigen `NAAM.txt` en dezelfde strikte exitcode (een ontbrekend `NAAM.txt` telt als FOUT), en staan in `tests.txt` achter de vaste lijst. Zonder het veld, zoals in deze repo, zijn uitvoer, `tests.txt` en exitcode ongewijzigd. Een ongeldig veld maakt de set meteen rood, nog voor er een test draait; `framework.py check` meldt het eerder.
 

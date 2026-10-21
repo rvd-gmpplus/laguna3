@@ -1,6 +1,6 @@
 #!/bin/bash
 # Volledige testset op de werktak, uitvoer naar $1 (map). Draait in twee parallelle reeksen, strikt (ui_inner --strict,
-# opentest --strikt-min, itest met poorten, tri --gate). Exitcode 1 zodra een test faalt; per test de duur in seconden.
+# opentest --strikt-min, de dichte botsingsmeting opendicht, itest met poorten, tri --gate). Exitcode 1 zodra een test faalt; per test de duur in seconden.
 # Extra tests per auto: auto.json: extraTests (docs/framework.md). Ze draaien als derde parallelle reeks, elk met NAAM.txt en
 # dezelfde strikte exitcode, en staan na de vaste lijst in tests.txt. Zonder dat veld is alles precies zoals hierboven.
 # Gebruik: tools/orkestratie/finaltests.sh UITVOERMAP
@@ -11,7 +11,7 @@ OUT="$(mkdir -p "$1" && cd "$1" && pwd)" || exit 2
 R="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$R" || exit 1
 # Vaste lijst: CI vergelijkt deze namen met de verwachting, zodat een test niet stil uit de set kan vallen.
-TESTS="lint smoke integ sil inner opentest itest tri pub stats shots visdiff anchor"
+TESTS="lint smoke integ sil inner opentest opendicht itest tri pub stats shots visdiff anchor"
 # Extra tests van deze auto (leeg zonder extraTests). Een ongeldig veld maakt de set meteen rood, vóór het werk begint.
 EXTRA="$(python3 tools/framework.py extra-namen)" || { echo "FOUT: tools/framework.py extra-namen faalde (extraTests in auto.json ongeldig); zie de melding hierboven" >&2; exit 1; }
 git log --oneline -1 > "$OUT/commit.txt"
@@ -30,7 +30,9 @@ run lint python3 build.py --lint
   run integ python3 tools/integrity.py
   run sil python3 tools/silhouette.py
   run inner python3 tools/ui_inner.py --open --strict
-  run opentest python3 tools/opentest.py --strikt-min --out "$OUT/opentest" ) &
+  run opentest python3 tools/opentest.py --strikt-min --out "$OUT/opentest"
+  # dichte botsingsmeting: de gewone 400 punten missen doordringingen tot 36 mm (golf 5n); alleen de controles 1 tot 3
+  run opendicht python3 tools/opentest.py --strikt-min --skip 4,5,6 --pts 20000 --steps 32 --out "$OUT/opendicht" ) &
 ( run itest env ITEST_GATES=1 python3 tools/itest.py
   run tri python3 tools/tri.py --gate --json "$OUT/tri.json"
   run pub python3 tools/pubsmoke.py

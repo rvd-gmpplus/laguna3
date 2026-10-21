@@ -31,8 +31,8 @@ taal van code-commentaar, beschrijvingen, docs en commits. Geen em-dashes in tek
 
 ## Klaar en bekende ruis
 
-- Klaar is: volledige set groen op macOS én op Linux (`tools/lag3-vm.sh test`), visuele poort (visdiff) groen op Linux, open-stand-
-  botsingsmeting zonder nieuwe doordringingen, advisor-oordeel pass. Een groene macOS-run alleen is geen oordeel over visdiff.
+- Klaar is: volledige set groen op macOS én op Linux (`tools/lag3-vm.sh test`), visuele poort (visdiff) groen op Linux, dichte open-stand-
+  botsingsmeting (`opendicht` in de set, 20.000 punten) zonder doordringingen, advisor-oordeel pass. Een groene macOS-run alleen is geen oordeel over visdiff.
 - Golf 5b-3 bleef hangen op botsingsrondes 4 en 5 en een beslissing die pas aan het eind boven kwam. Daarom vooraf de
   beslislijst en de verwachte rondes geven (zie `~/.claude/CLAUDE.md`, Lange orkestraties); max 6 reparatierondes per golf,
   daarna een beslisnotitie aan de gebruiker in plaats van nog een ronde.
