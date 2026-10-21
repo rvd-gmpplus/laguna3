@@ -101,6 +101,28 @@ function bodLens3In(m) {
   return m;
 }
 MAT.bodLens3 = bodLens3In(THREE.MeshPhysicalMaterial.prototype.clone.call(MAT.lensRed)); MAT.bodLens3.name = 'bodLens3';
+// lenzen van de achterlichten (golf 5n): vanaf de achterbank zag je bij achteroverleunen en opzij buigen de achterkant van de rode lens door de
+// kier tussen hoedenplanksteun, C-stijlbekleding en achterscherm (straalmeting: 10 treffers vanaf achter links, op x 0,71 tot 0,76, y 0,94
+// tot 0,96, z -2,08 tot -2,16). Wie een lens van binnen ziet, ziet het zwarte kunststof lamphuis. Binnen of buiten volgt uit de plaats in het
+// assenstelsel van het onderdeel (de geometrie staat in autocoordinaten): de normaal naar de kijker wijst bij de binnenkant in bovenaanzicht
+// naar een punt op de hartlijn voor de lampen (x 0, z -1,5). Die normaal is de objectnormaal met het teken van de normaal van three.js (die
+// in beide gangen van het transparante dubbelzijdige materiaal naar de kijker wijst); gl_FrontFacing is in de achterzijdegang omgekeerd
+// (three draait daar frontFace om) en is daarom niet bruikbaar. Ronde 2: in objectruimte in plaats van wereldruimte, zodat een uitgeklapte
+// lens (verschoven met ex) of de lens in een open achterklep van buiten rood of helder blijft; alleen de echte binnenkant is zwart. Rode
+// lenzen (bodLensTl) en heldere banden (bodLensTlC) van buiten- en binnendeel gebruiken dezelfde regel.
+function bodLensTlIn(m, key) {
+  m.customProgramCacheKey = () => key;
+  m.onBeforeCompile = sh => {
+    sh.vertexShader = 'varying vec3 vBodOP;\nvarying vec3 vBodON;\nvarying vec3 vBodVN;\n' + sh.vertexShader
+      .replace('#include <beginnormal_vertex>', '#include <beginnormal_vertex>\n\tvBodON = objectNormal;\n\tvBodVN = normalMatrix * objectNormal;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\n\tvBodOP = transformed;');
+    sh.fragmentShader = 'varying vec3 vBodOP;\nvarying vec3 vBodON;\nvarying vec3 vBodVN;\n' + sh.fragmentShader
+      .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n\tvec3 bodOn = vBodON * (dot(normal, vBodVN) < 0.0 ? -1.0 : 1.0);\n\tif (dot(bodOn.xz, vBodOP.xz - vec2(0.0, -1.5)) < 0.0) { diffuseColor = vec4(0.03, 0.032, 0.036, 1.0); metalnessFactor = 0.0; roughnessFactor = 0.75; }');
+  };
+  m.clone = function () { return bodLensTlIn(THREE.MeshPhysicalMaterial.prototype.clone.call(this), key); };
+  return m;
+}
+for (const [nm, src] of [['bodLensTl', MAT.lensRed], ['bodLensTlC', MAT.lensClear]]) { MAT[nm] = bodLensTlIn(THREE.MeshPhysicalMaterial.prototype.clone.call(src), nm); MAT[nm].name = nm; }
 // portierkaart (golf 5l): donker kunststof van de drager, Dark Carbon-leder van inzet en armsteun, pianozwarte lijsten, zwart vilt in de raamschacht
 std('bodDoorCard', 0x1c1d20, 0, 0.74);
 std('bodDoorLeather', 0x2b2d30, 0, 0.58);
@@ -822,15 +844,15 @@ function buildTaillight(s, deel = 'buiten') {
   const [f0, f1, f2, f3] = bodTLF, xo = 1.2;
   const faceR = (fa, fb, off) => bodMirX(bodTLgeo(bodTLxin, () => xs, bodTLY(bodZT, fa), bodTLY(bodZT, fb), off), s);
   if (deel === 'binnen') return A(`Achterlicht binnendeel ${n}`, { d: 'Deel van het achterlicht in de achterklep met achterlicht en achteruitrijlicht; zet de lijnen van het buitendeel over de naad voort en draait met de klep mee.', ex: [s * 0.03, 0.04, -0.08] }, [
-    P('Lens binnendeel', merge([faceR(f2, f3, 0.003), faceR(f0, f1, 0.003)]), MAT.lensRed, { d: 'Rode lens van het binnendeel (achterlicht): bovenband en onderstrook.', ex: [0, 0.03, -0.06] }),
-    P('Lens achteruitrijlicht', faceR(f1, f2, 0.0035), MAT.lensClear, { d: 'Heldere middenband over het achteruitrijlicht, in lijn met de heldere band van het buitendeel.', ex: [0, 0, -0.1] }),
+    P('Lens binnendeel', merge([faceR(f2, f3, 0.003), faceR(f0, f1, 0.003)]), MAT.bodLensTl, { d: 'Rode lens van het binnendeel (achterlicht): bovenband en onderstrook.', ex: [0, 0.03, -0.06] }),
+    P('Lens achteruitrijlicht', faceR(f1, f2, 0.0035), MAT.bodLensTlC, { d: 'Heldere middenband over het achteruitrijlicht, in lijn met de heldere band van het buitendeel.', ex: [0, 0, -0.1] }),
     P('Reflector binnendeel', face(xin + 0.004, xs - 0.008, f0, f3, -0.012, 8, 0.006), MAT.reflector, { d: 'Verchroomde reflector achter de lenzen.', ex: [0, 0, 0.04] }),
     P('Lichthuis binnendeel', face(xin + 0.01, xs - 0.01, f0, f3, -0.028, 8, 0.008), MAT.plastic, { d: 'Behuizing in de achterklep.', ex: [0, 0, 0.06] }),
     P('Lampdrager binnendeel', face(xin + 0.03, xs - 0.03, f0, f3, -0.018, 8, 0.02), MAT.ecu, { d: 'Lampdrager met fittingen en stekker.', ex: [0, 0, 0.1] }),
   ]);
   return A(`Achterlicht ${n}`, { d: 'Slank horizontaal achterlicht in twee delen, verdeeld over de klepnaad. Dit is het vaste deel op het achterscherm met achterlicht, remlicht en knipperlicht (LED-uitstraling): loopt om de afgeronde hoek de flank in en onder de schouder in een punt naar voren. Het deel in de achterklep hangt onder Achterklep als Achterlicht binnendeel en draait met de klep mee.', ex: [s * 0.3, 0.1, -0.5] }, [
-    P('Lens buitendeel', merge([side(-0.003, f2, f3), side(-0.003, f0, f1), face(xs + 0.003, xo, f2, f3, 0.003), face(xs + 0.003, xo, f0, f1, 0.003)]), MAT.lensRed, { d: 'Rode afdeklens met een brede bovenband en een smalle onderstrook, van het staartvlak om de hoek de flank in.', ex: [s * 0.05, 0, -0.06] }),
-    P('Heldere band buitendeel', merge([side(-0.0035, f1, f2), face(xs + 0.003, xo, f1, f2, 0.0035)]), MAT.lensClear, { d: 'Heldere horizontale band in de lens waarachter de knipperlichtunit zit; geeft de witte LED-streep van het fase 2-achterlicht.', ex: [s * 0.07, 0, -0.08] }),
+    P('Lens buitendeel', merge([side(-0.003, f2, f3), side(-0.003, f0, f1), face(xs + 0.003, xo, f2, f3, 0.003), face(xs + 0.003, xo, f0, f1, 0.003)]), MAT.bodLensTl, { d: 'Rode afdeklens met een brede bovenband en een smalle onderstrook, van het staartvlak om de hoek de flank in.', ex: [s * 0.05, 0, -0.06] }),
+    P('Heldere band buitendeel', merge([side(-0.0035, f1, f2), face(xs + 0.003, xo, f1, f2, 0.0035)]), MAT.bodLensTlC, { d: 'Heldere horizontale band in de lens waarachter de knipperlichtunit zit; geeft de witte LED-streep van het fase 2-achterlicht.', ex: [s * 0.07, 0, -0.08] }),
     P('Lichthuis buitendeel', merge([side(0.05, f0, f3), face(xs + 0.01, xo, f0, f3, -0.05, 8, 0.008)]), MAT.plastic, { d: 'Kunststof behuizing met bevestigingsbouten in het achterscherm.', ex: [-s * 0.04, 0, 0.06] }),
     P('LED-print buitendeel', merge([side(0.035, 0.15, 0.85), face(xs + 0.02, xo, f0, f3, -0.035, 8, 0.02)]), MAT.ecu, { d: 'Printplaat met de lampen van achter-, rem- en knipperlicht.', ex: [0, 0, 0.1] }),
     P('Reflector buitendeel', merge([side(0.02, f0, f3), face(xs + 0.003, xo, f0, f3, -0.02, 8, 0.01)]), MAT.reflector, { d: 'Verchroomde reflector achter de lens; zichtbaar door het rode glas en de heldere band.', ex: [0, 0, 0.05] }),
@@ -867,6 +889,76 @@ function bodClipOut(g, X0, Y0, Y1, zMin) {
     if (away) { tri.forEach(v => out.push(...v)); continue; }
     for (const hs of regs) { let poly = tri; for (const h of hs) { poly = clipPoly(poly, h[0], h[1], h[2]); if (poly.length < 3) break; }
       for (let k = 1; k + 1 < poly.length; k++) out.push(...poly[0], ...poly[k], ...poly[k + 1]); }
+  }
+  const r = new THREE.BufferGeometry(); r.setAttribute('position', new THREE.Float32BufferAttribute(out, 3)); r.computeVertexNormals(); return r;
+}
+// Renault-ruit (golf 5n ronde 2; besluit van de gebruiker van 21 oktober 2026: het logoverbod vervalt, de ruit mag als geometrie): een
+// ruitvormige band met holle vlakken. Elke zijde heeft twee schuine vlakken die van de buiten- en binnenrand (hoogte hO) naar een lagere
+// middellijn (hM) lopen, met een buiten- en binnenwand tot h0. F(u, v, w) geeft het punt in een assenstelsel op het vlak eronder (u naar
+// rechts, v omhoog, w naar buiten; rechtshandig); a en b zijn de halve breedte en hoogte, k de verhouding van de binnenrand. De
+// onderbreking van de band in het echte logo (twee in elkaar grijpende vormen) is niet gemodelleerd. De onderzijde op h0 sluit de schaal
+// (reviewronde golf 5n): bij Uitklappen komt de ruit los van voet of klep en keek je van onder en opzij in een open band
+function bodLosange(F, a, b, k, h0, hO, hM, n = 3) {
+  const R4 = f => [[0, b * f], [-a * f, 0], [0, -b * f], [a * f, 0]];   // tegen de klok in
+  const O = R4(1), I = R4(k), M = R4((1 + k) / 2), pos = [];
+  const quad = (p, q, r, t) => pos.push(...p, ...q, ...r, ...p, ...r, ...t);
+  for (let i = 0; i < 4; i++) {
+    const j = (i + 1) % 4, L = (Q, t, w) => F(lerp(Q[i][0], Q[j][0], t), lerp(Q[i][1], Q[j][1], t), w);
+    for (let m = 0; m < n; m++) {
+      const t0 = m / n, t1 = (m + 1) / n;
+      quad(L(O, t0, hO), L(O, t1, hO), L(M, t1, hM), L(M, t0, hM));
+      quad(L(M, t0, hM), L(M, t1, hM), L(I, t1, hO), L(I, t0, hO));
+      quad(L(O, t0, h0), L(O, t1, h0), L(O, t1, hO), L(O, t0, hO));
+      quad(L(I, t0, hO), L(I, t1, hO), L(I, t1, h0), L(I, t0, h0));
+      quad(L(O, t0, h0), L(I, t0, h0), L(I, t1, h0), L(O, t1, h0));
+    }
+  }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.computeVertexNormals(); return g;
+}
+// buis met platte kappen op beide einden (reviewronde golf 5n): tube() is open, en van schuin voor zag je bij de wenkbrauw en de ribben in
+// de mistlampuitsparing in een hol buiseinde. Elke kap is een waaier van het midden van de eindring naar de ringpunten (rad driehoeken)
+function bodCapTube(points, r, seg, rad) {
+  const g = tube(points, r, seg, rad), p = g.attributes.position, n = rad + 1, pos = [];
+  const ring = i => [...Array(rad).keys()].map(j => [p.getX(i * n + j), p.getY(i * n + j), p.getZ(i * n + j)]);
+  const cen = R => R.reduce((c, q) => c.map((v, k) => v + q[k] / R.length), [0, 0, 0]);
+  for (const [i, i2] of [[0, 1], [seg, seg - 1]]) {
+    const R = ring(i), c = cen(R), c2 = cen(ring(i2)), out = c.map((v, k) => v - c2[k]);
+    for (let j = 0; j < rad; j++) {
+      let a = R[j], b = R[(j + 1) % rad];
+      const u = a.map((v, k) => v - c[k]), w = b.map((v, k) => v - c[k]), nn = [u[1] * w[2] - u[2] * w[1], u[2] * w[0] - u[0] * w[2], u[0] * w[1] - u[1] * w[0]];
+      if (nn[0] * out[0] + nn[1] * out[1] + nn[2] * out[2] < 0) [a, b] = [b, a];
+      pos.push(...c, ...a, ...b);
+    }
+  }
+  const cap = new THREE.BufferGeometry(); cap.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); cap.computeVertexNormals();
+  return merge([g, cap]);
+}
+// voet onder de ruit voor: langwerpige zeshoek met licht afgeronde hoeken (drie punten per zijde, één keer afgeknot; halve breedte W, halve hoogte H, rechte zijden 2 * hs), bovenvlak op
+// hoogte h met een afgeschuinde rand en een wand tot 2 mm onder het vlak eronder; ringen van het midden naar de rand, zodat de voet de welving volgt
+function bodHexPlinth(F, W, H, hs, h) {
+  let bd = [[0, H], [-W, hs], [-W, -hs], [0, -H], [W, -hs], [W, hs]];
+  bd = bd.flatMap((q, i) => { const r = bd[(i + 1) % bd.length]; return [0.12, 0.5, 0.88].map(t => [lerp(q[0], r[0], t), lerp(q[1], r[1], t)]); });
+  bd = bd.flatMap((q, i) => { const r = bd[(i + 1) % bd.length]; return [[0.75 * q[0] + 0.25 * r[0], 0.75 * q[1] + 0.25 * r[1]], [0.25 * q[0] + 0.75 * r[0], 0.25 * q[1] + 0.75 * r[1]]]; });
+  const rings = [[0, h], [0.5, h], [0.85, h], [0.95, h * 0.92], [1, h * 0.6], [1, -0.002]], n = bd.length, pos = [], idx = [];
+  for (const [f, w] of rings) for (const q of bd) pos.push(...F(q[0] * f, q[1] * f, w));
+  for (let r = 0; r + 1 < rings.length; r++) for (let k = 0; k < n; k++) { const a = r * n + k, b = r * n + (k + 1) % n; idx.push(a, a + n, b, b, a + n, b + n); }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals(); return g;
+}
+// gat in een huiddeel (golf 5n ronde 2, grillevlak): houdt alleen het deel van elke driehoek dat in vooraanzicht (x, y) buiten de convexe
+// veelhoek poly ligt (tegen de klok in); driehoeken met een punt voor z < zMin blijven heel. Het buitengebied bestaat uit disjuncte convexe
+// stukken: buiten rand i en binnen alle randen ervoor (conventie van clipPoly in core.js: a * x + b * y <= c)
+function bodClipPoly(g, poly, zMin) {
+  const p = g.attributes.position, ix = g.index ? g.index.array : [...Array(p.count).keys()], out = [];
+  const V = k => [p.getX(k), p.getY(k), p.getZ(k)];
+  const pl = poly.filter((q, i) => { const r = poly[(i + 1) % poly.length]; return Math.hypot(r[0] - q[0], r[1] - q[1]) > 1e-7; });
+  const hs = pl.map((q, i) => { const r = pl[(i + 1) % pl.length], dx = r[0] - q[0], dy = r[1] - q[1]; return [dy, -dx, dy * q[0] - dx * q[1]]; });
+  const regs = hs.map((h, i) => [[-h[0], -h[1], -h[2]], ...hs.slice(0, i)]);
+  const bx = [0, 1].map(k => [Math.min(...pl.map(q => q[k])), Math.max(...pl.map(q => q[k]))]);
+  for (let i = 0; i < ix.length; i += 3) {
+    const tri = [V(ix[i]), V(ix[i + 1]), V(ix[i + 2])];
+    if (tri.some(v => v[2] < zMin) || [0, 1].some(k => tri.every(v => v[k] <= bx[k][0]) || tri.every(v => v[k] >= bx[k][1]))) { tri.forEach(v => out.push(...v)); continue; }
+    for (const hh of regs) { let q = tri; for (const h of hh) { q = clipPoly(q, h[0], h[1], h[2]); if (q.length < 3) break; }
+      for (let k = 1; k + 1 < q.length; k++) out.push(...q[0], ...q[k], ...q[k + 1]); }
   }
   const r = new THREE.BufferGeometry(); r.setAttribute('position', new THREE.Float32BufferAttribute(out, 3)); r.computeVertexNormals(); return r;
 }
@@ -1177,8 +1269,24 @@ function buildBody() {
     };
   })();
   const bodSprT = [0, bodSec(1.4).yd - 0.05, 1.4, 0.012, 0.016];   // T-stuk sproeierslangen: hart (x, y, z), halve lengte dwars, lengte uitloop naar voren
+  // Renault-ruit op de neus van de kap (golf 5n ronde 2, foto voorkant): verchroomde ruit met holle vlakken op een zeshoekige voet van
+  // satijnzilver, midden op de neus waar de vouwlijnen samenkomen. Maten geschat uit de foto (verhouding tot de koplampspitsen): voet ca.
+  // 15 x 21 cm langs het kapvlak, ruit ca. 11,5 x 17 cm, onderkant van de voet ca. 3 cm boven de kapvoorrand. Langs het kapvlak gemeten:
+  // de neus helt ca. 45 graden, zodat ruit en voet op de foto ongeveer even hoog als breed lezen. De voet volgt de welving van
+  // de kap: v is de booglengte langs de hartlijn vanaf de voorrand (z 2,29), u de afstand opzij
+  const bodEmbF = (() => {
+    const zs = [], ys = [], ss = [0];
+    for (let z = bodHoodZ1; z >= 1.95; z -= 0.002) { zs.push(z); ys.push(halfPt(z, 1)[1]); }
+    for (let i = 1; i < zs.length; i++) ss.push(ss[i - 1] + Math.hypot(zs[i] - zs[i - 1], ys[i] - ys[i - 1]));
+    const zAt = v => { let i = 0; while (i < ss.length - 2 && ss[i + 1] < v) i++; return lerp(zs[i], zs[i + 1], clamp((v - ss[i]) / (ss[i + 1] - ss[i]), 0, 1)); };
+    return (u, v, w) => { const z = zAt(0.135 + v), x = Math.abs(u), sv = Math.min(1, bodSAtX(z, x)), q = halfPt(z, sv), n = bodN(z, sv), sx = u < 0 ? -1 : 1; return [sx * (Math.abs(q[0]) + n[0] * w), q[1] + n[1] * w, z + n[2] * w]; };
+  })();
   const hood = A('Motorkap', { d: 'Motorkap van aluminium (werkplaatshandboek MR 415, hoofdstuk 48A) met binnenframe, isolatie, scharnieren, slotbeugel, veiligheidshaak en sproeiers.', ex: [0, 0.52, 0.3], open: hinge(bodHoodPv, [1, 0, 0], bodHoodAng, { min: 55 * PI / 180, label: 'Motorkap', look: { dir: [0.5, 0.55, 1], nodes: ['Motorkap', 'Motor F4Rt', 'Radiateur'] } }) }, [
     P('Buitenpaneel motorkap', patch((z, v) => bodLow(z, hoodRow(z, v), 0), WS0 + 0.004, bodHoodZ1 - 0.0003, 60, () => [0, 1], 46, hoodBr), MAT.paint, { d: 'Buitenhuid van aluminium plaat van de motorkap met twee vouwlijnen van de koplampen naar de voorruit.', ex: [0, 0.14, 0] }),
+    A('Renault-embleem voor', { d: 'Renault-ruit op de neus van de motorkap: verchroomde ruit met holle vlakken op een zeshoekige voet; gaat met de kap mee (maten geschat uit een foto).', ex: [0, 0.08, 0.12] }, [
+      P('Embleemvoet voor', bodHexPlinth(bodEmbF, 0.075, 0.105, 0.036, 0.006), MAT.satin, { d: 'Zeshoekige voet van satijnzilver kunststof onder de ruit, op de neus van de kap.', ex: [0, 0.02, 0.03] }),
+      P('Ruit voor', bodLosange(bodEmbF, 0.0575, 0.085, 0.45, 0.005, 0.013, 0.0095), MAT.bodChrome, { d: 'Verchroomde Renault-ruit met holle vlakken.', ex: [0, 0.04, 0.06] }),
+    ]),
     P('Binnenframe motorkap', hoodIn(0.03, 1.15, 2.26, 0.012), MAT.paintIn, { d: 'Verstevigend binnenframe met de bevestigingspunten van scharnieren en slotbeugel.', ex: [0, 0, 0] }),
     P('Motorkapisolatie', hoodIn(0.04, 1.22, 2.12, 0.04), MAT.carpet, { d: 'Geluids- en hitte-isolatiemat aan de onderzijde.', ex: [0, -0.1, 0] }),
     ...both(s => A(`Kapscharnier ${sn(s)}`, { d: 'Scharnier achteraan de motorkap: een arm aan het binnenframe van de kap en een voet op de veerpoottoren in de carrosserie. In de gesloten stand ligt de arm op de voet; de draaias is in dit model de achterrand van de kap (schematisch).', ex: [s * 0.08, -0.04, -0.06] }, [
@@ -1227,88 +1335,136 @@ function buildBody() {
   // extra stations vlak voor de neus van de kap: daar loopt de kapvoorrand bijna dwars en liet lineaire interpolatie een gaatje open
 const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   const fbBr = bodDense(1.752, 1.82, 4).concat(bodDense(2.15, ZF, 16), bodDense(2.235, bodHoodZ1, 8), bodHoodTip);
-  // onderste inlaat als echte opening in de bumperschaal (binnen de chromen U), met wanden naar een verzonken rooster
-  const inX = 0.462, inY0 = 0.316, inY1 = 0.436, inD = 0.03;
+  // golf 5n ronde 2 (foto voorkant van de auto van de gebruiker): één groot zwart grillevlak als omgekeerd trapezium, van de kapvoorrand
+  // tussen de binnenspitsen van de koplampen tot y 0,311, met een chromen U langs zijkanten en onderkant; bovenin het kenteken, onderin vier
+  // golvende lamellen in een echte opening. Was een brede lage inlaat (|x| 0,462) met een chromen 'smile' naar de mistlampen, een zwart vlak
+  // dat naar boven smaller werd en een losse sleuf onder de kap met lak ertussen. Maten geschat uit de foto (verhouding tot de binnenspitsen
+  // van de koplampen op |x| 0,37): de zijlijn van |x| 0,358 op y 0,64 tot 0,300 op y 0,335, onderhoeken met een straal van ca. 3 cm.
+  const grX = y => 0.300 + 0.19 * (y - 0.335);                 // zijlijn (hart van de chromen U)
+  const grYB = x => 0.311 + 0.006 * (x / 0.27) ** 2;           // onderrand (hart van de chromen U), naar de hoeken licht oplopend
+  const grTopY = 0.64, grSplit = 0.44;                         // bovenkant van de zijlijn (onder de koplampspits); deling van de chromen U
+  // halve rand van de hartlijn onder tot de bovenkant van de zijlijn, met een afgeronde hoek (kwadratische bezier); ins schuift de rand
+  // naar binnen (de opening ligt 4 mm binnen het hart van de chromen U, die haar rand afdekt)
+  const grHalf = (ins = 0, top = grTopY, rc = 0.03) => {
+    const xs = y => grX(y) - ins, yb = x => grYB(x) + ins;
+    let xc = 0.3; for (let i = 0; i < 30; i++) xc = xs(yb(xc));
+    const yc = yb(xc), l = Math.hypot(0.19, 1), a = [xc - rc, yb(xc - rc)], b = [xc + rc * 0.19 / l, yc + rc / l], pts = [];
+    for (let i = 0; i <= 10; i++) { const u = a[0] * i / 10; pts.push([u, yb(u)]); }
+    for (let i = 1; i < 8; i++) { const t = i / 8, m = 1 - t; pts.push([m * m * a[0] + 2 * m * t * xc + t * t * b[0], m * m * a[1] + 2 * m * t * yc + t * t * b[1]]); }
+    pts.push(b);
+    const ys = [b[1]]; for (let i = 1; i <= 4; i++) ys.push(lerp(b[1], Math.min(top, grSplit), i / 4));
+    if (top > grSplit) for (let i = 1; i <= 4; i++) ys.push(lerp(grSplit, top, i / 4));
+    for (const y of ys.slice(1)) pts.push([xs(y), y]);
+    return pts;
+  };
+  const inY1 = 0.436, inD = 0.03;                              // bovenrand en diepte van de opening voor de lamellen
+  const grHole = grHalf(0.004, inY1);                          // rechterhelft van de opening, van de hartlijn tot de bovenrand
+  const grHoleX = grHole[grHole.length - 1][0];
+  const grHolePoly = grHole.slice(1).reverse().map(([x, y]) => [-x, y]).concat(grHole);   // tegen de klok in; de bovenrand sluit
+  // onderkant van een halve rand als functie van |x| (de rand loopt in x op van de hartlijn tot de bovenkant)
+  const grLo = (half, x) => { const ax = Math.abs(x); let i = 0; while (i < half.length - 2 && half[i + 1][0] < ax) i++; const [p, q] = [half[i], half[i + 1]]; return lerp(p[1], q[1], clamp((ax - p[0]) / Math.max(1e-9, q[0] - p[0]), 0, 1)); };
+  const bodLipTop = 0.303;   // hoogste punt van de onderlip: in de rubberlijn onder de chromen inlaatlijst, net onder het chroom (zie Onderlip)
   // stations naar doorbuiging (koorde hoogstens 1 mm, golf 5b-2): de stations voor de neus van de kap en de knikken van de bovenrand
   // (koplamp en kapvoorrand) blijven vast, de overige stations uit fbBr zijn kandidaten; was 56 x 30 gelijke stappen plus fbBr
   const shF = bodSagSide(1.752, ZF, z => [fbLo(z), fbHi(z)], 0.001, { keep: bodHoodTip.concat([bodHLZ0, bodHLZ1, bodHoodZ1]), extra: fbBr, nuF: 240, nvF: 128 });
   // golf 5k: gelast met bodCreaseWeld. Het vroegere bodWeld laste op positie en normaal; na het knippen had elke driehoek een eigen vlakke
   // normaal en was de schaal vlak gearceerd. Met weldAll (ronde 1) gaf de knik onder de binnenhoek van de koplamp (station bodHLZ1) een lichte streep
-  const shellF = bodCreaseWeld(merge([shF.geo(L), shF.geo(R), bodCap(ZF - 1e-4, 1)].map(g => bodClipOut(g, inX, inY0, inY1, 2.1))));
+  const shellF = bodCreaseWeld(merge([shF.geo(L), shF.geo(R), bodCap(ZF - 1e-4, 1)].map(g => bodClipPoly(g, grHolePoly, 2.1))));
   // voorvlak-onderdelen: rooster over (x, y), z op het voorvlak
   const fNorm = (x, y) => { const z = frontZ(Math.abs(x), y), n = bodN(z, sAtY(z, y)); return [Math.sign(x || 1) * n[0], n[1], n[2]]; };
   const fPt = (x, y, out) => { const z = frontZ(Math.abs(x), y), n = fNorm(x, y); return [x + n[0] * out, y + n[1] * out, z + n[2] * out]; };
   const fFace = (x0, x1, y0, y1, out, nx = 16, ny = 3) => patch((y, t) => fPt(x0 + (x1 - x0) * t, y, out), y0, y1, ny, () => [0, 1], nx);
-  const fogPose = s => { const x = 0.56, y = 0.37, z = frontZ(x, y), n = fNorm(x, y); return { c: [x, y, z], n }; };
+  // mistlamp (golf 5n ronde 2): binnen-onder in de grote uitsparing, onder de chromen wenkbrauw (foto: ca. 40 procent van de binnenrand)
+  const fogPose = s => { const x = 0.49, y = 0.375, z = frontZ(x, y), n = fNorm(x, y); return { c: [x, y, z], n }; };
   const fog = s => { const { c, n } = fogPose(s), p = k => [c[0] + n[0] * k, c[1] + n[1] * k, c[2] + n[2] * k];   // linkerhelft; bodPose spiegelt
-    return A(`Mistlamp ${sn(s)}`, { d: 'Mistlamp in de bumperhoek (standaard op Initiale Paris).', ex: [s * n[0] * 0.18, -0.02, n[2] * 0.18] }, [
-      // zwarte rand met een ronde opening, daarachter een zwarte kom met de verchroomde reflector en de heldere lens (vooraanzicht: ronde lamp)
-      P('Mistlamphuis', merge([cache('bodFogBezel', () => { const sh = shapeOf(rrectPts(0.13, 0.085, 0.022, 5)); sh.holes.push(circlePath(0, 0, 0.034)); const g = extrude(sh, 0.016, 24); g.rotateY(HALF); return g; }),
-        G.lathe('x', [[0.034, -0.008], [0.034, -0.03], [0.012, -0.036], [0, -0.036]], 24, 'bodFogCup')]), MAT.blackGloss, { d: 'Zwarte behuizing in de bumperhoek: een rand met ronde opening en een kom waarin reflector en lamp zitten.', ...bodPose(s, p(-0.002), n) }),
+    return A(`Mistlamp ${sn(s)}`, { d: 'Mistlamp binnen-onder in de uitsparing in de bumperhoek (standaard op Initiale Paris).', ex: [s * n[0] * 0.18, -0.02, n[2] * 0.18] }, [
+      // zwarte ring met een ronde opening (bijna rond, 8,6 x 8,2 cm), daarachter een zwarte kom met de verchroomde reflector en de heldere lens
+      P('Mistlamphuis', merge([cache('bodFogBezel', () => { const sh = shapeOf(rrectPts(0.086, 0.082, 0.038, 6)); sh.holes.push(circlePath(0, 0, 0.034)); const g = extrude(sh, 0.016, 24); g.rotateY(HALF); return g; }),
+        G.lathe('x', [[0.034, -0.008], [0.034, -0.03], [0.012, -0.036], [0, -0.036]], 24, 'bodFogCup')]), MAT.blackGloss, { d: 'Zwarte ring om de lamp in de uitsparing, met een kom waarin reflector en lamp zitten.', ...bodPose(s, p(-0.002), n) }),
       P('Mistlampreflector', G.lathe('x', [[0.004, -0.03], [0.014, -0.027], [0.024, -0.02], [0.031, -0.012], [0.0335, -0.006]], 24, 'bodFogR2'), MAT.reflector, { d: 'Verchroomde reflector achter de lens.', ...bodPose(s, p(-0.002), n), ex: [s * n[0] * 0.03, 0, n[2] * 0.03] }),
       P('Mistlamplens', G.lathe('x', [[0, 0.0045], [0.02, 0.004], [0.033, 0.0015], [0.0335, -0.001], [0, -0.001]], 24, 'bodFogLens'), MAT.lensClear, { d: 'Heldere, licht bolle lens.', ...bodPose(s, p(-0.002), n), ex: [s * n[0] * 0.06, 0, n[2] * 0.06] }),
       P('Mistlampje', G.cyl('x', 0.007, 0.007, 0.02, 10), MAT.ceramic, { d: 'H11-halogeenlamp (gangbare uitvoering, schematisch).', inner: true, ...bodPose(s, p(-0.024), n) }),
     ]); };
-  // fase 2-chroom (foto blauwe hatchback): brede 'smile' langs de onderrand van de inlaat die naar de hoeken uitloopt en opkrult naar de
-  // mistlampen, en een dikke chromen balk (26 mm, 0,21 m lang) direct op de bovenrand van elke mistlamppot, over de hele potbreedte en naar de bumperhoek iets oplopend
-  const browPts = s => { const pts = []; for (let i = 0; i <= 12; i++) { const u = i / 12; pts.push([s * (0.472 + 0.21 * u), 0.424 + 0.017 * Math.pow(u, 1.6)]); } return pts; };
-  const brow = s => tube(browPts(s).map(([x, y]) => fPt(x, y, 0.005)), 0.013, 24, 10);
+  // vlak op het voorvlak binnen een stervormige rand [[x, y], ...] (tegen de klok in, vooraanzicht van de linkerhelft): ringen van het
+  // zwaartepunt naar de rand, zodat het vlak ook binnenin de bolling volgt. F(x, y) geeft het punt; sx = -1 spiegelt naar rechts
+  const fRing = (bd, F, fr = [0, 0.35, 0.7, 1]) => {
+    const c = bd.reduce((q, p) => [q[0] + p[0] / bd.length, q[1] + p[1] / bd.length], [0, 0]), pos = [], idx = [], n = bd.length;
+    for (const f of fr) for (const p of bd) pos.push(...F(lerp(c[0], p[0], f), lerp(c[1], p[1], f)));
+    for (let r = 0; r + 1 < fr.length; r++) for (let k = 0; k < n; k++) { const a = r * n + k, b = r * n + (k + 1) % n; idx.push(a, a + n, b, b, a + n, b + n); }
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals(); return g;
+  };
+  // veelhoek met afgeronde hoeken (kwadratische bezier per hoek, straal rc langs beide randen)
+  const rPoly = (cs, rc, n = 4) => { const out = []; cs.forEach((P0, i) => { const A0 = cs[(i + cs.length - 1) % cs.length], B0 = cs[(i + 1) % cs.length];
+    const to = (Q, d) => { const l = Math.hypot(Q[0] - P0[0], Q[1] - P0[1]); return [P0[0] + (Q[0] - P0[0]) * d / l, P0[1] + (Q[1] - P0[1]) * d / l]; }, a = to(A0, rc), b = to(B0, rc);
+    for (let k = 0; k <= n; k++) { const t = k / n, m = 1 - t; out.push([m * m * a[0] + 2 * m * t * P0[0] + t * t * b[0], m * m * a[1] + 2 * m * t * P0[1] + t * t * b[1]]); } }); return out; };
+  // uitsparing per bumperhoek (golf 5n ronde 2, foto): liggend trapezium van ca. 35 x 14 tot 19 cm naast de chromen U, de buitenrand naar
+  // boven naar buiten hellend en de bovenrand naar buiten oplopend tot onder het eindstuk van de wenkbrauw; afgeronde hoeken. Mat donkergrijs kunststof, 1,5 mm op de huid. Daarin de
+  // mistlamp binnen-onder, een zwarte luchtsleuf binnen de lamp, drie ribben buiten de lamp en de buitenste parkeersensor
+  const fogBd = rPoly([[0.338, 0.335], [0.64, 0.335], [0.722, 0.52], [0.362, 0.47]], 0.02);
+  const fogSlot = rPoly([[0.366, 0.343], [0.438, 0.343], [0.438, 0.41], [0.368, 0.41]], 0.01, 3);
+  // rand verdicht tot stukken van hoogstens 1,6 cm en vijf ringen: met de hoekpunten alleen lagen de koorden over de bolle bumperhoek
+  // (normaal draait van x 0,38 naar 0,70) tot enkele millimeters onder de huid en stak de bumperschaal er in vlekken doorheen
+  const fDense = (bd, h = 0.012) => bd.flatMap((q, i) => { const r = bd[(i + 1) % bd.length], n = Math.max(1, Math.ceil(Math.hypot(r[0] - q[0], r[1] - q[1]) / h)); return [...Array(n).keys()].map(k => [lerp(q[0], r[0], k / n), lerp(q[1], r[1], k / n)]); });
+  const fogSide = (s, bd, out, h = 0.016, fr = [0, 0.25, 0.5, 0.75, 0.92, 1]) => fRing(fDense(bd, h), (x, y) => fPt(s * x, y, out), fr);
+  const fogRibs = s => merge([0.37, 0.39, 0.41].map(y => bodCapTube([[0.546, y], [0.58, y + 0.001], [0.612, y + 0.002]].map(([x, yy]) => fPt(s * x, yy, 0.0035)), 0.0025, 6, 6)));
+  // chromen wenkbrauw over de hele uitsparing: van de binnenrand (ca. 40 procent onder de bovenrand) schuin omhoog naar de buitenhoek, waar
+  // hij uitloopt in een breed spits eindstuk (ca. 3 cm hoog) dat de buitenhoek van de uitsparing vormt. Was een rechte balk van 21 cm op de
+  // bovenrand van een kleine lamppot
+  const browPts = s => [[0.362, 0.426], [0.45, 0.443], [0.54, 0.459], [0.62, 0.475], [0.665, 0.487], [0.693, 0.499]].map(([x, y]) => [s * x, y]);
+  const browTip = [[0.56, 0.4605], [0.62, 0.475], [0.665, 0.487], [0.694, 0.4995], [0.712, 0.511], [0.704, 0.519], [0.684, 0.522], [0.655, 0.515], [0.62, 0.501], [0.585, 0.482]];
+  const brow = s => merge([bodCapTube(browPts(s).map(([x, y]) => fPt(x, y, 0.003)), 0.005, 32, 8), fogSide(s, browTip, 0.0042, 0.016, [0, 0.5, 1])]);
   // donkere lijn op het voorvlak langs een pad [[x, y], ...]: band van d0 tot d1 dwars op het pad (in vooraanzicht); aan beide kanten van een
   // chroomlijst geeft dat dezelfde omlijsting met donker als bij de raamomlijsting, zodat de heldere lijn op het zilver leest
   const fBand = (pts, d0, d1, out = 0.0012) => patch((u, t) => {
     const k = Math.min(pts.length - 2, Math.floor(u)), f = u - k, a = pts[k], b = pts[k + 1], dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy) || 1, d = lerp(d0, d1, t);
     return fPt(lerp(a[0], b[0], f) - dy / l * d, lerp(a[1], b[1], f) + dx / l * d, out); }, 0, pts.length - 1, (pts.length - 1) * 2, () => [0, 1], 1);
   const fFrame = (pts, a, b) => merge([fBand(pts, a, b), fBand(pts, -b, -a)]);
-  const intakeHalf = [[0, 0.311], [0.2, 0.311], [0.34, 0.313], [0.42, 0.317], [0.458, 0.326], [0.478, 0.343], [0.486, 0.365], [0.485, 0.395], [0.48, 0.418], [0.476, 0.432]];
-  const intakePts = intakeHalf.slice(1).reverse().map(([x, y]) => [-x, y]).concat(intakeHalf);
-  const intakeU = (() => { const pts = intakePts; return tube(pts.map(([x, y]) => fPt(x, y, Math.abs(x) < 0.42 ? lerp(-0.0065, -0.0035, clamp((Math.abs(x) - 0.2) / 0.22, 0, 1)) : lerp(-0.0035, 0.003, clamp((Math.abs(x) - 0.42) / 0.05, 0, 1)))), 0.011, 64, 10); })();   // op de neuspunt en de bolle hoek half verzonken (binnen ZF + 6 mm en de planmaat op z 2,30)
+  // grillevlak (golf 5n ronde 2): rand van het grillevlak met de chromen U; onderste deel (onderrand en zijkanten tot y 0,44) en de twee
+  // bovenste benen tot onder de koplampspitsen. Hart 2 mm in de huid, straal 6,5 mm (foto: een smalle lijst van ca. 1,3 cm)
+  const grRim = grHalf(0);
+  const grLow = grRim.filter(p => p[1] <= grSplit + 1e-9), grUp = grRim.filter(p => p[1] >= grSplit - 1e-9);
+  const grLowPts = grLow.slice(1).reverse().map(([x, y]) => [-x, y]).concat(grLow);                 // van links boven naar rechts boven
+  const grLegs = [grUp.slice().reverse().map(([x, y]) => [-x, y]), grUp];                          // links omlaag, rechts omhoog
+  const grChrome = pts => tube(pts.map(([x, y]) => fPt(x, y, -0.002)), 0.0065, Math.max(8, pts.length * 2), 8);
+  const grSeam = x => bodGrTop(Math.min(Math.abs(x), bodHoodX0 - 0.005)) + 0.003;                    // 3 mm onder de kapvoorrand
+  const grXT = grX(grTopY);
+  const grFaceLo = x => Math.abs(x) <= grHoleX ? inY1 : grLo(grRim, x);
   // verzonken rooster voor een matzwarte achterwand; wanden van de opening tot de achterwand. Golf 5k ronde 2: in de inlaat recht naar
   // achteren (z) in plaats van langs de normaal; die van fNorm springt op de hartlijn (x-deel +/-0,28 bij de neuspunt), waardoor gaas
   // en achterwand in twee gespiegelde, verschillend belichte helften met een naad op de hartlijn uiteenvielen
   const fPtI = (x, y, out) => [x, y, frontZ(Math.abs(x), y) + out];
   const inWall = (x0, y0, x1, y1, n) => patch((u, t) => { const x = lerp(x0, x1, u), y = lerp(y0, y1, u); return fPtI(x, y, lerp(0.0015, -inD, t)); }, 0, 1, n, () => [0, 1], 2);
-  // golf 5k (S7 kenmerk 6, 'honingraat/mesh'): ruitgaas in plaats van vijf lamellen. Staven onder +/-28 graden, 4,5 cm uit elkaar; elke staaf
-  // een strookje van 6 mm dat schuin omhoog kijkt (0,7 tot 1,5 cm achter het voorvlak) en het licht als lijntje vangt
-  const meshBar = (x0, k) => {
-    const ct = 1 / Math.tan(28 * PI / 180), y0 = inY0 + 0.001, y1 = inY1 - 0.007, X = inX - 0.002, xAt = y => x0 + k * (y - y0) * ct;
-    let ya = y0, yb = y1;   // stuk van de lijn binnen |x| <= X
-    for (const xl of [-X, X]) { const yl = y0 + (xl - x0) / (k * ct); if (k * ct > 0 ? xl < 0 : xl > 0) ya = Math.max(ya, yl); else yb = Math.min(yb, yl); }
-    if (yb - ya < 0.004) return null;
-    const n = Math.max(2, Math.ceil(Math.hypot(yb - ya, (yb - ya) * ct) / 0.025));
-    // vaste normalen (onderrand schuin naar voren, bovenrand meer omhoog) en de driehoeken naar voren gedraaid: met berekende normalen
-    // kantelde elke staaf naar opzij, per familie en per helft anders (de bolling van de neus), en las het gaas als twee helften
-    const g = patch((y, t) => fPtI(xAt(y), y + 0.006 * t, lerp(-0.007, -0.015, t)), ya, yb, n, () => [0, 1], 1), N = g.attributes.normal, ix = g.index.array, P3 = g.attributes.position;
-    for (let i = 0; i < N.count; i++) { const v = i % 2 ? [0, 0.62, 0.78] : [0, 0.3, 0.95]; N.setXYZ(i, ...v); }
-    const a = [0, 1, 2].map(k => [P3.getX(ix[k]), P3.getY(ix[k]), P3.getZ(ix[k])]), fz = (a[1][0] - a[0][0]) * (a[2][1] - a[0][1]) - (a[1][1] - a[0][1]) * (a[2][0] - a[0][0]);
-    if (fz < 0) for (let i = 0; i < ix.length; i += 3) { const t = ix[i + 1]; ix[i + 1] = ix[i + 2]; ix[i + 2] = t; }
-    return g;
-  };
-  const meshBars = k => { const out = [], ct = 1 / Math.tan(28 * PI / 180), h = inY1 - inY0; for (let x0 = -inX - (k > 0 ? h * ct : 0); x0 <= inX + (k < 0 ? h * ct : 0); x0 += 0.045) { const g = meshBar(x0, k); if (g) out.push(g); } return out; };
-  const grilleBack = patch((x, y) => fPtI(x, y, -inD), -inX, inX, 30, () => [inY0, inY1], 3);
-  const grilleWalls = merge([inWall(-inX, inY1, inX, inY1, 30), inWall(-inX, inY0, inX, inY0, 30), inWall(-inX, inY0, -inX, inY1, 4), inWall(inX, inY0, inX, inY1, 4)]);
-  const slats = merge(meshBars(1).concat(meshBars(-1)));
+  // golf 5n ronde 2: vier horizontale golvende lamellen (foto: zwart met een lichte golvende bovenrand, ca. vijf golven over de breedte),
+  // in plaats van het ruitgaas van golf 5k. Elk blad loopt van de voorrand (6 mm achter het voorvlak) 4 mm omhoog en 14 mm naar achteren,
+  // met een korte voorkant omlaag; de lichte rand is een strookje van 2 mm net voor de voorrand. Breedte tot 2 mm binnen de opening
+  const slatY = [0.333, 0.36, 0.387, 0.414], slatW = x => 0.0028 * Math.cos(2 * PI * x / 0.12);
+  const slatX = y => { let x = 0; while (x < grHoleX && grLo(grHole, x + 0.001) <= y - 0.004) x += 0.001; return x - 0.002; };
+  const slat = (y, f) => { const X = slatX(y); return patch((x, t) => f(x, y + slatW(x), t), -X, X, 56, () => [0, 1], 1); };
+  const slats = merge(slatY.flatMap(y => [slat(y, (x, yy, t) => fPtI(x, yy + 0.004 * t, lerp(-0.006, -0.02, t))), slat(y, (x, yy, t) => fPtI(x, yy - 0.006 * (1 - t), lerp(-0.0075, -0.006, t)))]));
+  const slatEdges = merge(slatY.map(y => slat(y, (x, yy, t) => fPtI(x, yy + lerp(-0.0012, 0.001, t), -0.0056 - 0.001 * t))));
+  const grilleBack = patch((x, y) => fPtI(x, y, -inD), -grHoleX, grHoleX, 40, x => [grLo(grHole, x), inY1], 3, bodDense(-grHoleX, -grHoleX + 0.03, 4).concat(bodDense(grHoleX - 0.03, grHoleX, 4)));
+  const grilleWalls = merge(grHolePoly.map((p, i) => { const q = grHolePoly[(i + 1) % grHolePoly.length]; return inWall(p[0], p[1], q[0], q[1], Math.max(1, Math.ceil(Math.hypot(q[0] - p[0], q[1] - p[1]) / 0.05))); }));
   const plateY = 0.505;
-  const plY0 = inY1 - 0.002, plY1 = 0.575, plR = 0.02;
-  const plHW = y => { const u = (y - plY0) / (plY1 - plY0), w = lerp(0.44, 0.30, u), e = Math.max(0, y - (plY1 - plR)); return w - plR + Math.sqrt(Math.max(0, plR * plR - e * e)); };
   // bovenrand van de bovengrille: 6 mm onder de kapvoorrand (de boog van de koplampspits naar de neus, zie bodHoodS), op elke x gemeten
   const bodGrTop = x => { const z = bodHLZ1 + (bodHoodZ1 - bodHLZ1) * Math.sqrt(Math.max(0, 1 - (x / bodHoodX0) ** 2)); return halfPt(z, bodSAtX(z, x))[1] - 0.006; };
-  const grChromePts = [...Array(13).keys()].map(i => { const x = -0.30 + 0.05 * i; return [x, bodGrTop(x) - 0.04 - 0.0025]; });
-  const frontBumper = A('Voorbumper', { d: 'Kunststof bumperschaal van de fase 2 met bovengrille, kentekenvlak, brede onderste inlaat met chromen onderrand en mistlampen met chromen balk.', ex: [0, -0.04, 0.72] }, [
+  const frontBumper = A('Voorbumper', { d: 'Kunststof bumperschaal van de fase 2 met een groot zwart grillevlak (omgekeerd trapezium met chromen U, vier golvende lamellen en het kentekenvlak) en in elke hoek een uitsparing met mistlamp, ribben en een chromen wenkbrauw.', ex: [0, -0.04, 0.72] }, [
     P('Bumperschaal voor', shellF, MAT.paint, { d: 'Gespoten kunststof bumperschaal in carrosseriekleur.', ex: [0, 0, 0] }),
     // flens onder de naad tussen kapvoorrand en bumper (6 mm onder de huid): door de naad is geen motorruimte meer te zien
     P('Kapnaadflens', merge([L, R].map(sd => lowSide(sd, bodHLZ1 - 0.03, bodHoodZ1, 20, z => { const h = bodHoodS(z); return [Math.min(0.999, h - 0.008), Math.min(1, h + 0.008)]; }, 2, bodDense(2.27, bodHoodZ1, 6).concat(bodHoodTip), 0.006))), MAT.plastic, { d: 'Kunststof flens van de bumperschaal onder de naad met de voorrand van de motorkap.', ex: [0, 0.03, 0.04] }),
-    // golf 5j (S7 kenmerk 5): smalle sleuf van 4 cm direct onder de kapvoorrand (exterieuronderzoek: x +/-0,30, y 0,62 tot 0,66; de
-    // kapvoorrand ligt op de hartlijn op y 0,661). Golf 5h had 5 cm en +/-0,33 met 1 cm lak tot de kap: dat las als dikke zwarte balk
-    A('Bovengrille', { d: 'Smalle zwarte sleuf direct onder de voorrand van de motorkap, tussen de binnenspitsen van de koplampen, met een dunne chroomlijn eronder.', ex: [0, 0.04, 0.12] }, [
-      P('Grillesleuf', patch((u, t) => { const x = lerp(-0.30, 0.30, t), y1 = bodGrTop(x); return fPt(x, lerp(y1 - 0.04, y1, u), 0.0015); }, 0, 1, 3, () => [0, 1], 20), MAT.blackGloss, { d: 'Hoogglans zwart rooster dat de smalle sleuf tussen de kapvoorrand en de bumper afsluit.', ex: [0, 0, 0] }),
-      // golf 5k (S7): de lijn lag half in de huid (vijf steunpunten, koorden in de bolle neus) en las niet. Nu 5 mm dik, hart 2,9 mm buiten
-      // de huid, direct onder de sleuf, door 13 punten, met een zwarte lijn eronder zodat het chroom op het zilver afsteekt
-      P('Chroomlijn grille', tube(grChromePts.map(([x, y]) => fPt(x, y, 0.0029)), 0.0025, 48, 8), MAT.bodChrome, { d: 'Dunne chroomlijn langs de onderrand van de grillesleuf.', ex: [0, -0.02, 0.04] }),
-      P('Rubberlijn chroomlijn grille', fBand(grChromePts, -0.0065, -0.002), MAT.bodPillar, { d: 'Smalle zwarte lijn onder de chroomlijn, waartegen de lijn op de lak afsteekt.', ex: [0, -0.02, 0.03] }),
+    // golf 5n ronde 2: de bovengrille is het bovenste deel van het grote grillevlak: een glanzend zwarte band van 3,5 cm direct onder de
+    // kapvoorrand, van koplampspits tot koplampspits, en de twee bovenste benen van de chromen U (van y 0,44 tot onder de koplampspitsen).
+    // Golf 5j/5k hadden hier een losse sleuf van +/-0,30 met een chroomlijn en lak eronder; op de foto loopt het zwart door tot het kenteken
+    A('Bovengrille', { d: 'Bovenste deel van het grillevlak: glanzend zwarte band direct onder de voorrand van de motorkap tussen de binnenspitsen van de koplampen, met de twee bovenste benen van de chromen U.', ex: [0, 0.04, 0.12] }, [
+      P('Grillesleuf', patch((x, t) => { const y1 = grSeam(x); return fPt(x, lerp(y1 - 0.035, y1, t), 0.0015); }, -grXT, grXT, 64, () => [0, 1], 3), MAT.blackGloss, { d: 'Glanzend zwarte band van ca. 3,5 cm direct onder de voorrand van de motorkap, over de hele breedte tussen de koplampspitsen.', ex: [0, 0, 0] }),
+      P('Chroomlijn grille', merge(grLegs.map(grChrome)), MAT.bodChrome, { d: 'Bovenste benen van de chromen U langs de zijkanten van het grillevlak, van de lamellen tot onder de koplampspitsen.', ex: [0, -0.02, 0.04] }),
+      P('Rubberlijn chroomlijn grille', merge(grLegs.map(pts => fBand(pts, -0.0125, -0.006, 0.0008))), MAT.bodPillar, { d: 'Smalle zwarte lijnen aan de buitenkant van de chromen benen, waartegen het chroom op de lak afsteekt.', ex: [0, -0.02, 0.03] }),
     ]),
-    // golf 5k (S7 kenmerk 6): zwart trapezium bovenin de inlaat (golf 5j: 1 tot 1,5 cm rond de plaat; daarvoor een losse rechthoek die als
-    // kastje las), |x| 0,44 op de bovenrand van de opening tot |x| 0,30 op y 0,575, hoeken straal 2 cm
-    P('Kentekenvlak', patch((y, t) => { const hw = plHW(y); return fPt(lerp(-hw, hw, t), y, 0.0012); }, plY0, plY1, 16, () => [0, 1], 40), MAT.blackGloss, { d: 'Zwart vlak bovenin de onderste inlaat, dat naar boven smaller wordt en waarop de kentekenplaat zit.', ex: [0, 0.02, 0.08] }),
+    // golf 5n ronde 2: het zwarte grillevlak tussen de band onder de kap, de chromen U en de opening voor de lamellen (foto: tussen kapnaad en
+    // kenteken geen lak); de plaat zit bovenin. Golf 5k had een zwart trapezium dat naar boven smaller werd (|x| 0,44 tot 0,30)
+    // 48 x 16 (ca. 1,5 x 1,2 cm), 1,8 mm op de huid: met 12 rijen en 1,2 mm zakten de koorden over de bolle neus onder de huid en stak de
+    // bumperschaal er boven de plaat door (stralen loodrecht op het vlak: geen treffer meer op de bumperschaal binnen het vlak)
+    P('Kentekenvlak', patch((x, y) => fPt(x, y, 0.0018), -grXT, grXT, 48, x => [grFaceLo(x), Math.max(grFaceLo(x) + 1e-4, grSeam(x) - 0.035)], 16,
+      [-grHoleX, grHoleX].concat(bodDense(-grXT, -0.29, 6), bodDense(0.29, grXT, 6))), MAT.bodGrille, { d: 'Groot zwart grillevlak in de vorm van een omgekeerd trapezium, van de band onder de motorkap tot de lamellen, waarop de kentekenplaat zit.', ex: [0, 0.02, 0.08] }),
     // plaat en houder volgen de bolling van het voorvlak en liggen er vlak op (2 tot 4 mm), zonder zichtbaar blok erachter; 8 rijen in y
     // (ronde 2: met 2 tot 4 rijen lag het vlak tussen de rijen binnen de bolle neus en stak de bumperschaal er bovenin door)
     P('Kentekenplaathouder', merge([fFace(-0.268, 0.268, plateY - 0.06, plateY + 0.06, 0.0022, 16, 8), fFace(-0.268, 0.268, plateY - 0.06, plateY + 0.06, 0.0017, 16, 8)]), MAT.plastic, { d: 'Dunne kunststof houder die de plaat in de bolling van het kentekenvlak houdt.', ex: [0, 0, 0.1] }),
@@ -1316,37 +1472,54 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
       P('Plaat', merge([fFace(-0.215, 0.26, plateY - 0.055, plateY + 0.055, 0.0040, 16, 8), fFace(-0.26, 0.26, plateY - 0.055, plateY + 0.055, 0.0028, 18, 8)]), MAT.plateYellow, { d: 'Retroreflecterende gele plaat van 520 × 110 mm.', ex: [0, 0, 0.03] }),
       P('EU-strook', fFace(-0.26, -0.215, plateY - 0.055, plateY + 0.055, 0.0042, 2, 8), MAT.plateBlue, { d: 'Blauwe strook met de landcode links op de plaat, zonder tekst weergegeven.', ex: [-0.06, 0, 0.02] }),
     ]),
-    A('Onderste luchtinlaat', { d: 'Brede, lage inlaat voor radiateur en intercooler, met een chromen onderrand.', ex: [0, -0.05, 0.12] }, [
-      P('Inlaatrooster', slats, MAT.bodGrille, { d: 'Zwart kunststof gaas van dunne schuine staven in een ruitpatroon, ca. 1 cm verzonken achter de chromen lijst.', ex: [0, 0, 0.04] }),
-      P('Inlaatkanaal', merge([grilleBack, grilleWalls]), MAT.plastic, { d: 'Mat zwarte achterwand en wanden van de inlaatopening, die de lucht naar radiateur en intercooler leiden.', ex: [0, 0, 0] }),
-      P('Chroomlijst inlaat', intakeU, MAT.bodChrome, { d: 'Brede chromen lijst langs de onderrand van de inlaat die naar de bumperhoeken uitloopt en naar de mistlampen opkrult.', ex: [0, -0.02, 0.06] }),
-      P('Rubberlijnen chroomlijst inlaat', fFrame(intakePts, 0.008, 0.017), MAT.bodPillar, { d: 'Smalle zwarte rubberlijnen aan beide kanten van de chromen inlaatlijst, waartegen de heldere lijst afsteekt.', ex: [0, -0.02, 0.04] }),
+    A('Onderste luchtinlaat', { d: 'Onderste deel van het grillevlak: een opening met vier golvende lamellen voor radiateur en intercooler, met de chromen U langs onderrand en zijkanten.', ex: [0, -0.05, 0.12] }, [
+      P('Inlaatrooster', slats, MAT.bodGrille, { d: 'Vier horizontale, golvende lamellen van zwart kunststof in de opening onder het kenteken.', ex: [0, 0, 0.04] }),
+      P('Lamelranden', slatEdges, MAT.bodBright, { d: 'Lichte, golvende bovenranden van de vier lamellen.', ex: [0, 0.01, 0.06] }),
+      P('Inlaatkanaal', merge([grilleBack, grilleWalls]), MAT.plastic, { d: 'Mat zwarte achterwand en wanden van de opening, die de lucht naar radiateur en intercooler leiden.', ex: [0, 0, 0] }),
+      P('Chroomlijst inlaat', grChrome(grLowPts), MAT.bodChrome, { d: 'Onderste deel van de chromen U: langs de onderrand en de zijkanten van het grillevlak tot de lamellen, met afgeronde hoeken.', ex: [0, -0.02, 0.06] }),
+      P('Rubberlijnen chroomlijst inlaat', fBand(grLowPts, -0.0125, -0.006, 0.0008), MAT.bodPillar, { d: 'Smalle zwarte lijn langs de buitenkant van de chromen U, waartegen de heldere lijst op de lak afsteekt.', ex: [0, -0.02, 0.04] }),
     ]),
-    A('Mistlampen voor', { d: 'Twee mistlampen in de bumperhoeken met elk een chromen wenkbrauw.', ex: [0, -0.02, 0.1] }, [
+    A('Mistlampen voor', { d: 'Twee mistlampen, elk in een grote uitsparing in de bumperhoek met ribben, een luchtsleuf en een chromen wenkbrauw.', ex: [0, -0.02, 0.1] }, [
       ...both(fog),
-      ...both(s => P(`Chroomwenkbrauw ${sn(s)}`, brow(s), MAT.bodChrome, { d: 'Chromen balk op de bovenrand van de mistlamp, naar buiten iets oplopend.', ex: [s * 0.08, 0.04, 0.08] })),
-      ...both(s => P(`Rubberlijnen wenkbrauw ${sn(s)}`, fFrame(browPts(s), 0.010, 0.019), MAT.bodPillar, { d: 'Smalle zwarte lijnen boven en onder de chromen wenkbrauw, waartegen de balk afsteekt.', ex: [s * 0.06, 0.03, 0.06] })),
+      ...both(s => P(`Mistlampuitsparing ${sn(s)}`, merge([fogSide(s, fogBd, 0.0015), fogRibs(s)]), MAT.plastic, { d: 'Donkergrijze kunststof omlijsting die de grote uitsparing in de bumperhoek vult (liggend trapezium van ca. 35 cm breed en 14 tot 19 cm hoog), met drie ribben naast de mistlamp (maten geschat uit een foto).', ex: [s * 0.06, -0.01, 0.05] })),
+      ...both(s => P(`Luchtsleuf mistlamp ${sn(s)}`, fogSide(s, fogSlot, 0.0021, 0.025, [0, 0.5, 1]), MAT.bodPillar, { d: 'Zwarte luchtsleuf binnen de mistlamp, onderin de uitsparing.', ex: [s * 0.04, -0.01, 0.07] })),
+      ...both(s => P(`Chroomwenkbrauw ${sn(s)}`, brow(s), MAT.bodChrome, { d: 'Chromen lijst schuin over de uitsparing, van de binnenrand naar de buitenhoek, waar hij uitloopt in een breed spits eindstuk.', ex: [s * 0.08, 0.04, 0.08] })),
+      ...both(s => P(`Rubberlijnen wenkbrauw ${sn(s)}`, fBand(browTip.slice(5).map(([x, y]) => [s * x, y]), s > 0 ? -0.006 : 0.002, s > 0 ? -0.002 : 0.006, 0.0012), MAT.bodPillar, { d: 'Smalle zwarte lijn langs de bovenrand van het chromen eindstuk, waartegen het op de lak afsteekt.', ex: [s * 0.06, 0.03, 0.06] })),
     ]),
     // de lip loopt tot de hartlijn door (s = 0), zodat de twee helften op de neuspunt aansluiten: eerder bleef daar een V-vormig gat met
     // spitse zwarte punten onder de chroomlijst
     // lip in twee banden: de vlakke onderkant (s 0 tot S1) en de onderste ronding tot 2,2 cm hoog met vier rijen. Eerder vier gelijke rijen
     // over het geheel, waarvan hoogstens één over de ronding: die koorde zakte tot ca. 6 mm, dieper dan de 3 mm afstand tot de huid, zodat
     // de bumperschaal er in de beelden van voren gekarteld wit-zwart doorheen stak (S7, golf 5f ronde 2)
+    // golf 5n: de ronding houdt onder y bodLipTop (0,303) op, met een zacht minimum (breedte 1,5 mm), zodat de bovenrand geen knik krijgt
+    // en op de neus in de zwarte rubberlijn eindigt (lager liet een zilveren strook van de bumperschaal zien).
+    // Op de neus stijgt de onderkant van de bumper steil (YB 0,268 op z 2,30 tot 0,31 op ZF), en de bovenrand YB + 2,2 cm kwam daar tot
+    // y 0,332, door de chromen inlaatlijst (onderkant 0,300) en de rubberlijn eronder (tot 0,294): van voren twee zwarte wiggen op de
+    // chromen onderrand, op x ca. +/-0,06 en +/-0,11
+    // ronde 2: voor z > 2,339 ligt YB boven bodLipTop (tot 0,31 op ZF); de bovenrand viel daar onder de onderkant van de doorsnede en bodSY
+    // klemde de vier rijen tot strookjes van 0,1 mm. Nu ligt de bovenrand minstens 4 mm boven YB (zacht maximum, ook 1,5 mm breed): op de
+    // neus blijft de ronding een smalle band die achter de chromen inlaatlijst valt (onderkant 0,300, hart 6,5 mm in de huid)
     P('Onderlip', merge([L, R].flatMap(sd => [lowSide(sd, 1.80, ZF, 60, () => [0, S1], 2, bodDense(2.2, ZF, 16), -0.003),
-      lowSide(sd, 1.80, ZF, 60, z => [S1, Math.max(S1 + 1e-4, bodSY(z, YB(z) + 0.022))], 4, bodDense(2.2, ZF, 16), -0.003)])), MAT.plastic, { d: 'Zwarte spoilerlip onder de bumper.', ex: [0, -0.08, 0.06] }),
+      lowSide(sd, 1.80, ZF, 60, z => { const w = 0.0015, lo = YB(z) + 0.004, m = bodLipTop - w * Math.log(Math.exp((bodLipTop - YB(z) - 0.022) / w) + 1);
+        return [S1, Math.max(S1 + 1e-4, bodSY(z, m + w * Math.log(1 + Math.exp((lo - m) / w))))]; }, 4, bodDense(2.2, ZF, 16), -0.003)])), MAT.plastic, { d: 'Zwarte spoilerlip onder de bumper.', ex: [0, -0.08, 0.06] }),
     // strip 2,5 mm boven de huid met 32 stations (was 14, de randen lazen als zaagtand) en een punt van 6 cm naar voren toe, zodat het
     // voorste eind niet als los wit blokje van de bumper afstaat
     ...both(s => P(`Sierstrip onderlip ${sn(s)}`, lowSide(s, 1.76, 2.15, 32, z => { const w = 0.009 * (0.15 + 0.85 * sstep((2.15 - z) / 0.06)); return [bodSY(z, YB(z) + 0.037 - w), bodSY(z, YB(z) + 0.037 + w)]; }, 1, [], -0.0025), MAT.bodBright, { d: 'Zilveren strip langs de bumperzijde die doorloopt in de dorpelsierlijst.', ex: [s * 0.06, -0.03, 0] })),
-    A('Koplampsproeiers', { d: 'Twee uitschuifbare koplampsproeiers onder de bi-xenon koplampen.', ex: [0, 0.02, 0.08] }, both(s => { const z = 2.0, y = bodHLlo(z) - 0.035, p = bodAt(z, y, 0.004), nn = bodNormalAt(z, y);
+    // golf 5n ronde 2 (foto): het kapje is een liggend ovaal van ca. 11 x 3 cm in lakkleur, vlak op het voorvlak tussen de koplamp en de
+    // uitsparing van de mistlamp (|x| 0,56, y 0,565); was een blokje van 6 x 2,5 cm op de zijkant (z 2,0) dat uitstak
+    A('Koplampsproeiers', { d: 'Twee uitschuifbare koplampsproeiers onder de bi-xenon koplampen.', ex: [0, 0.02, 0.08] }, both(s => { const x = 0.56, y = 0.565, nn = fNorm(x, y);
       return A(`Koplampsproeier ${sn(s)}`, { d: 'Uitschuifbare koplampsproeier (Initiale Paris: koplampsproeiers bij de bi-xenon).', ex: [s * 0.1, 0, 0.1] }, [
-        P('Sproeierkapje', G.rbox(0.012, 0.025, 0.06, 0.008), MAT.paint, { d: 'Kapje in carrosseriekleur.', ...bodPose(s, p, nn) }),
+        P('Sproeierkapje', cache('bodSprCap', () => xf(G.lathe('x', [[0, 0.0036], [0.5, 0.0033], [0.8, 0.0024], [0.95, 0.0011], [1, 0], [1, -0.001], [0, -0.001]], 24, 'bodSprCapL'), null, null, [1, 0.016, 0.054])), MAT.paint, { d: 'Liggend ovaal kapje in carrosseriekleur, vlak in de bumper onder de koplamp.', ...bodPose(s, fPt(x, y, 0.0004), nn) }),
         // kop 1,5 mm onder de huid in plaats van er precies tegen: de bumperschaal met stations naar doorbuiging ligt daar tot 0,5 mm lager
-        P('Sproeierkop koplamp', G.cyl('x', 0.008, 0.008, 0.04, 10), MAT.plastic, { d: 'Telescopische sproeierkop.', inner: true, ...bodPose(s, bodAt(z, y, -0.0215), nn), ex: [s * 0.04, 0, 0.03] }),
+        P('Sproeierkop koplamp', G.cyl('x', 0.008, 0.008, 0.04, 10), MAT.plastic, { d: 'Telescopische sproeierkop.', inner: true, ...bodPose(s, fPt(x, y, -0.0215), nn), ex: [s * 0.04, 0, 0.03] }),
       ]); })),
     // golf 5j ronde 2: de middelste twee naast de plaat (|x| 0,33) in plaats van onder de onderrand (|x| 0,15, y 0,452), waar ze als grijze
     // halve maantjes door plaat en houder staken; de buitenste naar |x| 0,47 boven de chromen wenkbrauw van de mistlampen
     // golf 5k: de middelste naar |x| 0,40, y 0,535, naast het zwarte kentekenvlak op de lak
-    A('Parkeersensoren voor', { d: 'Vier ultrasone sensoren van de parkeerhulp voor (op de Initiale aannemelijk standaard, in andere markten optie).', ex: [0, 0.03, 0.12] }, [[-0.47, 0.47], [-0.40, 0.535], [0.40, 0.535], [0.47, 0.47]].map(([x, y], i) => P(`Parkeersensor voor ${i + 1}`, G.cyl('z', 0.011, 0.011, 0.02, 12), MAT.paint, { d: 'Ultrasone parkeersensor voor (op de Initiale aannemelijk standaard, in andere markten optie).', p: fPt(x, y, -0.006), ex: [0, 0.02, 0.06] }))),
+    // golf 5n ronde 2 (foto): zwart; de middelste in het grillevlak naast de plaat (|x| 0,302, y 0,505, tussen houder en chromen U), de
+    // buitenste in de uitsparing van de mistlamp naast de ribben (|x| 0,628, y 0,40). Langs de normaal, ruim 1 mm voor het vlak eromheen: kop van de
+    // middelste op +3,0 mm (kentekenvlak +1,8 mm; was +2,2, 0,4 mm erboven, reviewronde), van de buitenste op +2,7 mm (uitsparing +1,5 mm)
+    A('Parkeersensoren voor', { d: 'Vier ultrasone sensoren van de parkeerhulp voor (op de Initiale aannemelijk standaard, in andere markten optie).', ex: [0, 0.03, 0.12] }, [[-0.628, 0.40], [-0.302, 0.505], [0.302, 0.505], [0.628, 0.40]].map(([x, y], i) => P(`Parkeersensor voor ${i + 1}`, G.cyl('x', 0.011, 0.011, 0.02, 12), MAT.blackGloss, { d: 'Zwarte ultrasone parkeersensor voor (op de Initiale aannemelijk standaard, in andere markten optie).', ...bodPose(Math.sign(x), fPt(Math.abs(x), y, Math.abs(x) > 0.5 ? -0.0073 : -0.007), fNorm(Math.abs(x), y)), ex: [0, 0.02, 0.06] }))),
     ...both(s => P(`Bumpersteun voor ${sn(s)}`, G.rbox(0.05, 0.08, 0.12, 0.01), MAT.plastic, { d: 'Steun die de bumperschaal aan voorscherm en frontmodule vasthoudt.', p: [s * 0.74, 0.5, 1.86], ex: [s * 0.05, 0, 0] })),
   ]);
 
@@ -1486,6 +1659,11 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   const tailgate = A('Achterklep', { d: 'Grote achterklep met de hele achterruit, typerend voor de vijfdeurs hatchback, met spoilerlip, derde remlicht en achterruitenwisser. Scharniert aan de dakrand en wordt door twee gasveren omhooggehouden.', ex: [0, 0.42, -0.5],
     open: hinge(bodTgPv, [1, 0, 0], bodTgAng, { min: 60 * PI / 180, label: 'Achterklep', look: { dir: [0.6, 0.6, -1], nodes: ['Achterklep', 'Gasveer links', 'Gasveer rechts'] } }) }, [
     P('Buitenpaneel achterklep', merge([tgOuter, bodSPweb(1, bodQScr(SP), 1, 0.003, 16), bodSPweb(-1, bodQScr(SP), 1, 0.003, 16)]), MAT.bodPaintTg, { d: 'Plaatwerk van de achterklep onder en achter de ruit.', ex: [0, 0, -0.08] }),
+    // Renault-ruit op de klep (golf 5n ronde 2): midden op het staartvlak van de klep, op de hoogte van het midden van de achterlichtband.
+    // Plaats en maat (10 x 13 cm) geschat uit fase 2-persfoto's; de foto's van de gebruiker tonen de achterkant niet. Assenstelsel: u naar
+    // rechts gezien van achter (-x), v omhoog, w naar achteren (-z). Sinds de schaal een onderzijde heeft (reviewronde), ligt die 1 mm achter
+    // het analytische staartvlak: op -1 mm zakte het gesloten volume tot 1,8 mm in het (gefacetteerde) buitenpaneel; nu kleinste afstand 0,13 mm
+    P('Renault-embleem achter', bodLosange((u, v, w) => { const x = -u, y = bodTLY(bodZT, 0.5) + v; return [x, y, tailZ(x, y) - w]; }, 0.05, 0.065, 0.45, 0.001, 0.008, 0.0045), MAT.bodChrome, { d: 'Verchroomde Renault-ruit met holle vlakken midden op de achterklep, op de hoogte van de achterlichten (plaats en maat geschat).', ex: [0, 0.03, -0.16] }),
     P('Binnenpaneel achterklep', merge([bodTailGeo(-0.36, 0.36, 0.68, ydT - 0.02, -0.04, 4, 8), ...tgRing]), MAT.paintIn, { d: 'Binnenframe van de achterklep met scharnier- en slotversteviging. Rond de achterruit loopt een smalle rand van 7 cm (de lijmrand), zodat de ruit van binnen als donker glas te zien is.', ex: [0, 0, 0] }),
     P('Bekleding achterklep', tgTrim, MAT.bodTgTrim, { d: 'Donkergrijze kunststof bekleding aan de binnenkant van de achterklep, over het binnenframe onder de ruit en de rand rond de achterruit.', ex: [0, -0.06, 0.08] }),
     P('Achterruit', scr, MAT.bodGlassSide, { d: 'Verwarmde achterruit van gehard glas, zeer vlak geplaatst (ca. 14 graden).', ex: [0, 0.14, 0.02] }),
