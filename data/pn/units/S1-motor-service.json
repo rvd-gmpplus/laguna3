@@ -2068,7 +2068,21 @@
     "https://www.autodoc.parts/car-parts/camshaft-sensor-15033/renault/laguna/laguna-iii-bt0-1/23370-2-0-16v-turbo",
     "autodoc.parts"
    ]
-  ]
+  ],
+  "kz": {
+   "o": [
+    "8200513668"
+   ],
+   "a": [],
+   "v": "Krukaspositiesensor Renault 8200513668 (Hall of inductief niet vastgesteld)",
+   "b": "B",
+   "z": "middel",
+   "g": "Voertuigtype BT15 met motor F4R 813 en bak AJ0 (besluit van de gebruiker van 21 oktober 2026, uit het typeplaatje en de Renault-catalogus). Een toepassingslijst bij Bosch 0 986 280 795 noemt voor Laguna (DT0/1) 2.0 16V Turbo de motorcodes F4R 811 en F4R 813 met OE 8200513668; bij de Laguna III-regels staat alleen 8200513668, niet 8200260327. Of de sensor Hall of inductief is, is niet vastgesteld, dus geen merknummer gekozen.",
+   "s": [
+    "https://picclick.co.uk/RPM-Crankshaft-Sensor-fits-RENAULT-CLIO-Mk3-178272815556.html",
+    "https://bestpriced.co.uk/bosch-impulse-sensor-0-986-280-795-renault-trafic-2-kasten-clio-3-megane-3-grandtour-vauxhall-vivaro-van-opel-vivaro-a-van-04047026658316"
+   ]
+  }
  },
  "S1-motor-service:U_CMP": {
   "n": "Nokkenaspositiesensor",
