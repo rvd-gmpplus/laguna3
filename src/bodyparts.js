@@ -625,15 +625,15 @@ function buildDoor(s, isFront) {
     const swoosh = patch((t, v) => {
       const y = lerp(yT, yB, t), z = swZ(t) + (v - 0.5) * swW(t), c = dC(z, y), fl = c + (Math.max(c, dF(z)) - c) * sstep(Math.min(v, 1 - v) / 0.18);
       return [s * (bx(z) - fl - 0.003 - swH(t) * Math.pow(Math.sin(PI * v), 0.7)), y, z];
-    }, 0, 1, 14, () => [0, 1], 8, [0.92, 0.96, 0.99]);
-    const lijstB = patch((z, v) => { const y = lerp(yLb(z), yLt(z), v); return [s * (cardX(z, y) - 0.003 - 0.004 * Math.sin(PI * v)), y, z]; }, iA - 0.003, zTop, 20, () => [0, 1], 4);
+    }, 0, 1, 14, () => [0, 1], 6, [0.92, 0.96, 0.99]);
+    const lijstB = patch((z, v) => { const y = lerp(yLb(z), yLt(z), v); return [s * (cardX(z, y) - 0.003 - 0.004 * Math.sin(PI * v)), y, z]; }, iA - 0.003, zTop, 12, () => [0, 1], 4);
     // inzet als kussen: 2 mm boven het inzetvlak, binnen 1,2 cm van de rand afgerond tot 7 mm (de verhoogde rand op de foto's); voorrand 4 mm onder de boog
     const TV = [0, 0.04, 0.1, 0.5, 0.9, 0.96, 1];
     const inzet = patch((u, j) => {
       const k = TV[Math.round(j)], yA = lerp(yI0, yLb(zTop), k), zE = swZ(swT(yA)) - swW(swT(yA)) / 2 + 0.004, z = lerp(iA, zE, u), y = lerp(yI0, yLb(z), k);
       const e = sstep(Math.min(z - iA, zE - z, y - yI0, yLb(z) - y) / 0.012);
       return [s * (bx(z) - Math.max(dC(z, y), dF(z)) - 0.002 - 0.005 * e), y, z];
-    }, 0, 1, 16, () => [0, 6], 6, [0.012, 0.03, 0.97, 0.988]);
+    }, 0, 1, 12, () => [0, 6], 6, [0.012, 0.03, 0.97, 0.988]);
     // armsteun: een geloft profiel (d binnen xb, y) van het kaartvlak onderaan tot het inzetvlak bovenaan; bovenvlak licht naar het portier hellend.
     // Naar de uiteinden (3,5 cm) krimpt het profiel naar de lijn tussen de aanhechtingen
     const aP = z => [[dC(z, 0.600), 0.600], [0.085, 0.601], [0.113, 0.608], [0.129, 0.621], [0.136, 0.638], [0.1345, 0.652], [0.127, 0.661], [0.104, 0.666], [dF(z) + 0.0015, 0.672]];
@@ -645,7 +645,7 @@ function buildDoor(s, isFront) {
     const arm = patch((z, j) => aPt(z, j), aA, aB, 24, () => [0, 8], 8, [aA + 0.006, aA + 0.016, aB - 0.016, aB - 0.006]);
     // dubbel stiksel over het voorvlak, 6 mm uit elkaar
     const seamZ = bodDense(aA + 0.04, aB - 0.03, 8).concat([aB - 0.03]);
-    const naden = merge([4.5, 4.95].map(kf => tube(seamZ.map(z => aPt(z, kf, 0.0009)), 0.0011, 16, 3)));
+    const naden = merge([4.5, 4.95].map(kf => tube(seamZ.map(z => aPt(z, kf, 0.0009)), 0.0011, 10, 3)));
     // greep: matte kom (afgeronde trapeziumvorm, achter hoger dan voor) iets boven het inzetvlak, met een gebogen chromen hendel en een rond
     // draaipunt vooraan. Kom als schaal: rand 2 mm boven het leder, midden 3 mm eronder
     const hZ = isFront ? 0.31 : -0.435, hY = 0.758, kB = dF(hZ) + 0.004;
@@ -654,13 +654,13 @@ function buildDoor(s, isFront) {
       const r = komR[Math.round(j)], c = Math.cos(th), sn = Math.sin(th), a = 0.064 * Math.sign(c) * Math.pow(Math.abs(c), 0.4), w = (a + 0.064) / 0.128;
       const b = lerp(0.029, 0.020, w) * Math.sign(sn) * Math.pow(Math.abs(sn), 0.4) + lerp(0.003, 0, w), z = hZ + r * a, y = hY + r * b;
       return [s * (bx(z) - kB - komD[Math.round(j)]), y, z];
-    }, 0, 2 * PI, 24, () => [0, 6], 6);
+    }, 0, 2 * PI, 16, () => [0, 6], 6);
     // hendel: gebogen schaal (hart zakt naar het midden), voor 1,4 cm en achter 1,6 cm hoog, bol naar de cabine; staat 9 tot 13 mm boven de kom
     const hendel = patch((a, v) => {
       const yc = hY + 0.004 - 0.009 * Math.sin(PI * (0.046 - a) / 0.092) - 0.002 * (0.046 - a) / 0.092, hh = lerp(0.007, 0.008, (0.046 - a) / 0.092) * (0.75 + 0.25 * Math.sin(PI * (0.046 - a) / 0.092));
       return X(bx(hZ + a) - kB - lerp(0.009, 0.013, (0.046 - a) / 0.092) - 0.004 * Math.sin(PI * v), yc + (v - 0.5) * 2 * hh, hZ + a);
     }, -0.046, 0.046, 12, () => [0, 1], 4);
-    const draaipunt = xf(G.cyl('x', 0.011, 0.011, 0.008, 16), X(bx(hZ + 0.046) - kB - 0.009, hY + 0.004, hZ + 0.046));
+    const draaipunt = xf(G.cyl('x', 0.011, 0.011, 0.008, 12), X(bx(hZ + 0.046) - kB - 0.009, hY + 0.004, hZ + 0.046));
     // schakelpaneel op het bovenvlak van de armsteun (13,5 graden gekanteld zoals dat vlak): bestuurder vier raamschakelaars, spiegelverstelling
     // en raamvergrendeling (pianozwart); passagier een lange satijnzwarte bak van 17 cm met een schakelaar vooraan; achter een kort paneel
     const drv = isFront && s > 0, pas = isFront && s < 0, pL = drv ? 0.16 : pas ? 0.17 : 0.07, pZ = aB - (pas ? 0.012 : 0.03) - pL / 2, kF = aB - 0.03;
@@ -1495,7 +1495,7 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   // bovenrand van een kleine lamppot
   const browPts = s => [[0.362, 0.426], [0.45, 0.443], [0.54, 0.459], [0.62, 0.475], [0.665, 0.487], [0.693, 0.499]].map(([x, y]) => [s * x, y]);
   const browTip = [[0.56, 0.4605], [0.62, 0.475], [0.665, 0.487], [0.694, 0.4995], [0.712, 0.511], [0.704, 0.519], [0.684, 0.522], [0.655, 0.515], [0.62, 0.501], [0.585, 0.482]];
-  const brow = s => merge([bodCapTube(browPts(s).map(([x, y]) => fPt(x, y, 0.003)), 0.005, 32, 8), fogSide(s, browTip, 0.0042, 0.016, [0, 0.5, 1])]);
+  const brow = s => merge([bodCapTube(browPts(s).map(([x, y]) => fPt(x, y, 0.003)), 0.005, 20, 8), fogSide(s, browTip, 0.0042, 0.016, [0, 0.5, 1])]);
   // donkere lijn op het voorvlak langs een pad [[x, y], ...]: band van d0 tot d1 dwars op het pad (in vooraanzicht); aan beide kanten van een
   // chroomlijst geeft dat dezelfde omlijsting met donker als bij de raamomlijsting, zodat de heldere lijn op het zilver leest
   const fBand = (pts, d0, d1, out = 0.0012) => patch((u, t) => {
@@ -1522,7 +1522,7 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   // met een korte voorkant omlaag; de lichte rand is een strookje van 2 mm net voor de voorrand. Breedte tot 2 mm binnen de opening
   const slatY = [0.333, 0.36, 0.387, 0.414], slatW = x => 0.0028 * Math.cos(2 * PI * x / 0.12);
   const slatX = y => { let x = 0; while (x < grHoleX && grLo(grHole, x + 0.001) <= y - 0.004) x += 0.001; return x - 0.002; };
-  const slat = (y, f) => { const X = slatX(y); return patch((x, t) => f(x, y + slatW(x), t), -X, X, 56, () => [0, 1], 1); };
+  const slat = (y, f) => { const X = slatX(y); return patch((x, t) => f(x, y + slatW(x), t), -X, X, 40, () => [0, 1], 1); };
   const slats = merge(slatY.flatMap(y => [slat(y, (x, yy, t) => fPtI(x, yy + 0.004 * t, lerp(-0.006, -0.02, t))), slat(y, (x, yy, t) => fPtI(x, yy - 0.006 * (1 - t), lerp(-0.0075, -0.006, t)))]));
   const slatEdges = merge(slatY.map(y => slat(y, (x, yy, t) => fPtI(x, yy + lerp(-0.0012, 0.001, t), -0.0056 - 0.001 * t))));
   const grilleBack = patch((x, y) => fPtI(x, y, -inD), -grHoleX, grHoleX, 40, x => [grLo(grHole, x), inY1], 3, bodDense(-grHoleX, -grHoleX + 0.03, 4).concat(bodDense(grHoleX - 0.03, grHoleX, 4)));
@@ -1592,7 +1592,7 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     // uitsparing van de mistlamp (|x| 0,56, y 0,565); was een blokje van 6 x 2,5 cm op de zijkant (z 2,0) dat uitstak
     A('Koplampsproeiers', { d: 'Twee uitschuifbare koplampsproeiers onder de bi-xenon koplampen.', ex: [0, 0.02, 0.08] }, both(s => { const x = 0.56, y = 0.565, nn = fNorm(x, y);
       return A(`Koplampsproeier ${sn(s)}`, { d: 'Uitschuifbare koplampsproeier (Initiale Paris: koplampsproeiers bij de bi-xenon).', ex: [s * 0.1, 0, 0.1] }, [
-        P('Sproeierkapje', cache('bodSprCap', () => xf(G.lathe('x', [[0, 0.0036], [0.5, 0.0033], [0.8, 0.0024], [0.95, 0.0011], [1, 0], [1, -0.001], [0, -0.001]], 24, 'bodSprCapL'), null, null, [1, 0.016, 0.054])), MAT.paint, { d: 'Liggend ovaal kapje in carrosseriekleur, vlak in de bumper onder de koplamp.', ...bodPose(s, fPt(x, y, 0.0004), nn) }),
+        P('Sproeierkapje', cache('bodSprCap', () => xf(G.lathe('x', [[0, 0.0036], [0.5, 0.0033], [0.8, 0.0024], [0.95, 0.0011], [1, 0], [1, -0.001], [0, -0.001]], 16, 'bodSprCapL'), null, null, [1, 0.016, 0.054])), MAT.paint, { d: 'Liggend ovaal kapje in carrosseriekleur, vlak in de bumper onder de koplamp.', ...bodPose(s, fPt(x, y, 0.0004), nn) }),
         // kop 1,5 mm onder de huid in plaats van er precies tegen: de bumperschaal met stations naar doorbuiging ligt daar tot 0,5 mm lager
         P('Sproeierkop koplamp', G.cyl('x', 0.008, 0.008, 0.04, 10), MAT.plastic, { d: 'Telescopische sproeierkop.', inner: true, ...bodPose(s, fPt(x, y, -0.0215), nn), ex: [s * 0.04, 0, 0.03] }),
       ]); })),
