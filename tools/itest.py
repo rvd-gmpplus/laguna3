@@ -2005,12 +2005,16 @@ def run_golf5n(s):
     pp.evaluate("window.__rafOrig = window.requestAnimationFrame; window.requestAnimationFrame = () => 0")
     wrapst.evaluate('e => e.remove()')
     try:
-        pp.wait_for_function("(() => { const a = document.getElementById('app').style.getPropertyValue('--dock-h'), d = document.getElementById('dock').offsetHeight; return d < 90 && parseFloat(a) === d; })()", timeout=4000)
+        pp.wait_for_function("(() => { const a = document.getElementById('app').style.getPropertyValue('--dock-h'), d = document.getElementById('dock').offsetHeight; return d < 90 && parseFloat(a) === d; })()", timeout=15000)  # de terugvaltimer loopt op de trage CI-runner seconden later
     except Exception:
         fails.append(['zonder beeld volgt --dock-h het dock niet (terugvaltimer)', pp.evaluate(GEO)])
     pp.evaluate("window.requestAnimationFrame = window.__rafOrig; requestRender()"); settle(pp, 300)
     meet('dock weer één rij, zonder beeld bijgewerkt')
     pp.tap('#btnCkOut'); settle(pp, 300); pp.wait_for_timeout(400)
+    try:  # op de trage CI-runner zet het volgende beeld --sheet-h pas later op 0 (nightly 21 oktober 2026: ck al null, --sheet-h nog 142)
+        pp.wait_for_function("__model.state().cockpit === null && parseFloat(document.getElementById('app').style.getPropertyValue('--sheet-h')) === 0", timeout=15000)
+    except Exception:
+        pass
     g = pp.evaluate(GEO)
     if g['sheetVar'] != 0 or g['ck'] is not None:
         fails.append(['uitstappen na formaatwissel', g])
