@@ -22,7 +22,7 @@ function layoutView() {
   } else {
     VIEW.l = 0; VIEW.r = 0;
     VIEW.t = Math.min(H * 0.3, Math.max(title.bottom, acts.bottom, $('openSeg').getBoundingClientRect().bottom) + 4);
-    const bottom = els.sheet.dataset.state === 'open' ? sheet.top : Math.min(dockTop, sheet.top);
+    const bottom = els.sheet.dataset.state === 'open' && !COCKPIT ? sheet.top : Math.min(dockTop, sheet.top); // in de cockpit staat het dock ook bij open boven het paneel
     VIEW.b = Math.max(0, H - bottom + 4);
     // Tijdens de rondleiding staat het bijschrift als balk onder de titel: het beeld begint eronder.
     if (!els.tourBar.hidden) { const tb = els.tourBar.getBoundingClientRect(); if (tb.height > 0) VIEW.t = Math.max(VIEW.t, Math.min(H * 0.45, tb.bottom + 4)); }

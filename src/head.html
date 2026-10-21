@@ -73,7 +73,7 @@ h1 span{font-weight:500;color:var(--ink-2)}
 .seg{display:inline-flex;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px;box-shadow:var(--shadow)}
 .seg-lbl{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);padding:0 6px 0 10px}
 .seg button{border:0;background:transparent;border-radius:999px;padding:7px 11px;font-size:13px;font-weight:700;color:var(--ink-2);white-space:nowrap}
-.seg button[aria-checked="true"]{background:var(--ink);color:var(--bg)}
+.seg button[aria-checked="true"],.seg button[data-also="1"]{background:var(--ink);color:var(--bg)}
 .seg .short{display:none}
 .xctl{display:flex;flex-direction:column;justify-content:center;gap:1px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:4px 6px 4px 12px;box-shadow:var(--shadow);min-width:0}
 .xlbl{font-size:11.5px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
@@ -313,6 +313,10 @@ input[type=range]{width:100%;accent-color:var(--ink)}
   .crumbs{flex-wrap:nowrap;overflow:hidden;white-space:nowrap;mask-image:linear-gradient(90deg,#000 85%,transparent)}
   #dock{bottom:var(--sheet-h,150px);padding-bottom:8px;align-items:stretch;gap:6px}
   #sheet[data-state="open"]~#dock{display:none}
+  /* cockpit: Naar buiten of Uitstappen is de enige weg terug op een telefoon (geen Esc), dus het dock blijft ook bij open en vol boven het paneel
+     staan; het paneel is dan een dockhoogte lager, zodat het dock niet over de segmentknop bovenin valt (golf 5n) */
+  #app.ckmode #sheet[data-state="open"]~#dock{display:flex}
+  #app.ckmode #sheet{max-height:calc(100% - 196px - env(safe-area-inset-top,0px))}
   .sel-actions{margin-top:8px}
   #sheet[data-state="peek"] #actAll,#sheet[data-state="peek"] #actFocus{display:none}
   /* vaste hoogte van de kaart in de peek-stand: geen verspringend beeld bij een andere selectie */

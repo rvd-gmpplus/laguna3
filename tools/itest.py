@@ -46,12 +46,18 @@ Controles (zie de app-brief):
      buitenwereld en lichtstand alleen in de cockpit en na het uitstappen exact terug (beide thema's), openersregel bij uitstappen;
      ronde 3: leungrens achteruit (hoofdsteun minstens 8 cm achter het oog), verticaal gezichtsveld op de telefoon hoogstens 95
      graden, lichte weergave zet elke lak met clearcoat uit en terug
-     golf 5m: Openen tikken in de cockpit laat je zitten (Cockpit en Openen allebei actief), Uitstappen heet dan Naar buiten en is
+     golf 5m: Openen tikken in de cockpit laat je zitten (Cockpit aangevinkt, Openen staat ook aan), Uitstappen heet dan Naar buiten en is
      gemarkeerd, brengt je naar het buitenaanzicht met Openen actief; Uitklappen tikken stapt uit; O in de cockpit wisselt alleen de klikmodus
   24 paneel slepen (golf 5m, telefoon staand 390 x 844, echte aanraking via CDP): de greep en de kop in peek slepen het onderpaneel,
      loslaten klikt naar de dichtstbijzijnde stand (peek, open, vol), een snelle veeg beslist op richting, een tik wisselt nog,
      Enter en spatie werken, de overgang staat tijdens het slepen uit, --sheet-h en het dock volgen, de kop sleept niet vanaf knoppen
      en niet buiten peek, draaien midden in het slepen laat niets hangen
+  25 golf 5n (app): (a) precies één radio aria-checked in #openSeg in elke combinatie van modus en cockpit, met één tabstop op die radio;
+     (b) Uitstappen en Naar buiten zichtbaar, vrij van de segmentknop en klikbaar in peek, open en vol op de telefoon staand (390 x 844);
+     (c) paneel slepen met de muis met pointer capture op de greep (en op de kop zodra het slepen begint), losgelaten bij loslaten of
+     annuleren, en het slepen werkt buiten de greep en buiten het venster; (d) pijltoetsen in het modussegment in de cockpit laten de
+     blik staan zolang de zitplaats niet wisselt. Oorzaak van (d): uiSetViewMode('cockpit') riep uiSetCockpit aan terwijl je al zat, en
+     die zet bij elke aanroep oog en blik terug op de zitplaats; pijl links (Openen) en weer rechts (Cockpit) trof dat
 """
 import sys, os, random, json, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -1332,7 +1338,7 @@ def ck_openen(pg, tag, tap):
     buitenaanzicht met Openen actief. Uitklappen tikken stapt uit naar Uitklappen. tap(selector) is een klik of een tik."""
     st = lambda: pg.evaluate("""(() => { const L = __model, k = L.cockpit(), b = document.getElementById('btnCkOut'), seg = [...document.querySelectorAll('#openSeg [role=radio]')];
       return { cockpit: L.state().cockpit, openMode: L.state().openMode, openers: L.state().openers.slice().sort(), yaw: k && k.yaw, pitch: k && k.pitch, eye: k && k.eye,
-        aria: seg.map(x => x.getAttribute('aria-checked')), tab: seg.map(x => x.tabIndex), hl: b.dataset.hl || '', txt: b.textContent, title: b.title, bg: getComputedStyle(b).backgroundColor,
+        aria: seg.map(x => x.getAttribute('aria-checked')), tab: seg.map(x => x.tabIndex), also: seg.map(x => x.dataset.also || ''), hl: b.dataset.hl || '', txt: b.textContent, title: b.title, bg: getComputedStyle(b).backgroundColor,
         accent: (() => { const t = document.createElement('i'); t.style.background = 'var(--accent)'; document.body.appendChild(t); const c = getComputedStyle(t).backgroundColor; t.remove(); return c; })(),
         vis: b.getBoundingClientRect().width > 0, orbit: controls.enabled }; })()""")
     pg.evaluate("__model.setOpenMode(false); __model.preset('assembled'); __model.setCockpit('bestuurder', true); __model.finishAll()"); settle(pg, 150)
@@ -1343,7 +1349,8 @@ def ck_openen(pg, tag, tap):
     b = st()
     check(f'23 [{tag}] Openen tikken in de cockpit: je blijft zitten (zitplaats, kijkrichting, oog en open portier ongewijzigd), de klikmodus is Openen',
           b['cockpit'] == 'bestuurder' and b['openMode'] and b['yaw'] == a['yaw'] and b['pitch'] == a['pitch'] and b['eye'] == a['eye'] and b['openers'] == a['openers'] and not b['orbit'], json.dumps([a, b]))
-    check(f'23 [{tag}] Openen en Cockpit zijn allebei actief (aria-checked), de tabstop blijft op Cockpit', b['aria'] == ['false', 'true', 'true'] and b['tab'] == [-1, -1, 0], json.dumps([b['aria'], b['tab']]))
+    # golf 5n (25): een radiogroep heeft precies één aangevinkte knop; dat Openen ook aan staat toont data-also (zie run_golf5n)
+    check(f'23 [{tag}] Cockpit is aangevinkt (aria-checked) en de enige tabstop; Openen staat ook aan (data-also)', b['aria'] == ['false', 'false', 'true'] and b['tab'] == [-1, -1, 0] and b['also'] == ['', '1', ''], json.dumps([b['aria'], b['tab'], b['also']]))
     check(f'23 [{tag}] Uitstappen is gemarkeerd: accentkleur, tekst Naar buiten, title noemt het standaardaanzicht in de stand Openen',
           b['hl'] == '1' and b['txt'] == 'Naar buiten' and b['bg'] == b['accent'] and 'standaardaanzicht' in b['title'] and 'Openen' in b['title'] and b['vis'], json.dumps({k: b[k] for k in ('hl', 'txt', 'bg', 'accent', 'title', 'vis')}))
     tap('#btnCkOut'); settle(pg, 300); pg.wait_for_timeout(300); settle(pg, 100)
@@ -1777,6 +1784,149 @@ def run_sheetdrag(s):
     pp.close()
 
 
+def run_golf5n(s):
+    """25 (golf 5n): vier fouten in de app-bediening; elke controle faalt op de code van voor golf 5n (zie de docstring bovenaan)."""
+    EPS = 1e-6
+    # (a) precies één aangevinkte radio in #openSeg, in elke combinatie van modus en cockpit (desktop, echte klikken en toetsen)
+    pg = s.page(1280, 800)
+    pg.evaluate(JS_CK)
+    seg = lambda: pg.evaluate("""(() => [...document.querySelectorAll('#openSeg [role=radio]')].map(b => ({ t: b.textContent.trim(), c: b.getAttribute('aria-checked'), tab: b.tabIndex, also: b.dataset.also || '', d: b.getAttribute('aria-description') || '' })))()""")
+    def een(tag, want):
+        r = seg()
+        n = [x['t'] for x in r if x['c'] == 'true']
+        tabs = [x['t'] for x in r if x['tab'] == 0]
+        also = [x['t'] for x in r if x['also'] == '1']
+        ok = n == [want] and tabs == [want] and also == (['Openen'] if tag.endswith('+ Openen') and want == 'Cockpit' else []) and all(bool(x['d']) == (x['also'] == '1') for x in r)
+        check(f'25 a [{tag}] precies één radio aria-checked ({want}), die ene tabstop; Openen markeert data-also alleen in de cockpit', ok, json.dumps(r))
+    pg.evaluate("__model.setOpenMode(false); __model.preset('assembled'); __model.finishAll()"); settle(pg, 120)
+    een('Uitklappen buiten', 'Uitklappen')
+    pg.click('#openSeg [data-omode="open"]'); settle(pg, 120)
+    een('Openen buiten', 'Openen')
+    pg.click('#openSeg [data-ckmode="cockpit"]'); settle(pg, 250)
+    een('cockpit + Openen', 'Cockpit')          # vanuit Openen: de klikmodus blijft Openen
+    check('25 a cockpit vanuit Openen: je zit en de klikmodus is Openen', pg.evaluate('__model.state().cockpit') == 'bestuurder' and pg.evaluate('__model.state().openMode'), '')
+    pg.click('#openSeg [data-omode="expand"]'); settle(pg, 250)
+    een('Uitklappen na de cockpit', 'Uitklappen')
+    pg.click('#openSeg [data-ckmode="cockpit"]'); settle(pg, 250)
+    een('cockpit zonder Openen', 'Cockpit')
+    pg.click('#openSeg [data-omode="open"]'); settle(pg, 150)
+    een('cockpit + Openen', 'Cockpit')
+    pg.evaluate("document.activeElement && document.activeElement.blur && document.activeElement.blur()")
+    pg.keyboard.press('o'); settle(pg, 120)
+    een('cockpit zonder Openen', 'Cockpit')
+    pg.keyboard.press('o'); settle(pg, 120)
+    een('cockpit + Openen', 'Cockpit')
+    pg.click('#btnCkOut'); settle(pg, 400); pg.wait_for_timeout(300); settle(pg, 100)
+    een('Naar buiten: Openen buiten', 'Openen')
+    pg.close()
+    # (d) pijltoetsen in het modussegment laten de cockpitblik staan zolang de zitplaats niet wisselt
+    pg = s.page(1280, 800)
+    pg.evaluate(JS_CK)
+    ck = lambda: pg.evaluate("(() => { const k = __model.cockpit(); return k && { seat: k.seat, yaw: k.yaw, pitch: k.pitch, fov: k.fov, eye: k.eye, off: k.off, moving: k.moving, om: __model.state().openMode }; })()")
+    same = lambda a, b: a and b and a['seat'] == b['seat'] and all(abs(a[k] - b[k]) < EPS for k in ('yaw', 'pitch', 'fov')) and all(abs(x - y) < EPS for k in ('eye', 'off') for x, y in zip(a[k], b[k]))
+    pg.evaluate("__model.setOpenMode(false); __model.preset('assembled'); __model.setCockpit('bestuurder', true); __model.finishAll()"); settle(pg, 200)
+    seat = next(x for x in pg.evaluate('__model.cockpitSeats()') if x['id'] == 'bestuurder')
+    pg.evaluate("uiCk.yaw = 21; uiCk.pitch = 9; uiCkClamp(); requestRender()"); settle(pg, 100)
+    k0 = ck()
+    check('25 d voorwaarde: de blik is gedraaid en staat niet op de blik van de zitplaats', k0 and (abs(k0['yaw'] - seat['kijk'][0]) > 1 or abs(k0['pitch'] - seat['kijk'][1]) > 1), json.dumps([k0, seat['kijk']]))
+    pg.focus('#openSeg [data-ckmode="cockpit"]')
+    pg.keyboard.press('ArrowLeft'); settle(pg, 250)
+    k1 = ck()
+    check('25 d pijl links (Cockpit naar Openen): je blijft zitten met de blik van nu en de klikmodus Openen', same(k0, k1) and k1['om'] and not k1['moving'], json.dumps([k0, k1]))
+    pg.keyboard.press('ArrowRight'); pg.wait_for_timeout(300); settle(pg, 250)
+    k2 = ck()
+    check('25 d pijl rechts (Openen naar Cockpit): de blik, het oog en het gezichtsveld blijven, geen overgang', same(k0, k2) and not k2['moving'], json.dumps([k0, k2]))
+    pg.click('#openSeg [data-ckmode="cockpit"]'); pg.wait_for_timeout(300); settle(pg, 250)
+    k3 = ck()
+    check('25 d een klik op Cockpit terwijl je al zit laat de blik staan', same(k0, k3) and not k3['moving'], json.dumps([k0, k3]))
+    # de modus wisselt wel echt: Uitklappen en weer Cockpit (pijl rechts, pijl rechts) zet je op de blik van de zitplaats
+    pg.focus('#openSeg [data-ckmode="cockpit"]')
+    pg.keyboard.press('ArrowLeft'); settle(pg, 150); pg.keyboard.press('ArrowLeft'); settle(pg, 300)
+    out = [pg.evaluate('__model.state().cockpit'), pg.evaluate('__model.state().openMode')]
+    pg.keyboard.press('ArrowRight'); settle(pg, 150); pg.keyboard.press('ArrowRight'); pg.wait_for_timeout(300); settle(pg, 300)
+    k4 = ck()
+    check('25 d twee keer links stapt uit naar Uitklappen; twee keer rechts zit je weer op de blik van de zitplaats', out == [None, False] and k4 and k4['seat'] == 'bestuurder' and abs(k4['yaw'] - seat['kijk'][0]) < EPS and abs(k4['pitch'] - seat['kijk'][1]) < EPS, json.dumps([out, k4, seat['kijk']]))
+    pg.close()
+    # (b) Uitstappen en Naar buiten blijven zichtbaar en klikbaar bij peek, open en vol (telefoon staand, aanraking)
+    pp = s.page(390, 844, scale=2, touch=True)
+    pp.add_style_tag(content='#sheet{transition:none!important}')
+    pp.evaluate(JS_CK)
+    geo = lambda: pp.evaluate("""(() => { const b = document.getElementById('btnCkOut'), r = b.getBoundingClientRect(), sh = document.getElementById('sheet'), sr = sh.getBoundingClientRect(), sg = document.getElementById('openSeg').getBoundingClientRect(),
+      cx = r.left + r.width / 2, cy = r.top + r.height / 2, hit = document.elementFromPoint(cx, cy);
+      return { state: sh.dataset.state, size: sh.dataset.size || '', vis: r.width > 0 && r.height > 0, inView: r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight, hit: !!hit && hit.closest('#btnCkOut') === b,
+        overSeg: r.top < sg.bottom && sg.top < r.bottom, overSheet: r.bottom > sr.top + 1, txt: b.textContent, ck: __model.state().cockpit }; })()""")
+    for omode in (True, False):
+        pp.evaluate("__model.setOpenMode(false); __model.preset('assembled'); __model.setCockpit('bestuurder', true); __model.finishAll()"); pp.wait_for_timeout(300)
+        if omode:
+            pp.tap('#openSeg [data-omode="open"]'); settle(pp, 250)
+        res = []
+        for st, sz in (('peek', None), ('open', ''), ('open', 'vol')):
+            pp.evaluate(f"setSheet({json.dumps(st)}, {json.dumps(sz) if sz is not None else 'undefined'})")
+            try:
+                pp.wait_for_function("(() => { const b = document.getElementById('btnCkOut').getBoundingClientRect(), s = document.getElementById('sheet').getBoundingClientRect(); return b.width > 0 && b.bottom <= s.top + 1; })()", timeout=2500)
+            except Exception:
+                pass
+            pp.wait_for_timeout(200)
+            res.append(geo())
+        want_txt = 'Naar buiten' if omode else 'Uitstappen'
+        ok = all(g['vis'] and g['inView'] and g['hit'] and not g['overSeg'] and not g['overSheet'] and g['txt'] == want_txt and g['ck'] == 'bestuurder' for g in res)
+        check(f'25 b telefoon 390 x 844, cockpit {"met" if omode else "zonder"} Openen: {want_txt} zichtbaar, vrij van segmentknop en paneel en onder de vinger in peek, open en vol', ok, json.dumps(res))
+        if omode:
+            shot(pp, 'itest_cockpit_vol_naar_buiten')
+    # in vol echt tikken: Uitstappen brengt je naar buiten
+    try:
+        pp.tap('#btnCkOut', timeout=4000)
+    except Exception as ex:  # een onzichtbare knop is een testfout, geen crash van de hele set
+        print('info 25 b tik op Uitstappen mislukt:', str(ex).splitlines()[0][:120])
+    settle(pp, 300); pp.wait_for_timeout(300); settle(pp, 100)
+    check('25 b tikken op Uitstappen in de stand vol verlaat de cockpit', pp.evaluate('__model.state().cockpit') is None and pp.evaluate('controls.enabled'), '')
+    pp.close()
+    # (c) paneel slepen met de muis: pointer capture op de greep, losgelaten bij loslaten en annuleren, slepen buiten greep en venster
+    pm = s.page(390, 844, scale=1)
+    pm.evaluate(JS_HELPERS)
+    pm.evaluate("__model.preset('assembled'); __model.finishAll()"); pm.wait_for_timeout(300)
+    inf = lambda: pm.evaluate("""(() => { const sh = document.getElementById('sheet'), g = document.getElementById('sheetToggle'), k = document.querySelector('#sheet .sel-head');
+      return { state: sh.dataset.state, size: sh.dataset.size || '', drag: sh.dataset.drag || '', inline: sh.style.height, h: Math.round(sh.getBoundingClientRect().height), capG: g.hasPointerCapture(1), capK: k.hasPointerCapture(1), exp: g.getAttribute('aria-expanded') }; })()""")
+    ctr = lambda sel: pm.evaluate(f"(() => {{ const r = document.querySelector({json.dumps(sel)}).getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; }})()")
+    pm.add_style_tag(content='#sheet{transition:none!important}')
+    g = ctr('#sheetToggle')
+    pm.mouse.move(g[0], g[1]); pm.mouse.down()
+    a0 = inf()
+    check('25 c muis neer op de greep: de greep heeft pointer capture, nog geen sleep', a0['capG'] and not a0['drag'], json.dumps(a0))
+    pm.mouse.move(g[0], g[1] - 30, steps=3); pm.mouse.move(g[0] - 120, g[1] - 160, steps=4)  # ver naast de greep en hoog boven het paneel
+    a1 = inf()
+    check('25 c muis midden in het slepen, ver van de greep: de greep houdt de capture en het paneel volgt (drag=1, hoger dan peek)', a1['capG'] and a1['drag'] == '1' and a1['h'] > a0['h'] + 100, json.dumps([a0, a1]))
+    pm.mouse.move(g[0] + 400, g[1] - 330, steps=4)  # buiten het venster (rechts van de pagina)
+    a2 = inf()
+    check('25 c muis buiten het venster: het slepen volgt nog (paneel groeit mee, capture blijft)', a2['capG'] and a2['drag'] == '1' and a2['h'] >= a1['h'], json.dumps([a1, a2]))
+    pm.mouse.up()
+    pm.wait_for_function("!document.getElementById('sheet').dataset.drag", timeout=10000); pm.wait_for_timeout(200)
+    a3 = inf()
+    check('25 c loslaten buiten het venster klikt naar een stand (open of vol), capture losgelaten, geen resten', a3['state'] == 'open' and not a3['drag'] and not a3['inline'] and not a3['capG'] and a3['exp'] == 'true', json.dumps(a3))
+    # annuleren (pointercancel) midden in het slepen: capture en slepen opgeruimd
+    pm.evaluate("setSheet('peek')"); pm.wait_for_timeout(300)
+    g = ctr('#sheetToggle')
+    pm.mouse.move(g[0], g[1]); pm.mouse.down(); pm.mouse.move(g[0], g[1] - 60, steps=3)
+    b0 = inf()
+    pm.evaluate("window.dispatchEvent(new PointerEvent('pointercancel', { pointerId: 1, pointerType: 'mouse' }))"); pm.wait_for_timeout(100)
+    b1 = inf()
+    check('25 c pointercancel midden in het slepen: capture en slepen opgeruimd, het paneel valt op een stand', b0['capG'] and b0['drag'] == '1' and not b1['capG'] and not b1['drag'] and b1['state'] in ('peek', 'open'), json.dumps([b0, b1]))
+    pm.mouse.up(); pm.wait_for_timeout(100)
+    pm.evaluate("setSheet('peek')"); pm.wait_for_timeout(300)
+    # de kop in peek: capture zodra het slepen begint (niet bij een tik)
+    kp = ctr('#sheet .sel-head')
+    pm.mouse.move(kp[0], kp[1]); pm.mouse.down()
+    c0 = inf()
+    pm.mouse.move(kp[0], kp[1] - 40, steps=4)
+    c1 = inf()
+    pm.mouse.move(kp[0] + 150, kp[1] - 330, steps=4)
+    pm.mouse.up(); pm.wait_for_function("!document.getElementById('sheet').dataset.drag", timeout=10000); pm.wait_for_timeout(200)
+    c2 = inf()
+    check('25 c de kop in peek: geen capture bij een tik, wel zodra het slepen begint, losgelaten aan het eind; paneel open', not c0['capK'] and c1['capK'] and c1['drag'] == '1' and not c2['capK'] and c2['state'] == 'open' and not c2['drag'], json.dumps([c0, c1, c2]))
+    pm.close()
+    check('25 geen console-fouten of -waarschuwingen', not s.logs, '; '.join(l[:200] for l in s.logs[:5]))
+
+
 with session() as s:
     run_view(s, 'desktop', 1280, 800, False)
     run_view(s, 'telefoon', 390, 844, True)
@@ -1876,6 +2026,7 @@ with session() as s:
     run_golf5c(s)
     run_cockpit(s)
     run_sheetdrag(s)
+    run_golf5n(s)
     errs = s.errors()  # fouten en waarschuwingen (harness.errors telt beide)
     check('10 geen console-fouten of -waarschuwingen', not s.logs, '; '.join(l[:200] for l in s.logs[:5]))
     s.report()
