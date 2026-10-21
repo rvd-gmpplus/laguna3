@@ -577,7 +577,7 @@ function intDashboard() {
   // de achterwand (Roosterkanaal) past in de opening van het huis, 0,5 mm vrij van de binnenrand, en ligt achter het stelwieltje
   const ventGroup = (name, d, o) => { const { w, h, zb } = o, wt = o.wt || w, D = 0.016, zr = zb - 0.0005 - D / 2, dw = w - wt;
     const out = [[o.sl > 0 ? w / 2 - dw : w / 2, h / 2], [o.sl < 0 ? -w / 2 + dw : -w / 2, h / 2], [-w / 2, -h / 2], [w / 2, -h / 2]];
-    const inn = intInset(out, 0.008), ring = shapeOf(intRoundPoly(out, 0.012)); ring.holes.push(intPolyPath(intRoundPoly(inn, 0.006)));
+    const rim = o.rim || 0.008, inn = intInset(out, rim), ring = shapeOf(intRoundPoly(out, 0.012)); ring.holes.push(intPolyPath(intRoundPoly(inn, 0.006)));
     // binnenmaat op hoogte y: linker- en rechterrand van de binnenrand (rechte stukken, lineair tussen onder en boven)
     const yb = inn[2][1], yt = inn[0][1], edge = (y, a, b) => lerp(inn[a][0], inn[b][0], (y - yb) / (yt - yb)), xl = y => edge(y, 2, 1), xr = y => edge(y, 3, 0);
     const wheelSide = o.wiel === 'zij' ? 0.014 : 0, y0 = yb + (o.wiel === 'onder' ? 0.02 : 0.005), y1 = yt - 0.005, n = Math.max(2, Math.round((y1 - y0) / 0.011)), lam = [];
@@ -585,29 +585,38 @@ function intDashboard() {
     const mid = lam[Math.floor(n / 2)], wheel = o.wiel === 'zij' ? xf(G.cyl('x', 0.0075, 0.0075, 0.006, 10), [o.ws * ((o.ws > 0 ? xr(0) : -xl(0)) - 0.0085), 0, zr])
       : o.wiel === 'onder' ? xf(G.cyl('y', 0.0075, 0.0075, 0.006, 10), [(xl(yb + 0.01) + xr(yb + 0.01)) / 2, yb + 0.0095, zr]) : null;
     return A(name, { d, p: o.f.p, r: o.f.r, ex: [0, 0.03, -0.1] }, [
-      intPart('Roosterkanaal', merge([xf(front(shapeOf(intRoundPoly(intInset(out, 0.0085), 0.0055)), 0.0008), [0, 0, zb - 0.0005])].concat(o.rok ? [intSkirt(intRoundPoly(out, 0.012), zr + D / 2, o.rok, o.c)] : [])), MAT.plastic, o.rok ? 'Donkere achterwand in het rooster, het einde van het luchtkanaal waar de lucht uit komt, en de donkere zijwanden van het huis van de omlijsting tot het dashboard.' : 'Donkere achterwand in het rooster: het einde van het luchtkanaal waar de lucht uit komt.', { ex: [0, 0, 0.02] }),
+      intPart('Roosterkanaal', merge([xf(front(shapeOf(intRoundPoly(intInset(out, rim + 0.0005), 0.0055)), 0.0008), [0, 0, zb - 0.0005])].concat(o.rok ? [intSkirt(intRoundPoly(out, 0.012), zr + D / 2, o.rok, o.c)] : [])), MAT.plastic, o.rok ? 'Donkere achterwand in het rooster, het einde van het luchtkanaal waar de lucht uit komt, en de donkere zijwanden van het huis van de omlijsting tot het dashboard.' : 'Donkere achterwand in het rooster: het einde van het luchtkanaal waar de lucht uit komt.', { ex: [0, 0, 0.02] }),
       intPart('Roosterhuis', xf(front(ring, D), [0, 0, zr]), o.mat, o.mat === MAT.satin ? 'Holle omlijsting van het luchtrooster in satijnchroom; de lamellen zitten erbinnen.' : 'Holle omlijsting van het luchtrooster in zwart kunststof, zonder chromen rand; de lamellen zitten erbinnen.', { ex: [0, 0.02, -0.04] }),
       intPart('Lamellen', merge(lam.map(([y, x, b]) => xf(G.box(b, 0.0022, 0.010), [x, y, zr]))), MAT.plastic, 'Verstelbare horizontale lamellen in het huis die de luchtstroom richten.', { ex: [0, 0, -0.06] }),
       intPart('Roosterknop', merge([xf(G.box(0.018, 0.0065, 0.006), [0, mid[0], zr - 0.0083])].concat(wheel ? [wheel] : [])), MAT.satin, 'Schuifje op een lamel waarmee de richting van de luchtstroom wordt ingesteld, met het geribde stelwieltje waarmee het rooster wordt geopend en gesloten.', { ex: [0, 0, -0.09] }),
     ]); };
-  // zijroosters (golf 5n reparatieronde 2, foto's van de eigenaar): de roosters zitten op de hoogte van de sierband, met de bovenkant
-  // van de omlijsting op y 1,005, net onder de wenkbrauw (stonden 9 cm lager op de schuine rand van het voorvlak). Het rooster staat
-  // 0,25 rad achterover zoals de sierband (x 0,62 bleef); de onderrand van de sokkel rust op de huid van het voorvlak (0,3 mm
-  // speling). De sokkel (zijprofiel z, y) vult de ruimte tussen rooster en huid: voorvlak 0,3 mm achter de omlijsting, een lip van
-  // 6 mm boven het rooster en een flauw aflopende bovenkant tot de huid op z 0,72, van x 0,5855 tot 0,675; aan passagierszijde vrij
-  // van de wang van de wenkbrauw (x 0,573 tot 0,585, vanaf z 0,55). Alleen voor z 0,544 loopt een strook door tot x 0,577, achter de
-  // binnenste onderhoek van de omlijsting. Het rooster draait 0,01 rad in zijn vlak (binnenkant 0,6 mm hoger): zo ligt het hoogste
-  // punt van elk roosterdeel aan de binnenkant. Recht erboven, op x 0,63 tot 0,66, valt een straal van boven tussen voorruitglas en
-  // voorruitrubber door tot de bodemplaat (spleet in de carrosserie), en daar meldt integrity.py dan een doorsteek.
-  const sideVent = (() => { const rx = 0.25, C = Math.cos(rx), S = Math.sin(rx), h = 0.117, gap = 0.0003, yTop = 1.005;
-    const G = intOffset(intDashTopPts, intSkinT + gap);
-    const yOn = z => { for (let i = 0; i < G.length - 1; i++) if (z <= G[i][0] && z >= G[i + 1][0]) return lerp(G[i][1], G[i + 1][1], (G[i][0] - z) / (G[i][0] - G[i + 1][0])); return G[0][1]; };
-    const zOn = y => lerp(G[3][0], G[4][0], (G[3][1] - y) / (G[3][1] - G[4][1]));
-    const yc = yTop - h / 2 * C, lb = -h / 2 - 0.004, zc = zOn(yc + lb * C - gap * S) - lb * S - gap * C;
-    const W = (ly, lz) => [zc + ly * S + lz * C, yc + ly * C - lz * S];
-    const B = W(lb, gap), T = W(h / 2 + 0.006, gap), zE = 0.72;
-    const pts = [B, T, [T[0] + 0.03, T[1] + 0.004], [zE, yOn(zE)], G[2], G[3]], zS = 0.544, strip = [B, T, [zS, T[1] + 0.004 * (zS - T[0]) / 0.03], [zS, yOn(zS)], G[3]];
-    return { h, rx, x: 0.62, y: yc, z: zc, pod: k => cache(`intVentPod5n${k}`, () => merge([xf(side(shapeOf(pts), 0.0895), [k * 0.01025, 0, 0]), xf(side(shapeOf(strip), 0.0095), [-k * 0.03825, 0, 0])])) }; })();
+  // zijroosters (golf 5n reparatieronde 2, tweede ronde, foto's van de eigenaar): verzonken in het voorvlak, onder de doorlopende
+  // dashboardhuid. Rooster 8,75 cm breed (boven 6,6 cm, schuine kant naar binnen), 14 cm hoog, met een satijnchromen rand van 1 cm
+  // en het stelwieltje onderin binnen de rand. Bovenkant omlijsting op y 0,905, 1,7 cm onder de knik van de huid. Het vlak loopt
+  // van het voorvlak op de bovenkant naar het voorvlak op de onderkant (over de knik op y 0,84) en ligt 1,5 cm daarachter; daarvoor
+  // is een uitsparing uit drager en huid gesneden (x 0,572 tot 0,668, 4 mm rond de omlijsting): boven de uitsparing lopen huid en
+  // drager ongewijzigd door, de bodem ligt 0,6 mm achter de omlijsting. Een inzetstuk (Roostersokkel, 1 cm dik) vult de bodem rond
+  // de omlijsting. Het rooster en het inzetstuk draaien 0,01 rad in hun vlak (binnenkant hoger): zo ligt het hoogste punt van elk
+  // roosterdeel aan de binnenkant. Recht erboven, op x 0,63 tot 0,66, valt een straal van boven tussen voorruitglas en voorruitrubber
+  // door tot de bodemplaat (spleet in de carrosserie), en daar meldt integrity.py dan een doorsteek.
+  const sideVent = (() => { const w = 0.0875, wt = 0.066, h = 0.14, rim = 0.01, x = 0.62, yTop = 0.905, back = 0.015, D = 0.017, Wn = w + 0.008;
+    const G = intOffset(intDashTopPts, intSkinT), F = intDashPf;
+    const faceZ = y => y >= G[4][1] ? lerp(G[3][0], G[4][0], (G[3][1] - y) / (G[3][1] - G[4][1])) : lerp(F[4][0], F[5][0], (F[4][1] - y) / (F[4][1] - F[5][1]));
+    let C = 1, S = 0, rx = 0;
+    for (let i = 0; i < 3; i++) { const yb = yTop - h * C; rx = Math.atan2(faceZ(yTop) - faceZ(yb), h * C); C = Math.cos(rx); S = Math.sin(rx); }
+    const yb = yTop - h * C, zc = (faceZ(yTop) + faceZ(yb)) / 2 + back * C, yc = (yTop + yb) / 2 - back * S;
+    const yT = yc + h / 2 * C + D * S + 0.004, yB = yc - h / 2 * C - 0.004;
+    // drager of huid (zijprofiel z, y) zonder de uitsparing: boven yT, onder yB en achter de bodem (lokaal z 0,6 mm)
+    const cut = poly => [clipPoly(poly, 0, -1, -yT), clipPoly(poly, 0, 1, yB), clipPoly(clipPoly(clipPoly(poly, 0, 1, yT), 0, -1, -yB), -C, S, -0.0006 + S * yc - C * zc)];
+    const outline = s => { const dw = w - wt; return [[s < 0 ? w / 2 - dw : w / 2, h / 2], [s > 0 ? -w / 2 + dw : -w / 2, h / 2], [-w / 2, -h / 2], [w / 2, -h / 2]]; };
+    const plate = s => cache(`intVentPlate5n${s}`, () => { const hw = Wn / 2 - 0.0012, y0 = (yB - yc) / C + 0.0015, y1 = (yT - yc) / C - 0.003;
+      const sh = shapeOf([[hw, y0], [hw, y1], [-hw, y1], [-hw, y0]]); sh.holes.push(intPolyPath(intRoundPoly(intInset(outline(s), -0.0004), 0.012)));
+      return xf(front(sh, 0.0103), [0, 0, -0.00485]); });
+    return { w, wt, h, rim, rx, x, y: yc, z: zc, n0: x - Wn / 2, n1: x + Wn / 2, cut, plate }; })();
+  // drager of huid als zijblokken van x0 tot x1, met de uitsparing voor de zijroosters waar het blok daar overheen loopt
+  const intVentBlocks = (poly, x0, x1) => { const out = [], N = [[-sideVent.n1, -sideVent.n0], [sideVent.n0, sideVent.n1]].filter(([a, b]) => a >= x0 - 1e-9 && b <= x1 + 1e-9);
+    let x = x0; for (const [a, b] of N) { out.push(intSideBlock(poly, x, a), ...sideVent.cut(poly).map(p => intSideBlock(p, a, b))); x = b; }
+    out.push(intSideBlock(poly, x, x1)); return out; };
   // instrumentenpaneel: de wijzerplaatdrager staat 0,25 rad achterover, naar het oog van de bestuurder [0,37; 1,12; -0,30], in een kap op de
   // dashboardkop. Zichtlijn (golf 5l, gemeten): boven het airbagdeksel langs en onder de bovenrand van de krans door; alle delen in dit kader
   const clC = [0.372, 0.98, 0.545], cl = o => Object.assign({ p: clC, r: [0.25, 0, 0] }, o), clW = 0.314;
@@ -728,8 +737,8 @@ function intDashboard() {
     intPart('Connectorblok bestuurderszijde', intBoxR(0.07, 0.04, 0.03, 0.006), MAT.plasticGrey, 'Stekkerblok naar de UCH en het instrumentenpaneel.', { p: [0.55, 0.74, 0.58], ex: [0.05, -0.04, 0] }),
     intPart('Connectorblok passagierszijde', intBoxR(0.07, 0.04, 0.03, 0.006), MAT.plasticGrey, 'Stekkerblok naar airbag en klimaatunit.', { p: [-0.55, 0.74, 0.58], ex: [-0.05, -0.04, 0] }),
   ]);
-  const huid = intPart('Dashboardhuid', side(shapeOf(skinPts), 1.5), MAT.dash, 'Gestikte (surpique) bovenkant van het dashboard over de draagstructuur.', { ex: [0, 0.14, 0.05] });
-  const gCut = [intSideBlock(intDashPf, -0.75, -0.38 - gHx), intSideBlock(intDashPf, -0.38 + gHx, 0.75),
+  const huid = intPart('Dashboardhuid', merge(intVentBlocks(skinPts, -0.75, 0.75)), MAT.dash, 'Gestikte (surpique) bovenkant van het dashboard over de draagstructuur.', { ex: [0, 0.14, 0.05] });
+  const gCut = [...intVentBlocks(intDashPf, -0.75, -0.38 - gHx), ...intVentBlocks(intDashPf, -0.38 + gHx, 0.75),
     intSideBlock(clipPoly(intDashPf, -gS, -gC, -gHy - gK), -0.38 - gHx, -0.38 + gHx), intSideBlock(clipPoly(intDashPf, gS, gC, -gHy + gK), -0.38 - gHx, -0.38 + gHx),
     intSideBlock(clipPoly(clipPoly(clipPoly(intDashPf, gS, gC, gHy + gK), -gS, -gC, gHy - gK), -gC, gS, -gDp - gM), -0.38 - gHx, -0.38 + gHx)];
   const carrier = intPart('Dashboarddrager', merge(gCut), MAT.dash, 'Kunststof draagstructuur van het dashboard met het voorvlak; hier loopt de stuurkolom doorheen.', { ex: [0, 0.0, 0.1] });
@@ -764,10 +773,10 @@ function intDashboard() {
   ]);
   return A('Dashboard', { d: 'Zwart dashboard met instrumentenpaneel onder een kap, verzonken navigatiescherm, pianozwarte sierband, klimaat- en audiobediening, kaartlezer en startknop, luchtroosters, handschoenenkastje, passagiersairbag, onderdashboard, klimaatunit en dwarsbalk.', ex: [0, 0.16, 0.6] }, [
     A('Dashboardschil', { d: 'Draagstructuur en zichtbare bekleding van het dashboard: drager, gestikte huid, middenpaneel, pianozwarte sierband onder de wenkbrauw, eindkappen en de ontwasemsleuven.', ex: [0, 0.3, 0.3] }, [carrier, huid, fascia, band, ...caps, defrost]),
-    A('Luchtroosters', { d: 'Vier verstelbare luchtroosters, elk een hol huis met lamellen erin: twee in het midden (circa 14 bij 7 cm, zwart met een stelwieltje aan de buitenkant) en twee staande, trapeziumvormige zijroosters (circa 8,5 bij 11,5 cm, satijnchroom met het wieltje onderaan).', ex: [0, 0.04, -0.06] }, [
+    A('Luchtroosters', { d: 'Vier verstelbare luchtroosters, elk een hol huis met lamellen erin: twee in het midden (circa 14 bij 7 cm, zwart met een stelwieltje aan de buitenkant) en twee staande, trapeziumvormige zijroosters verzonken in het voorvlak (circa 8,75 bij 14 cm, brede satijnchromen rand met het wieltje onderin).', ex: [0, 0.04, -0.06] }, [
       ...[1, -1].map(s => { const f = intFace(0.872, 0); return ventGroup(`Luchtrooster midden ${sideName(s)}`, s > 0 ? 'Verstelbaar middenrooster aan bestuurderszijde.' : 'Verstelbaar middenrooster aan passagierszijde.', { w: 0.14, h: 0.07, zb: -(intSkinT + 0.0005), f: { p: [s * 0.15, f.y, f.z], r: [f.rx, 0, 0] }, mat: MAT.plastic, wiel: 'zij', ws: s }); }),
-      ...[1, -1].map(s => ventGroup(`Luchtrooster zij ${sideName(s)}`, s > 0 ? 'Verstelbaar zijrooster aan bestuurderszijde, richt de lucht op de zijruit of het gezicht.' : 'Verstelbaar zijrooster aan passagierszijde.', { w: 0.085, wt: 0.062, sl: -s, h: sideVent.h, zb: -0.0005, f: { p: [s * sideVent.x, sideVent.y, sideVent.z], r: [sideVent.rx, 0, -s * 0.01] }, mat: MAT.satin, wiel: 'onder' })),
-      ...[1, -1].map(s => intPart(`Roostersokkel ${sideName(s)}`, xf(sideVent.pod(s), [s * sideVent.x, 0, 0]), MAT.dash, 'Verhoogde schouder van het dashboard waarin het zijrooster zit: het voorvlak ligt direct achter de omlijsting, met een korte lip boven het rooster en een flauw aflopende bovenkant tot de gestikte huid (vorm geschat naar de foto\'s van de eigenaar).', { ex: [s * 0.02, 0.03, 0.02] })),
+      ...[1, -1].map(s => ventGroup(`Luchtrooster zij ${sideName(s)}`, s > 0 ? 'Verstelbaar zijrooster aan bestuurderszijde, richt de lucht op de zijruit of het gezicht.' : 'Verstelbaar zijrooster aan passagierszijde.', { w: sideVent.w, wt: sideVent.wt, sl: -s, h: sideVent.h, rim: sideVent.rim, zb: -0.0005, f: { p: [s * sideVent.x, sideVent.y, sideVent.z], r: [sideVent.rx, 0, -s * 0.01] }, mat: MAT.satin, wiel: 'onder' })),
+      ...[1, -1].map(s => intPart(`Roostersokkel ${sideName(s)}`, sideVent.plate(s), MAT.dash, 'Inzetstuk in de uitsparing van het voorvlak rond het zijrooster: het rooster zit verzonken in het dashboard, onder de doorlopende huid (vorm geschat naar de foto\'s van de eigenaar).', { p: [s * sideVent.x, sideVent.y, sideVent.z], r: [sideVent.rx, 0, -s * 0.01], ex: [0, 0.02, -0.06] })),
     ]),
     cluster, nav,
     A('Bedieningspanelen', { d: 'Bediening op het middenpaneel van boven naar onder: klimaat tussen de roosters, de toetsenrij met alarmlicht, ontwaseming en stoelverwarming, de kaartlezer en de startknop, de radio en de bekerhouder.', ex: [0, 0, -0.05] }, [climate, hazard, rowDef, rowSeat, rowTxt, kaart, start, audio, cupDrawer]),
