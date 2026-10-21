@@ -101,22 +101,28 @@ function bodLens3In(m) {
   return m;
 }
 MAT.bodLens3 = bodLens3In(THREE.MeshPhysicalMaterial.prototype.clone.call(MAT.lensRed)); MAT.bodLens3.name = 'bodLens3';
-// lens van het buitendeel van de achterlichten (golf 5n): vanaf de achterbank zag je bij achteroverleunen en opzij buigen de achterkant van
-// de rode lens door de kier tussen hoedenplanksteun, C-stijlbekleding en achterscherm (straalmeting: 10 treffers vanaf achter links, op
-// x 0,71 tot 0,76, y 0,94 tot 0,96, z -2,08 tot -2,16). Wie de lens van binnen ziet, ziet nu het zwarte kunststof lamphuis. Binnen of buiten
-// volgt uit de plaats: de normaal naar de kijker (in beide gangen van het transparante dubbelzijdige materiaal) wijst bij de binnenkant in
-// bovenaanzicht naar een punt op de hartlijn voor de lampen (x 0, z -1,5). Van buiten blijft de lens ongewijzigd rood.
-function bodLensTlIn(m) {
-  m.customProgramCacheKey = () => 'bodLensTl';
+// lenzen van de achterlichten (golf 5n): vanaf de achterbank zag je bij achteroverleunen en opzij buigen de achterkant van de rode lens door de
+// kier tussen hoedenplanksteun, C-stijlbekleding en achterscherm (straalmeting: 10 treffers vanaf achter links, op x 0,71 tot 0,76, y 0,94
+// tot 0,96, z -2,08 tot -2,16). Wie een lens van binnen ziet, ziet het zwarte kunststof lamphuis. Binnen of buiten volgt uit de plaats in het
+// assenstelsel van het onderdeel (de geometrie staat in autocoordinaten): de normaal naar de kijker wijst bij de binnenkant in bovenaanzicht
+// naar een punt op de hartlijn voor de lampen (x 0, z -1,5). Die normaal is de objectnormaal met het teken van de normaal van three.js (die
+// in beide gangen van het transparante dubbelzijdige materiaal naar de kijker wijst); gl_FrontFacing is in de achterzijdegang omgekeerd
+// (three draait daar frontFace om) en is daarom niet bruikbaar. Ronde 2: in objectruimte in plaats van wereldruimte, zodat een uitgeklapte
+// lens (verschoven met ex) of de lens in een open achterklep van buiten rood of helder blijft; alleen de echte binnenkant is zwart. Rode
+// lenzen (bodLensTl) en heldere banden (bodLensTlC) van buiten- en binnendeel gebruiken dezelfde regel.
+function bodLensTlIn(m, key) {
+  m.customProgramCacheKey = () => key;
   m.onBeforeCompile = sh => {
-    sh.vertexShader = 'varying vec3 vBodW;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\n\tvBodW = (modelMatrix * vec4(transformed, 1.0)).xyz;');
-    sh.fragmentShader = 'varying vec3 vBodW;\n' + sh.fragmentShader
-      .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n\tvec3 bodNw = (vec4(normal, 0.0) * viewMatrix).xyz;\n\tif (dot(bodNw.xz, vBodW.xz - vec2(0.0, -1.5)) < 0.0) { diffuseColor = vec4(0.03, 0.032, 0.036, 1.0); metalnessFactor = 0.0; roughnessFactor = 0.75; }');
+    sh.vertexShader = 'varying vec3 vBodOP;\nvarying vec3 vBodON;\nvarying vec3 vBodVN;\n' + sh.vertexShader
+      .replace('#include <beginnormal_vertex>', '#include <beginnormal_vertex>\n\tvBodON = objectNormal;\n\tvBodVN = normalMatrix * objectNormal;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\n\tvBodOP = transformed;');
+    sh.fragmentShader = 'varying vec3 vBodOP;\nvarying vec3 vBodON;\nvarying vec3 vBodVN;\n' + sh.fragmentShader
+      .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n\tvec3 bodOn = vBodON * (dot(normal, vBodVN) < 0.0 ? -1.0 : 1.0);\n\tif (dot(bodOn.xz, vBodOP.xz - vec2(0.0, -1.5)) < 0.0) { diffuseColor = vec4(0.03, 0.032, 0.036, 1.0); metalnessFactor = 0.0; roughnessFactor = 0.75; }');
   };
-  m.clone = function () { return bodLensTlIn(THREE.MeshPhysicalMaterial.prototype.clone.call(this)); };
+  m.clone = function () { return bodLensTlIn(THREE.MeshPhysicalMaterial.prototype.clone.call(this), key); };
   return m;
 }
-MAT.bodLensTl = bodLensTlIn(THREE.MeshPhysicalMaterial.prototype.clone.call(MAT.lensRed)); MAT.bodLensTl.name = 'bodLensTl';
+for (const [nm, src] of [['bodLensTl', MAT.lensRed], ['bodLensTlC', MAT.lensClear]]) { MAT[nm] = bodLensTlIn(THREE.MeshPhysicalMaterial.prototype.clone.call(src), nm); MAT[nm].name = nm; }
 // portierkaart (golf 5l): donker kunststof van de drager, Dark Carbon-leder van inzet en armsteun, pianozwarte lijsten, zwart vilt in de raamschacht
 std('bodDoorCard', 0x1c1d20, 0, 0.74);
 std('bodDoorLeather', 0x2b2d30, 0, 0.58);
@@ -838,15 +844,15 @@ function buildTaillight(s, deel = 'buiten') {
   const [f0, f1, f2, f3] = bodTLF, xo = 1.2;
   const faceR = (fa, fb, off) => bodMirX(bodTLgeo(bodTLxin, () => xs, bodTLY(bodZT, fa), bodTLY(bodZT, fb), off), s);
   if (deel === 'binnen') return A(`Achterlicht binnendeel ${n}`, { d: 'Deel van het achterlicht in de achterklep met achterlicht en achteruitrijlicht; zet de lijnen van het buitendeel over de naad voort en draait met de klep mee.', ex: [s * 0.03, 0.04, -0.08] }, [
-    P('Lens binnendeel', merge([faceR(f2, f3, 0.003), faceR(f0, f1, 0.003)]), MAT.lensRed, { d: 'Rode lens van het binnendeel (achterlicht): bovenband en onderstrook.', ex: [0, 0.03, -0.06] }),
-    P('Lens achteruitrijlicht', faceR(f1, f2, 0.0035), MAT.lensClear, { d: 'Heldere middenband over het achteruitrijlicht, in lijn met de heldere band van het buitendeel.', ex: [0, 0, -0.1] }),
+    P('Lens binnendeel', merge([faceR(f2, f3, 0.003), faceR(f0, f1, 0.003)]), MAT.bodLensTl, { d: 'Rode lens van het binnendeel (achterlicht): bovenband en onderstrook.', ex: [0, 0.03, -0.06] }),
+    P('Lens achteruitrijlicht', faceR(f1, f2, 0.0035), MAT.bodLensTlC, { d: 'Heldere middenband over het achteruitrijlicht, in lijn met de heldere band van het buitendeel.', ex: [0, 0, -0.1] }),
     P('Reflector binnendeel', face(xin + 0.004, xs - 0.008, f0, f3, -0.012, 8, 0.006), MAT.reflector, { d: 'Verchroomde reflector achter de lenzen.', ex: [0, 0, 0.04] }),
     P('Lichthuis binnendeel', face(xin + 0.01, xs - 0.01, f0, f3, -0.028, 8, 0.008), MAT.plastic, { d: 'Behuizing in de achterklep.', ex: [0, 0, 0.06] }),
     P('Lampdrager binnendeel', face(xin + 0.03, xs - 0.03, f0, f3, -0.018, 8, 0.02), MAT.ecu, { d: 'Lampdrager met fittingen en stekker.', ex: [0, 0, 0.1] }),
   ]);
   return A(`Achterlicht ${n}`, { d: 'Slank horizontaal achterlicht in twee delen, verdeeld over de klepnaad. Dit is het vaste deel op het achterscherm met achterlicht, remlicht en knipperlicht (LED-uitstraling): loopt om de afgeronde hoek de flank in en onder de schouder in een punt naar voren. Het deel in de achterklep hangt onder Achterklep als Achterlicht binnendeel en draait met de klep mee.', ex: [s * 0.3, 0.1, -0.5] }, [
     P('Lens buitendeel', merge([side(-0.003, f2, f3), side(-0.003, f0, f1), face(xs + 0.003, xo, f2, f3, 0.003), face(xs + 0.003, xo, f0, f1, 0.003)]), MAT.bodLensTl, { d: 'Rode afdeklens met een brede bovenband en een smalle onderstrook, van het staartvlak om de hoek de flank in.', ex: [s * 0.05, 0, -0.06] }),
-    P('Heldere band buitendeel', merge([side(-0.0035, f1, f2), face(xs + 0.003, xo, f1, f2, 0.0035)]), MAT.lensClear, { d: 'Heldere horizontale band in de lens waarachter de knipperlichtunit zit; geeft de witte LED-streep van het fase 2-achterlicht.', ex: [s * 0.07, 0, -0.08] }),
+    P('Heldere band buitendeel', merge([side(-0.0035, f1, f2), face(xs + 0.003, xo, f1, f2, 0.0035)]), MAT.bodLensTlC, { d: 'Heldere horizontale band in de lens waarachter de knipperlichtunit zit; geeft de witte LED-streep van het fase 2-achterlicht.', ex: [s * 0.07, 0, -0.08] }),
     P('Lichthuis buitendeel', merge([side(0.05, f0, f3), face(xs + 0.01, xo, f0, f3, -0.05, 8, 0.008)]), MAT.plastic, { d: 'Kunststof behuizing met bevestigingsbouten in het achterscherm.', ex: [-s * 0.04, 0, 0.06] }),
     P('LED-print buitendeel', merge([side(0.035, 0.15, 0.85), face(xs + 0.02, xo, f0, f3, -0.035, 8, 0.02)]), MAT.ecu, { d: 'Printplaat met de lampen van achter-, rem- en knipperlicht.', ex: [0, 0, 0.1] }),
     P('Reflector buitendeel', merge([side(0.02, f0, f3), face(xs + 0.003, xo, f0, f3, -0.02, 8, 0.01)]), MAT.reflector, { d: 'Verchroomde reflector achter de lens; zichtbaar door het rode glas en de heldere band.', ex: [0, 0, 0.05] }),
@@ -1354,8 +1360,12 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     // Op de neus stijgt de onderkant van de bumper steil (YB 0,268 op z 2,30 tot 0,31 op ZF), en de bovenrand YB + 2,2 cm kwam daar tot
     // y 0,332, door de chromen inlaatlijst (onderkant 0,300) en de rubberlijn eronder (tot 0,294): van voren twee zwarte wiggen op de
     // chromen onderrand, op x ca. +/-0,06 en +/-0,11
+    // ronde 2: voor z > 2,339 ligt YB boven bodLipTop (tot 0,31 op ZF); de bovenrand viel daar onder de onderkant van de doorsnede en bodSY
+    // klemde de vier rijen tot strookjes van 0,1 mm. Nu ligt de bovenrand minstens 4 mm boven YB (zacht maximum, ook 1,5 mm breed): op de
+    // neus blijft de ronding een smalle band die achter de chromen inlaatlijst valt (onderkant 0,300, hart 6,5 mm in de huid)
     P('Onderlip', merge([L, R].flatMap(sd => [lowSide(sd, 1.80, ZF, 60, () => [0, S1], 2, bodDense(2.2, ZF, 16), -0.003),
-      lowSide(sd, 1.80, ZF, 60, z => [S1, Math.max(S1 + 1e-4, bodSY(z, bodLipTop - 0.0015 * Math.log(Math.exp((bodLipTop - YB(z) - 0.022) / 0.0015) + 1)))], 4, bodDense(2.2, ZF, 16), -0.003)])), MAT.plastic, { d: 'Zwarte spoilerlip onder de bumper.', ex: [0, -0.08, 0.06] }),
+      lowSide(sd, 1.80, ZF, 60, z => { const w = 0.0015, lo = YB(z) + 0.004, m = bodLipTop - w * Math.log(Math.exp((bodLipTop - YB(z) - 0.022) / w) + 1);
+        return [S1, Math.max(S1 + 1e-4, bodSY(z, m + w * Math.log(1 + Math.exp((lo - m) / w))))]; }, 4, bodDense(2.2, ZF, 16), -0.003)])), MAT.plastic, { d: 'Zwarte spoilerlip onder de bumper.', ex: [0, -0.08, 0.06] }),
     // strip 2,5 mm boven de huid met 32 stations (was 14, de randen lazen als zaagtand) en een punt van 6 cm naar voren toe, zodat het
     // voorste eind niet als los wit blokje van de bumper afstaat
     ...both(s => P(`Sierstrip onderlip ${sn(s)}`, lowSide(s, 1.76, 2.15, 32, z => { const w = 0.009 * (0.15 + 0.85 * sstep((2.15 - z) / 0.06)); return [bodSY(z, YB(z) + 0.037 - w), bodSY(z, YB(z) + 0.037 + w)]; }, 1, [], -0.0025), MAT.bodBright, { d: 'Zilveren strip langs de bumperzijde die doorloopt in de dorpelsierlijst.', ex: [s * 0.06, -0.03, 0] })),

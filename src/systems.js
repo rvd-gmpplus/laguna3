@@ -391,12 +391,16 @@ function buildFuel() {
   const flapSkin = () => { const g = patch((z, t) => tkSkin(z, lerp(flapY0, flapY1, t), fo), flapZ0, flapZ1, 14, () => [0, 1], 12), P3 = g.attributes.position, N = g.attributes.normal;
     for (let i = 0; i < P3.count; i++) { const e = bodNormalAt(P3.getZ(i), P3.getY(i)), q = [-e[0], e[1], e[2]], o = Math.sign(q[0] * N.getX(i) + q[1] * N.getY(i) + q[2] * N.getZ(i)) || 1; N.setXYZ(i, o * q[0], o * q[1], o * q[2]); }
     return g; };
-  const flapOut = cache('sysFlapRo', () => merge([
-    flapSkin(),
+  // ronde 2: stralen loodrecht op de huid over de klep en 8 mm daarbuiten (3111 stralen) raken binnen de klep altijd eerst het buitenvlak en
+  // daarbuiten het scherm; nergens liggen twee onderdelen binnen 0,8 mm (geen doorboring, geen z-fight). De vier randen (1,5 mm boven de huid
+  // tot 4 mm eronder) waren gelakt en vingen het licht: van opzij een witte lijn langs de scharnierkant. Ze horen nu bij de grijze
+  // binnenzijde en lezen als de donkere naad rond de klep.
+  const flapOut = cache('sysFlapRo', () => flapSkin());
+  const flapIn = cache('sysFlapRi', () => merge([
+    patch((z, t) => tkSkin(z, lerp(flapY0, flapY1, t), fi + 0.5 * flapCrown(z, t)), flapZ0, flapZ1, 14, () => [0, 1], 12),
     ...[flapZ0, flapZ1].map(zz => patch((y, t) => tkSkin(zz, y, lerp(fo, fi, t)), flapY0, flapY1, 8, () => [0, 1], 1)),
     ...[flapY0, flapY1].map(yy => patch((z, t) => tkSkin(z, yy, lerp(fo, fi, t)), flapZ0, flapZ1, 10, () => [0, 1], 1)),
   ]));
-  const flapIn = cache('sysFlapRi', () => patch((z, t) => tkSkin(z, lerp(flapY0, flapY1, t), fi + 0.5 * flapCrown(z, t)), flapZ0, flapZ1, 14, () => [0, 1], 12));
   // tankkom: vier wanden van de rand van de opening naar de bodem en een bodem met de hals
   const tkBowl = cache('sysTankkom', () => merge([
     ...[bodTkZ[0], bodTkZ[1]].map(zz => patch((y, t) => [-lerp(-tkSkin(zz, y, -0.004)[0], tkFloor, t), y, zz], bodTkY[0], bodTkY[1], 8, () => [0, 1], 4)),
@@ -420,8 +424,8 @@ function buildFuel() {
     P('Tankkom', tkBowl, MAT.sysTkNis, { d: 'Kom in het rechter achterscherm achter de tankklep, met de hals van de vulpijp op de bodem (vorm schematisch).', ex: [-0.12, 0.02, 0] }),
     A('Tankklep', { d: 'Tankklep in het rechter achterscherm, in lak uitgevoerd. Opent na ontgrendelen door op de achterrand te drukken en draait dan ongeveer 140 graden om de scharnierrand aan de voorkant (hoek geschat).', ex: [-0.34, 0.05, 0],
       open: hinge(tkSkin(bodTkZ[1] + 0.004, flapY, 0.004), [0, 1, 0], 140 * PI / 180, { min: 112 * PI / 180, label: 'Tankklep', look: { dir: [-1, 0.3, -0.45], nodes: ['Tankklep', 'Tankkom'] } }) }, [
-      P('Tankklep buitenkant', flapOut, MAT.paint, { d: 'Buitenkant van de tankklep in carrosseriekleur, licht bol zoals het scherm, met de randen.', ex: [-0.04, 0.01, 0] }),
-      P('Tankklep binnenzijde', flapIn, MAT.plasticGrey, { d: 'Grijze kunststof binnenzijde van de tankklep, zichtbaar als de klep openstaat.', ex: [0.04, 0, 0] }),
+      P('Tankklep buitenkant', flapOut, MAT.paint, { d: 'Buitenkant van de tankklep in carrosseriekleur, die de welving van het scherm volgt.', ex: [-0.04, 0.01, 0] }),
+      P('Tankklep binnenzijde', flapIn, MAT.plasticGrey, { d: 'Grijze kunststof binnenzijde van de tankklep met de randen, zichtbaar als de klep openstaat; de randen lezen bij een dichte klep als de naad.', ex: [0.04, 0, 0] }),
     ]),
     sysClamp('Klem vulpijp', [-0.44, 0.302, -0.845], V3(1, 0, 0), 0.0185, V3(0.5, 0, 0)),
   ]);
