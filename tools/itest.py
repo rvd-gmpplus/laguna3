@@ -920,7 +920,7 @@ def check18(s):
           sys_dark == 'rgb(26,33,41)' and light[0] == 'rgb(229,233,237)' and light[1] == {'choice': 'light', 'dark': False} and light[2] == 'light' and light[3] == ['true', 'false', 'false']
           and dark[0] == 'rgb(26,33,41)' and dark[1]['choice'] == 'dark' and dark[1]['dark'] and system[0] == 'rgb(26,33,41)' and system[1]['choice'] == 'system', json.dumps([sys_dark, light, dark, system]))
     theme('light'); pd.wait_for_timeout(100)
-    pd.reload(wait_until='load'); pd.wait_for_function('window.__model && window.__model.ready !== false', timeout=timeout); pd.wait_for_timeout(300)
+    pd.reload(wait_until='load', timeout=timeout); pd.wait_for_function('window.__model && window.__model.ready !== false', timeout=timeout); pd.wait_for_timeout(300)
     pd.evaluate(JS_HELPERS)
     after = [bg(), pd.evaluate('__model.theme()'), pd.evaluate("document.documentElement.getAttribute('data-theme')")]
     check('18 U5 thema onthouden na herladen (licht, terwijl het systeem donker is)', after[0] == 'rgb(229,233,237)' and after[1]['choice'] == 'light' and after[2] == 'light', json.dumps(after))
