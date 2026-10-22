@@ -442,6 +442,7 @@ _R9 = [(re.compile(p), uitleg) for p, uitleg in (
     (r'\buseLegacyLights\b', 'useLegacyLights: bestaat niet meer (lichten zijn fysisch, zie de PI-schaal in core.js)'),
     (r'\bphysicallyCorrectLights\b', 'physicallyCorrectLights: bestaat niet meer'),
     (r'examples/js/', 'examples/js/: de niet-module addons bestaan niet meer, gebruik examples/jsm/'),
+    (r'\bforceSinglePass\b', 'forceSinglePass: niet zetten, de glaspatches (FLIP_SIDED) rekenen op twee gangen voor transparant DoubleSide'),
 )]
 _EXPORT = re.compile(r'export\s*\{([^}]*)\}')
 
@@ -499,9 +500,9 @@ def lint_urls(html):
     urls = []
     for m in re.finditer(r'<script\b([^>]*)>(.*?)</script>', html, re.S | re.I):
         attrs, body = m.group(1), m.group(2)
-        src = re.search(r'\bsrc\s*=\s*["\']([^"\']*)', attrs, re.I)
+        src = re.search(r'\bsrc\s*=\s*(?:["\']([^"\']*)|([^\s>"\']+))', attrs, re.I)
         if src:
-            urls.append(('script src', src.group(1)))
+            urls.append(('script src', src.group(1) or src.group(2) or ''))
         if re.search(r'\btype\s*=\s*["\']?importmap\b', attrs, re.I):
             try:
                 im = json.loads(body)
@@ -511,12 +512,12 @@ def lint_urls(html):
             for sc_url, sc in im.get('scopes', {}).items():
                 urls += [('importmap scopes', sc_url)] + [('importmap scopes', v) for v in sc.values()]
             urls += [('importmap integrity', k) for k in im.get('integrity', {})]
-        elif _MODULE.search(attrs):
-            urls += [('module import', u) for u in _IMPORTS.findall(body)]
+        elif _MODULE.search(attrs) or re.search(r'\bid\s*=\s*["\']?model-js\b', attrs, re.I):
+            urls += [('module import', u) for u in _IMPORTS.findall(body)]   # ook import() in het klassieke script uit #model-js
     for m in re.finditer(r'<link\b([^>]*)>', html, re.I):
         if re.search(r'\brel\s*=\s*["\']?modulepreload\b', m.group(1), re.I):
-            href = re.search(r'\bhref\s*=\s*["\']([^"\']*)', m.group(1), re.I)
-            urls.append(('modulepreload', href.group(1) if href else ''))
+            href = re.search(r'\bhref\s*=\s*(?:["\']([^"\']*)|([^\s>"\']+))', m.group(1), re.I)
+            urls.append(('modulepreload', (href.group(1) or href.group(2) or '') if href else ''))
     return [f'extern adres buiten {CDN} in {kind}: {u} (R10)' for kind, u in urls
             if re.match(r'(?:[a-z][a-z0-9+.-]*:|//)', u, re.I) and not u.startswith(CDN)]
 
@@ -583,7 +584,7 @@ BOOT = """Promise.all([import('three'), import('three/addons/controls/OrbitContr
   import('three/addons/geometries/RoundedBoxGeometry.js'), import('three/addons/utils/BufferGeometryUtils.js')])
   .then(([T, oc, re, rb, bu]) => { window.THREE = Object.assign({}, T, { OrbitControls: oc.OrbitControls, RoomEnvironment: re.RoomEnvironment, RoundedBoxGeometry: rb.RoundedBoxGeometry, BufferGeometryUtils: bu }); },
     e => { window.__modelThreeFout = { message: String(e && e.message || e), oud: !(HTMLScriptElement.supports && HTMLScriptElement.supports('importmap')) }; })
-  .then(() => { const s = document.createElement('script'); s.textContent = document.getElementById('model-js').textContent; document.body.appendChild(s); });"""
+  .finally(() => { const s = document.createElement('script'); s.textContent = document.getElementById('model-js').textContent; document.body.appendChild(s); });"""
 # browser zonder JavaScript-modules: de bootstrap draait niet en "Model opbouwen…" bleef anders staan (ES5, geen pijlfuncties)
 NOMODULE = "var l = document.getElementById('loading'); if (l) l.textContent = 'Deze browser is te oud voor de 3D-bibliotheek (geen JavaScript-modules). Gebruik een recente versie van Chrome, Edge, Firefox of Safari.';"
 

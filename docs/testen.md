@@ -15,7 +15,7 @@ python3 tools/smoke.py
 
 | Omgevingsvariabele | Werking |
 |---|---|
-| `THREE_DIR` | Map met het uitgepakte npm-pakket `three@0.186.1` (de map `package`). Standaard `~/.cache/explosietekening/three-0.186.1/package`; ontbreekt die, dan draait het script `npm pack three@0.186.1` en pakt het uit. De harness leest `package.json` in die map en weigert een andere versie dan `THREE_VERSION` (golf 6: `build/three.module.js` bestaat ook in r147, dus alleen een bestandscontrole zou een oud pakket stil laten meedoen). De cache van 0.147.0 blijft staan, zodat `main` en een golftak naast elkaar testen; staat `THREE_DIR` nog op die oude map, zet de variabele dan uit. |
+| `THREE_DIR` | Map met het uitgepakte npm-pakket `three@0.186.1` (de map `package`). Standaard `~/.cache/explosietekening/three-0.186.1/package`; ontbreekt die, dan draait het script `npm pack three@0.186.1` en pakt het uit. De harness en `build.py` lezen `package.json` in die map en negeren een andere versie dan `THREE_VERSION`; dan geldt de cache (golf 6: `build/three.module.js` bestaat ook in r147, dus alleen een bestandscontrole zou een oud pakket stil laten meedoen). De cache van 0.147.0 blijft staan, zodat andere repo's en oudere takken naast elkaar testen; `~/.config/web3d/env.sh` zet `THREE_DIR` voor alle repo's nog op die oude map. |
 | `CHROMIUM` | Pad naar een Chromium-binary. Standaard `/opt/pw-browsers/chromium` als die bestaat, anders de Chromium van Playwright (`playwright install chromium`). |
 | `MODEL_TEST` | Een bestaande testmap hergebruiken in plaats van opnieuw te bouwen. Zonder deze variabele ruimt de harness zijn tijdelijke testmap bij het sluiten op. |
 | `MODEL_TIMEOUT_MS` | Wachttijd op laden en `ready`, standaard 120000. Op een belaste machine of in CI hoger zetten. |

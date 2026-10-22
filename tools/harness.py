@@ -81,7 +81,7 @@ def ensure_three():
 
 
 def build_test(test_dir=None):
-    """Bouwt src/ naar test_dir/index.html met three/ als symlink. Geeft de map terug."""
+    """Bouwt src/ naar test_dir/index.html; build.py kopieert de zes three-bestanden naar test_dir/three/ (anders een symlink naar het pakket). Geeft de map terug."""
     test_dir = test_dir or tempfile.mkdtemp(prefix='model-test-')
     r = subprocess.run([sys.executable, os.path.join(ROOT, 'build.py'), '--test-only', test_dir], capture_output=True, text=True)
     if r.returncode != 0:
