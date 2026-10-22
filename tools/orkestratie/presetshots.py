@@ -16,7 +16,9 @@ with session() as s:
         try:
             pg.evaluate("(id) => { const L = window.__model; L.preset(id); L.finishAll(); return true; }", pid)
             pg.wait_for_timeout(500)
-            pg.evaluate("() => { window.__model.finishAll(); }")
+            # bundels die nog in de rij staan eerst bouwen (golf 6): anders hangt het beeld af van hoe ver het bundelen op dat
+            # moment is, en gebundelde en losse meshes verschillen subpixels op de randen (visdiff niet herhaalbaar in de VM)
+            pg.evaluate("() => { const L = window.__model; L.finishAll(); L.batchFlush(); }")
             pg.wait_for_timeout(300)
             pg.screenshot(path=os.path.join(OUT, f'{i+1:02d}-{pid}.png'), timeout=180000)
             print('beeld', pid)
