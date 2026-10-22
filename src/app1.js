@@ -731,7 +731,7 @@ const uiStops = (st, t) => { if (t <= st[0][0]) return st[0][1]; for (let i = 1;
 function uiDataTex(data, w, h) {
   const t = new THREE.DataTexture(data, w, h, THREE.RGBAFormat);
   t.magFilter = THREE.LinearFilter; t.minFilter = THREE.LinearMipmapLinearFilter; t.generateMipmaps = true;
-  t.encoding = THREE.sRGBEncoding; t.needsUpdate = true;
+  t.colorSpace = THREE.SRGBColorSpace; t.needsUpdate = true;
   return t;
 }
 function gridTexture() {
