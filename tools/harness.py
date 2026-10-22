@@ -60,10 +60,10 @@ def ensure_three():
     """Geeft de map met het uitgepakte npm-pakket; haalt het op als het ontbreekt. Een bestandsvergrendeling voorkomt dat
     twee gelijktijdige testreeksen allebei `npm pack` draaien."""
     d = os.environ.get('THREE_DIR')
-    if d:
-        if _pkg_ok(d):
-            return d
-        raise SystemExit(f'THREE_DIR {d} is geen uitgepakt three@{THREE_VERSION} (versie in package.json of build/three.module.js en three.core.js wijkt af); zet de variabele uit of wijs naar het juiste pakket')
+    if d and _pkg_ok(d):
+        return d
+    # een THREE_DIR van een andere versie telt niet (zoals three_dir() in build.py): ~/.config/web3d/env.sh zet hem voor alle
+    # repo's op r147 en andere auto's gebruiken die nog; dan geldt de cache hieronder
     cache = os.path.expanduser(f'~/.cache/explosietekening/three-{THREE_VERSION}')
     pkg = os.path.join(cache, 'package')
     tgz = os.path.join(cache, f'three-{THREE_VERSION}.tgz')
