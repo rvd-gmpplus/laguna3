@@ -274,9 +274,10 @@ function bodQdBand(s, q0, q1, d0, d1, out, crown = 0, nq = 12, nt = 1) {
 // zicht vanaf de bestuurdersstoel) staat de spiegel op een ruime zwarte driehoek vooraan het voorportier, en het glasvlak van de spiegel
 // valt ongeveer op de achterrand van die driehoek (de voorrand van de zijruit)
 const bodSail = 0.765;
-// punt van de spiegeldriehoek op de gordel. Golf 7 ronde 2: 0,93 naar 0,96, zodat de schuine rand ca. 37 graden helt in plaats van 42
-// (op de foto's ca. 31 graden) en minder knikt tegen de daklijn
-const bodSailTip = 0.96;
+// punt van de spiegeldriehoek op de gordel. Golf 7 ronde 2 probeerde 0,96 (schuine rand ca. 37 graden in plaats van 42; op de foto's ca.
+// 31 graden), maar dan snijdt de onderrand vlak voor de sluitnaad (z 0,907 tot 0,910, y 0,904) bij een half open voorportier (55 tot 65
+// procent) door de bovenste achterhoek van het voorscherm. Besluit van de eigenaar: bij een doordringing terug naar 0,93 (fixronde 2)
+const bodSailTip = 0.93;
 // bovenrand van de spiegeldriehoek (golf 5h): van de bovenrand van de zijruit op bodSail recht naar de gordel op z bodSailTip, zoals de
 // zwarte driehoek in de ruithoek op de persfoto (fase 2). Was 0,966 tot 0,93 m: een strookje van 5 cm onder een breed gelakt vlak van de A-stijl
 const bodSailTop = z => lerp(bodYG(bodSail) - 0.003, YT(bodSailTip) + 0.002, clamp((z - bodSail) / (bodSailTip - bodSail), 0, 1));
