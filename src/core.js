@@ -227,7 +227,9 @@ controls.autoRotateSpeed = 0.7;
 let pmrem = new THREE.PMREMGenerator(renderer);
 function uiMakeEnvironment() {
   const old = scene.environment;
-  const room = new THREE.RoomEnvironment(), env = pmrem.fromScene(room, 0.04).texture;
+  const room = new THREE.RoomEnvironment();
+  room.position.y = 0;   // kamer van r147 (r183: 3,5 lager)
+  const env = pmrem.fromScene(room, 0.04).texture;
   room.dispose();
   env.uiEnv = true;   // herkenning voor de envMap-haak
   scene.environment = env;
