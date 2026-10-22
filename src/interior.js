@@ -628,7 +628,8 @@ function intDashboard() {
   // van het dashboard; aan bestuurderszijde begint het 0,5 mm naast de wang van de instrumentenkap (x 0,544). pod(d) geeft het
   // verhoogde profiel met de kruin d lager; per stuk [x0, x1, soort, d]. Soort 'u' is de uitloop van het zijrooster naar de portier:
   // daar zakt de kruin (alles boven y 0,95 en voor z 0,79) recht evenredig tot 40 procent van de verhoging aan het eind van het
-  // dashboard, zoals op de foto van de passagierszijde, zodat de buitenspiegel vanaf de bestuurdersstoel zichtbaar blijft.
+  // dashboard, zoals op de foto van de passagierszijde, zodat de buitenspiegel vanaf de bestuurdersstoel zichtbaar blijft. De uitloop
+  // bestaat uit drie plakken: een plak heeft een vlakke bovenkant alleen als hij smal is (anders een schuine vouw in de vierhoek).
   const podIn = s => (s > 0 ? 0.5445 : sideVent.n0(s));
   const ventPieces = [[-0.75, -sideVent.n1(-1), 'u', dr], [-sideVent.n1(-1), -sideVent.n0(-1), 'v', dr], [-sideVent.n0(-1), -podIn(-1), 'p', dr], [-podIn(-1), podIn(1), 'n', 0],
     [podIn(1), sideVent.n0(1), 'p', 0], [sideVent.n0(1), sideVent.n1(1), 'v', dr], [sideVent.n1(1), 0.75, 'u', dr]];
@@ -639,7 +640,7 @@ function intDashboard() {
   const intVentBlocks = (poly, pod, x0, x1) => { const out = [];
     for (const [a0, b0, k, d] of ventPieces) { const a = Math.max(a0, x0), b = Math.min(b0, x1); if (b - a < 1e-6) continue;
       if (k === 'n') out.push(intSideBlock(poly, a, b)); else if (k === 'p') out.push(intSideBlock(pod(d), a, b));
-      else if (k === 'u') out.push(podTaper(intSideBlock(pod(d), a, b), Math.min(Math.abs(a0), Math.abs(b0)), 0.75));
+      else if (k === 'u') for (let j = 0; j < 3; j++) out.push(podTaper(intSideBlock(pod(d), lerp(a, b, j / 3), lerp(a, b, (j + 1) / 3)), Math.min(Math.abs(a0), Math.abs(b0)), 0.75));
       else out.push(...sideVent.cut(pod(d)).map(p => intSideBlock(p, a, b))); }
     return out.filter(Boolean); };
   // instrumentenpaneel: de wijzerplaatdrager staat 0,25 rad achterover, naar het oog van de bestuurder [0,37; 1,12; -0,30], in een kap op de
@@ -771,7 +772,12 @@ function intDashboard() {
   const carrier = intPart('Dashboarddrager', merge(gCut), MAT.dash, 'Kunststof draagstructuur van het dashboard met het voorvlak, verhoogd rond de zijroosters; hier loopt de stuurkolom doorheen.', { ex: [0, 0.0, 0.1] });
   const fascia = intPart('Dashboardmiddenpaneel', side(shapeOf(fasPts), 0.30), MAT.dash, 'Middenpaneel onder de roosters met de toetsenrij, de kaartlezer, de radio en de bekerhouder.', { ex: [0, 0, -0.06] });
   const defrost = intPart('Ontwasemroosters', merge([xf(G.box(0.9, 0.004, 0.035), [0, intDashTop(0.97) + 0.0005, 0.97]), xf(G.box(0.08, 0.004, 0.05), [0.7, intDashTop(0.9) + 0.0005, 0.92]), xf(G.box(0.08, 0.004, 0.05), [-0.7, intDashTop(0.9) + 0.0005, 0.92])]), MAT.plastic, 'Sleuven die lucht tegen de voorruit en de zijruiten blazen.', { ex: [0, 0.1, 0] });
-  const caps = [1, -1].map(s => intPart(`Dashboardeindkap ${sideName(s)}`, G.rbox(0.012, 0.3, 0.38, 0.004), MAT.plasticGrey, 'Kap op het uiteinde van het dashboard naast de portier.', { p: [s * 0.757, 0.8, 0.78], ex: [s * 0.14, 0, 0] }));
+  // eindkap (golf 6): profielblok van x 0,751 tot 0,763 met het zijprofiel van het uiteinde van het dashboard (huid en drager op het
+  // eind van de uitloop, kruin op 40 procent van de verhoging), van y 0,65 tot de kruin en van z 0,50 tot 0,97; zo blijft er bij open
+  // portier geen kaal donker uiteinde boven de kap
+  const capPf = (() => { const T = intOffset(podLow(intDashTopPts, dr), intSkinT).map(([z, y]) => [z, y > 0.95 && z < 0.79 ? 0.95 + (y - 0.95) * 0.4 : y]);
+    return clipPoly(clipPoly(clipPoly(T.concat(intDashPf.slice(5)), 0, -1, -0.65), -1, 0, -0.5), 1, 0, 0.97); })();
+  const caps = [1, -1].map(s => intPart(`Dashboardeindkap ${sideName(s)}`, intSideBlock(capPf, s > 0 ? 0.751 : -0.763, s > 0 ? 0.763 : -0.751), MAT.plasticGrey, 'Kap op het uiteinde van het dashboard naast de portier, met het zijprofiel van het dashboard tot boven op de kruin.', { ex: [s * 0.14, 0, 0] }));
   // kaartsleuf (horizontaal, direct onder het linker middenluchtrooster) en startknop (links daarvan, aan de linkerrand van het middenpaneel naast het stuur): Notice NU 936-5, blz. 1.42-1.43, item 22; linksgestuurd, bestuurder aan +x; maten geschat
   const kaart = (() => { const f = intFace(0.8315, 0.024); return intPart('Kaartlezer', G.rbox(0.085, 0.012, 0.012, 0.004), MAT.plastic, 'Sleuf voor de handsfree Renault-kaart, horizontaal direct onder het linker middenluchtrooster (plaats bevestigd met de gebruiksaanwijzing NU 936-5, blz. 1.42-1.43, item 22; de maten zijn geschat).', { p: [0.108, f.y, f.z], r: [f.rx, 0, 0], ex: [0, 0, -0.12] }); })();
   const start = (() => { const f = intFace(0.78, 0.006); return intPart('Startknop', G.cyl('z', 0.015, 0.015, 0.012, 20), MAT.chrome, 'Ronde start-/stopknop van de motor, links van de kaartsleuf aan de linkerrand van het middenpaneel naast het stuur, op de hoogte van de toetsenrij onder de klimaatbediening (plaats volgens de gebruiksaanwijzing NU 936-5, blz. 1.42-1.43, item 22; de maten zijn geschat).', { p: [0.185, f.y, f.z], r: [f.rx, 0, 0], ex: [0, 0, -0.12] }); })();
