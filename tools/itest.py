@@ -28,7 +28,9 @@ Controles (zie de app-brief):
      overlay met tekenopdrachten en versie; __model.version is het versiestempel uit build.py (zou de fout vangen dat een gedeelde
      link op Gemonteerd opent, of dat de versie in de pagina niet meer bij de bron hoort)
   18 golf 5c-1 (app): foutpaden (geen three.js, geen WebGL, fout vooraf en achteraf, contextverlies en herstel), uiLastFit na een
-     duik bij draaien, rondleiding met pauze, vorige, volgende en verborgen tabblad, integrity op de scripttags, "+n meer" bij
+     duik bij draaien, rondleiding met pauze, vorige, volgende en verborgen tabblad, importmap met sha384-integrity en modulepreload
+     voor de zes three-bestanden (R5), envMap van elk getekend MeshStandardMaterial gelijk aan scene.environment (R6, golf 6), een
+     gewijzigde byte van three.core.js laadt niet (R7, golf 6), "+n meer" bij
      labels, fade en badge bij isoleren, themaknop met geheugen, toegankelijkheid (focusval en inert, menu, werkbalk, focusrand,
      schakelaarcontrast, tabs, live region, Esc), hulpvenster uit PRESETS, zoeken met synoniemen en diakrieten, toast, suggestie,
      trilling, Beeld opslaan en de printstijl; elke controle noemt de fout die hij gevangen zou hebben
@@ -62,7 +64,9 @@ Controles (zie de app-brief):
 """
 import sys, os, random, json, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from harness import session
+from harness import session, ensure_three
+import base64, hashlib
+import build as lagbuild   # harness zet de repo-map op het zoekpad; LIBS en THREE_VERSION zijn de bron voor 18 R5 tot R7
 
 OUT = os.environ.get('ITEST_SHOTS')
 RESULTS = []
@@ -809,7 +813,7 @@ def run_view(s, tag, w, h, touch):
 
 # ---------- 18. golf 5c-1 (app-agent): robuustheid, bediening, toegankelijkheid ----------
 # Elke controle noemt in zijn commentaar de fout uit golf 1 tot 4 die hij gevangen zou hebben, of het risico dat hij dekt.
-def fault_page(s, w=1280, h=800, init=None, block=None):
+def fault_page(s, w=1280, h=800, init=None, block=None, route=None):
     """Eigen context buiten de logregistratie van de harness: deze paden geven met opzet fouten in de console."""
     ctx = s.browser.new_context(viewport={'width': w, 'height': h})
     ctx.add_init_script('window.__MODEL_CACHECHECK = true;')
@@ -821,6 +825,8 @@ def fault_page(s, w=1280, h=800, init=None, block=None):
         pg.add_init_script(init)
     if block:
         pg.route(block, lambda rt: rt.abort())
+    if route:   # (patroon, handler): een eigen antwoord op een verzoek, bijvoorbeeld bytes die niet bij de integriteit passen
+        pg.route(*route)
     pg.goto(f'http://127.0.0.1:{s.port}/index.html', wait_until='load', timeout=int(os.environ.get('MODEL_TIMEOUT_MS', 120000)))
     return ctx, pg, logs
 
@@ -828,11 +834,19 @@ def fault_page(s, w=1280, h=800, init=None, block=None):
 def check18(s):
     print('--- 18 golf 5c-1')
     timeout = int(os.environ.get('MODEL_TIMEOUT_MS', 120000))
-    # R1b. Zonder three.js (CDN geblokkeerd) stond vóór golf 1 "Model opbouwen…" eeuwig; de melding moet er staan, met de versie
-    ctx, pg, logs = fault_page(s, block='**/three/build/three.min.js')
-    pg.wait_for_timeout(600)
+    # R1b. Zonder three.js (CDN geblokkeerd) stond vóór golf 1 "Model opbouwen…" eeuwig; de melding moet er staan, met de versie.
+    # Sinds golf 6 is three een ES-module (importmap): blokkeren we three.module.js, dan weigert import('three') en zet de bootstrap
+    # window.__modelThreeFout; de app toont dan dezelfde melding en gooit "three.js ontbreekt" (de module is asynchroon, dus wachten
+    # we op de melding in plaats van een vaste 600 ms).
+    ctx, pg, logs = fault_page(s, block='**/three/build/three.module.js')
+    try:
+        pg.wait_for_function("document.getElementById('loading').textContent.includes('3D-bibliotheek')", timeout=20000)
+    except Exception:
+        pass
     txt = pg.evaluate("document.getElementById('loading').textContent")
+    tf = pg.evaluate("window.__modelThreeFout || null")
     check('18 R1b zonder three.js: laadmelding noemt de 3D-bibliotheek en de versie', '3D-bibliotheek' in txt and 'Versie' in txt, txt[:160])
+    check('18 R1b zonder three.js: window.__modelThreeFout met melding, oud is onwaar (Chromium kent importmaps)', bool(tf) and bool(tf.get('message')) and tf.get('oud') is False and pg.evaluate("typeof THREE") == 'undefined', json.dumps(tf)[:200])
     ctx.close()
     # R1b. Zonder WebGL (audit §6: de renderer stond niet in try/catch): melding van core.js met de versie, lastError gezet
     ctx, pg, logs = fault_page(s, init="HTMLCanvasElement.prototype.getContext = function () { return null; };")
@@ -867,12 +881,111 @@ def check18(s):
         check('18 R2 herstel: melding weg, nieuwe omgevingskaart, er wordt weer getekend', not rest[0] and rest[1] and rest[2] and rest[3] > 0, json.dumps(rest))
     ctx.close()
 
-    # R5. Elke scripttag van three.js heeft integrity (sha384) en crossorigin; de pagina laadt ermee (anders was er geen THREE).
-    # Dekt: een CDN die andere bytes levert dan het npm-pakket (premortem 5c-1) komt niet stil in de pagina.
+    # R5. Sinds golf 6 komt three als ES-module uit een importmap. Elk van de zes bestanden (build.LIBS: three.module.js, three.core.js
+    # en de vier addons) heeft een sha384-sleutel in `integrity` van de importmap en een modulepreload-link met dezelfde integriteit
+    # en crossorigin anonymous (de link werkt ook in browsers die integrity in een importmap nog negeren, Chrome < 127, Firefox < 138,
+    # Safari < 18). De sleutels worden hier zelf uit het lokale pakket berekend. Er is geen klassiek three-script meer, de
+    # sleutels beginnen met ./three/ (de testprefix; "three/build/..." zou een zwakke specifier zijn en een waarschuwing geven) en
+    # THREE.REVISION komt uit THREE_VERSION van de bouw. Dekt: een CDN die andere bytes levert dan het npm-pakket (premortem 5c-1)
+    # komt niet stil in de pagina, en een vergeten of verouderde sleutel (core.js wordt relatief vanuit three.module.js geladen).
     pd = s.page(1280, 800)
     pd.evaluate(JS_HELPERS)
-    sc = pd.evaluate("[...document.querySelectorAll('script[src]')].map(e => [e.getAttribute('integrity') || '', e.getAttribute('crossorigin') || ''])")
-    check('18 R5 integrity sha384 en crossorigin anonymous op alle scripttags, three r147 geladen', len(sc) == 5 and all(i.startswith('sha384-') and c == 'anonymous' for i, c in sc) and pd.evaluate('THREE.REVISION') == '147', json.dumps(sc)[:200])
+    sc = pd.evaluate("""(() => { const im = [...document.querySelectorAll('script[type=importmap]')]; let map = null; try { map = JSON.parse(im[0].textContent); } catch (e) {}
+      return { nmap: im.length, map: map, rev: THREE.REVISION,
+               pre: [...document.querySelectorAll('link[rel=modulepreload]')].map(l => [l.getAttribute('href') || '', l.getAttribute('integrity') || '', l.getAttribute('crossorigin') || '']),
+               klassiek: [...document.querySelectorAll('script[src]')].map(e => e.getAttribute('src')).filter(u => /three/i.test(u)) }; })()""")
+    three_dir = ensure_three()
+    sri = {lib: 'sha384-' + base64.b64encode(hashlib.sha384(open(os.path.join(three_dir, lib), 'rb').read()).digest()).decode() for lib in lagbuild.LIBS}
+    sleutels = (sc['map'] or {}).get('integrity') or {}
+    revision = str(int(lagbuild.THREE_VERSION.split('.')[1]))
+    probs = []
+    if len(lagbuild.LIBS) != 6: probs.append(f'build.LIBS heeft {len(lagbuild.LIBS)} bestanden')
+    if sc['nmap'] != 1 or not sc['map']: probs.append(f'{sc["nmap"]} importmaps of onleesbaar')
+    for lib, want in sri.items():
+        gevonden = [k for k in sleutels if k.endswith('/' + lib)]
+        if len(gevonden) != 1: probs.append(f'sleutel voor {lib}: {len(gevonden)} gevonden'); continue
+        if not gevonden[0].startswith('./three/'): probs.append(f'sleutel {gevonden[0]} begint niet met ./three/')
+        if sleutels[gevonden[0]] != want: probs.append(f'sha384 van {lib} klopt niet met het pakket')
+        pre = [x for x in sc['pre'] if x[0].endswith('/' + lib)]
+        if len(pre) != 1: probs.append(f'modulepreload voor {lib}: {len(pre)} gevonden')
+        elif pre[0][1] != want or pre[0][2] != 'anonymous': probs.append(f'modulepreload {lib}: integrity of crossorigin klopt niet ({pre[0][2]})')
+    if len(sleutels) != len(sri): probs.append(f'{len(sleutels)} sleutels in de importmap, verwacht {len(sri)}')
+    if len(sc['pre']) != len(sri): probs.append(f'{len(sc["pre"])} modulepreload-links, verwacht {len(sri)}')
+    if sc['klassiek']: probs.append(f'klassiek three-script: {sc["klassiek"][:2]}')
+    if sc['rev'] != revision: probs.append(f'THREE.REVISION {sc["rev"]}, verwacht {revision}')
+    check(f'18 R5 importmap met zes sha384-sleutels en zes modulepreload (crossorigin anonymous), geen klassiek three-script, three r{revision} geladen', not probs, '; '.join(probs)[:300])
+
+    # R6 (golf 6). Sinds r163 telt envMapIntensity alleen bij material.envMap; de haak in core.js zet bij elk MeshStandardMaterial
+    # (ook Physical) zonder eigen kaart de scene.environment. Elk getekend materiaal moet dus envMap === scene.environment hebben;
+    # anders verdwijnt de weerspiegeling van leder, stof, glas en chroom stil (het beeld wordt vlak, er komt geen fout). "Getekend"
+    # betekent: renderBufferDirect krijgt het materiaal tijdens één weergave (de haak heeft dan al gedraaid). Standen: gewone stand,
+    # Röntgen (doorzichtige klonen via uiCut), kleuren per systeem (vervangende materialen) en na contextherstel (nieuwe omgevingskaart,
+    # oude materialen). Dekt ook de klonen van uiTint, uiCut en fade. Niet-vacuüm: er moeten materialen getekend zijn.
+    r6 = """(() => { const gezien = new Map(), orig = renderer.renderBufferDirect;
+      renderer.renderBufferDirect = function (cam, sc, geo, mat, obj) {
+        if (mat && mat.isMeshStandardMaterial && !gezien.has(mat.uuid)) gezien.set(mat.uuid, { ok: !!scene.environment && mat.envMap === scene.environment, eigen: !!mat.envMap, naam: (obj && (obj.name || (obj.userData && obj.userData.node && obj.userData.node.name))) || mat.name || '?' });
+        return orig.apply(this, arguments); };
+      try { if (typeof uiBatchSync === 'function') uiBatchSync(); renderer.render(scene, camera); } finally { renderer.renderBufferDirect = orig; }
+      const alle = [...gezien.values()], slecht = alle.filter(x => !x.ok);
+      return { env: !!scene.environment, n: alle.length, slecht: slecht.length, voorbeeld: slecht.slice(0, 4).map(x => x.naam + (x.eigen ? ' (andere kaart)' : ' (geen kaart)')) }; })()"""
+
+    def probe6(p, wat):
+        r = p.evaluate(r6)
+        check(f'18 R6 envMap === scene.environment op elk getekend MeshStandardMaterial, {wat}', r['env'] and r['n'] > 0 and r['slecht'] == 0, json.dumps(r, ensure_ascii=False)[:300])
+        return r
+    ctx6, p6, logs6 = fault_page(s)   # eigen context: contextverlies geeft met opzet consolemeldingen
+    p6.wait_for_function('window.__model && window.__model.ready !== false', timeout=timeout)
+    p6.wait_for_timeout(300)
+    probe6(p6, 'gewone stand')
+    p6.evaluate("document.getElementById('tXray').click()"); settle(p6, 250)
+    probe6(p6, 'Röntgen')
+    p6.evaluate("document.getElementById('tXray').click()"); settle(p6, 120)
+    p6.evaluate("document.getElementById('tSys').click()"); settle(p6, 250)
+    probe6(p6, 'kleuren per systeem')
+    p6.evaluate("document.getElementById('tSys').click()"); settle(p6, 120)
+    ext6 = p6.evaluate("""(() => { const ext = renderer.getContext().getExtension('WEBGL_lose_context'); if (!ext) return null;
+      window.__env6 = scene.environment.uuid; ext.loseContext(); window.__ext6 = ext; return true; })()""")
+    if check('18 R6 WEBGL_lose_context beschikbaar', ext6, 'de testbrowser kent de extensie niet'):
+        p6.wait_for_timeout(400)
+        p6.evaluate("window.__ext6.restoreContext()")
+        try:
+            p6.wait_for_function('window.__model.contextLost === false && scene.environment.uuid !== window.__env6', timeout=15000)
+        except Exception:
+            pass
+        p6.wait_for_timeout(500)
+        probe6(p6, 'na contextherstel (nieuwe omgevingskaart)')
+        p6.evaluate("document.getElementById('tXray').click(); document.getElementById('tSys').click()"); settle(p6, 250)
+        probe6(p6, 'na contextherstel met Röntgen en kleuren per systeem samen')
+    ctx6.close()
+
+    # R7 (golf 6). Levert de route een gewijzigde byte van three.core.js (een CDN of tussenlaag die andere bytes geeft), dan weigert
+    # de integriteit in de importmap het bestand: three laadt niet, de app toont de 3D-bibliotheekmelding en window.THREE ontbreekt.
+    # three.core.js wordt niet door de pagina zelf maar relatief vanuit three.module.js geladen; juist daar zou een ontbrekende
+    # sleutel stil blijven. De gewijzigde byte is een spatie (of nieuwe regel) aan het eind, zodat de syntaxis geldig blijft en alleen
+    # de integriteit het bestand kan weigeren. Controle ernaast: dezelfde route met de onveranderde bytes laadt three wel; anders
+    # bewees de weigering alleen dat de route niet werkt (verkeerd type, geen CORS-kop).
+    core = open(os.path.join(three_dir, 'build', 'three.core.js'), 'rb').read()
+    fout_core = core[:-1] + b' ' if core.endswith(b'\n') else core + b'\n'
+    hdr = {'content-type': 'text/javascript', 'access-control-allow-origin': '*'}
+    hits7 = []
+    ctx7, p7, logs7 = fault_page(s, route=('**/three/build/three.core.js', lambda rt: (hits7.append(rt.request.url), rt.fulfill(status=200, body=fout_core, headers=hdr))))
+    try:
+        p7.wait_for_function("document.getElementById('loading').textContent.includes('3D-bibliotheek')", timeout=20000)
+    except Exception:
+        pass
+    txt = p7.evaluate("document.getElementById('loading').textContent")
+    check('18 R7 gewijzigde byte in three.core.js: three laadt niet, 3D-bibliotheekmelding met versie, geen window.THREE',
+          bool(hits7) and p7.evaluate("typeof THREE") == 'undefined' and '3D-bibliotheek' in txt and 'Versie' in txt and bool(p7.evaluate("window.__modelThreeFout")),
+          json.dumps([len(hits7), txt[:100]], ensure_ascii=False))
+    ctx7.close()
+    hits7b = []
+    ctx7, p7, logs7 = fault_page(s, route=('**/three/build/three.core.js', lambda rt: (hits7b.append(rt.request.url), rt.fulfill(status=200, body=core, headers=hdr))))
+    try:
+        p7.wait_for_function("typeof THREE !== 'undefined' && !!THREE.REVISION", timeout=20000)
+    except Exception:
+        pass
+    check('18 R7 controle: dezelfde route met onveranderde bytes laadt three wel', bool(hits7b) and p7.evaluate("typeof THREE") != 'undefined' and not p7.evaluate("window.__modelThreeFout"), json.dumps([len(hits7b)]))
+    ctx7.close()
 
     # R4. Rondleiding: pauze (de timer van 5 s stapt dan niet door), volgende en vorige met een echte klik in de balk (die mag
     # de rondleiding niet stoppen), verborgen tabblad (audit §6: de rondleiding liep via setTimeout door in een verborgen tab).
