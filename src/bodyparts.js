@@ -840,8 +840,10 @@ function buildMirror(s) {
     // voet: smalle plaat 13 mm buiten de huid tussen portier en spiegelhuis (een blok voor de kap las als los zwart blokje, 5f-2);
     // 5h-2: spiegel 7 cm naar voren, op de spiegeldriehoek zoals op de persfoto
     // golf 5j: de voet loopt 3 cm verder naar voren, over de spiegeldriehoek (tot z 0,90), zodat de kap zichtbaar op de driehoek staat
-    // golf 7: met de spiegel 10 cm naar achteren en 3 cm omhoog; de huid op de nieuwe hoogte ligt bij q 0,16 (was 0,11)
-    P('Spiegelvoet', G.rbox(0.016, 0.032, 0.13, 0.005), MAT.bodPillar, { d: 'Voet met bevestigingsplaat op de spiegeldriehoek aan de binnenkant van het spiegelhuis; blijft staan als de spiegel inklapt (plaats geschat).', p: M(bodGhHalf(0.835 + bodMirDZ, 0.16)[0] + 0.0137, 0.941, 0.835), stay: true, ex: [-s * 0.05, -0.05, 0] }),
+    // golf 7: met de spiegel 10 cm naar achteren en 3 cm omhoog; de huid op de nieuwe hoogte ligt bij q 0,16 (was 0,11). De voet loopt nu van
+    // z 0,67 tot 0,80 en de driehoek begint op bodSail (0,765): het grootste deel staat op het portier achter de driehoek, alleen de voorste
+    // 3,5 cm over de achterrand ervan (de regels van 5h-2 en 5j hierboven gelden niet meer)
+    P('Spiegelvoet', G.rbox(0.016, 0.032, 0.13, 0.005), MAT.bodPillar, { d: 'Voet met bevestigingsplaat op het portier, net achter de spiegeldriehoek en over de achterrand ervan, aan de binnenkant van het spiegelhuis; blijft staan als de spiegel inklapt (plaats geschat).', p: M(bodGhHalf(0.835 + bodMirDZ, 0.16)[0] + 0.0137, 0.941, 0.835), stay: true, ex: [-s * 0.05, -0.05, 0] }),
     // kap als halve ellips in de diepte (schaal = wortel(1 - (d / 0,15)^2)): een ronde, slanke druppel zonder vlakke voorkant
     P('Spiegelkap', cache('bodMirCapT' + k, () => bodLoft(s, [0, 0.012, 0.03, 0.05, 0.07, 0.09, 0.106, 0.12, 0.132, 0.141, 0.147].map(d => [d < 0.013 ? 1 : Math.sqrt(1 - (d / 0.15) ** 2), d]), true, 0.32)), MAT.paint, { d: 'Druppelvormige kap in carrosseriekleur aan de voorzijde van het spiegelhuis.', p: Mc(cx, 0.738), ex: [0, 0.02, 0.1] }),
     P('Spiegelhuis', cache('bodMirRimT' + k, () => bodLoft(s, [[0.93, -0.004], [1.01, -0.004], [1.01, 0.012]], false)), MAT.paint, { d: 'Kunststof huis in carrosseriekleur met een rand rond het glas, dat glas, motoren en verwarming draagt.', p: Mc(cx, 0.734), ex: [0, 0, -0.02] }),
