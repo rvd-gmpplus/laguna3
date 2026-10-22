@@ -59,11 +59,8 @@ const CFG = Object.freeze({
     schuifMPx: 0.0006,                        // rechts slepen, Shift+slepen of twee vingers: meter per pixel
     zoomWiel: 0.0012,                         // scrollen: gezichtsveld maal exp(deltaY x dit)
     // lichtstand in de cockpit: zon lager en zachter, meer hemellicht, een zwak cabinelicht (plaats: auto.json cockpit.licht).
-    // zon en hemiPlus zijn r147-waarden; uiThemeLights zet er als laatste stap de factor PI op (golf 6).
-    // cabine en cabineDonker (golf 6): r147 rekende het verval van het cabinelicht (afstand 2,8 m, decay 1,5) als (1 - d/2,8)^1,5
-    // maal PI; three.js rekent nu fysisch: d^-decay maal (1 - (d/2,8)^4)^2. Kleinste-kwadratenfit (relatieve fout) op de r147-curve
-    // over 0,3 tot 1,8 m: decay 0,55 en sterkte maal 1,56 (de PI zit erin), hoogstens 16 procent afwijking; met decay 1,5 of 2
-    // scheelt het een factor 3 tot 6. Daarom de r147-sterktes 0,55 en 0,7 maal 1,56 en decay 0,55 in uiCabin.
+    // Cabine (golf 6): r147-verval (1 - d/2,8)^1,5 maal PI, nu fysisch d^-decay maal (1 - (d/2,8)^4)^2. Fit (relatief) over 0,3
+    // tot 1,8 m: decay 0,55 (uiCabin) en sterkte maal 1,56, PI inbegrepen; hoogstens 16 procent af (decay 1,5 of 2: factor 3 tot 6).
     licht: Object.freeze({ zon: 0.75, zonPos: Object.freeze([4, 4.5, 7]), hemiPlus: 0.3, cabine: 0.55 * 1.56, cabineDonker: 0.7 * 1.56 }),
     // buitenwereld rond de auto in de cockpit: lucht (zenit naar horizon) en een grondvlak (bij de auto naar de horizon)
     wereldR: 55,
@@ -182,15 +179,13 @@ const TXT = Object.freeze({
 const LOADING = document.getElementById('loading');
 // tijdlijn van het opstarten (ms sinds het begin van de navigatie), uit te lezen via __model.timing
 const uiTiming = { script: Math.round(performance.now()) };
-// three.js en de vier addons zet de bootstrapmodule van build.py op window.THREE (golf 6). Laadt dat niet, dan zet ze
-// __modelThreeFout: message is de fout, oud zegt dat de browser geen importmap kent (dan een andere melding).
+// de bootstrap van build.py zet three op window.THREE (golf 6), of anders __modelThreeFout (oud: geen importmap)
 if (!window.THREE || !THREE.OrbitControls || !THREE.BufferGeometryUtils || !THREE.RoomEnvironment || !THREE.RoundedBoxGeometry) {
   const fout = window.__modelThreeFout;
   LOADING.textContent = fout && fout.oud ? TXT.laadOud : TXT.laadDrie;
   throw new Error('three.js ontbreekt' + (fout ? ' (' + fout.message + ')' : ''));
 }
-// kleurbeheer: zoals r147 al stond (golf 6 zet het expliciet): hex- en CSS-kleuren zijn sRGB, er wordt lineair gerekend,
-// vertexkleuren blijven lineair; de uitvoer gaat na de toonafbeelding naar sRGB (outputColorSpace hieronder)
+// kleurbeheer zoals in r147: hex en CSS zijn sRGB, intern lineair (ook vertexkleuren), uitvoer sRGB na de toonafbeelding
 THREE.ColorManagement.enabled = true;
 THREE.ColorManagement.workingColorSpace = THREE.LinearSRGBColorSpace;
 const PI = Math.PI, HALF = PI / 2;
@@ -233,16 +228,13 @@ let pmrem = new THREE.PMREMGenerator(renderer);
 function uiMakeEnvironment() {
   const old = scene.environment;
   const env = pmrem.fromScene(new THREE.RoomEnvironment(), 0.04).texture;
-  env.uiEnv = true;   // onze omgevingskaart: de envMap-haak hieronder herkent hem hieraan
+  env.uiEnv = true;   // herkenning voor de envMap-haak
   scene.environment = env;
   if (old) old.dispose();
 }
-// envMap-haak (golf 6): sinds r163 telt envMapIntensity alleen bij material.envMap en niet meer bij scene.environment; in r147
-// gold hij voor beide, en de materialen rekenen daarop (leder, stof, dashboard, glas, chroom). Vlak voor het tekenen (de renderer
-// roept onBeforeRender aan vóór de keuze van het programma) krijgt elk MeshStandardMaterial (ook Physical) zonder eigen kaart, of met
-// een vorige kaart van ons (na contextherstel), scene.environment als envMap. Alleen voor onze kaart (vlag uiEnv): de scène van
-// RoomEnvironment die PMREM tekent, blijft erbuiten. Dekt ook klonen (kleuren per systeem, doorsnede, uitfaden) zonder wijziging in de
-// domeinbestanden. Dezelfde textuur als scene.environment geeft hetzelfde programma, dus geen hercompilatie; scene.environment blijft.
+// envMap-haak (golf 6): sinds r163 telt envMapIntensity alleen bij material.envMap, in r147 ook bij scene.environment. Vóór de
+// programmakeuze krijgt elk MeshStandardMaterial (ook Physical) zonder eigen kaart, of met een vorige van ons (contextherstel), onze
+// kaart (uiEnv) als envMap; de RoomEnvironment-scène van PMREM niet. Dekt ook klonen; zelfde textuur, dus geen hercompilatie.
 THREE.MeshStandardMaterial.prototype.onBeforeRender = function (r, sc) {
   const env = sc && sc.environment;
   if (env && env.uiEnv && this.envMap !== env && (this.envMap === null || this.envMap.uiEnv)) this.envMap = env;
@@ -263,13 +255,12 @@ rim.position.set(-6, 3, -5);
 scene.add(rim);
 // cabinelicht van de cockpit (golf 5l): staat altijd in de scène, met sterkte 0 buiten de cockpit. Zo verandert het aantal lichten
 // nooit en hoeft geen shader opnieuw te compileren bij het instappen; 0 draagt niets bij, het gewone beeld blijft gelijk.
-// Decay 0,55 (golf 6, was 1,5): de fit op het r147-verval, zie CFG.cockpit.licht.
+// decay 0,55 (golf 6, was 1,5): zie CFG.cockpit.licht
 const uiCabin = new THREE.PointLight(0xfff0dc, 0, 2.8, 0.55);
 scene.add(uiCabin);
 let uiCkLightOn = false;   // de lichtstand van de cockpit (uiCkLights in app2-controls.js) staat aan
-// Golf 6: sinds r155 rekent three.js de lichten fysisch, zonder de factor PI die r147 er stil bij deed (WebGLLights, scaleFactor).
-// uiThemeLights zet die factor als laatste stap terug op hemel-, zon- en randlicht, zodat het beeld dat van r147 is en de getallen
-// hier en in CFG.cockpit.licht de r147-waarden blijven. Het cabinelicht niet: dat heeft een eigen fit (CFG.cockpit.licht).
+// golf 6: r147 deed er stil PI bij (WebGLLights, scaleFactor), sinds r155 niet meer. uiThemeLights zet PI als laatste stap op
+// hemel-, zon- en randlicht, zodat alle getallen r147-waarden blijven; het cabinelicht heeft een eigen fit (CFG.cockpit.licht)
 const UI_LICHT_SCHAAL = PI;
 // Alle lichten uit het thema; in de cockpit daarna de lichtstand van de cockpit. Elke aanroep zet alles opnieuw, dus na het
 // uitstappen (uiCkLightOn uit) staan de lichten exact zoals het thema ze wil.
@@ -280,7 +271,7 @@ function uiThemeLights() {
   uiHemi.groundColor.setHex(dark ? 0x5a636d : 0x3c434b);
   sun.intensity = 1.2; sun.position.set(4, 9, 6); uiCabin.intensity = 0;
   if (uiCkLightOn) uiCkLights(dark);
-  uiHemi.intensity *= UI_LICHT_SCHAAL; sun.intensity *= UI_LICHT_SCHAAL; rim.intensity *= UI_LICHT_SCHAAL;   // na uiCkLights, zie UI_LICHT_SCHAAL
+  uiHemi.intensity *= UI_LICHT_SCHAAL; sun.intensity *= UI_LICHT_SCHAAL; rim.intensity *= UI_LICHT_SCHAAL;   // na uiCkLights
 }
 uiThemeLights();
 
