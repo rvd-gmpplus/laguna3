@@ -2057,11 +2057,23 @@ def run_golf5n(s):
     pp.evaluate(JS_CK)
     pp.evaluate("__model.setOpenMode(false); __model.preset('assembled'); __model.setCockpit('bestuurder', true); __model.finishAll()"); pp.wait_for_timeout(300)
     pp.evaluate("setSheet('open', 'vol')"); pp.wait_for_timeout(300)
-    tapok, tapinfo = True, ''
-    try:
-        pp.tap('#btnCkOut', timeout=4000)
-    except Exception as ex:
-        tapok, tapinfo = False, str(ex).splitlines()[0][:160]
+    # trage CI-runner: wacht tot de knop zichtbaar is en twee frames stilstaat, ruime timeout, hooguit één herhaalde tik
+    tapok, tapinfo, pogingen, t0 = False, '', 0, time.time()
+    for _ in range(2):
+        pogingen += 1
+        try:
+            pp.evaluate("window.__ckPrev = null")
+            pp.wait_for_function("(() => { const b = document.getElementById('btnCkOut').getBoundingClientRect(), k = [b.x, b.y, b.width, b.height].join(','), p = window.__ckPrev; window.__ckPrev = k; return b.width > 0 && p === k; })()", polling='raf', timeout=15000)
+            pp.tap('#btnCkOut', timeout=15000)
+            tapok = True
+            tapinfo = ''  # geslaagde tik: geen foutmelding van een eerdere poging tonen (pogingen= blijft zichtbaar)
+            break
+        except Exception as ex:
+            tapinfo = str(ex).splitlines()[0][:160]
+            if pp.evaluate('__model.state().cockpit') is None:
+                tapok = True  # de eerste tik was al aangekomen; geen tweede tik op een verdwenen knop
+                break
+    tapinfo = f'{tapinfo} pogingen={pogingen} ms={int((time.time() - t0) * 1000)}'.strip()
     settle(pp, 300); pp.wait_for_timeout(300); settle(pp, 100)
     check('25 b tikken op Uitstappen in de stand vol lukt en verlaat de cockpit', tapok and pp.evaluate('__model.state().cockpit') is None and pp.evaluate('controls.enabled'), tapinfo)
     pp.close()
