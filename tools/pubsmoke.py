@@ -90,7 +90,7 @@ def main():
             pg.on('pageerror', lambda e, tag=tag: logs.append(f'[{tag}] PAGEERROR: {e}'))
             gevraagd = set()
 
-            def route(rt, gevraagd=gevraagd):
+            def route(rt):   # gevraagd hoort bij deze ronde van de lus (de context sluit aan het eind ervan)
                 url = rt.request.url
                 if url.startswith(b.CDN):
                     path = os.path.join(three, url[len(b.CDN):].split('?')[0])
