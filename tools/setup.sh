@@ -1,6 +1,6 @@
 #!/bin/bash
-# Maakt een verse omgeving klaar voor de testset: Playwright (Python), three.js 0.147.0 in de cache (met hashcontrole),
-# en een Chromium. Idempotent; draait zonder vragen. Gebruik: tools/setup.sh
+# Maakt een verse omgeving klaar voor de testset: Playwright (Python), three.js 0.186.1 (npm-pakket met ES-modules) in de cache
+# (met hashcontrole; de versie en de hash staan in build.py en tools/harness.py), en een Chromium. Idempotent; draait zonder vragen. Gebruik: tools/setup.sh
 set -euo pipefail
 R="$(cd "$(dirname "$0")/.." && pwd)"
 export PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
