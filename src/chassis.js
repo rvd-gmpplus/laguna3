@@ -89,7 +89,7 @@ function chsKeyTex() {
   k.lineWidth = 5;
   lijn([[184, 66], [184, 36], [196, 36]]); k.beginPath(); k.arc(196, 44, 8, -HALF, HALF); k.stroke(); lijn([[196, 52], [184, 52]]); lijn([[192, 52], [204, 66]]);   // R
   k.beginPath(); k.ellipse(192, 141, 9, 14, 0, 0, PI * 2); k.stroke();         // 0
-  const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.anisotropy = 4;
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
   return t;
 }
 std('chsKeys', 0xffffff, 0, 0.55, { map: chsKeyTex() });
@@ -105,7 +105,7 @@ function chsKeyBox(u0, b, h, d, keys) {
     }
     g.translate(x, y, z); return g;
   };
-  return THREE.BufferGeometryUtils.mergeBufferGeometries([box(b, h, d, 0, 0, d / 2), ...keys.map(([x, y, w, hh]) => box(w, hh, 0.003, x, y, d + 0.0015))]);
+  return THREE.BufferGeometryUtils.mergeGeometries([box(b, h, d, 0, 0, d / 2), ...keys.map(([x, y, w, hh]) => box(w, hh, 0.003, x, y, d + 0.0015))]);
 }
 
 function discGeo(rIn, rOut, vented, key, hatH) {
