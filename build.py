@@ -3,7 +3,8 @@
 Gebruik:
   python3 build.py                 schrijft index.html: een volledig document met doctype en viewport-regel (GitHub Pages), three.js via CDN
   python3 build.py --bare BESTAND  schrijft ook de kale pagina zonder documentgeraamte naar BESTAND (het artefact: de host zet er zelf een geraamte omheen)
-  python3 build.py MAP             schrijft ook MAP/index.html die three.js uit MAP/three/ laadt
+  python3 build.py MAP             schrijft ook MAP/index.html die three.js uit MAP/three/ laadt (de zes bestanden van LIBS worden
+                                   erheen gekopieerd als MAP/three nog niet bestaat; tools/harness.py legt daar anders een symlink)
   python3 build.py --lint          controleert alleen, schrijft niets
   python3 build.py --test-only MAP schrijft alleen MAP/index.html (gebruikt door de tests; laat index.html ongemoeid)
 
@@ -11,26 +12,48 @@ Controles (de bouw stopt bij een fout):
   - dubbele functienamen op het hoogste niveau over alle bestanden (die zouden elkaar stil overschrijven)
   - dubbele materiaalnamen in std()/phys()
   - teksten in `d:`, `spec:`, `note:` en `label:` (R1, R2, R4, R5 fouten) en cachesleutels zonder voorvoegsel van het bestand (R7, fout): zie lint_texts()
-  - syntaxis van het samengevoegde script via `node --check` (vangt ook dubbele const/let), en van elk inline script in head.html
+  - syntaxis van het samengevoegde script via `node --check` (vangt ook dubbele const/let), van elk inline script in head.html en
+    van de bootstrapmodule (als .mjs)
+  - R8: elke THREE.X in src/ bestaat in three@THREE_VERSION (export van three.module.js of three.core.js, of een van de vier
+    addons; bij THREE.BufferGeometryUtils.Y ook Y); R9: geen API die na r147 is verdwenen; R10: externe adressen van scripts,
+    modulepreload en importmap alleen op CDN (zie lint_three() en lint_urls())
 
-De scripttags van three.js krijgen integrity (sha384) en crossorigin="anonymous"; de hash komt uit het lokale npm-pakket
-(THREE_DIR of ~/.cache/explosietekening/three-0.147.0/package, zie tools/harness.py --ensure-three). Ontbreekt dat, dan stopt de bouw.
+Laadketen (golf 6): three.js komt als ES-module via een importmap met integrity (sha384) en zes modulepreloads met integrity en
+crossorigin="anonymous"; de hash komt uit het lokale npm-pakket (THREE_DIR of ~/.cache/explosietekening/three-<versie>/package,
+zie tools/harness.py --ensure-three). Ontbreekt dat, dan stopt de bouw. De app zelf blijft één klassiek script: het staat inert in
+<script type="text/plain" id="model-js"> en een kleine bootstrapmodule voegt het in nadat three geladen is. Zo blijven de globale
+namen (const, let en function op het hoogste niveau) bereikbaar voor de tests, net als bij een gewoon inline script.
 """
 import os, re, sys, json, shutil, subprocess, tempfile, hashlib, base64
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, 'src')
 ORDER = ['core.js', 'body.js', 'bodyparts.js', 'panorama.js', 'engine1.js', 'engine2.js', 'engine3.js', 'drivetrain.js', 'chassis.js', 'interior.js', 'systems.js', 'partnumbers.js', 'app1.js', 'presetdata.js', 'presets.js', 'app2-panel.js', 'app2-controls.js', 'app2-labels.js', 'app2-input.js', 'app2-loop.js']
-LIBS = ['build/three.min.js', 'examples/js/controls/OrbitControls.js', 'examples/js/environments/RoomEnvironment.js', 'examples/js/geometries/RoundedBoxGeometry.js', 'examples/js/utils/BufferGeometryUtils.js']
-THREE_VERSION = '0.147.0'  # r147: de laatste three.js met de niet-module examples/js (OrbitControls enz.)
+# de zes bestanden van three.js die de pagina laadt: three.module.js importeert three.core.js relatief, de andere vier zijn de addons
+LIBS = ['build/three.module.js', 'build/three.core.js', 'examples/jsm/controls/OrbitControls.js', 'examples/jsm/environments/RoomEnvironment.js',
+        'examples/jsm/geometries/RoundedBoxGeometry.js', 'examples/jsm/utils/BufferGeometryUtils.js']
+THREE_VERSION = '0.186.1'  # golf 6: three.js als ES-module (r147 was de laatste met de niet-module examples/js)
 CDN = f'https://cdn.jsdelivr.net/npm/three@{THREE_VERSION}/'
+# de vier addons die de bootstrap op window.THREE zet (naam op THREE: bestand in LIBS); BufferGeometryUtils is de hele module,
+# de andere drie zijn de gelijknamige klasse
+ADDONS = {'OrbitControls': 'examples/jsm/controls/OrbitControls.js', 'RoomEnvironment': 'examples/jsm/environments/RoomEnvironment.js',
+          'RoundedBoxGeometry': 'examples/jsm/geometries/RoundedBoxGeometry.js', 'BufferGeometryUtils': 'examples/jsm/utils/BufferGeometryUtils.js'}
+
+
+def _pkg_version(d):
+    """Versie uit package.json van een uitgepakt npm-pakket, of None."""
+    try:
+        with open(os.path.join(d, 'package.json'), encoding='utf-8') as f:
+            return json.load(f).get('version')
+    except (OSError, ValueError):
+        return None
 
 
 def three_dir():
     """Map met het uitgepakte npm-pakket three@THREE_VERSION (dezelfde padlogica als tools/harness.py: THREE_DIR, anders de
     cache van `python3 tools/harness.py --ensure-three`)."""
     d = os.environ.get('THREE_DIR')
-    if d and os.path.isfile(os.path.join(d, 'build', 'three.min.js')):
+    if d and _pkg_version(d) == THREE_VERSION:   # een THREE_DIR van een andere versie (r147 heeft ook three.module.js) telt niet
         return d
     return os.path.expanduser(f'~/.cache/explosietekening/three-{THREE_VERSION}/package')
 
@@ -361,32 +384,149 @@ def lint(sources, prefixes=None):
     return errors
 
 
+def _node_check(node, code, suffix, label):
+    """node --check op één stuk code; geeft de foutmelding of None. Met suffix .mjs leest node het als module."""
+    with tempfile.NamedTemporaryFile('w', suffix=suffix, delete=False, encoding='utf-8') as f:
+        f.write(code)
+        tmp = f.name
+    try:
+        r = subprocess.run([node, '--check', tmp], capture_output=True, text=True)
+        return None if r.returncode == 0 else (r.stderr or r.stdout).strip().replace(tmp, label)
+    finally:
+        os.unlink(tmp)
+
+
+# scripttypen die geen JavaScript zijn: de importmap, het gegevensblok #pn en het inerte script #model-js
+_NOT_JS = re.compile(r'\btype\s*=\s*["\']?(?:importmap|application/json|text/plain)\b', re.I)
+_MODULE = re.compile(r'\btype\s*=\s*["\']?module\b', re.I)
+
+
 def lint_head(head):
     """Inline scripts in head.html (zoals de foutafhandeling vóór de scripttags) vallen buiten het samengevoegde script;
-    ze gaan apart door node --check."""
+    ze gaan apart door node --check (een module als .mjs; importmap, JSON en text/plain niet). Ook de bootstrapmodule en het
+    nomodule-script die page() erbij zet."""
     errors = []
     node = shutil.which('node')
     if not node:
         return errors
-    for i, sc in enumerate(re.findall(r'<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>', head, re.S), 1):
-        with tempfile.NamedTemporaryFile('w', suffix='.js', delete=False, encoding='utf-8') as f:
-            f.write(sc)
-            tmp = f.name
-        try:
-            r = subprocess.run([node, '--check', tmp], capture_output=True, text=True)
-            if r.returncode != 0:
-                errors.append(f'syntaxfout in inline script {i} van head.html:\n' + (r.stderr or r.stdout).strip().replace(tmp, 'head-inline.js'))
-        finally:
-            os.unlink(tmp)
+    for i, m in enumerate(re.finditer(r'<script(?![^>]*\bsrc=)([^>]*)>(.*?)</script>', head, re.S), 1):
+        if _NOT_JS.search(m.group(1)):
+            continue
+        ext = 'mjs' if _MODULE.search(m.group(1)) else 'js'
+        err = _node_check(node, m.group(2), '.' + ext, 'head-inline.' + ext)
+        if err:
+            errors.append(f'syntaxfout in inline script {i} van head.html:\n' + err)
+    for code, label in ((BOOT, 'bootstrap.mjs'), (NOMODULE, 'nomodule.js')):
+        err = _node_check(node, code, label[label.index('.'):], label)
+        if err:
+            errors.append(f'syntaxfout in {label} (build.py):\n' + err)
     return errors
 
 
+# ---------------------------------------------------------------------------------------------------------------------
+# Controles van de three.js-laag (golf 6). Generiek: geen autonaam, alleen three.js-API en de laadketen.
+#   R8 (fout)  elke THREE.X in src/*.js (behalve partnumbers.js) is een export van three.module.js of three.core.js of een van de
+#              vier addons; bij THREE.BufferGeometryUtils.Y ook Y. Statisch uit het lokale pakket: een naam die three heeft
+#              verwijderd of hernoemd, is anders pas in de browser een stille undefined.
+#   R9 (fout)  geen API die na r147 is verdwenen of zijn betekenis verloor (letterlijke tekst in de bron, ook in commentaar)
+#   R10 (fout) externe adressen van scripts, modulepreload en importmap alleen op CDN (exacte versie)
+# ---------------------------------------------------------------------------------------------------------------------
+_R9 = [(re.compile(p), uitleg) for p, uitleg in (
+    (r'\bsRGBEncoding\b', 'sRGBEncoding: gebruik colorSpace = THREE.SRGBColorSpace'),
+    (r'\bLinearEncoding\b', 'LinearEncoding: gebruik colorSpace = THREE.LinearSRGBColorSpace of NoColorSpace'),
+    (r'\boutputEncoding\b', 'outputEncoding: gebruik outputColorSpace'),
+    (r'\.encoding\s*=\s*THREE\.', '.encoding = THREE.: gebruik .colorSpace'),
+    (r'\blegacyMode\b', 'ColorManagement.legacyMode: gebruik ColorManagement.enabled'),
+    (r'\bmergeBufferGeometries\b', 'mergeBufferGeometries: heet nu mergeGeometries'),
+    (r'\bmergeBufferAttributes\b', 'mergeBufferAttributes: heet nu mergeAttributes'),
+    (r'\buseLegacyLights\b', 'useLegacyLights: bestaat niet meer (lichten zijn fysisch, zie de PI-schaal in core.js)'),
+    (r'\bphysicallyCorrectLights\b', 'physicallyCorrectLights: bestaat niet meer'),
+    (r'examples/js/', 'examples/js/: de niet-module addons bestaan niet meer, gebruik examples/jsm/'),
+)]
+_EXPORT = re.compile(r'export\s*\{([^}]*)\}')
+
+
+def _exports(path):
+    """Namen die een ES-module met `export { ... }` (ook `export { ... } from`) uitvoert."""
+    with open(path, encoding='utf-8') as f:
+        text = f.read()
+    out = set()
+    for m in _EXPORT.finditer(text):
+        for x in m.group(1).split(','):
+            x = x.strip().split(' as ')[-1].strip()
+            if x:
+                out.add(x)
+    return out
+
+
+def lint_three(sources):
+    """R8 en R9 over de bronbestanden [(naam, tekst)]; geeft de fouten. Zonder lokaal pakket stopt de bouw (zoals integrity())."""
+    errors = []
+    paths = [os.path.join(three_dir(), l) for l in ('build/three.module.js', 'build/three.core.js', ADDONS['BufferGeometryUtils'])]
+    for path in paths:
+        if not os.path.isfile(path):
+            raise SystemExit(f'three.js-bestand {path} ontbreekt voor de symboolcontrole (R8); haal het pakket op met: python3 tools/harness.py --ensure-three')
+    core = _exports(paths[0]) | _exports(paths[1])
+    bgu = _exports(paths[2])
+    for name, text in sources:
+        if name in TEXT_SKIP:
+            continue
+        seen = set()
+        for m in re.finditer(r'\bTHREE\.([A-Za-z_$][\w$]*)(?:\.([A-Za-z_$][\w$]*))?', text):
+            x, y = m.group(1), m.group(2)
+            if x == 'BufferGeometryUtils' and y and y not in bgu:
+                sym = f'{x}.{y}'
+            elif x not in core and x not in ADDONS:
+                sym = x
+            else:
+                continue
+            if sym not in seen:
+                seen.add(sym)
+                errors.append(f'{name}:{text.count(chr(10), 0, m.start()) + 1}: THREE.{sym} bestaat niet in three@{THREE_VERSION} (R8)')
+        for rx, uitleg in _R9:
+            for m in rx.finditer(text):
+                errors.append(f'{name}:{text.count(chr(10), 0, m.start()) + 1}: verdwenen API na r147, {uitleg} (R9)')
+    return errors
+
+
+_IMPORTS = re.compile(r"""(?:\bimport\s*\(\s*|\bfrom\s*|\bimport\s+)["']([^"']+)["']""")
+
+
+def lint_urls(html):
+    """R10: de adressen van scripts (src), modulepreload (href), de importmap (imports, scopes, integrity) en de imports van
+    modulescripts. Een extern adres (met schema of //) moet met CDN beginnen; relatieve adressen (testmap ./three/) en de kale
+    namen uit de importmap (three, three/addons/...) mogen. Geeft de fouten."""
+    urls = []
+    for m in re.finditer(r'<script\b([^>]*)>(.*?)</script>', html, re.S | re.I):
+        attrs, body = m.group(1), m.group(2)
+        src = re.search(r'\bsrc\s*=\s*["\']([^"\']*)', attrs, re.I)
+        if src:
+            urls.append(('script src', src.group(1)))
+        if re.search(r'\btype\s*=\s*["\']?importmap\b', attrs, re.I):
+            try:
+                im = json.loads(body)
+            except ValueError as e:
+                return [f'importmap is geen geldige JSON: {e} (R10)']
+            urls += [('importmap imports', v) for v in im.get('imports', {}).values()]
+            for sc_url, sc in im.get('scopes', {}).items():
+                urls += [('importmap scopes', sc_url)] + [('importmap scopes', v) for v in sc.values()]
+            urls += [('importmap integrity', k) for k in im.get('integrity', {})]
+        elif _MODULE.search(attrs):
+            urls += [('module import', u) for u in _IMPORTS.findall(body)]
+    for m in re.finditer(r'<link\b([^>]*)>', html, re.I):
+        if re.search(r'\brel\s*=\s*["\']?modulepreload\b', m.group(1), re.I):
+            href = re.search(r'\bhref\s*=\s*["\']([^"\']*)', m.group(1), re.I)
+            urls.append(('modulepreload', href.group(1) if href else ''))
+    return [f'extern adres buiten {CDN} in {kind}: {u} (R10)' for kind, u in urls
+            if re.match(r'(?:[a-z][a-z0-9+.-]*:|//)', u, re.I) and not u.startswith(CDN)]
+
+
 def version(head, js, test=False):
-    """Versiestempel: het nummer uit VERSION plus een inhoudshash (7 tekens) van head.html en het samengevoegde script,
-    zodat de pagina zelf zegt uit welke bron hij komt. Niet uit HEAD: de commit die index.html bevat bestaat bij het bouwen nog niet."""
+    """Versiestempel: het nummer uit VERSION plus een inhoudshash (7 tekens) van THREE_VERSION, head.html en het samengevoegde
+    script, zodat de pagina zelf zegt uit welke bron hij komt. Niet uit HEAD: de commit die index.html bevat bestaat bij het bouwen nog niet."""
     with open(os.path.join(HERE, 'VERSION'), encoding='utf-8') as f:
         num = f.read().strip()
-    h = hashlib.sha256((head + '\n' + js).encode('utf-8')).hexdigest()[:7]
+    h = hashlib.sha256((THREE_VERSION + '\n' + head + '\n' + js).encode('utf-8')).hexdigest()[:7]  # golf 6: ook de three-versie
     return f'{num} (bron {h}{", testversie" if test else ""})'
 
 
@@ -435,14 +575,63 @@ def pn_split(js):
     return js[:m.start()] + 'const PN_DATA = uiPnLazy();' + js[m.end():], f'<script type="application/json" id="pn">{data}</script>\n'
 
 
+# Bootstrap (golf 6, variant A): laadt three en de vier addons via de importmap, zet window.THREE als gewoon object (niet
+# bevroren, zoals de UMD-global van r147) en voegt daarna altijd het klassieke script uit #model-js in. Lukt three niet, dan draait
+# de app toch: core.js ziet dat THREE ontbreekt en toont de melding (oud: de browser kent geen importmap). Een ingevoegd klassiek
+# script deelt de globale lexicale scope met de rest van de pagina, dus de tests lezen camera, renderer, SPREAD enz. zoals altijd.
+BOOT = """Promise.all([import('three'), import('three/addons/controls/OrbitControls.js'), import('three/addons/environments/RoomEnvironment.js'),
+  import('three/addons/geometries/RoundedBoxGeometry.js'), import('three/addons/utils/BufferGeometryUtils.js')])
+  .then(([T, oc, re, rb, bu]) => { window.THREE = Object.assign({}, T, { OrbitControls: oc.OrbitControls, RoomEnvironment: re.RoomEnvironment, RoundedBoxGeometry: rb.RoundedBoxGeometry, BufferGeometryUtils: bu }); },
+    e => { window.__modelThreeFout = { message: String(e && e.message || e), oud: !(HTMLScriptElement.supports && HTMLScriptElement.supports('importmap')) }; })
+  .then(() => { const s = document.createElement('script'); s.textContent = document.getElementById('model-js').textContent; document.body.appendChild(s); });"""
+# browser zonder JavaScript-modules: de bootstrap draait niet en "Model opbouwen…" bleef anders staan (ES5, geen pijlfuncties)
+NOMODULE = "var l = document.getElementById('loading'); if (l) l.textContent = 'Deze browser is te oud voor de 3D-bibliotheek (geen JavaScript-modules). Gebruik een recente versie van Chrome, Edge, Firefox of Safari.';"
+
+
+def script_safe(js):
+    """Het samengevoegde script staat letterlijk in <script type="text/plain">: de HTML-parser sluit dat blok bij de eerste
+    </script, ook in een string of commentaar. Daarom wordt elke </script (hoofdletters of niet) <\\/script; in een string,
+    sjabloon, reguliere expressie of commentaar betekent dat hetzelfde. <!-- kan de parser in een andere toestand zetten en is in
+    het script nooit nodig: dan stopt de bouw."""
+    if '<!--' in js:
+        raise SystemExit('BOUW GESTOPT: het samengevoegde script bevat "<!--"; schrijf het anders (bijvoorbeeld \'<\' + \'!--\')')
+    return re.sub(r'</(?=script)', r'<\\/', js, flags=re.I)
+
+
+def importmap(prefix):
+    """De importmap: kale namen three en three/addons/ naar prefix, en integrity (sha384) voor de zes bestanden. Waarden en
+    sleutels moeten URL-achtig zijn (https://... of ./three/...): een sleutel als three/build/... negeert de browser met een waarschuwing."""
+    return json.dumps({'imports': {'three': prefix + 'build/three.module.js', 'three/addons/': prefix + 'examples/jsm/'},
+                       'integrity': {prefix + l: integrity(l) for l in LIBS}})
+
+
 def page(head, js, prefix, test=False):
+    """De pagina zonder documentgeraamte. prefix: CDN, of ./three/ voor de testmap. Volgorde (golf 6): head.html, de importmap
+    (vóór elke modulepreload en module), zes modulepreloads met integrity (ook voor browsers die integrity in een importmap
+    negeren), #pn, het inerte script #model-js, de bootstrapmodule en het nomodule-script."""
     a = auto()
     head = fill(head, a)
     js = 'const AUTO = Object.freeze(' + json.dumps({k: v for k, v in a.items() if not k.startswith('_')}, ensure_ascii=False) + ');\n' + js
-    tags = '\n'.join(f'<script src="{prefix}{l}" integrity="{integrity(l)}" crossorigin="anonymous"></script>' for l in LIBS)
     head = head.replace('__MODEL_VERSION__', version(head, js, test))  # de hash dekt ook de gegevens (vóór het splitsen)
     js, pn = pn_split(js)
-    return f"{head}\n{tags}\n{pn}<script>\n{js}\n</script>\n"
+    pre = '\n'.join(f'<link rel="modulepreload" href="{prefix}{l}" integrity="{integrity(l)}" crossorigin="anonymous">' for l in LIBS)
+    return (f'{head}\n<script type="importmap">{importmap(prefix)}</script>\n{pre}\n{pn}'
+            f'<script type="text/plain" id="model-js">\n{script_safe(js)}\n</script>\n'
+            f'<script type="module">\n{BOOT}\n</script>\n<script nomodule>{NOMODULE}</script>\n')
+
+
+def copy_three(test_dir):
+    """Zet de zes bestanden van LIBS onder test_dir/three/ (zelfde relatieve paden), tenzij test_dir/three al bestaat (de
+    harness legt daar een symlink naar het hele pakket; daarin wordt nooit geschreven)."""
+    dst = os.path.join(test_dir, 'three')
+    if os.path.lexists(dst):
+        return
+    for l in LIBS:
+        src = os.path.join(three_dir(), l)
+        if not os.path.isfile(src):
+            raise SystemExit(f'three.js-bestand {src} ontbreekt voor de testmap; haal het pakket op met: python3 tools/harness.py --ensure-three')
+        os.makedirs(os.path.dirname(os.path.join(dst, l)), exist_ok=True)
+        shutil.copyfile(src, os.path.join(dst, l))
 
 
 def main(argv):
@@ -458,7 +647,11 @@ def main(argv):
         argv = argv[:i] + argv[i + 2:]
     args = [a for a in argv if not a.startswith('--')]
     sources = [(f, read(f)) for f in ORDER]
-    errors = lint(sources, auto().get('_voorvoegsels')) + lint_head(read('head.html'))
+    head = read('head.html')
+    js = '\n'.join(text for _, text in sources)
+    errors = lint(sources, auto().get('_voorvoegsels')) + lint_head(head) + lint_three(sources + [('head.html', head)])
+    if not errors:
+        errors = lint_urls(page(head, js, CDN))   # R10 op de echte pagina, ook bij --lint (de testpagina is relatief)
     if errors:
         print('BOUW GESTOPT:', file=sys.stderr)
         for e in errors:
@@ -467,8 +660,6 @@ def main(argv):
     if lint_only:
         print('lint ok')
         return 0
-    head = read('head.html')
-    js = '\n'.join(text for _, text in sources)
     out = os.path.join(HERE, 'index.html')
     if test_only and not args:
         print('--test-only vraagt een map', file=sys.stderr)
@@ -482,9 +673,10 @@ def main(argv):
     if args:
         test_dir = args[0]
         os.makedirs(test_dir, exist_ok=True)
-        body = page(head, js, 'three/', test=True)
+        body = page(head, js, './three/', test=True)   # ./ verplicht: three/... is in een importmap geen URL-achtig adres
         with open(os.path.join(test_dir, 'index.html'), 'w', encoding='utf-8') as f:
             f.write(DOC_HEAD + body + DOC_TAIL)
+        copy_three(test_dir)
     print('ok', 'testversie' if test_only else f'{os.path.getsize(out)} bytes')
     return 0
 
