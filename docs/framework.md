@@ -187,19 +187,19 @@ Bij de export naar een auto zonder het veld verandert er voor de gebruiker niets
 
 ## Wat golf 6 aan de generieke laag toevoegde
 
-three.js is van r147 (UMD `three.min.js` plus `examples/js`) naar 0.186.1 als ES-module van jsDelivr (versie 21). Dit raakt de generieke laag; de export naar espace5 volgt in een eigen golf.
+three.js is van r147 (UMD `three.min.js` plus `examples/js`) naar 0.186.1 als ES-module van jsDelivr (versie 21). Dit raakt de generieke laag. De export naar espace5 is gedaan in golf 7 (22 oktober 2026, tak `golf-6-e5` van espace5, uit laguna3 `fef25dc`).
 
 - Laadketen (`build.py`: `BOOT`, `NOMODULE`, `LIBS`, `CDN`, `THREE_VERSION`): één importmap met `integrity` (sha384) voor zes bestanden (`build/three.module.js`, `build/three.core.js`, OrbitControls, RoomEnvironment, RoundedBoxGeometry, BufferGeometryUtils), zes modulepreloads met dezelfde `integrity` en `crossorigin="anonymous"`, en een bootstrapmodule die `window.THREE` vult en daarna het klassieke app-script uit `<script type="text/plain" id="model-js">` invoegt. Het blijft één klassiek script, dus alle globale namen van het testcontract blijven bestaan. Een `<script nomodule>` toont een melding in browsers zonder importmap; WebGL2 is verplicht.
 - Bouwcontroles in `build.py --lint`: R8 (elke `THREE.X` in de bron bestaat in 0.186.1), R9 (verdwenen r147-API zoals `sRGBEncoding`, `outputEncoding`, `mergeBufferGeometries` en `examples/js`; ook `forceSinglePass` wordt bewaakt, want de glaspatches leunen erop) en R10 (externe adressen alleen `https://cdn.jsdelivr.net/npm/three@0.186.1/`).
 - `src/core.js`: kleurbeheer is expliciet (`outputColorSpace`), `mergeGeometries` vervangt `mergeBufferGeometries`, en een envMap-haak zet onze omgevingskaart op elk `MeshStandardMaterial` vóór het tekenen (sinds r163 telt `envMapIntensity` alleen bij een `material.envMap`). Hemel-, zon- en randlicht zijn met PI geschaald (r155 schrapte de legacy-lichten), het cabinelicht heeft `decay` 0,55 en sterkte maal 1,56 (gefit op de r147-curve), en RoomEnvironment staat op de kamerhoogte van r147 (`room.position.y = 0`; r183 zette de kamer 3,5 lager).
-- Domeinbestanden: `colorSpace` in plaats van `encoding` (`app1.js`, `chassis.js`, `engine3.js`, `interior.js`) en `mergeGeometries` in `chassis.js`. Een auto die exporteert zet deze omzetting ook in haar eigen bestanden, anders stopt R8 of R9 de bouw.
+- Domeinbestanden: `colorSpace` in plaats van `encoding` (`app1.js`, `chassis.js`, `engine3.js`, `interior.js`) en `mergeGeometries` in `chassis.js`; in espace5 was alleen `app1.js` nodig, en dat bestand komt met de export mee. Een auto die exporteert zet deze omzetting ook in haar eigen bestanden, anders stopt R8 of R9 de bouw.
 - Testlaag: `harness.py` gebruikt de cache `three-0.186.1` en negeert een `THREE_DIR` van een andere versie; `pubsmoke.py` toetst REVISION 186, importmap en modulepreload in beide kanalen en gelijke CDN-bytes; itest 18 controleert importmap, modulepreload en sha384 (R5), de envMap op elk getekend `MeshStandardMaterial` in gewone stand, Röntgen, kleuren per systeem en na contextherstel (R6), en dat een gewijzigde byte in `three.core.js` niet laadt (R7).
 - `THREE.BatchedMesh` vervangt niets: de eigen bundelcode (`uiBatchSync`) blijft.
-- espace5: het nieuwe framework komt pas via `framework.py export` in een eigen golf. De generieke `build.py` met R8 en R9 vraagt dan ook de omzetting van de domeinbestanden van espace5.
+- espace5: het nieuwe framework kwam in golf 7 via `framework.py export`. De autobestanden van espace5 hadden geen `encoding` of `mergeBufferGeometries`; de r186-controles van itest 18 (R1b, R5 tot R7) zijn daar overgenomen in de itest van espace5.
 
 ## espace5 naar het framework
 
-Stand van 16 oktober: alle generieke bestanden wijken af of ontbreken, omdat espace5 op versie 6 is blijven staan. De overstap, in de sessie die aan espace5 werkt (niet vanuit hier, om haar werk niet te kruisen):
+Historisch, stand van 16 oktober: alle generieke bestanden wijken af of ontbreken, omdat espace5 op versie 6 is blijven staan. De overstap, in de sessie die aan espace5 werkt (niet vanuit hier, om haar werk niet te kruisen):
 
 1. `auto.json` maken met de teksten die nu in `head.html`, `app2.js` en `presets.js` van espace5 staan, `hook: "__espace"`.
 2. De presetlijst uit `presets.js` naar `src/presetdata.js`; `appCar` wordt `AUTO.wortel`.
