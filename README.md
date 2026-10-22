@@ -8,7 +8,7 @@ Stand van 21 oktober 2026: versie 20 (golf 5n, het model naar de foto's van de e
 
 ## Openen
 
-Open `index.html` in een moderne browser. Het bestand laadt three.js r147 van jsDelivr en lettertypes van Google Fonts. Verder is alles ingebouwd. Het werkt op desktop en telefoon, in licht en donker thema (het thema volgt het systeem).
+Open `index.html` in een moderne browser. Het bestand laadt three.js 0.186.1 (ES-module) van jsDelivr en lettertypes van Google Fonts. Verder is alles ingebouwd. Het werkt op desktop en telefoon, in licht en donker thema (het thema volgt het systeem). Een browser zonder importmap (Safari en iOS onder 16.4, Chrome onder 89, Firefox onder 108) of zonder WebGL2 krijgt een melding in plaats van de pagina.
 
 De adresbalk is een deelbare link: `?preset=engine` opent de preset Motor F4Rt, `?open=Motorkap,Achterklep` opent die delen in de modus Openen, en de pagina houdt de link bij terwijl je klikt. `?debug=1` toont een overlay met tekensnelheid, tekenopdrachten en versie, voor een melding vanaf een echte telefoon (zie [docs/telefoontest.md](docs/telefoontest.md)). De versie staat ook in het hulpvenster (`?`).
 
@@ -213,7 +213,7 @@ python3 build.py --lint          # controleert alleen (dubbele namen, syntaxis, 
 python3 build.py --test-only MAP # alleen de testversie, laat index.html ongemoeid
 ```
 
-De tests gebruiken three.js 0.147.0 uit een lokaal npm-pakket en een Chromium met software-rendering. Een verse omgeving maak je klaar met `tools/setup.sh` (Playwright uit `requirements.txt`, three.js met hashcontrole). De korte route:
+De tests gebruiken three.js 0.186.1 uit een lokaal npm-pakket en een Chromium met software-rendering. Een verse omgeving maak je klaar met `tools/setup.sh` (Playwright uit `requirements.txt`, three.js met hashcontrole). De korte route:
 
 ```bash
 python3 tools/smoke.py        # laden, aantallen, console

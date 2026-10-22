@@ -1,13 +1,14 @@
 # laguna3: afspraken voor wie hier bouwt
 
-Interactieve 3D-explosietekening van een Renault Laguna III (2011, F4Rt, automaat AJ0) in three.js r147. Alle geometrie
+Interactieve 3D-explosietekening van een Renault Laguna III (2011, F4Rt, automaat AJ0) in three.js 0.186.1 (ES-module via een importmap
+van jsDelivr; de app zelf blijft één klassiek script). Alle geometrie
 staat in code; `build.py` plakt `src/head.html` en `src/*.js` (volgorde `ORDER`) tot één `index.html`. Nederlands is de
 taal van code-commentaar, beschrijvingen, docs en commits. Geen em-dashes in tekst.
 
 ## Bouwen en testen
 
-- `tools/setup.sh` maakt een verse omgeving klaar (Playwright uit `requirements.txt`, three.js 0.147.0 met hashcontrole).
-- `python3 build.py --lint` voor elke commit; `python3 build.py` herbouwt `index.html` (gecommit, hoort bij `src/`).
+- `tools/setup.sh` maakt een verse omgeving klaar (Playwright uit `requirements.txt`, three.js 0.186.1 met hashcontrole).
+- `python3 build.py --lint` voor elke commit (R8: elke `THREE.X` bestaat in 0.186.1; R9: geen verdwenen r147-API; R10: externe adressen alleen `https://cdn.jsdelivr.net/npm/three@0.186.1/`); `python3 build.py` herbouwt `index.html` (gecommit, hoort bij `src/`).
 - Volledige set: `tools/orkestratie/finaltests.sh UITMAP` (strikt, één exitcode, tijd per test). Losse scripts in `tools/`.
 - Linux-tests en de visdiff-basislijn: `tools/lag3-vm.sh test [--repo PAD]` draait de set in een tijdelijke container op image `lag3-vm:1` (Apple container, 8 CPU's, verdwijnt na de run; ook voor worktrees en espace5). Instellingen in `docs/testen.md`, sectie Linux-VM.
 - Budgetten (driehoeken per hoofdgroep) staan in `tools/anchors.json`; `tools/tri.py --gate` bewaakt ze.

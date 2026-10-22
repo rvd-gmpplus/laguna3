@@ -448,12 +448,29 @@ Poort: `pncheck` groen (reproduceerbaar, bronnen per nummer niet gedaald); dekki
 | F3 | Multiriem (1.569 mm tegen 1.795 mm): alleen met de riemloop uit MR 415; de dynamo 0,11 m hoger komt boven het kapprofiel. Anders blijft de eerlijke beschrijving staan. Stand: de lengte (7PK, 1.790 tot 1.795 mm) en de verbruikers (dynamo, aircocompressor, stuurpomp) zijn bevestigd door de catalogus (vervolgronde 5g); het verloop staat alleen in figuur 124137 van MR 415 en is niet gevonden; de beschrijving blijft. | audit |
 | F4 | De uitklapanimatie zelf beoordelen: `DUR` 0,85 s (`app1.js:77`) en staffels van 0,22 s; één vóór/na-opname als GIF naast versie 1 (te traag bij diep duiken, te snel bij kleine groepen). Stand: gedaan als meting; de staffel is begrensd (`CFG.tijd.staffelMaxS`, `allesStaffelMaxS`), de GIF vervalt. | ontbrak |
 
-## Golf 6 (strategisch, alleen bij een concrete aanleiding)
+## Golf 6: three.js 0.186.1 als ES-module en zijroosters (UITGEVOERD; versie 21 in publicatie)
+
+Besloten op 21 oktober 2026 (zie `docs/onderzoek/beslissingen.md`, rij Golf 6). Oorspronkelijk stond hier "three.js blijft op r147" als standaard; dat is vervallen.
+
+Gedaan:
+- **Laadketen**: three@0.186.1 als ES-module van jsDelivr met één importmap (sha384) voor zes bestanden, zes modulepreloads, een bootstrapmodule die `window.THREE` vult en het klassieke app-script invoegt (één klassiek script, dus de globale namen van het testcontract blijven), en een `<script nomodule>`-melding. Oude browsers zonder importmap (Safari en iOS onder 16.4, Chrome onder 89, Firefox onder 108) krijgen een melding; WebGL2 is verplicht. Uitleg: `docs/framework.md`, "Wat golf 6 aan de generieke laag toevoegde".
+- **Bouwcontroles** in `build.py --lint`: R8 (elke `THREE.X` bestaat in 0.186.1), R9 (verdwenen r147-API, plus bewaking van `forceSinglePass`), R10 (externe adressen alleen van de vaste jsDelivr-map).
+- **Kleur en licht** in `core.js`: expliciet kleurbeheer, `mergeGeometries`, envMap-haak, PI-schaal op de lichten, cabinelicht aangepast aan de r147-curve, RoomEnvironment op de kamerhoogte van r147. Domeinbestanden: `colorSpace` in plaats van `encoding`.
+- **Beeld**: na kalibratie mediane ΔE76 1,22 tegen r147 over 42 presets (VM), hoogste preset 2,37; luminantie mediaan 1,003. Het advisor-oordeel (A2) over gelijkwaardigheid: zie CHANGELOG.
+- **Driehoeken**: 604 minder, omdat de earcut van r186 ontaarde driehoeken weglaat (oppervlak gelijk tot 1e-4, velgster 0,19 procent). Actuele aantallen: `docs/cijfers.md`.
+- **Testlaag**: harness met de cache `three-0.186.1`, pubsmoke (REVISION 186, importmap en modulepreload in beide kanalen, gelijke CDN-bytes), itest 18 met R5 tot en met R7 (importmap en sha384; envMap op elk getekend `MeshStandardMaterial`, ook na contextherstel; een gewijzigde byte in `three.core.js` laadt niet).
+- **Interieur (zijroosters)**: de roosterbovenkant ging van 905,8 naar 1030,9 mm (klokrand 1031,2), het dashboard is daar mee verhoogd en loopt naar de portier af, de eindkap is mee verhoogd en het bestuurdersrooster staat 17 mm dichter bij de instrumentenkap. Het verschil was 125 mm, niet de geschatte 5 tot 8 cm. Daarmee is het open punt van golf 5n opgelost.
+- `BatchedMesh` vervangt niets: de eigen bundelcode blijft.
+
+Open:
+- **Rechterbuitenspiegel** (besluit van de gebruiker op 22 oktober 2026, "Accepteren"): door de verhoging is de spiegel vanuit de bestuurdersstoel niet meer te zien (eerst 129 van 140 stralen vrij, nu 5). Oorzaak in de carrosserie: in het model staat de spiegel vóór de A-stijl (door de voorruit), op de foto erachter (door de portierruit). Spiegel en A-stijl gaan als open punt naar het carrosseriedomein (spiegel 5 tot 10 cm naar achteren). Zie `docs/onderzoek/beslissingen.md`, rij Rechterbuitenspiegel.
+- Advisor interieur, kan: de wang van de instrumentenkap bovenaan circa 20 mm naar buiten (foto: evenwijdig aan de schuine roosterrand); een kleine schuine vouw in de uitloop.
+- espace5 krijgt het nieuwe framework via `framework.py export` in een eigen golf; de generieke `build.py` met R8 en R9 vraagt dan ook de omzetting van haar domeinbestanden.
+
+Nog strategisch, alleen bij een concrete aanleiding:
 
 | Keuze | Wanneer | Wat |
 |---|---|---|
-| three.js blijft op r147 | standaard | Geen werk. r147 is de laatste versie met `examples/js`. Risico: geen beveiligings- of browserfixes meer. |
-| Migratie naar ES-modules en een actuele three.js (0.186) | besloten op 21 oktober 2026: three.js 0.186.1 als versie 21, na versie 20 en espace5 (zie `docs/onderzoek/beslissingen.md`, rij Golf 6). Oorspronkelijk: als er een functie nodig is die r147 mist | Aanleidingen: `THREE.BatchedMesh` (r159+) kan de eigen bundelcode in `app1.js:699-857` vervangen; `transmission` voor echt glas; WebGPU als terugval. Spike van een dag in een worktree: `build.py` bouwt een `<script type="module">` met een importmap naar jsDelivr-ESM, de bron blijft één naamruimte via een wrapper; `pubsmoke.py` en de CDN-controle mee. Doorzetten alleen als de spike de volledige itest haalt. |
 | Een tweede bestand naast de pagina | als de pagina echt kleiner moet | Nummergegevens als los JSON op Pages laden scheelt 565 kB, maar breekt "dezelfde bytes" op het artefact: een beslispunt over het aantal kanalen, geen techniekvraag. |
 | Offline | na R5 | Service worker die three.js en de lettertypes cachet. |
 | Engelse versie | na K6 | Alleen de teksttabel en de presetnotities; de 1.600 Nederlandse beschrijvingen blijven Nederlands tot er vraag naar is. |
@@ -807,7 +824,7 @@ T4 naar 1,8 MB raw en 490 kB gzip (besluit van de gebruiker); de paginagrootte v
 Rondes (21 oktober): twee rondes, daarna reparatieronde 1 (advisor) en reparatieronde 2 (fotopunten). De strikte set op de eindstand, het advisor-oordeel en de zwaaimeting staan er nog niet bij: die volgen met de publicatie van versie 20.
 
 Open voor later:
-- zijrooster 5 tot 8 cm lager dan op de foto (bovenkant tot de onderrand van de klokken, op de foto tot de bovenrand), en de bestuurderszijde staat verder van de instrumentenkap dan op de foto; besluit: goed maken in golf 6 (versie 21), met het dashboard daar mee verhoogd (`docs/onderzoek/beslissingen.md`, rij Zijroosters dashboard);
+- ~~zijrooster 5 tot 8 cm lager dan op de foto, en de bestuurderszijde staat verder van de instrumentenkap dan op de foto~~: opgelost in golf 6 (versie 21): het verschil bleek 125 mm, het rooster zit nu tot de bovenrand van de klokken, het dashboard is daar mee verhoogd en het bestuurdersrooster staat 17 mm dichterbij (`docs/onderzoek/beslissingen.md`, rij Zijroosters dashboard);
 - remschijf licht (gedeeld materiaal in `core.js`, dus via de orkestrator);
 - spleet in de carrosserie tussen voorruitglas en voorruitrubber (x 0,63 tot 0,66);
 - de rand van de achterklepbekleding rond de onderhoeken van de achterruit zwaait 13 tot 23 mm door de sponning, in een stand die de opentest als contact in dichte stand negeert;

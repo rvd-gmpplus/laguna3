@@ -10,7 +10,7 @@ Het framework maakt de scheiding hard: wat generiek is, is per auto byte voor by
 
 ## Hoe de modellering is opgezet
 
-1. **Alles in code, één pagina.** Geen modelbestanden: elk onderdeel is een stuk geometrie in JavaScript (three.js r147, de laatste versie met de klassieke `examples/js`). `build.py` plakt `src/` tot één `index.html`. Dat maakt elke maat controleerbaar in een diff en elke auto reproduceerbaar uit de bron.
+1. **Alles in code, één pagina.** Geen modelbestanden: elk onderdeel is een stuk geometrie in JavaScript (three.js 0.186.1 als ES-module; de app zelf is één klassiek script, zie "Wat golf 6 aan de generieke laag toevoegde"). `build.py` plakt `src/` tot één `index.html`. Dat maakt elke maat controleerbaar in een diff en elke auto reproduceerbaar uit de bron.
 2. **Een boom van knopen.** `A(naam, opties, kinderen)` voor een groep en `P(naam, geometrie, materiaal, opties)` voor een onderdeel, met verplicht `d` (Nederlandse beschrijving), `spec` alleen voor geverifieerde feiten, `ex` als uitklapvector, `inner` voor wat van buiten nooit te zien is, `open` voor wat opengaat, `hideWhen` voor wat uitgenomen wordt en `uitsteek` (meter) voor een deel dat bewust voor of achter de lengte ZF..ZR uitsteekt, zoals een trekhaak. De wortel heeft in elke auto dezelfde acht hoofdgroepen in dezelfde volgorde: Carrosserie, Interieur, Aandrijflijn, Onderstel, Koeling en luchtinlaat, Uitlaatsysteem, Brandstofsysteem, Elektrisch systeem. Details: [ontwerp-en-architectuur.md](ontwerp-en-architectuur.md), Knoop-API.
 3. **Vaste assenstelsels.** Het autoframe in meter: x naar links, y omhoog vanaf de grond, z naar voren, de auto in de lengte gecentreerd. Daarnaast een motorframe (oorsprong op de krukas-as) met vaste omrekeningen naar het autoframe. Elk domein rekent in deze frames en met de huidfuncties van de carrosserie (`HW`, `YB`, `YT`, `surfX`), niet met losse getallen.
 4. **Domeinen met eigenaars.** Eén bestand of groep bestanden per domein (carrosserie, motor, aandrijving, onderstel, interieur, systemen), elk met een eigen voorvoegsel voor functies, materialen en cachesleutels. Domeinen werken parallel in eigen worktrees en praten alleen via het contract.
@@ -184,6 +184,18 @@ In laguna3 (golf 5l, tak `golf-5l-app`) kwam een derde modus naast Uitklappen en
 - Testhaken: `setCockpit(id | null, direct)`, `cockpit()`, `lookAt(yaw, pitch)` en `cockpitSeats()`; `state().cockpit`.
 
 Bij de export naar een auto zonder het veld verandert er voor de gebruiker niets. Een auto die de cockpit wil, meet eerst de oogpunten met stralen en zet daarna `verberg` en `licht`.
+
+## Wat golf 6 aan de generieke laag toevoegde
+
+three.js is van r147 (UMD `three.min.js` plus `examples/js`) naar 0.186.1 als ES-module van jsDelivr (versie 21). Dit raakt de generieke laag; de export naar espace5 volgt in een eigen golf.
+
+- Laadketen (`build.py`: `BOOT`, `NOMODULE`, `LIBS`, `CDN`, `THREE_VERSION`): één importmap met `integrity` (sha384) voor zes bestanden (`build/three.module.js`, `build/three.core.js`, OrbitControls, RoomEnvironment, RoundedBoxGeometry, BufferGeometryUtils), zes modulepreloads met dezelfde `integrity` en `crossorigin="anonymous"`, en een bootstrapmodule die `window.THREE` vult en daarna het klassieke app-script uit `<script type="text/plain" id="model-js">` invoegt. Het blijft één klassiek script, dus alle globale namen van het testcontract blijven bestaan. Een `<script nomodule>` toont een melding in browsers zonder importmap; WebGL2 is verplicht.
+- Bouwcontroles in `build.py --lint`: R8 (elke `THREE.X` in de bron bestaat in 0.186.1), R9 (verdwenen r147-API zoals `sRGBEncoding`, `outputEncoding`, `mergeBufferGeometries` en `examples/js`; ook `forceSinglePass` wordt bewaakt, want de glaspatches leunen erop) en R10 (externe adressen alleen `https://cdn.jsdelivr.net/npm/three@0.186.1/`).
+- `src/core.js`: kleurbeheer is expliciet (`outputColorSpace`), `mergeGeometries` vervangt `mergeBufferGeometries`, en een envMap-haak zet onze omgevingskaart op elk `MeshStandardMaterial` vóór het tekenen (sinds r163 telt `envMapIntensity` alleen bij een `material.envMap`). Hemel-, zon- en randlicht zijn met PI geschaald (r155 schrapte de legacy-lichten), het cabinelicht heeft `decay` 0,55 en sterkte maal 1,56 (gefit op de r147-curve), en RoomEnvironment staat op de kamerhoogte van r147 (`room.position.y = 0`; r183 zette de kamer 3,5 lager).
+- Domeinbestanden: `colorSpace` in plaats van `encoding` (`app1.js`, `chassis.js`, `engine3.js`, `interior.js`) en `mergeGeometries` in `chassis.js`. Een auto die exporteert zet deze omzetting ook in haar eigen bestanden, anders stopt R8 of R9 de bouw.
+- Testlaag: `harness.py` gebruikt de cache `three-0.186.1` en negeert een `THREE_DIR` van een andere versie; `pubsmoke.py` toetst REVISION 186, importmap en modulepreload in beide kanalen en gelijke CDN-bytes; itest 18 controleert importmap, modulepreload en sha384 (R5), de envMap op elk getekend `MeshStandardMaterial` in gewone stand, Röntgen, kleuren per systeem en na contextherstel (R6), en dat een gewijzigde byte in `three.core.js` niet laadt (R7).
+- `THREE.BatchedMesh` vervangt niets: de eigen bundelcode (`uiBatchSync`) blijft.
+- espace5: het nieuwe framework komt pas via `framework.py export` in een eigen golf. De generieke `build.py` met R8 en R9 vraagt dan ook de omzetting van de domeinbestanden van espace5.
 
 ## espace5 naar het framework
 
