@@ -3,7 +3,10 @@
     python3 tools/framework.py check                 generieke bestanden bestaan en noemen deze auto niet (auto.json: verboden),
                                                      auto.json heeft elk veld dat head.html en de code vragen
     python3 tools/framework.py vergelijk DOEL        per generiek bestand: gelijk, afwijkend of ontbrekend in de repo DOEL
-    python3 tools/framework.py export DOEL [--droog] kopieert de generieke bestanden naar DOEL (raakt de autobestanden niet)
+    python3 tools/framework.py export DOEL [--droog] [--forceer]
+                                                     kopieert de generieke bestanden naar DOEL (raakt de autobestanden niet);
+                                                     eerst een proefexport in een tijdelijke kopie van DOEL met build.py --lint,
+                                                     en faalt die, dan weigert de export (slot; --forceer schrijft toch)
     python3 tools/framework.py nieuw DOEL --id ID --wortel "Merk Model" [--merk Merk]
                                                      zet een nieuwe auto op: generiek, sjablonen en een minimale beginauto die
                                                      bouwt en de rooktest haalt (DOEL moet leeg zijn of niet bestaan)
@@ -191,10 +194,39 @@ def compare(dst):
     return 1 if diff else 0
 
 
-def export(dst, dry):
+def proef(dst):
+    """Slot op de export: kopieer DOEL naar een tijdelijke map, zet daar de generieke bestanden over en draai build.py --lint.
+    Zo stopt een export die de bouw van DOEL breekt (bijvoorbeeld r147-API in autobestanden na golf 6) voordat er iets
+    geschreven is. THREE_DIR gaat niet mee, net als in de testen: build.py kiest dan zelf het pakket van zijn versie."""
+    import tempfile
+    with tempfile.TemporaryDirectory(prefix='fw-proef-') as tmp:
+        kop = os.path.join(tmp, 'doel')
+        shutil.copytree(dst, kop, ignore=shutil.ignore_patterns('.git', '.claude', '__pycache__', 'node_modules'))
+        for f in files('generiek'):
+            b = os.path.join(kop, f)
+            os.makedirs(os.path.dirname(b) or '.', exist_ok=True)
+            shutil.copy2(os.path.join(HERE, f), b)
+        env = {k: v for k, v in os.environ.items() if k != 'THREE_DIR'}
+        r = subprocess.run([sys.executable, 'build.py', '--lint'], cwd=kop, env=env, capture_output=True, text=True)
+        return r.returncode, (r.stdout + r.stderr).strip().splitlines()
+
+
+def export(dst, dry, forceer=False):
     if not os.path.exists(os.path.join(dst, 'auto.json')):
         print(f'{dst} heeft geen auto.json: maak die eerst (zie docs/framework.md, stap 2) of gebruik "nieuw"')
         return 1
+    code, uit = proef(dst)
+    if code:
+        print(f'proefexport: build.py --lint faalt in {dst} na de export (exit {code}):')
+        print('\n'.join('  ' + l for l in uit[-25:]))
+        if dry or not forceer:
+            print('export geweigerd: zet eerst de autobestanden van DOEL om (docs/framework.md, de sectie van de golf die de '
+                  'bouwcontroles invoerde) en exporteer dan opnieuw; --forceer schrijft toch, op een eigen tak' if not dry else
+                  'een echte export zou geweigerd worden (zonder --forceer)')
+            return 1
+        print('--forceer: de export gaat door; de bouw van DOEL faalt tot de autobestanden zijn omgezet')
+    else:
+        print('proefexport: build.py --lint ok in een kopie van DOEL')
     n = 0
     for f in files('generiek'):
         a, b = os.path.join(HERE, f), os.path.join(dst, f)
@@ -331,7 +363,7 @@ def main(argv):
     if cmd == 'vergelijk' and rest:
         return compare(os.path.abspath(rest[0]))
     if cmd == 'export' and rest:
-        return export(os.path.abspath(rest[0]), '--droog' in rest)
+        return export(os.path.abspath(rest[0]), '--droog' in rest, '--forceer' in rest)
     if cmd == 'nieuw' and rest:
         def opt(k):
             return rest[rest.index(k) + 1] if k in rest and rest.index(k) + 1 < len(rest) else None

@@ -89,7 +89,7 @@ Elke stap eindigt met een poort; pas als die groen is, begint de volgende.
 
 ## Werken met meerdere auto's
 
-- **Een verbetering in de generieke laag ontstaat hier.** Daarna `python3 tools/framework.py export ../andere-repo` (eerst met `--droog`), in die repo `python3 build.py` en de testset, en committen daar. De export raakt de autobestanden niet en schrijft het bestand `FRAMEWORK` met de versie en de bron-commit.
+- **Een verbetering in de generieke laag ontstaat hier.** Daarna `python3 tools/framework.py export ../andere-repo` (eerst met `--droog`), in die repo `python3 build.py` en de testset, en committen daar. De export heeft een slot: eerst gaat hij als proef naar een tijdelijke kopie van de doelauto en draait daar `build.py --lint`. Faalt dat (bijvoorbeeld omdat een autobestand nog r147-API gebruikt na golf 6), dan weigert de export en schrijft hij niets; zet dan eerst de autobestanden om. `--forceer` schrijft toch, alleen op een eigen tak. De export raakt de autobestanden niet en schrijft het bestand `FRAMEWORK` met de versie en de bron-commit.
 - **Ontstaat een verbetering in een andere auto** (zoals het documentgeraamte in espace5), dan wordt die eerst hier overgenomen en daarna geëxporteerd. Nooit in twee repo's apart.
 - **Afwijking meten:** `python3 tools/framework.py vergelijk ../andere-repo` geeft per generiek bestand gelijk, afwijkend of ontbrekend.
 - **Bewaken:** `python3 tools/framework.py check` draait in CI; een autonaam of motorcode in een generiek bestand is rood.
