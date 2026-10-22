@@ -1151,10 +1151,17 @@ def check18(s):
     pp.evaluate("__model.preset('engineAll'); __model.finishAll()")
     pp.evaluate("__model.dive(__model.byName('Cilinderkop').kids.find(k => !k.asm))"); settle(pp, 250)
     sel = pp.evaluate('__model.state().selected'); lf = pp.evaluate('__model.lastFit()')
-    pp.set_viewport_size({'width': 844, 'height': 390}); pp.wait_for_timeout(500); settle(pp, 300)
-    f = pp.evaluate(f'__model.frameOf({json.dumps(sel)})')
-    pp.set_viewport_size({'width': 390, 'height': 844}); pp.wait_for_timeout(500); settle(pp, 300)
-    f2 = pp.evaluate(f'__model.frameOf({json.dumps(sel)})')
+    # het herkadreren na een formaatwissel loopt via een uitgestelde resize; op een belaste runner valt die soms na de vaste
+    # wachttijd (golf 6: een keer rood in de VM, 0 van 15 bij herhaling). Daarom tot 5 s wachten tot het kader klopt; de eis blijft gelijk.
+    def frame_na(w, h):
+        pp.set_viewport_size({'width': w, 'height': h}); pp.wait_for_timeout(500); settle(pp, 300)
+        for _ in range(16):
+            fr = pp.evaluate(f'__model.frameOf({json.dumps(sel)})')
+            if fr['inside'] and fr['cover'] >= 0.02: break
+            settle(pp, 300)
+        return fr
+    f = frame_na(844, 390)
+    f2 = frame_na(390, 844)
     check('18 R3 telefoon draaien na een duik kadreert op het gedoken onderdeel (lastFit), liggend en weer staand', lf and lf.get('nodes') == [sel] and f['inside'] and f['cover'] >= 0.02 and f2['inside'] and f2['cover'] >= 0.02, json.dumps([lf, f['cover'], f2['cover']]))
     # U2. "+n meer" als er meer onderdelen zijn dan labels (ux-audit U11: stil afgekapt op 10 of 24)
     pp.evaluate("__model.preset('engine'); __model.finishAll()"); pp.wait_for_timeout(300); settle(pp, 200)
