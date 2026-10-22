@@ -711,7 +711,12 @@ function buildDoor(s, isFront) {
   // golf 5l ronde 2: van onder 0,875 m of 7 cm onder de gordel tot 6 mm erboven (boven de gordel 4 mm binnen xb, langs de onderrand van de
   // dichte ruit) en tot 3 mm van de portierranden; vanaf de achterbank
   // keek je anders onder het vilt door en tussen vilt en ruit door op de lak. De ruitdrager staat dicht tot 0,863 m.
-  const feltZ0 = z0 + 0.003, feltZ1 = isFront ? cz1 : z1 - 0.003, feltDy = [-0.07, -0.05, -0.03, -0.016, -0.009, -0.005, -0.0025, 0, 0.003, 0.006], felt = patch((z, j) => { const xb = bodSec(z).xe, yb = YT(z), dy = feltDy[Math.round(j)], y = dy < 0 ? Math.max(yb + dy, 0.875 + 0.001 * j) : yb + dy; return [s * (y > yb ? xb - 0.004 : Math.min(surfX(z, y) - 0.002, xb + 0.03)), y, z]; }, feltZ0, feltZ1, 14, () => [0, 9], 9, br.filter(b => b > feltZ0 && b < feltZ1));
+  const feltZ0 = z0 + 0.003, feltZ1 = isFront ? cz1 : z1 - 0.003, feltDy = [-0.07, -0.05, -0.03, -0.016, -0.009, -0.005, -0.0025, 0, 0.003, 0.006], feltSide = patch((z, j) => { const xb = bodSec(z).xe, yb = YT(z), dy = feltDy[Math.round(j)], y = dy < 0 ? Math.max(yb + dy, 0.875 + 0.001 * j) : yb + dy; return [s * (y > yb ? xb - 0.004 : Math.min(surfX(z, y) - 0.002, xb + 0.03)), y, z]; }, feltZ0, feltZ1, 14, () => [0, 9], 9, br.filter(b => b > feltZ0 && b < feltZ1));
+  // achterportier (golf 7 fixronde 2): onder de vaste kwartsruit zakt geen ruit, dus daar dekt een vlakke strook vilt 2 cm onder de gordel de
+  // raamschacht af, van de buitenkant van de raamlijst (xb - 0,0595) tot het vilt (xb + 0,03), van 12 mm voor de achterrand tot z -0,945
+  // (2 cm achter de achterrand van de zakbare ruit op de gordel, -0,924 in elke stand). Open keek je door de kwartsruit tot op de botsbalk
+  const lidZ0 = z0 + 0.012, lidZ1 = -0.945, feltLid = isFront ? null : patch((z, t) => { const xb = bodSec(z).xe, y = YT(z) - 0.02; return [s * lerp(xb - 0.059, Math.min(surfX(z, y) - 0.0025, xb + 0.0295), t), y, z]; }, lidZ0, lidZ1, 16, () => [0, 1], 2, br.filter(b => b > lidZ0 && b < lidZ1));
+  const felt = feltLid ? merge([feltSide, feltLid]) : feltSide;
   const kids = [
     P('Buitenpaneel', outer, MAT.paint, { d: `Geperste plaatstalen buitenhuid van het ${pos}portier, zilvergrijs metallic gelakt.`, ex: [s * 0.4, 0.14, 0.5] }),
     P('Portierrand', doorEdge, MAT.paintIn, { d: 'Gevouwen rand rondom het portier (onderkant en zijkanten) die buitenpaneel en binnenpaneel verbindt; zo heeft de sluitrand dikte.', ex: [-s * 0.1, -0.06, 0] }),
@@ -738,7 +743,7 @@ function buildDoor(s, isFront) {
     // golf 5l: het binnenste rubber ligt op de raamlijst van de portierkaart (was 3 cm binnen de gordelsierlijst, los in de lucht boven de kaart)
     P('Gordelrubber binnen', tube((([za, zb]) => [za + 0.006].concat(bodDense(za + 0.006, zb - 0.006, 16), [zb - 0.006]))((([a, b]) => [a, isFront ? Math.min(b, 0.43) : b])(cardZr(YT((cz0 + cz1) / 2) - 0.006, 13))).map(z => { const q = cardPts(z); return [s * (q[13][0] + q[14][0]) / 2, YT(z) - 0.0025, z]; }), 0.003, 20, 6), MAT.rubber, { d: 'Binnenste raamschachtrubber op de bovenrand van de portierkaart, langs de raamschacht.', ex: [-s * 0.06, 0.04, 0] }),
     // zwart vilt aan de binnenkant van de bovenrand van het buitenpaneel: van binnen kijk je door de raamschacht op vilt in plaats van op lak.
-    P('Raamschachtvilt', felt, MAT.bodFelt, { d: 'Zwart gevlokt vilt aan de binnenkant van de bovenrand van het buitenpaneel, waarlangs de ruit in de raamschacht glijdt.', ex: [s * 0.03, 0.05, 0] }),
+    P('Raamschachtvilt', felt, MAT.bodFelt, { d: 'Zwart gevlokt vilt aan de binnenkant van de bovenrand van het buitenpaneel, waarlangs de ruit in de raamschacht glijdt' + (isFront ? '.' : '; onder de vaste kwartsruit dekt een vlakke strook vilt de raamschacht af (plaats geschat).'), ex: [s * 0.03, 0.05, 0] }),
     A('Sierlijst', { d: `Verhoogde beschermlijst van ca. 38 mm op het ${pos}portier in carrosseriekleur, met afgeronde uiteinden en een dunne aluminium inzet langs de bovenrand.`, ex: [s * 0.1, 0, 0] }, [
       P('Lijstprofiel', lijstP(0, 1, 10, 0), MAT.paint, { d: 'Kunststof lijstprofiel in carrosseriekleur, op het buitenpaneel gelijmd.', ex: [s * 0.012, 0, 0] }),
       P('Aluminium inzet', lijstP(0.74, 0.9, 1, 0.0006), MAT.bodBright, { d: 'Dunne heldere aluminiumlook strip langs de bovenrand van de lijst.', ex: [s * 0.03, 0.02, 0] }),
