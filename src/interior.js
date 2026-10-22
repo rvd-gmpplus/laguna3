@@ -44,7 +44,7 @@ function intSillTex() {
   const w = [...txt].reduce((a, ch) => a + k.measureText(ch).width + sp, -sp), sc = Math.min(1, 480 / w);
   k.translate(256 - w * sc / 2, 32); k.scale(sc, sc); k.fillStyle = '#3d4046';
   let x = 0; for (const ch of txt) { k.fillText(ch, x, 2); x += k.measureText(ch).width + sp; }
-  const tx = new THREE.CanvasTexture(c); tx.encoding = THREE.sRGBEncoding; tx.anisotropy = 4;
+  const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace; tx.anisotropy = 4;
   return tx;
 }
 std('intSillLogo', 0xffffff, 0.3, 0.45, { map: intSillTex(), alphaTest: 0.4, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
@@ -487,7 +487,7 @@ function intDashTex() {
     [[0.0, 0.3, 1.0, 0.45], [0.2, 0.0, 0.35, 1.0], [0.6, 0.0, 0.7, 1.0], [0.0, 0.8, 1.0, 0.7]].forEach(([a, b, cc, d]) => { k.beginPath(); k.moveTo(R[0] + a * w, R[1] + b * h); k.lineTo(R[0] + cc * w, R[1] + d * h); k.stroke(); });
     k.strokeStyle = '#3d7be0'; k.lineWidth = 7; k.beginPath(); k.moveTo(R[0] + 0.3 * w, R[1] + h); k.lineTo(R[0] + 0.3 * w, R[1] + 0.37 * h); k.lineTo(R[0] + 0.65 * w, R[1] + 0.4 * h); k.lineTo(R[0] + 0.65 * w, R[1]); k.stroke();
     k.fillStyle = '#2b3440'; k.fillRect(R[0], R[1], w, 18); txt('Carminat TomTom', R[0] + w / 2, R[1] + 9, 13, '#ffffff'); }
-  const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.anisotropy = 4;
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
   return t;
 }
 { const T = intDashTex(); std('intDecal', 0xffffff, 0, 0.5, { map: T, emissive: 0xffffff, emissiveMap: T, emissiveIntensity: 0.35, alphaTest: 0.4, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }); }

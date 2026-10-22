@@ -205,7 +205,7 @@ function engLogoTex() {
   for (const ch of 'RENAULT') { k.fillText(ch, x, 50); x += k.measureText(ch).width + 7; }
   x += 22; k.font = F2; k.fillStyle = '#6a6e74'; k.fillText('2.0', x, 50); x += k.measureText('2.0').width + 2;
   k.fillStyle = '#e8c21a'; k.fillText('T', x, 50);
-  const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.anisotropy = 4;
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
   return t;
 }
 // opschrift als fijn vlak dat de vorm van de kap volgt (helling en ronde neus), 0,8 mm erboven; de uv blijft die van het vlak
