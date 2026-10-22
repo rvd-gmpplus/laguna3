@@ -8,7 +8,7 @@ Elk testscript doet:
         s.report()                  # console- en paginafouten
 
 Omgevingsvariabelen:
-    THREE_DIR   map met het uitgepakte npm-pakket three@0.147.0 (standaard ~/.cache/explosietekening/three-0.147.0/package)
+    THREE_DIR   map met het uitgepakte npm-pakket three@0.186.1 (standaard ~/.cache/explosietekening/three-0.186.1/package)
     CHROMIUM    pad naar een Chromium-binary (standaard /opt/pw-browsers/chromium als die bestaat)
     MODEL_TEST bestaande testmap gebruiken in plaats van opnieuw te bouwen
     MODEL_TIMEOUT_MS wachttijd op laden en `ready` in milliseconden (standaard 120000)
@@ -22,8 +22,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 import build as _build
 THREE_VERSION = _build.THREE_VERSION
-# npm `dist.integrity` van three@0.147.0: het opgehaalde pakket moet hier byte voor byte mee kloppen
-THREE_INTEGRITY = 'sha512-LPTOslYQXFkmvceQjFTNnVVli2LaVF6C99Pv34fJypp8NbQLbTlu3KinZ0zURghS5zEehK+VQyvWuPZ/Sm8fzw=='
+# npm `dist.integrity` van three@0.186.1 (opgehaald 21 oktober 2026, gecontroleerd met `npm view three@0.186.1 dist.integrity`): het opgehaalde pakket moet hier byte voor byte mee kloppen
+THREE_INTEGRITY = 'sha512-blFeqb49wRCSGUGj7gtpfnSGHy2lwDk94RhUmS1c/hTby70kvChbWpkJ4Pm1390LqzzvTmzgXKHPEafJwCb8jA=='
 ARGS = ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist']
 # LAG3_GPU=1: echte GPU (macOS: ANGLE Metal) in plaats van SwiftShader, alleen voor beelden die het oog beoordeelt (S7, galerij);
 # visdiff, basislijnen en de testset blijven op SwiftShader (golf 5f, 19 oktober 2026: de spikkels zijn een SwiftShader-artefact)
@@ -45,21 +45,35 @@ def _check_tgz(path):
         raise SystemExit(f'three.js-pakket {path} komt niet overeen met de npm-integriteit van three@{THREE_VERSION}: {got}')
 
 
+def _pkg_ok(d):
+    """Is d een uitgepakt three@THREE_VERSION? three.core.js bestaat pas sinds r171 en three.module.js ook in r147, dus de
+    versie in package.json beslist (een THREE_DIR van een andere versie mag niet stil meedoen)."""
+    try:
+        with open(os.path.join(d, 'package.json'), encoding='utf-8') as f:
+            ok = json.load(f).get('version') == THREE_VERSION
+    except (OSError, ValueError):
+        return False
+    return ok and all(os.path.isfile(os.path.join(d, 'build', k)) for k in ('three.module.js', 'three.core.js'))
+
+
 def ensure_three():
     """Geeft de map met het uitgepakte npm-pakket; haalt het op als het ontbreekt. Een bestandsvergrendeling voorkomt dat
     twee gelijktijdige testreeksen allebei `npm pack` draaien."""
     d = os.environ.get('THREE_DIR')
-    if d and os.path.isfile(os.path.join(d, 'build', 'three.min.js')):
-        return d
+    if d:
+        if _pkg_ok(d):
+            return d
+        raise SystemExit(f'THREE_DIR {d} is geen uitgepakt three@{THREE_VERSION} (versie in package.json of build/three.module.js en three.core.js wijkt af); zet de variabele uit of wijs naar het juiste pakket')
     cache = os.path.expanduser(f'~/.cache/explosietekening/three-{THREE_VERSION}')
     pkg = os.path.join(cache, 'package')
     tgz = os.path.join(cache, f'three-{THREE_VERSION}.tgz')
     os.makedirs(cache, exist_ok=True)
     with open(os.path.join(cache, '.lock'), 'w') as lk:
         fcntl.flock(lk, fcntl.LOCK_EX)
-        if not os.path.isfile(os.path.join(pkg, 'build', 'three.min.js')):
+        if not _pkg_ok(pkg):
             subprocess.run(['npm', 'pack', f'three@{THREE_VERSION}'], cwd=cache, check=True, capture_output=True)
             _check_tgz(tgz)
+            shutil.rmtree(pkg, ignore_errors=True)  # een halfuitgepakte of verkeerde map eerst weg
             subprocess.run(['tar', 'xzf', tgz], cwd=cache, check=True)
         elif os.path.isfile(tgz):
             _check_tgz(tgz)
