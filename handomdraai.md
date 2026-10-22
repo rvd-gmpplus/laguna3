@@ -1,56 +1,38 @@
 # Handomdraai laguna3
 
-## Overdracht voor de volgende sessie (21 oktober 2026, na golf 5n; versie 20 is gepubliceerd)
+## Overdracht voor de volgende sessie (22 oktober 2026, na golf 6; versie 21 is gepubliceerd)
 
 ### Waar alles staat
-- **Gepubliceerd:** versie 20 (golf 5n), 21 oktober 2026 om 18:08 UTC.
-  - `main` fast-forward `8d3a028..cfbed99`, tag `v20` op `cfbed99`, stempel "20 (bron 30d1c8a)".
-  - Pages: https://rvd-gmpplus.github.io/laguna3/ (1.720.222 bytes, md5 `0a78fa2fd6c1b320371462df24900e02`), byte voor byte teruggelezen.
-  - Artefact versie 22: https://claude.ai/artifact/4qJq7YUk5nGSFmexY7WkZR (kale pagina 1.720.046 bytes, md5 `495033add1d929880cad98b5af61a51e`, 531 bytes geraamte ervoor en 15 erna), byte voor byte teruggelezen.
-  - De nightly op `main` moet na de publicatie opnieuw draaien; een rode nightly is een melding, geen stop.
-- **Werkplek:** de hoofdcheckout op `main`; de worktree `.claude/worktrees/export-e5` (tak `export-e5`). De worktrees en takken van golf 5n zijn opgeruimd. Begin met `git ls-remote --heads origin` en een vergelijking van elke tak met `main`.
-- **espace5:** versie 8 gepubliceerd op 21 oktober 2026 (tag `v8`): framework uit laguna3 na versie 20 (`ffc673b`, tak `export-e5`) met de poort `opendicht`; die vond 7 doordringingen in de carrosserie van espace5, opgelost in drie rondes. De cockpit voor de Espace (zitplaatsen in `auto.json`) is een eigen golf, later. Zie de CHANGELOG van espace5.
-- **Tak `export-e5`:** de framework-fix (`AUTO['cockpit']` met haken in commentaar) en het besluit over de zijroosters; gaat bij de start van golf 6 naar `main`.
+- **Gepubliceerd:** versie 21 (golf 6), 22 oktober 2026 om 17:48 UTC.
+  - `main` fast-forward `3e2ca57..ba4e19a`, tag `v21` op `ba4e19a`, stempel "21 (bron 977185c)".
+  - Pages: https://rvd-gmpplus.github.io/laguna3/ (1.729.057 bytes, md5 `b64554b2c8a172720ef68749723e1e1e`), byte voor byte teruggelezen.
+  - Artefact versie 23: https://claude.ai/artifact/4qJq7YUk5nGSFmexY7WkZR (kale pagina 1.728.881 bytes, md5 `291912a5e7bf06298ddd890f2d82327f`, 531 bytes geraamte ervoor en 15 erna), byte voor byte teruggelezen.
+- **Werkplek:** alleen de hoofdcheckout op `main`. De worktrees en takken van golf 6 en `export-e5` zijn opgeruimd. Begin met `git ls-remote --heads origin` en een vergelijking van elke tak met `main`.
+- **three.js:** 0.186.1 als ES-module van jsDelivr. De harness gebruikt `~/.cache/explosietekening/three-0.186.1/package` (sha512 uit npm). `~/.config/web3d/env.sh` zet `THREE_DIR` nog op r147 voor andere repo's; `build.py` en de harness negeren een `THREE_DIR` van een andere versie.
+- **espace5:** versie 8 (21 oktober 2026) draait nog op het framework van na versie 20. Golf 6 gaat er alleen heen via `framework.py export` in een eigen golf, met de omzetting van haar domeinbestanden voor R8 en R9.
 - **Linux-tests:** `tools/lag3-vm.sh test --repo "$PWD"`, met een tijdelijke container per run.
   - Uitvoer in `~/.cache/explosietekening/lag3-vm/out/ft-laguna3-<commit>`.
   - Containers van andere sessies (`s26u-linux:1`, `explosie-test:1`) niet aanraken.
 
-### Volgende stappen (in deze volgorde)
-1. **Golf 6:** three.js 0.186.1 als ES-module, versie 21. De besluiten staan in `docs/onderzoek/beslissingen.md`, rij Golf 6, en in `docs/masterplan.md`, sectie Golf 6. Het plan van de spike stond in het scratchpad en is niet in de repo bewaard. Mee in deze golf: de zijroosters van het dashboard 5 tot 8 cm hoger, tot de bovenrand van de klokken, met het dashboard daar mee verhoogd (besluit van de gebruiker, rij Zijroosters dashboard).
-
-### Wat golf 5n deed
-- **Foto's van de eigen auto:** portierkaarten, raamkader binnen, stoelen, hoofdsteunnaden, schermgreep van het panoramadak, dashboard en console (twaalf punten), zijroosters, keuzehendel, dakgrepen, stuur, velg met tien Y-spaken, naafdop, band, voorkant, achterlichtlens en tankklep. Per onderdeel: `CHANGELOG.md` (versie 20) en `docs/masterplan.md`, sectie Golf 5n.
-- **Logoverbod opgeheven** (besluit van de gebruiker): de Renault-ruit staat op de neus, de achterklep, het stuur en de naafdoppen.
-- **Middelste achtergordel** uit de rugleuning.
-- **Motor F4R 813 is zeker** (typeplaatje BT15). Onderdeelnummers: vier nieuwe keuzes na blinde verificatie, 17 eenheden met een keuze; `data/pn/meta.json` bijgewerkt.
-- **Glasmarkering** per ruit: AGC rechtsvoor, Pilkington op de zijruiten van de achterportieren.
-- **Doordringingen bij het openen** opgelost; de gewone opentest had ze gemist (tot 35,8 mm).
-- **Testlaag:** poort `opendicht` in `finaltests.sh`, de nightly en de CI-testlijst; itest-fixes voor de trage CI-runner (controles 14, 18, 20 en 24); itest 23 aangepast en 25 nieuw. Aantallen: `docs/testen.md`.
-- **App:** `#openSeg` met een aangevinkte radio, "Naar buiten" zichtbaar bij een open paneel, pointer capture, pijltoetsen in de cockpit, gemeten dockhoogte.
-- **Besluiten van de gebruiker** (`docs/onderzoek/beslissingen.md`, "Besluiten van 21 oktober 2026"): T4 naar 1,8 MB raw en 490 kB gzip, glasmarkering, RDW-gegevens blijven staan, staartsilhouet zoals het is, toerenteller 0 tot 7, golf 6.
-- **Bronnen voor nummers** (stand 20 oktober, niet opnieuw getoetst):
-  - Jina en Firecrawl hadden geen tegoed; curl op autodoc.parts gaf 403.
-  - Wat werkte: curl op spareto.com (`Crawl-delay: 1`, geen `?brand=` en geen `?per_page=`), Exa, en de OEM-pagina's van autodoc.parts via Exa.
-  - Het werkplaatshandboek (MR 415) is de pdf `Renault_Laguna-III_2007-2014_[EN-FR-ES].pdf` in OneDrive (`Documenten/PDF/HANDLEIDING/`).
-  - Het kenteken leidt in Autodoc naar TecDoc-type 23370. Kenteken en chassisnummer komen nooit in de repo.
+### Wat golf 6 deed
+Per onderdeel: `CHANGELOG.md` (versie 21) en `docs/masterplan.md`, sectie Golf 6.
+- **three.js 0.186.1** als ES-module met importmap (sha384), modulepreload en een melding voor oude browsers; bouwcontroles R8 tot R10.
+- **Beeld** gekalibreerd op r147 (RoomEnvironment op de oude kamerhoogte); advisor A2 oordeelde het beeld gelijkwaardig.
+- **Zijroosters** tot de bovenrand van de klokken, dashboard daar verhoogd, eindkap mee.
+- **Testlaag:** itest 18 R5 tot R7, R3 wacht tot 5 s op het kader; `presetshots.py` flusht de bundels voor elke opname, zodat visdiff herhaalbaar is; visdiff-basislijn uit `/out/g6f1`.
+- **Besluit van de gebruiker:** de rechterbuitenspiegel is vanaf de bestuurdersstoel niet meer te zien; geaccepteerd (`docs/onderzoek/beslissingen.md`, rij Rechterbuitenspiegel).
 
 ### Open punten (in volgorde van waarde)
-1. **De nightly:** de itest-fixes van golf 5n horen de nachtelijke fouten (reload in controle 18, resize in 20, de overgang in 24, een tik in 14) te verhelpen. Of de eerstvolgende nightly groen is, is niet gecontroleerd; zie eerst `gh run list` en de log.
-2. **Geometrie uit golf 5n** (details: `docs/masterplan.md`, sectie Golf 5n):
-   - zijrooster iets lager dan op de foto, en de bestuurderszijde staat verder van de instrumentenkap;
-   - remschijf licht (gedeeld materiaal in `core.js`; via de orkestrator);
-   - spleet in de carrosserie tussen voorruitglas en voorruitrubber (x 0,63 tot 0,66);
-   - de rand van de achterklepbekleding rond de onderhoeken van de achterruit zwaait 13 tot 23 mm door de sponning, in een stand die de opentest als contact in dichte stand negeert;
-   - raamkader van het achterportier in hetzelfde vlak als de B-stijl (mogelijk flikkeren);
-   - bumpersteun voor rechts tegen de steunhouder van de motorkapsteun: -3,0 mm;
-   - staartsilhouet: herzien kan met een foto van de achterkant (besluit: nu zoals het is).
-3. **Nummers:**
-   - `U_ALT`, `U_BUMP`, `U_PADKIT` en `U_START` blijven open;
-   - de distributiekappen hangen als `set` aan TCOVER, met een zwakke grond;
-   - partsouq op VIN voor de varianten (de gebruiker typt het chassisnummer zelf of geeft toestemming);
-   - interieur, uitlaat, koeling en elektra zijn dun: de catalogi voor type 23370 hebben weinig.
-4. **App-advisor A1 tot A3:** `aria-description`, Openen uitzetten in de cockpit met de muis, en pijltoetsen omhoog en omlaag in de radiogroep.
-5. **Open uit golf 5k, 5l en 5m:** `docs/masterplan.md`, de secties van die golven. Rugschaal en kaartvak van de voorstoelen, de middelste gordelband en de achterlichtlens zijn in golf 5n aangepakt maar niet opnieuw vanuit de cockpit beoordeeld.
+1. **CI en nightly op versie 21:** de eerste `ci`-run op `ba4e19a` stond bij de publicatie nog in de wachtrij. De nightly van 22 oktober (nog op versie 20) faalde op itest 25 b: "Page.tap: Timeout 4000ms exceeded" bij Uitstappen in de stand vol, op een runner die 85 minuten nodig had. In de VM was 25 b drie keer groen. Eerst `gh run list` en de log bekijken; bij herhaling de tik in 25 b robuuster maken zoals in golf 5n bij 14, 18, 20 en 24.
+2. **Telefoontest op iOS** door de gebruiker (iOS 16.4 of nieuwer, protocol `docs/telefoontest.md`).
+3. **Carrosserie:** rechterbuitenspiegel en A-stijl (spiegel 5 tot 10 cm naar achteren); spleet tussen voorruitglas en voorruitrubber (x 0,63 tot 0,66); raamkader van het achterportier in het vlak van de B-stijl; bumpersteun voor rechts -3,0 mm; hoeken van de achterklepbekleding; velgspaakfacetten en de rand van de dakgreepkom.
+4. **Interieur (advisor, kan):** wang van de instrumentenkap bovenaan circa 20 mm naar buiten; kleine schuine vouw in de uitloop van het dashboard.
+5. **Remschijf** te licht (gedeeld materiaal in `core.js`, via de orkestrator).
+6. **Reserve voor three.js:** valt 0.186.1 op jsDelivr weg, dan is 0.185.0 de terugvaloptie (G10 in het plan van golf 6).
+7. **Nummers:** `U_ALT`, `U_BUMP`, `U_PADKIT` en `U_START` open; de rest zoals bij golf 5n hieronder in de geschiedenis van dit bestand (`git log -p handomdraai.md`).
+8. **App-advisor A1 tot A3:** `aria-description`, Openen uitzetten in de cockpit met de muis, pijltoetsen omhoog en omlaag in de radiogroep.
+9. **Ruis in gateshots:** "Afdekkap" van Olievuldop en Peilstok lost niet op; ook op r147, dus niet nieuw.
+10. **Docs:** `cijfers.py` wist de handmatige sectie Pagina in `docs/cijfers.md`; na het genereren terugzetten (of het script die sectie laten bewaren).
 
 ### Afspraken die in deze sessie golden
 - Elke versie wordt direct na een groene poort gepubliceerd. Daarna Pages en het artefact byte voor byte teruglezen, tag `vN` zetten en de docs bijwerken: CHANGELOG, deze handomdraai, masterplan en cijfers.
@@ -64,6 +46,8 @@
   - visdiff op de Mac telt niet.
 - Een golf zonder geometriewijziging (alleen app, tekst of nummers) heeft geen zwaaimeting nodig. Controleer dat met `git diff --stat vN HEAD -- src/`.
 - Na elke commit van een agent: `git diff --stat` om te zien dat geen bestand leeg of afgekapt is.
+
+Stand 22 oktober 2026, golf 6: versie 21 (three.js 0.186.1 als ES-module, zijroosters tot de klokrand) is gepubliceerd (`main` fast-forward `3e2ca57..ba4e19a`, tag `v21`, artefactversie 23, Pages byte voor byte teruggelezen). Open punten: zie hierboven en `docs/masterplan.md`, golf 6.
 
 Stand 21 oktober 2026, golf 5n: versie 20 (foto's van de eigen auto, Renault-ruit, F4R 813 zeker, poort `opendicht`) is gepubliceerd (`main` fast-forward `8d3a028..cfbed99`, tag `v20`, artefactversie 22, Pages byte voor byte teruggelezen). Open punten: zie `docs/masterplan.md`, golf 5n. Volgende: espace5, dan golf 6 (three.js 0.186.1, versie 21).
 

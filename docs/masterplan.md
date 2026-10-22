@@ -448,7 +448,7 @@ Poort: `pncheck` groen (reproduceerbaar, bronnen per nummer niet gedaald); dekki
 | F3 | Multiriem (1.569 mm tegen 1.795 mm): alleen met de riemloop uit MR 415; de dynamo 0,11 m hoger komt boven het kapprofiel. Anders blijft de eerlijke beschrijving staan. Stand: de lengte (7PK, 1.790 tot 1.795 mm) en de verbruikers (dynamo, aircocompressor, stuurpomp) zijn bevestigd door de catalogus (vervolgronde 5g); het verloop staat alleen in figuur 124137 van MR 415 en is niet gevonden; de beschrijving blijft. | audit |
 | F4 | De uitklapanimatie zelf beoordelen: `DUR` 0,85 s (`app1.js:77`) en staffels van 0,22 s; één vóór/na-opname als GIF naast versie 1 (te traag bij diep duiken, te snel bij kleine groepen). Stand: gedaan als meting; de staffel is begrensd (`CFG.tijd.staffelMaxS`, `allesStaffelMaxS`), de GIF vervalt. | ontbrak |
 
-## Golf 6: three.js 0.186.1 als ES-module en zijroosters (UITGEVOERD; versie 21 in publicatie)
+## Golf 6: three.js 0.186.1 als ES-module en zijroosters (UITGEVOERD; versie 21 gepubliceerd op 22 oktober 2026, tag `v21`)
 
 Besloten op 21 oktober 2026 (zie `docs/onderzoek/beslissingen.md`, rij Golf 6). Oorspronkelijk stond hier "three.js blijft op r147" als standaard; dat is vervallen.
 
@@ -465,6 +465,7 @@ Gedaan:
 Open:
 - **Rechterbuitenspiegel** (besluit van de gebruiker op 22 oktober 2026, "Accepteren"): door de verhoging is de spiegel vanuit de bestuurdersstoel niet meer te zien (eerst 129 van 140 stralen vrij, nu 5). Oorzaak in de carrosserie: in het model staat de spiegel vóór de A-stijl (door de voorruit), op de foto erachter (door de portierruit). Spiegel en A-stijl gaan als open punt naar het carrosseriedomein (spiegel 5 tot 10 cm naar achteren). Zie `docs/onderzoek/beslissingen.md`, rij Rechterbuitenspiegel.
 - Advisor interieur, kan: de wang van de instrumentenkap bovenaan circa 20 mm naar buiten (foto: evenwijdig aan de schuine roosterrand); een kleine schuine vouw in de uitloop.
+- Telefoontest op iOS: de laadketen vraagt Safari 16.4 of nieuwer; een echte iPhone is niet getest (protocol: `docs/telefoontest.md`).
 - espace5 krijgt het nieuwe framework via `framework.py export` in een eigen golf; de generieke `build.py` met R8 en R9 vraagt dan ook de omzetting van haar domeinbestanden.
 
 Nog strategisch, alleen bij een concrete aanleiding:

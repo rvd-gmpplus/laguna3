@@ -9,6 +9,8 @@ daar niet uit komt: de pagina op een echte telefoon en een echte GPU. Het kost o
   De overlay bovenin toont: beelden per seconde (fps) tijdens beweging, tekenopdrachten, driehoeken, pixelverhouding
   (dpr), of de lichte weergave aanstaat, en de versie. Maak van elke stap hieronder een screenshot met de overlay in beeld.
 - Noteer het toestel (merk, type, jaar), de browser en of de telefoon aan de lader hing.
+- Sinds versie 21 laadt three.js als ES-module met een importmap. Daarvoor is iOS of Safari 16.4 of nieuwer nodig
+  (Chrome 89, Firefox 108). Een oudere browser toont een melding in plaats van het model; noteer dan de melding.
 
 ## Stappen
 
