@@ -603,10 +603,12 @@ function intDashboard() {
   // (y 1,03 in plaats van 0,905). Het dashboard is daar mee verhoogd: van het zijrooster tot het eind van het dashboard (aan
   // bestuurderszijde vanaf de wang van de instrumentenkap) hebben drager en huid het verhoogde profiel podTop, met de knik op y 1,036
   // en een bovenkant die vanaf z 0,63 terugloopt naar het gewone profiel op z 0,8. Aan bestuurderszijde staat het rooster 1,7 cm
-  // dichter bij de instrumentenkap (x 0,603), zoals op de foto.
-  const podTop = intDashTopPts.map((p, i) => (i === 2 ? [0.63, 1.033] : i === 3 ? [0.515, 1.036] : p));
-  const podPf = intDashPf.map((p, i) => (i === 2 ? podTop[2] : i === 3 ? podTop[3] : p));
-  const podSkin = intOffset(podTop, intSkinT).concat(intOffset(podTop, -0.003).reverse());
+  // dichter bij de instrumentenkap (x 0,603), zoals op de foto. De kruin ligt alleen naast de kap op volle hoogte; vanaf het
+  // zijrooster naar buiten ligt hij 1 mm lager (dr), zodat het hoogste punt van huid en drager niet boven de spleet in de carrosserie
+  // valt (zie boven) maar naast de instrumentenkap, waar de voorruit erboven dicht is.
+  const podTop = intDashTopPts.map((p, i) => (i === 2 ? [0.63, 1.033] : i === 3 ? [0.515, 1.036] : p)), dr = 0.001;
+  const podLow = (poly, d) => poly.map((p, i) => (i === 2 || i === 3 ? [podTop[i][0], podTop[i][1] - d] : p));
+  const podPf = d => podLow(intDashPf, d), podSkin = d => { const T = podLow(intDashTopPts, d); return intOffset(T, intSkinT).concat(intOffset(T, -0.003).reverse()); };
   const sideVent = (() => { const w = 0.0875, wt = 0.066, h = 0.14, rim = 0.01, xs = s => (s > 0 ? 0.603 : 0.62), yTop = 1.03, back = 0.015, D = 0.017, Wn = w + 0.008;
     const G = intOffset(podTop, intSkinT), F = intDashPf;
     const faceZ = y => y >= G[4][1] ? lerp(G[3][0], G[4][0], (G[3][1] - y) / (G[3][1] - G[4][1])) : lerp(F[4][0], F[5][0], (F[4][1] - y) / (F[4][1] - F[5][1]));
@@ -623,13 +625,14 @@ function intDashboard() {
     return { w, wt, h, rim, rx, x: xs, y: yc, z: zc, n0: s => xs(s) - Wn / 2, n1: s => xs(s) + Wn / 2, cut, plate }; })();
   // drager of huid als zijblokken van x0 tot x1: poly is het gewone profiel, pod het verhoogde profiel rond de zijroosters (golf 6),
   // met de uitsparing voor de zijroosters waar het blok daar overheen loopt. Het verhoogde deel loopt van het zijrooster tot het eind
-  // van het dashboard; aan bestuurderszijde begint het 0,5 mm naast de wang van de instrumentenkap (x 0,544).
+  // van het dashboard; aan bestuurderszijde begint het 0,5 mm naast de wang van de instrumentenkap (x 0,544). pod(d) geeft het
+  // verhoogde profiel met de kruin d lager; per stuk [x0, x1, soort, d].
   const podIn = s => (s > 0 ? 0.5445 : sideVent.n0(s));
-  const ventPieces = [[-0.75, -sideVent.n1(-1), 'p'], [-sideVent.n1(-1), -sideVent.n0(-1), 'v'], [-sideVent.n0(-1), -podIn(-1), 'p'], [-podIn(-1), podIn(1), 'n'],
-    [podIn(1), sideVent.n0(1), 'p'], [sideVent.n0(1), sideVent.n1(1), 'v'], [sideVent.n1(1), 0.75, 'p']];
+  const ventPieces = [[-0.75, -sideVent.n1(-1), 'p', dr], [-sideVent.n1(-1), -sideVent.n0(-1), 'v', dr], [-sideVent.n0(-1), -podIn(-1), 'p', dr], [-podIn(-1), podIn(1), 'n', 0],
+    [podIn(1), sideVent.n0(1), 'p', 0], [sideVent.n0(1), sideVent.n1(1), 'v', dr], [sideVent.n1(1), 0.75, 'p', dr]];
   const intVentBlocks = (poly, pod, x0, x1) => { const out = [];
-    for (const [a0, b0, k] of ventPieces) { const a = Math.max(a0, x0), b = Math.min(b0, x1); if (b - a < 1e-6) continue;
-      if (k === 'n') out.push(intSideBlock(poly, a, b)); else if (k === 'p') out.push(intSideBlock(pod, a, b)); else out.push(...sideVent.cut(pod).map(p => intSideBlock(p, a, b))); }
+    for (const [a0, b0, k, d] of ventPieces) { const a = Math.max(a0, x0), b = Math.min(b0, x1); if (b - a < 1e-6) continue;
+      if (k === 'n') out.push(intSideBlock(poly, a, b)); else if (k === 'p') out.push(intSideBlock(pod(d), a, b)); else out.push(...sideVent.cut(pod(d)).map(p => intSideBlock(p, a, b))); }
     return out.filter(Boolean); };
   // instrumentenpaneel: de wijzerplaatdrager staat 0,25 rad achterover, naar het oog van de bestuurder [0,37; 1,12; -0,30], in een kap op de
   // dashboardkop. Zichtlijn (golf 5l, gemeten): boven het airbagdeksel langs en onder de bovenrand van de krans door; alle delen in dit kader
