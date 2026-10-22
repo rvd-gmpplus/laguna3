@@ -626,13 +626,21 @@ function intDashboard() {
   // drager of huid als zijblokken van x0 tot x1: poly is het gewone profiel, pod het verhoogde profiel rond de zijroosters (golf 6),
   // met de uitsparing voor de zijroosters waar het blok daar overheen loopt. Het verhoogde deel loopt van het zijrooster tot het eind
   // van het dashboard; aan bestuurderszijde begint het 0,5 mm naast de wang van de instrumentenkap (x 0,544). pod(d) geeft het
-  // verhoogde profiel met de kruin d lager; per stuk [x0, x1, soort, d].
+  // verhoogde profiel met de kruin d lager; per stuk [x0, x1, soort, d]. Soort 'u' is de uitloop van het zijrooster naar de portier:
+  // daar zakt de kruin (alles boven y 0,95 en voor z 0,79) recht evenredig tot 40 procent van de verhoging aan het eind van het
+  // dashboard, zoals op de foto van de passagierszijde, zodat de buitenspiegel vanaf de bestuurdersstoel zichtbaar blijft.
   const podIn = s => (s > 0 ? 0.5445 : sideVent.n0(s));
-  const ventPieces = [[-0.75, -sideVent.n1(-1), 'p', dr], [-sideVent.n1(-1), -sideVent.n0(-1), 'v', dr], [-sideVent.n0(-1), -podIn(-1), 'p', dr], [-podIn(-1), podIn(1), 'n', 0],
-    [podIn(1), sideVent.n0(1), 'p', 0], [sideVent.n0(1), sideVent.n1(1), 'v', dr], [sideVent.n1(1), 0.75, 'p', dr]];
+  const ventPieces = [[-0.75, -sideVent.n1(-1), 'u', dr], [-sideVent.n1(-1), -sideVent.n0(-1), 'v', dr], [-sideVent.n0(-1), -podIn(-1), 'p', dr], [-podIn(-1), podIn(1), 'n', 0],
+    [podIn(1), sideVent.n0(1), 'p', 0], [sideVent.n0(1), sideVent.n1(1), 'v', dr], [sideVent.n1(1), 0.75, 'u', dr]];
+  const podTaper = (g, xa, xb) => { const P = g.attributes.position;
+    for (let i = 0; i < P.count; i++) { const y = P.getY(i), t = Math.min(1, Math.max(0, (Math.abs(P.getX(i)) - xa) / (xb - xa)));
+      if (y > 0.95 && P.getZ(i) < 0.79) P.setY(i, 0.95 + (y - 0.95) * (1 - 0.6 * t)); }
+    g.computeVertexNormals(); return g; };
   const intVentBlocks = (poly, pod, x0, x1) => { const out = [];
     for (const [a0, b0, k, d] of ventPieces) { const a = Math.max(a0, x0), b = Math.min(b0, x1); if (b - a < 1e-6) continue;
-      if (k === 'n') out.push(intSideBlock(poly, a, b)); else if (k === 'p') out.push(intSideBlock(pod(d), a, b)); else out.push(...sideVent.cut(pod(d)).map(p => intSideBlock(p, a, b))); }
+      if (k === 'n') out.push(intSideBlock(poly, a, b)); else if (k === 'p') out.push(intSideBlock(pod(d), a, b));
+      else if (k === 'u') out.push(podTaper(intSideBlock(pod(d), a, b), Math.min(Math.abs(a0), Math.abs(b0)), 0.75));
+      else out.push(...sideVent.cut(pod(d)).map(p => intSideBlock(p, a, b))); }
     return out.filter(Boolean); };
   // instrumentenpaneel: de wijzerplaatdrager staat 0,25 rad achterover, naar het oog van de bestuurder [0,37; 1,12; -0,30], in een kap op de
   // dashboardkop. Zichtlijn (golf 5l, gemeten): boven het airbagdeksel langs en onder de bovenrand van de krans door; alle delen in dit kader
