@@ -130,10 +130,11 @@ function buildPanorama() {
   /* ---- dwarsbalk, omlijsting, afdichtingen, frame en rails ---- */
   const bar = P('Dwarsbalk', panSlab(PAN_OF[1], PAN_OR[0], -PAN_XR, PAN_XR, 0.0008, 0.0065, 2, 14), MAT.bodPanoBar, { d: 'Dwarsbalk tussen de twee glaspanelen, van buiten donker; huisvest de schermcassette van het voorste scherm (vorm geschat).', ex: [0, 0.2, 0] });
   // golf 8 (kierenaudit): de achterste omlijsting ligt met de bovenkant op 5 mm, gelijk met het vaste glas (was 3 mm: trede van 2,5 mm
-  // tussen keramische rand en omlijsting langs de zijranden); de voorste blijft op 3 mm, daar kantelt en schuift het glas
+  // tussen keramische rand en omlijsting langs de zijranden). Golf 8 ronde 2: de voorste ook (bleef op 3 mm omdat het glas daar kantelt en
+  // schuift; de omlijsting ligt naast en voor het glas, de opentest bewaakt de beweging)
   const ring = (z0, z1, l1 = 0.003) => merge([panSlab(z1, z0, PAN_X, PAN_XR, 0.0008, l1, 14, 1), panSlab(z1, z0, -PAN_XR, -PAN_X, 0.0008, l1, 14, 1),
     panSlab(z0, z0 + 0.02, -PAN_XR, PAN_XR, 0.0008, l1, 1, 14), panSlab(z1 - 0.02, z1, -PAN_XR, PAN_XR, 0.0008, l1, 1, 14)]);
-  const trimF = P('Omlijsting opening voor', ring(PAN_OF[0], PAN_OF[1]), MAT.bodPillar, { d: 'Zwarte kunststof omlijsting (sierlijst) rond de voorste dakopening, zonder chroom (breedte geschat).', ex: [0, 0.18, 0.05] });
+  const trimF = P('Omlijsting opening voor', ring(PAN_OF[0], PAN_OF[1], 0.005), MAT.bodPillar, { d: 'Zwarte kunststof omlijsting (sierlijst) rond de voorste dakopening, zonder chroom (breedte geschat).', ex: [0, 0.18, 0.05] });
   const trimR = P('Omlijsting opening achter', ring(PAN_OR[0], PAN_OR[1], 0.005), MAT.bodPillar, { d: 'Zwarte kunststof omlijsting (sierlijst) rond de achterste dakopening.', ex: [0, 0.18, -0.05] });
   // donkere binnenlijst: een smalle zwarte kunststof lijst die net binnen de afwerkring van de hemel (interior.js, rand van de hemelopening op |x| 0,45) rondom
   // de opening ligt, 3,3 cm onder het dakvlak en daarmee onder de zonneschermen; van binnen leest de opening zo rondom als een donkere omlijsting
@@ -180,9 +181,13 @@ function buildPanorama() {
   const scrF = screen('voor', 0.165, -0.58, 8, -0.0165, [-0.50, -0.60], 0.0465, panLookScrF);
   const scrR = screen('achter', -0.61, -1.17, 6, -0.0185, [-1.11, -1.19], 0.03, panLookScrR);
   /* ---- motor, kabelboom, waterafvoer ---- */
+  // golf 8 ronde 2: motorhuis en wormas volgen de helling van het dak (hier ruim 19 graden naar de voorruit en dwars een paar graden
+  // naar buiten); vlak liggend stak de voorste rand van het huis 0,8 mm en de wormas 1,5 mm door de dakplaat
+  const mtZ = 0.255, mtX = 0.3, mtRx = Math.atan((panP(mtZ - 0.02, mtX)[1] - panP(mtZ + 0.02, mtX)[1]) / 0.04),
+    mtRz = -Math.atan((panP(mtZ, mtX - 0.03)[1] - panP(mtZ, mtX + 0.07)[1]) / 0.1);
   const motor = A('Dakmotor', { d: 'Elektromotor (aandrijving met wormwiel) van het schuifdak, naast de rail voorin (Webasto op een onderzocht exemplaar van fase 1; plaats geschat). Anti-klem: stopt en zet enkele centimeters terug als het glas weerstand voelt.', ex: [0.1, -0.1, 0.2] }, [
-    P('Motorhuis dakmotor', merge([xf(G.rbox(0.06, 0.016, 0.04, 0.005), [0, 0, 0]), xf(G.cyl('x', 0.009, 0.009, 0.07, 14), [0.065, 0.0, 0])]), MAT.darkSteel, { d: 'Motor met overbrengingskast op de plaatstrook voor het schuifglas (plaats geschat).', p: panP(0.255, 0.3, -0.0145), ex: [0.06, -0.04, 0] }),
-    P('Wormwiel dakmotor', G.cyl('z', 0.007, 0.007, 0.05, 10), MAT.steel, { d: 'Wormas die de schuifkabels aandrijft.', p: panP(0.255, 0.36, -0.0145), ex: [0.1, 0, 0.05] }),
+    P('Motorhuis dakmotor', merge([xf(G.rbox(0.06, 0.016, 0.04, 0.005), [0, 0, 0]), xf(G.cyl('x', 0.009, 0.009, 0.07, 14), [0.065, 0.0, 0])]), MAT.darkSteel, { d: 'Motor met overbrengingskast op de plaatstrook voor het schuifglas (plaats geschat).', p: panP(mtZ, mtX, -0.0145), r: [mtRx, 0, mtRz], ex: [0.06, -0.04, 0] }),
+    P('Wormwiel dakmotor', G.cyl('z', 0.007, 0.007, 0.05, 10), MAT.steel, { d: 'Wormas die de schuifkabels aandrijft.', p: panP(mtZ, 0.36, -0.0145), r: [mtRx, 0, 0], ex: [0.1, 0, 0.05] }),
   ]);
   const harness = P('Kabelboom dakmotor', tube([panP(0.255, 0.27, -0.0145), panP(0.255, 0.15, -0.0145), panP(0.255, 0.05, -0.0145), panP(0.255, 0.0, -0.0145)], 0.0035, 16, 5), MAT.rubber, { d: 'Kabelboom van de dakmotor langs de voorste dakstrook naar de hemelconsole.', ex: [0, -0.1, 0.1] });
   const hose = (pts, nm, s) => P(`Afvoerslang ${nm}`, tube(pts, 0.006, 40, 6), MAT.rubber, { d: 'Afvoerslang die regenwater uit de goot van het dakframe door de stijl naar de wielkast leidt (verloop geschat).', ex: [s * 0.1, -0.1, 0] });
