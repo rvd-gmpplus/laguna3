@@ -856,10 +856,11 @@ function buildMirror(s) {
   const M = (x, y, z) => [s * x, y + bodMirDY, z + bodMirDZ], Mc = (x, z) => [s * x, cy, z + bodMirDZ];
   return A(`Buitenspiegel ${n}`, { d: 'Elektrisch verstelbare, verwarmde en elektrisch inklapbare buitenspiegel in carrosseriekleur (Initiale Paris met geheugen). Klapt ongeveer 80 graden naar achteren (hoek geschat).', ex: [s * 0.32, 0.12, 0.08],
     open: hinge(M(0.95, 0.94, 0.81), [0, 1, 0], s * 80 * PI / 180, { min: 64 * PI / 180, label: `Buitenspiegel ${n}`, look: { dir: [s * 0.8, 0.3, 0.75], nodes: [`Buitenspiegel ${n}`] } }) }, [
-    // voet: smalle zwarte plaat 13,7 mm buiten de huid op de spiegeldriehoek (een blok voor de kap las als los zwart blokje, 5f-2); even lang
-    // als het ingekorte huis en zoals op de foto geheel op de driehoek. Van 1,5 mm boven de bolle gordelsierlijst, die onder de driehoek
-    // doorloopt (bovenkant y 0,936), tot de onderkant van de kap (0,948)
-    P('Spiegelvoet', G.rbox(0.016, 0.0125, 0.085, 0.005), MAT.bodPillar, { d: 'Zwarte voet met bevestigingsplaat op de spiegeldriehoek, aan de binnenkant van het spiegelhuis; blijft staan als de spiegel inklapt (plaats geschat).', p: M(bodGhHalf(0.8025 + bodMirDZ, bodQy(0.8025 + bodMirDZ, 0.91375 + bodMirDY))[0] + 0.0137, 0.91375, 0.8025), stay: true, ex: [-s * 0.05, -0.05, 0] }),
+    // voet: smalle zwarte plaat 10,7 mm buiten de huid op de spiegeldriehoek (een blok voor de kap las als los zwart blokje, 5f-2); zoals op de
+    // foto geheel op de driehoek. Van 1,5 mm boven de bolle gordelsierlijst (bovenkant y 0,936) tot de onderkant van de kap (0,948).
+    // Golf 7 ronde 3: 3 mm naar binnen (was 13,7 mm; van boven zag je een lichte streep tussen voet en driehoek) en 75 mm lang van z 0,79
+    // tot 0,865 (was 85 mm vanaf 0,78), zodat de achterkant vrij blijft van de rubberlijn langs de voorrand van de ruit
+    P('Spiegelvoet', G.rbox(0.016, 0.0125, 0.075, 0.005), MAT.bodPillar, { d: 'Zwarte voet met bevestigingsplaat op de spiegeldriehoek, aan de binnenkant van het spiegelhuis; blijft staan als de spiegel inklapt (plaats geschat).', p: M(bodGhHalf(0.8075 + bodMirDZ, bodQy(0.8075 + bodMirDZ, 0.91375 + bodMirDY))[0] + 0.0107, 0.91375, 0.8075), stay: true, ex: [-s * 0.05, -0.05, 0] }),
     // kap als halve ellips in de diepte (schaal = wortel(1 - (d / 0,15)^2)): een ronde, slanke druppel zonder vlakke voorkant; de diepte maal
     // bodMirKD (golf 7 ronde 2: 137 mm huis was te diep tegen ca. 95 tot 110 mm op de foto)
     P('Spiegelkap', cache('bodMirCapT' + k, () => bodLoft(s, [0, 0.012, 0.03, 0.05, 0.07, 0.09, 0.106, 0.12, 0.132, 0.141, 0.147].map(d => [d < 0.013 ? 1 : Math.sqrt(1 - (d / 0.15) ** 2), d * bodMirKD]), true, 0.32)), MAT.paint, { d: 'Druppelvormige kap in carrosseriekleur aan de voorzijde van het spiegelhuis.', p: Mc(cx, 0.738), ex: [0, 0.02, 0.1] }),
