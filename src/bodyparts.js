@@ -2178,7 +2178,12 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     // dek achter de lip: rolt bol af naar het staartvlak; vlak onder de lip ligt ca. 2 cm lager (schaduwlijn)
     bodDeck(bodZT, SP + 0.002, 22, z => bodSAtX(z, bodTGdx(z)), 24, bodDense(bodZT, -2.22, 6)),
   ]);
-  const scr = patch((z, w) => ghPt(z, w), SP + 0.004, RW0 - 0.004, 30, z => { const q = qScr(z) + 0.004; return [q / 2, 1 - q / 2]; }, 22);
+  // golf 8 ronde 3 (kierenaudit, facet): 30 rijen en 22 kolommen gaven rechtsonder (z -1,906, |x| 0,58) een vlak van 1,2 mm onder het glas,
+  // waar de kas in de voet van de C-stijl naar het dek overgaat; nu 44 rijen (dichter onderin) en 36 kolommen. Met de fijnere kolommen lag
+  // de bovenrand van het glas (z RW0 - 0,004) niet meer onder het dakpaneel, dat 2 tot 4 mm over het glas ligt, maar er vlak mee (z-fight
+  // en een naad dak tegen glas met de lichte dakplaat achter de ruitrand): de laatste 14 mm zakt het glas daarom 0,6 mm weg onder het dak
+  const scr = patch((z, w) => { const p = ghPt(z, w); p[1] -= 0.0006 * sstep((z - RW0 + 0.018) / 0.01); return p; }, SP + 0.004, RW0 - 0.004, 44, z => { const q = qScr(z) + 0.004; return [q / 2, 1 - q / 2]; }, 36,
+    bodDense(SP + 0.03, SP + 0.33, 12).concat([RW0 - 0.018, RW0 - 0.013, RW0 - 0.008]));
   // keramische rand op de achterruit (golf 8, vormbesluit): effen matzwarte band met de binnenrand op een vaste afstand over het glas van de
   // ruitrand: zijkanten 35 mm, boven 40 mm (vanaf de achterrand van het dakpaneel, dat 4 mm over het glas ligt), onder 50 mm; binnenhoeken rond
   // (straal 30 mm). Zonder rand zag je door het glas de sponning en de lichte lijmrand op 15 tot 37 mm diepte, en las de ruit als verzonken.
