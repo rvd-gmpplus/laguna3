@@ -69,7 +69,7 @@ De vaste testlijst van `finaltests.sh` is generiek en blijft letterlijk gelijk (
 
 Hoe het werkt: `python3 tools/framework.py check` valideert het veld (rood bij een fout). `framework.py extra-namen` drukt de namen op één regel af (niets als het veld ontbreekt) en geeft exit 1 bij een ongeldig veld; `finaltests.sh` stopt dan meteen met een melding. Anders start `finaltests.sh` de extra tests als derde parallelle reeks naast de twee vaste, elk via `framework.py extra NAAM UITMAP`, dat de exitcode van het commando ongewijzigd doorgeeft (onbekende naam: 2). Elke extra test schrijft `NAAM.txt` met als laatste regel `exit N (Ns)`, telt in de eindlus mee (een ontbrekend `NAAM.txt` is FOUT) en staat na de vaste lijst in `tests.txt`.
 
-Eigen scripts van de auto horen in het manifest onder `auto` (niet onder `generiek`), want ze verschillen per auto.
+Eigen scripts van de auto horen in het manifest onder `auto` (niet onder `generiek`), want ze verschillen per auto. `build.py` laat `extraTests` weg uit het object `AUTO` in de pagina: een nieuwe test verandert de pagina en haar hash dus niet.
 
 ## Een nieuwe auto in stappen
 

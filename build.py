@@ -612,7 +612,8 @@ def page(head, js, prefix, test=False):
     negeren), #pn, het inerte script #model-js, de bootstrapmodule en het nomodule-script."""
     a = auto()
     head = fill(head, a)
-    js = 'const AUTO = Object.freeze(' + json.dumps({k: v for k, v in a.items() if not k.startswith('_')}, ensure_ascii=False) + ');\n' + js
+    # extraTests is testgegevens voor finaltests.sh en hoort niet in de pagina (anders verandert de pagina door een nieuwe test)
+    js = 'const AUTO = Object.freeze(' + json.dumps({k: v for k, v in a.items() if not k.startswith('_') and k != 'extraTests'}, ensure_ascii=False) + ');\n' + js
     head = head.replace('__MODEL_VERSION__', version(head, js, test))  # de hash dekt ook de gegevens (vóór het splitsen)
     js, pn = pn_split(js)
     pre = '\n'.join(f'<link rel="modulepreload" href="{prefix}{l}" integrity="{integrity(l)}" crossorigin="anonymous">' for l in LIBS)
