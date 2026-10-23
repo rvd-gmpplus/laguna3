@@ -1806,9 +1806,10 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   const bodLipTop = 0.303;   // hoogste punt van de onderlip: in de rubberlijn onder de chromen inlaatlijst, net onder het chroom (zie Onderlip)
   // stations naar doorbuiging (koorde hoogstens 1 mm, golf 5b-2): de stations voor de neus van de kap en de knikken van de bovenrand
   // (koplamp en kapvoorrand) blijven vast, de overige stations uit fbBr zijn kandidaten; was 56 x 30 gelijke stappen plus fbBr
-  // golf 8 ronde 2: vaste stations op het eind van de koplamp en op fbJ, waar de bovenrand van de onderrand van de lamp naar de kapnaad
+  // golf 8 ronde 2: koorde hoogstens 0,7 mm (was 1 mm; 2.500 driehoeken meer, de schaal ligt dichter op de huid en de trede met het
+  // afdekglas van de koplamp is 1,1 mm); vaste stations op het eind van de koplamp en op fbJ, waar de bovenrand van de onderrand van de lamp naar de kapnaad
   // springt; zonder die twee liep de koorde schuin omhoog en zag je naast de binnenspits van de koplamp door een driehoekig gat
-  const shF = bodSagSide(1.752, ZF, z => [fbLo(z), fbHi(z)], 0.001, { keep: bodHoodTip.concat([bodHLZ0, fbJ - 0.0005, fbJ, bodHLZ1, bodHoodZ1]), extra: fbBr, nuF: 240, nvF: 128 });
+  const shF = bodSagSide(1.752, ZF, z => [fbLo(z), fbHi(z)], 0.0007, { keep: bodHoodTip.concat([bodHLZ0, fbJ - 0.0005, fbJ, bodHLZ1, bodHoodZ1]), extra: fbBr, nuF: 240, nvF: 128 });
   // golf 5k: gelast met bodCreaseWeld. Het vroegere bodWeld laste op positie en normaal; na het knippen had elke driehoek een eigen vlakke
   // normaal en was de schaal vlak gearceerd. Met weldAll (ronde 1) gaf de knik onder de binnenhoek van de koplamp (station bodHLZ1) een lichte streep
   const shellF = bodCreaseWeld(merge([shF.geo(L), shF.geo(R), bodCap(ZF - 1e-4, 1)].map(g => bodClipPoly(g, grHolePoly, 2.1))));
