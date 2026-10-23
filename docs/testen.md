@@ -19,6 +19,7 @@ python3 tools/smoke.py
 | `CHROMIUM` | Pad naar een Chromium-binary. Standaard `/opt/pw-browsers/chromium` als die bestaat, anders de Chromium van Playwright (`playwright install chromium`). |
 | `MODEL_TEST` | Een bestaande testmap hergebruiken in plaats van opnieuw te bouwen. Zonder deze variabele ruimt de harness zijn tijdelijke testmap bij het sluiten op. |
 | `MODEL_TIMEOUT_MS` | Wachttijd op laden en `ready`, standaard 120000. Op een belaste machine of in CI hoger zetten. |
+| `ACTION_TIMEOUT_MS` | Standaardtijd van Playwright-acties (`tools/harness.py`, `pg.set_default_timeout`), standaard 30000. De nightly zet 120000. Lokaal verandert er niets. |
 | `PUBSMOKE_READY_MS` | Grens voor `ready` in `pubsmoke.py`, standaard 20000 (de grens uit de premortem). |
 
 Chromium start met `--use-angle=swiftshader --enable-unsafe-swiftshader --ignore-gpu-blocklist`. De harness zet `window.__MODEL_CACHECHECK = true`, zodat een botsing van cache-sleutels in `core.js` als consolefout verschijnt. Een script faalt bij elke console-fout of -waarschuwing (`harness.errors()` geeft beide), behalve de regels in `IGNORE` in `tools/harness.py`; die lijst is een contract met per regel een reden en datum, en alleen de orkestrator wijzigt hem.
@@ -34,6 +35,8 @@ Laadketen sinds golf 6 (three@0.186.1 als ES-module): `build.py` schrijft na `he
 ## CI op GitHub
 
 `.github/workflows/ci.yml` draait bij elke push en PR de snelle set (lint, `index.html` hoort bij `src/`, smoke, integrity, silhouette, `tri.py --gate`, de testlijst van `finaltests.sh`), richting 5 tot 10 minuten; `nightly.yml` draait elke nacht en op aanvraag de lange set (itest met poorten, `opentest --strikt-min`, `ui_inner --open --strict`, pubsmoke, stats en cijfers), met ruimere wachttijden (`MODEL_TIMEOUT_MS` 600 s, `PUBSMOKE_READY_MS` 60 s) en de uitvoer als artefact. Een rode push-job stopt het werk tot hij groen is; een rode nachtrun is een melding. SwiftShader op een gedeelde runner is trager dan de container; de eerste runs zijn een proef van de tijdgrenzen.
+
+Wachttijden op de nightly. `ACTION_TIMEOUT_MS` (nightly: 120000) verhoogt de standaardtijd van elke Playwright-actie; anders lopen klikken, `evaluate` en `wait_for_function` op SwiftShader tegen de 30 s aan. Na een viewportwissel (`set_viewport_size`) klopt `innerWidth` direct, maar het resize-event van de app komt op de runner pas na 1 tot 16 s. Wie meteen meet, meet een verouderde indeling (controle 18 U2 mat zo een verouderde breedte). In `tools/itest.py` wisselt daarom `wissel_viewport(pg, w, h)` het formaat en wacht (tot 40 s) tot een eigen resize-teller omhoog is en `innerWidth` en `innerHeight` kloppen; pas daarna wordt gemeten. Controle 20 doet hetzelfde met `window.__rs`. Gebruik de helper bij elke nieuwe formaatwissel in een test. De nightly schrijft de itest-uitvoer ook naar `uit/itest.log`, zodat het artefact bij een rode run iets bevat.
 
 ## Scripts
 

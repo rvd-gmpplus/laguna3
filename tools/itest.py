@@ -254,6 +254,22 @@ def settle(pg, ms=180):
     pg.wait_for_timeout(ms)
 
 
+def wissel_viewport(pg, w, h, ms=40000):
+    """Formaat wisselen en wachten tot de app het resize-event echt kreeg. Op een trage runner (SwiftShader) komt dat event
+    pas na 1 tot 16 s, terwijl innerWidth direct klopt; wie meteen meet, meet een verouderde indeling. Eigen teller
+    window.__rsw (los van window.__rs van controle 20); wacht tot de teller omhoog is en innerWidth/innerHeight kloppen.
+    Geen event te verwachten als het formaat al gelijk is. Geeft True als het event kwam binnen ms."""
+    pg.evaluate("if (window.__rsw === undefined) { window.__rsw = 0; window.addEventListener('resize', () => { window.__rsw++; }); }")
+    n, zelfde = pg.evaluate(f"[window.__rsw, innerWidth === {int(w)} && innerHeight === {int(h)}]")
+    pg.set_viewport_size({'width': w, 'height': h})
+    if zelfde: return True
+    try:
+        pg.wait_for_function(f'window.__rsw > {n} && innerWidth === {int(w)} && innerHeight === {int(h)}', timeout=ms)
+        return True
+    except Exception:
+        return False  # de controle erna meldt wat er dan wel is
+
+
 def tap(pg, touch, x, y, **kw):
     if touch:
         pg.touchscreen.tap(x, y)
@@ -1154,7 +1170,7 @@ def check18(s):
     # het herkadreren na een formaatwissel loopt via een uitgestelde resize; op een belaste runner valt die soms na de vaste
     # wachttijd (golf 6: een keer rood in de VM, 0 van 15 bij herhaling). Daarom tot 5 s wachten tot het kader klopt; de eis blijft gelijk.
     def frame_na(w, h):
-        pp.set_viewport_size({'width': w, 'height': h}); pp.wait_for_timeout(500); settle(pp, 300)
+        wissel_viewport(pp, w, h); pp.wait_for_timeout(500); settle(pp, 300)
         for _ in range(16):
             fr = pp.evaluate(f'__model.frameOf({json.dumps(sel)})')
             if fr['inside'] and fr['cover'] >= 0.02: break
@@ -1903,11 +1919,11 @@ def run_sheetdrag(s):
     gl = ctr('#sheetToggle'); touch('touchStart', [(x, gl[1])])
     for i in range(1, 5): touch('touchMove', [(x, gl[1] - 25 * i)], 0.03); pp.wait_for_timeout(30)
     # wachten tot de app de draai verwerkt heeft (matchMedia en resize komen op de CI-runner pas na enkele seconden)
-    pp.set_viewport_size({'width': 844, 'height': 390}); pp.wait_for_timeout(500); wacht_stand('open')
+    wissel_viewport(pp, 844, 390); pp.wait_for_timeout(500); wacht_stand('open')
     touch('touchEnd', [])
     l1 = na()
     check('24 draaien midden in het slepen: zijkolom open, geen data-drag, geen inline hoogte, geen maat blijft staan', l1['state'] == 'open' and not l1['drag'] and not l1['inline'] and l1['size'] == '' , json.dumps(l1))
-    pp.set_viewport_size({'width': 390, 'height': 844}); pp.wait_for_timeout(600); wacht_stand('peek'); settle(pp, 200)
+    wissel_viewport(pp, 390, 844); pp.wait_for_timeout(600); wacht_stand('peek'); settle(pp, 200)
     l2 = na()
     check('24 terug naar staand: peek en het slepen werkt weer', l2['state'] == 'peek' and not l2['drag'] and not l2['inline'], json.dumps(l2))
     g3 = ctr('#sheetToggle'); drag(x, g3[1], -330, rust=150); l3 = na()
@@ -2111,14 +2127,14 @@ def run_golf5n(s):
         if not (abs(g['sheetVar'] - g['sheetH']) <= 1 and abs(g['dockVar'] - g['dockH']) <= 1 and not g['overSeg'] and not g['overSheet'] and g['ck'] == 'bestuurder'):
             fails.append([tag, g])
     for (w, h) in ((360, 780), (320, 568), (390, 844)):
-        pp.set_viewport_size({'width': w, 'height': h}); settle(pp, 500)  # settle geeft de pagina een beeld, anders lopen resize en ResizeObserver niet
+        wissel_viewport(pp, w, h); settle(pp, 500)  # settle geeft de pagina een beeld, anders lopen resize en ResizeObserver niet
         meet(f'formaatwissel naar {w} x {h}')
-    pp.set_viewport_size({'width': 844, 'height': 390}); settle(pp, 600)   # liggend: het paneel is een zijkolom
-    pp.set_viewport_size({'width': 390, 'height': 844}); settle(pp, 600)   # weer staand: setSheet zet peek
+    wissel_viewport(pp, 844, 390); settle(pp, 600)   # liggend: het paneel is een zijkolom
+    wissel_viewport(pp, 390, 844); settle(pp, 600)   # weer staand: setSheet zet peek
     meet('terug van liggend (peek)')
     pp.evaluate("setSheet('open', 'vol')"); pp.wait_for_timeout(300)
     meet('vol na het draaien')
-    pp.set_viewport_size({'width': 360, 'height': 780}); settle(pp, 500)
+    wissel_viewport(pp, 360, 780); settle(pp, 500)
     meet('vol na het draaien en een formaatwissel')
     # het dock wordt hoger terwijl het paneel in vol staat (de ResizeObserver op het dock): --dock-h volgt en het paneel krimpt mee
     d0 = pp.evaluate(GEO)['dockH']
