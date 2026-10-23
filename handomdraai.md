@@ -25,7 +25,7 @@ Per onderdeel: `CHANGELOG.md` (versie 22) en `docs/masterplan.md`, sectie Golf 7
 ### Open punten (in volgorde van waarde)
 1. **Nightly:** de eerste nightly op versie 22 (laguna3) en op versie 9 via `main` (espace5) nakijken met `gh run list`.
 2. **Telefoontest op iOS** door de gebruiker (iOS 16.4 of nieuwer, protocol `docs/telefoontest.md`).
-3. **Keuzes voor de gebruiker uit golf 7:** de strook onder de portierkaart omlaag tot y 0,82 of accepteren; Bekledingspaneel tegen Luidsprekerrooster (0,70 mm, al op versie 21) vastleggen als bekend of het rooster 1 mm naar binnen.
+3. **Volgende golf (besluit van de gebruiker):** Luidsprekerrooster in de deurbekleding ongeveer 1 mm naar binnen, zodat het Bekledingspaneel er niet meer 0,70 mm in steekt (links en rechts, al op versie 21); daarna clash dicht. Het gelakte stukje onder de bovenlijst van de portierkaart is voor nu geaccepteerd.
 4. **Carrosserie:** spleet tussen voorruitglas en voorruitrubber (x 0,63 tot 0,66); raamkader van het achterportier in het vlak van de B-stijl; bumpersteun voor rechts -3,0 mm; hoeken van de achterklepbekleding; velgspaakfacetten en de rand van de dakgreepkom; dakafvoerslang onder de spiegeldriehoek; voorrand van het portier ongeveer 75 mm te ver naar achteren tegenover de vooras (voet van de A-stijl in `body.js`, met de hoek van de driehoek). Budget Carrosserie bijna vol (`docs/cijfers.md`).
 5. **Testlaag:** `opendicht` vergeeft tot 5 mm voorbij het geraakte vlak; een randtoets voor dunne delen toevoegen (golf 7 vond zo een snijding die de set miste).
 6. **Interieur (advisor, kan):** wang van de instrumentenkap bovenaan circa 20 mm naar buiten; kleine schuine vouw in de uitloop van het dashboard.

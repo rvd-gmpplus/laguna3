@@ -490,8 +490,8 @@ Gedaan:
 - **espace5**: versie 9 (three.js 0.186.1, framework van versie 21 plus het slot); de standaardtak op GitHub stond op een oude tak en is op `main` gezet, zodat de nightly versie 9 test.
 
 Open:
-- Onder de bovenlijst van de portierkaart blijft bij een open voorportier tussen z 0,803 en 0,898 een gelakt stukje te zien; de strook kan omlaag tot y ongeveer 0,82 met een nieuwe botsingsmeting tegen de dashboardeindkap (besluit van de gebruiker).
-- Bekledingspaneel tegen Luidsprekerrooster dringt 0,70 mm door, links en rechts; bestaat al op versie 21 en de testset meet dit paar niet. Vastleggen als bekend of het rooster 1 mm naar binnen.
+- Onder de bovenlijst van de portierkaart blijft bij een open voorportier tussen z 0,803 en 0,898 een gelakt stukje te zien; voor nu geaccepteerd (besluit van de gebruiker op 23 oktober 2026).
+- Bekledingspaneel tegen Luidsprekerrooster dringt 0,70 mm door, links en rechts; bestaat al op versie 21 en de testset meet dit paar niet. Besluit van de gebruiker: in de volgende golf het rooster ongeveer 1 mm naar binnen, met een botsingsmeting.
 - De dakafvoerslang (`panorama.js`) loopt 9 tot 11 mm onder de schuine rand van de spiegeldriehoek; ze hoort eerder binnen de A-stijl.
 - Budget Carrosserie: nog ongeveer 1.000 driehoeken marge (`docs/cijfers.md`); de volgende carrosseriegolf maakt eerst ruimte of herziet het budget met de gebruiker.
 - `opendicht` vergeeft tot 5 mm voorbij het geraakte vlak en zag de snijding van de driehoek niet; een randtoets (randen als stralen) in de poort zou dit soort dunne delen wel vinden.
