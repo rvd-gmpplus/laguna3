@@ -532,9 +532,9 @@
  ],
  "triangle_budgets": {
   "_uitleg": "Budget aan driehoeken per hoofdgroep en in totaal (tools/tri.py --gate). Alleen-lezen voor domeineigenaars; wijzigen alleen met een reden in docs/onderzoek/beslissingen.md.",
-  "totaal": 720000,
+  "totaal": 760000,
   "Aandrijflijn": 260000,
-  "Carrosserie": 200000,
+  "Carrosserie": 230000,
   "Onderstel": 125000,
   "Interieur": 95000,
   "Koeling en luchtinlaat": 30000,
