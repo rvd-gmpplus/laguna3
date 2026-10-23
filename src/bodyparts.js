@@ -276,8 +276,10 @@ function bodQdBand(s, q0, q1, d0, d1, out, crown = 0, nq = 12, nt = 1) {
 const bodSail = 0.765;
 // punt van de spiegeldriehoek op de gordel. Golf 7 ronde 2 probeerde 0,96 (schuine rand ca. 37 graden in plaats van 42; op de foto's ca.
 // 31 graden), maar dan snijdt de onderrand vlak voor de sluitnaad (z 0,907 tot 0,910, y 0,904) bij een half open voorportier (55 tot 65
-// procent) door de bovenste achterhoek van het voorscherm. Besluit van de eigenaar: bij een doordringing terug naar 0,93 (fixronde 2)
-const bodSailTip = 0.93;
+// procent) door de bovenste achterhoek van het voorscherm; fixronde 2 zette hem terug op 0,93. Golf 7 ronde 3 (besluit van de eigenaar):
+// toch 0,96, met de onderrand van de spiegeldriehoek op q 0,014 in plaats van 0,004 (ca. 3 mm hoger); zo blijft de onderrand bij elke
+// tussenstand van het portier vrij van het voorscherm (randtoets en zwaai 0,40 tot 0,75 open, rechts en links)
+const bodSailTip = 0.96;
 // bovenrand van de spiegeldriehoek (golf 5h): van de bovenrand van de zijruit op bodSail recht naar de gordel op z bodSailTip, zoals de
 // zwarte driehoek in de ruithoek op de persfoto (fase 2). Was 0,966 tot 0,93 m: een strookje van 5 cm onder een breed gelakt vlak van de A-stijl
 const bodSailTop = z => lerp(bodYG(bodSail) - 0.003, YT(bodSailTip) + 0.002, clamp((z - bodSail) / (bodSailTip - bodSail), 0, 1));
@@ -799,7 +801,7 @@ function buildDoor(s, isFront) {
   kids.push(P('Raamkaderrubber binnen', bodGhSide(s, kZ0, gz1 + 0.01, 30, z => [kQT(z) - 0.005, kQT(z)], 1, [], -0.0055), MAT.rubber, { d: 'Zwart afdichtrubber langs de buitenrand van het raamkader, onder de dakrand.', ex: [-s * 0.03, 0.08, 0] }));
   if (isFront) kids.push(P('Naadrubber B-stijl', bodBand(s, -0.148 + bodBGW + 0.001, bodBGK, -0.148 - bodBGW - 0.001, bodBGK, 0.0008), MAT.bodPillar, { d: 'Mat zwart rubber in de naad tussen de twee B-stijlafdekkingen, in het verlengde van de sluitnaad onder de gordel.', ex: [s * 0.03, 0.02, 0] }));
   if (isFront) {
-    kids.push(P('Spiegeldriehoek', bodGhSide(s, bodSail, bodSailTip, 8, z => [0.004, Math.min(bodQS - 0.02, bodQy(z, bodSailTop(z)))], 6, [], 0.001), MAT.bodPillar, { d: 'Zwarte driehoekige afdekplaat tussen zijruit en A-stijl waarop de spiegel staat.', ex: [s * 0.05, 0.05, 0.03] }));
+    kids.push(P('Spiegeldriehoek', bodGhSide(s, bodSail, bodSailTip, 8, z => [0.014, Math.min(bodQS - 0.02, bodQy(z, bodSailTop(z)))], 6, [], 0.001), MAT.bodPillar, { d: 'Zwarte driehoekige afdekplaat tussen zijruit en A-stijl waarop de spiegel staat.', ex: [s * 0.05, 0.05, 0.03] }));
     // binnenkant van de spiegeldriehoek (golf 7 ronde 2, foto's portier open en zicht vanaf de bestuurdersstoel): matzwarte kunststof
     // afdekking 8 mm binnen het ruitvlak, met de achterrand langs de voorrand van de ruit, de onderrand op de bovenrand van de portierkaart en de
     // bovenrand 20 mm onder de schuine rand van de driehoek, langs het binnenrubber van het raamkader (de afvoerslang van het dak loopt
