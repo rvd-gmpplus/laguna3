@@ -23,7 +23,7 @@
   const pad = m => { const p = []; for (let k = m.userData.node; k; k = k.parent) p.unshift(k.name); return p.slice(1).join('/'); };
   const zicht = o => { for (; o; o = o.parent) if (o.visible === false) return false; return true; };
   const rx = a => (a || []).map(s => new RegExp(s));
-  const OPB = rx(cfg.opbouw), VERZ = rx(cfg.verzonken), RUIT = rx(cfg.lijmruiten), VUL = rx(cfg.naadvulling), KLEIN = rx(cfg.klein), GEENF = rx(cfg.geenFacet), ZWART = rx(cfg.zwarteRand);
+  const OPB = rx(cfg.opbouw), VERZ = rx(cfg.verzonken), RUIT = rx(cfg.lijmruiten), VUL = rx(cfg.naadvulling), KLEIN = rx(cfg.klein), GEENF = rx(cfg.geenFacet), ZWART = rx(cfg.zwarteRand), AFD = rx(cfg.afdekkers);
   const H = cfg.stap / 1000, R0 = 0.05, FAR = R0 + 0.30, DDIEP = cfg.diep, LMAX = cfg.lmax, DS = 0.0004;
 
   /* ---------- meshes en driehoeken ---------- */
@@ -33,7 +33,7 @@
     const tr = mats.every(x => x && x.transparent && x.opacity < 0.95);
     const hx = base && base.color ? base.color.getHexString() : '808080';
     const c = [0, 2, 4].map(i => parseInt(hx.slice(i, i + 2), 16) / 255), lum = 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
-    return { p, tr, lum: +lum.toFixed(3), inner: !!m.userData.node.inner, opb: OPB.some(r => r.test(p)), verz: VERZ.some(r => r.test(p)), ruit: RUIT.some(r => r.test(p)), vul: VUL.some(r => r.test(p)), klein: KLEIN.some(r => r.test(p)), geenF: GEENF.some(r => r.test(p)), zwart: ZWART.some(r => r.test(p)), buiten: true };
+    return { p, tr, lum: +lum.toFixed(3), inner: !!m.userData.node.inner, opb: OPB.some(r => r.test(p)), verz: VERZ.some(r => r.test(p)), ruit: RUIT.some(r => r.test(p)), vul: VUL.some(r => r.test(p)), klein: KLEIN.some(r => r.test(p)), geenF: GEENF.some(r => r.test(p)), zwart: ZWART.some(r => r.test(p)), afd: AFD.some(r => r.test(p)), buiten: true };
   });
   let nt = 0;
   for (const m of ms) { const g = m.geometry; nt += (g.index ? g.index.count : g.attributes.position.count) / 3 | 0; }
@@ -334,18 +334,32 @@
     const kant = (i0, stp) => { const r = []; for (let s = 2; s <= 7; s++) { const i = i0 + stp * s; if (i < 0 || i > N || L_[i] !== L_[i0]) break; r.push(D_[i]); } return r; };
     const dA = med(kant(iA, -1)), dB = med(kant(iB, 1));
     let door = -Infinity, doorDeel = -1, doorLicht = 0;
+    const zie = new Set(); let niets = false;
     for (let s = iA + 1; s < iB; s++) {
       if (L_[s] === -5) continue;
       const d = D_[s]; if (d > door) { door = d; doorDeel = M_[s]; }
       if (M_[s] >= 0 && info[M_[s]].lum > cfg.randLum && !info[M_[s]].vul) doorLicht++;
+      if (d > DDIEP) { if (M_[s] < 0) niets = true; else zie.add(M_[s]); }
+    }
+    // afgedekt (golf 8 ronde 2): ligt over de hele kier een afdekdeel (cfg.afdekkers: een lijst of rubber die bewust over een naad
+    // ligt) hooguit dekMax mm dieper dan de randen of erboven, dan is de kier van buiten niet te zien: een tweede laag onder een
+    // sierlijst of wenkbrauw. De kruising telt dan met kier 0 en zonder doorkijk; welk deel afdekt, staat in de naad (afgedekt).
+    // Alleen afdekdelen tellen: een binnendeel dat tot in een kier van de huid komt (een motorhuis onder een spleet in het dak),
+    // blijft een fout
+    const ref = Math.max(dA === null ? 0 : dA, dB === null ? 0 : dB);
+    let dek = cfg.dekMax !== undefined && iB - iA > 1 ? -1 : -2;
+    for (let s = iA + 1; s < iB && dek > -2; s++) {
+      const m = M_[s];
+      if (L_[s] === -5 || m < 0 || m === la || m === lb || !info[m].afd || D_[s] > ref + cfg.dekMax) dek = -2; else if (dek < 0) dek = m;
     }
     const nA = T_[Math.max(fa, iA - 3)] >= 0 ? triN(T_[Math.max(fa, iA - 3)]) : null, nB = T_[Math.min(N, iB + 3)] >= 0 ? triN(T_[Math.min(N, iB + 3)]) : null;
     const knik = nA && nB ? Math.acos(Math.min(1, Math.abs(dot(nA, nB)))) * 180 / PI : null;
     const [Pm, nm] = tussen(c.a, c.b, 0.5);
     const e0 = norm([0, 1, 2].map(k => PP[N][k] - PP[0][k]));
+    const afg = dek >= 0;
     Object.assign(c, {
-      la, lb, kierL: Math.max(0, iB - iA - 1) * DS * 1000, stap: dA !== null && dB !== null ? dA - dB : null, dA, dB,
-      door: iB - iA > 1 ? (door === -Infinity ? null : door) : null, doorDeel, doorLicht, derde: [...new Set(derde)], knik,
+      la, lb, kierL: afg ? 0 : Math.max(0, iB - iA - 1) * DS * 1000, afg: afg ? dek : -1, zie: afg ? [] : [...zie], niets: !afg && niets, stap: dA !== null && dB !== null ? dA - dB : null, dA, dB,
+      door: iB - iA > 1 && !afg ? (door === -Infinity ? null : door) : null, doorDeel, doorLicht, derde: [...new Set(derde)], knik,
       eA: PP[iA], eB: PP[iB], M: [0, 1, 2].map(k => (PP[iA][k] + PP[iB][k]) / 2), n: nm, e0,
       gapN: iB - iA - 1,
       rand: info[la].ruit && !info[lb].ruit && !info[lb].zwart ? ruitRand(c, c.a) : info[lb].ruit && !info[la].ruit && !info[la].zwart ? ruitRand(c, c.b) : [], vul: L_.slice(iA + 1, iB).some(l => l === -5),
@@ -372,20 +386,33 @@
       }
     });
     const comps = new Map(); lijst.forEach((c, i) => { const r = f(i); (comps.get(r) || comps.set(r, []).get(r)).push(c); });
+    const afst = (c, o) => Math.hypot(c.M[0] - o.M[0], c.M[1] - o.M[1], c.M[2] - o.M[2]);
     for (const cs of comps.values()) {
       if (cs.length < cfg.minKruis) { los += cs.length; continue; }
-      // richting van de naad per kruising uit de buren binnen 3 rasterstappen (hoofdas), dan de kier loodrecht
+      // deellijnen (golf 8 ronde 2): kruisingen die hooguit lijnSamen rasterstappen uit elkaar liggen, vormen één lijn. Een lijst met
+      // twee randen tegen hetzelfde rubber (onder- en bovenrand, 13 mm uit elkaar) gaf anders één naad met twee evenwijdige lijnen,
+      // en de richting uit de buren sprong dan tussen die twee (schijnknik tot 48 graden). Alleen voor de knik in de naadlijn (tl);
+      // de kier loodrecht op de naad houdt de richting uit alle buren (t), want op een schuine naad liggen de kruisingen soms
+      // verder dan lijnSamen uit elkaar
+      const lp = cs.map((_, i) => i), lf = i => { while (lp[i] !== i) i = lp[i] = lp[lp[i]]; return i; };
+      const LS = (cfg.lijnSamen || cfg.samen) * H;
+      for (let i = 0; i < cs.length; i++) for (let j = i + 1; j < cs.length; j++) if (afst(cs[i], cs[j]) <= LS) { const a = lf(i), b = lf(j); if (a !== b) lp[a] = b; }
+      cs.forEach((c, i) => { c.lijnId = lf(i); });
+      // richting van de naad per kruising uit de buren binnen 3 rasterstappen (hoofdas): t uit alle buren, tl uit de buren op dezelfde
+      // deellijn; dan de kier loodrecht op t
+      const hoofdas = nb => {
+        if (nb.length < 2) return null;
+        const m = [0, 1, 2].map(k => nb.reduce((s, o) => s + o.M[k], 0) / nb.length);
+        const Cv = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+        for (const o of nb) { const d = [0, 1, 2].map(k => o.M[k] - m[k]); for (let a = 0; a < 3; a++) for (let b = 0; b < 3; b++) Cv[a][b] += d[a] * d[b]; }
+        let v = [1, 0.5, 0.25]; for (let it = 0; it < 30; it++) v = norm([0, 1, 2].map(a => Cv[a][0] * v[0] + Cv[a][1] * v[1] + Cv[a][2] * v[2]));
+        return v;
+      };
       for (const c of cs) {
-        const nb = cs.filter(o => Math.hypot(...[0, 1, 2].map(k => c.M[k] - o.M[k])) <= 3.2 * H);
-        let t = null;
-        if (nb.length >= 2) {
-          const m = [0, 1, 2].map(k => nb.reduce((s, o) => s + o.M[k], 0) / nb.length);
-          const Cv = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
-          for (const o of nb) { const d = [0, 1, 2].map(k => o.M[k] - m[k]); for (let a = 0; a < 3; a++) for (let b = 0; b < 3; b++) Cv[a][b] += d[a] * d[b]; }
-          let v = [1, 0.5, 0.25]; for (let it = 0; it < 30; it++) v = norm([0, 1, 2].map(a => Cv[a][0] * v[0] + Cv[a][1] * v[1] + Cv[a][2] * v[2]));
-          t = v;
-        }
+        const nb = cs.filter(o => afst(c, o) <= 3.2 * H);
+        const t = hoofdas(nb);
         c.t = t;
+        c.tl = hoofdas(nb.filter(o => o.lijnId === c.lijnId));
         const loodrecht = t ? norm(cross(c.n, t)) : null;
         c.cos = loodrecht ? Math.abs(dot(loodrecht, c.e0)) : 1;
         c.kier = c.kierL * c.cos;
@@ -397,7 +424,7 @@
       // lijnhoek: hoek tussen de randlijn van A en die van B over stukken van ongeveer 5 rasterstappen
       let lijn = null;
       for (const c of basis) {
-        const nb = basis.filter(o => Math.hypot(...[0, 1, 2].map(k => c.M[k] - o.M[k])) <= 5 * H);
+        const nb = basis.filter(o => afst(c, o) <= 5 * H);
         if (nb.length < 4) continue;
         const as = (pts) => { const m = [0, 1, 2].map(k => pts.reduce((s, p) => s + p[k], 0) / pts.length); const Cv = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
           for (const p of pts) { const d = [0, 1, 2].map(k => p[k] - m[k]); for (let a = 0; a < 3; a++) for (let b = 0; b < 3; b++) Cv[a][b] += d[a] * d[b]; }
@@ -407,17 +434,21 @@
         if (lijn === null || h > lijn) lijn = h;
       }
       // doorkijk telt pas bij een kier van minstens twee scanstappen (0,8 mm); door een spleet van 0,4 mm zie je niets
-      // knik in de naadlijn: grootste hoek tussen de richtingen van twee kruisingen die 3 tot 6 rasterstappen uit elkaar liggen
+      // knik in de naadlijn: grootste hoek tussen de richtingen (tl) van twee kruisingen op dezelfde deellijn die 3 tot 6 rasterstappen uit elkaar liggen
       // (informatie: een ontworpen hoek, zoals de bovenhoek van een portier, telt ook)
       let knikL = null;
-      for (const c of basis) { if (!c.t) continue; for (const o of basis) { if (o === c || !o.t) continue;
+      for (const c of basis) { if (!c.tl) continue; for (const o of basis) { if (o === c || !o.tl || o.lijnId !== c.lijnId) continue;
         const d = Math.hypot(...[0, 1, 2].map(k => c.M[k] - o.M[k])); if (d < 3 * H || d > 6 * H) continue;
-        const h = Math.acos(Math.min(1, Math.abs(dot(c.t, o.t)))) * 180 / PI;
+        const h = Math.acos(Math.min(1, Math.abs(dot(c.tl, o.tl)))) * 180 / PI;
         if (!knikL || h > knikL.hoek) knikL = { hoek: +h.toFixed(1), plek: [0, 1, 2].map(k => +((c.M[k] + o.M[k]) / 2).toFixed(3)) }; } }
       const kv = vals(c => c.kier), sv = vals(c => c.stap), dv = cs.filter(c => c.gapN >= 2).map(c => c.door).filter(v => v !== null);
       const doorDelen = {}; cs.forEach(c => { if (c.gapN >= 2 && c.door !== null && c.doorDeel >= 0 && c.door > DDIEP) doorDelen[c.doorDeel] = (doorDelen[c.doorDeel] || 0) + 1; });
       const rand = {}; cs.forEach(c => c.rand.forEach(([m]) => { rand[m] = (rand[m] || 0) + 1; }));
       const derde = {}; cs.forEach(c => c.derde.forEach(m => { derde[m] = (derde[m] || 0) + 1; }));
+      // doorkijk per deel (alleen bij een kier van minstens twee scanstappen): welke delen en hoe vaak niets; afgedekte kruisingen
+      const doorZie = {}; let doorNiets = 0; const afgedekt = {};
+      cs.forEach(c => { if (c.afg >= 0) afgedekt[c.afg] = (afgedekt[c.afg] || 0) + 1; if (c.gapN < 2) return; c.zie.forEach(m => { doorZie[m] = (doorZie[m] || 0) + 1; }); if (c.niets) doorNiets++; });
+      const lijnen = new Set(basis.map(c => c.lijnId)).size;
       const la = cs[0].la < cs[0].lb ? cs[0].la : cs[0].lb, lb = la === cs[0].la ? cs[0].lb : cs[0].la;
       // stap met teken ten opzichte van la (positief: la ligt dieper)
       const svT = basis.filter(c => c.stap !== null).map(c => c.la === la ? c.stap : -c.stap);
@@ -428,9 +459,9 @@
         door: dv.length ? +Math.max(...dv).toFixed(1) : null, doorN: dv.filter(v => v > DDIEP).length, doorDelen, doorLicht: cs.reduce((s, c) => s + (c.doorLicht ? 1 : 0), 0),
         randA: randA.sort((x, y) => x - y).map(v => +v.toFixed(2)), randB: randB.sort((x, y) => x - y).map(v => +v.toFixed(2)),
         knik: cs.map(c => c.knik).filter(v => v !== null).sort((x, y) => x - y).map(v => +v.toFixed(1)), lijn: lijn === null ? null : +lijn.toFixed(1), knikL,
-        rand, derde,
-        // punt: x, y, z, kier, stap (teken t.o.v. a), doorkijk, rastersoort (0/1 zij, 2 voor, 3 achter), normaal y en x
-        punten: basis.map(c => [+c.M[0].toFixed(4), +c.M[1].toFixed(4), +c.M[2].toFixed(4), +c.kier.toFixed(2), c.stap === null ? null : +((c.la === la ? c.stap : -c.stap)).toFixed(2), c.door === null ? null : +c.door.toFixed(1), SM[c.a].kind, +c.n[1].toFixed(2), +c.n[0].toFixed(2)]),
+        rand, derde, doorZie, doorNiets, afgedekt, lijnen,
+        // punt: x, y, z, kier, stap (teken t.o.v. a), doorkijk, rastersoort (0/1 zij, 2 voor, 3 achter), normaal y en x, deellijn
+        punten: basis.map(c => [+c.M[0].toFixed(4), +c.M[1].toFixed(4), +c.M[2].toFixed(4), +c.kier.toFixed(2), c.stap === null ? null : +((c.la === la ? c.stap : -c.stap)).toFixed(2), c.door === null ? null : +c.door.toFixed(1), SM[c.a].kind, +c.n[1].toFixed(2), +c.n[0].toFixed(2), c.lijnId]),
       });
     }
   }
@@ -459,7 +490,7 @@
   window.__kieren = { SM, lab, GR, fac: facetten.map(f => f.mon), vla: vlakken.map(v => v.mon) };
   const tel = { monsters: NS, gemeten: 0, skip: 0, opbouw: 0, kier: 0, vulling: 0 };
   for (let i = 0; i < NS; i++) { const l = lab[i]; if (l >= 0) tel.gemeten++; else if (l === -2) tel.skip++; else if (l === -3) tel.opbouw++; else if (l === -4) tel.kier++; else tel.vulling++; }
-  const gebruikt = new Set(); naden.forEach(n => { gebruikt.add(n.a); gebruikt.add(n.b); Object.keys(n.doorDelen).forEach(m => gebruikt.add(+m)); Object.keys(n.rand).forEach(m => gebruikt.add(+m)); Object.keys(n.derde).forEach(m => gebruikt.add(+m)); });
+  const gebruikt = new Set(); naden.forEach(n => { gebruikt.add(n.a); gebruikt.add(n.b); Object.keys(n.doorDelen).forEach(m => gebruikt.add(+m)); Object.keys(n.rand).forEach(m => gebruikt.add(+m)); Object.keys(n.derde).forEach(m => gebruikt.add(+m)); Object.keys(n.doorZie).forEach(m => gebruikt.add(+m)); Object.keys(n.afgedekt).forEach(m => gebruikt.add(+m)); });
   facetten.forEach(f => gebruikt.add(f.deel)); vlakken.forEach(v => { Object.keys(v.buren).forEach(m => gebruikt.add(+m)); Object.keys(v.gezien).forEach(m => gebruikt.add(+m)); });
   const meshes = {}; for (const m of gebruikt) meshes[m] = { p: info[m].p, tr: info[m].tr, lum: info[m].lum, inner: info[m].inner, ruit: info[m].ruit, verz: info[m].verz, ...(delen[m] ? { med: +delen[m].med.toFixed(2), glad: delen[m].glad, nm: delen[m].n } : {}) };
   facetten.forEach(f => delete f.mon);
