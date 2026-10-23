@@ -42,4 +42,14 @@ for k in ['script', 'buildStart', 'buildCar', 'startUp', 'render0', 'firstFrame'
 if 'buildStart' in t and 'buildCar' in t:
     out.append(f"| duur buildCar() | {nl(t['buildCar'] - t['buildStart'] if t['buildCar'] > t['buildStart'] else t['buildCar'])} |")
 out.append('\nDeze tijden zeggen niets over een echt apparaat; zie `docs/telefoontest.md`.\n')
+# De sectie "## Pagina" is met de hand geschreven (publicatiecijfers). De omleiding naar docs/cijfers.md maakt het bestand
+# leeg voordat dit script het kan lezen; daarom komt de sectie ongewijzigd uit de gecommitte versie (HEAD). Bijwerken blijft
+# handwerk na elke publicatie.
+try:
+    oud = subprocess.run(['git', 'show', 'HEAD:docs/cijfers.md'], capture_output=True, text=True).stdout
+except Exception:
+    oud = ''
+i = oud.find('\n## Pagina')
+if i >= 0:
+    out.append(oud[i + 1:].rstrip('\n'))
 print('\n'.join(out))
