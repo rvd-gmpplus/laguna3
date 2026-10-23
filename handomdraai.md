@@ -1,6 +1,19 @@
 # Handomdraai laguna3
 
-## Overdracht voor de volgende sessie (23 oktober 2026, na golf 8; versie 23 is gepubliceerd)
+## Overdracht voor de volgende sessie (24 oktober 2026, na golf 8; versie 23 is gepubliceerd)
+
+### Volgende start
+1. `git ls-remote --heads origin` en elke tak met `main` vergelijken. Verwacht: alleen `main` (laatste commit is deze bijgewerkte handomdraai), geen worktrees, alles gepusht.
+2. Niets staat half: versie 23 is gepubliceerd en teruggelezen, de nightly van laguna3 en van espace5 zijn groen, de docs zijn bijgewerkt.
+3. Kandidaat voor golf 9 (kiezen met de gebruiker; volgorde naar waarde, details onder Open punten):
+   - cosmetisch: het lichte driehoekje boven het achterlicht bij de klepnaad, de lakkleur van de koker achter de koplampsproeier, de grijsblauwe wig bij de A-stijlpunt (punt 4);
+   - scharnieras van het voorportier van 6 naar 2 tot 3 graden (punt 5);
+   - bekende doordringingen: Regensensor in het Lamphuis plafonnier, voorste opening panoramadak (punt 6);
+   - tekst 'Keramische rand voor': 25 mm in de beschrijving, gemeten 43 tot 47 mm (punt 7);
+   - `tools/orkestratie/cijfers.py` (`2e0b4dd`) met `framework.py export` naar espace5 (zie espace5 hieronder).
+4. Voor de gebruiker: telefoontest op iOS (punt 3).
+5. Nightly's: de volgende geplande runs van laguna3 en espace5 nakijken met `gh run list -R rvd-gmpplus/laguna3 --workflow nightly` (en hetzelfde voor espace5).
+
 
 ### Waar alles staat
 - **Gepubliceerd:** versie 23 (golf 8), 23 oktober 2026 om ongeveer 19:37 UTC.
@@ -9,7 +22,10 @@
   - Artefact versie 25: https://claude.ai/artifact/4qJq7YUk5nGSFmexY7WkZR (kale pagina 1.822.239 bytes, md5 `45f222a2201aab1ef1c22fcf9bb0484f`, 531 bytes geraamte ervoor en 15 erna), byte voor byte teruggelezen.
 - **Werkplek:** na het opruimen alleen de hoofdcheckout op `main`. Begin met `git ls-remote --heads origin` en een vergelijking van elke tak met `main`.
 - **three.js:** 0.186.1 als ES-module van jsDelivr. De harness gebruikt `~/.cache/explosietekening/three-0.186.1/package` (sha512 uit npm). `~/.config/web3d/env.sh` zet `THREE_DIR` nog op r147 voor andere repo's; draai build en tests met `env -u THREE_DIR`.
-- **espace5:** versie 9 (22 oktober 2026, tag `v9`): three.js 0.186.1 en het framework van versie 21 met het exportslot. Wat golf 8 generiek veranderde (onder meer `tools/orkestratie/cijfers.py`, de harness en de wachttijden in de nightly) gaat er pas heen met `framework.py export` in een eigen golf.
+- **espace5:** versie 9 (22 oktober 2026, tag `v9`), three.js 0.186.1.
+  - Framework-export van golf 8 gedaan op 23 oktober 2026: commit `d1975f3` op `main` (tak `framework-v23` staat ook op origin). Mee: `ACTION_TIMEOUT_MS` in de harness, de nightly met 120000 ms, `PYTHONUNBUFFERED` en `tee`, de fix van `extraTests` in `build.py`, en `press()` met een timeout van 90000 ms in `tools/itest.py` van espace5. `framework.json` noemt de bestanden van `kieren` en `spiegelzicht` als autobestanden (niet gekopieerd).
+  - `index.html` van espace5 is niet veranderd, dus geen nieuwe publicatie. Mac-set groen behalve visdiff (bekende ruis), itest 165 van 165; nightly met de hand gestart (run 40014991474): success in 1u17m.
+  - Nog niet mee: `tools/orkestratie/cijfers.py` uit `2e0b4dd` (de sectie Pagina blijft staan).
 - **Linux-tests:** `tools/lag3-vm.sh test --repo "$PWD"`, met een tijdelijke container per run.
   - Uitvoer in `~/.cache/explosietekening/lag3-vm/out/ft-laguna3-<commit>`.
   - Containers van andere sessies (`s26u-linux:1`, `explosie-test:1`) niet aanraken.
@@ -27,7 +43,7 @@ Per onderdeel: `CHANGELOG.md` (versie 23) en `docs/masterplan.md`, sectie Golf 8
 
 ### Open punten (in volgorde van waarde)
 1. **Grens T4 verhoogd (besluit van de gebruiker, 23 oktober 2026):** naar 1,9 MB raw en 530 kB gzip (was 1,8 MB en 490 kB). Versie 23 is 1.822.415 bytes raw en 506.180 bytes gzip en ligt daaronder.
-2. **Nightly:** de eerste nightly op versie 23 nakijken met `gh run list` (nu met de extra test `kieren`).
+2. **Nightly:** de eerste nightly op versie 23 (run 40013551219, met de hand gestart op `5bdfda8`, nu met de extra test `kieren`) is groen: success, 23 oktober 2026 van 19:42 tot 22:16 UTC. Nakijken: de volgende geplande runs.
 3. **Telefoontest op iOS** door de gebruiker (iOS 16.4 of nieuwer, protocol `docs/telefoontest.md`).
 4. **Cosmetisch uit golf 8 (advisor en eigen waarneming):** licht driehoekje in de hoek boven het achterlicht bij de klepnaad; kleine grijsblauwe wig bij de punt tussen spiegeldriehoek en gordelsierlijst; de koker achter de koplampsproeier heeft de lakkleur van het kapje (alleen door de grille of van onderen te zien).
 5. **Voorportier:** de scharnieras staat op 6 graden; echte portieren vallen minder, verfijning naar 2 tot 3 graden is mogelijk.
@@ -55,6 +71,8 @@ Per onderdeel: `CHANGELOG.md` (versie 23) en `docs/masterplan.md`, sectie Golf 8
   - visdiff op de Mac telt niet.
 - Een golf zonder geometriewijziging (alleen app, tekst of nummers) heeft geen zwaaimeting nodig. Controleer dat met `git diff --stat vN HEAD -- src/`.
 - Na elke commit van een agent: `git diff --stat` om te zien dat geen bestand leeg of afgekapt is.
+
+Stand 24 oktober 2026, na golf 8: alles afgerond en gepusht. Nightly laguna3 groen (run 40013551219), espace5 framework-export `d1975f3` met groene nightly (run 40014991474), grens T4 naar 1,9 MB raw en 530 kB gzip (`93e9956`). Geen open takken of worktrees. Volgende: zie Volgende start bovenaan.
 
 Stand 23 oktober 2026, golf 8: versie 23 (kierenaudit van de buitenhuid, voorruit en A-stijl, achterkant, panoramadak) is gepubliceerd (`main` fast-forward `7d4e0a7..5bdfda8`, tag `v23`, artefactversie 25, Pages byte voor byte teruggelezen). Open punten: zie hierboven en `docs/masterplan.md`, golf 8.
 
