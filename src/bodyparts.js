@@ -216,10 +216,17 @@ function bodGhAt(z, q, out = 0) { const [x, y] = bodGhHalf(z, q); return [x + ou
 const bodYG = z => { const g = bodGh(z); return g.yb + (g.ye - g.yb) * (bodQG / bodQS); };   // bovenrand zijruit
 const bodQG = 0.505;                                                                          // q van de bovenrand van de zijruiten
 // wielbooglip: dunne flens van r = ARCH tot ARCH + 0,04 net boven de huid
-function archLip(s, az) {
+// a0..a1: stuk van de boog (hoek vanaf de voorkant, rond de bovenkant naar achteren); 40 stappen over de hele boog
+function archLip(s, az, a0 = 0.02, a1 = PI - 0.02) {
   return patch((a, t) => { const r = ARCH + 0.004 + t * 0.036, z = az + r * Math.cos(a), y = AY + r * Math.sin(a), p = bodAt(z, y, 0.004 * (1 - t) + 0.001); return [s * p[0], p[1], p[2]]; },
-    0.02, PI - 0.02, 40, () => [0, 1], 2);
+    a0, a1, Math.max(2, Math.round(40 * (a1 - a0) / (PI - 0.04))), () => [0, 1], 2);
 }
+// golf 8 ronde 2 (kierenaudit): achter de achterwielboog loopt de lip onder de naad achterscherm/achterbumper (bodRSeam) door over de bumper;
+// dat stuk hoort bij de bumperschaal, anders stond de lip van het scherm als trede van 3,5 mm op de bumper. Hoek waar het midden van de lip
+// de naad kruist (bisectie tussen de bovenkant en het achtereinde van de boog)
+const bodLipCutR = (() => { const r = ARCH + 0.022; let lo = HALF, hi = PI - 0.02;
+  for (let i = 0; i < 40; i++) { const m = (lo + hi) / 2; if (AY + r * Math.sin(m) > bodRSeam(AXR + r * Math.cos(m)) + 0.0015) lo = m; else hi = m; }
+  return (lo + hi) / 2; })();
 /* ---------- naden en ruitlijnen (zijaanzicht, onderzoek exterieur §3) ---------- */
 const bodFDF = y => 0.84 + (y - 0.31) / 0.61 * 0.065;                    // voorrand voorportier (schuin)
 const bodFDlo = z => z < 0.84 ? 0.307 : 0.31 + (z - 0.84) / 0.065 * 0.61;  // onderrand voorportier per z
@@ -1373,7 +1380,9 @@ function bodWHFace(s, z, x0, top) {
 // net binnen de wand (|x| 0,505) en naast de veerkokers tot |x| 0,428; dikte t, randstraal b, holle hoeken ri
 function bodBootPlate(hw, zc, hd, t, b, ri) {
   const v1 = -1.80 - zc, v2 = bodSprZ[0] - 0.007 - zc, w1 = bodWHX - 0.005, w2 = bodSprX - 0.004;
-  const g = roundPlate([[-hw, -hd], [hw, -hd], [hw, v1], [w1, v1], [w1, v2], [w2, v2], [w2, hd], [-w2, hd], [-w2, v2], [-w1, v2], [-w1, v1], [-hw, v1]], t, b, ri);
+  // achterhoeken afgeschuind (golf 8 ronde 2, kierenaudit): de staart loopt daar in bovenaanzicht in (op y 0,40 bij z -2,24 nog |x| 0,618),
+  // en de rechte hoek op |x| hw stak 3 cm door de bumperschaal naast de uitlaat. Nu minstens 15 mm binnen de huid
+  const g = roundPlate([[-hw + 0.05, -hd], [hw - 0.05, -hd], [hw, -hd + 0.04], [hw, v1], [w1, v1], [w1, v2], [w2, v2], [w2, hd], [-w2, hd], [-w2, v2], [-w1, v2], [-w1, v1], [-hw, v1], [-hw, -hd + 0.04]], t, b, ri);
   g.rotateX(HALF); return g;
 }
 /* ---------- openers: maten en hulpfuncties (motorkap, steun) ---------- */
@@ -1604,9 +1613,10 @@ function buildBody() {
     // band boven het achterlicht tussen de onderrand van de achterruit (SP) en de punt van de lamp: sluit de spleet tot de schouder
     lowSide(s, SP - 0.002, bodTLZ + 0.001, 10, z => [Math.min(bodTLhi(z) + 0.001, S4 - 0.004), S4 - 0.0008], 2),
     bodSPweb(s, 0, bodQScr(SP) + 0.005, 0.001),
-    bodMirX(bodTailGeo(bodTGseam(0.7) + 0.003, 1.2, bodYLEDGE + 0.004, bodTLY(bodZT, 0), 0, 8, 4), s),
+    // golf 8 ronde 2: 3 mm boven de richel (was 4): op de hoek van richel en flank gaf dat een kier van 5,3 mm met doorkijk
+    bodMirX(bodTailGeo(bodTGseam(0.7) + 0.003, 1.2, bodYLEDGE + 0.003, bodTLY(bodZT, 0), 0, 8, 4), s),
     bodMirX(bodTailGeo(bodTGseam(1.0) + 0.003, 1.2, bodTLY(bodZT, 1), bodSec(bodZT).yd - 0.002, 0, 4, 4), s),
-    archLip(s, AXR),
+    archLip(s, AXR, 0.02, bodLipCutR),
   ]);
   const rear = A('Achterbouw', { d: 'Achterschermen, binnenwielkasten, achterpaneel, hoedenplanksteunen en bumperbalk achter.', ex: [0, 0.04, -0.42] }, [
     ...both(s => P(`Achterscherm ${sn(s)}`, s < 0 ? bodCreaseWeld(rearFender(s)) : rearFender(s), MAT.paint, { d: 'Gelast achterzijpaneel van achterportier tot achterlicht, met de wielboogflens.', ex: [s * 0.22, 0, -0.04] })),
@@ -1994,7 +2004,7 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   const rzA = bodRearZ(0, rPlateY - 0.045), rzB = bodRearZ(0, rPlateY + 0.045), rTilt = -Math.atan2(rzA - rzB, 0.09), rPlateZ = (rzA + rzB) / 2 + rcD - 0.0055;
   const zVal = (() => { let lo = ZR, hi = bodZT; for (let i = 0; i < 30; i++) { const m = (lo + hi) / 2; if (YB(m) >= 0.366) lo = m; else hi = m; } return hi; })();
   const rearBumper = A('Achterbumper', { d: 'Bumperschaal met kentekenuitsparing, richel onder de achterklep, reflectoren, parkeersensoren en uitsparingen voor de dubbele uitlaat (aannemelijk voor deze motor).', ex: [0, -0.04, -0.7] }, [
-    P('Bumperschaal achter', merge([shellR, bodZTStep(L), bodZTStep(R)]), MAT.paint, { d: 'Gespoten kunststof bumperschaal met de richel onder de achterklep.', ex: [0, 0, 0] }),
+    P('Bumperschaal achter', merge([shellR, bodZTStep(L), bodZTStep(R), archLip(L, AXR, bodLipCutR), archLip(R, AXR, bodLipCutR)]), MAT.paint, { d: 'Gespoten kunststof bumperschaal met de richel onder de achterklep en het achterste stuk van de wielbooglip.', ex: [0, 0, 0] }),
     P('Kentekenuitsparing', recess, MAT.paint, { d: 'Verdiepte kentekenuitsparing in carrosseriekleur: schuin naar binnen lopende wanden rond de plaat en een vlakke bodem.', ex: [0, 0, -0.06] }),
     A('Kentekenplaat achter', { d: 'Gele Nederlandse kentekenplaat (zonder kenteken weergegeven).', ex: [0, 0, -0.22] }, [
       P('Plaat', G.box(0.52, 0.11, 0.004), MAT.plateYellow, { d: 'Retroreflecterende gele plaat van 520 × 110 mm, licht gekanteld met het bumpervlak.', p: [0, rPlateY, rPlateZ], r: [rTilt, 0, 0], ex: [0, 0, -0.03] }),
@@ -2005,7 +2015,9 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     // de uitlaateindstukken (uitlaatsysteem, y 0,30) liggen aan de onderrand
     // de band stopt waar de onderkant van de staartpunt boven 0,366 komt (z ca. -2,29): daarachter bleef een strook zonder hoogte over die als
     // dunne staande lijn midden door de kentekenplaat te zien was
-    P('Onderschort', bodCreaseWeld(exCut(merge([L, R].map(sd => lowSide(sd, -2.02, zVal, 40, z => [0, bodSY(z, Math.max(YB(z) + 0.002, Math.min(0.368, YB(z) + 0.09)))], 8, bodDense(-2.3, bodZT, 6).concat(bodDense(zVal, -2.3, 4)), -0.0025))))), MAT.bodValance, { d: 'Donkergrijze kunststof onderschort langs de onderrand van de achterbumper (ca. 9 cm hoog), met de uitsparingen voor de uitlaat.', ex: [0, -0.08, -0.04] }),
+    // golf 8 ronde 2 (kierenaudit): 16 rijen over de hoogte (was 8): de onderste rijen liggen in de ronding van de onderrand (straal 6 cm), en
+    // met 8 rijen sneden de koorden naast de uitlaatuitsparing 1,4 mm binnen het oppervlak (facet)
+    P('Onderschort', bodCreaseWeld(exCut(merge([L, R].map(sd => lowSide(sd, -2.02, zVal, 40, z => [0, bodSY(z, Math.max(YB(z) + 0.002, Math.min(0.368, YB(z) + 0.09)))], 16, bodDense(-2.3, bodZT, 6).concat(bodDense(zVal, -2.3, 4)), -0.0025))))), MAT.bodValance, { d: 'Donkergrijze kunststof onderschort langs de onderrand van de achterbumper (ca. 9 cm hoog), met de uitsparingen voor de uitlaat.', ex: [0, -0.08, -0.04] }),
     P('Mistachterlicht', G.rbox(0.1, 0.03, 0.012, 0.006), MAT.lensRed, { d: 'Mistachterlicht onderin de bumper aan de bestuurderszijde (positie geschat uit fase 2-foto\'s).', p: [0.62, 0.34, bodRearZ(0.62, 0.34) - 0.004], ex: [0.04, 0, -0.08] }),
     P('Reflector rechts', G.rbox(0.1, 0.03, 0.01, 0.006), MAT.lensRed, { d: 'Rode reflector onderin de bumper.', p: [-0.62, 0.34, bodRearZ(0.62, 0.34) - 0.004], ex: [-0.04, 0, -0.08] }),
     A('Parkeersensoren achter', { d: 'Vier ultrasone sensoren van de parkeerhulp achter (standaard op Initiale Paris), onder en naast de kentekenuitsparing.', ex: [0, 0.03, -0.12] }, [[0.5, 0.43], [0.17, 0.345], [-0.17, 0.345], [-0.5, 0.43]].map(([x, y], i) => P(`Parkeersensor achter ${i + 1}`, G.cyl('z', 0.011, 0.011, 0.02, 12), MAT.paint, { d: 'Ultrasone parkeersensor achter (standaard op Initiale Paris).', p: [x, y, bodRearZ(x, y) + 0.006], ex: [0, 0.02, -0.06] }))),
