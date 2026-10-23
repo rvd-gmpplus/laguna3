@@ -459,7 +459,7 @@ function bodFL() {
   const crs = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]], unit = a => { const l = Math.hypot(...a) || 1; return a.map(v => v / l); };
   const e = 1e-5, der = (z, q) => [sub(P3(z + e, q), P3(z - e, q)).map(v => v / (2 * e)), sub(P3(z, q + e), P3(z, q - e)).map(v => v / (2 * e))];
   // q op hoogte y: op de zijkant lineair (ook iets onder de gordel), op de ronding met halvering
-  const qAt = (z, y) => { const g = bodGh(z); return y <= g.ye ? (y - g.yb) / (g.ye - g.yb) * bodQS : bodQFind(z, y, g, bodQR); };
+  const qAt = (z, y) => { const g = bodGh(z); return y <= g.ye && bodAFf(z) <= 0 ? (y - g.yb) / (g.ye - g.yb) * bodQS : bodQFind(z, y, g, bodQR); };
   // zijaanzicht: bovenlijn y = yV(z) op q bodQV, raaklijn in A, schuine lijn door (bodFLEz, gordel), knie met gelijke benen
   const yV = z => bodGhHalf(z, bodQV)[1], kV = (yV(bodFLA + 0.002) - yV(bodFLA - 0.002)) / 0.004;
   const tA = unit([1, kV]), tL = [Math.cos(bodFLPhi), -Math.sin(bodFLPhi)], A0 = [bodFLA, yV(bodFLA)], E0 = [bodFLEz, YT(bodFLEz)];
@@ -622,7 +622,9 @@ const bodShoulderLv = (a, b, n) => { const lv = []; for (let k = 0; k <= n; k++)
 const bodLinCol = (a, b, n) => { const r = []; for (let k = 0; k <= n; k++) r.push(a + (b - a) * k / n); return r; };
 // vaste q-niveaus van A-stijl, dakrail en spiegeldriehoek: zijkant per 0,0295 (ca. 9 mm), een rij op de overgang naar de dakrailronding
 // (bodQS) en de ronding in tien stappen (per 9 graden). Zonder rij op bodQS sneed de koorde de overgang 0,9 mm af.
-const bodAQ = [...Array(19).keys()].map(k => 0.004 + k * 0.0295).concat([bodQS], [...Array(10).keys()].map(k => bodQS + (k + 1) * (bodQR - bodQS) / 10));
+// Golf 8 ronde 3: vijf rijen extra in de afgeronde vouw van de A-stijl (bodAFf, body.js), van bodQS - 0,03 tot bodQS + 0,01
+const bodAQ = [...Array(19).keys()].map(k => 0.004 + k * 0.0295).concat([bodQS], [...Array(10).keys()].map(k => bodQS + (k + 1) * (bodQR - bodQS) / 10),
+  [-0.03, -0.02, -0.01, 0.005, 0.01].map(d => bodQS + d)).sort((a, b) => a - b);
 /* ---------- huidpanelen met stations naar doorbuiging ---------- */
 // Kiest uit een fijne reeks punten per lijn (lines[k][i]: punt i van lijn k) de stations waartussen de rechte koorde voor alle lijnen
 // tegelijk hoogstens tol van de tussenliggende fijne punten afligt; indices in 'keep' worden altijd een station. Geeft de gekozen indices.

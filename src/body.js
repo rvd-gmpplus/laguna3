@@ -217,7 +217,26 @@ function bodGhHalfM(z, q, g) {
   }
   return r;
 }
+// vouw van de A-stijl (golf 8 ronde 3, kierenaudit, via de orkestrator): de kasdoorsnede heeft op q bodQS een vouw van 32,5 graden (zijvlak
+// met tumblehome naar de ronding van de dakrail). Langs het portier loopt de raamomlijsting evenwijdig aan die vouw, maar langs de schuine
+// voorrand (bodFL in bodyparts.js) kruisen de rand van de A-stijl, de rubberlijn en de chroomband hem onder ca. 16 graden in zijaanzicht; de
+// naadlijn knikte daar 10 graden per 10 mm (kierenmeting, grens 5). Tussen z 0,68 en 0,86 is de vouw afgerond: een kwadratische Bezier van
+// q bodQS - 0,03 tot bodQS + 0,015 met aan beide kanten dezelfde raaklijn (straal ca. 3 cm, hoogstens 1,3 mm binnen de oude hoek). De
+// zijruit (tot q bodQG 0,505) en de bovenlijn van de raamomlijsting (q bodQV 0,557) liggen erbuiten
+const bodAFq0 = 0.03, bodAFq1 = 0.015;
+const bodAFf = z => sstep((z - 0.68) / 0.04) * sstep((0.86 - z) / 0.04);
 function bodGhHalf0(z, q, g) {
+  const f = bodAFf(z), q0 = bodQS - bodAFq0, q1 = bodQS + bodAFq1;
+  if (f <= 0 || q <= q0 || q >= q1) return bodGhHalfR(z, q, g);
+  const e = 1e-4, A = bodGhHalfR(z, q0, g), a0 = bodGhHalfR(z, q0 - e, g), B = bodGhHalfR(z, q1, g), b1 = bodGhHalfR(z, q1 + e, g);
+  const ta = [A[0] - a0[0], A[1] - a0[1]], tb = [b1[0] - B[0], b1[1] - B[1]], cr = ta[0] * tb[1] - ta[1] * tb[0];
+  // controlepunt op het snijpunt van de raaklijnen in A en B (anders de oude hoek)
+  let K = bodGhHalfR(z, bodQS, g);
+  if (Math.abs(cr) > 1e-12) { const u = ((B[0] - A[0]) * tb[1] - (B[1] - A[1]) * tb[0]) / cr; if (u > 0) K = [A[0] + u * ta[0], A[1] + u * ta[1]]; }
+  const t = (q - q0) / (q1 - q0), w0 = (1 - t) * (1 - t), w1 = 2 * t * (1 - t), w2 = t * t, r = bodGhHalfR(z, q, g);
+  return [lerp(r[0], w0 * A[0] + w1 * K[0] + w2 * B[0], f), lerp(r[1], w0 * A[1] + w1 * K[1] + w2 * B[1], f)];
+}
+function bodGhHalfR(z, q, g) {
   if (q <= bodQS) { const t = q / bodQS; return [g.xb + (g.xe - g.xb) * t + 0.012 * Math.sin(PI * t) * Math.min(1, (g.ye - g.yb) / 0.2), g.yb + (g.ye - g.yb) * t]; }
   if (q <= bodQR) { const a = (q - bodQS) / (bodQR - bodQS) * HALF; return [g.xr + (g.xe - g.xr) * Math.cos(a), g.ye + (g.yre - g.ye) * Math.sin(a)]; }
   const t = (q - bodQR) / (1 - bodQR), x = g.xr * (1 - t); return [x, g.yre + g.cr * t * (2 - t)];
@@ -229,7 +248,7 @@ function ghPt(z, w) {
 // parameter q (halve kas) op hoogte y langs de zijruit
 function bodQAtY(z, y) {
   const g = bodGh(z);
-  if (bodMorph(z) > 0 || bodCFf(z) > 0) return bodQFind(z, y, g, bodQS);
+  if (bodMorph(z) > 0 || bodCFf(z) > 0 || bodAFf(z) > 0) return bodQFind(z, y, g, bodQS);
   return clamp((y - g.yb) / Math.max(1e-6, g.ye - g.yb), 0, 1) * bodQS;
 }
 // q bij hoogte y door halvering (in de overgangszone van de C-stijlvoet; y stijgt monotoon met q)
@@ -246,7 +265,7 @@ function surfX(z, y) {
   const yt = bodCFf(z) > 0 ? bodGhHalf(z, 0)[1] : YT(z);
   if (y <= yt || z < SP || z > WS0) return ringX(z, Math.min(y, bodSec(z).yd));
   const g = bodGh(z);
-  if (bodMorph(z) > 0) return y >= g.yc ? 0 : bodGhHalf(z, bodQFind(z, y, g), g)[0];
+  if (bodMorph(z) > 0 || bodAFf(z) > 0) return y >= g.yc ? 0 : bodGhHalf(z, bodQFind(z, y, g), g)[0];
   if (y <= g.ye) return bodGhHalf(z, bodQAtY(z, y), g)[0];
   if (y <= g.yre) { const a = Math.asin(clamp((y - g.ye) / Math.max(1e-6, g.yre - g.ye), 0, 1)); return g.xr + (g.xe - g.xr) * Math.cos(a); }
   if (y >= g.yc) return 0;
