@@ -1,51 +1,55 @@
 # Handomdraai laguna3
 
-## Overdracht voor de volgende sessie (22 oktober 2026, na golf 6; versie 21 is gepubliceerd)
+## Overdracht voor de volgende sessie (23 oktober 2026, na golf 7; versie 22 is gepubliceerd)
 
 ### Waar alles staat
-- **Gepubliceerd:** versie 21 (golf 6), 22 oktober 2026 om 17:48 UTC.
-  - `main` fast-forward `3e2ca57..ba4e19a`, tag `v21` op `ba4e19a`, stempel "21 (bron 977185c)".
-  - Pages: https://rvd-gmpplus.github.io/laguna3/ (1.729.057 bytes, md5 `b64554b2c8a172720ef68749723e1e1e`), byte voor byte teruggelezen.
-  - Artefact versie 23: https://claude.ai/artifact/4qJq7YUk5nGSFmexY7WkZR (kale pagina 1.728.881 bytes, md5 `291912a5e7bf06298ddd890f2d82327f`, 531 bytes geraamte ervoor en 15 erna), byte voor byte teruggelezen.
-- **Werkplek:** alleen de hoofdcheckout op `main`. De worktrees en takken van golf 6 en `export-e5` zijn opgeruimd. Begin met `git ls-remote --heads origin` en een vergelijking van elke tak met `main`.
-- **three.js:** 0.186.1 als ES-module van jsDelivr. De harness gebruikt `~/.cache/explosietekening/three-0.186.1/package` (sha512 uit npm). `~/.config/web3d/env.sh` zet `THREE_DIR` nog op r147 voor andere repo's; `build.py` en de harness negeren een `THREE_DIR` van een andere versie.
-- **espace5:** versie 8 (21 oktober 2026) draait nog op het framework van na versie 20. Golf 6 gaat er alleen heen via `framework.py export` in een eigen golf, met de omzetting van haar domeinbestanden voor R8 en R9.
+- **Gepubliceerd:** versie 22 (golf 7), 23 oktober 2026 om 06:34 UTC.
+  - `main` fast-forward `fef25dc..72bbbda`, tag `v22` op `72bbbda`, stempel "22 (bron 23841ce)".
+  - Pages: https://rvd-gmpplus.github.io/laguna3/ (1.740.296 bytes, md5 `187b5a85c5252fc8f3898bf03d9872f5`), byte voor byte teruggelezen.
+  - Artefact versie 24: https://claude.ai/artifact/4qJq7YUk5nGSFmexY7WkZR (kale pagina 1.740.120 bytes, md5 `6280c0c988ff58f397653a6bf1a779f8`, 531 bytes geraamte ervoor en 15 erna), byte voor byte teruggelezen.
+- **Werkplek:** na het opruimen alleen de hoofdcheckout op `main`. Begin met `git ls-remote --heads origin` en een vergelijking van elke tak met `main`.
+- **three.js:** 0.186.1 als ES-module van jsDelivr. De harness gebruikt `~/.cache/explosietekening/three-0.186.1/package` (sha512 uit npm). `~/.config/web3d/env.sh` zet `THREE_DIR` nog op r147 voor andere repo's; draai build en tests met `env -u THREE_DIR`.
+- **espace5:** versie 9 (22 oktober 2026, tag `v9`): three.js 0.186.1 en het framework van versie 21 met het exportslot. De standaardtak op GitHub stond op `ccr-f2a0ca84-7x7v27` (de nightly testte die oude tak) en staat sinds 23 oktober op `main`.
 - **Linux-tests:** `tools/lag3-vm.sh test --repo "$PWD"`, met een tijdelijke container per run.
   - Uitvoer in `~/.cache/explosietekening/lag3-vm/out/ft-laguna3-<commit>`.
   - Containers van andere sessies (`s26u-linux:1`, `explosie-test:1`) niet aanraken.
 
-### Wat golf 6 deed
-Per onderdeel: `CHANGELOG.md` (versie 21) en `docs/masterplan.md`, sectie Golf 6.
-- **three.js 0.186.1** als ES-module met importmap (sha384), modulepreload en een melding voor oude browsers; bouwcontroles R8 tot R10.
-- **Beeld** gekalibreerd op r147 (RoomEnvironment op de oude kamerhoogte); advisor A2 oordeelde het beeld gelijkwaardig.
-- **Zijroosters** tot de bovenrand van de klokken, dashboard daar verhoogd, eindkap mee.
-- **Testlaag:** itest 18 R5 tot R7, R3 wacht tot 5 s op het kader; `presetshots.py` flusht de bundels voor elke opname, zodat visdiff herhaalbaar is; visdiff-basislijn uit `/out/g6f1`.
-- **Besluit van de gebruiker:** de rechterbuitenspiegel is vanaf de bestuurdersstoel niet meer te zien; geaccepteerd (`docs/onderzoek/beslissingen.md`, rij Rechterbuitenspiegel).
+### Wat golf 7 deed
+Per onderdeel: `CHANGELOG.md` (versie 22) en `docs/masterplan.md`, sectie Golf 7.
+- **Spiegel** op de zwarte spiegeldriehoek zoals op de foto's, 30 mm hoger, huis 110 mm; nieuwe binnendriehoek; punt van de driehoek 0,96 met de onderrand 3 mm hoger.
+- **Zicht** op de rechterspiegel vanaf de bestuurder: 105 van 140 stralen vrij (was 5), door een lagere dashboardrand bij de portieren en een rechter zijrooster dat aan de buitenkant 38 mm schuin zakt.
+- **Kleine punten:** gordelsierlijst tot de naad, voet tegen de driehoek, bovenlijst van de portierkaart door, vilt in de raamschacht linksachter.
+- **Testlaag:** itest 25 b robuust; `framework.py export` met een slot (proefexport plus `build.py --lint` in een kopie van het doel).
+- **Advisor:** Fable 5.1 xhigh, drie rondes (bijsturen, bijsturen, pass).
 
 ### Open punten (in volgorde van waarde)
-1. **CI en nightly op versie 21:** de eerste `ci`-run op `ba4e19a` stond bij de publicatie nog in de wachtrij. De nightly van 22 oktober (nog op versie 20) faalde op itest 25 b: "Page.tap: Timeout 4000ms exceeded" bij Uitstappen in de stand vol, op een runner die 85 minuten nodig had. In de VM was 25 b drie keer groen. Eerst `gh run list` en de log bekijken; bij herhaling de tik in 25 b robuuster maken zoals in golf 5n bij 14, 18, 20 en 24.
+1. **Nightly:** de eerste nightly op versie 22 (laguna3) en op versie 9 via `main` (espace5) nakijken met `gh run list`.
 2. **Telefoontest op iOS** door de gebruiker (iOS 16.4 of nieuwer, protocol `docs/telefoontest.md`).
-3. **Carrosserie:** rechterbuitenspiegel en A-stijl (spiegel 5 tot 10 cm naar achteren); spleet tussen voorruitglas en voorruitrubber (x 0,63 tot 0,66); raamkader van het achterportier in het vlak van de B-stijl; bumpersteun voor rechts -3,0 mm; hoeken van de achterklepbekleding; velgspaakfacetten en de rand van de dakgreepkom.
-4. **Interieur (advisor, kan):** wang van de instrumentenkap bovenaan circa 20 mm naar buiten; kleine schuine vouw in de uitloop van het dashboard.
-5. **Remschijf** te licht (gedeeld materiaal in `core.js`, via de orkestrator).
-6. **Reserve voor three.js:** valt 0.186.1 op jsDelivr weg, dan is 0.185.0 de terugvaloptie (G10 in het plan van golf 6).
-7. **Nummers:** `U_ALT`, `U_BUMP`, `U_PADKIT` en `U_START` open; de rest zoals bij golf 5n hieronder in de geschiedenis van dit bestand (`git log -p handomdraai.md`).
-8. **App-advisor A1 tot A3:** `aria-description`, Openen uitzetten in de cockpit met de muis, pijltoetsen omhoog en omlaag in de radiogroep.
-9. **Ruis in gateshots:** "Afdekkap" van Olievuldop en Peilstok lost niet op; ook op r147, dus niet nieuw.
-10. **Docs:** `cijfers.py` wist de handmatige sectie Pagina in `docs/cijfers.md`; na het genereren terugzetten (of het script die sectie laten bewaren).
+3. **Keuzes voor de gebruiker uit golf 7:** de strook onder de portierkaart omlaag tot y 0,82 of accepteren; Bekledingspaneel tegen Luidsprekerrooster (0,70 mm, al op versie 21) vastleggen als bekend of het rooster 1 mm naar binnen.
+4. **Carrosserie:** spleet tussen voorruitglas en voorruitrubber (x 0,63 tot 0,66); raamkader van het achterportier in het vlak van de B-stijl; bumpersteun voor rechts -3,0 mm; hoeken van de achterklepbekleding; velgspaakfacetten en de rand van de dakgreepkom; dakafvoerslang onder de spiegeldriehoek; voorrand van het portier ongeveer 75 mm te ver naar achteren tegenover de vooras (voet van de A-stijl in `body.js`, met de hoek van de driehoek). Budget Carrosserie bijna vol (`docs/cijfers.md`).
+5. **Testlaag:** `opendicht` vergeeft tot 5 mm voorbij het geraakte vlak; een randtoets voor dunne delen toevoegen (golf 7 vond zo een snijding die de set miste).
+6. **Interieur (advisor, kan):** wang van de instrumentenkap bovenaan circa 20 mm naar buiten; kleine schuine vouw in de uitloop van het dashboard.
+7. **Remschijf** te licht (gedeeld materiaal in `core.js`, via de orkestrator).
+8. **Reserve voor three.js:** valt 0.186.1 op jsDelivr weg, dan is 0.185.0 de terugvaloptie (G10 in het plan van golf 6).
+9. **Nummers:** `U_ALT`, `U_BUMP`, `U_PADKIT` en `U_START` open.
+10. **App-advisor A1 tot A3:** `aria-description`, Openen uitzetten in de cockpit met de muis, pijltoetsen omhoog en omlaag in de radiogroep.
+11. **Ruis in gateshots:** "Afdekkap" van Olievuldop en Peilstok lost niet op; ook op r147, dus niet nieuw.
+12. **Docs:** `cijfers.py` wist de handmatige sectie Pagina in `docs/cijfers.md`; na het genereren terugzetten (of het script die sectie laten bewaren). Meet de opstarttijden op een rustige Mac, niet tijdens een VM-run.
 
 ### Afspraken die in deze sessie golden
 - Elke versie wordt direct na een groene poort gepubliceerd. Daarna Pages en het artefact byte voor byte teruglezen, tag `vN` zetten en de docs bijwerken: CHANGELOG, deze handomdraai, masterplan en cijfers.
 - Klaar is: volledige set groen op macOS en Linux, inclusief de dichte botsingsmeting `opendicht`; visdiff groen op Linux; zwaaimeting zonder nieuwe doordringingen; advisor pass.
 - Advisor:
   - Opus 5.5 high voor gewone golven;
-  - Fable 5.1 xhigh voor het interieur en waar de gebruiker erom vraagt;
+  - Fable 5.1 xhigh voor het interieur, de spiegel en waar de gebruiker erom vraagt;
   - "doe het eerst zelf, lukt het niet goed, raadpleeg Fable 5.1 xhigh".
 - Ruis:
   - een `Page.goto: Timeout 120000ms` in itest of shots op de Mac kwam door een load average boven 8; de test los opnieuw draaien was groen;
   - visdiff op de Mac telt niet.
 - Een golf zonder geometriewijziging (alleen app, tekst of nummers) heeft geen zwaaimeting nodig. Controleer dat met `git diff --stat vN HEAD -- src/`.
 - Na elke commit van een agent: `git diff --stat` om te zien dat geen bestand leeg of afgekapt is.
+
+Stand 23 oktober 2026, golf 7: versie 22 (buitenspiegel op de spiegeldriehoek, zicht vanaf de bestuurder, binnendriehoek) is gepubliceerd (`main` fast-forward `fef25dc..72bbbda`, tag `v22`, artefactversie 24, Pages byte voor byte teruggelezen). Open punten: zie hierboven en `docs/masterplan.md`, golf 7.
 
 Stand 22 oktober 2026, golf 6: versie 21 (three.js 0.186.1 als ES-module, zijroosters tot de klokrand) is gepubliceerd (`main` fast-forward `3e2ca57..ba4e19a`, tag `v21`, artefactversie 23, Pages byte voor byte teruggelezen). Open punten: zie hierboven en `docs/masterplan.md`, golf 6.
 

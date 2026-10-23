@@ -463,10 +463,10 @@ Gedaan:
 - `BatchedMesh` vervangt niets: de eigen bundelcode blijft.
 
 Open:
-- **Rechterbuitenspiegel** (besluit van de gebruiker op 22 oktober 2026, "Accepteren"): door de verhoging is de spiegel vanuit de bestuurdersstoel niet meer te zien (eerst 129 van 140 stralen vrij, nu 5). Oorzaak in de carrosserie: in het model staat de spiegel vóór de A-stijl (door de voorruit), op de foto erachter (door de portierruit). Spiegel en A-stijl gaan als open punt naar het carrosseriedomein (spiegel 5 tot 10 cm naar achteren). Zie `docs/onderzoek/beslissingen.md`, rij Rechterbuitenspiegel.
+- **Rechterbuitenspiegel** (besluit van de gebruiker op 22 oktober 2026, "Accepteren"): door de verhoging is de spiegel vanuit de bestuurdersstoel niet meer te zien (eerst 129 van 140 stralen vrij, nu 5). Oorzaak in de carrosserie: in het model staat de spiegel vóór de A-stijl (door de voorruit), op de foto erachter (door de portierruit). Spiegel en A-stijl gaan als open punt naar het carrosseriedomein (spiegel 5 tot 10 cm naar achteren). Zie `docs/onderzoek/beslissingen.md`, rij Rechterbuitenspiegel. Opgelost in golf 7 (versie 22).
 - Advisor interieur, kan: de wang van de instrumentenkap bovenaan circa 20 mm naar buiten (foto: evenwijdig aan de schuine roosterrand); een kleine schuine vouw in de uitloop.
 - Telefoontest op iOS: de laadketen vraagt Safari 16.4 of nieuwer; een echte iPhone is niet getest (protocol: `docs/telefoontest.md`).
-- espace5 krijgt het nieuwe framework via `framework.py export` in een eigen golf; de generieke `build.py` met R8 en R9 vraagt dan ook de omzetting van haar domeinbestanden.
+- espace5 krijgt het nieuwe framework via `framework.py export` in een eigen golf; de generieke `build.py` met R8 en R9 vraagt dan ook de omzetting van haar domeinbestanden. Gedaan in golf 7: espace5 versie 9.
 
 Nog strategisch, alleen bij een concrete aanleiding:
 
@@ -475,6 +475,26 @@ Nog strategisch, alleen bij een concrete aanleiding:
 | Een tweede bestand naast de pagina | als de pagina echt kleiner moet | Nummergegevens als los JSON op Pages laden scheelt 565 kB, maar breekt "dezelfde bytes" op het artefact: een beslispunt over het aantal kanalen, geen techniekvraag. |
 | Offline | na R5 | Service worker die three.js en de lettertypes cachet. |
 | Engelse versie | na K6 | Alleen de teksttabel en de presetnotities; de 1.600 Nederlandse beschrijvingen blijven Nederlands tot er vraag naar is. |
+
+## Golf 7: buitenspiegel op de spiegeldriehoek en zicht vanaf de bestuurder (UITGEVOERD; versie 22 gepubliceerd op 23 oktober 2026, tag `v22`)
+
+Besloten op 22 en 23 oktober 2026 (zie `docs/onderzoek/beslissingen.md`, rijen Golf 7). Drie rondes; advisor Fable 5.1 xhigh gaf in ronde 1 en 2 bijsturen en in ronde 3 pass. Versie, tijden en publicatie: `CHANGELOG.md`, versie 22.
+
+Gedaan:
+- **Spiegel**: ronde 1 zette de spiegel 10 cm naar achteren en 3 cm omhoog; de advisor vond dat de voet toen op het glas stond. In ronde 2 staat de spiegel weer op de zwarte driehoek zoals op de foto's: glasvlak op de achterrand van de driehoek, de 30 mm hogere plaats blijft, huis 110 mm diep (was 137), voet geheel op de driehoek.
+- **Spiegeldriehoek**: nieuw onderdeel Spiegeldriehoek binnen; punt van 0,93 naar 0,96 m met de onderrand 3 mm hoger. De punt op 0,96 met de oude onderrand sneed het voorscherm bij 55 tot 65 procent open (randtoets van de advisor); de testset zag dat niet, omdat `opendicht` tot 5 mm voorbij het geraakte vlak vergeeft. Met de hogere onderrand: 0 snijdingen rechts en links bij 0,40 tot 0,75 open, kleinste afstand 1,36 mm.
+- **Gordelsierlijst en portierkaart**: de sierlijst van het voorportier eindigt op de sluitnaad; de bovenlijst van de portierkaart loopt door tot onder de binnendriehoek.
+- **Zicht op de rechterspiegel**: dashboard naast beide zijroosters in een vloeiende boog naar 0,977 m bij het portier; alleen dat haalde 35 van 140 vrije stralen, dus het rechter zijrooster zakt aan de buitenkant 38 mm schuin mee (terugvalbesluit), met rechte, ingekorte lamellen en gladde schaduw op het gezakte vlak. Resultaat 105 van 140 (eis 100). Het linker rooster blijft recht.
+- **Achterportier links**: gat in de raamschacht onder de kwartsruit gedicht met een strook vilt (`inner --open --strict` werd rood doordat het stralenraster verschoof).
+- **Testlaag en framework**: itest 25 b robuust (wacht tot de knop stilstaat, 15 s, hooguit een herhaling); `framework.py export` met een slot dat een export weigert als `build.py --lint` in een kopie van het doel faalt.
+- **espace5**: versie 9 (three.js 0.186.1, framework van versie 21 plus het slot); de standaardtak op GitHub stond op een oude tak en is op `main` gezet, zodat de nightly versie 9 test.
+
+Open:
+- Onder de bovenlijst van de portierkaart blijft bij een open voorportier tussen z 0,803 en 0,898 een gelakt stukje te zien; de strook kan omlaag tot y ongeveer 0,82 met een nieuwe botsingsmeting tegen de dashboardeindkap (besluit van de gebruiker).
+- Bekledingspaneel tegen Luidsprekerrooster dringt 0,70 mm door, links en rechts; bestaat al op versie 21 en de testset meet dit paar niet. Vastleggen als bekend of het rooster 1 mm naar binnen.
+- De dakafvoerslang (`panorama.js`) loopt 9 tot 11 mm onder de schuine rand van de spiegeldriehoek; ze hoort eerder binnen de A-stijl.
+- Budget Carrosserie: nog ongeveer 1.000 driehoeken marge (`docs/cijfers.md`); de volgende carrosseriegolf maakt eerst ruimte of herziet het budget met de gebruiker.
+- `opendicht` vergeeft tot 5 mm voorbij het geraakte vlak en zag de snijding van de driehoek niet; een randtoets (randen als stralen) in de poort zou dit soort dunne delen wel vinden.
 
 ## Volgorde, capaciteit en poorten
 
