@@ -1,7 +1,7 @@
 {
  "_uitleg": "Kierenaudit (tools/kieren.py, docs/testen.md). Natuurlijke naden die op de echte auto bestaan, met per soort een realistische grens; alles wat hier niet als naad staat, moet aansluiten (sectie aansluiten). Patronen zijn reguliere expressies op het volledige pad van een mesh (zonder de wortel), bijvoorbeeld 'Carrosserie/Portier rechtsvoor/Buitenpaneel'. De eerste naad waarvan a en b passen (in beide volgordes) telt. Grenzen in millimeter: kier loodrecht op de naad in het vlak, stap loodrecht op het vlak, rand = hoe ver de laatste centimeters van een glad deel van zijn eigen mediaan afwijken. knikMax (optioneel per naad): grootste toegestane richtingsverandering van de naadlijn in graden. Doorkijk: of je door de kier dieper dan 'diep' mm mag kijken. Lijmruitrand: of lichte delen (luminantie boven 'randLum') binnen 'randDiepte' mm achter de rand van een gelijmde ruit te zien mogen zijn; bij een echte gelijmde ruit dekt een zwarte keramische rand dat af. Alleen de orkestrator wijzigt dit bestand; elke wijziging met een reden in _uitleg of in docs/onderzoek/beslissingen.md.",
  "meting": {
-  "_uitleg": "stap: rasterstap in mm over het analytische oppervlak; diep: dieper dan dit (mm onder het oppervlak) telt een treffer als kier of doorkijk; lmax: een kier van hooguit zoveel rastermonsters tussen twee delen is een naad, breder is een doorkijkvlak; minBuiten: een deel telt pas als buitendeel als het raster het minstens zo vaak aan de huid raakt (anders is het iets dat door een kier te zien is); facet: afwijking in mm van de mediaan van een glad deel; facetMin: kleinste facet in rastermonsters; gladIqr: een deel is glad als de middelste helft van zijn diepten binnen zoveel mm ligt; samen: kruisingen binnen zoveel rasterstappen horen bij dezelfde naad; minKruis: kleinere naden tellen als ruis (los).",
+  "_uitleg": "stap: rasterstap in mm over het analytische oppervlak; diep: dieper dan dit (mm onder het oppervlak) telt een treffer als kier of doorkijk; lmax: een kier van hooguit zoveel rastermonsters tussen twee delen is een naad, breder is een doorkijkvlak; minBuiten: een deel telt pas als buitendeel als het raster het minstens zo vaak aan de huid raakt (anders is het iets dat door een kier te zien is); facet: afwijking in mm van de mediaan van een glad deel; facetMin: kleinste facet in rastermonsters; gladIqr: een deel is glad als de middelste helft van zijn diepten binnen zoveel mm ligt; samen: kruisingen binnen zoveel rasterstappen horen bij dezelfde naad; minKruis: kleinere naden tellen als ruis (los). dekMax (golf 8 ronde 2): een kruising waarvan de hele kier bedekt is door een afdekdeel (sectie afdekkers) dat hooguit zoveel mm dieper ligt dan de randen of erboven, telt met kier 0 en zonder doorkijk; de kier is van buiten niet te zien (tweede laag onder een sierlijst of wenkbrauw). lijnSamen (golf 8 ronde 2): kruisingen binnen zoveel rasterstappen vormen één deellijn; richting, lijnhoek en knik worden per deellijn bepaald, zodat de twee randen van een lijst (13 mm uit elkaar) geen schijnknik geven.",
   "stap": 8,
   "diep": 4,
   "lmax": 4,
@@ -13,7 +13,9 @@
   "randDiepte": 120,
   "randLum": 0.3,
   "samen": 6,
-  "minKruis": 3
+  "minKruis": 3,
+  "dekMax": 1.0,
+  "lijnSamen": 1.4
  },
  "aansluiten": {
   "_uitleg": "Eis van de gebruiker (golf 8): wat geen natuurlijke naad is, moet in elkaar overlopen. Een kier tot 1 mm en een stap tot 1 mm zie je op ooghoogte niet als naad; doorkijk mag niet.",
@@ -124,6 +126,15 @@
    "a": "Achterklep/Spoilerlip$",
    "b": "Achterklep/(Achterruit|Buitenpaneel achterklep)$",
    "_uitleg": "De spoilerlip onder de achterruit is een ontworpen opstaande richel (tot ongeveer 35 mm boven het analytische dek, diagnose golf 8); de stap tegen achterruit en klep is vorm. Een kier of doorkijk langs de lip hoort er niet; de ruitrand zelf valt onder de controle op lichte delen."
+  },
+  {
+   "naam": "klepnaad langs de achterruitrand",
+   "soort": "paneelnaad",
+   "kierMax": 5.0,
+   "doorkijk": "donker",
+   "a": "Achterklep/(Keramische rand achter|Lijmrand achterruit)$",
+   "b": "(C-stijl (rechts|links)|Dakpaneel panoramadak|Achterscherm (rechts|links))$",
+   "_uitleg": "Golf 8 ronde 2: de keramische rand en de lijmrand van de achterruit horen bij de achterklep; waar ze tegen de C-stijl (of dak en scherm) liggen, is dat de achterklepnaad en geen lijst of rubber op een vlak. Op de echte auto is die naad 3 tot 5 mm (kierMax 5, strenger dan de 6 mm van een gewone paneelnaad) en zie je erin alleen de zwarte klepafdichting en de lijm. doorkijk 'donker': doorkijk mag alleen naar donkere delen (luminantie tot randLum) of naar de flens van de twee delen van de naad zelf; een licht deel erachter (hoedenplanksteun, bekleding) of niets is een fout."
   },
   {
    "naam": "achterklepnaad",
@@ -275,6 +286,12 @@
    "Keramische rand (voor|achter)$"
   ]
  },
+ "afdekkers": {
+  "_uitleg": "Golf 8 ronde 2: lijsten en rubbers die bewust over een naad of een tweede laag liggen. Ligt zo'n deel over de hele kier van een kruising, hooguit meting.dekMax mm dieper dan de randen of erboven, dan is de kier van buiten niet te zien en telt hij met kier 0 en zonder doorkijk. Alleen deze delen: een ander deel dat tot in een kier komt (zoals het motorhuis van het schuifdak onder een spleet in het dakpaneel, golf 8 ronde 2), blijft een fout. Rubberlijnen wenkbrauw: de bumperschaal voor heeft boven de mistlampuitsparing een verborgen tweede laag (zelfspleet van 10 tot 21 mm langs de rasterlijn, y 0,51 tot 0,52); het rubber van de wenkbrauw ligt er 1 mm boven en dekt hem helemaal af (straal op x 0,67, y 0,518: eerst wenkbrauw, dan bumperschaal 5 mm dieper).",
+  "patronen": [
+   "Mistlampen voor/(Rubberlijnen wenkbrauw|Chroomwenkbrauw) (rechts|links)$"
+  ]
+ },
  "naadvulling": {
   "_uitleg": "Rubber dat in een portiernaad zichtbaar is; telt als kier (zwart), niet als doorkijk en niet als deel.",
   "patronen": [
@@ -312,6 +329,73 @@
    "Uitlaatuitsparing (rechts|links)$",
    "Uitlaateindstuk (rechts|links)$",
    "Bovengrille/.*$"
+  ]
+ },
+ "lijnen": {
+  "_uitleg": "Golf 8 ronde 2: lijnen die in één lijn horen te lopen. knik: een grens (graden) op een knik in de lijn van een naad, los van de soort van de naad (ook voor een naad die moet aansluiten). De maat is de sprong in de richting: per deellijn de hoek tussen de koorde 'boog' m terug en de koorde 'boog' m verder (standaard 0,032 m, vier rasterstappen), min het gemiddelde van die hoek een boog terug en een boog verder; een gelijkmatige bocht (de daklijn die naar de voorruit afbuigt, ongeveer 8 graden over 4 cm) geeft zo ongeveer 0, een knik zijn volle hoek. De laatste twee bogen van een lijn tellen niet: daar mag een lijn in een ontworpen hoek eindigen. Alleen voor lijnen die op de echte auto recht of gelijkmatig gebogen doorlopen (gordellijn, dakrand, bovenkant raamkader); verticale naden met een ontworpen bocht (achterrand achterportier, B-stijlnaad, voorrand voorportier) en hoeken van een raamkader staan hier bewust niet. doorlopend: twee lijnen die over een naad of stijl heen in elkaar overlopen; per zijde de deellijn van elk die het dichtst bij de andere komt, de meetpunten daarvan binnen 'venster' m van die plek, en de hoek tussen hun hoofdassen (grens knikMax). De verspringing (loodrecht, mm) staat als informatie in kieren.json. 3 graden: over 6 cm een afwijking van ongeveer 3 mm, op ooghoogte net te zien.",
+  "knik": [
+   {
+    "naam": "gordellijn",
+    "knikMax": 3.0,
+    "a": "(Portier (rechts|links)(voor|achter)/Raamlijsten en sierlijsten/(Gordelsierlijst|Gordelrubber buiten)|Kwartsruit (rechts|links)/Gordellijn kwartsruit)$",
+    "b": "(Portier (rechts|links)(voor|achter)/(Buitenpaneel|Raamlijsten en sierlijsten/(Gordelsierlijst|Gordelrubber buiten)))$",
+    "_uitleg": "De gordellijn (sierlijst, rubber en de rand van het portier eronder) loopt op de echte auto als één rechte, licht stijgende lijn van de spiegeldriehoek tot de kwartsruit."
+   },
+   {
+    "naam": "dakrand",
+    "knikMax": 3.0,
+    "a": "Dakpaneel panoramadak$",
+    "b": "Dakrail (rechts|links)$",
+    "_uitleg": "De naad tussen dak en dakrail volgt de flauw gebogen daklijn."
+   },
+   {
+    "naam": "raamkader boven",
+    "knikMax": 3.0,
+    "a": "Dakrail (rechts|links)$",
+    "b": "Portier (rechts|links)(voor|achter)/Raamlijsten en sierlijsten/Rubberlijn raamomlijsting$",
+    "_uitleg": "De bovenkant van het raamkader langs de dakrail volgt de daklijn."
+   }
+  ],
+  "doorlopend": [
+   {
+    "naam": "gordellijn voor en achter over de B-stijl",
+    "knikMax": 3.0,
+    "venster": 0.06,
+    "a": [
+     "Portier (rechts|links)voor/Raamlijsten en sierlijsten/(Gordelsierlijst|Gordelrubber buiten)$",
+     "Portier (rechts|links)voor/(Buitenpaneel|Raamlijsten en sierlijsten/(Gordelsierlijst|Gordelrubber buiten))$"
+    ],
+    "b": [
+     "Portier (rechts|links)achter/Raamlijsten en sierlijsten/(Gordelsierlijst|Gordelrubber buiten)$",
+     "Portier (rechts|links)achter/(Buitenpaneel|Raamlijsten en sierlijsten/(Gordelsierlijst|Gordelrubber buiten))$"
+    ]
+   },
+   {
+    "naam": "gordellijn achterportier en kwartsruit",
+    "knikMax": 3.0,
+    "venster": 0.06,
+    "a": [
+     "Portier (rechts|links)achter/Raamlijsten en sierlijsten/(Gordelsierlijst|Gordelrubber buiten)$",
+     "Portier (rechts|links)achter/(Buitenpaneel|Raamlijsten en sierlijsten/(Gordelsierlijst|Gordelrubber buiten))$"
+    ],
+    "b": [
+     "Kwartsruit (rechts|links)/Gordellijn kwartsruit$",
+     "Portier (rechts|links)achter/Buitenpaneel$"
+    ]
+   },
+   {
+    "naam": "raamkader boven voor en achter over de B-stijl",
+    "knikMax": 3.0,
+    "venster": 0.06,
+    "a": [
+     "Dakrail (rechts|links)$",
+     "Portier (rechts|links)voor/Raamlijsten en sierlijsten/Rubberlijn raamomlijsting$"
+    ],
+    "b": [
+     "Dakrail (rechts|links)$",
+     "Portier (rechts|links)achter/Raamlijsten en sierlijsten/Rubberlijn raamomlijsting$"
+    ]
+   }
   ]
  }
 }
