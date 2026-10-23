@@ -696,9 +696,14 @@ function bodSealPts(isFront, z0, z1) {
 }
 // draaias van een portier: de lijn door de twee scharnierpennen (uitleg bij de scharnieren in buildDoor). Los, zodat de kwartsruit in het
 // raamkader van het achterportier om dezelfde as kan meedraaien.
+// Voorportier (golf 8 ronde 3): een eigen as van 6 graden voorover, los van de schuine voorrand (11,7 graden). Met de as langs de rand zakte
+// de achterkant van het portier op 67 graden 97 mm (gemeten), nu ca. 40 mm zoals voor ronde 2. De as ligt 12 mm voor de punt van de voorrand
+// op de gordel (bodFDZ1) en loopt naar onderen steeds verder voor de rand uit: de pennen liggen 26 mm (boven, 0,76 m) en 58 mm (onder,
+// 0,45 m) voor de rand, 16 mm binnen de huid; de scharnierbladen overbruggen dat met een zwanenhals (zie de scharnieren in buildDoor)
+const bodFDA = 6 * PI / 180, bodFDAz = y => bodFDZ1 + 0.012 + (y - bodFDY1) * Math.tan(bodFDA);
 function bodDoorAxis(s, isFront) {
   const z1 = isFront ? 0.903 : -0.153;
-  const pinAt = y => { if (isFront) { const zf = bodFDF(y); return [s * (surfX(zf, y) - 0.016), y, zf + 0.016]; } return [s * (surfX(z1, y) - 0.0065), y, z1 + 0.0063]; };
+  const pinAt = y => { if (isFront) { const za = bodFDAz(y); return [s * (surfX(za, y) - 0.016), y, za]; } return [s * (surfX(z1, y) - 0.0065), y, z1 + 0.0063]; };
   const pins = [pinAt(isFront ? 0.76 : 0.74), pinAt(isFront ? 0.45 : 0.50)];
   const d = [0, 1, 2].map(i => pins[0][i] - pins[1][i]), l = Math.hypot(...d);
   return { pins, pv: pins[1], ax: d.map(v => v / l), ang: -s * (isFront ? 67 : 62) * PI / 180 }; // voorportier 67 graden: RiDC, gradenboog op een Laguna Grandtour Initiale 2011
@@ -872,11 +877,14 @@ function buildDoor(s, isFront) {
   // in elke stand om de pen liggen. Lokaal assenstelsel per scharnier: oorsprong op het hart van de pen, y langs de as, x naar buiten, z naar voren.
   // Ligging van de as: de buitenkant van de voorrand blijft bij het openen buiten de huid zolang de as minstens tan(hoek/2) maal zijn diepte
   // voor de voorrand ligt (67 graden: 0,66 maal). Een diepere pen laat de voorrand onder het voorscherm of door het voorportier zwaaien.
-  // Voorportier: pen 16 mm binnen de huid en 16 mm voor de schuine voorrand (bodFDF), 11,7 graden voorover zoals de voorrand (golf 8 ronde 2;
-  // was 6 graden; de achterkant van het portier zakt open daardoor ca. 13 cm in plaats van 6,5 cm) (de zijkant is bol,
-  // dus halverwege ligt de rechte as 21 mm diep: 16 mm naar voren houdt de voorrand daar buiten het scherm); het oog blijft onder
-  // het voorscherm, dat langs zijn achterrand boven 0,8 m tot 5 mm naar binnen buigt (bovenste scharnier daarom op 0,76 m in plaats van 0,79 m);
-  // het carrosserieblad staat evenwijdig aan het portierblad voor de pen (op de plaats van de A-stijl achter het voorscherm).
+  // Voorportier (golf 8 ronde 3): pen 16 mm binnen de huid op een eigen as van 6 graden voorover (bodFDAz), 26 mm (boven) en 58 mm (onder)
+  // voor de schuine voorrand van 11,7 graden; in ronde 2 liep de as 16 mm voor de rand mee en zakte de achterkant van het portier open 97 mm.
+  // Het portierblad ligt plat in het portier, 3 mm achter de voorrand en schuin zoals de rand, en een zwanenhals verbindt het met het oog:
+  // vanaf het oog eerst naar binnen (88 procent van de afstand tot de rand) en dan met een bocht naar achteren. Zo blijft alles wat met het
+  // portier meedraait en nog onder het voorscherm zit binnen de cirkel waarin het open zwaait zonder de binnenkant van het scherm te raken
+  // (een recht blad op 16 mm diepte zou het scherm vanaf ca. 18 mm van de pen raken). Het oog blijft onder het voorscherm, dat langs zijn
+  // achterrand boven 0,8 m tot 5 mm naar binnen buigt (bovenste scharnier daarom op 0,76 m in plaats van 0,79 m); het carrosserieblad staat
+  // voor de pen (op de plaats van de A-stijl achter het voorscherm).
   // Achterportier: pen 6,5 mm binnen de huid in de naad tussen de portieren (10 mm aan de huid, naar binnen breder door de schuine sluitranden),
   // 6,3 mm voor de voorrand (z -0,1467), onder het naadrubber van het voorportier; met een pen op de B-stijl zwaaide de voorrand door het
   // voorportier. Klein oog (4 mm, pen 2,5 mm) zodat het in de naad past; scharnieren op 0,50 en 0,74 m, zodat de rechte as ook bij de bolling
@@ -892,11 +900,20 @@ function buildDoor(s, isFront) {
     const R = (lx, ly, lz) => { const x1 = lx * Math.cos(hRoll) - ly * Math.sin(hRoll), y1 = lx * Math.sin(hRoll) + ly * Math.cos(hRoll); return [pin[0] + x1, pin[1] + y1 * Math.cos(hTilt) - lz * Math.sin(hTilt), pin[2] + y1 * Math.sin(hTilt) + lz * Math.cos(hTilt)]; };
     let doorGeo, bodyGeo, boltAt, boltR;
     if (isFront) {
-      // bladen van 6 tot 53 mm naar binnen, 8,5 mm achter (portier) en voor (carrosserie) de pen, met een korte verbinding naar het oog alleen
-      // aan de eigen kant; zo reikt het portierblad open hoogstens 8 mm van de pen naar buiten en blijft het onder het voorscherm
-      doorGeo = merge([xf(G.box(0.047, 0.055, 0.004), [-s * 0.0295, 0, -0.0085]), xf(G.box(0.0045, eL, 0.003), [-s * 0.00425, eY, -0.006]), eye(eY)]);
+      // carrosserieblad van 6 tot 53 mm naar binnen, 8,5 mm voor de pen, met een korte verbinding naar het oog alleen aan de eigen kant.
+      // Portierblad (golf 8 ronde 3): plaat van 17 tot 64 mm naar binnen, plat op de voorste sluitrand van het portier (de rand van
+      // Portierrand die van de buitenhuid 95 mm naar binnen gaat en daarbij ca. 4 mm naar achteren loopt), dus evenwijdig aan de schuine
+      // voorrand (dl: het verschil tussen de helling van de rand en die van de as). fz is de lokale z van dat vlak op hoogte ly en u meter
+      // binnen de pen; dF de afstand van de pen tot de rand op de hoogte van de pen, langs de lokale z. Dichter bij de pen dan 17 mm
+      // raakte de plaat open de binnenkant van het voorscherm. De zwanenhals (4 mm dik, 25 mm breed) loopt op 6,5 mm achter de pen naar
+      // binnen tot uA, buigt met een straal van 8 mm en gaat dan recht naar achteren tot in de plaat
+      const dl = Math.atan((bodFDZ1 - 0.84) / (bodFDY1 - 0.31)) - hTilt, dz = pin[2] - bodFDF(pin[1]), dF = dz * Math.cos(hTilt);
+      const fz = (ly, u) => -dF + (ly + dz * Math.sin(hTilt)) * Math.tan(dl) + 0.0005 - 0.041 * (u + 0.016);
+      const uA = 0.88 * dF, zc = 0.0065, rB = 0.008, h = 0.002, zE = fz(eY, uA) + 0.0023, arc = (r, a0, a1) => [0, 1, 2, 3, 4, 5].map(k => { const a = a0 + (a1 - a0) * k / 5; return [uA - rB + r * Math.cos(a), -zc - rB + r * Math.sin(a)]; });
+      const neck = [[0.003, -zc + h], ...arc(rB + h, HALF, 0), [uA + h, zE], [uA - h, zE], ...arc(rB - h, 0, HALF), [0.003, -zc - h]].map(([u, z]) => [-s * u, z]);
+      doorGeo = merge([xf(G.box(0.047, 0.055, 0.004), [-s * 0.0405, 0, fz(0, 0.0405) + 0.0023], [dl, -s * 0.041, 0]), xf(plan(shapeOf(neck), eL), [0, eY, 0]), eye(eY)]);
       bodyGeo = merge([xf(G.box(0.047, 0.055, 0.004), [-s * 0.0295, 0, 0.0085]), xf(G.box(0.0045, eL, 0.003), [-s * 0.00425, -eY, 0.006]), eye(-eY)]);
-      boltAt = dy => R(-s * 0.036, dy, -0.0065); boltR = [hTilt, PI, 0];
+      boltAt = dy => R(-s * 0.036, dy, fz(dy, 0.036) + 0.0043); boltR = [hTilt + dl, PI, 0];
     } else {
       // portierblad plat op de schuine voorste sluitrand (z = -0,153 - 0,126 maal de diepte), 1 mm ervoor, van de pen 55 mm naar binnen;
       // d is de diepte onder de pen. Carrosserieblad: plaat op de B-stijl en een arm 2 mm voor de pen door de naad.
