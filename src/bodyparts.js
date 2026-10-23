@@ -479,6 +479,22 @@ function bodGhZip(s, zs, lo, hi, lev, out = 0) {
     const [x, y] = bodGhHalf(z, q), o = out * (q <= bodQS ? 1 : 0.7); return [s * (x + o), y + (q > bodQS ? out * 0.7 : 0), z];
   });
 }
+// stations zoals patch (nu gelijke stappen plus breaks), maar tussen a en b in stappen van hooguit h
+function bodZipZs(u0, u1, nu, breaks, a, b, h) {
+  const us = []; for (let i = 0; i <= nu; i++) us.push(u0 + (u1 - u0) * i / nu);
+  breaks.forEach(x => { if (x > u0 + 1e-4 && x < u1 - 1e-4) us.push(x); });
+  const n = Math.ceil((b - a) / h), d = []; for (let i = 0; i <= n; i++) d.push(a + (b - a) * i / n);
+  return us.filter(u => u < a - 1e-4 || u > b + 1e-4).concat(d).sort((x, y) => x - y);
+}
+// paneel op de onderbak met een rij per kolom: col(z) geeft de oplopende s-waarden van de linkerhelft (zoals lowSide gespiegeld)
+function bodLowZip(s, zs, col, off = 0) {
+  return bodZip(zs.map(z => { const v = col(z); return { u: z, v: s > 0 ? v : v.map(t => 2 - t).reverse() }; }), (z, p) => bodLow(z, p, off));
+}
+// vaste s-niveaus: de n + 1 lineaire rijen tussen a en b, plus extra rijen per 8 mm in de schouder onder de gordel (y 0,78 tot 0,90,
+// gemeten op z 0,87); niveaus dichter dan 0,003 bij elkaar vallen weg
+const bodShoulderLv = (a, b, n) => { const lv = []; for (let k = 0; k <= n; k++) lv.push(a + (b - a) * k / n); for (let y = 0.78; y < 0.905; y += 0.008) lv.push(bodSY(0.87, y));
+  return lv.sort((x, y) => x - y).filter((v, i, l) => i === 0 || v - l[i - 1] > 0.003); };
+const bodLinCol = (a, b, n) => { const r = []; for (let k = 0; k <= n; k++) r.push(a + (b - a) * k / n); return r; };
 // vaste q-niveaus van A-stijl, dakrail en spiegeldriehoek: zijkant per 0,0295 (ca. 9 mm), een rij op de overgang naar de dakrailronding
 // (bodQS) en de ronding in tien stappen (per 9 graden). Zonder rij op bodQS sneed de koorde de overgang 0,9 mm af.
 const bodAQ = [...Array(19).keys()].map(k => 0.004 + k * 0.0295).concat([bodQS], [...Array(10).keys()].map(k => bodQS + (k + 1) * (bodQR - bodQS) / 10));
@@ -571,7 +587,12 @@ function buildDoor(s, isFront) {
   const nO = 40, nI = 22; // het fijnere gaas langs de wielboog van herstelronde 2 kostte 12.000 driehoeken voor een kleine winst (budget Carrosserie 190.000)
   // achterste punt van de botsbalk: bij het achterportier vóór de naad om de wielboog; de balk ligt daar op 0,43 m en begint bij z -0,78, zodat hij niet onder de onderrand van het portier uitsteekt
   const zm = (z0 + z1) / 2, za = isFront ? z0 + 0.06 : -0.90, zb = z1 - 0.06;
-  const outer = lowSide(s, z0, z1, nO, vr, 26, br);
+  // buitenpaneel voorportier (golf 8): tussen z 0,835 en de voorrand rijen op vaste s (de 26 rijen van station 0,835 plus rijen per 8 mm in de
+  // schouder) met per station een eigen onderste punt op de schuine rand, stations elke 1,2 mm. Tot golf 8 lagen 26 rijen lineair tussen de
+  // schuine rand en de gordel, zodat de laatste vakken voor de rand 3 tot 12 mm in de schouder wegzakten (y 0,80 tot 0,90).
+  const dJ = 0.835, dLv = isFront && bodShoulderLv(...vr(dJ), 26);
+  const outer = isFront ? bodLowZip(s, bodZipZs(z0, z1, nO, br, dJ, z1, 0.0012), z => z <= dJ + 1e-6 ? bodLinCol(...vr(z), 26) : bodZipCol(...vr(z), dLv, 0.004))
+    : lowSide(s, z0, z1, nO, vr, 26, br);
   const inner = lowSide(s, z0 + 0.012, z1 - 0.012, nI, z => [bodSY(z, lo(z) + 0.02), S4 - 0.012], 12, br, 0.095);
   const P3 = (z, y, inw) => { const p = bodAt(z, y, -inw); return [s * p[0], p[1], p[2]]; };
   const xin = z => s * (surfX(z, 0.6) - 0.04);
@@ -1605,9 +1626,17 @@ function buildBody() {
 
   /* ================= voorschermen ================= */
   const ffLo = z => { if (z < AXF - ARCH) return bodSY(z, 0.304); if (z <= AXF + ARCH) return archS(z); return bodSY(z, bodSeamF(z) + 0.004); };
-  const ffHi = z => z < 0.905 ? bodSY(z, bodFDlo(z) - 0.004) : S4 - 0.0008;
+  // bovenrand: 4 mm onder de schuine voorrand van het portier, hoogstens tot de gordel (golf 8: met de dichte stations van de schouder kwam
+  // een station tussen z 0,9035 en 0,905 boven de gordel uit, op het dek naar binnen, 5,6 mm in de eindkap van het dashboard)
+  const ffHi = z => z < 0.905 ? Math.min(S4 - 0.0008, bodSY(z, bodFDlo(z) - 0.004)) : S4 - 0.0008;
+  // schermpaneel (golf 8): voor z 0,906 (langs de schuine voorrand van het portier) rijen op vaste s, zoals het buitenpaneel van het portier
+  // ernaast, en stations elke 1,2 mm; daarachter de 22 lineaire rijen zoals voorheen. Tot golf 8 zakten de laatste vakken tegen de schuine
+  // rand 2 tot 23 mm weg in de schouder, met een gat van 2 mm op y 0,90.
+  const fJ = 0.906, fLv = bodShoulderLv(ffLo(fJ), ffHi(fJ), 22);
+  const fenderGeo = s => bodLowZip(s, bodZipZs(0.842, bodHLZ0 - 0.002, 60, ARCH_BREAKS.concat(bodDense(1.75, 1.81, 4)), 0.842, fJ, 0.0012),
+    z => z >= fJ - 1e-6 ? bodLinCol(ffLo(z), ffHi(z), 22) : bodZipCol(ffLo(z), ffHi(z), fLv, 0.004));
   const fender = s => A(`Voorscherm ${sn(s)}`, { d: 'Geschroefd voorscherm boven het voorwiel, met wielboogflens.', ex: [s * 0.5, 0.08, 0.22] }, [
-    P('Schermpaneel', merge([lowSide(s, 0.842, bodHLZ0 - 0.002, 60, z => [ffLo(z), ffHi(z)], 22, ARCH_BREAKS.concat(bodDense(0.842, 0.906, 6), bodDense(1.75, 1.81, 4))), archLip(s, AXF)]), MAT.paint, { d: 'Kunststof of stalen spatbord, in carrosseriekleur gelakt.', ex: [s * 0.04, 0, 0] }),
+    P('Schermpaneel', merge([fenderGeo(s), archLip(s, AXF)]), MAT.paint, { d: 'Kunststof of stalen spatbord, in carrosseriekleur gelakt.', ex: [s * 0.04, 0, 0] }),
     ...[1.0, 1.25, 1.5, 1.72].map((z, i) => P(`Schermbout ${i + 1}`, hexBolt(0.02, 0.007, 'y'), MAT.steel, { d: 'Bout langs de bovenflens waarmee het scherm aan de binnenwand vastzit.', p: [s * (bodSec(z).xe - 0.03), YT(z) - 0.012, z], ex: [0, 0.06, 0] })),
     P('Schermsteun', G.rbox(0.03, 0.08, 0.06, 0.006), MAT.darkSteel, { d: 'Steun die de voorkant van het scherm aan de frontmodule verbindt.', p: [s * (surfX(1.78, 0.6) - 0.05), 0.6, 1.78], ex: [-s * 0.04, 0, 0.04] }),
     // flenzen onder de naden met de motorkap (6 mm onder de huid) en met de bumper (4 mm): door de naden zag je eerst afwisselend het lichte
