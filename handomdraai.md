@@ -3,7 +3,7 @@
 ## Overdracht voor de volgende sessie (24 oktober 2026, na golf 8; versie 23 is gepubliceerd)
 
 ### Volgende start
-1. `git ls-remote --heads origin` en elke tak met `main` vergelijken. Verwacht: alleen `main` (laatste commit is deze bijgewerkte handomdraai), geen worktrees, alles gepusht.
+1. `git ls-remote --heads origin` en elke tak met `main` vergelijken. Verwacht: alleen `main` en `gh-pages` (laatste commit op `main` is deze bijgewerkte handomdraai), geen worktrees, alles gepusht.
 2. Niets staat half: versie 23 is gepubliceerd en teruggelezen, de nightly van laguna3 en van espace5 zijn groen, de docs zijn bijgewerkt.
 3. Kandidaat voor golf 9 (kiezen met de gebruiker; volgorde naar waarde, details onder Open punten):
    - cosmetisch: het lichte driehoekje boven het achterlicht bij de klepnaad, de lakkleur van de koker achter de koplampsproeier, de grijsblauwe wig bij de A-stijlpunt (punt 4);
