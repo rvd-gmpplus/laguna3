@@ -381,8 +381,9 @@ function buildFuel() {
   const flapY = (bodTkY[0] + bodTkY[1]) / 2, flapZ = (bodTkZ[0] + bodTkZ[1]) / 2;
   const tkFloor = fx - 0.05, tkMouth = fx - 0.022, tkNeck = fx - 0.056;       // x (positief, rechterkant) van de bodem, de monding en de achterkant van de hals
   const tkSkin = (z, y, out) => { const p = bodAt(z, y, out); return [-p[0], p[1], p[2]]; };
-  // klep: schaal die de huid volgt (2 mm over de rand van de opening), met een binnenvlak en vier randen
-  const flapZ0 = bodTkZ[0] - 0.002, flapZ1 = bodTkZ[1] + 0.002, flapY0 = bodTkY[0] - 0.002, flapY1 = bodTkY[1] + 0.002, fo = 0.0015, fi = -0.004;
+  // klep: schaal die de huid volgt (2 mm over de rand van de opening), met een binnenvlak en vier randen. Golf 8 ronde 3 (kierenaudit, paneelnaad
+  // stap hooguit 1 mm): buitenvlak 0,5 mm boven de huid (was 1,5 mm; gemeten stap 1,6 mm tegen het scherm)
+  const flapZ0 = bodTkZ[0] - 0.002, flapZ1 = bodTkZ[1] + 0.002, flapY0 = bodTkY[0] - 0.002, flapY1 = bodTkY[1] + 0.002, fo = 0.0005, fi = -0.004;
   const flapCrown = (z, t) => 0.005 * Math.sin(PI * (z - flapZ0) / (flapZ1 - flapZ0)) * Math.sin(PI * t);   // licht bol, zoals het scherm
   // buitenvlak (golf 5n): volgt de huid zonder extra bolling en krijgt de normalen van de huid (bodN, gespiegeld naar rechts). Met de bolling
   // van 5 mm weken de normalen tot ca. 8 graden af van het scherm eromheen, en de blanke lak spiegelde daardoor een andere strook van de
@@ -392,7 +393,7 @@ function buildFuel() {
     for (let i = 0; i < P3.count; i++) { const e = bodNormalAt(P3.getZ(i), P3.getY(i)), q = [-e[0], e[1], e[2]], o = Math.sign(q[0] * N.getX(i) + q[1] * N.getY(i) + q[2] * N.getZ(i)) || 1; N.setXYZ(i, o * q[0], o * q[1], o * q[2]); }
     return g; };
   // ronde 2: stralen loodrecht op de huid over de klep en 8 mm daarbuiten (3111 stralen) raken binnen de klep altijd eerst het buitenvlak en
-  // daarbuiten het scherm; nergens liggen twee onderdelen binnen 0,8 mm (geen doorboring, geen z-fight). De vier randen (1,5 mm boven de huid
+  // daarbuiten het scherm; nergens liggen twee onderdelen binnen 0,8 mm (geen doorboring, geen z-fight; met fo 1,5 mm). De vier randen (fo boven de huid
   // tot 4 mm eronder) waren gelakt en vingen het licht: van opzij een witte lijn langs de scharnierkant. Ze horen nu bij de grijze
   // binnenzijde en lezen als de donkere naad rond de klep.
   const flapOut = cache('sysFlapRo', () => flapSkin());
