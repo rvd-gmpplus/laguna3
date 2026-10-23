@@ -2079,7 +2079,11 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     // uitsparing van de mistlamp (|x| 0,56, y 0,565); was een blokje van 6 x 2,5 cm op de zijkant (z 2,0) dat uitstak
     A('Koplampsproeiers', { d: 'Twee uitschuifbare koplampsproeiers onder de bi-xenon koplampen.', ex: [0, 0.02, 0.08] }, both(s => { const x = 0.56, y = 0.565, nn = fNorm(x, y);
       return A(`Koplampsproeier ${sn(s)}`, { d: 'Uitschuifbare koplampsproeier (Initiale Paris: koplampsproeiers bij de bi-xenon).', ex: [s * 0.1, 0, 0.1] }, [
-        P('Sproeierkapje', cache('bodSprCap', () => xf(G.lathe('x', [[0, 0.0036], [0.5, 0.0033], [0.8, 0.0024], [0.95, 0.0011], [1, 0], [1, -0.001], [0, -0.001]], 16, 'bodSprCapL'), null, null, [1, 0.016, 0.054])), MAT.paint, { d: 'Liggend ovaal kapje in carrosseriekleur, vlak in de bumper onder de koplamp.', ...bodPose(s, fPt(x, y, 0.0004), nn) }),
+        // golf 8 ronde 3 (inner): de kop stak 4 cm vrij de bumper in en was door de grille en van onderen langs de binnenkant van de
+        // schaal te zien. Achter het kapje zit nu een dichte koker (r 9,5 mm, van 1,0 tot 44 mm onder de huid) om de kop (r 8, 1,5 tot
+        // 41,5 mm), in dezelfde mesh als het kapje zodat de boom gelijk blijft; van buiten valt hij binnen het kapje
+        P('Sproeierkapje', cache('bodSprCap', () => merge([xf(G.lathe('x', [[0, 0.0036], [0.5, 0.0033], [0.8, 0.0024], [0.95, 0.0011], [1, 0], [1, -0.001], [0, -0.001]], 16, 'bodSprCapL'), null, null, [1, 0.016, 0.054]),
+          xf(G.cyl('x', 0.0095, 0.0095, 0.043, 10), [-0.0229, 0, 0])])), MAT.paint, { d: 'Liggend ovaal kapje in carrosseriekleur, vlak in de bumper onder de koplamp, met de koker van de telescopische kop erachter.', ...bodPose(s, fPt(x, y, 0.0004), nn) }),
         // kop 1,5 mm onder de huid in plaats van er precies tegen: de bumperschaal met stations naar doorbuiging ligt daar tot 0,5 mm lager
         P('Sproeierkop koplamp', G.cyl('x', 0.008, 0.008, 0.04, 10), MAT.plastic, { d: 'Telescopische sproeierkop.', inner: true, ...bodPose(s, fPt(x, y, -0.0215), nn), ex: [s * 0.04, 0, 0.03] }),
       ]); })),
