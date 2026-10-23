@@ -1348,18 +1348,33 @@ function buildTaillight(s, deel = 'buiten') {
   const side = (off, f0, f1) => patch((z, p) => bodLow(z, p, off), bodZT + 0.0012, bodTLZ - 0.001, 18, z => sideR(s, bodSY(z, bodTLY(z, f0)), Math.max(bodSY(z, bodTLY(z, f0)) + 1e-4, bodSY(z, bodTLY(z, f1)))), 3, bodDense(-2.06, bodTLZ, 4));
   const face = (x0, x1, f0, f1, off, nx = 8, dy = 0) => { return bodMirX(bodTailGeo(x0, x1, bodTLY(bodZT, f0) + dy, bodTLY(bodZT, f1) - dy, off, 3, nx), s); };
   const [f0, f1, f2, f3] = bodTLF, xo = 1.2;
-  const faceR = (fa, fb, off) => bodMirX(bodTLgeo(bodTLxin, () => xs, bodTLY(bodZT, fa), bodTLY(bodZT, fb), off), s);
+  // golf 8 ronde 4 (advisor, klepnaad verspringt bij de bovenrand van het achterlicht): de lenzen staan 1 mm (buitendeel) en 0,6 mm (binnendeel)
+  // boven het staartvlak, scherm en klep liggen erin. Schuin van opzij schoof de naad in de lamp daardoor een halve millimeter op ten opzichte
+  // van de naad erboven. Langs de klepnaad loopt elke lens over de laatste 3 mm (tlW) af naar 0,35 mm boven het vlak (tlE), een afgeronde
+  // lensrand; de heldere banden houden hun 0,5 mm extra.
+  const tlW = 0.003, tlE = 0.00035;
+  const tlStrip = (x0, x1, fa, fb, oa, ob, ny, br) => bodMirX(patch((y, t) => { const x = lerp(x0, x1, t); return [x, y, tailZ(x, y) - lerp(oa, ob, t)]; }, bodTLY(bodZT, fa), bodTLY(bodZT, fb), ny, () => [0, 1], 2, br), s);
+  const faceR = (fa, fb, off) => merge([bodMirX(bodTLgeo(bodTLxin, () => xs - tlW, bodTLY(bodZT, fa), bodTLY(bodZT, fb), off), s),
+    tlStrip(xs - tlW, xs, fa, fb, off, off - (bodTLoB - tlE), 1, bodTLys())]);
+  const faceO = (fa, fb, off) => merge([face(xs + 0.003 + tlW, xo, fa, fb, off), tlStrip(xs + 0.003, xs + 0.003 + tlW, fa, fb, off - (bodTLo - tlE), off, 3, [])]);
+  // zwarte zijwand van het lichthuis langs de klepnaad, van de lensrand tot 5,5 mm onder het staartvlak (net boven de donkere strook van de
+  // klepafdichting op 6 mm). De lenzen hadden aan de naad geen zijkant: schuin van opzij keek je onder de lensrand door op de lichte reflector,
+  // en de naad in de lamp las als lichte reep naast de donkere naad boven de lamp. De wand volgt de lensbanden (heldere band 0,5 mm hoger) en
+  // dezelfde hoogtestations als de lens. De wand staat 0,3 mm binnen de lensrand en begint 0,1 mm onder de lens, zodat de lens de rand van de
+  // naad blijft (kierenaudit: anders meet de audit de kier tot de wand en geen stap tussen de lenzen).
+  const seamWall = (x, off, ny, br) => [[f0, f1, off], [f1, f2, off + 0.0005], [f2, f3, off]].map(([fa, fb, o]) =>
+    bodMirX(patch((y, t) => [x, y, tailZ(x, y) - lerp(o, -0.0055, t)], bodTLY(bodZT, fa), bodTLY(bodZT, fb), ny, () => [0, 1], 2, br), s));
   if (deel === 'binnen') return A(`Achterlicht binnendeel ${n}`, { d: 'Deel van het achterlicht in de achterklep met achterlicht en achteruitrijlicht; zet de lijnen van het buitendeel over de naad voort en draait met de klep mee.', ex: [s * 0.03, 0.04, -0.08] }, [
     P('Lens binnendeel', merge([faceR(f2, f3, bodTLoB), faceR(f0, f1, bodTLoB)]), MAT.bodLensTl, { d: 'Rode lens van het binnendeel (achterlicht): bovenband en onderstrook.', ex: [0, 0.03, -0.06] }),
     P('Lens achteruitrijlicht', faceR(f1, f2, bodTLoB + 0.0005), MAT.bodLensTlC, { d: 'Heldere middenband over het achteruitrijlicht, in lijn met de heldere band van het buitendeel.', ex: [0, 0, -0.1] }),
     P('Reflector binnendeel', face(xin + 0.004, xs - 0.008, f0, f3, -0.012, 8, 0.006), MAT.reflector, { d: 'Verchroomde reflector achter de lenzen.', ex: [0, 0, 0.04] }),
-    P('Lichthuis binnendeel', face(xin + 0.01, xs - 0.01, f0, f3, -0.028, 8, 0.008), MAT.plastic, { d: 'Behuizing in de achterklep.', ex: [0, 0, 0.06] }),
+    P('Lichthuis binnendeel', merge([face(xin + 0.01, xs - 0.01, f0, f3, -0.028, 8, 0.008), ...seamWall(xs - 0.0003, tlE - 0.0001, 1, bodTLys())]), MAT.plastic, { d: 'Zwarte kunststof behuizing in de achterklep, met een zijwand langs de klepnaad.', ex: [0, 0, 0.06] }),
     P('Lampdrager binnendeel', face(xin + 0.03, xs - 0.03, f0, f3, -0.018, 8, 0.02), MAT.ecu, { d: 'Lampdrager met fittingen en stekker.', ex: [0, 0, 0.1] }),
   ]);
   return A(`Achterlicht ${n}`, { d: 'Slank horizontaal achterlicht in twee delen, verdeeld over de klepnaad. Dit is het vaste deel op het achterscherm met achterlicht, remlicht en knipperlicht (LED-uitstraling): loopt om de afgeronde hoek de flank in en onder de schouder in een punt naar voren. Het deel in de achterklep hangt onder Achterklep als Achterlicht binnendeel en draait met de klep mee.', ex: [s * 0.3, 0.1, -0.5] }, [
-    P('Lens buitendeel', merge([side(-bodTLo, f2, f3), side(-bodTLo, f0, f1), face(xs + 0.003, xo, f2, f3, bodTLo), face(xs + 0.003, xo, f0, f1, bodTLo)]), MAT.bodLensTl, { d: 'Rode afdeklens met een brede bovenband en een smalle onderstrook, van het staartvlak om de hoek de flank in.', ex: [s * 0.05, 0, -0.06] }),
-    P('Heldere band buitendeel', merge([side(-bodTLo - 0.0005, f1, f2), face(xs + 0.003, xo, f1, f2, bodTLo + 0.0005)]), MAT.bodLensTlC, { d: 'Heldere horizontale band in de lens waarachter de knipperlichtunit zit; geeft de witte LED-streep van het fase 2-achterlicht.', ex: [s * 0.07, 0, -0.08] }),
-    P('Lichthuis buitendeel', merge([side(0.05, f0, f3), face(xs + 0.01, xo, f0, f3, -0.05, 8, 0.008)]), MAT.plastic, { d: 'Kunststof behuizing met bevestigingsbouten in het achterscherm.', ex: [-s * 0.04, 0, 0.06] }),
+    P('Lens buitendeel', merge([side(-bodTLo, f2, f3), side(-bodTLo, f0, f1), faceO(f2, f3, bodTLo), faceO(f0, f1, bodTLo)]), MAT.bodLensTl, { d: 'Rode afdeklens met een brede bovenband en een smalle onderstrook, van het staartvlak om de hoek de flank in.', ex: [s * 0.05, 0, -0.06] }),
+    P('Heldere band buitendeel', merge([side(-bodTLo - 0.0005, f1, f2), faceO(f1, f2, bodTLo + 0.0005)]), MAT.bodLensTlC, { d: 'Heldere horizontale band in de lens waarachter de knipperlichtunit zit; geeft de witte LED-streep van het fase 2-achterlicht.', ex: [s * 0.07, 0, -0.08] }),
+    P('Lichthuis buitendeel', merge([side(0.05, f0, f3), face(xs + 0.01, xo, f0, f3, -0.05, 8, 0.008), ...seamWall(xs + 0.0033, tlE - 0.0001, 3, [])]), MAT.plastic, { d: 'Kunststof behuizing met bevestigingsbouten in het achterscherm, met een zijwand langs de klepnaad.', ex: [-s * 0.04, 0, 0.06] }),
     P('LED-print buitendeel', merge([side(0.035, 0.15, 0.85), face(xs + 0.02, xo, f0, f3, -0.035, 8, 0.02)]), MAT.ecu, { d: 'Printplaat met de lampen van achter-, rem- en knipperlicht.', ex: [0, 0, 0.1] }),
     P('Reflector buitendeel', merge([side(0.02, f0, f3), face(xs + 0.003, xo, f0, f3, -0.02, 8, 0.01)]), MAT.reflector, { d: 'Verchroomde reflector achter de lens; zichtbaar door het rode glas en de heldere band.', ex: [0, 0, 0.05] }),
   ]);
