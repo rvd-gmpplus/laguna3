@@ -39,6 +39,13 @@ jobs:
         run: python3 tools/pncheck.py --tree
       - name: pubsmoke
         run: python3 tools/pubsmoke.py
+      - name: "extra tests van deze auto (auto.json: extraTests)"
+        run: |
+          fail=0
+          for n in $(python3 tools/framework.py extra-namen); do
+            echo "== $n"; python3 tools/framework.py extra "$n" uit || fail=1
+          done
+          exit $fail
       - name: "labelankers (poort, geen van beide totalen daalt)"
         run: python3 tools/anchorcheck.py --json uit/anchorcheck.json --basis docs/baseline/anchorcheck.json
       - name: "visuele regressie (informatie tot de ruisvloer op de runner bekend is)"

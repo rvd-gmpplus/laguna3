@@ -50,5 +50,8 @@
     "binnen": [],
     "licht": [0, 1.02, 0.0]
   },
+  "extraTests": [
+    {"naam": "spiegelzicht", "cmd": ["python3", "tools/spiegelzicht.py", "--zijde", "rechts", "--min", "100", "--json", "{uit}/spiegelzicht.json"], "uitleg": "Zichtpoort van golf 7: vanaf het oog van de bestuurder minstens 100 van 140 stralen vrij naar het rechter spiegelglas (besluit van de gebruiker, docs/onderzoek/beslissingen.md)."}
+  ],
   "verboden": ["Laguna", "laguna", "LAGUNA", "F4R", "AJ0", "Initiale", "zilvergrijs"]
 }

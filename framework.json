@@ -74,6 +74,7 @@
     "tools/anchors.json",
     "tools/open_allow.json",
     "tools/itest.py",
+    "tools/spiegelzicht.py",
     "tools/orkestratie/gallery.py",
     "tools/orkestratie/gateshots.py",
     "tools/orkestratie/poort.js",
