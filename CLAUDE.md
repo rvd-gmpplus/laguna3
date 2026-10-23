@@ -39,6 +39,7 @@ taal van code-commentaar, beschrijvingen, docs en commits. Geen em-dashes in tek
   daarna een beslisnotitie aan de gebruiker in plaats van nog een ronde.
 - Ruis op macOS: GPU-prestatiehints van ANGLE (zoals `GPU stall due to ReadPixels`) in de lokale smoketest. Melden, niet blokkeren.
 - Ruis op macOS: `visdiff` tegen de Linux-basislijn is sinds golf 5n op alle 42 beelden rood (8 tot 36 procent): de app meet de dockhoogte en het dock is op de Mac door andere lettermaten breder, dus de camera kadert anders. Alleen visdiff op Linux telt.
+- Ruis in de Linux-VM onder belasting: een VM-run tegelijk met de Mac-set en andere browserzware taken gaf visdiff 1,5 tot 2,2 procent op beelden die niet veranderd waren (`a2d8378`); dezelfde code in een rustige run gaf 0,00 procent. Draai de VM-run voor een nieuwe basislijn zonder andere belasting.
 
 ## Werkwijze
 

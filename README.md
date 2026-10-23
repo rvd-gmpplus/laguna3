@@ -2,7 +2,7 @@
 
 Interactieve 3D-explosietekening van een Renault Laguna III hatchback (fase 2, 2011) in de uitvoering Initiale Paris: zilvergrijs (Gris Platine D69), met de 2.0 Turbo F4Rt-motor (170 pk) en de zestraps automaat Jatco JF613E (Renault AJ0). Het model bestaat uit losse onderdelen in groepen die tot 8 lagen diep gaan; de aantallen (knopen, groepen, onderdelen, driehoeken per hoofdgroep) staan in [docs/cijfers.md](docs/cijfers.md). Elke groep klapt apart uit en in, tot op klepspie, zuigerveer en remzuiger. Een tweede modus, Openen, laat de motorkap, de portieren, de ruiten, de achterklep, het panoramadak en een reeks interieurdelen open gaan zoals bij de echte auto. Het paneel toont per onderdeel de bekende onderdeelnummers. Alle geometrie wordt in code opgebouwd; er zijn geen 3D-bestanden.
 
-Stand van 23 oktober 2026: versie 22 (golf 7, de buitenspiegel op de spiegeldriehoek zoals op de foto's en weer zichtbaar vanaf de bestuurdersstoel) is live: https://rvd-gmpplus.github.io/laguna3/ (vanaf `main`, `72bbbda`, stempel `22 (bron 23841ce)`, tag `v22`) en het artefact https://claude.ai/artifact/4qJq7YUk5nGSFmexY7WkZR (privé, artefactversie 24). Wat elke versie bracht, staat in [CHANGELOG.md](CHANGELOG.md); de secties "Nieuw in" hieronder beschrijven oudere golven. De pagina toont zelf welke versie je ziet (`?`).
+Stand van 23 oktober 2026: versie 23 (golf 8, een buitenhuid die aansluit: kierenaudit als vaste test, voorruit en A-stijl, achterkant en panoramadak) is live: https://rvd-gmpplus.github.io/laguna3/ (vanaf `main`, `5bdfda8`, stempel `23 (bron e519aaf)`, tag `v23`) en het artefact https://claude.ai/artifact/4qJq7YUk5nGSFmexY7WkZR (privé, artefactversie 25). Wat elke versie bracht, staat in [CHANGELOG.md](CHANGELOG.md); de secties "Nieuw in" hieronder beschrijven oudere golven. De pagina toont zelf welke versie je ziet (`?`).
 
 ![Gemonteerd](docs/screenshots/gemonteerd.png)
 
@@ -224,6 +224,7 @@ python3 tools/pubsmoke.py     # de CDN-versie in de verpakking van de host
 python3 tools/ui_inner.py     # ingesloten (inner) onderdelen mogen van buitenaf niet zichtbaar zijn
 python3 tools/ui_inner.py --open  # ingesloten knopen die zichtbaar worden met alles open
 python3 tools/opentest.py     # de 26 openers: zes controles per opener
+python3 tools/kieren.py --zijde beide  # kierenaudit van de buitenhuid (naden, stappen, doorkijk)
 ```
 
 De hele set in een keer, strikt en met één exitcode: `tools/orkestratie/finaltests.sh UITVOERMAP`. De budgetten voor driehoeken staan in `tools/anchors.json` en worden bewaakt door `python3 tools/tri.py --gate`.

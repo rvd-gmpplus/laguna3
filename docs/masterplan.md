@@ -491,10 +491,34 @@ Gedaan:
 
 Open:
 - Onder de bovenlijst van de portierkaart blijft bij een open voorportier tussen z 0,803 en 0,898 een gelakt stukje te zien; voor nu geaccepteerd (besluit van de gebruiker op 23 oktober 2026).
-- Bekledingspaneel tegen Luidsprekerrooster dringt 0,70 mm door, links en rechts; bestaat al op versie 21 en de testset meet dit paar niet. Besluit van de gebruiker: in de volgende golf het rooster ongeveer 1 mm naar binnen, met een botsingsmeting.
+- Bekledingspaneel tegen Luidsprekerrooster dringt 0,70 mm door, links en rechts; bestaat al op versie 21 en de testset meet dit paar niet. Besluit van de gebruiker: in de volgende golf het rooster ongeveer 1 mm naar binnen, met een botsingsmeting. Opgelost in golf 8 (versie 23): het rooster volgt de portierkaart op 0,4 mm, 0 doordringend.
 - De dakafvoerslang (`panorama.js`) loopt 9 tot 11 mm onder de schuine rand van de spiegeldriehoek; ze hoort eerder binnen de A-stijl.
-- Budget Carrosserie: nog ongeveer 1.000 driehoeken marge (`docs/cijfers.md`); de volgende carrosseriegolf maakt eerst ruimte of herziet het budget met de gebruiker.
+- Budget Carrosserie: nog ongeveer 1.000 driehoeken marge (`docs/cijfers.md`); de volgende carrosseriegolf maakt eerst ruimte of herziet het budget met de gebruiker. In golf 8 herzien met de gebruiker (rij Golf 8, budget).
 - `opendicht` vergeeft tot 5 mm voorbij het geraakte vlak en zag de snijding van de driehoek niet; een randtoets (randen als stralen) in de poort zou dit soort dunne delen wel vinden.
+
+## Golf 8: een buitenhuid die aansluit (UITGEVOERD; versie 23 gepubliceerd op 23 oktober 2026, tag `v23`)
+
+Verzoek van de gebruiker: natuurlijke kieren mogen, maar wat in elkaar moet overlopen, moet goed aansluiten. Besloten op 23 oktober 2026 (zie `docs/onderzoek/beslissingen.md`, rijen Golf 8). Vier rondes van de zes die een golf mag hebben; advisor Fable 5.1 xhigh gaf in ronde 3 bijsturen (lakband A-stijl naar ongeveer 100 mm) en in ronde 4 pass, met twee cosmetische punten. Takken `golf-8-voor`, `golf-8-achter`, `golf-8-int`, `golf-8-test` en `golf-8-ci`, samengevoegd in `golf-8`. Versie, tijden en publicatie: `CHANGELOG.md`, versie 23.
+
+Rondes:
+- **Ronde 1**: kierenaudit als vaste extra test (`kieren`, op versie 22 rood met 90 fouten); voorruit tot de rand van A-stijl en dak, doorlopende voorlijn van het raamkader, voorrand voorportier tegen het voorscherm; achter de keramische rand op de achterruit, lijmrand en sponning donker, C-stijl, achterscherm en bumperstaart, hoeken van de achterklepbekleding; luidsprekerrooster in de portierkaart.
+- **Ronde 2**: audit met afdekkers, donkere doorkijk en lijnregels; sluitnaad, chroomlijst en gordellijst in de punt van de spiegeldriehoek; motorkapnaad, koplampglas, wielbooglip voor, bumperschaal, wisseraskappen, panoramadak; achter de C-stijlschouder, klepnaad met rubberlijn, achterlichten in het vlak, B-stijlnaad 3,8 mm.
+- **Ronde 3**: strengere kiergrenzen (besluit van de gebruiker); voorportier op een eigen as van 6 graden, A-stijlvouw afgerond, daklijn zonder sprong, voorruitkolommen dichter, motorkapnaad 4 mm; achter gordellijst met schaduwlijn, achterruit fijner, klepnaad dicht, tankklep, dwarsbalk 5,5 mm. Advisor bijsturen.
+- **Ronde 4**: lakband A-stijl optie A met de dashboardhoek onder het glas, matte voorruitfrit, klepnaad door het achterlicht zonder sprong, tankklep met een kier van 3 mm, dichte koker achter de sproeierkop, keramische rand voorruit tot de glasrand met een eigen naadregel, A-stijlbekleding tot op het dashboard. Advisor pass.
+
+Gedaan:
+- **Kierenaudit**: eindstand groen, 330 naden en vlakken (zie `docs/testen.md`, sectie extra tests). Budget Carrosserie in drie stappen verhoogd (`docs/cijfers.md`).
+- **Eindpoort** op `645138d`: Mac en Linux groen behalve visdiff; op Linux alleen de carrosseriebeelden die golf 8 bewust verandert; basislijn vernieuwd uit een rustige VM-run (`714dc1c`).
+
+Open:
+- **Grens T4**: versie 23 ligt boven 1,8 MB raw en 490 kB gzip (`docs/cijfers.md`, sectie Pagina). Besluit van de gebruiker nodig: grens verhogen of ruimte maken.
+- Licht driehoekje in de hoek boven het achterlicht bij de klepnaad (cosmetisch punt 2 van de advisor).
+- De koker achter de koplampsproeier heeft de lakkleur van het kapje; alleen door de grille of van onderen te zien.
+- Scharnieras voorportier 6 graden; echte portieren vallen minder, verfijning naar 2 tot 3 graden is mogelijk.
+- Bestaande doordringingen: Regensensor 4,4 mm in het Lamphuis plafonnier; afdichting en omlijsting van de voorste opening in het panoramadak.
+- Kleine grijsblauwe wig bij de punt tussen spiegeldriehoek en gordelsierlijst.
+- De beschrijving van 'Keramische rand voor' noemt zijbanden van 25 mm; gemeten is 43 tot 47 mm.
+- Budget Interieur bijna vol na de A-stijlbekleding (`docs/cijfers.md`).
 
 ## Volgorde, capaciteit en poorten
 
