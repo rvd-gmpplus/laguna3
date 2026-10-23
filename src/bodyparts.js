@@ -1249,8 +1249,10 @@ function buildHeadlight(s) {
   const back = at(2.0, 0.5, 0.075);
   return A(`Koplamp ${n}`, { d: 'Bi-xenon directionele koplamp met dagrijlicht en zwart masker; loopt ver terug langs het voorscherm (fase 2, standaard op Initiale Paris).', ex: [s * 0.32, 0.12, 0.62] }, [
     // golf 8 ronde 2: 0,5 mm boven de huid (was 3 mm): trede tegen bumper, scherm en kap was 3 tot 3,8 mm, nu hoogstens ca. 1,5 mm
-    // (de bumperschaal ligt met zijn koorden tot 1 mm binnen de huid)
-    P('Afdekglas', reg(lo, hi, -0.0005), MAT.lensClear, { d: 'Gebogen polycarbonaat afdekglas dat het scherm- en kapvlak volgt.', ex: out(0.26) }),
+    // (de bumperschaal ligt met zijn koorden tot 1 mm binnen de huid). Golf 8 ronde 3: stations naar doorbuiging (0,25 mm) in plaats van
+    // 30 vaste stappen in z en 8 over de breedte: bij de binnenspits (z 2,23) staat de huid bijna haaks op z, zodat een stap in z daar een
+    // lange koorde over de bolling gaf; rechts lag de rand van het glas zo tot 1,6 mm onder zijn eigen vlak (kierenmeting, grens 1,5)
+    P('Afdekglas', bodSagSide(z0, z1, z => [lo(z), hi(z)], 0.00025, { off: -0.0005, nuF: 240, nvF: 64 }).geo(s), MAT.lensClear, { d: 'Gebogen polycarbonaat afdekglas dat het scherm- en kapvlak volgt.', ex: out(0.26) }),
     P('Zwart masker', merge([reg(z => lo(z) + (hi(z) - lo(z)) * 0.7, z => hi(z) - 0.002, 0.012), patch((z, p) => bodLow(z, p, 0.013), z0, 1.9, 8, z => sideR(s, lo(z) + 0.002, hi(z) - 0.002), 4)]), MAT.blackGloss, { d: 'Hoogglans zwart masker als ooglid boven de projectoren en achterin de lamp, kenmerkend voor de fase 2-koplamp.', ex: out(0.15) }),
     P('Reflectorvlak', holes(patch((z, p) => bodLow(z, p, 0.016), 1.9, z1, 48, z => sideR(s, lo(z) + 0.002, lo(z) + (hi(z) - lo(z)) * 0.7), 14)), MAT.chrome, { d: 'Verchroomd vlak rond de projectoren onder het masker.', ex: out(0.1) }),
     P('Lamphuis', merge([reg(lo, hi, 0.07), wall(lo), wall(hi), endWall(z0), endWall(z1), reg(z => lo(z) - 0.007, z => lo(z) + 0.002, 0.005), reg(z => hi(z) - 0.002, z => hi(z) + 0.006, 0.005)]), MAT.plastic, { d: 'Kunststof lamphuis waarin alle modules zijn gemonteerd.', ex: [0, 0, 0] }),
