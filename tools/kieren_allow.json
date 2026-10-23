@@ -344,7 +344,7 @@
    {
     "naam": "gordellijn",
     "knikMax": 3.0,
-    "a": "(Portier (rechts|links)(voor|achter)/Raamlijsten en sierlijsten/(Gordelsierlijst|Gordelrubber buiten)|Kwartsruit (rechts|links)/Gordellijn kwartsruit)$",
+    "a": "(Portier (rechts|links)(voor|achter)/Raamlijsten en sierlijsten/(Gordelsierlijst|Gordelrubber buiten)|Kwartsruit (rechts|links)/(Gordellijn kwartsruit|Rubberlijn kwartsruit))$",
     "b": "(Portier (rechts|links)(voor|achter)/(Buitenpaneel|Raamlijsten en sierlijsten/(Gordelsierlijst|Gordelrubber buiten)))$",
     "_uitleg": "De gordellijn (sierlijst, rubber en de rand van het portier eronder) loopt op de echte auto als één rechte, licht stijgende lijn van de spiegeldriehoek tot de kwartsruit."
    },
@@ -386,7 +386,7 @@
      "Portier (rechts|links)achter/(Buitenpaneel|Raamlijsten en sierlijsten/(Gordelsierlijst|Gordelrubber buiten))$"
     ],
     "b": [
-     "Kwartsruit (rechts|links)/Gordellijn kwartsruit$",
+     "Kwartsruit (rechts|links)/(Gordellijn kwartsruit|Rubberlijn kwartsruit)$",
      "Portier (rechts|links)achter/Buitenpaneel$"
     ]
    },
