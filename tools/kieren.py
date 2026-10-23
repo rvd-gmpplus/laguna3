@@ -21,6 +21,9 @@ de flens van zijn eigen delen. Sectie lijnen: knik (sprong in de richting van ee
 en doorlopend (twee lijnen die over een naad of stijl in elkaar overlopen, hoek tussen hun hoofdassen). Lijnregels staan als eigen
 rijen in de uitslag (soort lijnknik of doorlopend).
 
+Golf 8 ronde 3: knikMax van een naad is de richtingsverandering per knikSeg mm booglengte (knikPerSeg). Een vormzone met een sectie naad
+(wielbooglip) geeft de kruisingen in de zone eigen grenzen voor stap en rand; kier en doorkijk houden de grenzen van de naad.
+
 Exitcode 0 als niets fout is, 1 bij een fout (per fout naad, delen, plaats en maat), 2 bij een scriptfout.
 --png MAP schrijft kieren_<zijde>.png met zijaanzicht, bovenaanzicht, voor- en achteraanzicht van het raster: grijs per
 deel, blauw kier, rood moet-aansluiten-fout, oranje natuurlijk-te-groot, magenta facet, groen natuurlijk-ok.
@@ -121,9 +124,29 @@ def classificeer(r, allow):
         if randdoorkijk >= 2:
             delen = ', '.join(f'{kort(pad(k))} {v}x' for k, v in sorted(n['rand'].items(), key=lambda x: -x[1])[:3])
             fouten.append(f"lichte delen achter de ruitrand zichtbaar ({delen})")
-        kl = n.get('knikL')
-        if grens.get('knikMax') is not None and kl and kl['hoek'] > grens['knikMax'] + 1e-6:
-            fouten.append(f"knik van {nl(kl['hoek'])} graden in de naadlijn bij z {nl(kl['plek'][2], 3)}, y {nl(kl['plek'][1], 3)} (grens {nl(grens['knikMax'])})")
+        # vormzones met een sectie naad (golf 8 ronde 3, wielbooglip): de kruisingen in de zone hebben eigen grenzen voor stap en rand
+        zoneInfo = {}
+        for zi, z in (n.get('zones') or {}).items():
+            vz = allow['vormzones'][int(zi)]
+            zg = vz['naad']
+            zs = robuust(z['stap'], absoluut=True)
+            zr = []
+            for kant, m in (('randA', n['a']), ('randB', n['b'])):
+                mm = M[str(m)]
+                if mm.get('glad') and z[kant]:
+                    zr.append(robuust([v - mm['med'] for v in z[kant]], absoluut=True))
+            zrW = max(zr) if zr else None
+            zoneInfo[vz['naam']] = {'kruisingen': z['n'], 'stap': zs, 'rand': zrW}
+            if zg.get('stapMax') is not None and zs is not None and zs > zg['stapMax'] + 1e-6:
+                fouten.append(f"stap {nl(zs)} mm in de vormzone {vz['naam']} (grens {nl(zg['stapMax'])})")
+            if zg.get('randMax') is not None and zrW is not None and zrW > zg['randMax'] + 1e-6:
+                fouten.append(f"rand wijkt {nl(zrW)} mm af van het vlak in de vormzone {vz['naam']} (grens {nl(zg['randMax'])})")
+        # knik in de naadlijn (golf 8 ronde 3): richtingsverandering per knikSeg mm booglengte, per fysieke lijn van de naad
+        kl = None
+        if grens.get('knikMax') is not None:
+            kl = knikPerSeg(n['punten'], hit.get('knikSeg', 10.0) / 1000 if hit else 0.010, hit.get('knikGlad', 5.0) / 1000 if hit else 0.005)
+            if kl and kl['hoek'] > grens['knikMax'] + 1e-6:
+                fouten.append(f"knik van {nl(kl['hoek'])} graden per {nl(kl['seg'], 0)} mm in de naadlijn bij z {nl(kl['plek'][2], 3)}, y {nl(kl['plek'][1], 3)} (grens {nl(grens['knikMax'])})")
 
         natuurlijk = hit is not None
         klasse = ('natuurlijk-te-groot' if fouten else 'natuurlijk-ok') if natuurlijk else ('moet-aansluiten-fout' if fouten else 'moet-aansluiten-ok')
@@ -134,7 +157,7 @@ def classificeer(r, allow):
             'rand': randW, 'doorkijk': n['door'], 'doorkijkN': doorkijkN, 'knik': robuust(n['knik']), 'lijnhoek': n['lijn'], 'lijnknik': n.get('knikL'),
             'vulling': n.get('vul', 0), 'randdoorkijk': n['rand'] and {kort(pad(k)): v for k, v in n['rand'].items()},
             'afgedekt': {kort(pad(k)): v for k, v in n.get('afgedekt', {}).items()}, 'doorZie': {kort(pad(k)): v for k, v in n.get('doorZie', {}).items()},
-            'doorNiets': n.get('doorNiets', 0), 'deellijnen': n.get('lijnen'), 'knikMax': grens.get('knikMax'),
+            'doorNiets': n.get('doorNiets', 0), 'deellijnen': n.get('lijnen'), 'knikMax': grens.get('knikMax'), 'knikPerSeg': kl, 'vormzones': zoneInfo,
             'punten': n['punten'],
         })
     facetten = []
@@ -168,6 +191,11 @@ def lijnGroepen(naden, R, zijde):
         for p in n['punten']:
             if (p[0] < -0.02) if zijde == 'rechts' else (p[0] > 0.02):
                 subs.setdefault((ni, p[9] if len(p) > 9 else 0), {'paar': tuple(sorted((pa, pb))), 'pts': []})['pts'].append(p[:3])
+    return voegSamen(subs)
+
+
+def voegSamen(subs):
+    """Deellijnen (sleutel: {'paar', 'pts'}) samenvoegen tot fysieke lijnen; regels in lijnGroepen."""
     keys = list(subs)
     info = {}
     for k in keys:
@@ -223,6 +251,98 @@ def lijnknik(naden, regels):
                 uit.append({'naam': r['naam'], 'soort': 'lijnknik', 'delen': [r['a'], r['b']], 'plaats': plaats(lo, hi), 'lo': lo, 'hi': hi,
                             'klasse': 'moet-aansluiten-fout' if fouten else 'moet-aansluiten-ok', 'fouten': fouten, 'punten_n': len(pts), **k})
     return uit
+
+
+def knikPerSeg(punten, seg, glad):
+    """Knik in de lijn van één naad (knikMax per naad, golf 8 ronde 3): de richtingsverandering per seg m booglengte. De deellijnen van
+    de naad worden fysieke lijnen (kopAanKop; een gat zonder kruisingen of een sprong tussen twee deellijnen telt zo mee). Per lijn: de
+    punten langs de hoofdas, gladgestreken met het gemiddelde binnen glad m booglengte (de kruisingen van de twee rasterrichtingen
+    liggen 4 tot 9 mm uit elkaar en hebben ongeveer 0,1 mm ruis), dan elke millimeter de hoek tussen de koorde over seg terug en de koorde
+    over seg verder. Een boog met straal R geeft seg / R radialen (5 graden per 10 mm is R ongeveer 11,5 cm), een knik zijn volle hoek;
+    de ruisvloer is 1 tot 2,5 graden. Punten binnen seg + glad van een eind tellen niet. Geeft {hoek, plek, seg (mm)} of None."""
+    subs = {}
+    for p in punten:
+        subs.setdefault(p[9] if len(p) > 9 else 0, []).append(p[:3])
+    best = None
+    for pts in kopAanKop(list(subs.values())):
+        if len(pts) < 6:
+            continue
+        t, m = richting(pts)
+        pts = sorted(pts, key=lambda p: sum((p[k] - m[k]) * t[k] for k in range(3)))
+        s = [0.0]
+        for a, b in zip(pts, pts[1:]):
+            s.append(s[-1] + math.dist(a, b))
+        if s[-1] < 2 * (seg + glad):
+            continue
+        G = []
+        for i in range(len(pts)):
+            nb = [p for p, si in zip(pts, s) if abs(si - s[i]) <= glad + 1e-9]
+            G.append([sum(p[k] for p in nb) / len(nb) for k in range(3)])
+        def op(x):
+            i = max(0, min(len(s) - 2, next((j for j in range(len(s) - 1) if s[j + 1] >= x), len(s) - 2)))
+            f = (x - s[i]) / (s[i + 1] - s[i]) if s[i + 1] - s[i] > 1e-12 else 0.0
+            return [G[i][k] + (G[i + 1][k] - G[i][k]) * f for k in range(3)]
+        x = s[0] + seg + glad
+        while x <= s[-1] - seg - glad + 1e-9:
+            a, b, c = op(x - seg), op(x), op(x + seg)
+            u = [b[k] - a[k] for k in range(3)]
+            v = [c[k] - b[k] for k in range(3)]
+            lu, lv = math.hypot(*u), math.hypot(*v)
+            if lu > 1e-9 and lv > 1e-9:
+                h = math.degrees(math.acos(max(-1.0, min(1.0, sum(u[k] * v[k] for k in range(3)) / (lu * lv)))))
+                if best is None or h > best['hoek']:
+                    best = {'hoek': round(h, 2), 'plek': [round(q, 3) for q in b], 'seg': seg * 1000}
+            x += 0.001
+    return best
+
+
+def kopAanKop(lijnen, gat=0.025, kegel=0.35, eind=0.015):
+    """Deellijnen van één naad die kop aan kop liggen, samenvoegen (voor knikPerSeg). Twee deellijnen horen bij elkaar als een eind van
+    de een binnen 'gat' m van een eind van de ander ligt, en elk eind in het verlengde van de ander: vooruit langs de raaklijn van de
+    laatste 'eind' m van die deellijn, en hooguit kegel maal de afstand plus 1 mm ernaast (een kegel van ongeveer 20 graden). Twee
+    evenwijdige randen van een lijst (13 mm naast elkaar) liggen naast elkaar en niet in elkaars verlengde, en blijven gescheiden."""
+    def koppen(pts):
+        if len(pts) < 2:
+            return [(pts[0], None)]
+        t, m = richting(pts)
+        pr = [sum((p[k] - m[k]) * t[k] for k in range(3)) for p in pts]
+        uit = []
+        for e, teken in ((pts[pr.index(min(pr))], -1), (pts[pr.index(max(pr))], 1)):
+            nb = [p for p in pts if math.dist(p, e) <= eind + 1e-9]
+            if len(nb) >= 2:
+                tl, ml = richting(nb)
+                # naar buiten gericht: van het zwaartepunt van het eindstuk naar het eind
+                if sum((e[k] - ml[k]) * tl[k] for k in range(3)) < 0:
+                    tl = [-v for v in tl]
+                if sum((e[k] - m[k]) * tl[k] for k in range(3)) < 0:
+                    tl = [-v for v in tl]
+            else:
+                tl = [teken * v for v in t]
+            uit.append((e, tl))
+        return uit
+    def verlengde(e, tl, q):
+        d = [q[k] - e[k] for k in range(3)]
+        a = math.hypot(*d)
+        if tl is None:
+            return True
+        x = sum(d[k] * tl[k] for k in range(3))
+        return x > -1e-4 and max(0.0, a * a - x * x) ** 0.5 <= kegel * a + 0.001
+    K = [koppen(p) for p in lijnen]
+    par = list(range(len(lijnen)))
+    def f(i):
+        while par[i] != i:
+            i = par[i]
+        return i
+    for i in range(len(lijnen)):
+        for j in range(i + 1, len(lijnen)):
+            for ea, ta in K[i]:
+                for eb, tb in K[j]:
+                    if math.dist(ea, eb) <= gat and verlengde(ea, ta, eb) and verlengde(eb, tb, ea):
+                        par[f(i)] = f(j)
+    groepen = {}
+    for i, p in enumerate(lijnen):
+        groepen.setdefault(f(i), []).extend(p)
+    return list(groepen.values())
 
 
 def knikSprong(pts, boog):

@@ -173,7 +173,10 @@
     const z0 = ZR + 0.004, nk = Math.floor((ZF - 0.004 - z0) / H);
     for (let k = 0; k <= nk; k++) {
       const z = z0 + k * H, kas = z >= SP && z <= WS0;
-      const segs = kas ? [[0, S2, S4], [1, 0, 1]] : [[0, S2, 1]];
+      // golf 8 ronde 3: de kas begint op de C-stijlschouder bij bodCFsA (body.js, golf 8 ronde 2), niet meer overal bij S4. De onderbak
+      // tot S4 rasteren legde monsters op de oude hoek, waar de huid nu de holle afronding volgt (schijnfacet van 10 mm in de C-stijl)
+      const sKas = typeof bodCFsA === 'function' ? bodCFsA(z) : S4;
+      const segs = kas ? [[0, S2, sKas], [1, 0, 1]] : [[0, S2, 1]];
       const dense = [];
       for (const [kind, a, b] of segs) for (let i = 0; i <= 300; i++) { const u = a + (b - a) * i / 300, p = sec(z, kind, u); dense.push([kind, u, p[0], p[1]]); }
       let acc = 0; const cum = [0];
@@ -243,10 +246,18 @@
   const buren4 = i => { const s = SM[i]; return [at(s.g, s.k - 1, s.j), at(s.g, s.k + 1, s.j), at(s.g, s.k, s.j - 1), at(s.g, s.k, s.j + 1)]; };
   const buren8 = i => { const s = SM[i], r = []; for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) if (a || b) r.push(at(s.g, s.k + a, s.j + b)); return r; };
   // vormzones: ontworpen vormdetails waar het oppervlak bewust van het analytische afwijkt (geen facetcontrole)
-  const vorm = s => (cfg.vormzones || []).some(v => {
-    if (v.soort === 'wielboog') return [AXF, AXR].some(az => { const r = Math.hypot(s.P[2] - az, s.P[1] - AY); return r < ARCH + v.rmax; });
-    if (v.soort === 'kader') return s.P.every((c, k) => c >= v.lo[k] - 1e-9 && c <= v.hi[k] + 1e-9);
+  const inZone = (v, P) => {
+    if (v.soort === 'wielboog') return [AXF, AXR].some(az => { const r = Math.hypot(P[2] - az, P[1] - AY); return r < ARCH + v.rmax; });
+    if (v.soort === 'kader') return P.every((c, k) => c >= v.lo[k] - 1e-9 && c <= v.hi[k] + 1e-9);
     return false;
+  };
+  const vorm = s => (cfg.vormzones || []).some(v => inZone(v, s.P));
+  // vormzone voor een kruising van een naad (golf 8 ronde 3): alleen zones met een sectie naad, en bij de wielboog alleen de lipband zelf
+  // (ARCH tot ARCH + rmax van de as); index van de zone of -1
+  const naadZone = P => (cfg.vormzones || []).findIndex(v => {
+    if (!v.naad) return false;
+    if (v.soort === 'wielboog') return [AXF, AXR].some(az => { const r = Math.hypot(P[2] - az, P[1] - AY); return r >= ARCH - 1e-9 && r < ARCH + v.rmax; });
+    return inZone(v, P);
   });
   const facMon = new Uint8Array(NS);
   for (let i = 0; i < NS; i++) {
@@ -360,7 +371,7 @@
     Object.assign(c, {
       la, lb, kierL: afg ? 0 : Math.max(0, iB - iA - 1) * DS * 1000, afg: afg ? dek : -1, zie: afg ? [] : [...zie], niets: !afg && niets, stap: dA !== null && dB !== null ? dA - dB : null, dA, dB,
       door: iB - iA > 1 && !afg ? (door === -Infinity ? null : door) : null, doorDeel, doorLicht, derde: [...new Set(derde)], knik,
-      eA: PP[iA], eB: PP[iB], M: [0, 1, 2].map(k => (PP[iA][k] + PP[iB][k]) / 2), n: nm, e0,
+      eA: PP[iA], eB: PP[iB], M: [0, 1, 2].map(k => (PP[iA][k] + PP[iB][k]) / 2), n: nm, e0, zone: naadZone([0, 1, 2].map(k => (PP[iA][k] + PP[iB][k]) / 2)),
       gapN: iB - iA - 1,
       rand: info[la].ruit && !info[lb].ruit && !info[lb].zwart ? ruitRand(c, c.a) : info[lb].ruit && !info[la].ruit && !info[la].zwart ? ruitRand(c, c.b) : [], vul: L_.slice(iA + 1, iB).some(l => l === -5),
     });
@@ -450,16 +461,21 @@
       cs.forEach(c => { if (c.afg >= 0) afgedekt[c.afg] = (afgedekt[c.afg] || 0) + 1; if (c.gapN < 2) return; c.zie.forEach(m => { doorZie[m] = (doorZie[m] || 0) + 1; }); if (c.niets) doorNiets++; });
       const lijnen = new Set(basis.map(c => c.lijnId)).size;
       const la = cs[0].la < cs[0].lb ? cs[0].la : cs[0].lb, lb = la === cs[0].la ? cs[0].lb : cs[0].la;
-      // stap met teken ten opzichte van la (positief: la ligt dieper)
-      const svT = basis.filter(c => c.stap !== null).map(c => c.la === la ? c.stap : -c.stap);
-      const randA = basis.map(c => c.la === la ? c.dA : c.dB).filter(v => v !== null), randB = basis.map(c => c.la === la ? c.dB : c.dA).filter(v => v !== null);
+      // stap met teken ten opzichte van la (positief: la ligt dieper). Kruisingen in een vormzone met een sectie naad (golf 8 ronde 3,
+      // de wielbooglip) tellen apart in zones: daar gelden voor stap en rand de grenzen van de zone, voor de rest die van de naad
+      const svT = basis.filter(c => c.stap !== null && c.zone < 0).map(c => c.la === la ? c.stap : -c.stap);
+      const randA = basis.filter(c => c.zone < 0).map(c => c.la === la ? c.dA : c.dB).filter(v => v !== null), randB = basis.filter(c => c.zone < 0).map(c => c.la === la ? c.dB : c.dA).filter(v => v !== null);
+      const zones = {};
+      basis.forEach(c => { if (c.zone < 0) return; const z = zones[c.zone] || (zones[c.zone] = { n: 0, stap: [], randA: [], randB: [] }); z.n++;
+        if (c.stap !== null) z.stap.push(+(c.la === la ? c.stap : -c.stap).toFixed(2));
+        const ra = c.la === la ? c.dA : c.dB, rb = c.la === la ? c.dB : c.dA; if (ra !== null) z.randA.push(+ra.toFixed(2)); if (rb !== null) z.randB.push(+rb.toFixed(2)); });
       naden.push({
         a: la, b: lb, n: cs.length, vul: cs.filter(c => c.vul).length, nb: basis.length, lo: lo.map(v => +v.toFixed(3)), hi: hi.map(v => +v.toFixed(3)),
         kier: kv.sort((x, y) => x - y).map(v => +v.toFixed(2)), stap: svT.sort((x, y) => x - y).map(v => +v.toFixed(2)),
         door: dv.length ? +Math.max(...dv).toFixed(1) : null, doorN: dv.filter(v => v > DDIEP).length, doorDelen, doorLicht: cs.reduce((s, c) => s + (c.doorLicht ? 1 : 0), 0),
         randA: randA.sort((x, y) => x - y).map(v => +v.toFixed(2)), randB: randB.sort((x, y) => x - y).map(v => +v.toFixed(2)),
         knik: cs.map(c => c.knik).filter(v => v !== null).sort((x, y) => x - y).map(v => +v.toFixed(1)), lijn: lijn === null ? null : +lijn.toFixed(1), knikL,
-        rand, derde, doorZie, doorNiets, afgedekt, lijnen,
+        rand, derde, doorZie, doorNiets, afgedekt, lijnen, zones,
         // punt: x, y, z, kier, stap (teken t.o.v. a), doorkijk, rastersoort (0/1 zij, 2 voor, 3 achter), normaal y en x, deellijn
         punten: basis.map(c => [+c.M[0].toFixed(4), +c.M[1].toFixed(4), +c.M[2].toFixed(4), +c.kier.toFixed(2), c.stap === null ? null : +((c.la === la ? c.stap : -c.stap)).toFixed(2), c.door === null ? null : +c.door.toFixed(1), SM[c.a].kind, +c.n[1].toFixed(2), +c.n[0].toFixed(2), c.lijnId]),
       });

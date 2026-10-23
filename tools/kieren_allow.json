@@ -1,5 +1,5 @@
 {
- "_uitleg": "Kierenaudit (tools/kieren.py, docs/testen.md). Natuurlijke naden die op de echte auto bestaan, met per soort een realistische grens; alles wat hier niet als naad staat, moet aansluiten (sectie aansluiten). Patronen zijn reguliere expressies op het volledige pad van een mesh (zonder de wortel), bijvoorbeeld 'Carrosserie/Portier rechtsvoor/Buitenpaneel'. De eerste naad waarvan a en b passen (in beide volgordes) telt. Grenzen in millimeter: kier loodrecht op de naad in het vlak, stap loodrecht op het vlak, rand = hoe ver de laatste centimeters van een glad deel van zijn eigen mediaan afwijken. knikMax (optioneel per naad): grootste toegestane richtingsverandering van de naadlijn in graden. Doorkijk: of je door de kier dieper dan 'diep' mm mag kijken. Lijmruitrand: of lichte delen (luminantie boven 'randLum') binnen 'randDiepte' mm achter de rand van een gelijmde ruit te zien mogen zijn; bij een echte gelijmde ruit dekt een zwarte keramische rand dat af. Alleen de orkestrator wijzigt dit bestand; elke wijziging met een reden in _uitleg of in docs/onderzoek/beslissingen.md.",
+ "_uitleg": "Kierenaudit (tools/kieren.py, docs/testen.md). Natuurlijke naden die op de echte auto bestaan, met per soort een realistische grens; alles wat hier niet als naad staat, moet aansluiten (sectie aansluiten). Patronen zijn reguliere expressies op het volledige pad van een mesh (zonder de wortel), bijvoorbeeld 'Carrosserie/Portier rechtsvoor/Buitenpaneel'. De eerste naad waarvan a en b passen (in beide volgordes) telt. Grenzen in millimeter: kier loodrecht op de naad in het vlak, stap loodrecht op het vlak, rand = hoe ver de laatste centimeters van een glad deel van zijn eigen mediaan afwijken. knikMax (optioneel per naad): grootste toegestane richtingsverandering van de naadlijn in graden. Doorkijk: of je door de kier dieper dan 'diep' mm mag kijken. Lijmruitrand: of lichte delen (luminantie boven 'randLum') binnen 'randDiepte' mm achter de rand van een gelijmde ruit te zien mogen zijn; bij een echte gelijmde ruit dekt een zwarte keramische rand dat af. Alleen de orkestrator wijzigt dit bestand; elke wijziging met een reden in _uitleg of in docs/onderzoek/beslissingen.md. Golf 8 ronde 3 (besluit van de gebruiker na ronde 2, optie A; docs/onderzoek/beslissingen.md, rij Golf 8, kiergrenzen): strengere grenzen, want de echte portier- en kapkier is ongeveer 4 mm met 1 mm speling: paneelnaad kier 6,0 naar 5,0 mm, stap en rand 1,5 naar 1,0 mm; lijst stap 15 naar 6 mm; raamkader voorportier langs de A-stijl knik 30 graden naar 5 graden per 10 mm booglengte. knikMax van een naad is sindsdien de richtingsverandering per knikSeg mm booglengte (standaard 10), zie de naad zelf.",
  "meting": {
   "_uitleg": "stap: rasterstap in mm over het analytische oppervlak; diep: dieper dan dit (mm onder het oppervlak) telt een treffer als kier of doorkijk; lmax: een kier van hooguit zoveel rastermonsters tussen twee delen is een naad, breder is een doorkijkvlak; minBuiten: een deel telt pas als buitendeel als het raster het minstens zo vaak aan de huid raakt (anders is het iets dat door een kier te zien is); facet: afwijking in mm van de mediaan van een glad deel; facetMin: kleinste facet in rastermonsters; gladIqr: een deel is glad als de middelste helft van zijn diepten binnen zoveel mm ligt; samen: kruisingen binnen zoveel rasterstappen horen bij dezelfde naad; minKruis: kleinere naden tellen als ruis (los). dekMax (golf 8 ronde 2): een kruising waarvan de hele kier bedekt is door een afdekdeel (sectie afdekkers) dat hooguit zoveel mm dieper ligt dan de randen of erboven, telt met kier 0 en zonder doorkijk; de kier is van buiten niet te zien (tweede laag onder een sierlijst of wenkbrauw). lijnSamen (golf 8 ronde 2): kruisingen binnen zoveel rasterstappen vormen één deellijn; richting, lijnhoek en knik worden per deellijn bepaald, zodat de twee randen van een lijst (13 mm uit elkaar) geen schijnknik geven.",
   "stap": 8,
@@ -25,11 +25,11 @@
  },
  "soorten": {
   "paneelnaad": {
-   "kierMax": 6.0,
-   "stapMax": 1.5,
-   "randMax": 1.5,
+   "kierMax": 5.0,
+   "stapMax": 1.0,
+   "randMax": 1.0,
    "doorkijk": true,
-   "_uitleg": "Naad rond een bewegend paneel (portier, motorkap, achterklep, tankklep, schuifdak). Op een middenklasser van deze generatie is de kier 3 tot 5 mm (fabrieksmaat rond 4 mm, tolerantie ongeveer 1 mm) en de vlakheid (flush) binnen ongeveer 1 mm; 6 mm en 1,5 mm laten ruimte voor de benadering van het model. In de kier zie je de flens of het rubber; dat is doorkijk die bij de naad hoort."
+   "_uitleg": "Naad rond een bewegend paneel (portier, motorkap, achterklep, tankklep, schuifdak). Op een middenklasser van deze generatie is de kier 3 tot 5 mm (fabrieksmaat rond 4 mm, tolerantie ongeveer 1 mm) en de vlakheid (flush) binnen ongeveer 1 mm. Golf 8 ronde 3 (besluit van de gebruiker): kier hooguit 5 mm (4 mm plus 1 mm speling), stap en rand hooguit 1 mm; tot ronde 2 was dat 6 en 1,5 mm als ruimte voor de benadering van het model. In de kier zie je de flens of het rubber; dat is doorkijk die bij de naad hoort."
   },
   "dorpelnaad": {
    "kierMax": 8.0,
@@ -61,10 +61,10 @@
   },
   "lijst": {
    "kierMax": 1.5,
-   "stapMax": 15.0,
+   "stapMax": 6.0,
    "randMax": null,
    "doorkijk": false,
-   "_uitleg": "Rubber, chroomlijst of sierlijst op of tegen een vlak: een profiel staat bewust boven het vlak (raamrubber 2 tot 3 mm, gordellijst 4 tot 14 mm), dus de stap is vorm; een zichtbare kier of doorkijk langs een lijst hoort er niet. Geen randcontrole: de rand van het vlak onder een lijst mag onder de lijst wegduiken."
+   "_uitleg": "Rubber, chroomlijst of sierlijst op of tegen een vlak: een profiel staat bewust boven het vlak (raamrubber 2 tot 3 mm, gordellijst enkele millimeters), dus de stap is vorm; een zichtbare kier of doorkijk langs een lijst hoort er niet. Golf 8 ronde 3 (besluit van de gebruiker): stap hooguit 6 mm (was 15 mm); een lijst die verder uitsteekt, is een richel. Een ontworpen hogere lijst krijgt een eigen naad met een eigen stapMax (spoilerlip). Geen randcontrole: de rand van het vlak onder een lijst mag onder de lijst wegduiken."
   },
   "inzet": {
    "kierMax": 3.0,
@@ -130,17 +130,18 @@
   {
    "naam": "klepnaad langs de achterruitrand",
    "soort": "paneelnaad",
-   "kierMax": 5.0,
    "doorkijk": "donker",
    "a": "Achterklep/(Keramische rand achter|Lijmrand achterruit)$",
    "b": "(C-stijl (rechts|links)|Dakpaneel panoramadak|Achterscherm (rechts|links))$",
-   "_uitleg": "Golf 8 ronde 2: de keramische rand en de lijmrand van de achterruit horen bij de achterklep; waar ze tegen de C-stijl (of dak en scherm) liggen, is dat de achterklepnaad en geen lijst of rubber op een vlak. Op de echte auto is die naad 3 tot 5 mm (kierMax 5, strenger dan de 6 mm van een gewone paneelnaad) en zie je erin alleen de zwarte klepafdichting en de lijm. doorkijk 'donker': doorkijk mag alleen naar donkere delen (luminantie tot randLum) of naar de flens van de twee delen van de naad zelf; een licht deel erachter (hoedenplanksteun, bekleding) of niets is een fout."
+   "_uitleg": "Golf 8 ronde 2: de keramische rand en de lijmrand van de achterruit horen bij de achterklep; waar ze tegen de C-stijl (of dak en scherm) liggen, is dat de achterklepnaad en geen lijst of rubber op een vlak. Op de echte auto is die naad 3 tot 5 mm (kier hooguit 5 mm; sinds golf 8 ronde 3 is dat de grens van elke paneelnaad, dus geen eigen kierMax meer) en zie je erin alleen de zwarte klepafdichting en de lijm. doorkijk 'donker': doorkijk mag alleen naar donkere delen (luminantie tot randLum) of naar de flens van de twee delen van de naad zelf; een licht deel erachter (hoedenplanksteun, bekleding) of niets is een fout."
   },
   {
    "naam": "achterklepnaad",
    "soort": "paneelnaad",
+   "doorkijk": "donker",
    "a": "Achterklep/(Buitenpaneel achterklep|Achterruit|Spoilerlip|Achterlicht binnendeel (rechts|links)/.*)$",
-   "b": "(Achterscherm (rechts|links)|C-stijl (rechts|links)|Dakpaneel panoramadak|Achterbumper/Bumperschaal achter|Achterlicht (rechts|links)/.*)$"
+   "b": "(Achterscherm (rechts|links)|C-stijl (rechts|links)|Dakpaneel panoramadak|Achterbumper/Bumperschaal achter|Achterlicht (rechts|links)/.*)$",
+   "_uitleg": "Golf 8 ronde 3: de hele achterklepnaad (klep, achterruit, spoilerlip en de binnendelen van de achterlichten tegen scherm, C-stijl, dak, bumper en de buitendelen van de lichten) heeft doorkijk 'donker': op de echte auto zie je in een klepnaad alleen het zwarte klepdichtingsrubber. Een licht deel of niets achter de kier is een fout. Afdekkers blijven een eigen lijst (sectie afdekkers): alleen wat daar staat, telt als afdekker."
   },
   {
    "naam": "tankklep",
@@ -191,10 +192,12 @@
   {
    "naam": "raamkader voorportier langs de A-stijl",
    "soort": "lijst",
-   "knikMax": 30.0,
+   "knikMax": 5.0,
+   "knikSeg": 10.0,
+   "knikGlad": 5.0,
    "a": "Portier (rechts|links)voor/Raamlijsten en sierlijsten/(Rubberlijn|Chroomlijst) raamomlijsting$",
    "b": "A-stijl (rechts|links)$",
-   "_uitleg": "Het raamkader van het voorportier volgt de A-stijl als één doorlopende lijn van de spiegeldriehoek tot het dak (foto's van de auto). knikMax: de richting van de naad mag over 2,4 tot 4,8 cm niet meer dan 30 graden draaien; een ronde hoek met een straal vanaf ongeveer 10 cm blijft daaronder, een knik zoals in de melding van de gebruiker (golf 8, 'een knik in de voorste deuren') niet."
+   "_uitleg": "Het raamkader van het voorportier volgt de A-stijl als één doorlopende lijn van de spiegeldriehoek tot het dak (foto's van de auto). knikMax (golf 8 ronde 3, besluit van de gebruiker; tot ronde 2 30 graden over 2,4 tot 4,8 cm): de richting van de naadlijn mag per knikSeg mm booglengte niet meer dan 5 graden draaien. Maat (kieren.py, knikPerSeg): de deellijnen van de naad kop aan kop samengevoegd tot één lijn, de punten gladgestreken over knikGlad mm, dan de hoek tussen de koorde over 10 mm terug en de koorde over 10 mm verder. Een ronde bocht met een straal vanaf ongeveer 11,5 cm blijft onder 5 graden, een knik zoals in de melding van de gebruiker (golf 8, 'een knik in de voorste deuren') niet; de ruisvloer van de meting is 1 tot 2,5 graden."
   },
   {
    "naam": "voorruit tegen rubber of lak",
@@ -318,7 +321,11 @@
    "naam": "wielbooglip",
    "soort": "wielboog",
    "rmax": 0.045,
-   "_uitleg": "archLip (bodyparts.js): een flens van 4 cm rond de wielboog die bewust tot 5 mm boven de huid staat; geen facetcontrole binnen ARCH + 4,5 cm van de as."
+   "naad": {
+    "stapMax": 6.0,
+    "randMax": 6.0
+   },
+   "_uitleg": "archLip (bodyparts.js): een flens van 4 cm rond de wielboog die bewust tot 5 mm boven de huid staat; geen facetcontrole binnen ARCH + 4,5 cm van de as. naad (golf 8 ronde 3): ook voor naden, maar alleen voor de kruisingen in de lipband zelf (ARCH tot ARCH + 4,5 cm van de as). Daar is de stap tussen de lip en een buurdeel zonder lip (bumper tegen scherm achter: 5 mm) en de afwijking van de rand van het scherm (de lip ligt hoger dan de mediaan van het scherm: 2,4 tot 4,8 mm) vorm en geen montagefout; grens 6 mm voor stap en rand (5 mm lip plus 1 mm). Kier en doorkijk houden de grenzen van de naad, en buiten de lipband gelden voor die naad alle grenzen van zijn soort."
   }
  ],
  "openingen": {
