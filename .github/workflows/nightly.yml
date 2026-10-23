@@ -13,6 +13,10 @@ jobs:
       MODEL_TIMEOUT_MS: '600000'
       PUBSMOKE_READY_MS: '60000'
       ITEST_GATES: '1'
+      # SwiftShader op de runner is traag: Playwright-acties krijgen 120 s in plaats van 30 s (tools/harness.py)
+      ACTION_TIMEOUT_MS: '120000'
+      # regels direct in het log, niet pas bij het einde van de stap
+      PYTHONUNBUFFERED: '1'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -28,7 +32,11 @@ jobs:
           python3 -m playwright install --with-deps chromium
           python3 tools/harness.py --ensure-three
       - name: itest met poorten
-        run: python3 tools/itest.py
+        # de uitvoer gaat ook naar uit/itest.log, zodat upload-artifact bij een rode run iets heeft (pipefail houdt de exitcode van itest)
+        run: |
+          mkdir -p uit
+          set -o pipefail
+          python3 tools/itest.py 2>&1 | tee uit/itest.log
       - name: opentest strikt
         run: python3 tools/opentest.py --strikt-min --out uit/opentest
       - name: "opentest dicht (botsing met 20.000 punten in 32 stappen)"

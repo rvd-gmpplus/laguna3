@@ -12,6 +12,7 @@ Omgevingsvariabelen:
     CHROMIUM    pad naar een Chromium-binary (standaard /opt/pw-browsers/chromium als die bestaat)
     MODEL_TEST bestaande testmap gebruiken in plaats van opnieuw te bouwen
     MODEL_TIMEOUT_MS wachttijd op laden en `ready` in milliseconden (standaard 120000)
+    ACTION_TIMEOUT_MS standaardtijd van Playwright-acties in milliseconden (standaard 30000; de nightly zet 120000)
 
 Los aan te roepen: `python3 tools/harness.py --ensure-three` haalt three.js op (met hashcontrole) en drukt de map af.
 """
@@ -156,6 +157,9 @@ class Session:
         # (visdiff); bereikbaarheid controleert pubsmoke.py met curl. (orkestrator, 16 oktober 2026)
         ctx.route(lambda u: u.startswith(FONT_HOSTS), _font_route)
         pg = ctx.new_page()
+        # standaardtijd voor Playwright-acties (klik, wacht, evaluate). Op een trage runner (SwiftShader) loopt 30 s te krap;
+        # de nightly zet ACTION_TIMEOUT_MS hoger. Lokaal blijft 30 s.
+        pg.set_default_timeout(int(os.environ.get('ACTION_TIMEOUT_MS', '30000')))
         tag = f'{w}x{h}'
 
         def on_console(m):
