@@ -402,6 +402,7 @@ function bodRibbon(s, zq, w, out = 0.004, crown = 0.0015, nv = 4, P = (z, q) => 
 // De punten blijven op het oppervlak (geen raakvlak), zodat een band ook over de ronding van de dakrail netjes aanligt.
 const bodPGh = (z, q) => { const [x, y] = bodGhHalf(z, clamp(q, 0, 1)); return [x, y, z]; };
 // up: normaal naar boven richten (y > 0) in plaats van naar buiten (x > 0), voor banden op het dak en de voorruit
+// out mag een functie van v zijn (0 bij a, 1 bij b): een band die naar een rand toe dunner wordt (gordellijst, golf 8 ronde 3)
 function bodTrim(s, zu, a, b, out = 0.003, crown = 0, nv = 1, P = bodPGh, up = false) {
   const e = 1e-4, sub = (p, q) => [p[0] - q[0], p[1] - q[1], p[2] - q[2]], dot = (p, q) => p[0] * q[0] + p[1] * q[1] + p[2] * q[2];
   // voorwaartse verschillen: aan de rand u = 0 (gordel) klemt P de parameter, een centraal verschil gaf daar de halve afgeleide (dubbele breedte)
@@ -415,7 +416,7 @@ function bodTrim(s, zu, a, b, out = 0.003, crown = 0, nv = 1, P = bodPGh, up = f
     for (let j = 0; j <= nv; j++) {
       const v = j / nv, da = typeof a === 'function' ? a(z) : a, db = typeof b === 'function' ? b(z) : b, d = da + (db - da) * v, zz = z + dz * d, uu = u + du * d, p = P(zz, uu), [Qz, Qu] = der(zz, uu);
       let N = [Qz[1] * Qu[2] - Qz[2] * Qu[1], Qz[2] * Qu[0] - Qz[0] * Qu[2], Qz[0] * Qu[1] - Qz[1] * Qu[0]]; const l = Math.hypot(...N) || 1; N = N.map(w => w / l); if (up ? N[1] < 0 : N[0] < 0) N = N.map(w => -w);
-      const o = out + crown * Math.sin(PI * v); pos.push(s * (p[0] + N[0] * o), p[1] + N[1] * o, p[2] + N[2] * o);
+      const o = (typeof out === 'function' ? out(v) : out) + crown * Math.sin(PI * v); pos.push(s * (p[0] + N[0] * o), p[1] + N[1] * o, p[2] + N[2] * o);
     }
   });
   for (let i = 0; i < n - 1; i++) for (let j = 0; j < nv; j++) { const a1 = i * (nv + 1) + j, b1 = a1 + nv + 1; if (s > 0) idx.push(a1, b1, a1 + 1, b1, b1 + 1, a1 + 1); else idx.push(a1, a1 + 1, b1, b1, a1 + 1, b1 + 1); }
@@ -425,13 +426,32 @@ function bodTrim(s, zu, a, b, out = 0.003, crown = 0, nv = 1, P = bodPGh, up = f
 // met een donkere lijn van 9 mm tussen chroom en lak (rubber en de naad tussen raamkader en dak); daaronder het zwarte raamkader tot de ruit.
 // Met 4 mm was die lijn in het zijaanzicht minder dan een pixel en las de chroomband tegen de lichte dakrail niet als lijst (S7 kenmerk 4, ronde 2)
 const bodQV = 0.557, bodTW = 0.0085, bodTR = 0.009;
-// gordellijst onderaan de ruit langs een pad op q = 0: schaduwlijn (3 mm) naar de lak, bolle chroomband (15 mm) en rubberlip (4 mm) naar het
-// glas; samen 21 mm langs de ruit, zodat de zichtbare ruitlijn binnen de silhouetmaat blijft (ca. 2 cm boven de gordel)
+// gordellijst onderaan de ruit langs een pad op q = 0: bolle chroomband (15 mm, sinds golf 8 ronde 3 met een voet over de schouder en
+// daaronder een schaduwlijn) en rubberlip (4 mm) naar het glas; samen 21 mm langs de ruit, zodat de zichtbare ruitlijn binnen de silhouetmaat blijft (ca. 2 cm boven de gordel)
 // cut (golf 8 ronde 2, voorportier): elke lijn eindigt op het verstek met de schuine chroomlijst (bodTrimCut, cut van bodFL)
+// Golf 8 ronde 3 (kierenaudit, lijst stap hooguit 6 mm): de schouder van de onderbak loopt op de gordel vrijwel vlak (ca. 6 graden) de
+// kas in, die onder ca. 65 graden omhoog gaat. De chroomband stond alleen op de kas: van boven gezien een staande richel van 13 tot 14 mm
+// boven de schouder. Nu heeft de lijst een voet over de bovenrand van het portier (zoals de kap van een echte gordellijst de omgezette rand
+// van de portierhuid afdekt): de band loopt van 5 mm onder de gordel over de schouder, met een holle afronding over de hoek, de kas op.
+// Draagvlak bodPBelt(z, u): u >= 0 de kas (bodPGh), u < 0 de schouderboog van de onderbak op booglengte (halfPt; vanaf bodCFsA, waar de
+// C-stijlschouder de kas al op de schouder laat beginnen), en rond de hoek een kwadratische Bezier over bodBFL aan elke kant met het
+// controlepunt op de hoek. De schaal van u onder de gordel is die van de kas op de gordel, zodat bodTrim afstanden goed omrekent.
+const bodBFL = 0.008;
+function bodPBelt(z, u) {
+  const g = bodGh(z), K0 = bodGhHalf(z, 0, g), K1 = bodGhHalf(z, 1e-4, g), sp = Math.hypot(K1[0] - K0[0], K1[1] - K0[1]) / 1e-4, uk = bodBFL / sp;
+  if (u >= uk) return bodPGh(z, u);
+  const c = bodSec(z), s0 = bodCFsA(z), ds = (S4 - S3) / (c.rs * c.th), sh = L => halfPt(z, Math.max(S3, s0 - L * ds));
+  if (u <= -uk) { const p = sh(-u * sp); return [p[0], p[1], z]; }
+  const A = sh(bodBFL), B = bodGhHalf(z, uk, g), t = (u + uk) / (2 * uk), w0 = (1 - t) * (1 - t), w1 = 2 * t * (1 - t), w2 = t * t;
+  return [w0 * A[0] + w1 * K0[0] + w2 * B[0], w0 * A[1] + w1 * K0[1] + w2 * B[1], z];
+}
 function bodBeltTrim(s, path, cut) {
-  const T = cut ? (s, p, a, b, o, c, nv) => bodTrimCut(s, p, a, b, o, c, nv, cut) : bodTrim;
-  return { chrome: T(s, path, -0.0175, -0.0025, 0.003, 0.003, 8),
-    rubber: merge([T(s, path, -0.021, -0.017, 0.0022, 0, 1), T(s, path, -0.003, -0.0002, 0.0022, 0, 1)]) };
+  const T = cut ? (s, p, a, b, o, c, nv) => bodTrimCut(s, p, a, b, o, c, nv, cut, bodPBelt) : (s, p, a, b, o, c, nv) => bodTrim(s, p, a, b, o, c, nv, bodPBelt);
+  // chroom van 17,5 mm boven tot 5 mm onder de gordel, over het draagvlak bodPBelt (kas, afgeronde hoek, schouder); de voet wordt naar de
+  // rand dunner (3 naar 1,2 mm boven de lak) en ligt zonder open spleet op de schouder. Daaronder een donkere lip van 4,5 tot 8,5 mm op de
+  // schouder (1,2 naar 0,2 mm dik): de schaduwlijn onder de lijst, zodat het chroom niet in de schouder opgaat (golf 8 ronde 3)
+  return { chrome: T(s, path, -0.0175, 0.005, v => 0.003 - 0.0018 * sstep((v - 0.72) / 0.28), 0.003, 12),
+    rubber: merge([T(s, path, -0.021, -0.017, 0.0022, 0, 1), T(s, path, 0.0045, 0.0085, v => lerp(0.0012, 0.0002, v), 0, 2)]) };
 }
 // dunne donkere naadlijn op de onderbak langs punten (z, y): het portierrubber dat in de sluitnaad zichtbaar is
 const bodSeamLine = (s, zy, w = 0.0045) => bodRibbon(s, zy, w, 0.0007, 0, 1, (z, y) => { const [x, yy] = halfPt(z, sAtY(z, y)); return [x, yy, z]; });
@@ -578,7 +598,7 @@ function bodTrimCut(s, zu, a, b, out, crown, nv, cut, P = bodPGh) {
   return bodCutStrip(s, 0, n, nv, (i, j) => { const [z, u, dz, du] = prm[i], d = a + (b - a) * j / nv; return [z + dz * d, u + du * d]; }, cut, (z, u, uu, j) => {
     const p = P(z, u), [Qz, Qu] = der(z, u); let N = [Qz[1] * Qu[2] - Qz[2] * Qu[1], Qz[2] * Qu[0] - Qz[0] * Qu[2], Qz[0] * Qu[1] - Qz[1] * Qu[0]];
     const l = Math.hypot(...N) || 1; N = N.map(w => w / l); if (N[0] < 0) N = N.map(w => -w);
-    const o = out + crown * Math.sin(PI * j / nv); return [s * (p[0] + N[0] * o), p[1] + N[1] * o, p[2] + N[2] * o];
+    const o = (typeof out === 'function' ? out(j / nv) : out) + crown * Math.sin(PI * j / nv); return [s * (p[0] + N[0] * o), p[1] + N[1] * o, p[2] + N[2] * o];
   });
 }
 // rits tussen kolommen met een eigen aantal rijen (golf 8): cols[i] = { u, v: [oplopende rijparameters] }, pt(u, v) geeft het punt.
@@ -832,7 +852,8 @@ function buildDoor(s, isFront) {
     ringGeo = bodTrim(s, topPath, -bodTW, bodTW, 0.0035, 0.003, 8);
     ringRub = bodTrim(s, topPath, -bodTW - bodTR, -bodTW + 0.0005, 0.0026, 0, 1);
   }
-  // gordellijst onderaan de ruit: bolle chroomband van 15 mm met een donkere rubberlijn naar het glas en een schaduwlijn naar de lak
+  // gordellijst onderaan de ruit: bolle chroomband van 15 mm met een voet op de schouder, een donkere rubberlijn naar het glas en een
+  // schaduwlijn op de schouder onder de voet
   // voorportier: stations elke 2 mm in het verstek (elke lijn eindigt op zijn eigen snijpunt met de verstekhoek, bodTrimCut)
   const beltPath = isFront ? bodLinZ(zB0, 0.86, 26, 0).concat(bodLinZ(0.86, zB1, 48, 0).slice(1)) : bodLinZ(zB0, zB1, 30, 0);
   const { chrome: beltGeo, rubber: beltRub } = bodBeltTrim(s, beltPath, isFront ? bodFL().cutB : undefined);
