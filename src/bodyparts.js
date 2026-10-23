@@ -1035,7 +1035,10 @@ function buildDoor(s, isFront) {
   const kTop = bodGhSide(s, kZ0, gz1 + 0.01, 30, z => [bodQG + 0.001, kQT(z)], 3, [], -0.004);
   kids.push(P('Raamkader binnen', kTop, MAT.paintIn, { d: 'Binnenkant van het raamkader: gelakt plaatwerk langs de bovenrand van de ruit, zichtbaar bij een open portier.', ex: [-s * 0.04, 0.06, 0] }));
   kids.push(P('Raamkaderrubber binnen', bodGhSide(s, kZ0, gz1 + 0.01, 30, z => [kQT(z) - 0.005, kQT(z)], 1, [], -0.0055), MAT.rubber, { d: 'Zwart afdichtrubber langs de buitenrand van het raamkader, onder de dakrand.', ex: [-s * 0.03, 0.08, 0] }));
-  if (isFront) kids.push(P('Naadrubber B-stijl', bodBand(s, -0.148 + bodBGF + 0.001, bodBGK, -0.148 - bodBGW - 0.001, bodBGK, 0.0008), MAT.bodPillar, { d: 'Mat zwart rubber in de naad tussen de twee B-stijlafdekkingen, in het verlengde van de sluitnaad onder de gordel.', ex: [s * 0.03, 0.02, 0] }));
+  // golf 8 ronde 2 (dichte opentest): de bovenrand ligt 0,002 in q (ca. 1,3 mm) onder die van de afdekkingen. Het rubber loopt 1 mm onder de
+  // afdekking van het achterportier door (anders doorkijk in de naad); bij gelijke bovenrand stak de bovenste rij net buiten die afdekking uit
+  // (het vlak helt daar naar het dak) en liep die bij het openen van het voorportier, dat eerst naar buiten gaat, tot 38,8 mm erdoorheen
+  if (isFront) kids.push(P('Naadrubber B-stijl', bodBand(s, -0.148 + bodBGF + 0.001, bodBGK, -0.148 - bodBGW - 0.001, bodBGK, 0.0008, bodQG + 0.028), MAT.bodPillar, { d: 'Mat zwart rubber in de naad tussen de twee B-stijlafdekkingen, in het verlengde van de sluitnaad onder de gordel.', ex: [s * 0.03, 0.02, 0] }));
   if (isFront) {
     // golf 8: bovenrand op de rand van de A-stijl (bodFL: 0,5 mm onder de buitenrand van de rubberlijn), met dezelfde stations als de A-stijl,
     // zodat beide zonder kier op elkaar aansluiten; de punt ligt waar die rand de onderrand (q bodFLQc) kruist (z ca. 0,96, als in golf 7)
@@ -1565,7 +1568,11 @@ function buildBody() {
     // golf 8 ronde 2: de schouderafronding (bodCFqB, body.js) krijgt een eigen band van zes rijen; daarboven elf rijen tot de hoek op bodQS
     // golf 8 ronde 2 (klepnaad): de bovenrand van de C-stijl ligt 0,0012 hoger in q (ca. 0,6 mm), zodat de naad met de keramische rand van de
     // achterklep (q + 0,004) van 1,5 tot 2,0 mm naar ongeveer 1,0 tot 1,4 mm gaat; in de laatste 2 cm voor RW0 loopt de verhoging terug naar 0
-    ...both(s => { const lo = z => z < bodQZ ? 0 : cPillarLo(z), hi = z => z < RW0 ? qScr(z) + bodKNq(z) : bodQR, mid = z => clamp(bodQS, lo(z), hi(z)), br = bodCSBr();
+    // golf 8 ronde 2 (dichte opentest): voor de achterrand van de kwartsruit (bodQZ) loopt de onderrand vanaf zQ0 (ca. 7 mm ervoor, het station
+    // van de oude verdeling in 34 stappen) schuin omhoog naar cPillarLo. Met 110 stations viel er een station op z -1,2558 met de onderrand
+    // op de gordel, en daar liep het gordelrubber binnen van het achterportier bij het openen 9,7 mm door de stijl
+    ...both(s => { const zQ0 = SP + (-0.95 - SP) * 25 / 34, qQ = cPillarLo(bodQZ);
+      const lo = z => z < zQ0 ? 0 : z < bodQZ ? qQ * (z - zQ0) / (bodQZ - zQ0) : cPillarLo(z), hi = z => z < RW0 ? qScr(z) + bodKNq(z) : bodQR, mid = z => clamp(bodQS, lo(z), hi(z)), br = bodCSBr().concat([zQ0]);
       const fq = z => lo(z) + Math.max(bodCFqB(z), 0.006);
       // 110 stations in plaats van 34: de beginlijn van de afronding buigt in de overgangen sterk, en bij 3,4 cm per station week de koorde
       // tot 1,3 mm van de bovenrand van het scherm af (doorkijk naar de hoedenplanksteun); nu ca. 1 cm per station, koordefout onder 0,15 mm
