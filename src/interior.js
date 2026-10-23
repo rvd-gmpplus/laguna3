@@ -656,11 +656,28 @@ function intDashboard() {
     if (ax <= b) return s < 0 ? lerp(sinkVi, sinkVo, clamp((ax - a) / (b - a), 0, 1)) : 1;
     const t = Math.min(1, (ax - b) / sinkU), t2 = t * t, t3 = t2 * t;
     return (2 * t3 - 3 * t2 + 1) * kb + (t3 - 2 * t2 + t) * sinkU * m0 + (3 * t2 - 2 * t3) * sinkDoor; };
+  // Golf 8 ronde 4 (lakband A-stijl optie A, via de orkestrator): met de langere A-stijlvoet (bodAPL 0,20 in body.js) zakt de onderhoek van
+  // de voorruit tot in de buitenhoeken van drager en huid (|x| 0,74 tot 0,75, z 0,99 tot 1,03; clash 4,0 en 2,1 mm door glas en keramische
+  // rand). In de uitloop naar de portier (vanaf |x| wsX0 en z wsZ0) blijft elk hoekpunt nu minstens wsGap onder het glas (analytisch, ghPt;
+  // het glas is bol, dus de vlakken ertussen blijven er ook onder). Daarvoor heeft het buitenste stuk (|x| 0,725 tot 0,75) vijf stappen en
+  // het profiel vanaf z wsZ0 een punt per 5 mm (wsRefine). Alleen de hoek tegen de ruit zakt, tot ca. 10 mm recht omlaag (ca. 4 mm loodrecht
+  // op het glas); de rest van het dashboard blijft gelijk.
+  const wsGap = 0.0015, wsX0 = 0.70, wsZ0 = 0.975, wsC = new Map();
+  const wsY = (ax, z) => { const k = `${Math.round(ax * 1e5)},${Math.round(z * 1e5)}`; if (wsC.has(k)) return wsC.get(k);
+    let lo = bodQR / 2, hi = 0.5, y = Infinity;
+    if (ghPt(z, lo)[0] >= ax) { for (let i = 0; i < 32; i++) { const m = (lo + hi) / 2; if (ghPt(z, m)[0] > ax) lo = m; else hi = m; } y = ghPt(z, (lo + hi) / 2)[1]; }
+    wsC.set(k, y); return y; };
+  // profiel met een extra punt per 5 mm in z vanaf wsZ0 op elke rand (zelfde vorm), zodat de klem alleen de hoek tegen de ruit raakt
+  const wsRefine = poly => poly.flatMap((a, i) => { const b = poly[(i + 1) % poly.length], zs = [];
+    for (let z = Math.ceil(Math.max(wsZ0, Math.min(a[0], b[0])) / 0.005 - 1e-6) * 0.005; z < Math.max(a[0], b[0]) - 1e-6; z += 0.005) zs.push(z);
+    const t = zs.map(z => (z - a[0]) / (b[0] - a[0])).filter(u => u > 1e-6 && u < 1 - 1e-6).sort((u, v) => u - v);
+    return [a, ...t.map(u => [lerp(a[0], b[0], u), lerp(a[1], b[1], u)])]; });
   // g ongeindexeerd (extrusie); de normaal per punt is het gemiddelde van de vlaknormalen van de driehoeken op die plek die voor
   // het zakken dezelfde normaal hadden (zelfde vlak van het profiel, binnen 2,6 graden): knikken en kopse kanten blijven scherp
   const sink = g => { const P = g.attributes.position; g.computeVertexNormals(); const N0 = g.attributes.normal.array.slice();
     for (let i = 0; i < P.count; i++) { const x = P.getX(i), y = P.getY(i);
-      if (y > sinkY && P.getZ(i) < 0.79) P.setY(i, sinkY + (y - sinkY) * sinkK(x > 0 ? 1 : -1, Math.abs(x))); }
+      if (y > sinkY && P.getZ(i) < 0.79) P.setY(i, sinkY + (y - sinkY) * sinkK(x > 0 ? 1 : -1, Math.abs(x)));
+      if (Math.abs(x) >= wsX0 && P.getZ(i) >= wsZ0) P.setY(i, Math.min(P.getY(i), wsY(Math.abs(x), P.getZ(i)) - wsGap)); }
     g.computeVertexNormals(); const N = g.attributes.normal.array, F = N.slice(), at = new Map();
     for (let i = 0; i < P.count; i++) { const k = `${Math.round(P.getX(i) * 1e5)},${Math.round(P.getY(i) * 1e5)},${Math.round(P.getZ(i) * 1e5)}`; if (!at.has(k)) at.set(k, []); at.get(k).push(i); }
     for (const ids of at.values()) for (const i of ids) { let x = 0, y = 0, z = 0;
@@ -687,7 +704,10 @@ function intDashboard() {
     for (const [a0, b0, k, d] of ventPieces) { const a = Math.max(a0, x0), b = Math.min(b0, x1); if (b - a < 1e-6) continue;
       if (k === 'n') out.push(intSideBlock(poly, a, b)); else if (k === 'p') out.push(intSideBlock(pod(d), a, b));
       else if (k === 'u') { const s = a + b > 0 ? 1 : -1, xr = s * (Math.min(Math.abs(a0), Math.abs(b0)) + sinkU), m = Math.min(Math.max(xr, a), b);
-        out.push(sinkBlock(pod(d), a, m, s > 0 ? 10 : 1), sinkBlock(pod(d), m, b, s > 0 ? 1 : 10)); }
+        // buitenste stuk vanaf |x| 0,725 in vijf stappen (klem onder de ruithoek, zie wsGap)
+        const pr = wsRefine(pod(d)), e = s > 0 ? Math.min(Math.max(0.725, m), b) : Math.min(Math.max(-0.725, a), m);
+        const parts = s > 0 ? [[a, m, 10], [m, e, 1], [e, b, 5]] : [[a, e, 5], [e, m, 1], [m, b, 10]];
+        parts.forEach(([p0, p1, n]) => { if (p1 - p0 > 1e-6) out.push(sinkBlock(pr, p0, p1, n)); }); }
       else if (a + b < 0) out.push(...sideVent.cut(pod(d)).map(p => sinkBlock(p, a, b, 8)));
       else out.push(...sideVent.cut(pod(d)).map(p => intSideBlock(p, a, b))); }
     return out.filter(Boolean); };

@@ -176,7 +176,7 @@ function bodGh(z) {
 const bodCPL = 0.30;
 // voet van de A-stijl (golf 5h): tussen WS0 - bodAPL en WS0 gaat de kas over in de dekdoorsnede van de kap, zodat ruit en stijl op de
 // kap aansluiten (anders een open driehoek naast de ruithoek). Overgang sstep; de dashboardhuid begint op z 1,00 (glas 26 mm erboven).
-const bodAPL = 0.09;
+const bodAPL = 0.20;
 const bodMorph = z => (z >= SP + bodCPL ? sstep((z - WS0 + bodAPL) / bodAPL) : sstep((SP + bodCPL - z) / bodCPL));
 // C-stijlschouder (golf 8 ronde 2, kierenaudit; besluit via de orkestrator): achter het achterportier liep de vlakke bovenkant van de schouder
 // (helling 8 tot 11 graden) met een knik van ca. 65 graden in de C-stijl (73 tot 75 graden), een richel waar de kierenaudit een stap van 10 mm
@@ -224,7 +224,7 @@ function bodGhHalfM(z, q, g) {
 // q bodQS - 0,03 tot bodQS + 0,015 met aan beide kanten dezelfde raaklijn (straal ca. 3 cm, hoogstens 1,3 mm binnen de oude hoek). De
 // zijruit (tot q bodQG 0,505) en de bovenlijn van de raamomlijsting (q bodQV 0,557) liggen erbuiten
 const bodAFq0 = 0.03, bodAFq1 = 0.015;
-const bodAFf = z => sstep((z - 0.68) / 0.04) * sstep((0.86 - z) / 0.04);
+const bodAFf = z => sstep((z - 0.65) / 0.04) * sstep((0.86 - z) / 0.04);
 function bodGhHalf0(z, q, g) {
   const f = bodAFf(z), q0 = bodQS - bodAFq0, q1 = bodQS + bodAFq1;
   if (f <= 0 || q <= q0 || q >= q1) return bodGhHalfR(z, q, g);

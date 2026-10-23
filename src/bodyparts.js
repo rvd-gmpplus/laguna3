@@ -468,7 +468,7 @@ const bodLinZ = (a, b, n, q) => { const out = []; for (let i = 0; i <= n; i++) o
 // Golf 8 ronde 2 (vormbesluit, Fable): schuine lijn onder 42 graden (was 46; op de foto's ca. 38 tot 40) met de knie 6 cm verder naar achteren
 // (bodFLA 0,68, benen 31 mm, van 27 naar 42 graden), zodat de lijn recht van de knie naar de punt loopt; de bovenhoek van de ruit ligt
 // daardoor onder de zwarte band. Schuine chroomlijst en gordellijst lopen tot de punt en sluiten in verstek op elkaar aan (bodFLMiter).
-const bodFLA = 0.68, bodFLEz = 0.9323, bodFLPhi = 42 * PI / 180, bodFLQc = 0.014, bodFLTr = 0.05;
+const bodFLA = 0.6575, bodFLEz = 0.9211, bodFLPhi = 42 * PI / 180, bodFLQc = 0.014, bodFLTr = 0.05;
 // onderrand A-stijl = bovenrand spiegeldriehoek: 0,5 mm onder de buitenrand van de rubberlijn (d = -(bodTW + bodTR))
 const bodFLDA = -(bodTW + bodTR) + 0.0005;
 let bodFLc = null;
@@ -887,10 +887,16 @@ function buildDoor(s, isFront) {
   const winSlide = extra => ({ type: 'slide', move: [s * (isFront ? 0.027 : 0), -dDrop, dDrop * kSl], tilt: { pivot: [s * 0.811, isFront ? 0.94 : 0.972, 0.3], axis: [0, 0, 1], angle: -s * 0.244, part: 0.3 }, ...extra });
   // sluitnaden: voorportier voorrand (schuin) en de naad tussen de portieren; achterportier achterrand om de wielboog
   // voorrand (golf 8 ronde 2): tot 4 mm onder de gordel op de punt (yFT); met vaste stappen tot 0,9 eindigde de lijn op 0,858 en zag je
-  // daarboven tot de punt door de naad op de eindkap van het dashboard
+  // daarboven tot de punt door de naad op de eindkap van het dashboard. Golf 8 ronde 4: tot 1 mm onder de gordel; in de 4 mm daarboven
+  // zag je van opzij nog een grijze strook van de eindkap tussen het einde van de naad en de gordellijst
   const yBelt = z => YT(z) - 0.004, ls = (a, b, n) => bodDense(a, b, n).concat([b]);
-  const yFT = (() => { let y = 0.89; for (let k = 0; k < 8; k++) y = yBelt(bodFDF(y + 0.001)); return y; })();
-  const seams = isFront ? [bodSeamLine(s, [0.312].concat(ls(0.312, yFT, 16)).map(y => [bodFDF(y + 0.001), y])), bodSeamLine(s, [0.31].concat(ls(0.31, yBelt(-0.148), 12)).map(y => [(bodFDR - 0.153) / 2, y]), 0.0034)]
+  const yFT = (() => { let y = 0.89; for (let k = 0; k < 8; k++) y = YT(bodFDF(y + 0.001)) - 0.001; return y; })();
+  // golf 8 ronde 4 (naad_vlek): boven 0,75 m stations per 2 mm, en de strook komt daar geleidelijk 0,6 mm verder van de huid (1,3 mm in plaats
+  // van 0,7 mm; het buitenpaneel en het scherm liggen in de schouder ca. 0,6 mm buiten halfPt). Met stations per 36 mm zakte de rechte strook
+  // in de schouder tussen twee stations tot 2 mm onder de lak: alleen rond de stations (y 0,858 en de punt op 0,894) kwam hij als donkere
+  // verdikking van 4,5 mm door de naad, daartussen zag je alleen de kier van 1,5 mm tussen portier en scherm. Nu is de naad overal 4,5 mm
+  const fdSeamY = [0.312].concat(ls(0.312, 0.75, 12), ls(0.75, yFT, Math.ceil((yFT - 0.75) / 0.002)));
+  const seams = isFront ? [bodRibbon(s, fdSeamY.map(y => [bodFDF(y + 0.001), y]), 0.0045, 0.0007, 0, 1, (z, y) => bodAt(z, y, 0.0006 * sstep((y - 0.75) / 0.04))), bodSeamLine(s, [0.31].concat(ls(0.31, yBelt(-0.148), 12)).map(y => [(bodFDR - 0.153) / 2, y]), 0.0034)]
     : [bodSeamLine(s, [-0.666].concat(ls(-0.666, bodRDZ0, 30)).map(z => { const n = bodRDnrm(z); return [z + n[0] * bodRDG / 2, bodRDedge(z) + n[1] * bodRDG / 2]; })
       .concat([0.25, 0.5, 0.75].map(t => { const n = bodRDnrm(bodRDZ0), a0 = Math.atan2(n[1], n[0]), a = a0 + t * (-PI - a0); return [bodRDZ0 + Math.cos(a) * bodRDG / 2, bodRDedge(bodRDZ0) + Math.sin(a) * bodRDG / 2]; }))
       .concat(ls(bodRDedge(bodRDZ0), yBelt(bodRDZ0 - bodRDG / 2), 4).map(y => [bodRDZ0 - bodRDG / 2, y])), bodRDG - 0.0006)];
@@ -2447,7 +2453,10 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     ...fSide(() => wsW[0], z => wsW[0] + fdw(z)), ...fSide(z => wsW[1] - fdw(z), () => wsW[1])]);
   const windscreen = A('Voorruit', { d: 'Gelaagde voorruit onder een hoek van ca. 26 graden, met rubber en regensensor.', ex: [0, 0.4, 0.42] }, [
     P('Voorruitglas', patch((z, t) => ghPt(z, wsWm(t)), WS1, WS0 - 0.002, 28, () => [0, 1], 44, bodDense(WS0 - bodAPL, WS0 - 0.002, 16)), MAT.glassWs, { d: 'Gelaagd veiligheidsglas met akoestische tussenlaag.', ex: [0, 0.08, 0.04] }),
-    P('Keramische rand voor', wsFrit, MAT.bodPanoFrit, { d: 'Zwarte keramische rand (frit) op het glas van de voorruit: langs de zijkanten ca. 25 mm, boven ca. 40 mm en onder 60 mm (breedtes geschat naar de foto van de voorkant); verbergt lijmrand, A-stijlbekleding en torpedobak.', ex: [0, 0.1, 0.05] }),
+    // golf 8 ronde 4: effen matzwart zoals de keramische rand van de achterruit (MAT.bodRwFrit). Met de glans van de frit van het panoramadak
+    // (ruwheid 0,35, volle omgeving) spiegelde de rand in de lagere ruithoek (A-stijlvoet bodAPL 0,20) onder een scherende hoek de lichte omgeving
+    // en las hij van opzij als lichtgrijs blok naast de stijl
+    P('Keramische rand voor', wsFrit, MAT.bodRwFrit, { d: 'Zwarte keramische rand (frit) op het glas van de voorruit: langs de zijkanten ca. 25 mm, boven ca. 40 mm en onder 60 mm (breedtes geschat naar de foto van de voorkant); verbergt lijmrand, A-stijlbekleding en torpedobak.', ex: [0, 0.1, 0.05] }),
     P('Voorruitrubber', merge([wsRub(1), wsRub(-1)]), MAT.rubber, { d: 'Zwarte platte sierrubber over de naad tussen glas en lak langs de zijkanten en de bovenrand, met afgeronde bovenhoeken.', ex: [0, 0.04, 0] }),
     P('Regensensor', G.rbox(0.07, 0.012, 0.06, 0.008), MAT.plastic, { d: 'Regen- en lichtsensor achter de ruit bij de binnenspiegel.', p: [0, YR(0.36) - 0.022, 0.36], r: [0.4, 0, 0], ex: [0, -0.06, 0] }),
   ]);
