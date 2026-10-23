@@ -63,12 +63,13 @@ function panRoofGeo() {
 }
 // glaspaneel: glas met afgeronde randdikte, zwarte keramische rand (0,06) erop en een zwart kader eronder
 function panGlass(z0, z1, name, adj) {
+  // zijbanden van de keramische rand met 36 stations in z (golf 8 ronde 3, was 14), zoals de zijstroken van de omlijsting ernaast
   const zm = (z0 + z1) / 2, fw = 0.06, lf = 0.0055;
   const glass = P(`Glas ${name}`, panSlab(z1, z0, -PAN_X, PAN_X, 0.0, 0.005, 14, 8), MAT.bodPanoGlass, { d: `Sterk getint anti-UV veiligheidsglas van het ${adj} glaspaneel van het panoramadak (maat geschat, schematisch weergegeven).`, ex: [0, 0.14, 0] });
   glass.obj.renderOrder = 3;
   const frit = P(`Keramische rand ${name}`, merge([
     panBand(z0, z0 - fw, -PAN_X, PAN_X, lf, 2, 8), panBand(z1, z1 + fw, -PAN_X, PAN_X, lf, 2, 8),
-    panBand(z0, z1, PAN_X, PAN_X - fw, lf, 14, 2), panBand(z0, z1, -PAN_X, -PAN_X + fw, lf, 14, 2)]),
+    panBand(z0, z1, PAN_X, PAN_X - fw, lf, 36, 2), panBand(z0, z1, -PAN_X, -PAN_X + fw, lf, 36, 2)]),
     MAT.bodPanoFrit, { d: 'Zwarte keramische rand (frit) op het glas, 6 cm breed; verbergt het kader, de lijm en de rails (breedte geschat).', ex: [0, 0.2, 0] });
   frit.obj.renderOrder = 4;
   const kader = P(`Glaskader ${name}`, merge([
@@ -128,15 +129,22 @@ function buildPanorama() {
       look: panLook } }, panGlass(PAN_GF[0], PAN_GF[1], 'voor', 'voorste'));
   const glassR = A('Glaspaneel achter', { d: 'Vast achterste glaspaneel van het panoramadak, op de dakplaat gelijmd. Ligt boven de achterbank; het schuifglas schuift er in open stand overheen.', ex: [0, 0.2, -0.1] }, panGlass(PAN_GR[0], PAN_GR[1], 'achter', 'achterste'));
   /* ---- dwarsbalk, omlijsting, afdichtingen, frame en rails ---- */
-  const bar = P('Dwarsbalk', panSlab(PAN_OF[1], PAN_OR[0], -PAN_XR, PAN_XR, 0.0008, 0.0065, 2, 14), MAT.bodPanoBar, { d: 'Dwarsbalk tussen de twee glaspanelen, van buiten donker; huisvest de schermcassette van het voorste scherm (vorm geschat).', ex: [0, 0.2, 0] });
+  // golf 8 ronde 3 (kierenaudit): bovenkant op 5,8 mm (was 6,5): trede tegen de dakplaat 6,5 mm (grens 6) en 1,3 mm tegen de keramische
+  // randen van beide glaspanelen (5,5 mm, grens 1)
+  const bar = P('Dwarsbalk', panSlab(PAN_OF[1], PAN_OR[0], -PAN_XR, PAN_XR, 0.0008, 0.0058, 2, 14), MAT.bodPanoBar, { d: 'Dwarsbalk tussen de twee glaspanelen, van buiten donker; huisvest de schermcassette van het voorste scherm (vorm geschat).', ex: [0, 0.2, 0] });
   // golf 8 (kierenaudit): de achterste omlijsting ligt met de bovenkant op 5 mm, gelijk met het vaste glas (was 3 mm: trede van 2,5 mm
   // tussen keramische rand en omlijsting langs de zijranden). Golf 8 ronde 2: de voorste ook (bleef op 3 mm omdat het glas daar kantelt en
   // schuift; de omlijsting ligt naast en voor het glas, de opentest bewaakt de beweging)
   // voor = false laat de voorste dwarsstrook weg (golf 8 ronde 2): bij de achterste opening lag die strook (z -0,58 tot -0,56) binnen de
   // dwarsbalk (z -0,58 tot -0,50), twee vlakken op elkaar die door elkaar heen flikkerden
-  const ring = (z0, z1, l1 = 0.003, voor = true) => merge([panSlab(z1, z0, PAN_X, PAN_XR, 0.0008, l1, 14, 1), panSlab(z1, z0, -PAN_XR, -PAN_X, 0.0008, l1, 14, 1),
-    ...(voor ? [panSlab(z0, z0 + 0.02, -PAN_XR, PAN_XR, 0.0008, l1, 1, 14)] : []), panSlab(z1 - 0.02, z1, -PAN_XR, PAN_XR, 0.0008, l1, 1, 14)]);
-  const trimF = P('Omlijsting opening voor', ring(PAN_OF[0], PAN_OF[1], 0.005), MAT.bodPillar, { d: 'Zwarte kunststof omlijsting (sierlijst) rond de voorste dakopening, zonder chroom (breedte geschat).', ex: [0, 0.18, 0.05] });
+  // golf 8 ronde 3: de zijstroken met 36 stations in z en drie vakken over de breedte (was 14 en een): vooraan, waar het dak naar de
+  // voorruit buigt, zakte de koorde tussen twee stations (5 cm) tot 0,9 mm onder de hoogte van de omlijsting en was de trede tegen de
+  // keramische rand van het schuifglas 1,05 mm (grens 1)
+  // achter = false laat de achterste dwarsstrook weg (golf 8 ronde 3): bij de voorste opening lag die (z -0,52 tot -0,50) helemaal in de
+  // dwarsbalk (clash 2,8 mm), net als de voorste strook van de achterste opening
+  const ring = (z0, z1, l1 = 0.003, voor = true, achter = true) => merge([panSlab(z1, z0, PAN_X, PAN_XR, 0.0008, l1, 36, 3), panSlab(z1, z0, -PAN_XR, -PAN_X, 0.0008, l1, 36, 3),
+    ...(voor ? [panSlab(z0, z0 + 0.02, -PAN_XR, PAN_XR, 0.0008, l1, 1, 14)] : []), ...(achter ? [panSlab(z1 - 0.02, z1, -PAN_XR, PAN_XR, 0.0008, l1, 1, 14)] : [])]);
+  const trimF = P('Omlijsting opening voor', ring(PAN_OF[0], PAN_OF[1], 0.005, true, false), MAT.bodPillar, { d: 'Zwarte kunststof omlijsting (sierlijst) rond de voorste dakopening, zonder chroom (breedte geschat).', ex: [0, 0.18, 0.05] });
   const trimR = P('Omlijsting opening achter', ring(PAN_OR[0], PAN_OR[1], 0.005, false), MAT.bodPillar, { d: 'Zwarte kunststof omlijsting (sierlijst) rond de achterste dakopening.', ex: [0, 0.18, -0.05] });
   // donkere binnenlijst: een smalle zwarte kunststof lijst die net binnen de afwerkring van de hemel (interior.js, rand van de hemelopening op |x| 0,45) rondom
   // de opening ligt, 3,3 cm onder het dakvlak en daarmee onder de zonneschermen; van binnen leest de opening zo rondom als een donkere omlijsting
@@ -186,12 +194,15 @@ function buildPanorama() {
   const scrR = screen('achter', -0.61, -1.17, 6, -0.0185, [-1.11, -1.19], 0.03, panLookScrR);
   /* ---- motor, kabelboom, waterafvoer ---- */
   // golf 8 ronde 2: motorhuis en wormas volgen de helling van het dak (hier ruim 19 graden naar de voorruit en dwars een paar graden
-  // naar buiten); vlak liggend stak de voorste rand van het huis 0,8 mm en de wormas 1,5 mm door de dakplaat
-  const mtZ = 0.255, mtX = 0.3, mtRx = Math.atan((panP(mtZ - 0.02, mtX)[1] - panP(mtZ + 0.02, mtX)[1]) / 0.04),
+  // naar buiten); vlak liggend stak de voorste rand van het huis 0,8 mm en de wormas 1,5 mm door de dakplaat.
+  // Golf 8 ronde 3: tussen de voorste dwarsstrook van de afvoergoot (tot 8,5 mm onder het dak) en die van het dakframe (vanaf 21,5 mm) is
+  // 13 mm ruimte; het huis van 16 mm stak 3,3 mm in de goot en 2,2 mm in het frame, de wormas 1,3 en 0,5 mm. Nu 11 mm hoog (motor
+  // diameter 11 mm, wormas 10 mm) op 15 mm onder het dak, midden in die ruimte; van buiten en van binnen niet te zien (tussen dak en hemel)
+  const mtZ = 0.255, mtX = 0.3, mtL = -0.015, mtRx = Math.atan((panP(mtZ - 0.02, mtX)[1] - panP(mtZ + 0.02, mtX)[1]) / 0.04),
     mtRz = -Math.atan((panP(mtZ, mtX - 0.03)[1] - panP(mtZ, mtX + 0.07)[1]) / 0.1);
   const motor = A('Dakmotor', { d: 'Elektromotor (aandrijving met wormwiel) van het schuifdak, naast de rail voorin (Webasto op een onderzocht exemplaar van fase 1; plaats geschat). Anti-klem: stopt en zet enkele centimeters terug als het glas weerstand voelt.', ex: [0.1, -0.1, 0.2] }, [
-    P('Motorhuis dakmotor', merge([xf(G.rbox(0.06, 0.016, 0.04, 0.005), [0, 0, 0]), xf(G.cyl('x', 0.009, 0.009, 0.07, 14), [0.065, 0.0, 0])]), MAT.darkSteel, { d: 'Motor met overbrengingskast op de plaatstrook voor het schuifglas (plaats geschat).', p: panP(mtZ, mtX, -0.0145), r: [mtRx, 0, mtRz], ex: [0.06, -0.04, 0] }),
-    P('Wormwiel dakmotor', G.cyl('z', 0.007, 0.007, 0.05, 10), MAT.steel, { d: 'Wormas die de schuifkabels aandrijft.', p: panP(mtZ, 0.36, -0.0145), r: [mtRx, 0, 0], ex: [0.1, 0, 0.05] }),
+    P('Motorhuis dakmotor', merge([xf(G.rbox(0.06, 0.011, 0.04, 0.004), [0, 0, 0]), xf(G.cyl('x', 0.0055, 0.0055, 0.07, 14), [0.065, 0.0, 0])]), MAT.darkSteel, { d: 'Motor met overbrengingskast op de plaatstrook voor het schuifglas (plaats geschat).', p: panP(mtZ, mtX, mtL), r: [mtRx, 0, mtRz], ex: [0.06, -0.04, 0] }),
+    P('Wormwiel dakmotor', G.cyl('z', 0.005, 0.005, 0.05, 10), MAT.steel, { d: 'Wormas die de schuifkabels aandrijft.', p: panP(mtZ, 0.36, mtL), r: [mtRx, 0, 0], ex: [0.1, 0, 0.05] }),
   ]);
   const harness = P('Kabelboom dakmotor', tube([panP(0.255, 0.27, -0.0145), panP(0.255, 0.15, -0.0145), panP(0.255, 0.05, -0.0145), panP(0.255, 0.0, -0.0145)], 0.0035, 16, 5), MAT.rubber, { d: 'Kabelboom van de dakmotor langs de voorste dakstrook naar de hemelconsole.', ex: [0, -0.1, 0.1] });
   const hose = (pts, nm, s) => P(`Afvoerslang ${nm}`, tube(pts, 0.006, 40, 6), MAT.rubber, { d: 'Afvoerslang die regenwater uit de goot van het dakframe door de stijl naar de wielkast leidt (verloop geschat).', ex: [s * 0.1, -0.1, 0] });
