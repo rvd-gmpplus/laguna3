@@ -511,7 +511,7 @@ Gedaan:
 - **Eindpoort** op `645138d`: Mac en Linux groen behalve visdiff; op Linux alleen de carrosseriebeelden die golf 8 bewust verandert; basislijn vernieuwd uit een rustige VM-run (`714dc1c`).
 
 Open:
-- **Grens T4**: versie 23 ligt boven 1,8 MB raw en 490 kB gzip (`docs/cijfers.md`, sectie Pagina). Besluit van de gebruiker nodig: grens verhogen of ruimte maken.
+- **Grens T4**: verhoogd naar 1,9 MB raw en 530 kB gzip (besluit van de gebruiker, 23 oktober 2026); versie 23 ligt eronder (`docs/cijfers.md`, sectie Pagina).
 - Licht driehoekje in de hoek boven het achterlicht bij de klepnaad (cosmetisch punt 2 van de advisor).
 - De koker achter de koplampsproeier heeft de lakkleur van het kapje; alleen door de grille of van onderen te zien.
 - Scharnieras voorportier 6 graden; echte portieren vallen minder, verfijning naar 2 tot 3 graden is mogelijk.
@@ -544,7 +544,7 @@ Elke golf krijgt vooraf een korte premortem (één lens, zeven oorzaken, struike
 | T1 | `tri.py --gate` boven een budget na een samenvoeging | niet publiceren; eigenaar verlaagt segmenten of stations in de eigen golf; budgetten zelf staan in `anchors.json` en wijzigen alleen met een reden in `beslissingen.md` |
 | T2 | Poort K1-K13: een kenmerk zakt twee stappen (ja naar nee), of zakt één stap en een tweede, onafhankelijk panel reproduceert dat | de wijziging die het kenmerk raakt terugdraaien; een daling van één stap zonder reproductie is ruis en geen actie |
 | T3 | CI push-job rood op `main` | niets anders tot groen; een rode nachtrun opent een issue |
-| T4 | `index.html` meer dan 100 kB gegroeid in één golf zonder reden in het commitbericht, of boven 1,8 MB raw / 490 kB gzip (MB = 10^6 bytes, `gzip -6`; grens verhoogd door de gebruiker op 17 oktober 2026, was 1,4 MB / 330 kB, op 19 oktober 2026 voor golf 5i naar 385 kB op 20 oktober 2026 voor golf 5k naar 395 kB gzip en voor golf 5l (cockpit en interieur) naar 1,6 MB raw en 430 kB gzip, binnen de ruimte die de gebruiker gaf, en op 20 oktober 2026 voor golf 5m (onderdeelnummers) naar 1,7 MB raw en 450 kB gzip; de gebruiker: "mag groter indien nodig"; op 21 oktober 2026 voor golf 5n (foto's van de eigen auto) naar 1,8 MB raw en 490 kB gzip, besluit van de gebruiker) | reden toevoegen of terugdraaien; 5d mag groeien met de nummers die het toevoegt |
+| T4 | `index.html` meer dan 100 kB gegroeid in één golf zonder reden in het commitbericht, of boven 1,9 MB raw / 530 kB gzip (MB = 10^6 bytes, `gzip -6`; grens verhoogd door de gebruiker op 17 oktober 2026, was 1,4 MB / 330 kB, op 19 oktober 2026 voor golf 5i naar 385 kB op 20 oktober 2026 voor golf 5k naar 395 kB gzip en voor golf 5l (cockpit en interieur) naar 1,6 MB raw en 430 kB gzip, binnen de ruimte die de gebruiker gaf, en op 20 oktober 2026 voor golf 5m (onderdeelnummers) naar 1,7 MB raw en 450 kB gzip; de gebruiker: "mag groter indien nodig"; op 21 oktober 2026 voor golf 5n (foto's van de eigen auto) naar 1,8 MB raw en 490 kB gzip, besluit van de gebruiker; op 23 oktober 2026 na golf 8 (extra driehoeken) naar 1,9 MB raw en 530 kB gzip, besluit van de gebruiker) | reden toevoegen of terugdraaien; 5d mag groeien met de nummers die het toevoegt |
 | T5 | Golf langer dan anderhalf maal de richting | scope halveren, de rest naar de volgende golf; nooit de poort overslaan |
 | T6 | Een melding van de gebruiker zonder reproductie met `pick.py`, stralen of opname | eerst reproduceren, dan pas wijzigen |
 | T7 | `pncheck` rood, een lokvogel doorgelaten, of bronnen per nummer gedaald | de plak vervalt in zijn geheel |

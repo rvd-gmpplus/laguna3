@@ -26,7 +26,7 @@ Per onderdeel: `CHANGELOG.md` (versie 23) en `docs/masterplan.md`, sectie Golf 8
 - **Advisor:** Fable 5.1 xhigh, ronde 3 bijsturen, ronde 4 pass. Vier rondes van max zes.
 
 ### Open punten (in volgorde van waarde)
-1. **Grens T4 overschreden (besluit van de gebruiker nodig):** versie 23 is 1.822.415 bytes raw en 506.180 bytes gzip, boven 1,8 MB en 490 kB. Golf 8 heeft de grens niet verhoogd. Kiezen: de grens verhogen, of ruimte maken (bijvoorbeeld de onderdeelnummers apart laden).
+1. **Grens T4 verhoogd (besluit van de gebruiker, 23 oktober 2026):** naar 1,9 MB raw en 530 kB gzip (was 1,8 MB en 490 kB). Versie 23 is 1.822.415 bytes raw en 506.180 bytes gzip en ligt daaronder.
 2. **Nightly:** de eerste nightly op versie 23 nakijken met `gh run list` (nu met de extra test `kieren`).
 3. **Telefoontest op iOS** door de gebruiker (iOS 16.4 of nieuwer, protocol `docs/telefoontest.md`).
 4. **Cosmetisch uit golf 8 (advisor en eigen waarneming):** licht driehoekje in de hoek boven het achterlicht bij de klepnaad; kleine grijsblauwe wig bij de punt tussen spiegeldriehoek en gordelsierlijst; de koker achter de koplampsproeier heeft de lakkleur van het kapje (alleen door de grille of van onderen te zien).

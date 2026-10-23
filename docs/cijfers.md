@@ -64,4 +64,4 @@ Deze sectie komt niet uit het generatordeel van `cijfers.py`; ze is met de hand 
 | `index.html` (gepubliceerd, stempel "23 (bron e519aaf)"), raw | 1.822.415 bytes (md5 `c572c6c4f86dbbf86ce9686bebf5bd6f`) |
 | `index.html` (gepubliceerd), `gzip -6` | 506.180 bytes |
 | Artefact (kale pagina uit `build.py --bare`) | 1.822.239 bytes (md5 `45f222a2201aab1ef1c22fcf9bb0484f`), artefactversie 25 |
-| Grens T4 | 1,8 MB raw en 490 kB gzip (MB = 10^6 bytes; zie `docs/masterplan.md`, struikeldraad T4). Versie 23 ligt erboven: 22.415 bytes raw en 16.180 bytes gzip. Golf 8 heeft de grens niet verhoogd; dat vraagt een besluit van de gebruiker (verhogen of ruimte maken). |
+| Grens T4 | 1,9 MB raw en 530 kB gzip (MB = 10^6 bytes; zie `docs/masterplan.md`, struikeldraad T4). Op 23 oktober 2026 door de gebruiker verhoogd van 1,8 MB en 490 kB, na golf 8; versie 23 ligt eronder (marge 77.585 bytes raw en 23.820 bytes gzip). |
