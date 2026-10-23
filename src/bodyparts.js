@@ -270,13 +270,19 @@ function bodQdBand(s, q0, q1, d0, d1, out, crown = 0, nq = 12, nt = 1) {
     const [x, y] = bodGhHalf(z, q); return [s * (x + o), y + (q > bodQS ? o * 0.6 : 0), z];
   }, q0, q1, nq, () => [0, 1], nt);
 }
-// spiegeldriehoek tussen z bodSail en de A-stijl. Golf 7: 10 cm naar achteren (was 0,865), samen met de buitenspiegel (bodMirDZ): op de
-// foto's van de eigen auto staat de spiegel achter de A-stijl op een zwarte driehoek vooraan het voorportier en ziet de bestuurder de
-// rechterspiegel door de portierruit; in het model stond hij zo ver naar voren dat de zijkant van het dashboard het glas afdekte
+// spiegeldriehoek tussen z bodSail en de A-stijl. Golf 7: 10 cm naar achteren (was 0,865); op de foto's van de eigen auto (portier open,
+// zicht vanaf de bestuurdersstoel) staat de spiegel op een ruime zwarte driehoek vooraan het voorportier, en het glasvlak van de spiegel
+// valt ongeveer op de achterrand van die driehoek (de voorrand van de zijruit)
 const bodSail = 0.765;
-// bovenrand van de spiegeldriehoek (golf 5h): van de bovenrand van de zijruit op bodSail recht naar de gordel op z 0,93, zoals de zwarte
-// driehoek in de ruithoek op de persfoto (fase 2). Was 0,966 tot 0,93 m: een strookje van 5 cm onder een breed gelakt vlak van de A-stijl
-const bodSailTop = z => lerp(bodYG(bodSail) - 0.003, YT(0.93) + 0.002, clamp((z - bodSail) / (0.93 - bodSail), 0, 1));
+// punt van de spiegeldriehoek op de gordel. Golf 7 ronde 2 probeerde 0,96 (schuine rand ca. 37 graden in plaats van 42; op de foto's ca.
+// 31 graden), maar dan snijdt de onderrand vlak voor de sluitnaad (z 0,907 tot 0,910, y 0,904) bij een half open voorportier (55 tot 65
+// procent) door de bovenste achterhoek van het voorscherm; fixronde 2 zette hem terug op 0,93. Golf 7 ronde 3 (besluit van de eigenaar):
+// toch 0,96, met de onderrand van de spiegeldriehoek op q 0,014 in plaats van 0,004 (ca. 3 mm hoger); zo blijft de onderrand bij elke
+// tussenstand van het portier vrij van het voorscherm (randtoets en zwaai 0,40 tot 0,75 open, rechts en links)
+const bodSailTip = 0.96;
+// bovenrand van de spiegeldriehoek (golf 5h): van de bovenrand van de zijruit op bodSail recht naar de gordel op z bodSailTip, zoals de
+// zwarte driehoek in de ruithoek op de persfoto (fase 2). Was 0,966 tot 0,93 m: een strookje van 5 cm onder een breed gelakt vlak van de A-stijl
+const bodSailTop = z => lerp(bodYG(bodSail) - 0.003, YT(bodSailTip) + 0.002, clamp((z - bodSail) / (bodSailTip - bodSail), 0, 1));
 const bodQy = (z, y) => bodQAtY(z, y);
 
 /* ---------- sierlijsten met afgerond profiel ---------- */
@@ -483,6 +489,13 @@ function buildDoor(s, isFront) {
     const k = k0 + Math.round(j), [za, zb] = cardZr(cardPts((cz0 + cz1) / 2)[k][1], k), z = lerp(za, zb, u), q = cardPts(z)[k]; return [s * q[0], q[1], q.length > 2 ? q[2] : z];
   }, 0, 1, nu, () => [0, k1 - k0], k1 - k0, ub);
   const cardU = br.filter(b => b > cz0 && b < cz1).map(b => (b - cz0) / (cz1 - cz0)), trimP = cardSurf(0, 11, 22, cardU), raamlijst = cardSurf(11, 16, 22, cardU);
+  // voorportier, golf 7 ronde 3 (foto portier bestuurder open): de zwarte bovenlijst van de portierkaart loopt onder de binnendriehoek door
+  // tot de voorrand van het portier; daar keek je tussen het einde van de kaart (z 0,803) en de voorrand op de gelakte binnenkant van het
+  // buitenpaneel. Staande strook van y 0,88 tot 0,924, 10 mm binnen het ruitvlak (onder de gordel recht omlaag), 2 mm achter de
+  // binnendriehoek; begint 2 cm achter het einde van de kaart, zodat er geen spleet tussen beide te zien is
+  const cardFront = isFront && patch((z, v) => {
+    const y = lerp(0.88, 0.924, v), x = bodGhHalf(z, y > YT(z) ? bodQy(z, y) : 0)[0] - 0.010; return [s * x, y, z];
+  }, cz1 - 0.02, 0.898, 10, () => [0, 1], 8);
   // band op het kaartvlak tussen y0 en y1 (functies van z), dx meter naar binnen; uiteinden begrensd zoals de kaart
   const cardBand = (za, zb, y0f, y1f, dx, nu, nv = 2) => patch((u, v) => {
     const ym = lerp(y0f((za + zb) / 2), y1f((za + zb) / 2), v), [ca, cb] = cardZr(ym, 11), z = lerp(Math.max(za, ca), Math.min(zb, cb), u), y = lerp(y0f(z), y1f(z), v);
@@ -509,9 +522,10 @@ function buildDoor(s, isFront) {
   // de lijnen van voor- en achterportier lopen over hun eigen B-stijlafdekking tot de naad ertussen (korte onderbreking van 8 mm)
   const zGt = bodBg(1.35), zT0 = isFront ? zGt + 0.004 : gz0 - 0.01, zT1 = isFront ? gz1 + 0.01 : zGt - 0.004;
   // chroomomlijsting als vlakke, licht bolle band van ca. 17 mm (leesbaar op galerijformaat); voorportier ook langs de voorrand bij de spiegeldriehoek
-  // de gordellijst van het voorportier loopt tot z 0,991, vlak voor de voorrand van het portier (vast sinds golf 7: was gz1 + 0,13, en gz1 schoof
-  // met de spiegeldriehoek 10 cm naar achteren)
-  const zB0 = isFront ? -0.144 : gz0 - 0.01, zB1 = isFront ? 0.991 : -0.152;
+  // de gordellijst van het voorportier eindigt onder de spiegeldriehoek op de sluitnaad op de gordel (z 0,905; de driehoek loopt tot
+  // bodSailTip). Golf 7 ronde 2: tot 0,991 liep hij 88 mm voorbij het portier over de voet van de A-stijl; tot ronde 3 op 0,925, zodat de
+  // chroomlijn in het zijaanzicht nog 2 cm op het voorscherm lag (op de echte auto zit daar geen chroom)
+  const zB0 = isFront ? -0.144 : gz0 - 0.01, zB1 = isFront ? 0.905 : -0.152;
   // bovenband bol (hooglicht boven, donkere onderhelft) op het staande vlak; voorportier ook langs de voorrand bij de spiegeldriehoek
   const topPath = bodLinZ(zT0, zT1, 36, bodQV), sailPath = [0.04, 0.12, 0.22, 0.32, 0.42, 0.5, 0.53, bodQV].map(q => [gz1 + 0.006, q]);
   const ringGeo = bodTrim(s, topPath, -bodTW, bodTW, 0.0035, 0.003, 8);
@@ -685,7 +699,7 @@ function buildDoor(s, isFront) {
     const gT = cardX(spZ, spY + spR), gB = cardX(spZ, spY - spR), gK = (gT - gB) / (2 * spR), gX = (gT + gB) / 4 + cardX(spZ, spY) / 2;
     const lamp = isFront && patch((th, j) => { const r = j / 3, z = lZ + 0.05 * r * Math.cos(th), y = lY + 0.015 * r * Math.sin(th); return [s * (cardX(z, y) - 0.001 - 0.003 * Math.sqrt(Math.max(0, 1 - r * r))), y, z]; }, 0, 2 * PI, 20, () => [0, 3], 3);
     return [
-      P('Bekledingspaneel', trimP, MAT.bodDoorCard, { d: 'Gespoten kunststof drager van de portierkaart, van de onderrand tot de raamschacht; dekt binnenpaneel, raammechaniek en geleiderails af.', ex: [0, 0, 0] }),
+      P('Bekledingspaneel', cardFront ? merge([trimP, cardFront]) : trimP, MAT.bodDoorCard, { d: 'Gespoten kunststof drager van de portierkaart, van de onderrand tot de raamschacht; dekt binnenpaneel, raammechaniek en geleiderails af.' + (isFront ? ' Vooraan loopt de bovenlijst onder de binnenkant van de spiegeldriehoek door tot de voorrand van het portier.' : ''), ex: [0, 0, 0] }),
       P('Raamlijst', raamlijst, MAT.bodSatinBlack, { d: 'Ronde zwarte bovenrand van de portierkaart langs de raamschacht, waarop het binnenste raamschachtrubber ligt.', ex: [0, 0.05, 0] }),
       P('Inzet', inzet, MAT.leather, { d: 'Brede inzet in zwart leder met nerf tussen de armsteun en de sierlijst, als kussen met een afgeronde rand; loopt vooraan tot in de boog van de sierlijst.', ex: [-s * 0.03, 0.02, 0] }),
       P('Sierlijst pianozwart', merge([lijstB, swoosh]), MAT.bodPiano, { d: 'Brede hoogglans zwarte sierlijst onder de schouder van de portierkaart (vooraan 3,5 cm, achteraan 2 cm), die vooraan in een holle boog voor de greep langs omlaag buigt tot de voorkant van de armsteun; samen met de armsteun vormt de boog de trekgreep.', ex: [-s * 0.04, 0.04, 0] }),
@@ -707,7 +721,12 @@ function buildDoor(s, isFront) {
   // golf 5l ronde 2: van onder 0,875 m of 7 cm onder de gordel tot 6 mm erboven (boven de gordel 4 mm binnen xb, langs de onderrand van de
   // dichte ruit) en tot 3 mm van de portierranden; vanaf de achterbank
   // keek je anders onder het vilt door en tussen vilt en ruit door op de lak. De ruitdrager staat dicht tot 0,863 m.
-  const feltZ0 = z0 + 0.003, feltZ1 = isFront ? cz1 : z1 - 0.003, feltDy = [-0.07, -0.05, -0.03, -0.016, -0.009, -0.005, -0.0025, 0, 0.003, 0.006], felt = patch((z, j) => { const xb = bodSec(z).xe, yb = YT(z), dy = feltDy[Math.round(j)], y = dy < 0 ? Math.max(yb + dy, 0.875 + 0.001 * j) : yb + dy; return [s * (y > yb ? xb - 0.004 : Math.min(surfX(z, y) - 0.002, xb + 0.03)), y, z]; }, feltZ0, feltZ1, 14, () => [0, 9], 9, br.filter(b => b > feltZ0 && b < feltZ1));
+  const feltZ0 = z0 + 0.003, feltZ1 = isFront ? cz1 : z1 - 0.003, feltDy = [-0.07, -0.05, -0.03, -0.016, -0.009, -0.005, -0.0025, 0, 0.003, 0.006], feltSide = patch((z, j) => { const xb = bodSec(z).xe, yb = YT(z), dy = feltDy[Math.round(j)], y = dy < 0 ? Math.max(yb + dy, 0.875 + 0.001 * j) : yb + dy; return [s * (y > yb ? xb - 0.004 : Math.min(surfX(z, y) - 0.002, xb + 0.03)), y, z]; }, feltZ0, feltZ1, 14, () => [0, 9], 9, br.filter(b => b > feltZ0 && b < feltZ1));
+  // achterportier (golf 7 fixronde 2): onder de vaste kwartsruit zakt geen ruit, dus daar dekt een vlakke strook vilt 2 cm onder de gordel de
+  // raamschacht af, van de buitenkant van de raamlijst (xb - 0,0595) tot het vilt (xb + 0,03), van 12 mm voor de achterrand tot z -0,945
+  // (2 cm achter de achterrand van de zakbare ruit op de gordel, -0,924 in elke stand). Open keek je door de kwartsruit tot op de botsbalk
+  const lidZ0 = z0 + 0.012, lidZ1 = -0.945, feltLid = isFront ? null : patch((z, t) => { const xb = bodSec(z).xe, y = YT(z) - 0.02; return [s * lerp(xb - 0.059, Math.min(surfX(z, y) - 0.0025, xb + 0.0295), t), y, z]; }, lidZ0, lidZ1, 16, () => [0, 1], 2, br.filter(b => b > lidZ0 && b < lidZ1));
+  const felt = feltLid ? merge([feltSide, feltLid]) : feltSide;
   const kids = [
     P('Buitenpaneel', outer, MAT.paint, { d: `Geperste plaatstalen buitenhuid van het ${pos}portier, zilvergrijs metallic gelakt.`, ex: [s * 0.4, 0.14, 0.5] }),
     P('Portierrand', doorEdge, MAT.paintIn, { d: 'Gevouwen rand rondom het portier (onderkant en zijkanten) die buitenpaneel en binnenpaneel verbindt; zo heeft de sluitrand dikte.', ex: [-s * 0.1, -0.06, 0] }),
@@ -734,7 +753,7 @@ function buildDoor(s, isFront) {
     // golf 5l: het binnenste rubber ligt op de raamlijst van de portierkaart (was 3 cm binnen de gordelsierlijst, los in de lucht boven de kaart)
     P('Gordelrubber binnen', tube((([za, zb]) => [za + 0.006].concat(bodDense(za + 0.006, zb - 0.006, 16), [zb - 0.006]))((([a, b]) => [a, isFront ? Math.min(b, 0.43) : b])(cardZr(YT((cz0 + cz1) / 2) - 0.006, 13))).map(z => { const q = cardPts(z); return [s * (q[13][0] + q[14][0]) / 2, YT(z) - 0.0025, z]; }), 0.003, 20, 6), MAT.rubber, { d: 'Binnenste raamschachtrubber op de bovenrand van de portierkaart, langs de raamschacht.', ex: [-s * 0.06, 0.04, 0] }),
     // zwart vilt aan de binnenkant van de bovenrand van het buitenpaneel: van binnen kijk je door de raamschacht op vilt in plaats van op lak.
-    P('Raamschachtvilt', felt, MAT.bodFelt, { d: 'Zwart gevlokt vilt aan de binnenkant van de bovenrand van het buitenpaneel, waarlangs de ruit in de raamschacht glijdt.', ex: [s * 0.03, 0.05, 0] }),
+    P('Raamschachtvilt', felt, MAT.bodFelt, { d: 'Zwart gevlokt vilt aan de binnenkant van de bovenrand van het buitenpaneel, waarlangs de ruit in de raamschacht glijdt' + (isFront ? '.' : '; onder de vaste kwartsruit dekt een vlakke strook vilt de raamschacht af (plaats geschat).'), ex: [s * 0.03, 0.05, 0] }),
     A('Sierlijst', { d: `Verhoogde beschermlijst van ca. 38 mm op het ${pos}portier in carrosseriekleur, met afgeronde uiteinden en een dunne aluminium inzet langs de bovenrand.`, ex: [s * 0.1, 0, 0] }, [
       P('Lijstprofiel', lijstP(0, 1, 10, 0), MAT.paint, { d: 'Kunststof lijstprofiel in carrosseriekleur, op het buitenpaneel gelijmd.', ex: [s * 0.012, 0, 0] }),
       P('Aluminium inzet', lijstP(0.74, 0.9, 1, 0.0006), MAT.bodBright, { d: 'Dunne heldere aluminiumlook strip langs de bovenrand van de lijst.', ex: [s * 0.03, 0.02, 0] }),
@@ -790,7 +809,12 @@ function buildDoor(s, isFront) {
   kids.push(P('Raamkaderrubber binnen', bodGhSide(s, kZ0, gz1 + 0.01, 30, z => [kQT(z) - 0.005, kQT(z)], 1, [], -0.0055), MAT.rubber, { d: 'Zwart afdichtrubber langs de buitenrand van het raamkader, onder de dakrand.', ex: [-s * 0.03, 0.08, 0] }));
   if (isFront) kids.push(P('Naadrubber B-stijl', bodBand(s, -0.148 + bodBGW + 0.001, bodBGK, -0.148 - bodBGW - 0.001, bodBGK, 0.0008), MAT.bodPillar, { d: 'Mat zwart rubber in de naad tussen de twee B-stijlafdekkingen, in het verlengde van de sluitnaad onder de gordel.', ex: [s * 0.03, 0.02, 0] }));
   if (isFront) {
-    kids.push(P('Spiegeldriehoek', bodGhSide(s, bodSail, 0.93, 8, z => [0.004, Math.min(bodQS - 0.02, bodQy(z, bodSailTop(z)))], 6, [], 0.001), MAT.bodPillar, { d: 'Zwarte driehoekige afdekplaat tussen zijruit en A-stijl waarop de spiegel staat.', ex: [s * 0.05, 0.05, 0.03] }));
+    kids.push(P('Spiegeldriehoek', bodGhSide(s, bodSail, bodSailTip, 8, z => [0.014, Math.min(bodQS - 0.02, bodQy(z, bodSailTop(z)))], 6, [], 0.001), MAT.bodPillar, { d: 'Zwarte driehoekige afdekplaat tussen zijruit en A-stijl waarop de spiegel staat.', ex: [s * 0.05, 0.05, 0.03] }));
+    // binnenkant van de spiegeldriehoek (golf 7 ronde 2, foto's portier open en zicht vanaf de bestuurdersstoel): matzwarte kunststof
+    // afdekking 8 mm binnen het ruitvlak, met de achterrand langs de voorrand van de ruit, de onderrand op de bovenrand van de portierkaart en de
+    // bovenrand 20 mm onder de schuine rand van de driehoek, langs het binnenrubber van het raamkader (de afvoerslang van het dak loopt
+    // daar vlak achter de driehoek omlaag)
+    kids.push(P('Spiegeldriehoek binnen', bodGhSide(s, bodSail - 0.002, 0.925, 8, z => [0.004, Math.min(bodQS - 0.02, bodQy(z, bodSailTop(z) - 0.02))], 6, [], -0.008), MAT.bodDoorCard, { d: 'Zwarte kunststof afdekking aan de binnenkant van de spiegeldriehoek, tussen ruit, raamkader en de bovenrand van de portierkaart.', ex: [-s * 0.05, 0.05, 0.03] }));
     kids.push(buildMirror(s));
   } else {
     // schuin stijltje tussen zakbare ruit en kwartsruit (zijfoto fase 2: zwarte balk van ca. 3 cm met chroom langs beide ruiten): hoogglans zwart,
@@ -827,25 +851,26 @@ function bodLoft(sg, rings, cap, taper = 0) {
   if (cap) { const m = pos.length / 3, last = (rings.length - 1) * n; pos.push(0, 0, rings[rings.length - 1][1] * dz(0)); for (let j = 0; j < n; j++) idx.push(last + j, last + (j + 1) % n, m); }
   const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals(); return g;
 }
-// golf 7: de hele spiegel (voet, huis, glas, motoren en de scharnieras) 10 cm naar achteren en 3 cm omhoog, met de spiegeldriehoek mee
-// (bodSail). Gemeten met 140 stralen vanaf het oog van de bestuurder (0,37; 1,12; -0,30) naar het glas van de rechterspiegel: voorheen 6
-// vrij, de rest liep in de zijkant van het dashboard en het zijrooster rechts; nu gaat de zichtlijn door de portierruit erachter langs.
-// Alleen 10 cm naar achteren gaf ca. 87 vrij; de 3 cm omhoog brengt de onderkant van het huis ca. 2,5 cm boven de gordellijn
-const bodMirDZ = -0.10, bodMirDY = 0.03;
+// golf 7: de hele spiegel (voet, huis, glas, motoren en de scharnieras) 3 cm omhoog: op de foto's van de eigen auto zit de onderkant van het
+// glas ca. 25 mm boven de gordel, op een zwarte voet. In z staat hij op de spiegeldriehoek zoals op de foto (ronde 1 zette hem 10 cm naar
+// achteren, met de voet grotendeels op de ruit; ronde 2 terug): bodMirDZ 0,02 brengt het glasvlak op z 0,751, net achter de voorrand van
+// de ruit (0,761). Het huis is in ronde 2 korter geworden, ca. 110 mm van de rand van het glas tot de punt van de kap (was 137 mm)
+const bodMirDZ = 0.02, bodMirDY = 0.03;
+// diepte van de kap ten opzichte van het oorspronkelijke ontwerp (loft 0,147 naar 0,116; kap 129 naar 102 mm)
+const bodMirKD = 0.79;
 function buildMirror(s) {
   const n = sn(s), cx = 0.925, cy = 0.975 + bodMirDY, k = s > 0 ? 'L' : 'R';
   const M = (x, y, z) => [s * x, y + bodMirDY, z + bodMirDZ], Mc = (x, z) => [s * x, cy, z + bodMirDZ];
   return A(`Buitenspiegel ${n}`, { d: 'Elektrisch verstelbare, verwarmde en elektrisch inklapbare buitenspiegel in carrosseriekleur (Initiale Paris met geheugen). Klapt ongeveer 80 graden naar achteren (hoek geschat).', ex: [s * 0.32, 0.12, 0.08],
     open: hinge(M(0.95, 0.94, 0.81), [0, 1, 0], s * 80 * PI / 180, { min: 64 * PI / 180, label: `Buitenspiegel ${n}`, look: { dir: [s * 0.8, 0.3, 0.75], nodes: [`Buitenspiegel ${n}`] } }) }, [
-    // voet: smalle plaat 13 mm buiten de huid tussen portier en spiegelhuis (een blok voor de kap las als los zwart blokje, 5f-2);
-    // 5h-2: spiegel 7 cm naar voren, op de spiegeldriehoek zoals op de persfoto
-    // golf 5j: de voet loopt 3 cm verder naar voren, over de spiegeldriehoek (tot z 0,90), zodat de kap zichtbaar op de driehoek staat
-    // golf 7: met de spiegel 10 cm naar achteren en 3 cm omhoog; de huid op de nieuwe hoogte ligt bij q 0,16 (was 0,11). De voet loopt nu van
-    // z 0,67 tot 0,80 en de driehoek begint op bodSail (0,765): het grootste deel staat op het portier achter de driehoek, alleen de voorste
-    // 3,5 cm over de achterrand ervan (de regels van 5h-2 en 5j hierboven gelden niet meer)
-    P('Spiegelvoet', G.rbox(0.016, 0.032, 0.13, 0.005), MAT.bodPillar, { d: 'Voet met bevestigingsplaat op het portier, net achter de spiegeldriehoek en over de achterrand ervan, aan de binnenkant van het spiegelhuis; blijft staan als de spiegel inklapt (plaats geschat).', p: M(bodGhHalf(0.835 + bodMirDZ, 0.16)[0] + 0.0137, 0.941, 0.835), stay: true, ex: [-s * 0.05, -0.05, 0] }),
-    // kap als halve ellips in de diepte (schaal = wortel(1 - (d / 0,15)^2)): een ronde, slanke druppel zonder vlakke voorkant
-    P('Spiegelkap', cache('bodMirCapT' + k, () => bodLoft(s, [0, 0.012, 0.03, 0.05, 0.07, 0.09, 0.106, 0.12, 0.132, 0.141, 0.147].map(d => [d < 0.013 ? 1 : Math.sqrt(1 - (d / 0.15) ** 2), d]), true, 0.32)), MAT.paint, { d: 'Druppelvormige kap in carrosseriekleur aan de voorzijde van het spiegelhuis.', p: Mc(cx, 0.738), ex: [0, 0.02, 0.1] }),
+    // voet: smalle zwarte plaat 10,7 mm buiten de huid op de spiegeldriehoek (een blok voor de kap las als los zwart blokje, 5f-2); zoals op de
+    // foto geheel op de driehoek. Van 1,5 mm boven de bolle gordelsierlijst (bovenkant y 0,936) tot de onderkant van de kap (0,948).
+    // Golf 7 ronde 3: 3 mm naar binnen (was 13,7 mm; van boven zag je een lichte streep tussen voet en driehoek) en 75 mm lang van z 0,79
+    // tot 0,865 (was 85 mm vanaf 0,78), zodat de achterkant vrij blijft van de rubberlijn langs de voorrand van de ruit
+    P('Spiegelvoet', G.rbox(0.016, 0.0125, 0.075, 0.005), MAT.bodPillar, { d: 'Zwarte voet met bevestigingsplaat op de spiegeldriehoek, aan de binnenkant van het spiegelhuis; blijft staan als de spiegel inklapt (plaats geschat).', p: M(bodGhHalf(0.8075 + bodMirDZ, bodQy(0.8075 + bodMirDZ, 0.91375 + bodMirDY))[0] + 0.0107, 0.91375, 0.8075), stay: true, ex: [-s * 0.05, -0.05, 0] }),
+    // kap als halve ellips in de diepte (schaal = wortel(1 - (d / 0,15)^2)): een ronde, slanke druppel zonder vlakke voorkant; de diepte maal
+    // bodMirKD (golf 7 ronde 2: 137 mm huis was te diep tegen ca. 95 tot 110 mm op de foto)
+    P('Spiegelkap', cache('bodMirCapT' + k, () => bodLoft(s, [0, 0.012, 0.03, 0.05, 0.07, 0.09, 0.106, 0.12, 0.132, 0.141, 0.147].map(d => [d < 0.013 ? 1 : Math.sqrt(1 - (d / 0.15) ** 2), d * bodMirKD]), true, 0.32)), MAT.paint, { d: 'Druppelvormige kap in carrosseriekleur aan de voorzijde van het spiegelhuis.', p: Mc(cx, 0.738), ex: [0, 0.02, 0.1] }),
     P('Spiegelhuis', cache('bodMirRimT' + k, () => bodLoft(s, [[0.93, -0.004], [1.01, -0.004], [1.01, 0.012]], false)), MAT.paint, { d: 'Kunststof huis in carrosseriekleur met een rand rond het glas, dat glas, motoren en verwarming draagt.', p: Mc(cx, 0.734), ex: [0, 0, -0.02] }),
     P('Spiegelglas', cache('bodMirGlT' + k, () => { const g = new THREE.ShapeGeometry(shapeOf(bodMirOutline().map(([u, v]) => [s * u * 0.93, v * 0.93]))); return g; }), MAT.bodMirror, { d: 'Bol spiegelglas in de spiegelkap, waarin de bestuurder het verkeer naast en schuin achter de auto ziet.', p: Mc(cx, 0.731), ex: [0, 0, -0.12] }),
     P('Glasdrager', G.rbox(0.14, 0.056, 0.008, 0.01), MAT.plastic, { d: 'Kunststof drager waarop het glas is geklikt.', p: Mc(cx, 0.738), ex: [0, 0, -0.08] }),
@@ -1248,7 +1273,7 @@ function buildBody() {
   // d = -(qFr + k) loopt van de ruit af (het pad heeft stijgende z, de ruit ligt aan de kant d > 0)
   const qBelt = s => bodBeltTrim(s, bodLinZ(bodQZ - 0.012, -0.96, 14, 0));
   const qTrim = (s, k0, k1, out, crown, nv) => bodTrim(s, qEdge, z => -(qFr(z) + k1), z => -(qFr(z) + k0), out, crown, nv);
-  const aPillarLo = z => z < bodSail - 0.004 ? bodQG + 0.03 : z < 0.93 ? Math.min(bodQS - 0.02, bodQy(z, bodSailTop(z))) : 0.004;
+  const aPillarLo = z => z < bodSail - 0.004 ? bodQG + 0.03 : z < bodSailTip ? Math.min(bodQS - 0.02, bodQy(z, bodSailTop(z))) : 0.004;
   // dakplaat met twee openingen: panRoofGeo() in panorama.js (4 mm overlap met de achterruit, geen spleet op de naad)
   // de kwartsruit ligt boven het achterportier (de sluitnaad loopt achter de punt op de gordel, z -1,2665) en zit in het raamkader van dat portier
   // achter het schuine stijltje: hij draait om dezelfde scharnieras mee. Bleef hij staan, dan hing hij bij een open achterportier los in de
@@ -1268,7 +1293,7 @@ function buildBody() {
     A('Dakbogen', { d: 'Drie dwarsliggers onder het dakpaneel. Door de twee openingen van het panoramadak liggen ze onder de plaatstroken voor, tussen en achter de glaspanelen (onder de dwarsbalk en boven de hemelbekleding).', ex: [0, 0.1, 0] }, [[0.285, 'voor'], [-0.54, 'midden'], [-1.14, 'achter']].map(([z, nm]) => P(`Dakboog ${nm}`, (() => { const pts = []; for (let i = 0; i <= 12; i++) { const w = bodQR / 2 + (1 - bodQR) * i / 12; const p = ghPt(z, w); pts.push([p[0] * 0.97, p[1] - 0.005, z]); } return tube(pts, 0.0045, 24, 6); })(), MAT.paintIn, { d: 'Dwarsligger onder het dakpaneel.', ex: [0, -0.04, z * 0.05] }))),
     buildPanorama(),
     ...both(s => P(`Dakrail ${sn(s)}`, bodGhSide(s, -0.95, WS1, 30, () => [bodQG + 0.03, bodQR], 10), MAT.bodPaintKas, { d: 'Zijdelingse dakligger boven de portieren.', ex: [s * 0.08, 0.04, 0] })),
-    ...both(s => P(`A-stijl ${sn(s)}`, bodGhSide(s, WS1, WS0, 24, z => [aPillarLo(z), bodQR], 8, bodDense(bodSail - 0.085, bodSail + 0.085, 6).concat(bodDense(bodSail + 0.085, 0.95, 3), bodDense(WS0 - bodAPL, WS0, 9))), MAT.bodPaintKas, { d: 'Voorste dakstijl langs de voorruit.', ex: [s * 0.08, 0.04, 0.04] })),
+    ...both(s => P(`A-stijl ${sn(s)}`, bodGhSide(s, WS1, WS0, 24, z => [aPillarLo(z), bodQR], 8, bodDense(bodSail - 0.085, bodSail + 0.085, 6).concat(bodDense(bodSail + 0.085, bodSailTip + 0.02, 3), bodDense(WS0 - bodAPL, WS0, 9))), MAT.bodPaintKas, { d: 'Voorste dakstijl langs de voorruit.', ex: [s * 0.08, 0.04, 0.04] })),
     // B-stijl: profiel onder (tot 1,06 m) en boven de gordel het gelakte buitenvlak van de stijl tot de bovenrand van de ruiten, 4 mm onder de
     // twee zwarte afdekkingen van de portierkaders (de onderste 10 cm dieper, binnen de zakkende voorste zijruit; zie bodBPillarFace). Dicht blijft het vlak achter die afdekkingen (16 mm van de glasranden, zodat het niet
     // door de ruiten te zien is); bij een open portier leest de stijl zo als stijl. Zonder dit vlak keek je daar langs de afdekking van het
