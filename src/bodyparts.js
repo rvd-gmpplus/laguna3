@@ -1772,9 +1772,13 @@ function buildBody() {
   const cage = A('Carrosseriekooi', { d: 'De gelaste ruwbouw (body in white): vloer, voorbouw, stijlen, dak en achterbouw, met de vaste buitenpanelen.', ex: [0, 0, 0] }, [floorGrp, frontGrp, sideRoof, rear, liners]);
 
   /* ================= motorkap ================= */
-  // rand van de kap 0,0012 in s binnen de naadlijn (golf 8 ronde 2, was 0,0018): de naad met het scherm gemeten 5,2 in plaats van 6,8 mm
-  const hoodS = z => bodHoodS(z) + 0.0012;
-  const hoodBr = bodDense(2.2, bodHoodZ1 - 0.002, 10).concat([bodHoodZ1 - 0.0005]);
+  // rand van de kap 0,0012 in s binnen de naadlijn (golf 8 ronde 2, was 0,0018): de naad met het scherm gemeten 5,2 in plaats van 6,8 mm.
+  // Golf 8 ronde 3: langs het scherm 0,0009 (op het dek ca. 3,3 mm per 0,001 in s): de naad met het scherm langs de doorsnede was
+  // 4,7 tot 5,1 mm, nu ca. 3,8 tot 4,1 mm. Vanaf de achterpunt van de koplamp (z 1,80 tot 1,83) loopt het weer op naar 0,0012, zodat
+  // de naden met het afdekglas en de neus blijven zoals ze waren. Stations net voor en na bodHLZ0: daar springt de bovenrand van de lamp
+  // (bodHLHi) 0,0005 naar buiten, en zonder station liep die sprong als koorde tot ca. 2 cm terug in de naad met het scherm (6,8 mm op z 1,805)
+  const hoodS = z => bodHoodS(z) + 0.0009 + 0.0003 * sstep((z - 1.80) / 0.03);
+  const hoodBr = bodDense(2.2, bodHoodZ1 - 0.002, 10).concat([bodHoodZ1 - 0.0005, bodHLZ0 - 0.0005, bodHLZ0 + 0.0005]);
   // binnenframe en isolatie op de hoogte van het dek zonder de verlaging van golf 5j (bodHoodDrop): de buitenhuid ligt daardoor tot
   // 2 cm dichter op het binnenframe (3 cm onder het dek), zonder dat het frame in de motorruimte zakt
   const hoodIn = (off, a, b, da) => { bodDropOff = true; try { return bodDeck(a, b, 28, z => Math.min(0.995, bodHoodS(z) + da), 12, bodDense(2.1, b, 4), off); } finally { bodDropOff = false; } };
