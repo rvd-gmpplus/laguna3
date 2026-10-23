@@ -114,6 +114,16 @@
    "b": "Dorpel (rechts|links)$"
   },
   {
+   "naam": "motorkap tegen de keramische rand van de voorruit",
+   "soort": "paneelnaad",
+   "a": "Motorkap/Buitenpaneel motorkap$",
+   "b": "Voorruit/Keramische rand voor$",
+   "kierMax": 8.0,
+   "stapMax": 2.0,
+   "randMax": 1.5,
+   "_uitleg": "Golf 8 ronde 4: de keramische rand loopt tot de glasrand. Op de echte auto ligt de achterrand van de motorkap voor de ruit, met het torpedorooster ertussen, en de ruit ligt in een steiler vlak; daar is geen paneelnaad van 4 mm maar een spleet van ongeveer 6 mm met een kleine stap. Gemeten bij de invoering: kier 6,3 mm, stap 1,3 mm, rand 1,0 mm."
+  },
+  {
    "naam": "motorkapnaad",
    "soort": "paneelnaad",
    "a": "Motorkap/Buitenpaneel motorkap$",

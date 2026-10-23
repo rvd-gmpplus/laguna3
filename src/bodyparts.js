@@ -2462,9 +2462,11 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   // golf 8 ronde 3: de zijbanden lopen over de volle hoogte en de onder- en bovenband liggen tussen hun binnenranden (dezelfde lijn, dezelfde
   // stations), met kolommen die naar de zijkanten dichter worden zoals het glas (wsWm); zo volgt de rand in de hoeken de koorden van het glas
   const fw = (z, t) => lerp(wsW[0] + fdw(z), wsW[1] - fdw(z), (wsWm(t) - wsW[0]) / (wsW[1] - wsW[0]));
-  const fBr = bodDense(WS0 - bodAPL, WS0 - 0.004, 16), fSide = (a, b) => [[WS1, fzT, 3, []], [fzT, fzB, 26, bodDense(WS0 - bodAPL, fzB, 6)], [fzB, WS0 - 0.004, 8, fBr]].map(([z0, z1, n, br]) => patch(fritPt, z0, z1, n, z => [a(z), b(z)], 2, br));
+  // golf 8 ronde 4: de onderband loopt tot de glasrand (WS0 - 0,002, was 0,004); anders bleef onder de frit een heldere strook glas van 2 mm
+  // waardoor de lichte torpedobak te zien was
+  const fBr = bodDense(WS0 - bodAPL, WS0 - 0.002, 16), fSide = (a, b) => [[WS1, fzT, 3, []], [fzT, fzB, 26, bodDense(WS0 - bodAPL, fzB, 6)], [fzB, WS0 - 0.002, 8, fBr]].map(([z0, z1, n, br]) => patch(fritPt, z0, z1, n, z => [a(z), b(z)], 2, br));
   const wsFrit = merge([
-    patch((z, t) => fritPt(z, fw(z, t)), WS1, fzT, 3, () => [0, 1], 44), patch((z, t) => fritPt(z, fw(z, t)), fzB, WS0 - 0.004, 8, () => [0, 1], 44, fBr),
+    patch((z, t) => fritPt(z, fw(z, t)), WS1, fzT, 3, () => [0, 1], 44), patch((z, t) => fritPt(z, fw(z, t)), fzB, WS0 - 0.002, 8, () => [0, 1], 44, fBr),
     ...fSide(() => wsW[0], z => wsW[0] + fdw(z)), ...fSide(z => wsW[1] - fdw(z), () => wsW[1])]);
   const windscreen = A('Voorruit', { d: 'Gelaagde voorruit onder een hoek van ca. 26 graden, met rubber en regensensor.', ex: [0, 0.4, 0.42] }, [
     P('Voorruitglas', patch((z, t) => ghPt(z, wsWm(t)), WS1, WS0 - 0.002, 28, () => [0, 1], 44, bodDense(WS0 - bodAPL, WS0 - 0.002, 16)), MAT.glassWs, { d: 'Gelaagd veiligheidsglas met akoestische tussenlaag.', ex: [0, 0.08, 0.04] }),
