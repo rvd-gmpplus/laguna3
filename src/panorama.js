@@ -131,10 +131,12 @@ function buildPanorama() {
   const bar = P('Dwarsbalk', panSlab(PAN_OF[1], PAN_OR[0], -PAN_XR, PAN_XR, 0.0008, 0.0065, 2, 14), MAT.bodPanoBar, { d: 'Dwarsbalk tussen de twee glaspanelen, van buiten donker; huisvest de schermcassette van het voorste scherm (vorm geschat).', ex: [0, 0.2, 0] });
   // golf 8 (kierenaudit): de achterste omlijsting ligt met de bovenkant op 5 mm, gelijk met het vaste glas (was 3 mm: trede van 2,5 mm
   // tussen keramische rand en omlijsting langs de zijranden); de voorste blijft op 3 mm, daar kantelt en schuift het glas
-  const ring = (z0, z1, l1 = 0.003) => merge([panSlab(z1, z0, PAN_X, PAN_XR, 0.0008, l1, 14, 1), panSlab(z1, z0, -PAN_XR, -PAN_X, 0.0008, l1, 14, 1),
-    panSlab(z0, z0 + 0.02, -PAN_XR, PAN_XR, 0.0008, l1, 1, 14), panSlab(z1 - 0.02, z1, -PAN_XR, PAN_XR, 0.0008, l1, 1, 14)]);
+  // voor = false laat de voorste dwarsstrook weg (golf 8 ronde 2): bij de achterste opening lag die strook (z -0,58 tot -0,56) binnen de
+  // dwarsbalk (z -0,58 tot -0,50), twee vlakken op elkaar die door elkaar heen flikkerden
+  const ring = (z0, z1, l1 = 0.003, voor = true) => merge([panSlab(z1, z0, PAN_X, PAN_XR, 0.0008, l1, 14, 1), panSlab(z1, z0, -PAN_XR, -PAN_X, 0.0008, l1, 14, 1),
+    ...(voor ? [panSlab(z0, z0 + 0.02, -PAN_XR, PAN_XR, 0.0008, l1, 1, 14)] : []), panSlab(z1 - 0.02, z1, -PAN_XR, PAN_XR, 0.0008, l1, 1, 14)]);
   const trimF = P('Omlijsting opening voor', ring(PAN_OF[0], PAN_OF[1]), MAT.bodPillar, { d: 'Zwarte kunststof omlijsting (sierlijst) rond de voorste dakopening, zonder chroom (breedte geschat).', ex: [0, 0.18, 0.05] });
-  const trimR = P('Omlijsting opening achter', ring(PAN_OR[0], PAN_OR[1], 0.005), MAT.bodPillar, { d: 'Zwarte kunststof omlijsting (sierlijst) rond de achterste dakopening.', ex: [0, 0.18, -0.05] });
+  const trimR = P('Omlijsting opening achter', ring(PAN_OR[0], PAN_OR[1], 0.005, false), MAT.bodPillar, { d: 'Zwarte kunststof omlijsting (sierlijst) rond de achterste dakopening.', ex: [0, 0.18, -0.05] });
   // donkere binnenlijst: een smalle zwarte kunststof lijst die net binnen de afwerkring van de hemel (interior.js, rand van de hemelopening op |x| 0,45) rondom
   // de opening ligt, 3,3 cm onder het dakvlak en daarmee onder de zonneschermen; van binnen leest de opening zo rondom als een donkere omlijsting
   const liner = (z0, z1) => merge([panBand(z0, z1, 0.446, 0.426, -0.033, 6, 1), panBand(z0, z1, -0.446, -0.426, -0.033, 6, 1),
@@ -142,7 +144,9 @@ function buildPanorama() {
   const linerF = P('Binnenlijst opening voor', liner(0.2, -0.48), MAT.bodPillar, { d: 'Zwarte kunststof lijst rondom de voorste dakopening aan de binnenkant, net binnen de afwerkring van de hemel; verbergt de rand van het zonnescherm en de rubbers (breedte geschat).', ex: [0, -0.1, 0.04] });
   const linerR = P('Binnenlijst opening achter', liner(-0.6, -1.09), MAT.bodPillar, { d: 'Zwarte kunststof lijst rondom de achterste dakopening aan de binnenkant, net binnen de afwerkring van de hemel (breedte geschat).', ex: [0, -0.1, -0.04] });
   const sealF = P('Afdichting opening voor', tube(panLoop(PAN_OF[0] - 0.012, PAN_OF[1] + 0.012, PAN_X + 0.012, -0.001, 8), 0.0045, 80, 6, true), MAT.rubber, { d: 'Rubber afdichting rond de voorste opening waarop het schuifglas dichtligt.', ex: [0, 0.1, 0.04] });
-  const sealR = P('Afdichting opening achter', tube(panLoop(PAN_OR[0] - 0.012, PAN_OR[1] + 0.012, PAN_X + 0.012, -0.001, 8), 0.0045, 80, 6, true), MAT.rubber, { d: 'Rubber afdichting rond de achterste opening waarop het vaste glas rust.', ex: [0, 0.1, -0.04] });
+  // golf 8 ronde 2: het rubber ligt 4,5 mm onder het dakvlak (was 1 mm), met de bovenkant op het dakvlak en onder de omlijsting (0,8 mm);
+  // het stak 3,5 mm boven het dak uit, door de omlijsting heen
+  const sealR = P('Afdichting opening achter', tube(panLoop(PAN_OR[0] - 0.012, PAN_OR[1] + 0.012, PAN_X + 0.012, -0.0045, 8), 0.0045, 80, 6, true), MAT.rubber, { d: 'Rubber afdichting rond de achterste opening waarop het vaste glas rust.', ex: [0, 0.1, -0.04] });
   const frame = P('Dakframe', merge([
     ...[PAN_OF, PAN_OR].map(([z0, z1]) => merge([panSlab(z1, z0, PAN_XO, 0.545, -0.0285, -0.0215, 14, 1), panSlab(z1, z0, -0.545, -PAN_XO, -0.0285, -0.0215, 14, 1),
       panSlab(z0, z0 + 0.03, -0.545, 0.545, -0.0285, -0.0215, 1, 14), panSlab(z1 - 0.03, z1, -0.545, 0.545, -0.0285, -0.0215, 1, 14)]))]),
