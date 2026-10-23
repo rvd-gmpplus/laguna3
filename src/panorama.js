@@ -132,9 +132,9 @@ function buildPanorama() {
       look: panLook } }, panGlass(PAN_GF[0], PAN_GF[1], 'voor', 'voorste'));
   const glassR = A('Glaspaneel achter', { d: 'Vast achterste glaspaneel van het panoramadak, op de dakplaat gelijmd. Ligt boven de achterbank; het schuifglas schuift er in open stand overheen.', ex: [0, 0.2, -0.1] }, panGlass(PAN_GR[0], PAN_GR[1], 'achter', 'achterste'));
   /* ---- dwarsbalk, omlijsting, afdichtingen, frame en rails ---- */
-  // golf 8 ronde 3 (kierenaudit): bovenkant op 5,8 mm (was 6,5): trede tegen de dakplaat 6,5 mm (grens 6) en 1,3 mm tegen de keramische
-  // randen van beide glaspanelen (5,5 mm, grens 1)
-  const bar = P('Dwarsbalk', panSlab(PAN_OF[1], PAN_OR[0], -PAN_XR, PAN_XR, 0.0008, 0.0058, 2, 14), MAT.bodPanoBar, { d: 'Dwarsbalk tussen de twee glaspanelen, van buiten donker; huisvest de schermcassette van het voorste scherm (vorm geschat).', ex: [0, 0.2, 0] });
+  // golf 8 ronde 3 (kierenaudit): bovenkant op 5,5 mm, gelijk met de keramische rand van de glaspanelen (glas 5 mm plus 0,5 mm frit). Op
+  // 6,5 mm stond de balk 1,3 mm boven de frit (schuifdaknaad, stap hooguit 1 mm) en 6,5 mm boven de dakplaat aan de uiteinden (lijst, hooguit 6 mm)
+  const bar = P('Dwarsbalk', panSlab(PAN_OF[1], PAN_OR[0], -PAN_XR, PAN_XR, 0.0008, 0.0055, 2, 14), MAT.bodPanoBar, { d: 'Dwarsbalk tussen de twee glaspanelen, van buiten donker; huisvest de schermcassette van het voorste scherm (vorm geschat).', ex: [0, 0.2, 0] });
   // golf 8 (kierenaudit): de achterste omlijsting ligt met de bovenkant op 5 mm, gelijk met het vaste glas (was 3 mm: trede van 2,5 mm
   // tussen keramische rand en omlijsting langs de zijranden). Golf 8 ronde 2: de voorste ook (bleef op 3 mm omdat het glas daar kantelt en
   // schuift; de omlijsting ligt naast en voor het glas, de opentest bewaakt de beweging)
