@@ -238,6 +238,8 @@ const bodRDloZ = z => z > -0.665 ? 0.305 : bodRDlo(z);                     // on
 // stations van de C-stijl (110 gelijke stappen van SP tot -0,95 plus verdichtingen bij de achterruithoek, de voet en het eind van de
 // schouderafronding); het scherm neemt ze over in zijn bovenrand, zodat de naad tussen scherm en C-stijl dezelfde hoekpunten heeft
 const bodCSN = 110;
+// verhoging van de bovenrand van de C-stijl langs de achterklep (q), met een uitloop van 2 cm naar RW0 (klepnaad, golf 8 ronde 2)
+const bodKNq = z => 0.0012 * clamp((RW0 - z) / 0.02, 0, 1);
 function bodCSBr() { return bodDense(-1.27, -1.15, 6).concat(bodDense(SP, SP + 0.1, 8), bodDense(-1.372, bodCFZ1, 5)); }
 function bodCSZs() { return Array.from({ length: bodCSN + 1 }, (_, i) => SP + (-0.95 - SP) * i / bodCSN).concat(bodCSBr()); }
 const bodRDG = 0.004, bodRDZ0 = -1.266;
@@ -1561,7 +1563,9 @@ function buildBody() {
     // en achterscherm), en het gaas volgt de hoek in het analytische oppervlak op q = bodQS (zijwand naar dakrailronding): met 16 gelijke stappen
     // over die hoek lag het tot 2,4 mm buiten het oppervlak. Twee banden aan elkaar gelast, met zachte normalen over de hoek.
     // golf 8 ronde 2: de schouderafronding (bodCFqB, body.js) krijgt een eigen band van zes rijen; daarboven elf rijen tot de hoek op bodQS
-    ...both(s => { const lo = z => z < bodQZ ? 0 : cPillarLo(z), hi = z => z < RW0 ? qScr(z) : bodQR, mid = z => clamp(bodQS, lo(z), hi(z)), br = bodCSBr();
+    // golf 8 ronde 2 (klepnaad): de bovenrand van de C-stijl ligt 0,0012 hoger in q (ca. 0,6 mm), zodat de naad met de keramische rand van de
+    // achterklep (q + 0,004) van 1,5 tot 2,0 mm naar ongeveer 1,0 tot 1,4 mm gaat; in de laatste 2 cm voor RW0 loopt de verhoging terug naar 0
+    ...both(s => { const lo = z => z < bodQZ ? 0 : cPillarLo(z), hi = z => z < RW0 ? qScr(z) + bodKNq(z) : bodQR, mid = z => clamp(bodQS, lo(z), hi(z)), br = bodCSBr();
       const fq = z => lo(z) + Math.max(bodCFqB(z), 0.006);
       // 110 stations in plaats van 34: de beginlijn van de afronding buigt in de overgangen sterk, en bij 3,4 cm per station week de koorde
       // tot 1,3 mm van de bovenrand van het scherm af (doorkijk naar de hoedenplanksteun); nu ca. 1 cm per station, koordefout onder 0,15 mm
@@ -2221,6 +2225,18 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     ...both(s => P(`Klepbuffer ${sn(s)}`, G.cyl('z', 0.012, 0.012, 0.02, 10), MAT.rubber, { d: 'Rubberen aanslag op de carrosserie die het rammelen van de klep voorkomt.', inner: true, stay: true, p: [s * 0.48, 0.68, bodZT + 0.035], ex: [s * 0.03, 0, 0.04] })),
     // plus een donkere strook van 8 mm, 2 mm onder de huid achter de zijnaden in het staartvlak (onder en boven het achterlicht): door de spleet van
     // 3 mm zag je eerst de lichte bovenkant van de bumperrichel, zodat de naad als onregelmatige witte lijn las in plaats van als donkere naad
+    // golf 8 ronde 2 (klepnaad): zwart rubberprofiel aan de zijrand van de klep, 3 mm onder de naad met de C-stijl, van net binnen de bovenrand
+    // van de stijl tot 1,25 mm onder de keramische rand (de ruit is een enkel vlak, het rubber ligt eronder). Door de naad zag je tussen de
+    // sponning en de klepafdichting door tot in de bagageruimte of naar buiten. Het zit aan de klep, niet aan de stijl: de gasveerbeugel aan
+    // de klep zwaait bij het openen door de ruimte onder de naad
+    // (3 mm langs de echte normaal van de kas: bij de onderhoek van de ruit en onder het dak staat het vlak anders dan schuin 45 graden), met
+    // aan de kant van de stijl een opstaande lip tot 1,2 mm onder de huid, zodat ook een schuine blik langs de rand van de stijl op rubber valt
+    // (stations van de C-stijl, bodCSZs: dan lopen de randen van stijl en rubber tussen dezelfde punten)
+    ...both(s => { const rb = (z, q, d) => { const p = bodGhHalf(z, q), a = bodGhHalf(z, q - 1e-4), b = bodGhHalf(z, q + 1e-4), l = Math.hypot(b[0] - a[0], b[1] - a[1]);
+        let nx = (b[1] - a[1]) / l, ny = -(b[0] - a[0]) / l; if (nx * p[0] + ny * (p[1] - 0.65) < 0) { nx = -nx; ny = -ny; }
+        return [s * (p[0] - d * nx), p[1] - d * ny, z]; }, q0 = z => qScr(z) + bodKNq(z) + 0.0003;
+      return P(`Rubberlijn klepnaad ${sn(s)}`, merge([patch((z, q) => rb(z, q, 0.003), SP + 0.004, RW0 - 0.004, 1, z => [q0(z), qScr(z) + 0.0065], 4, bodCSZs()),
+        patch((z, d) => rb(z, q0(z), d), SP + 0.004, RW0 - 0.004, 1, () => [0.0012, 0.003], 1, bodCSZs())]), MAT.rubber, { d: 'Zwart rubberprofiel langs de zijrand van de achterklep, net onder de naad met de C-stijl; het dekt de spleet af, zodat je door de naad niet tot in de bagageruimte kijkt.', ex: [s * 0.04, 0.03, 0] }); }),
     P('Klepafdichting', merge([tube(bodTGPath(0.03), 0.008, 80, 5), ...[L, R].flatMap(sd => [[bodYLEDGE + 0.004, bodTLY(bodZT, 0)], [bodTLY(bodZT, 1), ydT - 0.002]].map(([y0, y1]) => bodMirX(bodTailGeo(bodTGseam(y0) - 0.0025, bodTGseam(y0) + 0.0055, y0, y1, -0.002, 8, 1), sd)))]), MAT.rubber, { d: 'Rubber afdichting tussen klep en sponning, op de sponning van de carrosserie; blijft staan als de klep opent. In de zijnaden van het staartvlak van buiten te zien als donkere lijn.', stay: true, ex: [0, 0, 0.06] }),
     P('Binnenbekleding achterklep', bodTailGeo(-tgXs, tgXs, 0.7, ydT - 0.04, -0.055, 4, 8), MAT.dash, { d: 'Kunststof binnenbekleding met greep om de klep te sluiten.', ex: [0, 0, 0.12] }),
   ]);
