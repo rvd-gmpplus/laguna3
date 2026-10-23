@@ -64,8 +64,22 @@ let bodDropOff = false;
 const bodHoodYD0 = bodYD(1.15), bodHoodYN = bodYD(2.29), bodHoodK = 0.8;
 const bodHoodDrop = z => (bodDropOff || z <= 1.15 || z >= 2.29) ? 0 : Math.max(0, bodHoodK * (bodHoodYD0 - bodYD(z)) * (bodYD(z) - bodHoodYN));
 // daklijn op de hartlijn (voorruit bol, dak als een boog, vlakke achterruit onder ca. 14 graden)
-const YR = pchip([[-2.11, 1.13], [-1.905, 1.181], [-1.655, 1.246], [-1.405, 1.31], [-1.17, 1.37], [-0.905, 1.418], [-0.655, 1.441], [-0.43, 1.447], [-0.155, 1.44], [0.095, 1.414],
+const YR0 = pchip([[-2.11, 1.13], [-1.905, 1.181], [-1.655, 1.246], [-1.405, 1.31], [-1.17, 1.37], [-0.905, 1.418], [-0.655, 1.441], [-0.43, 1.447], [-0.155, 1.44], [0.095, 1.414],
   [0.30, 1.346], [0.345, 1.332], [0.595, 1.237], [0.845, 1.112], [1.06, 0.975]]);
+// golf 8 ronde 3 (kierenaudit, via de orkestrator): tussen z 0,095 en de voorruitkop (WS1) een vijfdegraads Hermite-stuk met dezelfde hoogte,
+// helling en kromming als de daklijn aan beide uiteinden. In de pchip sprong de kromming op de knoop 0,095 van -0,4 naar -3,4 per meter: de
+// naad tussen dak en dakrail had daar een knik van 3,3 graden (grens 3). Het dak ligt in dat stuk hoogstens 1,8 mm hoger (rond z 0,15 tot
+// 0,20); de voorruit (vanaf WS1) en alles achter z 0,095 blijven gelijk
+const YR = (() => {
+  const a = 0.095, b = WS1, h = b - a, e = 1e-4, y0 = YR0(a), y1 = YR0(b), m0 = (YR0(a) - YR0(a - e)) / e, m1 = (YR0(b + e) - YR0(b)) / e;
+  const k0 = (YR0(a) - 2 * YR0(a - e) + YR0(a - 2 * e)) / (e * e), k1 = (YR0(b + 2 * e) - 2 * YR0(b + e) + YR0(b)) / (e * e);
+  return z => {
+    if (z <= a || z >= b) return YR0(z);
+    const t = (z - a) / h, t2 = t * t, t3 = t2 * t, t4 = t3 * t, t5 = t4 * t;
+    return y0 * (1 - 10 * t3 + 15 * t4 - 6 * t5) + m0 * h * (t - 6 * t3 + 8 * t4 - 3 * t5) + k0 * h * h * (t2 - 3 * t3 + 3 * t4 - t5) / 2
+      + y1 * (10 * t3 - 15 * t4 + 6 * t5) + m1 * h * (-4 * t3 + 7 * t4 - 3 * t5) + k1 * h * h * (t3 - 2 * t4 + t5) / 2;
+  };
+})();
 // karakterlijn op de flank: van de voorwielboog oplopend naar de bovenrand van het achterlicht
 const bodYC = pchip([[-2.2, 0.985], [-1.98, 0.975], [-1.4, 0.93], [-1.0, 0.90], [0.0, 0.852], [0.95, 0.80], [1.3, 0.785]]);
 // bovenaanzicht: boven de bumperrichel loopt de staart ronder in dan de bumper (hoekstraal ca. 0,3 m); factor op x
@@ -203,7 +217,26 @@ function bodGhHalfM(z, q, g) {
   }
   return r;
 }
+// vouw van de A-stijl (golf 8 ronde 3, kierenaudit, via de orkestrator): de kasdoorsnede heeft op q bodQS een vouw van 32,5 graden (zijvlak
+// met tumblehome naar de ronding van de dakrail). Langs het portier loopt de raamomlijsting evenwijdig aan die vouw, maar langs de schuine
+// voorrand (bodFL in bodyparts.js) kruisen de rand van de A-stijl, de rubberlijn en de chroomband hem onder ca. 16 graden in zijaanzicht; de
+// naadlijn knikte daar 10 graden per 10 mm (kierenmeting, grens 5). Tussen z 0,68 en 0,86 is de vouw afgerond: een kwadratische Bezier van
+// q bodQS - 0,03 tot bodQS + 0,015 met aan beide kanten dezelfde raaklijn (straal ca. 3 cm, hoogstens 1,3 mm binnen de oude hoek). De
+// zijruit (tot q bodQG 0,505) en de bovenlijn van de raamomlijsting (q bodQV 0,557) liggen erbuiten
+const bodAFq0 = 0.03, bodAFq1 = 0.015;
+const bodAFf = z => sstep((z - 0.68) / 0.04) * sstep((0.86 - z) / 0.04);
 function bodGhHalf0(z, q, g) {
+  const f = bodAFf(z), q0 = bodQS - bodAFq0, q1 = bodQS + bodAFq1;
+  if (f <= 0 || q <= q0 || q >= q1) return bodGhHalfR(z, q, g);
+  const e = 1e-4, A = bodGhHalfR(z, q0, g), a0 = bodGhHalfR(z, q0 - e, g), B = bodGhHalfR(z, q1, g), b1 = bodGhHalfR(z, q1 + e, g);
+  const ta = [A[0] - a0[0], A[1] - a0[1]], tb = [b1[0] - B[0], b1[1] - B[1]], cr = ta[0] * tb[1] - ta[1] * tb[0];
+  // controlepunt op het snijpunt van de raaklijnen in A en B (anders de oude hoek)
+  let K = bodGhHalfR(z, bodQS, g);
+  if (Math.abs(cr) > 1e-12) { const u = ((B[0] - A[0]) * tb[1] - (B[1] - A[1]) * tb[0]) / cr; if (u > 0) K = [A[0] + u * ta[0], A[1] + u * ta[1]]; }
+  const t = (q - q0) / (q1 - q0), w0 = (1 - t) * (1 - t), w1 = 2 * t * (1 - t), w2 = t * t, r = bodGhHalfR(z, q, g);
+  return [lerp(r[0], w0 * A[0] + w1 * K[0] + w2 * B[0], f), lerp(r[1], w0 * A[1] + w1 * K[1] + w2 * B[1], f)];
+}
+function bodGhHalfR(z, q, g) {
   if (q <= bodQS) { const t = q / bodQS; return [g.xb + (g.xe - g.xb) * t + 0.012 * Math.sin(PI * t) * Math.min(1, (g.ye - g.yb) / 0.2), g.yb + (g.ye - g.yb) * t]; }
   if (q <= bodQR) { const a = (q - bodQS) / (bodQR - bodQS) * HALF; return [g.xr + (g.xe - g.xr) * Math.cos(a), g.ye + (g.yre - g.ye) * Math.sin(a)]; }
   const t = (q - bodQR) / (1 - bodQR), x = g.xr * (1 - t); return [x, g.yre + g.cr * t * (2 - t)];
@@ -215,7 +248,7 @@ function ghPt(z, w) {
 // parameter q (halve kas) op hoogte y langs de zijruit
 function bodQAtY(z, y) {
   const g = bodGh(z);
-  if (bodMorph(z) > 0 || bodCFf(z) > 0) return bodQFind(z, y, g, bodQS);
+  if (bodMorph(z) > 0 || bodCFf(z) > 0 || bodAFf(z) > 0) return bodQFind(z, y, g, bodQS);
   return clamp((y - g.yb) / Math.max(1e-6, g.ye - g.yb), 0, 1) * bodQS;
 }
 // q bij hoogte y door halvering (in de overgangszone van de C-stijlvoet; y stijgt monotoon met q)
@@ -232,7 +265,7 @@ function surfX(z, y) {
   const yt = bodCFf(z) > 0 ? bodGhHalf(z, 0)[1] : YT(z);
   if (y <= yt || z < SP || z > WS0) return ringX(z, Math.min(y, bodSec(z).yd));
   const g = bodGh(z);
-  if (bodMorph(z) > 0) return y >= g.yc ? 0 : bodGhHalf(z, bodQFind(z, y, g), g)[0];
+  if (bodMorph(z) > 0 || bodAFf(z) > 0) return y >= g.yc ? 0 : bodGhHalf(z, bodQFind(z, y, g), g)[0];
   if (y <= g.ye) return bodGhHalf(z, bodQAtY(z, y), g)[0];
   if (y <= g.yre) { const a = Math.asin(clamp((y - g.ye) / Math.max(1e-6, g.yre - g.ye), 0, 1)); return g.xr + (g.xe - g.xr) * Math.cos(a); }
   if (y >= g.yc) return 0;
