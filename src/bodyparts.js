@@ -1732,7 +1732,12 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   // naast de schaal, die daar opzij omrolt. Nu gaan de normalen naar de rand toe ((|x| / X)^3) over in die van de schaal op de laatste
   // doorsnede (2 mm voor ZR: bodN op ZR zelf is eenzijdig en kantelt twee keer te ver), zodat de arcering zonder trede aansluit; de vorm
   // blijft gelijk en het vlak wordt niet meegelast
-  const rCap = (() => { const z = ZR + 1e-4, c = bodSec(z), g = patch((y, t) => { const X = ringX(z, y), v = 2 * (y - c.yb) / (c.yd - c.yb) - 1; return [X * t, y, z - 0.004 * (1 - t * t) * (1 - v * v)]; }, c.yb + 1e-4, c.yd - 1e-4, 8, () => [-1, 1], 16);
+  // golf 8 (kierenaudit): het vlak lag in het midden 4 mm achter het staartvlak (bolling, facet van 3,9 mm) en had 8 rijen over de hoogte;
+  // bovenin, waar de ring in 1 cm van 25 cm breed naar het hart afrondt, sneed de rand als koorde door de hoeken (kier 3,6 mm met doorkijk
+  // naar het achterpaneel). Nu vlak op het staartvlak, met rijen die naar de boven- en onderrand kwadratisch verdichten
+  const rCapBr = (() => { const z = ZR + 1e-4, c = bodSec(z), o = []; for (let k = 1; k < 24; k++) o.push(c.yd - 1e-4 - (c.yd - 0.585) * (k / 24) ** 2);
+    for (let k = 1; k < 12; k++) o.push(c.yb + 1e-4 + (0.56 - c.yb) * (k / 12) ** 2); return o; })();
+  const rCap = (() => { const z = ZR + 1e-4, c = bodSec(z), g = patch((y, t) => [ringX(z, y) * t, y, z], c.yb + 1e-4, c.yd - 1e-4, 4, () => [-1, 1], 16, rCapBr);
     const p = g.attributes.position, n = g.attributes.normal;
     for (let i = 0; i < p.count; i++) { const x = p.getX(i), y = p.getY(i), w = clamp(Math.abs(x) / Math.max(1e-6, ringX(z, y)), 0, 1) ** 3, e = bodN(ZR + 0.002, sAtY(ZR + 0.002, y)), q = [Math.sign(x || 1) * e[0] * w, e[1], lerp(-1, e[2], w)], l = Math.hypot(...q);
       const o = Math.sign(q[0] * n.getX(i) + q[1] * n.getY(i) + q[2] * n.getZ(i)) || 1; n.setXYZ(i, o * q[0] / l, o * q[1] / l, o * q[2] / l); }   // zelfde kant als de draairichting
