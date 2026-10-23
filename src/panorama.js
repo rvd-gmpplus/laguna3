@@ -129,10 +129,12 @@ function buildPanorama() {
   const glassR = A('Glaspaneel achter', { d: 'Vast achterste glaspaneel van het panoramadak, op de dakplaat gelijmd. Ligt boven de achterbank; het schuifglas schuift er in open stand overheen.', ex: [0, 0.2, -0.1] }, panGlass(PAN_GR[0], PAN_GR[1], 'achter', 'achterste'));
   /* ---- dwarsbalk, omlijsting, afdichtingen, frame en rails ---- */
   const bar = P('Dwarsbalk', panSlab(PAN_OF[1], PAN_OR[0], -PAN_XR, PAN_XR, 0.0008, 0.0065, 2, 14), MAT.bodPanoBar, { d: 'Dwarsbalk tussen de twee glaspanelen, van buiten donker; huisvest de schermcassette van het voorste scherm (vorm geschat).', ex: [0, 0.2, 0] });
-  const ring = (z0, z1) => merge([panSlab(z1, z0, PAN_X, PAN_XR, 0.0008, 0.003, 14, 1), panSlab(z1, z0, -PAN_XR, -PAN_X, 0.0008, 0.003, 14, 1),
-    panSlab(z0, z0 + 0.02, -PAN_XR, PAN_XR, 0.0008, 0.003, 1, 14), panSlab(z1 - 0.02, z1, -PAN_XR, PAN_XR, 0.0008, 0.003, 1, 14)]);
+  // golf 8 (kierenaudit): de achterste omlijsting ligt met de bovenkant op 5 mm, gelijk met het vaste glas (was 3 mm: trede van 2,5 mm
+  // tussen keramische rand en omlijsting langs de zijranden); de voorste blijft op 3 mm, daar kantelt en schuift het glas
+  const ring = (z0, z1, l1 = 0.003) => merge([panSlab(z1, z0, PAN_X, PAN_XR, 0.0008, l1, 14, 1), panSlab(z1, z0, -PAN_XR, -PAN_X, 0.0008, l1, 14, 1),
+    panSlab(z0, z0 + 0.02, -PAN_XR, PAN_XR, 0.0008, l1, 1, 14), panSlab(z1 - 0.02, z1, -PAN_XR, PAN_XR, 0.0008, l1, 1, 14)]);
   const trimF = P('Omlijsting opening voor', ring(PAN_OF[0], PAN_OF[1]), MAT.bodPillar, { d: 'Zwarte kunststof omlijsting (sierlijst) rond de voorste dakopening, zonder chroom (breedte geschat).', ex: [0, 0.18, 0.05] });
-  const trimR = P('Omlijsting opening achter', ring(PAN_OR[0], PAN_OR[1]), MAT.bodPillar, { d: 'Zwarte kunststof omlijsting (sierlijst) rond de achterste dakopening.', ex: [0, 0.18, -0.05] });
+  const trimR = P('Omlijsting opening achter', ring(PAN_OR[0], PAN_OR[1], 0.005), MAT.bodPillar, { d: 'Zwarte kunststof omlijsting (sierlijst) rond de achterste dakopening.', ex: [0, 0.18, -0.05] });
   // donkere binnenlijst: een smalle zwarte kunststof lijst die net binnen de afwerkring van de hemel (interior.js, rand van de hemelopening op |x| 0,45) rondom
   // de opening ligt, 3,3 cm onder het dakvlak en daarmee onder de zonneschermen; van binnen leest de opening zo rondom als een donkere omlijsting
   const liner = (z0, z1) => merge([panBand(z0, z1, 0.446, 0.426, -0.033, 6, 1), panBand(z0, z1, -0.446, -0.426, -0.033, 6, 1),
