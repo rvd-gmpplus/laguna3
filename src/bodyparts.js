@@ -220,7 +220,9 @@ const bodQG = 0.505;                                                            
 // onderrand van het scherm), 'bumper' het deel ervoor (tot 5 mm eronder, zoals de bovenrand van de bumper). Tot ronde 2 hoorde de hele lip bij
 // het scherm en lag het voorste stuk (y 0,33 tot 0,47) op de bumper: trede tot 4,5 mm in de naad. Met part loopt de lip onderaan voor
 // (de eerste 0,3 rad, ca. 12 cm) glad uit in de huid: daar grenzen bumper en scherm aan de binnenrand van de lip. Zonder part de hele boog.
-function archLip(s, az, part) {
+// ra0..ra1 (golf 8 ronde 2, achterste boog): stuk van de boog zonder part (hoek vanaf de voorkant, rond de bovenkant naar achteren),
+// zoals het achterscherm (0,02 tot bodLipCutR) en de bumperschaal achter (bodLipCutR tot het eind); 40 stappen over de hele boog
+function archLip(s, az, part = null, ra0 = 0.02, ra1 = PI - 0.02) {
   const pt = (a, t) => { const r = ARCH + 0.004 + t * 0.036; return [az + r * Math.cos(a), AY + r * Math.sin(a)]; };
   const cutA = (t, dy) => {
     const g = a => { const [z, y] = pt(a, t); return y - bodSeamF(z) - dy; };
@@ -228,11 +230,17 @@ function archLip(s, az, part) {
     for (let k = 0; k < 40; k++) { const m = (lo + hi) / 2; if (g(m) >= 0) hi = m; else lo = m; }
     return hi;
   };
-  const a0 = part === 'scherm' ? t => cutA(t, 0.004) : () => 0.02, a1 = part === 'bumper' ? t => cutA(t, -0.005) : () => PI - 0.02;
+  const a0 = part === 'scherm' ? t => cutA(t, 0.004) : () => ra0, a1 = part === 'bumper' ? t => cutA(t, -0.005) : () => ra1;
   const fade = a => part ? sstep((a - 0.02) / 0.3) : 1;
   return patch((u, t) => { const a = lerp(a0(t), a1(t), u), [z, y] = pt(a, t), p = bodAt(z, y, 0.0004 + (0.004 * (1 - t) + 0.0006) * fade(a)); return [s * p[0], p[1], p[2]]; },
-    0, 1, part === 'bumper' ? 6 : 40, () => [0, 1], 2);
+    0, 1, part === 'bumper' ? 6 : part ? 40 : Math.max(2, Math.round(40 * (ra1 - ra0) / (PI - 0.04))), () => [0, 1], 2);
 }
+// golf 8 ronde 2 (kierenaudit): achter de achterwielboog loopt de lip onder de naad achterscherm/achterbumper (bodRSeam) door over de bumper;
+// dat stuk hoort bij de bumperschaal, anders stond de lip van het scherm als trede van 3,5 mm op de bumper. Hoek waar het midden van de lip
+// de naad kruist (bisectie tussen de bovenkant en het achtereinde van de boog)
+const bodLipCutR = (() => { const r = ARCH + 0.022; let lo = HALF, hi = PI - 0.02;
+  for (let i = 0; i < 40; i++) { const m = (lo + hi) / 2; if (AY + r * Math.sin(m) > bodRSeam(AXR + r * Math.cos(m)) + 0.0015) lo = m; else hi = m; }
+  return (lo + hi) / 2; })();
 /* ---------- naden en ruitlijnen (zijaanzicht, onderzoek exterieur §3) ---------- */
 // voorrand voorportier (schuin): recht van de onderhoek (z 0,84 op y 0,31) naar de punt op de gordel (z bodFDZ1). Golf 8 ronde 2 (vormbesluit,
 // Fable): op de auto vallen de bovenkant van de sluitnaad, het einde van de schuine chroomlijst, het einde van de gordellijst en de punt van
@@ -243,6 +251,37 @@ const bodFDF = y => 0.84 + (y - 0.31) / (bodFDY1 - 0.31) * (bodFDZ1 - 0.84);
 const bodFDlo = z => z < 0.84 ? 0.307 : 0.31 + (z - 0.84) / (bodFDZ1 - 0.84) * (bodFDY1 - 0.31);  // onderrand voorportier per z
 const bodRDlo = pchip([[-1.268, 0.877], [-1.20, 0.795], [-1.109, 0.66], [-1.0, 0.525], [-0.916, 0.406], [-0.80, 0.338], [-0.665, 0.305]]);
 const bodRDloZ = z => z > -0.665 ? 0.305 : bodRDlo(z);                     // onderrand achterportier (zwaait om de achterwielboog)
+// kier achter het achterportier (golf 8 ronde 2, kierenaudit): het achterscherm volgt de rand van het buitenpaneel (z -1,266 en de onderrand
+// bodRDloZ + 0,002) op bodRDG loodrecht op die rand, ook in het schuine stuk om de wielboog. Tot ronde 2 lag het scherm 4 mm achter de
+// verticale rand en 6 mm recht onder de onderrand, zodat de kier van 3 mm (schuin stuk) tot 6,8 mm (bovenaan) liep.
+// stations van de C-stijl (110 gelijke stappen van SP tot -0,95 plus verdichtingen bij de achterruithoek, de voet en het eind van de
+// schouderafronding); het scherm neemt ze over in zijn bovenrand, zodat de naad tussen scherm en C-stijl dezelfde hoekpunten heeft
+const bodCSN = 110;
+// verhoging van de bovenrand van de C-stijl langs de achterklep (q), met een uitloop van 2 cm naar RW0 (klepnaad, golf 8 ronde 2)
+const bodKNq = z => 0.0012 * clamp((RW0 - z) / 0.02, 0, 1);
+function bodCSBr() { return bodDense(-1.27, -1.15, 6).concat(bodDense(SP, SP + 0.1, 8), bodDense(-1.372, bodCFZ1, 5)); }
+function bodCSZs() { return Array.from({ length: bodCSN + 1 }, (_, i) => SP + (-0.95 - SP) * i / bodCSN).concat(bodCSBr()); }
+const bodRDG = 0.004, bodRDZ0 = -1.266;
+const bodRDedge = z => bodRDloZ(z) + 0.002;
+// normaal van de rand naar het scherm (naar achteren en omlaag) in het vlak (z, y)
+const bodRDnrm = z => { const e = 5e-4, d = (bodRDedge(z + e) - bodRDedge(z - e)) / (2 * e), l = Math.hypot(d, 1); return [d / l, -1 / l]; };
+// bovenrand van het scherm: de hoogste y onder de rand met minstens g afstand tot de rand (tabel per 0,5 mm in z, lineair ertussen)
+const bodRDoffC = {};
+function bodRDoff(g) {
+  if (bodRDoffC[g]) return bodRDoffC[g];
+  const st = 0.0005, cur = [];
+  for (let z = bodRDZ0; z <= -0.60 + 1e-9; z += st) cur.push([z, bodRDedge(z)]);
+  const yC = cur[0][1], z0 = bodRDZ0 - g, tab = [];
+  const dist = (z, y) => { let m = y >= yC ? Math.abs(z - bodRDZ0) : Math.hypot(z - bodRDZ0, y - yC);
+    const i0 = Math.max(0, Math.floor((z - g - bodRDZ0) / st)), i1 = Math.min(cur.length - 1, Math.ceil((z + g - bodRDZ0) / st) + 1);
+    for (let i = i0; i <= i1; i++) m = Math.min(m, Math.hypot(z - cur[i][0], y - cur[i][1]));
+    return m; };
+  const n = Math.round((-0.62 - z0) / st);
+  for (let k = 0; k <= n; k++) { const z = z0 + k * st; let lo = 0.2, hi = z < bodRDZ0 ? yC : bodRDedge(z);
+    for (let i = 0; i < 30; i++) { const m = (lo + hi) / 2; if (dist(z, m) >= g) lo = m; else hi = m; }
+    tab.push(lo); }
+  return (bodRDoffC[g] = z => { const u = clamp((z - z0) / st, 0, n), i = Math.min(n - 1, Math.floor(u)); return lerp(tab[i], tab[i + 1], u - i); });
+}
 // B-stijl: twee zwarte afdekkingen naast elkaar (raamkader voorportier voor de naad, raamkader achterportier erachter), samen ca. 12,8 cm
 // breed op de gordel en ca. 11 cm bovenaan (inclusief het runkanaal, bodBRW per kant, golf 5f ronde 3), helling ca. 12 graden naar achteren;
 // de sluitnaad (z -0,148 op de gordel) loopt ertussen omhoog. De ruitranden (bodBf, bodBr) liggen op de gordel 10,2 cm uit elkaar.
@@ -250,6 +289,11 @@ const bodRDloZ = z => z > -0.665 ? 0.305 : bodRDlo(z);                     // on
 // op de auto. De achterste afdekking blijft gelijk: de ruit van het achterportier zakt schuin langs die achterkant (helling bodBRK) en schuift
 // met een smallere afdekking door de voorste sluitrand en het scharnierblad van het portier.
 const bodBGK = Math.tan(12 * PI / 180), bodBF0 = -0.121, bodBFK = 0.091 / 0.43, bodBRK = 0.066 / 0.43, bodBGW = 0.0045, bodBRW = 0.014;
+// sluitnaad tussen de portieren (golf 8 ronde 2, kierenaudit): een echte portierkier van 3,8 mm. Tot ronde 2 eindigde het buitenpaneel van het
+// voorportier op z -0,143 (kier 10 mm, gemeten 10,8) en de voorste B-stijlafdekking 4,5 mm voor de hartlijn bodBg (kier 9 mm). Alleen de
+// achterrand van het voorportier schuift naar achteren: het buitenpaneel tot bodFDR, de afdekking tot bodBGF voor bodBg. Het achterportier, de
+// scharnieras en alles binnen het voorportier (binnenpaneel, kaart, slot, rubbers) blijven waar ze waren.
+const bodFDR = -0.1492, bodBGF = -0.0007;
 const bodBg = y => -0.148 - (y - 0.946) * bodBGK;                          // hartlijn van de naad tussen de afdekkingen
 const bodBf = y => bodBF0 - (y - 0.946) * bodBFK;                          // voorkant van de voorste afdekking (achterrand ruit voorportier)
 const bodBr = y => -0.223 - (y - 0.946) * bodBRK;                          // achterkant van de achterste afdekking (voorrand ruit achterportier)
@@ -676,7 +720,8 @@ function buildDoor(s, isFront) {
   // gordel, zodat de laatste vakken voor de rand 3 tot 12 mm in de schouder wegzakten (y 0,80 tot 0,90). Stations elke 1,8 mm (ronde 1: 1,2 mm
   // bij een rand van 6 graden): de rand stijgt 8,7 mm per station, zoals toen 11 mm
   const dJ = 0.835, dLv = isFront && bodShoulderLv(...vr(dJ), 26);
-  const outer = isFront ? bodLowZip(s, bodZipZs(z0, z1, nO, br, dJ, z1, 0.0018), z => z <= dJ + 1e-6 ? bodLinCol(...vr(z), 26) : bodZipCol(...vr(z), dLv, 0.004))
+  const zO = isFront ? bodFDR : z0;   // achterrand van het buitenpaneel (voorportier: bodFDR, 6,2 mm achter z0)
+  const outer = isFront ? bodLowZip(s, bodZipZs(zO, z1, nO, br, dJ, z1, 0.0018), z => z <= dJ + 1e-6 ? bodLinCol(...vr(z), 26) : bodZipCol(...vr(z), dLv, 0.004))
     : lowSide(s, z0, z1, nO, vr, 26, br);
   const inner = lowSide(s, z0 + 0.012, z1 - 0.012, nI, z => [bodSY(z, lo(z) + 0.02), S4 - 0.012], 12, br, 0.095);
   const P3 = (z, y, inw) => { const p = bodAt(z, y, -inw); return [s * p[0], p[1], p[2]]; };
@@ -817,8 +862,10 @@ function buildDoor(s, isFront) {
   // daarboven tot de punt door de naad op de eindkap van het dashboard
   const yBelt = z => YT(z) - 0.004, ls = (a, b, n) => bodDense(a, b, n).concat([b]);
   const yFT = (() => { let y = 0.89; for (let k = 0; k < 8; k++) y = yBelt(bodFDF(y + 0.001)); return y; })();
-  const seams = isFront ? [bodSeamLine(s, [0.312].concat(ls(0.312, yFT, 16)).map(y => [bodFDF(y + 0.001), y])), bodSeamLine(s, [0.31].concat(ls(0.31, yBelt(-0.148), 12)).map(y => [-0.148, y]), 0.0105)]
-    : [bodSeamLine(s, [-0.666].concat(ls(-0.666, -1.2665, 30)).map(z => [z, bodRDloZ(z) - 0.001]).concat(ls(0.878, yBelt(-1.2665), 4).map(y => [-1.2665, y])))];
+  const seams = isFront ? [bodSeamLine(s, [0.312].concat(ls(0.312, yFT, 16)).map(y => [bodFDF(y + 0.001), y])), bodSeamLine(s, [0.31].concat(ls(0.31, yBelt(-0.148), 12)).map(y => [(bodFDR - 0.153) / 2, y]), 0.0034)]
+    : [bodSeamLine(s, [-0.666].concat(ls(-0.666, bodRDZ0, 30)).map(z => { const n = bodRDnrm(z); return [z + n[0] * bodRDG / 2, bodRDedge(z) + n[1] * bodRDG / 2]; })
+      .concat([0.25, 0.5, 0.75].map(t => { const n = bodRDnrm(bodRDZ0), a0 = Math.atan2(n[1], n[0]), a = a0 + t * (-PI - a0); return [bodRDZ0 + Math.cos(a) * bodRDG / 2, bodRDedge(bodRDZ0) + Math.sin(a) * bodRDG / 2]; }))
+      .concat(ls(bodRDedge(bodRDZ0), yBelt(bodRDZ0 - bodRDG / 2), 4).map(y => [bodRDZ0 - bodRDG / 2, y])), bodRDG - 0.0006)];
   // portierscharnier als plat gesmeed blad in lakkleur (meegelakt met de carrosserie): het portierblad ligt plat op de voorste sluitrand
   // van het portier, het carrosserieblad plat op de stijl, en elk blad heeft een oog om de stalen pen (portierblad boven, carrosserieblad onder).
   // De pennen van beide scharnieren liggen op een lijn en die lijn is de draaias van het portier (open.pivot en open.axis), zodat beide ogen
@@ -871,7 +918,11 @@ function buildDoor(s, isFront) {
   const eIn = 0.095, pp = sv => (s > 0 ? sv : 2 - sv), sTop = S4 - 0.004;
   const edgeBottom = patch((z, t) => bodLow(z, pp(bodSY(z, lo(z) + 0.002 + 0.018 * t)), eIn * t), z0 + 0.012, z1 - 0.012, 30, () => [0, 1], 2, br);
   const edgeV = (zo, zi) => patch((u, t) => bodLow(lerp(zo, zi, t), pp(lerp(bodSY(zo, lo(zo) + 0.002), sTop, u)), eIn * t), 0, 1, 8, () => [0, 1], 2);
-  const doorEdge = merge([edgeBottom, edgeV(z0, z0 + 0.012), ...(isFront ? [] : [edgeV(z1, z1 - 0.012)])]);
+  // voorportier (golf 8 ronde 2): het buitenpaneel loopt 6,2 mm verder naar achteren dan de sluitrand (bodFDR); daar is het een omgezette rand
+  // van 1 mm dik (zoom) tot z0, en pas vanaf z0 gaat de sluitrand naar binnen. Een schuine sluitrand vanaf bodFDR liep tot 2,2 mm door de
+  // scharnieren van het achterportier, die net onder de huid in de B-stijlnaad zitten
+  const hemV = (za, zb, d0, d1) => patch((u, t) => { const z = lerp(za, zb, t); return bodLow(z, pp(lerp(bodSY(z, lo(z) + 0.002), sTop, u)), lerp(d0, d1, t)); }, 0, 1, 8, () => [0, 1], 2);
+  const doorEdge = merge([edgeBottom, ...(isFront ? [hemV(zO, zO, 0, 0.001), hemV(zO, z0, 0.001, 0.001), edgeV(z0, z0 + 0.012)] : [edgeV(z0, z0 + 0.012), edgeV(z1, z1 - 0.012)])]);
   // luidspreker vooraan laag in het voorportier (rooster ca. 18 cm, golf 5n ronde 2 naar de foto's), achter in het midden van het portier
   const spR = 0.09, spZ = isFront ? cz1 - 0.12 : zm, spY = Math.max(0.46, cardY0(spZ) + spR + 0.006);
   // de luidspreker zelf (achter de kaart) blijft op 0,42 m: hoger stak hij dieper door waterscherm en raammotor (clash), en het rooster dekt hem ook zo.
@@ -1049,7 +1100,7 @@ function buildDoor(s, isFront) {
   // Golf 5f ronde 3 (S7 kenmerk 4): elke afdekking loopt bodBRW verder over de rand van de ruit (het runkanaal van het raamkader), zodat het
   // zwarte vlak op de gordel ca. 12,8 cm breed is (bovenaan ca. 11 cm) en de lichte bekleding en de stoelen binnen niet direct langs de stijl
   // als lichte streep lezen. De ruitranden zelf (bodBf, bodBr) blijven waar ze waren; de ruit loopt nu 4 mm plus bodBRW onder de afdekking.
-  kids.push(P('Afdekking B-stijl', isFront ? bodBand(s, bodBF0 + bodBRW, bodBFK, -0.148 + bodBGW, bodBGK, 0.002) : bodBand(s, -0.148 - bodBGW, bodBGK, -0.223 - bodBRW, bodBRK, 0.002), MAT.bodPillarGloss,
+  kids.push(P('Afdekking B-stijl', isFront ? bodBand(s, bodBF0 + bodBRW, bodBFK, -0.148 + bodBGF, bodBGK, 0.002) : bodBand(s, -0.148 - bodBGW, bodBGK, -0.223 - bodBRW, bodBRK, 0.002), MAT.bodPillarGloss,
     { d: isFront ? 'Hoogglans zwarte afdekking (weergegeven als mat zwart) op het raamkader van het voorportier, de voorste helft van de zwarte B-stijl, licht naar achteren hellend; dekt ook het runkanaal langs de achterrand van de ruit af.' : 'Hoogglans zwarte afdekking (weergegeven als mat zwart) op het raamkader van het achterportier, de achterste helft van de zwarte B-stijl; dekt ook het runkanaal langs de voorrand van de ruit af.', ex: [s * 0.06, 0.04, 0] }));
   // raamkader van binnen (golf 5n ronde 2, foto portier bestuurder open): het gelakte plaatwerk van het kader, ca. 2 cm breed langs de
   // bovenrand van de ruit, 4 mm binnen het glasvlak, met langs de buitenrand een zwart rubber. Van binnen las het kader eerst als dunne zwarte
@@ -1069,7 +1120,10 @@ function buildDoor(s, isFront) {
   const kTop = bodGhSide(s, kZ0, gz1 + 0.01, 30, z => [bodQG + 0.001, kQT(z)], 3, [], -0.004);
   kids.push(P('Raamkader binnen', kTop, MAT.paintIn, { d: 'Binnenkant van het raamkader: gelakt plaatwerk langs de bovenrand van de ruit, zichtbaar bij een open portier.', ex: [-s * 0.04, 0.06, 0] }));
   kids.push(P('Raamkaderrubber binnen', bodGhSide(s, kZ0, gz1 + 0.01, 30, z => [kQT(z) - 0.005, kQT(z)], 1, [], -0.0055), MAT.rubber, { d: 'Zwart afdichtrubber langs de buitenrand van het raamkader, onder de dakrand.', ex: [-s * 0.03, 0.08, 0] }));
-  if (isFront) kids.push(P('Naadrubber B-stijl', bodBand(s, -0.148 + bodBGW + 0.001, bodBGK, -0.148 - bodBGW - 0.001, bodBGK, 0.0008), MAT.bodPillar, { d: 'Mat zwart rubber in de naad tussen de twee B-stijlafdekkingen, in het verlengde van de sluitnaad onder de gordel.', ex: [s * 0.03, 0.02, 0] }));
+  // golf 8 ronde 2 (dichte opentest): de bovenrand ligt 0,002 in q (ca. 1,3 mm) onder die van de afdekkingen. Het rubber loopt 1 mm onder de
+  // afdekking van het achterportier door (anders doorkijk in de naad); bij gelijke bovenrand stak de bovenste rij net buiten die afdekking uit
+  // (het vlak helt daar naar het dak) en liep die bij het openen van het voorportier, dat eerst naar buiten gaat, tot 38,8 mm erdoorheen
+  if (isFront) kids.push(P('Naadrubber B-stijl', bodBand(s, -0.148 + bodBGF + 0.001, bodBGK, -0.148 - bodBGW - 0.001, bodBGK, 0.0008, bodQG + 0.028), MAT.bodPillar, { d: 'Mat zwart rubber in de naad tussen de twee B-stijlafdekkingen, in het verlengde van de sluitnaad onder de gordel.', ex: [s * 0.03, 0.02, 0] }));
   if (isFront) {
     // golf 8: bovenrand op de rand van de A-stijl (bodFL: 0,5 mm onder de buitenrand van de rubberlijn), met dezelfde stations als de A-stijl,
     // zodat beide zonder kier op elkaar aansluiten; de punt ligt waar die rand de onderrand (q bodFLQc) kruist (z ca. 0,96, als in golf 7)
@@ -1229,6 +1283,10 @@ const bodTLY = (z, f) => lerp(bodTLlo(Math.max(z, bodZT)), bodTLtop(Math.max(z, 
 // x 0,34 maar een halve ellips (3,5 cm diep), zodat de lamp aan de binnenkant afgerond eindigt; het klepvlak ertussen volgt dezelfde rand.
 // Lenzen en klepvlak gebruiken dezelfde hoogtestations (dichter bij boven- en onderrand), zodat de randen naadloos op elkaar aansluiten.
 const bodTLin = 0.34, bodTLinR = 0.035;
+// hoogte van de lenzen boven de huid (golf 8 ronde 2, kierenaudit): 1 mm, de heldere banden 0,5 mm daarboven. Met 3 mm stonden de lenzen als
+// opgeplakte schaal 3 tot 3,5 mm boven scherm en klep; op de auto liggen de lenzen nagenoeg in het vlak
+// het binnendeel op de klep 0,6 mm (bodTLoB): de klep wijkt onder de lens tot 0,5 mm extra af, en daar kwam de stap op 1,5 mm
+const bodTLo = 0.001, bodTLoB = 0.0006;
 const bodTLxin = y => { const y0 = bodTLY(bodZT, 0), y1 = bodTLY(bodZT, 1), u = clamp((2 * y - y0 - y1) / (y1 - y0), -1, 1); return bodTLin + bodTLinR * (1 - Math.sqrt(1 - u * u)); };
 const bodTLys = () => { const y0 = bodTLY(bodZT, 0), y1 = bodTLY(bodZT, 1), out = []; for (let i = 1; i < 18; i++) out.push(lerp(y0, y1, (1 - Math.cos(PI * i / 18)) / 2)); return out.concat(bodTLF.map(f => lerp(y0, y1, f))); };
 // vlak op het staartvlak tussen x0f(y) en x1f(y) (functies van de hoogte), 'off' achter het vlak; hoogtestations van bodTLys
@@ -1244,15 +1302,15 @@ function buildTaillight(s, deel = 'buiten') {
   const [f0, f1, f2, f3] = bodTLF, xo = 1.2;
   const faceR = (fa, fb, off) => bodMirX(bodTLgeo(bodTLxin, () => xs, bodTLY(bodZT, fa), bodTLY(bodZT, fb), off), s);
   if (deel === 'binnen') return A(`Achterlicht binnendeel ${n}`, { d: 'Deel van het achterlicht in de achterklep met achterlicht en achteruitrijlicht; zet de lijnen van het buitendeel over de naad voort en draait met de klep mee.', ex: [s * 0.03, 0.04, -0.08] }, [
-    P('Lens binnendeel', merge([faceR(f2, f3, 0.003), faceR(f0, f1, 0.003)]), MAT.bodLensTl, { d: 'Rode lens van het binnendeel (achterlicht): bovenband en onderstrook.', ex: [0, 0.03, -0.06] }),
-    P('Lens achteruitrijlicht', faceR(f1, f2, 0.0035), MAT.bodLensTlC, { d: 'Heldere middenband over het achteruitrijlicht, in lijn met de heldere band van het buitendeel.', ex: [0, 0, -0.1] }),
+    P('Lens binnendeel', merge([faceR(f2, f3, bodTLoB), faceR(f0, f1, bodTLoB)]), MAT.bodLensTl, { d: 'Rode lens van het binnendeel (achterlicht): bovenband en onderstrook.', ex: [0, 0.03, -0.06] }),
+    P('Lens achteruitrijlicht', faceR(f1, f2, bodTLoB + 0.0005), MAT.bodLensTlC, { d: 'Heldere middenband over het achteruitrijlicht, in lijn met de heldere band van het buitendeel.', ex: [0, 0, -0.1] }),
     P('Reflector binnendeel', face(xin + 0.004, xs - 0.008, f0, f3, -0.012, 8, 0.006), MAT.reflector, { d: 'Verchroomde reflector achter de lenzen.', ex: [0, 0, 0.04] }),
     P('Lichthuis binnendeel', face(xin + 0.01, xs - 0.01, f0, f3, -0.028, 8, 0.008), MAT.plastic, { d: 'Behuizing in de achterklep.', ex: [0, 0, 0.06] }),
     P('Lampdrager binnendeel', face(xin + 0.03, xs - 0.03, f0, f3, -0.018, 8, 0.02), MAT.ecu, { d: 'Lampdrager met fittingen en stekker.', ex: [0, 0, 0.1] }),
   ]);
   return A(`Achterlicht ${n}`, { d: 'Slank horizontaal achterlicht in twee delen, verdeeld over de klepnaad. Dit is het vaste deel op het achterscherm met achterlicht, remlicht en knipperlicht (LED-uitstraling): loopt om de afgeronde hoek de flank in en onder de schouder in een punt naar voren. Het deel in de achterklep hangt onder Achterklep als Achterlicht binnendeel en draait met de klep mee.', ex: [s * 0.3, 0.1, -0.5] }, [
-    P('Lens buitendeel', merge([side(-0.003, f2, f3), side(-0.003, f0, f1), face(xs + 0.003, xo, f2, f3, 0.003), face(xs + 0.003, xo, f0, f1, 0.003)]), MAT.bodLensTl, { d: 'Rode afdeklens met een brede bovenband en een smalle onderstrook, van het staartvlak om de hoek de flank in.', ex: [s * 0.05, 0, -0.06] }),
-    P('Heldere band buitendeel', merge([side(-0.0035, f1, f2), face(xs + 0.003, xo, f1, f2, 0.0035)]), MAT.bodLensTlC, { d: 'Heldere horizontale band in de lens waarachter de knipperlichtunit zit; geeft de witte LED-streep van het fase 2-achterlicht.', ex: [s * 0.07, 0, -0.08] }),
+    P('Lens buitendeel', merge([side(-bodTLo, f2, f3), side(-bodTLo, f0, f1), face(xs + 0.003, xo, f2, f3, bodTLo), face(xs + 0.003, xo, f0, f1, bodTLo)]), MAT.bodLensTl, { d: 'Rode afdeklens met een brede bovenband en een smalle onderstrook, van het staartvlak om de hoek de flank in.', ex: [s * 0.05, 0, -0.06] }),
+    P('Heldere band buitendeel', merge([side(-bodTLo - 0.0005, f1, f2), face(xs + 0.003, xo, f1, f2, bodTLo + 0.0005)]), MAT.bodLensTlC, { d: 'Heldere horizontale band in de lens waarachter de knipperlichtunit zit; geeft de witte LED-streep van het fase 2-achterlicht.', ex: [s * 0.07, 0, -0.08] }),
     P('Lichthuis buitendeel', merge([side(0.05, f0, f3), face(xs + 0.01, xo, f0, f3, -0.05, 8, 0.008)]), MAT.plastic, { d: 'Kunststof behuizing met bevestigingsbouten in het achterscherm.', ex: [-s * 0.04, 0, 0.06] }),
     P('LED-print buitendeel', merge([side(0.035, 0.15, 0.85), face(xs + 0.02, xo, f0, f3, -0.035, 8, 0.02)]), MAT.ecu, { d: 'Printplaat met de lampen van achter-, rem- en knipperlicht.', ex: [0, 0, 0.1] }),
     P('Reflector buitendeel', merge([side(0.02, f0, f3), face(xs + 0.003, xo, f0, f3, -0.02, 8, 0.01)]), MAT.reflector, { d: 'Verchroomde reflector achter de lens; zichtbaar door het rode glas en de heldere band.', ex: [0, 0, 0.05] }),
@@ -1419,7 +1477,9 @@ function bodWHFace(s, z, x0, top) {
 // net binnen de wand (|x| 0,505) en naast de veerkokers tot |x| 0,428; dikte t, randstraal b, holle hoeken ri
 function bodBootPlate(hw, zc, hd, t, b, ri) {
   const v1 = -1.80 - zc, v2 = bodSprZ[0] - 0.007 - zc, w1 = bodWHX - 0.005, w2 = bodSprX - 0.004;
-  const g = roundPlate([[-hw, -hd], [hw, -hd], [hw, v1], [w1, v1], [w1, v2], [w2, v2], [w2, hd], [-w2, hd], [-w2, v2], [-w1, v2], [-w1, v1], [-hw, v1]], t, b, ri);
+  // achterhoeken afgeschuind (golf 8 ronde 2, kierenaudit): de staart loopt daar in bovenaanzicht in (op y 0,40 bij z -2,24 nog |x| 0,618),
+  // en de rechte hoek op |x| hw stak 3 cm door de bumperschaal naast de uitlaat. Nu minstens 15 mm binnen de huid
+  const g = roundPlate([[-hw + 0.05, -hd], [hw - 0.05, -hd], [hw, -hd + 0.04], [hw, v1], [w1, v1], [w1, v2], [w2, v2], [w2, hd], [-w2, hd], [-w2, v2], [-w1, v2], [-w1, v1], [-hw, v1], [-hw, -hd + 0.04]], t, b, ri);
   g.rotateX(HALF); return g;
 }
 /* ---------- openers: maten en hulpfuncties (motorkap, steun) ---------- */
@@ -1592,14 +1652,26 @@ function buildBody() {
     // golf 8 (kierenaudit): achter de kwartsruit begint de C-stijl op de gordel (q 0, was 0,004: kier van 2,4 tot 2,8 mm met doorkijk tussen stijl
     // en achterscherm), en het gaas volgt de hoek in het analytische oppervlak op q = bodQS (zijwand naar dakrailronding): met 16 gelijke stappen
     // over die hoek lag het tot 2,4 mm buiten het oppervlak. Twee banden aan elkaar gelast, met zachte normalen over de hoek.
-    ...both(s => { const lo = z => z < bodQZ ? 0 : cPillarLo(z), hi = z => z < RW0 ? qScr(z) : bodQR, mid = z => clamp(bodQS, lo(z), hi(z)), br = bodDense(-1.27, -1.15, 6);
-      const g = weldAll(merge([bodGhSide(s, SP, -0.95, 34, z => [lo(z), mid(z)], 12, br), bodGhSide(s, SP, -0.95, 34, z => [mid(z), hi(z)], 6, br)]));
+    // golf 8 ronde 2: de schouderafronding (bodCFqB, body.js) krijgt een eigen band van zes rijen; daarboven elf rijen tot de hoek op bodQS
+    // golf 8 ronde 2 (klepnaad): de bovenrand van de C-stijl ligt 0,0012 hoger in q (ca. 0,6 mm), zodat de naad met de keramische rand van de
+    // achterklep (q + 0,004) van 1,5 tot 2,0 mm naar ongeveer 1,0 tot 1,4 mm gaat; in de laatste 2 cm voor RW0 loopt de verhoging terug naar 0
+    // golf 8 ronde 2 (dichte opentest): voor de achterrand van de kwartsruit (bodQZ) loopt de onderrand vanaf zQ0 (ca. 7 mm ervoor, het station
+    // van de oude verdeling in 34 stappen) schuin omhoog naar cPillarLo. Met 110 stations viel er een station op z -1,2558 met de onderrand
+    // op de gordel, en daar liep het gordelrubber binnen van het achterportier bij het openen 9,7 mm door de stijl
+    ...both(s => { const zQ0 = SP + (-0.95 - SP) * 25 / 34, qQ = cPillarLo(bodQZ);
+      const lo = z => z < zQ0 ? 0 : z < bodQZ ? qQ * (z - zQ0) / (bodQZ - zQ0) : cPillarLo(z), hi = z => z < RW0 ? qScr(z) + bodKNq(z) : bodQR, mid = z => clamp(bodQS, lo(z), hi(z)), br = bodCSBr().concat([zQ0]);
+      const fq = z => lo(z) + Math.max(bodCFqB(z), 0.006);
+      // 110 stations in plaats van 34: de beginlijn van de afronding buigt in de overgangen sterk, en bij 3,4 cm per station week de koorde
+      // tot 1,3 mm van de bovenrand van het scherm af (doorkijk naar de hoedenplanksteun); nu ca. 1 cm per station, koordefout onder 0,15 mm
+      const g = weldAll(merge([bodGhSide(s, SP, -0.95, bodCSN, z => [lo(z), fq(z)], 6, br), bodGhSide(s, SP, -0.95, bodCSN, z => [fq(z), mid(z)], 11, br), bodGhSide(s, SP, -0.95, bodCSN, z => [mid(z), hi(z)], 6, br)]));
       // onderste rij tussen achterlicht en kwartsruit precies op de bovenrand van het achterscherm (rfHi: S4 - 0,0008); de kasvoet ligt daar
       // 0,7 mm verder naar binnen, wat met de ondergrens samen een kier met doorkijk naar de hoedenplanksteun gaf
       const pa = g.attributes.position;
-      for (let i = 0; i < pa.count; i++) { const z = pa.getZ(i); if (z > bodQZ - 1e-4 || z < bodTLZ + 1e-4) continue;
+      // golf 8 ronde 2: ook boven het achterlicht (vanaf SP; daar lag de kas 0,7 mm boven de bovenrand van de band boven de lamp, kier met doorkijk
+      // naar de hoedenplanksteun), en op de schouderafronding op het begin van de afronding (bodCFsA)
+      for (let i = 0; i < pa.count; i++) { const z = pa.getZ(i); if (z > bodQZ - 1e-4 || z < SP - 1e-4) continue;
         const f = bodGhHalf(z, 0); if (Math.abs(pa.getY(i) - f[1]) > 1e-5 || Math.abs(Math.abs(pa.getX(i)) - f[0]) > 1e-5) continue;
-        const r = bodLow(z, S4 - 0.0008); pa.setXYZ(i, s * Math.abs(r[0]), r[1], z); }
+        const r = bodLow(z, bodCFsA(z) - 0.0008); pa.setXYZ(i, s * Math.abs(r[0]), r[1], z); }
       return P(`C-stijl ${sn(s)}`, g, MAT.bodPaintKas, { d: 'Achterste dakstijl met de karakteristieke kromming boven de kwartsruit.', ex: [s * 0.1, 0.04, -0.04] }); }),
     ...both(quarter),
     // het plaatje reikt tot 5 mm boven de kogelpen en 25 mm eronder (was 25 mm erboven): bij een open klep wijst de veer omhoog en
@@ -1620,7 +1692,8 @@ function buildBody() {
   // nu nog 9 cm, grotendeels achter de boogflens
   // voor de wielboog op de bovenrand van de dorpel (y 0,302; was 0,304: kier van 2 mm met doorkijk achter het achterportier, golf 8)
   const rfLo = z => { if (z < AXR - ARCH) return bodSY(z, bodRSeam(z) + 0.003); if (z <= AXR + ARCH) return Math.max(archS(z), bodSY(z, 0.25)); return bodSY(z, 0.302); };
-  const rfHi = z => { if (z <= bodTLZ) return tlLow(z) - 0.002; if (z <= -1.27) return S4 - 0.0008; return bodSY(z, bodRDloZ(z) - 0.004); };
+  const rfOff = bodRDoff(bodRDG), rfZC = bodRDZ0 - bodRDG;
+  const rfHi = z => { if (z <= bodTLZ) return tlLow(z) - 0.002; if (z <= rfZC + 1e-7) return bodCFsA(z) - 0.0008; return bodSY(z, rfOff(z)); };
   // de stukken naast de tankopening in drie banden (onder, naast en boven de opening) met dezelfde rijen als de stroken onder en boven de
   // opening (9 en 5 stappen): de naden vallen dan op elkaar, de normalen lopen door en het lak leest zonder rand door rond de kom
   // (waar het paneel lager eindigt dan de opening, bij het portier, vallen de bovenste twee banden weg en dekt de onderste het hele paneel)
@@ -1628,7 +1701,12 @@ function buildBody() {
   // stations naar doorbuiging (koorde hoogstens 0,8 mm, golf 5b-2): de knikken van de onder- en bovenrand (wielboog, achterlicht, naad
   // bij het achterportier) blijven vast. Links over het hele paneel; rechts alleen de rijen (gemeten over het hele bereik van het paneel),
   // de banden houden 9, 6 en 5 gelijke stappen, zodat ze op de naden met de stukken onder en boven de opening blijven aansluiten.
-  const rfSag = (z0, z1, o = {}) => bodSagSide(z0, z1, z => [rfLo(z), rfHi(z)], 0.0008, Object.assign({ keep: ARCH_BREAKS.concat([-1.271, -1.269, bodTLZ, bodTLZ - 0.001]), extra: bodDense(-1.27, -0.66, 10).concat(bodDense(bodZT, bodTLZ, 5)), nuF: 200, nvF: 96 }, o));
+  // stations van het buitenpaneel van het achterportier (lowSide met 40 stappen plus br in buildDoor): de rand van het scherm volgt de rand van
+  // het portier dan tussen dezelfde stations, zodat de kier niet per vak verloopt
+  const rfDoorZs = Array.from({ length: 41 }, (_, i) => bodRDZ0 + (-0.153 - bodRDZ0) * i / 40).concat(bodDense(bodRDZ0, -0.62, 14)).filter(z => z > bodRDZ0 + 1e-4 && z < -0.668);
+  // golf 8 ronde 2: ook een station net na de lamppunt (bodTLZ + 0,1 mm): rfHi springt daar van de lamprand naar de schouder, en zonder dat station
+  // liep de bovenrand rechts schuin tot het volgende station (driehoekig gat bij z -1,978 met doorkijk naar de zijbekleding)
+  const rfSag = (z0, z1, o = {}) => bodSagSide(z0, z1, z => [rfLo(z), rfHi(z)], 0.0008, Object.assign({ keep: ARCH_BREAKS.concat([rfZC, rfZC + 1e-4, rfZC + 0.001, rfZC + 0.002, rfZC + 0.003, bodRDZ0, bodTLZ, bodTLZ + 1e-4, bodTLZ - 0.001], rfDoorZs, bodCSZs().filter(z => z > SP + 1e-4 && z < rfZC - 1e-4)), extra: bodDense(-1.27, -0.66, 10).concat(bodDense(bodZT, bodTLZ, 5)), nuF: 200, nvF: 96 }, o));
   const rfUni = n => Array.from({ length: n + 1 }, (_, j) => j / n);
   const tkBands = (s, z0, z1) => { const zs = rfSag(z0, z1).zs;
     return [[rfLo, tkE0, 9], [tkE0, tkE1, 6], [tkE1, rfHi, 5]].map(([a, b, n]) => bodSagSide(z0, z1, z => [a(z), b(z)], 0, { zs, vf: rfUni(n) }).geo(s)); };
@@ -1644,11 +1722,12 @@ function buildBody() {
     ] : [rfSag(bodZT, -0.667).geo(s)]),
     lowSide(s, bodZT, SP, 16, z => [z <= bodTLZ ? bodTLhi(z) + 0.001 : S4, Math.max(S4 + 1e-4, bodSAtX(z, bodTGdx(z)) - 0.003)], 4, bodDense(bodZT, -2.2, 4)),
     // band boven het achterlicht tussen de onderrand van de achterruit (SP) en de punt van de lamp: sluit de spleet tot de schouder
-    lowSide(s, SP - 0.002, bodTLZ + 0.001, 10, z => [Math.min(bodTLhi(z) + 0.001, S4 - 0.004), S4 - 0.0008], 2),
+    lowSide(s, SP - 0.002, bodTLZ + 0.001, 10, z => [Math.min(bodTLhi(z) + 0.001, bodCFsA(z) - 0.004), bodCFsA(z) - 0.0008], 2, bodCSZs()),
     bodSPweb(s, 0, bodQScr(SP) + 0.005, 0.001),
-    bodMirX(bodTailGeo(bodTGseam(0.7) + 0.003, 1.2, bodYLEDGE + 0.004, bodTLY(bodZT, 0), 0, 8, 4), s),
+    // golf 8 ronde 2: 3 mm boven de richel (was 4): op de hoek van richel en flank gaf dat een kier van 5,3 mm met doorkijk
+    bodMirX(bodTailGeo(bodTGseam(0.7) + 0.003, 1.2, bodYLEDGE + 0.003, bodTLY(bodZT, 0), 0, 8, 4), s),
     bodMirX(bodTailGeo(bodTGseam(1.0) + 0.003, 1.2, bodTLY(bodZT, 1), bodSec(bodZT).yd - 0.002, 0, 4, 4), s),
-    archLip(s, AXR),
+    archLip(s, AXR, null, 0.02, bodLipCutR),
   ]);
   const rear = A('Achterbouw', { d: 'Achterschermen, binnenwielkasten, achterpaneel, hoedenplanksteunen en bumperbalk achter.', ex: [0, 0.04, -0.42] }, [
     ...both(s => P(`Achterscherm ${sn(s)}`, s < 0 ? bodCreaseWeld(rearFender(s)) : rearFender(s), MAT.paint, { d: 'Gelast achterzijpaneel van achterportier tot achterlicht, met de wielboogflens.', ex: [s * 0.22, 0, -0.04] })),
@@ -2046,7 +2125,7 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   const rzA = bodRearZ(0, rPlateY - 0.045), rzB = bodRearZ(0, rPlateY + 0.045), rTilt = -Math.atan2(rzA - rzB, 0.09), rPlateZ = (rzA + rzB) / 2 + rcD - 0.0055;
   const zVal = (() => { let lo = ZR, hi = bodZT; for (let i = 0; i < 30; i++) { const m = (lo + hi) / 2; if (YB(m) >= 0.366) lo = m; else hi = m; } return hi; })();
   const rearBumper = A('Achterbumper', { d: 'Bumperschaal met kentekenuitsparing, richel onder de achterklep, reflectoren, parkeersensoren en uitsparingen voor de dubbele uitlaat (aannemelijk voor deze motor).', ex: [0, -0.04, -0.7] }, [
-    P('Bumperschaal achter', merge([shellR, bodZTStep(L), bodZTStep(R)]), MAT.paint, { d: 'Gespoten kunststof bumperschaal met de richel onder de achterklep.', ex: [0, 0, 0] }),
+    P('Bumperschaal achter', merge([shellR, bodZTStep(L), bodZTStep(R), archLip(L, AXR, null, bodLipCutR), archLip(R, AXR, null, bodLipCutR)]), MAT.paint, { d: 'Gespoten kunststof bumperschaal met de richel onder de achterklep en het achterste stuk van de wielbooglip.', ex: [0, 0, 0] }),
     P('Kentekenuitsparing', recess, MAT.paint, { d: 'Verdiepte kentekenuitsparing in carrosseriekleur: schuin naar binnen lopende wanden rond de plaat en een vlakke bodem.', ex: [0, 0, -0.06] }),
     A('Kentekenplaat achter', { d: 'Gele Nederlandse kentekenplaat (zonder kenteken weergegeven).', ex: [0, 0, -0.22] }, [
       P('Plaat', G.box(0.52, 0.11, 0.004), MAT.plateYellow, { d: 'Retroreflecterende gele plaat van 520 × 110 mm, licht gekanteld met het bumpervlak.', p: [0, rPlateY, rPlateZ], r: [rTilt, 0, 0], ex: [0, 0, -0.03] }),
@@ -2057,7 +2136,9 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     // de uitlaateindstukken (uitlaatsysteem, y 0,30) liggen aan de onderrand
     // de band stopt waar de onderkant van de staartpunt boven 0,366 komt (z ca. -2,29): daarachter bleef een strook zonder hoogte over die als
     // dunne staande lijn midden door de kentekenplaat te zien was
-    P('Onderschort', bodCreaseWeld(exCut(merge([L, R].map(sd => lowSide(sd, -2.02, zVal, 40, z => [0, bodSY(z, Math.max(YB(z) + 0.002, Math.min(0.368, YB(z) + 0.09)))], 8, bodDense(-2.3, bodZT, 6).concat(bodDense(zVal, -2.3, 4)), -0.0025))))), MAT.bodValance, { d: 'Donkergrijze kunststof onderschort langs de onderrand van de achterbumper (ca. 9 cm hoog), met de uitsparingen voor de uitlaat.', ex: [0, -0.08, -0.04] }),
+    // golf 8 ronde 2 (kierenaudit): 16 rijen over de hoogte (was 8): de onderste rijen liggen in de ronding van de onderrand (straal 6 cm), en
+    // met 8 rijen sneden de koorden naast de uitlaatuitsparing 1,4 mm binnen het oppervlak (facet)
+    P('Onderschort', bodCreaseWeld(exCut(merge([L, R].map(sd => lowSide(sd, -2.02, zVal, 40, z => [0, bodSY(z, Math.max(YB(z) + 0.002, Math.min(0.368, YB(z) + 0.09)))], 16, bodDense(-2.3, bodZT, 6).concat(bodDense(zVal, -2.3, 4)), -0.0025))))), MAT.bodValance, { d: 'Donkergrijze kunststof onderschort langs de onderrand van de achterbumper (ca. 9 cm hoog), met de uitsparingen voor de uitlaat.', ex: [0, -0.08, -0.04] }),
     P('Mistachterlicht', G.rbox(0.1, 0.03, 0.012, 0.006), MAT.lensRed, { d: 'Mistachterlicht onderin de bumper aan de bestuurderszijde (positie geschat uit fase 2-foto\'s).', p: [0.62, 0.34, bodRearZ(0.62, 0.34) - 0.004], ex: [0.04, 0, -0.08] }),
     P('Reflector rechts', G.rbox(0.1, 0.03, 0.01, 0.006), MAT.lensRed, { d: 'Rode reflector onderin de bumper.', p: [-0.62, 0.34, bodRearZ(0.62, 0.34) - 0.004], ex: [-0.04, 0, -0.08] }),
     A('Parkeersensoren achter', { d: 'Vier ultrasone sensoren van de parkeerhulp achter (standaard op Initiale Paris), onder en naast de kentekenuitsparing.', ex: [0, 0.03, -0.12] }, [[0.5, 0.43], [0.17, 0.345], [-0.17, 0.345], [-0.5, 0.43]].map(([x, y], i) => P(`Parkeersensor achter ${i + 1}`, G.cyl('z', 0.011, 0.011, 0.02, 12), MAT.paint, { d: 'Ultrasone parkeersensor achter (standaard op Initiale Paris).', p: [x, y, bodRearZ(x, y) + 0.006], ex: [0, 0.02, -0.06] }))),
@@ -2248,6 +2329,18 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     ...both(s => P(`Klepbuffer ${sn(s)}`, G.cyl('z', 0.012, 0.012, 0.02, 10), MAT.rubber, { d: 'Rubberen aanslag op de carrosserie die het rammelen van de klep voorkomt.', inner: true, stay: true, p: [s * 0.48, 0.68, bodZT + 0.035], ex: [s * 0.03, 0, 0.04] })),
     // plus een donkere strook van 8 mm, 2 mm onder de huid achter de zijnaden in het staartvlak (onder en boven het achterlicht): door de spleet van
     // 3 mm zag je eerst de lichte bovenkant van de bumperrichel, zodat de naad als onregelmatige witte lijn las in plaats van als donkere naad
+    // golf 8 ronde 2 (klepnaad): zwart rubberprofiel aan de zijrand van de klep, 3 mm onder de naad met de C-stijl, van net binnen de bovenrand
+    // van de stijl tot 1,25 mm onder de keramische rand (de ruit is een enkel vlak, het rubber ligt eronder). Door de naad zag je tussen de
+    // sponning en de klepafdichting door tot in de bagageruimte of naar buiten. Het zit aan de klep, niet aan de stijl: de gasveerbeugel aan
+    // de klep zwaait bij het openen door de ruimte onder de naad
+    // (3 mm langs de echte normaal van de kas: bij de onderhoek van de ruit en onder het dak staat het vlak anders dan schuin 45 graden), met
+    // aan de kant van de stijl een opstaande lip tot 1,2 mm onder de huid, zodat ook een schuine blik langs de rand van de stijl op rubber valt
+    // (stations van de C-stijl, bodCSZs: dan lopen de randen van stijl en rubber tussen dezelfde punten)
+    ...both(s => { const rb = (z, q, d) => { const p = bodGhHalf(z, q), a = bodGhHalf(z, q - 1e-4), b = bodGhHalf(z, q + 1e-4), l = Math.hypot(b[0] - a[0], b[1] - a[1]);
+        let nx = (b[1] - a[1]) / l, ny = -(b[0] - a[0]) / l; if (nx * p[0] + ny * (p[1] - 0.65) < 0) { nx = -nx; ny = -ny; }
+        return [s * (p[0] - d * nx), p[1] - d * ny, z]; }, q0 = z => qScr(z) + bodKNq(z) + 0.0003;
+      return P(`Rubberlijn klepnaad ${sn(s)}`, merge([patch((z, q) => rb(z, q, 0.003), SP + 0.004, RW0 - 0.004, 1, z => [q0(z), qScr(z) + 0.0065], 4, bodCSZs()),
+        patch((z, d) => rb(z, q0(z), d), SP + 0.004, RW0 - 0.004, 1, () => [0.0012, 0.003], 1, bodCSZs())]), MAT.rubber, { d: 'Zwart rubberprofiel langs de zijrand van de achterklep, net onder de naad met de C-stijl; het dekt de spleet af, zodat je door de naad niet tot in de bagageruimte kijkt.', ex: [s * 0.04, 0.03, 0] }); }),
     P('Klepafdichting', merge([tube(bodTGPath(0.03), 0.008, 80, 5), ...[L, R].flatMap(sd => [[bodYLEDGE + 0.004, bodTLY(bodZT, 0)], [bodTLY(bodZT, 1), ydT - 0.002]].map(([y0, y1]) => bodMirX(bodTailGeo(bodTGseam(y0) - 0.0025, bodTGseam(y0) + 0.0055, y0, y1, -0.002, 8, 1), sd)))]), MAT.rubber, { d: 'Rubber afdichting tussen klep en sponning, op de sponning van de carrosserie; blijft staan als de klep opent. In de zijnaden van het staartvlak van buiten te zien als donkere lijn.', stay: true, ex: [0, 0, 0.06] }),
     P('Binnenbekleding achterklep', bodTailGeo(-tgXs, tgXs, 0.7, ydT - 0.04, -0.055, 4, 8), MAT.dash, { d: 'Kunststof binnenbekleding met greep om de klep te sluiten.', ex: [0, 0, 0.12] }),
   ]);

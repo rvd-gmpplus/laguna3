@@ -164,7 +164,35 @@ const bodCPL = 0.30;
 // kap aansluiten (anders een open driehoek naast de ruithoek). Overgang sstep; de dashboardhuid begint op z 1,00 (glas 26 mm erboven).
 const bodAPL = 0.09;
 const bodMorph = z => (z >= SP + bodCPL ? sstep((z - WS0 + bodAPL) / bodAPL) : sstep((SP + bodCPL - z) / bodCPL));
+// C-stijlschouder (golf 8 ronde 2, kierenaudit; besluit via de orkestrator): achter het achterportier liep de vlakke bovenkant van de schouder
+// (helling 8 tot 11 graden) met een knik van ca. 65 graden in de C-stijl (73 tot 75 graden), een richel waar de kierenaudit een stap van 10 mm
+// en doorkijk mat. Op de Laguna III hatchback is de C-stijl met het achterscherm een geperst zijpaneel en loopt de schouder vloeiend in de
+// stijl over. De kas begint daar nu op de schouder (punt A, raaklijnlengte bodCFD voor de oude hoek C) en loopt in een kwadratische Bezier met
+// het controlepunt op het snijpunt van de raaklijn van de schouder in A en de lijn van de stijl naar de stijl (punt B, bodCFD boven C):
+// raakcontinu aan beide kanten, holle afronding met een straal van ca. 4 cm, tot 7 mm materiaal in de hoek (huid.py). Volle maat van z -1,372 tot
+// SP + 0,10, met een overgang van 10 cm naar de achterrand van het achterportier (z -1,272) en naar de onderhoek van de achterruit (SP).
+const bodCFD = 0.025, bodCFZ1 = -1.272;
+const bodCFf = z => (z <= SP || z >= bodCFZ1) ? 0 : sstep((bodCFZ1 - z) / 0.10) * sstep((z - SP) / 0.10);
+// s van punt A op de schouder (boog van straal rs over de hoek th tussen S3 en S4); S4 waar geen afronding is
+function bodCFsA(z) { const f = bodCFf(z); if (f <= 0) return S4; const c = bodSec(z); return S4 - (bodCFD * f / c.rs) / c.th * (S4 - S3); }
+// q van punt B (bodCFD boven de oude hoek, langs de stijl); 0 waar geen afronding is
+function bodCFqB(z, g) { const f = bodCFf(z); if (f <= 0) return 0; g = g || bodGh(z); const C = bodGhHalfM(z, 0, g), e = 0.004, Pe = bodGhHalfM(z, e, g); return bodCFD * f * e / Math.hypot(Pe[0] - C[0], Pe[1] - C[1]); }
 function bodGhHalf(z, q, g) {
+  const f = bodCFf(z);
+  if (f <= 0) return bodGhHalfM(z, q, g);
+  g = g || bodGh(z);
+  const d = bodCFD * f, qB = bodCFqB(z, g), C = bodGhHalfM(z, 0, g);
+  if (q >= qB) return bodGhHalfM(z, q, g);
+  const sA = bodCFsA(z), A = halfPt(z, sA), a0 = halfPt(z, sA - 1e-4), a1 = halfPt(z, Math.min(S4, sA + 1e-4)), B = bodGhHalfM(z, qB, g);
+  const ta = [a1[0] - a0[0], a1[1] - a0[1]], tb = [B[0] - C[0], B[1] - C[1]], cr = ta[0] * tb[1] - ta[1] * tb[0];
+  // controlepunt: A + u ta = C + v tb; bij (vrijwel) evenwijdige lijnen (geen knik) het punt C
+  let K = C;
+  if (Math.abs(cr) > 1e-12) { const u = ((C[0] - A[0]) * tb[1] - (C[1] - A[1]) * tb[0]) / cr, Kc = [A[0] + u * ta[0], A[1] + u * ta[1]];
+    if (u > 0 && Math.hypot(Kc[0] - C[0], Kc[1] - C[1]) < d) K = Kc; }
+  const t = q / qB, w0 = (1 - t) * (1 - t), w1 = 2 * t * (1 - t), w2 = t * t;
+  return [w0 * A[0] + w1 * K[0] + w2 * B[0], w0 * A[1] + w1 * K[1] + w2 * B[1]];
+}
+function bodGhHalfM(z, q, g) {
   const b = bodMorph(z);
   g = g || bodGh(z);
   const r = bodGhHalf0(z, q, g);
@@ -187,7 +215,7 @@ function ghPt(z, w) {
 // parameter q (halve kas) op hoogte y langs de zijruit
 function bodQAtY(z, y) {
   const g = bodGh(z);
-  if (bodMorph(z) > 0) return bodQFind(z, y, g, bodQS);
+  if (bodMorph(z) > 0 || bodCFf(z) > 0) return bodQFind(z, y, g, bodQS);
   return clamp((y - g.yb) / Math.max(1e-6, g.ye - g.yb), 0, 1) * bodQS;
 }
 // q bij hoogte y door halvering (in de overgangszone van de C-stijlvoet; y stijgt monotoon met q)
@@ -200,7 +228,8 @@ function bodQFind(z, y, g, qMax = 1) {
 }
 /* ---------- buitenhuid voor andere onderdelen ---------- */
 function surfX(z, y) {
-  const yt = YT(z);
+  // in de C-stijlschouder begint de kas onder YT (punt A van de afronding)
+  const yt = bodCFf(z) > 0 ? bodGhHalf(z, 0)[1] : YT(z);
   if (y <= yt || z < SP || z > WS0) return ringX(z, Math.min(y, bodSec(z).yd));
   const g = bodGh(z);
   if (bodMorph(z) > 0) return y >= g.yc ? 0 : bodGhHalf(z, bodQFind(z, y, g), g)[0];
