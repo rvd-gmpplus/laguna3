@@ -54,12 +54,15 @@ function panLoop(z0, z1, x, l, n = 8) {
   for (let i = 0; i < n; i++) pts.push(panP(z0, lerp(-x, x, i / n), l));
   return pts;
 }
-// dakplaat met twee openingen: stroken rondom en tussen de openingen
+// dakplaat met twee openingen: stroken rondom en tussen de openingen. Golf 8 ronde 3: de zijstroken langs de voorste opening met 40
+// stations (ca. 18 mm, was 14 van 51 mm) en het stuk voor de opening met 6 (was 3). Waar het dak naar de voorruit buigt (kromming tot
+// 3 per meter, zie YR in body.js) week een koorde van 5 cm tot 1 mm van het dakvlak af; met 18 mm is dat 0,1 mm en volgt de rand op
+// de dakrail de daklijn
 function panRoofGeo() {
   const wo = z => panQ(z, PAN_XO) / 2, w0 = bodQR / 2, w1 = 1 - bodQR / 2;
   const full = (z0, z1, n) => patch((z, w) => ghPt(z, w), z0, z1, n, () => [w0, w1], 22);
   const strips = (z0, z1, n) => [patch((z, w) => ghPt(z, w), z0, z1, n, z => [w0, wo(z)], 5), patch((z, w) => ghPt(z, w), z0, z1, n, z => [1 - wo(z), w1], 5)];
-  return weldAll(merge([full(RW0 - 0.008, PAN_OR[1], 4), ...strips(PAN_OR[1], PAN_OR[0], 12), full(PAN_OR[0], PAN_OF[1], 3), ...strips(PAN_OF[1], PAN_OF[0], 14), full(PAN_OF[0], WS1, 3)]));
+  return weldAll(merge([full(RW0 - 0.008, PAN_OR[1], 4), ...strips(PAN_OR[1], PAN_OR[0], 12), full(PAN_OR[0], PAN_OF[1], 3), ...strips(PAN_OF[1], PAN_OF[0], 40), full(PAN_OF[0], WS1, 6)]));
 }
 // glaspaneel: glas met afgeronde randdikte, zwarte keramische rand (0,06) erop en een zwart kader eronder
 function panGlass(z0, z1, name, adj) {

@@ -64,8 +64,22 @@ let bodDropOff = false;
 const bodHoodYD0 = bodYD(1.15), bodHoodYN = bodYD(2.29), bodHoodK = 0.8;
 const bodHoodDrop = z => (bodDropOff || z <= 1.15 || z >= 2.29) ? 0 : Math.max(0, bodHoodK * (bodHoodYD0 - bodYD(z)) * (bodYD(z) - bodHoodYN));
 // daklijn op de hartlijn (voorruit bol, dak als een boog, vlakke achterruit onder ca. 14 graden)
-const YR = pchip([[-2.11, 1.13], [-1.905, 1.181], [-1.655, 1.246], [-1.405, 1.31], [-1.17, 1.37], [-0.905, 1.418], [-0.655, 1.441], [-0.43, 1.447], [-0.155, 1.44], [0.095, 1.414],
+const YR0 = pchip([[-2.11, 1.13], [-1.905, 1.181], [-1.655, 1.246], [-1.405, 1.31], [-1.17, 1.37], [-0.905, 1.418], [-0.655, 1.441], [-0.43, 1.447], [-0.155, 1.44], [0.095, 1.414],
   [0.30, 1.346], [0.345, 1.332], [0.595, 1.237], [0.845, 1.112], [1.06, 0.975]]);
+// golf 8 ronde 3 (kierenaudit, via de orkestrator): tussen z 0,095 en de voorruitkop (WS1) een vijfdegraads Hermite-stuk met dezelfde hoogte,
+// helling en kromming als de daklijn aan beide uiteinden. In de pchip sprong de kromming op de knoop 0,095 van -0,4 naar -3,4 per meter: de
+// naad tussen dak en dakrail had daar een knik van 3,3 graden (grens 3). Het dak ligt in dat stuk hoogstens 1,8 mm hoger (rond z 0,15 tot
+// 0,20); de voorruit (vanaf WS1) en alles achter z 0,095 blijven gelijk
+const YR = (() => {
+  const a = 0.095, b = WS1, h = b - a, e = 1e-4, y0 = YR0(a), y1 = YR0(b), m0 = (YR0(a) - YR0(a - e)) / e, m1 = (YR0(b + e) - YR0(b)) / e;
+  const k0 = (YR0(a) - 2 * YR0(a - e) + YR0(a - 2 * e)) / (e * e), k1 = (YR0(b + 2 * e) - 2 * YR0(b + e) + YR0(b)) / (e * e);
+  return z => {
+    if (z <= a || z >= b) return YR0(z);
+    const t = (z - a) / h, t2 = t * t, t3 = t2 * t, t4 = t3 * t, t5 = t4 * t;
+    return y0 * (1 - 10 * t3 + 15 * t4 - 6 * t5) + m0 * h * (t - 6 * t3 + 8 * t4 - 3 * t5) + k0 * h * h * (t2 - 3 * t3 + 3 * t4 - t5) / 2
+      + y1 * (10 * t3 - 15 * t4 + 6 * t5) + m1 * h * (-4 * t3 + 7 * t4 - 3 * t5) + k1 * h * h * (t3 - 2 * t4 + t5) / 2;
+  };
+})();
 // karakterlijn op de flank: van de voorwielboog oplopend naar de bovenrand van het achterlicht
 const bodYC = pchip([[-2.2, 0.985], [-1.98, 0.975], [-1.4, 0.93], [-1.0, 0.90], [0.0, 0.852], [0.95, 0.80], [1.3, 0.785]]);
 // bovenaanzicht: boven de bumperrichel loopt de staart ronder in dan de bumper (hoekstraal ca. 0,3 m); factor op x
