@@ -869,10 +869,12 @@ function buildDoor(s, isFront) {
     const vak = patch((z, j) => { const k = Math.round(j), w = sstep((z - vA) / kA) * sstep((vB - z) / kB2), [dx, y] = vP[k]; return [s * (cardX(z, y) - 0.001 - (dx - 0.001) * w), y, z]; }, vA, vB, 16, () => [0, vP.length - 1], vP.length - 1);
     // portierlicht (alleen voorportieren, foto's): ovale rode lens van 10 x 3 cm laag achterin, onder het portiervak
     const lZ = z0 + 0.25, lY = 0.384;
-    // rooster gekanteld naar de helling van de kaart over zijn hoogte (onder 0,60 m volgt de kaart de huid op 12,5 cm, ca. 2 graden): vlak
-    // en recht stond de onderrand 3,5 mm in de kaart en zweefde de bovenrand 2,7 tot 3,2 mm ervoor (stralen, ronde 2). De kaart is hier licht hol
-    // (ca. 1,6 mm onder de koorde), dus het vlak ligt halverwege koorde en midden: rand en midden hoogstens ca. 0,8 mm van de kaart
-    const gT = cardX(spZ, spY + spR), gB = cardX(spZ, spY - spR), gK = (gT - gB) / (2 * spR), gX = (gT + gB) / 4 + cardX(spZ, spY) / 2;
+    // rooster volgt de kaart punt voor punt (golf 8): een vlak rooster (eerst recht, dan gekanteld) week op de licht holle kaart ruim 1,6 mm af
+    // (rand en midden samen -0,8 tot +0,9 mm), dus de achterkant steekt er deels in en zweeft elders. De achterkant ligt nu 0,4 mm voor de
+    // kaart (cardX), de voorkant is dezelfde bolle schijf als eerst: 4 mm bol, rand van straal spR, plateau tot 5 mm van de rand
+    const gA = 0.0004, gRing = [0, spR - 0.005, spR], gH = [0.004, 0.004, 0];
+    const gSch = (hf) => patch((th, j) => { const r = gRing[Math.round(j)], z = spZ + r * Math.cos(th), y = spY + r * Math.sin(th); return [s * (cardX(z, y) - gA - hf(Math.round(j))), y, z]; }, 0, 2 * PI, 24, () => [0, 2], 2);
+    const gGeo = merge([gSch(j => gH[j]), gSch(() => 0)]);
     const lamp = isFront && patch((th, j) => { const r = j / 3, z = lZ + 0.05 * r * Math.cos(th), y = lY + 0.015 * r * Math.sin(th); return [s * (cardX(z, y) - 0.001 - 0.003 * Math.sqrt(Math.max(0, 1 - r * r))), y, z]; }, 0, 2 * PI, 20, () => [0, 3], 3);
     return [
       P('Bekledingspaneel', cardFront ? merge([trimP, cardFront]) : trimP, MAT.bodDoorCard, { d: 'Gespoten kunststof drager van de portierkaart, van de onderrand tot de raamschacht; dekt binnenpaneel, raammechaniek en geleiderails af.' + (isFront ? ' Vooraan loopt de bovenlijst onder de binnenkant van de spiegeldriehoek door tot de voorrand van het portier.' : ''), ex: [0, 0, 0] }),
@@ -888,7 +890,7 @@ function buildDoor(s, isFront) {
       drv && P('Spiegelverstelling', xf(G.cyl('y', 0.0105, 0.012, 0.008, 16), onTop(0, kF - 0.02, 0.007), [0, 0, s * aTl]), MAT.bodChrome, { d: 'Draaiknop voor het verstellen en inklappen van de buitenspiegels.', ex: [0, 0.08, 0.02] }),
       drv && P('Raamvergrendeling', xf(G.box(0.014, 0.007, 0.014), onTop(0, kF - 0.122, 0.0065), [0, 0, s * aTl]), MAT.plastic, { d: 'Drukschakelaar die de raamschakelaars en de elektrische kinderbeveiliging van de achterportieren vergrendelt.', ex: [0, 0.08, -0.02] }),
       P('Portiervak', vak, MAT.bodDoorCard, { d: 'Open opbergvak onderin de portierkaart, ' + (isFront ? 'met een holle afgeronde achterrand; loopt vooraan tot tegen de luidspreker.' : 'met een holle afgeronde voorrand (naar de B-stijl); loopt achteraan tot tegen de luidspreker.'), ex: [-s * 0.08, -0.04, 0] }),
-      P('Luidsprekerrooster', G.lathe('x', [[0, 0.004], [spR - 0.005, 0.004], [spR, 0], [0, 0]], 24, 'bodGrill3'), MAT.bodGrille, { d: 'Rond rooster van ca. 18 cm met fijn zwart gaas voor de luidspreker laag in de portierkaart.', p: X(gX, spY, spZ), r: [0, 0, (s > 0 ? PI : 0) - s * Math.atan(gK)], ex: [-s * 0.05, 0, 0] }),
+      P('Luidsprekerrooster', gGeo, MAT.bodGrille, { d: 'Rond rooster van ca. 18 cm met fijn zwart gaas voor de luidspreker laag in de portierkaart.', ex: [-s * 0.05, 0, 0] }),
       lamp && P('Portierlicht', lamp, MAT.bodDoorLamp, { d: 'Ovale rode lens van het portierlicht laag achterin de portierkaart, onder het portiervak. Het licht brandt alleen als het portier open staat (waarschuwing voor achteropkomend verkeer); het model toont de lens onverlicht.', ex: [-s * 0.05, -0.03, 0] }),
     ].filter(Boolean);
   })();
