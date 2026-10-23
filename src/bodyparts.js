@@ -324,7 +324,8 @@ function bodRibbon(s, zq, w, out = 0.004, crown = 0.0015, nv = 4, P = (z, q) => 
 // met stijgende z is d > 0 de kant van de kleinere u, bij de kas dus omlaag; a en b mogen ook functies van z zijn), 'out' boven het oppervlak en een bolling 'crown' over de breedte.
 // De punten blijven op het oppervlak (geen raakvlak), zodat een band ook over de ronding van de dakrail netjes aanligt.
 const bodPGh = (z, q) => { const [x, y] = bodGhHalf(z, clamp(q, 0, 1)); return [x, y, z]; };
-function bodTrim(s, zu, a, b, out = 0.003, crown = 0, nv = 1, P = bodPGh) {
+// up: normaal naar boven richten (y > 0) in plaats van naar buiten (x > 0), voor banden op het dak en de voorruit
+function bodTrim(s, zu, a, b, out = 0.003, crown = 0, nv = 1, P = bodPGh, up = false) {
   const e = 1e-4, sub = (p, q) => [p[0] - q[0], p[1] - q[1], p[2] - q[2]], dot = (p, q) => p[0] * q[0] + p[1] * q[1] + p[2] * q[2];
   // voorwaartse verschillen: aan de rand u = 0 (gordel) klemt P de parameter, een centraal verschil gaf daar de halve afgeleide (dubbele breedte)
   const der = (z, u) => { const P0 = P(z, u), Pz = sub(P(z + e, u), P0).map(v => v / e), Pu = sub(P(z, u + e), P0).map(v => v / e); return [Pz, Pu]; };
@@ -336,7 +337,7 @@ function bodTrim(s, zu, a, b, out = 0.003, crown = 0, nv = 1, P = bodPGh) {
     const L = Math.sqrt(Math.max(1e-12, dot(Pz, Pz) * dz * dz + 2 * dot(Pz, Pu) * dz * du + dot(Pu, Pu) * du * du)); dz /= L; du /= L;
     for (let j = 0; j <= nv; j++) {
       const v = j / nv, da = typeof a === 'function' ? a(z) : a, db = typeof b === 'function' ? b(z) : b, d = da + (db - da) * v, zz = z + dz * d, uu = u + du * d, p = P(zz, uu), [Qz, Qu] = der(zz, uu);
-      let N = [Qz[1] * Qu[2] - Qz[2] * Qu[1], Qz[2] * Qu[0] - Qz[0] * Qu[2], Qz[0] * Qu[1] - Qz[1] * Qu[0]]; const l = Math.hypot(...N) || 1; N = N.map(w => w / l); if (N[0] < 0) N = N.map(w => -w);
+      let N = [Qz[1] * Qu[2] - Qz[2] * Qu[1], Qz[2] * Qu[0] - Qz[0] * Qu[2], Qz[0] * Qu[1] - Qz[1] * Qu[0]]; const l = Math.hypot(...N) || 1; N = N.map(w => w / l); if (up ? N[1] < 0 : N[0] < 0) N = N.map(w => -w);
       const o = out + crown * Math.sin(PI * v); pos.push(s * (p[0] + N[0] * o), p[1] + N[1] * o, p[2] + N[2] * o);
     }
   });
@@ -2035,10 +2036,35 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   ]);
 
   /* ================= voorruit en wissers ================= */
-  const wsW = [bodQR / 2 + 0.002, 1 - bodQR / 2 - 0.002];
+  // golf 8: het glas loopt tot de rand van de A-stijl (q bodQR) en het dak (WS1), zonder overlap; tot golf 8 begon het 10 mm verder
+  // (q 0,724, z WS1 + 0,004) en lag er een rond rubber van 12 mm 4 mm boven de lak, met doorkijk naar A-stijlbekleding en hemel.
+  // Nu ligt een platte rubberband van 14 mm (1 mm boven de huid) half op de lak en half op het glas, met een afgeronde bovenhoek
+  // (straal 15 mm), en een zwarte keramische rand op het glas (foto voorkant: zijkanten ca. 25 mm, boven ca. 40 mm; onder 60 mm onder de
+  // wissers, waar anders torpedobak en schutbord door het glas lichten). Breedtes vanaf de glasrand, over het glas gemeten.
+  const wsW = [bodQR / 2, 1 - bodQR / 2];
+  const wsP = (z, q) => { const [x, y] = bodGhHalf(z, clamp(q, 0, 1)); return [x, y, z]; };
+  const wsDer = (z, w) => { const e = 1e-5, a0 = ghPt(z - e, w), a1 = ghPt(z + e, w), b0 = ghPt(z, w - e), b1 = ghPt(z, w + e); return [[0, 1, 2].map(k => (a1[k] - a0[k]) / (2 * e)), [0, 1, 2].map(k => (b1[k] - b0[k]) / (2 * e))]; };
+  const wsLen = v => Math.hypot(...v);
+  const wsRub = s => {
+    const rz = 0.015 / wsLen(wsDer(WS1, bodQR / 2)[0]), rq = 0.015 * 2 / wsLen(wsDer(WS1, bodQR / 2)[1]);
+    const zs = [WS0 - 0.004, WS0 - 0.015, WS0 - 0.025, WS0 - 0.035, WS0 - 0.045, WS0 - 0.055, WS0 - 0.07, WS0 - bodAPL];
+    for (let z = WS0 - bodAPL - 0.03; z > WS1 + rz + 0.01; z -= 0.03) zs.push(z);
+    const path = zs.map(z => [z, bodQR]);
+    for (let i = 0; i <= 8; i++) { const t = i / 8 * PI / 2; path.push([WS1 + rz * (1 - Math.sin(t)), bodQR + rq * (1 - Math.cos(t))]); }
+    for (let i = 1; i <= 12; i++) path.push([WS1, bodQR + rq + (1 - bodQR - rq) * i / 12]);
+    return bodTrim(s, path, -0.007, 0.007, 0.001, 0.0008, 4, wsP, true);
+  };
+  // keramische rand: punt op het glas met verschuiving o langs de normaal (naar boven)
+  const fritPt = (z, w) => { const [Pz, Pw] = wsDer(z, w), p = ghPt(z, w); let N = [Pz[1] * Pw[2] - Pz[2] * Pw[1], Pz[2] * Pw[0] - Pz[0] * Pw[2], Pz[0] * Pw[1] - Pz[1] * Pw[0]]; const l = wsLen(N) || 1; N = N.map(v => v / l); if (N[1] < 0) N = N.map(v => -v); return [p[0] + N[0] * 0.0008, p[1] + N[1] * 0.0008, p[2] + N[2] * 0.0008]; };
+  const wsZAt = (z0, L, sg) => { let z = z0, acc = 0; while (acc < L) { const dz = 0.0005 * sg; acc += wsLen([0, 1, 2].map(k => ghPt(z + dz, 0.5)[k] - ghPt(z, 0.5)[k])); z += dz; } return z; };
+  const fzT = wsZAt(WS1, 0.040, 1), fzB = wsZAt(WS0 - 0.002, 0.060, -1), fdw = z => 0.025 / wsLen(wsDer(z, bodQR / 2)[1]);
+  const wsFrit = merge([
+    patch(fritPt, WS1, fzT, 3, () => wsW, 28), patch(fritPt, fzB, WS0 - 0.004, 8, () => wsW, 28, bodDense(WS0 - bodAPL, WS0 - 0.004, 9)),
+    patch(fritPt, fzT, fzB, 26, z => [wsW[0], wsW[0] + fdw(z)], 2, bodDense(WS0 - bodAPL, fzB, 6)), patch(fritPt, fzT, fzB, 26, z => [wsW[1] - fdw(z), wsW[1]], 2, bodDense(WS0 - bodAPL, fzB, 6))]);
   const windscreen = A('Voorruit', { d: 'Gelaagde voorruit onder een hoek van ca. 26 graden, met rubber en regensensor.', ex: [0, 0.4, 0.42] }, [
-    P('Voorruitglas', patch((z, w) => ghPt(z, w), WS1 + 0.004, WS0 - 0.002, 28, () => wsW, 22, bodDense(WS0 - bodAPL, WS0 - 0.002, 9)), MAT.glassWs, { d: 'Gelaagd veiligheidsglas met akoestische tussenlaag.', ex: [0, 0.08, 0.04] }),
-    P('Voorruitrubber', (() => { const pts = []; const zz = [WS0 - 0.004, WS0 - 0.02, WS0 - 0.035, WS0 - 0.055, WS0 - bodAPL, 0.85, 0.65, 0.45, WS1 + 0.006]; zz.forEach(z => { const p = bodGhAt(z, bodQR - 0.004, 0.004); pts.push([p[0], p[1], z]); }); for (let i = 1; i < 10; i++) { const p = ghPt(WS1 + 0.006, 0.36 + 0.28 * i / 10); pts.push([p[0], p[1] + 0.004, p[2]]); } zz.slice().reverse().forEach(z => { const p = bodGhAt(z, bodQR - 0.004, 0.004); pts.push([-p[0], p[1], z]); }); return tube(pts, 0.006, 80, 5); })(), MAT.rubber, { d: 'Zwarte sierrubber langs zijkanten en bovenrand.', ex: [0, 0.04, 0] }),
+    P('Voorruitglas', patch((z, w) => ghPt(z, w), WS1, WS0 - 0.002, 28, () => wsW, 28, bodDense(WS0 - bodAPL, WS0 - 0.002, 9)), MAT.glassWs, { d: 'Gelaagd veiligheidsglas met akoestische tussenlaag.', ex: [0, 0.08, 0.04] }),
+    P('Keramische rand voor', wsFrit, MAT.bodPanoFrit, { d: 'Zwarte keramische rand (frit) op het glas van de voorruit: langs de zijkanten ca. 25 mm, boven ca. 40 mm en onder 60 mm (breedtes geschat naar de foto van de voorkant); verbergt lijmrand, A-stijlbekleding en torpedobak.', ex: [0, 0.1, 0.05] }),
+    P('Voorruitrubber', merge([wsRub(1), wsRub(-1)]), MAT.rubber, { d: 'Zwarte platte sierrubber over de naad tussen glas en lak langs de zijkanten en de bovenrand, met afgeronde bovenhoeken.', ex: [0, 0.04, 0] }),
     P('Regensensor', G.rbox(0.07, 0.012, 0.06, 0.008), MAT.plastic, { d: 'Regen- en lichtsensor achter de ruit bij de binnenspiegel.', p: [0, YR(0.36) - 0.022, 0.36], r: [0.4, 0, 0], ex: [0, -0.06, 0] }),
   ]);
   const wipeOn = (x, z, lift) => { const g = bodGh(z), q = bodQR + (1 - bodQR) * (1 - Math.abs(x) / g.xr); const p = bodGhHalf(z, Math.min(1, q), g); return [x, p[1] + lift, z]; };
