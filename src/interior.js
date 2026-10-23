@@ -1043,10 +1043,21 @@ function intHoseA(s) {
 }
 // A-stijlbekleding: breed paneel van raamrubber (w 0,257) tot voorruit (w 0,363), van de hemel (z 0,40) tot het dashboard; binnenkant een
 // boog 9 tot 21 mm binnen de koorde. De buitenkant ligt 6 mm binnen de stijl en wijkt uit rond de afvoerslang.
+// Voet (golf 8 ronde 4, via de orkestrator): met de langere A-stijlvoet (bodAPL 0,20 in body.js) zakt de onderhoek van de voorruit tot op het
+// dashboard (glasrand op y 0,953 bij z 0,98). De bekleding hield op z 0,905 op, 3 cm boven het dashboard; daaronder zag je van binnen een zwarte
+// wig van stijl en keramische rand naast de bekleding (op dashboardhoogte 31 tot 50 mm, boven de voet 20 mm). Nu loopt elke lijn van het
+// profiel (rail) vanaf z 0,905 in intAPFootN stappen verder langs de stijl tot hij intAPFootGap boven het dashboard komt (intDashTop, op de
+// ontwasemsleuf aan de zijkant 4,5 mm hoger). Zo volgt de voorrand de glasrand tot op het dashboard en blijft de keramische rand ernaast een
+// strook van ca. 20 mm; de onderkant staat als dop op het dashboard.
+const intAPFootN = 6, intAPFootGap = 0.002, intAPFootZ = 1.0;
+// voorrand op w intAPW1: boven 0,3625 (was 0,363) en naar de voet 0,3621, zodat de keramische rand van binnen overal ca. 23 mm breed te
+// zien is (gestraald vanaf de camera's binnen_hoek en de bestuurdersstoel; met 0,363 overal was de strook boven 20,7 mm en aan de voet 18,3 mm)
+const intAPW1 = z => 0.3625 - 0.0004 * sstep((z - 0.89) / 0.06);
+const intAPFloor = z => intDashTop(z) + intAPFootGap + 0.0045 * sstep((0.955 - z) / 0.01);
 function intAPillar(s) {
-  const w0 = 0.257, w1 = 0.363, nW = 12, hs = intHoseA(s).getSpacedPoints(400), zs = [0.40, 0.42, 0.45, 0.48, 0.51, 0.54, 0.57, 0.60, 0.63, 0.66, 0.69, 0.72, 0.75, 0.78, 0.81, 0.84, 0.87, 0.905];
-  const loops = zs.map(z => {
-    const prof = Array.from({ length: nW + 1 }, (_, k) => { const g = ghPt(z, w0 + (w1 - w0) * k / nW); return [Math.abs(g[0]), g[1]]; });
+  const w0 = 0.257, nW = 12, hs = intHoseA(s).getSpacedPoints(400), zs = [0.40, 0.42, 0.45, 0.48, 0.51, 0.54, 0.57, 0.60, 0.63, 0.66, 0.69, 0.72, 0.75, 0.78, 0.81, 0.84, 0.87, 0.905];
+  const sec = z => {
+    const w1 = intAPW1(z), prof = Array.from({ length: nW + 1 }, (_, k) => { const g = ghPt(z, w0 + (w1 - w0) * k / nW); return [Math.abs(g[0]), g[1]]; });
     const F = prof[0], W = prof[nW], L = Math.hypot(W[0] - F[0], W[1] - F[1]), t = [(W[0] - F[0]) / L, (W[1] - F[1]) / L], n = [-t[1], t[0]];   // t wijst naar binnen en omhoog, n naar de cabine
     let h = hs[0]; for (const p of hs) if (Math.abs(p.z - z) < Math.abs(h.z - z)) h = p;
     // voetpunt van de slang op het profiel; de buitenkant wijkt daar uit tot 6,5 mm voorbij de slang (tussen de steunpunten loopt de
@@ -1059,7 +1070,15 @@ function intAPillar(s) {
     // binnenkant recht naar de cabine vanaf de buitenkant (geen verschuiving langs de koorde, dus geen kruisende randen)
     const inner = outer.map((q, k) => { const pd = (q[0] - F[0]) * n[0] + (q[1] - F[1]) * n[1], e = Math.max(0.004, base(k / nW) - pd); return [q[0] + n[0] * e, q[1] + n[1] * e]; });
     return [...outer, ...inner.reverse()].map(([x, y]) => [s * x, y, z]);
-  });
+  };
+  const loops = zs.map(sec), zA = zs[zs.length - 1], nR = loops[0].length;
+  // voet: per rail j de z waar hij op het dashboard komt (halvering), daartussen gelijke stappen; een rail die er voor intAPFootZ niet komt,
+  // eindigt op intAPFootZ
+  const above = (z, j) => { const p = sec(z)[j]; return p[1] - intAPFloor(z); };
+  const zEnd = Array.from({ length: nR }, (_, j) => { if (above(intAPFootZ, j) > 0) return intAPFootZ;
+    let lo = zA, hi = intAPFootZ; for (let i = 0; i < 24; i++) { const m = (lo + hi) / 2; if (above(m, j) > 0) lo = m; else hi = m; } return (lo + hi) / 2; });
+  for (let i = 1; i <= intAPFootN; i++) loops.push(zEnd.map((ze, j) => { const z = lerp(zA, ze, i / intAPFootN), p = sec(z)[j];
+    return i === intAPFootN ? [p[0], Math.max(p[1], intAPFloor(z)), z] : p; }));
   return intLoft(loops);
 }
 // Zijbekleding achter: donker paneel van z -0,84 tot de dop van de bagageruimtebekleding (-1,36); boven 2 cm onder de onderrand van het
