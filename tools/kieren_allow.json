@@ -1,0 +1,317 @@
+{
+ "_uitleg": "Kierenaudit (tools/kieren.py, docs/testen.md). Natuurlijke naden die op de echte auto bestaan, met per soort een realistische grens; alles wat hier niet als naad staat, moet aansluiten (sectie aansluiten). Patronen zijn reguliere expressies op het volledige pad van een mesh (zonder de wortel), bijvoorbeeld 'Carrosserie/Portier rechtsvoor/Buitenpaneel'. De eerste naad waarvan a en b passen (in beide volgordes) telt. Grenzen in millimeter: kier loodrecht op de naad in het vlak, stap loodrecht op het vlak, rand = hoe ver de laatste centimeters van een glad deel van zijn eigen mediaan afwijken. knikMax (optioneel per naad): grootste toegestane richtingsverandering van de naadlijn in graden. Doorkijk: of je door de kier dieper dan 'diep' mm mag kijken. Lijmruitrand: of lichte delen (luminantie boven 'randLum') binnen 'randDiepte' mm achter de rand van een gelijmde ruit te zien mogen zijn; bij een echte gelijmde ruit dekt een zwarte keramische rand dat af. Alleen de orkestrator wijzigt dit bestand; elke wijziging met een reden in _uitleg of in docs/onderzoek/beslissingen.md.",
+ "meting": {
+  "_uitleg": "stap: rasterstap in mm over het analytische oppervlak; diep: dieper dan dit (mm onder het oppervlak) telt een treffer als kier of doorkijk; lmax: een kier van hooguit zoveel rastermonsters tussen twee delen is een naad, breder is een doorkijkvlak; minBuiten: een deel telt pas als buitendeel als het raster het minstens zo vaak aan de huid raakt (anders is het iets dat door een kier te zien is); facet: afwijking in mm van de mediaan van een glad deel; facetMin: kleinste facet in rastermonsters; gladIqr: een deel is glad als de middelste helft van zijn diepten binnen zoveel mm ligt; samen: kruisingen binnen zoveel rasterstappen horen bij dezelfde naad; minKruis: kleinere naden tellen als ruis (los).",
+  "stap": 8,
+  "diep": 4,
+  "lmax": 4,
+  "minBuiten": 12,
+  "facet": 1.0,
+  "facetMin": 3,
+  "gladMin": 40,
+  "gladIqr": 0.6,
+  "randDiepte": 120,
+  "randLum": 0.3,
+  "samen": 6,
+  "minKruis": 3
+ },
+ "aansluiten": {
+  "_uitleg": "Eis van de gebruiker (golf 8): wat geen natuurlijke naad is, moet in elkaar overlopen. Een kier tot 1 mm en een stap tot 1 mm zie je op ooghoogte niet als naad; doorkijk mag niet.",
+  "kierMax": 1.0,
+  "stapMax": 1.0,
+  "randMax": 1.0
+ },
+ "soorten": {
+  "paneelnaad": {
+   "kierMax": 6.0,
+   "stapMax": 1.5,
+   "randMax": 1.5,
+   "doorkijk": true,
+   "_uitleg": "Naad rond een bewegend paneel (portier, motorkap, achterklep, tankklep, schuifdak). Op een middenklasser van deze generatie is de kier 3 tot 5 mm (fabrieksmaat rond 4 mm, tolerantie ongeveer 1 mm) en de vlakheid (flush) binnen ongeveer 1 mm; 6 mm en 1,5 mm laten ruimte voor de benadering van het model. In de kier zie je de flens of het rubber; dat is doorkijk die bij de naad hoort."
+  },
+  "dorpelnaad": {
+   "kierMax": 8.0,
+   "stapMax": 1.5,
+   "randMax": 1.5,
+   "doorkijk": true,
+   "_uitleg": "Onderrand van een portier boven de dorpel: het portier valt over de dorpel heen en de zichtbare spleet is groter dan bij een zijnaad (ongeveer 5 tot 8 mm)."
+  },
+  "aanbouwnaad": {
+   "kierMax": 4.0,
+   "stapMax": 1.5,
+   "randMax": 1.5,
+   "doorkijk": true,
+   "_uitleg": "Vast aangebouwd deel tegen de lak: bumper tegen scherm, lamp tegen scherm, kap of bumper, scherm tegen A-stijl of dorpel. Op de echte auto 0,5 tot 3 mm kier en vlak binnen 1 tot 1,5 mm (lampglas volgt de vorm van het scherm)."
+  },
+  "ruitkader": {
+   "kierMax": 2.0,
+   "stapMax": 5.0,
+   "randMax": 1.5,
+   "doorkijk": false,
+   "_uitleg": "Een zakkende portierruit of vaste kwartsruit in zijn kader of rubber: de ruit loopt het kanaal in (geen kier) en ligt een paar millimeter verzonken achter het raamrubber en de chroomlijst (bij een portier met raamkader 2 tot 5 mm)."
+  },
+  "lijmruitrand": {
+   "kierMax": 1.0,
+   "stapMax": 2.0,
+   "randMax": 1.5,
+   "doorkijk": false,
+   "_uitleg": "Rand van een gelijmde ruit (voorruit, achterruit) tegen lak of rubber: bij gelijmde ruiten van deze generatie ligt het glas vlak in de carrosserie (flush glazing), met een sierrubber of lijst die hooguit 1 tot 2 mm boven glas en lak uitsteekt, en een zwarte keramische rand die de lijm en de sponning afdekt."
+  },
+  "lijst": {
+   "kierMax": 1.5,
+   "stapMax": 15.0,
+   "randMax": null,
+   "doorkijk": false,
+   "_uitleg": "Rubber, chroomlijst of sierlijst op of tegen een vlak: een profiel staat bewust boven het vlak (raamrubber 2 tot 3 mm, gordellijst 4 tot 14 mm), dus de stap is vorm; een zichtbare kier of doorkijk langs een lijst hoort er niet. Geen randcontrole: de rand van het vlak onder een lijst mag onder de lijst wegduiken."
+  },
+  "inzet": {
+   "kierMax": 3.0,
+   "stapMax": 40.0,
+   "randMax": null,
+   "doorkijk": true,
+   "_uitleg": "Inzetstuk in een bumper (grille, kentekenvlak, mistlamp, reflector, sensorkapje, onderlip): de inzet ligt bewust verzonken of steekt uit, de naad eromheen is op de echte auto 1 tot 3 mm."
+  },
+  "opening": {
+   "kierMax": null,
+   "stapMax": null,
+   "randMax": null,
+   "doorkijk": true,
+   "_uitleg": "Binnen een rooster of opening (luchtinlaat, uitlaat): de kier is de opening zelf; geen grens."
+  }
+ },
+ "naden": [
+  {
+   "naam": "voorrand voorportier",
+   "soort": "paneelnaad",
+   "a": "Portier (rechts|links)voor/(Buitenpaneel|Spiegeldriehoek)$",
+   "b": "Voorscherm (rechts|links)/Schermpaneel$"
+  },
+  {
+   "naam": "spiegeldriehoek tegen A-stijl",
+   "soort": "paneelnaad",
+   "a": "Portier (rechts|links)voor/Spiegeldriehoek$",
+   "b": "A-stijl (rechts|links)$",
+   "_uitleg": "De spiegeldriehoek zit aan het portier en draait mee; de naad met de A-stijl is een portiernaad."
+  },
+  {
+   "naam": "B-stijlnaad",
+   "soort": "paneelnaad",
+   "a": "Portier (rechts|links)voor/(Buitenpaneel|Afdekking B-stijl)$",
+   "b": "Portier (rechts|links)achter/(Buitenpaneel|Afdekking B-stijl)$"
+  },
+  {
+   "naam": "achterrand achterportier",
+   "soort": "paneelnaad",
+   "a": "Portier (rechts|links)achter/Buitenpaneel$",
+   "b": "Achterscherm (rechts|links)$"
+  },
+  {
+   "naam": "onderrand portier",
+   "soort": "dorpelnaad",
+   "a": "Portier (rechts|links)(voor|achter)/Buitenpaneel$",
+   "b": "Dorpel (rechts|links)$"
+  },
+  {
+   "naam": "motorkapnaad",
+   "soort": "paneelnaad",
+   "a": "Motorkap/Buitenpaneel motorkap$",
+   "b": "(Voorscherm (rechts|links)/Schermpaneel|Koplamp (rechts|links)/Afdekglas|Voorbumper/Bumperschaal voor|Bovengrille/Grillesleuf|Voorruit/Voorruit(glas|rubber)|A-stijl (rechts|links)|Voorkop/Torpedoplaat)$"
+  },
+  {
+   "naam": "spoilerlip op de achterklep",
+   "soort": "lijst",
+   "stapMax": 40.0,
+   "a": "Achterklep/Spoilerlip$",
+   "b": "Achterklep/(Achterruit|Buitenpaneel achterklep)$",
+   "_uitleg": "De spoilerlip onder de achterruit is een ontworpen opstaande richel (tot ongeveer 35 mm boven het analytische dek, diagnose golf 8); de stap tegen achterruit en klep is vorm. Een kier of doorkijk langs de lip hoort er niet; de ruitrand zelf valt onder de controle op lichte delen."
+  },
+  {
+   "naam": "achterklepnaad",
+   "soort": "paneelnaad",
+   "a": "Achterklep/(Buitenpaneel achterklep|Achterruit|Spoilerlip|Achterlicht binnendeel (rechts|links)/.*)$",
+   "b": "(Achterscherm (rechts|links)|C-stijl (rechts|links)|Dakpaneel panoramadak|Achterbumper/Bumperschaal achter|Achterlicht (rechts|links)/.*)$"
+  },
+  {
+   "naam": "tankklep",
+   "soort": "paneelnaad",
+   "a": "Tankklep/Tankklep buitenkant$",
+   "b": "Achterscherm (rechts|links)$"
+  },
+  {
+   "naam": "windgeleider schuifdak",
+   "soort": "paneelnaad",
+   "stapMax": 8.0,
+   "a": "Panoramadak/Luchtgeleider/.*$",
+   "b": "Panoramadak/.*$",
+   "_uitleg": "De windgeleider van het schuifdak ligt in de dichte stand een paar millimeter onder de glasrand en de omlijsting (4 tot 7 mm), zoals bij een echt schuifdak; daarom een ruimere stap."
+  },
+  {
+   "naam": "schuifdak",
+   "soort": "paneelnaad",
+   "a": "Panoramadak/(Glaspaneel (voor|achter)/.*|Luchtgeleider/.*)$",
+   "b": "Panoramadak/(Omlijsting opening (voor|achter)|Dwarsbalk|Afdichting opening (voor|achter)|Luchtgeleider/.*)$",
+   "_uitleg": "Glas en windgeleider van het panoramadak tegen de omlijsting van de opening: de naad van een schuifdak."
+  },
+  {
+   "naam": "bumper tegen scherm",
+   "soort": "aanbouwnaad",
+   "a": "(Voorbumper/Bumperschaal voor|Achterbumper/Bumperschaal achter)$",
+   "b": "(Voorscherm (rechts|links)/Schermpaneel|Achterscherm (rechts|links))$"
+  },
+  {
+   "naam": "lamp tegen carrosserie",
+   "soort": "aanbouwnaad",
+   "a": "(Koplamp (rechts|links)/Afdekglas|Achterlicht (rechts|links)/(Lens buitendeel|Heldere band buitendeel)|Achterlicht binnendeel (rechts|links)/Lens (binnendeel|achteruitrijlicht))$",
+   "b": "(Voorscherm (rechts|links)/Schermpaneel|Voorbumper/Bumperschaal voor|Achterscherm (rechts|links)|Achterklep/Buitenpaneel achterklep|Achterbumper/Bumperschaal achter)$"
+  },
+  {
+   "naam": "achterlicht over de klepnaad",
+   "soort": "paneelnaad",
+   "a": "Achterlicht binnendeel (rechts|links)/Lens (binnendeel|achteruitrijlicht)$",
+   "b": "Achterlicht (rechts|links)/(Lens buitendeel|Heldere band buitendeel)$"
+  },
+  {
+   "naam": "scherm tegen A-stijl of dorpel",
+   "soort": "aanbouwnaad",
+   "a": "Voorscherm (rechts|links)/Schermpaneel$",
+   "b": "(A-stijl (rechts|links)|Dorpel (rechts|links))$",
+   "_uitleg": "Het voorscherm is aangeschroefd; de naad met de A-stijlvoet en de dorpel is op de echte auto een smalle naad."
+  },
+  {
+   "naam": "raamkader voorportier langs de A-stijl",
+   "soort": "lijst",
+   "knikMax": 30.0,
+   "a": "Portier (rechts|links)voor/Raamlijsten en sierlijsten/(Rubberlijn|Chroomlijst) raamomlijsting$",
+   "b": "A-stijl (rechts|links)$",
+   "_uitleg": "Het raamkader van het voorportier volgt de A-stijl als één doorlopende lijn van de spiegeldriehoek tot het dak (foto's van de auto). knikMax: de richting van de naad mag over 2,4 tot 4,8 cm niet meer dan 30 graden draaien; een ronde hoek met een straal vanaf ongeveer 10 cm blijft daaronder, een knik zoals in de melding van de gebruiker (golf 8, 'een knik in de voorste deuren') niet."
+  },
+  {
+   "naam": "voorruit tegen rubber of lak",
+   "soort": "lijmruitrand",
+   "a": "Voorruit/Voorruit(glas|rubber)$",
+   "b": ".*"
+  },
+  {
+   "naam": "achterruit tegen klep of lak",
+   "soort": "lijmruitrand",
+   "a": "Achterklep/Achterruit$",
+   "b": "Achterklep/Buitenpaneel achterklep$",
+   "_uitleg": "Ruit tegen het klepvlak binnen de achterklep. Tegen C-stijl en dak telt de achterklepnaad (de ruit hoort bij de klep), tegen de spoilerlip de regel van de lip."
+  },
+  {
+   "naam": "ruit in kader",
+   "soort": "ruitkader",
+   "a": "(Zijruit|Kwartsruit (rechts|links)/Ruit)$",
+   "b": ".*"
+  },
+  {
+   "naam": "uitlaatopening",
+   "soort": "opening",
+   "a": "(Uitlaatuitsparing|Uitlaateindstuk) (rechts|links)$",
+   "b": ".*"
+  },
+  {
+   "naam": "inzet in bumper",
+   "soort": "inzet",
+   "a": "(Bovengrille/.*|Kentekenvlak|Kentekenplaathouder|Mistlampen voor/.*|Onderste luchtinlaat/.*|Onderlip|Sierstrip onderlip (rechts|links)|Koplampsproeier (rechts|links)/.*|Kentekenuitsparing|Kentekenverlichting (rechts|links)|Onderschort|Mistachterlicht|Reflector (rechts|links)|Uitlaatuitsparing (rechts|links)|Kapnaadflens)$",
+   "b": ".*"
+  },
+  {
+   "naam": "lijst of rubber",
+   "soort": "lijst",
+   "a": "(Raamlijsten en sierlijsten/.*|Rubberlijn.*|Raamkader kwartsruit|Omlijsting|Gordellijn kwartsruit|Dorpelsierlijst (rechts|links)|Omlijsting opening (voor|achter)|Afdekking B-stijl|Raamstijl achter|Klepafdichting|Keramische rand (voor|achter)|Dwarsbalk)$",
+   "b": ".*"
+  },
+  {
+   "naam": "luchtinlaat",
+   "soort": "opening",
+   "a": "Onderste luchtinlaat/.*$",
+   "b": "Onderste luchtinlaat/.*$"
+  }
+ ],
+ "opbouw": {
+  "_uitleg": "Delen die op de huid zitten en de huid eronder afdekken; een straal die ze raakt, telt niet mee (geen naad, geen doorkijk).",
+  "patronen": [
+   "Buitenspiegel (rechts|links)/",
+   "Buitendeurgreep/",
+   "Ruitenwissers/",
+   "Achterruitenwisser/",
+   "Dakantenne/",
+   "Kentekenplaat (voor|achter)/",
+   "Renault-embleem",
+   "Sierlijst/",
+   "Sproeierkop$",
+   "Sproeieropening$",
+   "Parkeersensor (voor|achter) [0-9]+$",
+   "Derde remlicht$"
+  ]
+ },
+ "verzonken": {
+  "_uitleg": "Delen die bewust dieper dan 'diep' liggen en toch huid zijn (geen kier of doorkijk als je ze raakt).",
+  "patronen": [
+   "Kentekenuitsparing$",
+   "Onderste luchtinlaat/Inlaatrooster$",
+   "Onderste luchtinlaat/Lamelranden$",
+   "Onderste luchtinlaat/Inlaatkanaal$",
+   "Kentekenvlak$",
+   "Grillesleuf$",
+   "Mistlamp",
+   "Uitlaatuitsparing (rechts|links)$",
+   "Uitlaateindstuk (rechts|links)$"
+  ]
+ },
+ "lijmruiten": {
+  "_uitleg": "Gelijmde ruiten: achter hun rand mag geen licht deel te zien zijn (zwarte keramische rand op de echte auto).",
+  "patronen": [
+   "Voorruit/Voorruitglas$",
+   "Achterklep/Achterruit$",
+   "Kwartsruit (rechts|links)/Ruit$",
+   "Glaspaneel (voor|achter)/Glas (voor|achter)$"
+  ]
+ },
+ "zwarteRand": {
+  "_uitleg": "Zwarte rand die bij een gelijmde ruit hoort (keramische rand): een ruit tegen zo'n deel krijgt geen controle op lichte delen achter de rand, want de rand zelf dekt af.",
+  "patronen": [
+   "Keramische rand (voor|achter)$"
+  ]
+ },
+ "naadvulling": {
+  "_uitleg": "Rubber dat in een portiernaad zichtbaar is; telt als kier (zwart), niet als doorkijk en niet als deel.",
+  "patronen": [
+   "Portierrubber$",
+   "Naadrubber B-stijl$",
+   "Deurrubber B-stijl$"
+  ]
+ },
+ "klein": {
+  "_uitleg": "Kleine buitendelen die het raster minder dan minBuiten keer raken en toch huid zijn.",
+  "patronen": [
+   "Tankklep buitenkant$",
+   "Sproeierkapje$",
+   "Kentekenverlichting (rechts|links)$",
+   "Spiegeldriehoek$"
+  ]
+ },
+ "geenFacet": {
+  "_uitleg": "Delen zonder facetcontrole (geen glad vlak op het analytische oppervlak).",
+  "patronen": []
+ },
+ "vormzones": [
+  {
+   "naam": "wielbooglip",
+   "soort": "wielboog",
+   "rmax": 0.045,
+   "_uitleg": "archLip (bodyparts.js): een flens van 4 cm rond de wielboog die bewust tot 5 mm boven de huid staat; geen facetcontrole binnen ARCH + 4,5 cm van de as."
+  }
+ ],
+ "openingen": {
+  "_uitleg": "Een doorkijkvlak (kier breder dan een rasterstap in beide richtingen) is natuurlijk als het alleen aan deze delen grenst of aan de rand van het raster (wielboog, onderkant).",
+  "patronen": [
+   "Onderste luchtinlaat/.*$",
+   "Kentekenvlak$",
+   "Uitlaatuitsparing (rechts|links)$",
+   "Uitlaateindstuk (rechts|links)$",
+   "Bovengrille/.*$"
+  ]
+ }
+}
