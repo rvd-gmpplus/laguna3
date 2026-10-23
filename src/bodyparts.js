@@ -139,6 +139,9 @@ phys('bodPiano', { color: 0x030405, metalness: 0, roughness: 0.08, clearcoat: 1,
 std('bodSatinBlack', 0x0d0e10, 0.05, 0.5, { envMapIntensity: 0.5 });
 std('bodFelt', 0x0b0c0d, 0, 1.0, { envMapIntensity: 0.1 });
 std('bodTgTrim', 0x34363a, 0, 0.8);                                     // donkergrijze bekleding van de achterklep (golf 5l ronde 2)
+// keramische rand van de achterruit (golf 8): effen matzwart. Met de glans van de frit van het panoramadak (ruwheid 0,35, volle omgeving) spiegelde
+// de band onder een scherende hoek de lichte omgeving en las de bovenrand als lichtgrijze strook
+std('bodRwFrit', 0x040405, 0, 0.6, { envMapIntensity: 0.25 });
 // nieuwe carrosseriematerialen: zwart mat voor stijlen en raamkaders, helder chroom voor lijsten en sierstrips, spiegelglas
 std('bodPillar', 0x060607, 0, 0.8, { envMapIntensity: 0.12 });
 std('bodBright', 0xf4f6f8, 0.6, 0.16, { envMapIntensity: 1.5 });
@@ -1763,6 +1766,72 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     bodDeck(bodZT, SP + 0.002, 22, z => bodSAtX(z, bodTGdx(z)), 24, bodDense(bodZT, -2.22, 6)),
   ]);
   const scr = patch((z, w) => ghPt(z, w), SP + 0.004, RW0 - 0.004, 30, z => { const q = qScr(z) + 0.004; return [q / 2, 1 - q / 2]; }, 22);
+  // keramische rand op de achterruit (golf 8, vormbesluit): effen matzwarte band met de binnenrand op een vaste afstand over het glas van de
+  // ruitrand: zijkanten 35 mm, boven 40 mm (vanaf de achterrand van het dakpaneel, dat 4 mm over het glas ligt), onder 50 mm; binnenhoeken rond
+  // (straal 30 mm). Zonder rand zag je door het glas de sponning en de lichte lijmrand op 15 tot 37 mm diepte, en las de ruit als verzonken.
+  // Rekenwijze: een kaart (a, b) van het glas met a = booglengte dwars vanaf de hartlijn (vaste z) en b = booglengte langs de hartlijn vanaf de
+  // onderrand. De binnenrand is de rand van de verzameling punten met minstens de bandbreedte tot elke ruitrand, met afgeronde hoeken (alles binnen
+  // de straal van het met die straal ingekrompen gebied). Stroken lopen vanuit het midden van de ruit door de binnenrand naar de ruitrand:
+  // de binnenrand is convex en de ruitrand stervormig vanuit dat midden, dus de stroken kruisen elkaar niet en dekken de hele band.
+  const rwFrit = (() => {
+    const zb = SP + 0.004, zt = RW0 - 0.0085, wZ = 0.035, wO = 0.050, wB = 0.040, rc = 0.030, lift = 0.0008, NZ = 120, NW = 160;
+    const d3 = (p, q) => Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]);
+    const zs = [], bs = [0], rows = [];
+    for (let i = 0; i <= NZ; i++) zs.push(lerp(zb, zt, i / NZ));
+    for (let i = 1; i <= NZ; i++) bs.push(bs[i - 1] + d3(ghPt(zs[i - 1], 0.5), ghPt(zs[i], 0.5)));
+    for (const z of zs) {   // per z: w van de hartlijn naar de ruitrand (linkerhelft) met de opgetelde booglengte
+      const w0 = (qScr(z) + 0.004) / 2, ws = [], as = [];
+      let acc = 0, prev = ghPt(z, 0.5);
+      for (let j = 0; j <= NW; j++) { const w = lerp(0.5, w0, j / NW), p = ghPt(z, w); acc += d3(prev, p); prev = p; ws.push(w); as.push(acc); }
+      rows.push({ ws, as });
+    }
+    const Bt = bs[NZ];
+    const zIdx = b => { let i = 0; while (i < NZ - 1 && bs[i + 1] < b) i++; return [i, clamp((b - bs[i]) / (bs[i + 1] - bs[i]), 0, 1)]; };
+    const rowAE = r => r.as[NW];
+    const aE = b => { const [i, f] = zIdx(b); return lerp(rowAE(rows[i]), rowAE(rows[i + 1]), f); };
+    const wAt = (r, a) => { let j = 0; while (j < NW - 1 && r.as[j + 1] < a) j++; return lerp(r.ws[j], r.ws[j + 1], clamp((a - r.as[j]) / Math.max(1e-9, r.as[j + 1] - r.as[j]), 0, 1)); };
+    // kaartpunt naar (z, w) op het glas
+    const toZW = (a, b) => { const [i, f] = zIdx(b), aa = Math.abs(a), w = lerp(wAt(rows[i], aa), wAt(rows[i + 1], aa), f); return [lerp(zs[i], zs[i + 1], f), a < 0 ? 1 - w : w]; };
+    // zijrand als lijn in de kaart (rechterhelft door spiegeling)
+    const edge = bs.map((b, i) => [rowAE(rows[i]), b]);
+    const segD = (p, A, B) => { const dx = B[0] - A[0], dy = B[1] - A[1], t = clamp(((p[0] - A[0]) * dx + (p[1] - A[1]) * dy) / (dx * dx + dy * dy || 1), 0, 1); return Math.hypot(p[0] - A[0] - t * dx, p[1] - A[1] - t * dy); };
+    const lineD = (p, L) => { let m = Infinity; for (let k = 0; k < L.length - 1; k++) m = Math.min(m, segD(p, L[k], L[k + 1])); return m; };
+    const binnen = (p, e) => p[1] >= wO + e && Bt - p[1] >= wB + e && Math.abs(p[0]) <= aE(p[1]) && lineD([Math.abs(p[0]), p[1]], edge) >= wZ + e;
+    const c = [0, (wO + Bt - wB) / 2];
+    const ray = (th, ok, rMax = 2) => { const dx = Math.cos(th), dy = Math.sin(th); let lo = 0, hi = rMax; for (let k = 0; k < 26; k++) { const m = (lo + hi) / 2; if (ok([c[0] + dx * m, c[1] + dy * m])) lo = m; else hi = m; } return [c[0] + dx * lo, c[1] + dy * lo]; };
+    // ingekrompen gebied (bandbreedte plus de hoekstraal) als veelhoek, dan de binnenrand: alles binnen de hoekstraal van dat gebied
+    const NT = 180, kern = [];
+    for (let k = 0; k <= NT; k++) kern.push(ray(2 * PI * k / NT, p => binnen(p, rc)));
+    const inKern = p => binnen(p, rc) || lineD(p, kern) <= rc;
+    const glas = p => p[1] >= 0 && p[1] <= Bt && Math.abs(p[0]) <= aE(clamp(p[1], 0, Bt));
+    // binnenrand fijn, daarna gelijk verdeeld naar booglengte (ca. 14 mm), plus stralen door de vier hoeken van de ruit
+    const fine = [];
+    for (let k = 0; k < 720; k++) { const th = 2 * PI * k / 720; fine.push([th, ray(th, inKern)]); }
+    const cum = [0];
+    for (let k = 1; k <= fine.length; k++) cum.push(cum[k - 1] + Math.hypot(fine[k % fine.length][1][0] - fine[k - 1][1][0], fine[k % fine.length][1][1] - fine[k - 1][1][1]));
+    const L = cum[fine.length], n = Math.round(L / 0.014), ths = [];
+    for (let k = 0, j = 0; k < n; k++) { const s = L * k / n; while (cum[j + 1] < s) j++; const f = (s - cum[j]) / (cum[j + 1] - cum[j]), t1 = j + 1 < fine.length ? fine[j + 1][0] : 2 * PI; ths.push(lerp(fine[j][0], t1, f)); }
+    for (const [x, y] of [[aE(0), 0], [-aE(0), 0], [aE(Bt), Bt], [-aE(Bt), Bt]]) ths.push((Math.atan2(y - c[1], x - c[0]) + 2 * PI) % (2 * PI));
+    ths.sort((p, q) => p - q);
+    // punt op het glas met de verschuiving langs de naar buiten wijzende normaal
+    const onGlass = (z, w) => {
+      const p = ghPt(z, w), e = 1e-4, u = ghPt(z + e, w), v = ghPt(z, w + e);
+      const du = [u[0] - p[0], u[1] - p[1], u[2] - p[2]], dv = [v[0] - p[0], v[1] - p[1], v[2] - p[2]];
+      let nn = [du[1] * dv[2] - du[2] * dv[1], du[2] * dv[0] - du[0] * dv[2], du[0] * dv[1] - du[1] * dv[0]];
+      const l = Math.hypot(...nn) || 1, sg = nn[0] * p[0] + nn[1] * (p[1] - 0.75) >= 0 ? 1 : -1;
+      return [p[0] + sg * nn[0] / l * lift, p[1] + sg * nn[1] / l * lift, p[2] + sg * nn[2] / l * lift];
+    };
+    const NV = 6, pos = [], idx = [];
+    for (const th of ths) {
+      const pi = ray(th, inKern), po = ray(th, glas);
+      for (let j = 0; j <= NV; j++) { const t = j / NV, [z, w] = toZW(lerp(pi[0], po[0], t), lerp(pi[1], po[1], t)); pos.push(...onGlass(z, w)); }
+    }
+    const R = NV + 1, N = ths.length;
+    for (let k = 0; k < N; k++) { const k2 = (k + 1) % N; for (let j = 0; j < NV; j++) { const a = k * R + j, b = k2 * R + j; idx.push(a, b, a + 1, b, b + 1, a + 1); } }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals();
+    return g;
+  })();
   // spoilerlip (eendenstaartje): dun blad van ca. 7 mm dat ca. 3,6 cm achter de onderrand van de ruit uitsteekt, met een lichte opkrul (ca. 18 graden, ca. 4 mm boven het glas aan de voet)
   // en een scherpe achterrand; profiel (dz, dy) t.o.v. die rand: bovenkant, achterrand, onderkant. Zo breed als de ruit (onderhoek x bodXScr);
   // naar de uiteinden loopt het profiel in ruit en dek weg (geen trede bij de C-stijl). Vorige ronden: 4,7 cm las als plank, 2,2 cm was onzichtbaar
@@ -1808,9 +1877,11 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     P('Binnenpaneel achterklep', merge([bodTailGeo(-0.36, 0.36, 0.68, ydT - 0.02, -0.04, 4, 8), ...tgRing]), MAT.paintIn, { d: 'Binnenframe van de achterklep met scharnier- en slotversteviging. Rond de achterruit loopt een smalle rand van 7 cm (de lijmrand), zodat de ruit van binnen als donker glas te zien is.', ex: [0, 0, 0] }),
     P('Bekleding achterklep', tgTrim, MAT.bodTgTrim, { d: 'Donkergrijze kunststof bekleding aan de binnenkant van de achterklep, over het binnenframe onder de ruit en de rand rond de achterruit.', ex: [0, -0.06, 0.08] }),
     P('Achterruit', scr, MAT.bodGlassSide, { d: 'Verwarmde achterruit van gehard glas, zeer vlak geplaatst (ca. 14 graden).', ex: [0, 0.14, 0.02] }),
+    P('Keramische rand achter', rwFrit, MAT.bodRwFrit, { d: 'Zwarte keramische rand (frit) langs de rand van de achterruit: ca. 35 mm langs de zijkanten, 40 mm onder de dakrand en 50 mm boven de spoilerlip, met ronde binnenhoeken; dekt de lijmrand en de sponning af, ook van binnen gezien zwart (breedtes geschat uit foto\'s van fase 1 en 2).', ex: [0, 0.14, 0.02] }),
     P('Spoilerlip', lip, MAT.paint, { d: 'Kleine spoilerlip (eendenstaartje) aan de onderrand van de achterruit: een dun, licht opkrullend blad van ca. 3,5 cm met een scherpe achterrand, zo breed als de ruit en aan de uiteinden in het plaatwerk weglopend.', ex: [0, 0.1, -0.06] }),
-    // achter het glas, net onder de dakrand: steekt in zijaanzicht niet boven de daklijn uit en schemert door de getinte ruit
-    P('Derde remlicht', G.rbox(0.30, 0.008, 0.02, 0.003), MAT.bodLens3, { d: 'Derde remlicht achter de bovenrand van de achterruit, direct onder de dakrand: rode lens naar buiten in een zwart kunststof huis, dat je van binnen ziet (plaats geschat uit fase 2-foto\'s, schematisch).', p: [0, YR(RW0 - 0.045) - 0.011, RW0 - 0.045], r: [-Math.atan2(YR(RW0) - YR(RW0 - 0.09), 0.09), 0, 0], ex: [0, 0.05, -0.08] }),
+    // achter het glas, net onder de dakrand: steekt in zijaanzicht niet boven de daklijn uit en schemert door de getinte ruit. Golf 8: 20 mm lager
+    // (hart 65 mm achter de knik), zodat de lens helemaal onder de keramische rand van 40 mm uit komt; op 45 mm viel de bovenste helft eronder
+    P('Derde remlicht', G.rbox(0.30, 0.008, 0.02, 0.003), MAT.bodLens3, { d: 'Derde remlicht achter de bovenrand van de achterruit, direct onder de keramische rand langs de dakrand: rode lens naar buiten in een zwart kunststof huis, dat je van binnen ziet (plaats geschat uit fase 2-foto\'s, schematisch).', p: [0, YR(RW0 - 0.065) - 0.011, RW0 - 0.065], r: [-Math.atan2(YR(RW0 - 0.02) - YR(RW0 - 0.11), 0.09), 0, 0], ex: [0, 0.05, -0.08] }),
     A('Achterruitenwisser', { d: 'Achterruitenwisser die langs de zijrand van de ruit parkeert (links op een foto van fase 2, rechts op een tekening van fase 1; aannemelijk).', ex: [0.06, 0.14, 0] }, [
       P('Wisserarm achter', tube([wPiv, panP((wPiv[2] + wTip[2]) / 2, 0.42, 0.016), wTip], 0.006, 16, 6), MAT.blackGloss, { d: 'Wisserarm die het blad met veerdruk tegen de achterruit houdt en het heen en weer zwaait.', ex: [0, 0.03, 0] }),
       P('Wisserblad achter', tube([panP(-1.85, 0.46, 0.010), panP(-1.42, 0.505, 0.010)], 0.006, 8, 5), MAT.rubber, { d: 'Rubber wisserblad dat regen en vuil van de achterruit veegt.', ex: [0, 0.06, 0] }),
