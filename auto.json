@@ -51,7 +51,8 @@
     "licht": [0, 1.02, 0.0]
   },
   "extraTests": [
-    {"naam": "spiegelzicht", "cmd": ["python3", "tools/spiegelzicht.py", "--zijde", "rechts", "--min", "100", "--json", "{uit}/spiegelzicht.json"], "uitleg": "Zichtpoort van golf 7: vanaf het oog van de bestuurder minstens 100 van 140 stralen vrij naar het rechter spiegelglas (besluit van de gebruiker, docs/onderzoek/beslissingen.md)."}
+    {"naam": "spiegelzicht", "cmd": ["python3", "tools/spiegelzicht.py", "--zijde", "rechts", "--min", "100", "--json", "{uit}/spiegelzicht.json"], "uitleg": "Zichtpoort van golf 7: vanaf het oog van de bestuurder minstens 100 van 140 stralen vrij naar het rechter spiegelglas (besluit van de gebruiker, docs/onderzoek/beslissingen.md)."},
+    {"naam": "kieren", "cmd": ["python3", "tools/kieren.py", "--zijde", "beide", "--json", "{uit}/kieren.json", "--png", "{uit}"], "uitleg": "Kierenaudit van golf 8: alle naden van de buitenhuid in de dichte stand; natuurlijke naden binnen de grens van tools/kieren_allow.json, al het andere sluit aan (kier en stap hooguit 1 mm, geen doorkijk), geen facetten."}
   ],
   "verboden": ["Laguna", "laguna", "LAGUNA", "F4R", "AJ0", "Initiale", "zilvergrijs"]
 }
