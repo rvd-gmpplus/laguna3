@@ -142,6 +142,18 @@ std('bodTgTrim', 0x34363a, 0, 0.8);                                     // donke
 // keramische rand van de achterruit (golf 8): effen matzwart. Met de glans van de frit van het panoramadak (ruwheid 0,35, volle omgeving) spiegelde
 // de band onder een scherende hoek de lichte omgeving en las de bovenrand als lichtgrijze strook
 std('bodRwFrit', 0x040405, 0, 0.6, { envMapIntensity: 0.25 });
+// sponning van de achterklepopening (golf 8): het deel langs de ruit (vóór de onderrand van de ruit, z > SP - 0,02) is donker, zodat het door de
+// ruit naast de keramische rand niet als lichte strook te zien is; het deel rond het staartvlak (bij open klep te zien) houdt de binnenlak
+function bodSponIn(m) {
+  m.customProgramCacheKey = () => 'bodSpon';
+  m.onBeforeCompile = sh => {
+    sh.vertexShader = 'varying vec3 vBodWP;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\n\tvBodWP = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+    sh.fragmentShader = 'varying vec3 vBodWP;\n' + sh.fragmentShader.replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n\tif (vBodWP.z > ' + (SP - 0.02).toFixed(4) + ') { diffuseColor.rgb = vec3(0.022, 0.023, 0.025); metalnessFactor = 0.0; roughnessFactor = 0.9; }');
+  };
+  m.clone = function () { return bodSponIn(THREE.MeshStandardMaterial.prototype.clone.call(this)); };
+  return m;
+}
+MAT.bodSpon = bodSponIn(THREE.MeshStandardMaterial.prototype.clone.call(MAT.paintIn)); MAT.bodSpon.name = 'bodSpon';
 // nieuwe carrosseriematerialen: zwart mat voor stijlen en raamkaders, helder chroom voor lijsten en sierstrips, spiegelglas
 std('bodPillar', 0x060607, 0, 0.8, { envMapIntensity: 0.12 });
 std('bodBright', 0xf4f6f8, 0.6, 0.16, { envMapIntensity: 1.5 });
@@ -1367,7 +1379,7 @@ function buildBody() {
     ...both(s => P(`Wielkast achter ${sn(s)}`, merge([G.half('x', bodWHR, 0.22, PI, 24), xf(bodRearWHWall(s), [-s * 0.62, -AY, -AXR])]), MAT.underbody, { d: 'Gesloten binnenwielkast achter met donkere steenslagcoating, gelast aan vloer en achterscherm: kuip boven het wiel en binnenwand naar interieur en bagageruimte, met een sleuf voor de torsiebalk en een veerkoker waar de schroefveer tegen drukt.', p: [s * 0.62, AY, AXR], ex: [s * 0.1, 0.04, 0] })),
     ...both(s => P(`Hoedenplanksteun ${sn(s)}`, G.rbox(0.05, 0.16, 0.5, 0.01), MAT.paintIn, { d: 'Steun van de bagageruimteafdekking tegen de binnenzijwand.', p: [s * 0.66, 0.92, -1.85], ex: [s * 0.06, 0.04, 0] })),
     P('Achterpaneel', G.rbox(1.2, 0.26, 0.012, 0.004), MAT.paintIn, { d: 'Dwarspaneel onder de achterklepopening met de slotbeugel.', p: [0, 0.5, bodZT + 0.03], ex: [0, 0, -0.06] }),
-    P('Achterklepsponning', tube(bodTGPath(0.045), 0.012, 80, 6), MAT.paintIn, { d: 'Gelaste sponning rond de achterklepopening waarop de afdichting zit.', ex: [0, 0.04, -0.04] }),
+    P('Achterklepsponning', tube(bodTGPath(0.045), 0.012, 80, 6), MAT.bodSpon, { d: 'Gelaste sponning rond de achterklepopening waarop de afdichting zit; langs de ruit donker (onder de ruitrand, schematisch), rond het staartvlak in de lak van de binnenkant.', ex: [0, 0.04, -0.04] }),
     // golf 5j ronde 2: 6,8 cm voor de bumperhuid (was 7,5): door de heup ligt de huid op de hoeken 7 mm verder naar voren, en de balk
     // moet op dezelfde plek blijven, achter de bagageruimtevloer die bij het openen langs de uiteinden draait
     P('Bumperbalk achter', tube([-0.55, -0.42, -0.28, 0, 0.28, 0.42, 0.55].map(x => [x, 0.5, Math.max(bodZT + 0.02, bodRearZ(Math.abs(x), 0.5) + 0.068)]), 0.04, 24, 8), MAT.steel, { d: 'Stalen botsbalk achter de achterbumper.', ex: [0, 0, -0.1] }),
@@ -1874,7 +1886,9 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     // rechts gezien van achter (-x), v omhoog, w naar achteren (-z). Sinds de schaal een onderzijde heeft (reviewronde), ligt die 1 mm achter
     // het analytische staartvlak: op -1 mm zakte het gesloten volume tot 1,8 mm in het (gefacetteerde) buitenpaneel; nu kleinste afstand 0,13 mm
     P('Renault-embleem achter', bodLosange((u, v, w) => { const x = -u, y = bodTLY(bodZT, 0.5) + v; return [x, y, tailZ(x, y) - w]; }, 0.05, 0.065, 0.45, 0.001, 0.008, 0.0045), MAT.bodChrome, { d: 'Verchroomde Renault-ruit met holle vlakken midden op de achterklep, op de hoogte van de achterlichten (plaats en maat geschat).', ex: [0, 0.03, -0.16] }),
-    P('Binnenpaneel achterklep', merge([bodTailGeo(-0.36, 0.36, 0.68, ydT - 0.02, -0.04, 4, 8), ...tgRing]), MAT.paintIn, { d: 'Binnenframe van de achterklep met scharnier- en slotversteviging. Rond de achterruit loopt een smalle rand van 7 cm (de lijmrand), zodat de ruit van binnen als donker glas te zien is.', ex: [0, 0, 0] }),
+    P('Binnenpaneel achterklep', bodTailGeo(-0.36, 0.36, 0.68, ydT - 0.02, -0.04, 4, 8), MAT.paintIn, { d: 'Binnenframe van de achterklep met scharnier- en slotversteviging.', ex: [0, 0, 0] }),
+    // golf 8: de lijmrand was een deel van het binnenpaneel in de lichte binnenlak en was door de ruit naast de keramische rand te zien als lichte strook
+    P('Lijmrand achterruit', merge(tgRing), MAT.bodPillar, { d: 'Rand rond de achterruit aan de binnenkant van de klep: de flens van het klepframe met de zwarte lijmrups waarop de ruit is gelijmd, langs de zijkanten 7 cm en boven en onder 5 tot 6 cm breed (schematisch, 3 cm onder het glas), zodat de ruit van binnen als donker glas te zien is.', ex: [0, 0.02, 0] }),
     P('Bekleding achterklep', tgTrim, MAT.bodTgTrim, { d: 'Donkergrijze kunststof bekleding aan de binnenkant van de achterklep, over het binnenframe onder de ruit en de rand rond de achterruit.', ex: [0, -0.06, 0.08] }),
     P('Achterruit', scr, MAT.bodGlassSide, { d: 'Verwarmde achterruit van gehard glas, zeer vlak geplaatst (ca. 14 graden).', ex: [0, 0.14, 0.02] }),
     P('Keramische rand achter', rwFrit, MAT.bodRwFrit, { d: 'Zwarte keramische rand (frit) langs de rand van de achterruit: ca. 35 mm langs de zijkanten, 40 mm onder de dakrand en 50 mm boven de spoilerlip, met ronde binnenhoeken; dekt de lijmrand en de sponning af, ook van binnen gezien zwart (breedtes geschat uit foto\'s van fase 1 en 2).', ex: [0, 0.14, 0.02] }),
