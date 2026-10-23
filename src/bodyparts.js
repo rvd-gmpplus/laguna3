@@ -1855,16 +1855,33 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     const pts = [[0.008, yg + 0.003]].concat(lipPr.map(([dz, dy]) => [dz * w, yg + dy * w]), [[0.001, lipYd(ax) - 0.003]]);
     const i = Math.min(pts.length - 2, Math.floor(v)), f = v - i, a = pts[i], b = pts[i + 1];
     return [x, lerp(a[1], b[1], f), SP + lerp(a[0], b[0], f)]; }, -lipX, lipX, 48, () => [0, lipN], lipN);
-  const wPiv = [0.32, halfPt(SP + 0.06, bodSAtX(SP + 0.06, 0.32))[1] + 0.03, SP + 0.06];
+  // golf 8: de asmoerkap staat op het glas (gekanteld naar de helling, onderkant 2 tot 4 mm boven het glas en de keramische rand); lag 8 mm onder het glas, onzichtbaar en
+  // tegen de lijmrand. De wissermotor blijft waar hij was (wMotY), onder het glas in de klep
+  const wMotY = halfPt(SP + 0.06, bodSAtX(SP + 0.06, 0.32))[1] - 0.03;
+  const wPiv = [0.32, panP(SP + 0.06, 0.32)[1] + 0.0145, SP + 0.06];
   // punt op het glas bij (z, x) met lift meter erboven (het glas volgt hetzelfde profiel als het dak, zie panP in panorama.js); eerder lag het wisserblad 12 cm onder het glas, in de cabine
   const wTip = panP(-1.5, 0.5, 0.012);
   // lijmrand rond de achterruit aan de binnenkant: vier stroken van 7 cm (zijkanten) en 5 tot 6 cm (boven en onder), 3 cm onder het glas; het midden blijft open
   const tgInP = (z, w) => { const p = ghPt(z, w); return [p[0] * 0.97, p[1] - 0.03, z]; };
-  const tgWo = z => bodQScr(z) / 2 + 0.006;
-  const tgWi = z => { const x0 = Math.abs(ghPt(z, tgWo(z))[0]); let lo = tgWo(z), hi = 0.5; for (let k = 0; k < 26; k++) { const m = (lo + hi) / 2; if (Math.abs(ghPt(z, m)[0]) > x0 - 0.07) lo = m; else hi = m; } return (lo + hi) / 2; };
+  // golf 8 (open punt 'hoeken van de achterklepbekleding'): bij de onderhoeken van de ruit buigt de sponning (buis van 12 mm om bodTGPath(0,045))
+  // naar het dek, en daar lagen de buitenranden van de lijmrand en van de bekleding in dichte stand 11 tot 12 mm in die buis (gemeten met een
+  // zwaai over de klepstand): de buis loopt daar dwars door de stroken. De buitenrand schuift nu per z naar binnen tot voorbij de buis (minstens
+  // 4 mm vrij, beide stroken); de binnenrand blijft waar hij was. Elders verandert niets.
+  const tgSpC = new THREE.CatmullRomCurve3(bodTGPath(0.045).map(p => V3(...p)), false, 'centripetal').getSpacedPoints(800).filter(p => p.x > 0 && p.z > SP - 0.15).map(p => [p.x, p.y, p.z]);
+  // ook vrij van de gasveer in dichte stand (cilinder r 16 mm van A naar B, beugel met kogel rond B), plus 3 mm: daar lagen de lijmrand en de
+  // bekleding 1,5 tot 6 mm in de cilinder, de zuigerstang en de beugel (clash.py)
+  const tgGsD = p => { const ab = [bodGsB[0] - bodGsA[0], bodGsB[1] - bodGsA[1], bodGsB[2] - bodGsA[2]], ap = [p[0] - bodGsA[0], p[1] - bodGsA[1], p[2] - bodGsA[2]];
+    const t = clamp((ab[0] * ap[0] + ab[1] * ap[1] + ab[2] * ap[2]) / (ab[0] * ab[0] + ab[1] * ab[1] + ab[2] * ab[2]), 0, 1);
+    return Math.hypot(ap[0] - t * ab[0], ap[1] - t * ab[1], ap[2] - t * ab[2]); };
+  const tgSpVrij = p => { const ax = Math.abs(p[0]); for (const c of tgSpC) if (Math.hypot(ax - c[0], p[1] - c[1], p[2] - c[2]) < 0.016) return false;
+    const q = [ax, p[1], p[2]]; return tgGsD(q) >= 0.019 && Math.hypot(ax - bodGsB[0], p[1] - bodGsB[1], p[2] - bodGsB[2]) >= 0.035; };
+  const tgWo0 = z => bodQScr(z) / 2 + 0.006;
+  const tgWo = z => { let w = tgWo0(z), last = -1; for (let k = 0; k < 120; k++, w += 0.0005) { const p = ghPt(z, w); if (!tgSpVrij([p[0] * 0.97, p[1] - 0.03, z]) || !tgSpVrij([p[0] * 0.97, p[1] - 0.038, z])) last = w; } return last < 0 ? tgWo0(z) : last + 0.0005; };
+  const tgZb = Array.from({ length: 15 }, (_, i) => SP + 0.045 + 0.01 * i);   // extra rijen bij de onderhoeken (daarboven om de 2,3 cm)
+  const tgWi = z => { const x0 = Math.abs(ghPt(z, tgWo0(z))[0]); let lo = tgWo(z), hi = 0.5; for (let k = 0; k < 26; k++) { const m = (lo + hi) / 2; if (Math.abs(ghPt(z, m)[0]) > x0 - 0.07) lo = m; else hi = m; } return (lo + hi) / 2; };
   const tgZ0 = SP + 0.04, tgZ1 = RW0 - 0.06;
-  const tgRing = [patch(tgInP, tgZ0, tgZ1, 14, z => [tgWo(z), tgWi(z)], 2), patch(tgInP, tgZ0, tgZ1, 14, z => [1 - tgWi(z), 1 - tgWo(z)], 2),
-    patch(tgInP, tgZ0, tgZ0 + 0.06, 2, z => [tgWo(z), 1 - tgWo(z)], 8), patch(tgInP, tgZ1 - 0.05, tgZ1, 2, z => [tgWo(z), 1 - tgWo(z)], 8)];
+  const tgRing = [patch(tgInP, tgZ0, tgZ1, 40, z => [tgWo(z), tgWi(z)], 2, tgZb), patch(tgInP, tgZ0, tgZ1, 40, z => [1 - tgWi(z), 1 - tgWo(z)], 2, tgZb),
+    patch(tgInP, tgZ0, tgZ0 + 0.06, 6, z => [tgWo(z), 1 - tgWo(z)], 8), patch(tgInP, tgZ1 - 0.05, tgZ1, 4, z => [tgWo(z), 1 - tgWo(z)], 24)];
   // bekleding van de achterklep (golf 5l ronde 2, cockpit): donkergrijs kunststof 8 mm binnen het binnenpaneel en de lijmrand; van de
   // achterbank zag je bij omkijken de lak van het binnenframe
   const tgInT = (z, w) => { const p = tgInP(z, w); return [p[0], p[1] - 0.008, z]; };
@@ -1876,8 +1893,8 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   // het openen tot 13,9 en 17,7 mm door die delen; binnen de naad (0,472) maar 5 cm diep liepen ze 17,9 mm door de sponning (dichte opentest).
   // De klep draait om x, dus wat binnen de sponning blijft, blijft bij het openen vrij van alles daarbuiten
   const tgXs = 0.414;
-  const tgTrim = merge([bodTailGeo(-tgXs, tgXs, 0.68, ydT - 0.02, -0.048, 4, 12), patch(tgInT, tgZ0 + 0.07, tgZ1, 13, z => [tgWo(z), tgWi(z)], 2), patch(tgInT, tgZ0 + 0.07, tgZ1, 13, z => [1 - tgWi(z), 1 - tgWo(z)], 2),
-    patch(tgInT, tgZ0, tgZ0 + 0.07, 2, z => [tgWx(z, 0.60), 1 - tgWx(z, 0.60)], 8), patch(tgInT, tgZ1 - 0.05, tgZ1, 2, z => [tgWo(z), 1 - tgWo(z)], 8)]);
+  const tgTrim = merge([bodTailGeo(-tgXs, tgXs, 0.68, ydT - 0.02, -0.048, 4, 12), patch(tgInT, tgZ0 + 0.07, tgZ1, 40, z => [tgWo(z), tgWi(z)], 2, tgZb), patch(tgInT, tgZ0 + 0.07, tgZ1, 40, z => [1 - tgWi(z), 1 - tgWo(z)], 2, tgZb),
+    patch(tgInT, tgZ0, tgZ0 + 0.07, 2, z => [tgWx(z, 0.60), 1 - tgWx(z, 0.60)], 8), patch(tgInT, tgZ1 - 0.05, tgZ1, 4, z => [tgWo(z), 1 - tgWo(z)], 24)]);
   const tailgate = A('Achterklep', { d: 'Grote achterklep met de hele achterruit, typerend voor de vijfdeurs hatchback, met spoilerlip, derde remlicht en achterruitenwisser. Scharniert aan de dakrand en wordt door twee gasveren omhooggehouden.', ex: [0, 0.42, -0.5],
     open: hinge(bodTgPv, [1, 0, 0], bodTgAng, { min: 60 * PI / 180, label: 'Achterklep', look: { dir: [0.6, 0.6, -1], nodes: ['Achterklep', 'Gasveer links', 'Gasveer rechts'] } }) }, [
     P('Buitenpaneel achterklep', merge([tgOuter, bodSPweb(1, bodQScr(SP), 1, 0.003, 16), bodSPweb(-1, bodQScr(SP), 1, 0.003, 16)]), MAT.bodPaintTg, { d: 'Plaatwerk van de achterklep onder en achter de ruit.', ex: [0, 0, -0.08] }),
@@ -1899,8 +1916,8 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
     A('Achterruitenwisser', { d: 'Achterruitenwisser die langs de zijrand van de ruit parkeert (links op een foto van fase 2, rechts op een tekening van fase 1; aannemelijk).', ex: [0.06, 0.14, 0] }, [
       P('Wisserarm achter', tube([wPiv, panP((wPiv[2] + wTip[2]) / 2, 0.42, 0.016), wTip], 0.006, 16, 6), MAT.blackGloss, { d: 'Wisserarm die het blad met veerdruk tegen de achterruit houdt en het heen en weer zwaait.', ex: [0, 0.03, 0] }),
       P('Wisserblad achter', tube([panP(-1.85, 0.46, 0.010), panP(-1.42, 0.505, 0.010)], 0.006, 8, 5), MAT.rubber, { d: 'Rubber wisserblad dat regen en vuil van de achterruit veegt.', ex: [0, 0.06, 0] }),
-      P('Asmoerkap', G.cyl('y', 0.014, 0.016, 0.02, 12), MAT.blackGloss, { d: 'Kap over de asmoer van de wisserarm.', p: wPiv, ex: [0, 0.03, 0] }),
-      P('Wissermotor achter', merge([G.cyl('z', 0.03, 0.03, 0.08, 16), xf(G.rbox(0.07, 0.05, 0.05, 0.01), [0, 0, -0.06])]), MAT.darkSteel, { d: 'Motor van de achterruitenwisser in de klep.', p: [wPiv[0], wPiv[1] - 0.06, wPiv[2] + 0.02], ex: [0, -0.06, 0.06] }),
+      P('Asmoerkap', G.cyl('y', 0.014, 0.016, 0.02, 12), MAT.blackGloss, { d: 'Kap over de asmoer van de wisserarm.', p: wPiv, r: [-Math.atan2(panP(wPiv[2] + 0.01, 0.32)[1] - panP(wPiv[2] - 0.01, 0.32)[1], 0.02), 0, 0], ex: [0, 0.03, 0] }),
+      P('Wissermotor achter', merge([G.cyl('z', 0.03, 0.03, 0.08, 16), xf(G.rbox(0.07, 0.05, 0.05, 0.01), [0, 0, -0.06])]), MAT.darkSteel, { d: 'Motor van de achterruitenwisser in de klep.', p: [wPiv[0], wMotY, wPiv[2] + 0.02], ex: [0, -0.06, 0.06] }),
     ]),
     A('Achterklepslot', { d: 'Slot onderin de klep met elektrische ontgrendeling; zit tussen buitenpaneel en binnenpaneel, dus binnen de klep, en zwaait bij het openen vrij uit de sponning.', ex: [0, -0.08, 0.04] }, [
       P('Slotkast achterklep', G.rbox(0.08, 0.05, 0.03, 0.008), MAT.darkSteel, { d: 'Slot met vanghaak die door een sleuf in het binnenpaneel om de slotbeugel in het achterpaneel grijpt.', p: [0, 0.74, bodZT - 0.03], ex: [0, -0.04, 0] }),
