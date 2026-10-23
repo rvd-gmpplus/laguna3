@@ -2377,6 +2377,9 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   // (straal 15 mm), en een zwarte keramische rand op het glas (foto voorkant: zijkanten ca. 25 mm, boven ca. 40 mm; onder 60 mm onder de
   // wissers, waar anders torpedobak en schutbord door het glas lichten). Breedtes vanaf de glasrand, over het glas gemeten.
   const wsW = [bodQR / 2, 1 - bodQR / 2];
+  // kolommen over de breedte (golf 8 ronde 3): 44 in plaats van 28, aan de zijranden vier keer zo dicht als in het midden. In de A-stijlvoet
+  // (bodAPL) buigt de ruit in de hoeken naar de kap; met gelijke kolommen zakte de koorde daar tot 0,63 mm onder het glasvlak, nu 0,15 mm
+  const wsWm = t => wsW[0] + (wsW[1] - wsW[0]) * (t - 0.75 * Math.sin(2 * PI * t) / (2 * PI));
   const wsP = (z, q) => { const [x, y] = bodGhHalf(z, clamp(q, 0, 1)); return [x, y, z]; };
   const wsDer = (z, w) => { const e = 1e-5, a0 = ghPt(z - e, w), a1 = ghPt(z + e, w), b0 = ghPt(z, w - e), b1 = ghPt(z, w + e); return [[0, 1, 2].map(k => (a1[k] - a0[k]) / (2 * e)), [0, 1, 2].map(k => (b1[k] - b0[k]) / (2 * e))]; };
   const wsLen = v => Math.hypot(...v);
@@ -2393,11 +2396,15 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   const fritPt = (z, w) => { const [Pz, Pw] = wsDer(z, w), p = ghPt(z, w); let N = [Pz[1] * Pw[2] - Pz[2] * Pw[1], Pz[2] * Pw[0] - Pz[0] * Pw[2], Pz[0] * Pw[1] - Pz[1] * Pw[0]]; const l = wsLen(N) || 1; N = N.map(v => v / l); if (N[1] < 0) N = N.map(v => -v); return [p[0] + N[0] * 0.0008, p[1] + N[1] * 0.0008, p[2] + N[2] * 0.0008]; };
   const wsZAt = (z0, L, sg) => { let z = z0, acc = 0; while (acc < L) { const dz = 0.0005 * sg; acc += wsLen([0, 1, 2].map(k => ghPt(z + dz, 0.5)[k] - ghPt(z, 0.5)[k])); z += dz; } return z; };
   const fzT = wsZAt(WS1, 0.040, 1), fzB = wsZAt(WS0 - 0.002, 0.060, -1), fdw = z => 0.025 / wsLen(wsDer(z, bodQR / 2)[1]);
+  // golf 8 ronde 3: de zijbanden lopen over de volle hoogte en de onder- en bovenband liggen tussen hun binnenranden (dezelfde lijn, dezelfde
+  // stations), met kolommen die naar de zijkanten dichter worden zoals het glas (wsWm); zo volgt de rand in de hoeken de koorden van het glas
+  const fw = (z, t) => lerp(wsW[0] + fdw(z), wsW[1] - fdw(z), (wsWm(t) - wsW[0]) / (wsW[1] - wsW[0]));
+  const fBr = bodDense(WS0 - bodAPL, WS0 - 0.004, 16), fSide = (a, b) => [[WS1, fzT, 3, []], [fzT, fzB, 26, bodDense(WS0 - bodAPL, fzB, 6)], [fzB, WS0 - 0.004, 8, fBr]].map(([z0, z1, n, br]) => patch(fritPt, z0, z1, n, z => [a(z), b(z)], 2, br));
   const wsFrit = merge([
-    patch(fritPt, WS1, fzT, 3, () => wsW, 28), patch(fritPt, fzB, WS0 - 0.004, 8, () => wsW, 28, bodDense(WS0 - bodAPL, WS0 - 0.004, 9)),
-    patch(fritPt, fzT, fzB, 26, z => [wsW[0], wsW[0] + fdw(z)], 2, bodDense(WS0 - bodAPL, fzB, 6)), patch(fritPt, fzT, fzB, 26, z => [wsW[1] - fdw(z), wsW[1]], 2, bodDense(WS0 - bodAPL, fzB, 6))]);
+    patch((z, t) => fritPt(z, fw(z, t)), WS1, fzT, 3, () => [0, 1], 44), patch((z, t) => fritPt(z, fw(z, t)), fzB, WS0 - 0.004, 8, () => [0, 1], 44, fBr),
+    ...fSide(() => wsW[0], z => wsW[0] + fdw(z)), ...fSide(z => wsW[1] - fdw(z), () => wsW[1])]);
   const windscreen = A('Voorruit', { d: 'Gelaagde voorruit onder een hoek van ca. 26 graden, met rubber en regensensor.', ex: [0, 0.4, 0.42] }, [
-    P('Voorruitglas', patch((z, w) => ghPt(z, w), WS1, WS0 - 0.002, 28, () => wsW, 28, bodDense(WS0 - bodAPL, WS0 - 0.002, 9)), MAT.glassWs, { d: 'Gelaagd veiligheidsglas met akoestische tussenlaag.', ex: [0, 0.08, 0.04] }),
+    P('Voorruitglas', patch((z, t) => ghPt(z, wsWm(t)), WS1, WS0 - 0.002, 28, () => [0, 1], 44, bodDense(WS0 - bodAPL, WS0 - 0.002, 16)), MAT.glassWs, { d: 'Gelaagd veiligheidsglas met akoestische tussenlaag.', ex: [0, 0.08, 0.04] }),
     P('Keramische rand voor', wsFrit, MAT.bodPanoFrit, { d: 'Zwarte keramische rand (frit) op het glas van de voorruit: langs de zijkanten ca. 25 mm, boven ca. 40 mm en onder 60 mm (breedtes geschat naar de foto van de voorkant); verbergt lijmrand, A-stijlbekleding en torpedobak.', ex: [0, 0.1, 0.05] }),
     P('Voorruitrubber', merge([wsRub(1), wsRub(-1)]), MAT.rubber, { d: 'Zwarte platte sierrubber over de naad tussen glas en lak langs de zijkanten en de bovenrand, met afgeronde bovenhoeken.', ex: [0, 0.04, 0] }),
     P('Regensensor', G.rbox(0.07, 0.012, 0.06, 0.008), MAT.plastic, { d: 'Regen- en lichtsensor achter de ruit bij de binnenspiegel.', p: [0, YR(0.36) - 0.022, 0.36], r: [0.4, 0, 0], ex: [0, -0.06, 0] }),
