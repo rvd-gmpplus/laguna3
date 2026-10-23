@@ -2,7 +2,9 @@
 // Alles wat aan de motor of de startmotor hangt begint op ENG_PORTS.* (via ENG2CAR) of DRV_PORTS.starterTerminal.
 std('sysHose', 0x1b1d20, 0, 0.8);
 std('sysBattery', 0x1f2125, 0, 0.6);                           // zwarte accubak (golf 5i, naar foto; was blauwgrijs)
-std('sysTkNis', 0x3a3e44, 0.15, 0.55);                          // tankkom: halfdonker satijn, donkerder dan de lak
+// tankkom: mat zwart kunststof (golf 8 ronde 4; was halfdonker satijn 0x3a3e44). De onderwand ligt vlak en vangt van boven gezien de lucht
+// onder een scherende hoek; met de volle omgevingsreflectie las ze in de kier van 3 mm rond de tankklep als lichte lijn
+std('sysTkNis', 0x1c1e22, 0, 0.9, { envMapIntensity: 0.1 });
 std('sysDemper', 0x4a4642, 0.35, 0.88);                         // einddemper en eindpijpen: donker, ruw plaatstaal (onder de bumper is bijna niets te zien)
 
 // Routes van slangen, kabels en leidingen in de motorruimte (golf 5j): tussenpunten in het autoframe uit een A*-zoektocht door de
@@ -381,9 +383,12 @@ function buildFuel() {
   const flapY = (bodTkY[0] + bodTkY[1]) / 2, flapZ = (bodTkZ[0] + bodTkZ[1]) / 2;
   const tkFloor = fx - 0.05, tkMouth = fx - 0.022, tkNeck = fx - 0.056;       // x (positief, rechterkant) van de bodem, de monding en de achterkant van de hals
   const tkSkin = (z, y, out) => { const p = bodAt(z, y, out); return [-p[0], p[1], p[2]]; };
-  // klep: schaal die de huid volgt (2 mm over de rand van de opening), met een binnenvlak en vier randen. Golf 8 ronde 3 (kierenaudit, paneelnaad
-  // stap hooguit 1 mm): buitenvlak 0,5 mm boven de huid (was 1,5 mm; gemeten stap 1,6 mm tegen het scherm)
-  const flapZ0 = bodTkZ[0] - 0.002, flapZ1 = bodTkZ[1] + 0.002, flapY0 = bodTkY[0] - 0.002, flapY1 = bodTkY[1] + 0.002, fo = 0.0005, fi = -0.004;
+  // klep: schaal die de huid volgt, met een binnenvlak en vier randen. Golf 8 ronde 3 (kierenaudit, paneelnaad stap hooguit 1 mm): buitenvlak
+  // 0,5 mm boven de huid (was 1,5 mm; gemeten stap 1,6 mm tegen het scherm). Golf 8 ronde 4 (advisor): de klep lag 2 mm over de rand van de
+  // opening (kier 0, de naad was niet te zien); nu ligt hij er 3 mm binnen (tkGap), met rondom een kier van 3 mm zoals op de auto. In de kier
+  // zie je de donkere wanden van de tankkom en de zwarte randen van de klep.
+  const tkGap = 0.003;
+  const flapZ0 = bodTkZ[0] + tkGap, flapZ1 = bodTkZ[1] - tkGap, flapY0 = bodTkY[0] + tkGap, flapY1 = bodTkY[1] - tkGap, fo = 0.0005, fi = -0.004;
   const flapCrown = (z, t) => 0.005 * Math.sin(PI * (z - flapZ0) / (flapZ1 - flapZ0)) * Math.sin(PI * t);   // licht bol, zoals het scherm
   // buitenvlak (golf 5n): volgt de huid zonder extra bolling en krijgt de normalen van de huid (bodN, gespiegeld naar rechts). Met de bolling
   // van 5 mm weken de normalen tot ca. 8 graden af van het scherm eromheen, en de blanke lak spiegelde daardoor een andere strook van de
@@ -394,18 +399,20 @@ function buildFuel() {
     return g; };
   // ronde 2: stralen loodrecht op de huid over de klep en 8 mm daarbuiten (3111 stralen) raken binnen de klep altijd eerst het buitenvlak en
   // daarbuiten het scherm; nergens liggen twee onderdelen binnen 0,8 mm (geen doorboring, geen z-fight; met fo 1,5 mm). De vier randen (fo boven de huid
-  // tot 4 mm eronder) waren gelakt en vingen het licht: van opzij een witte lijn langs de scharnierkant. Ze horen nu bij de grijze
-  // binnenzijde en lezen als de donkere naad rond de klep.
+  // tot 4 mm eronder) waren gelakt en vingen het licht: van opzij een witte lijn langs de scharnierkant. Ze horen nu bij de binnenzijde en lezen
+  // als de donkere naad rond de klep (golf 8 ronde 4: zwart kunststof, was grijs; in de kier van 3 mm las het grijs als lichte lijn).
   const flapOut = cache('sysFlapRo', () => flapSkin());
   const flapIn = cache('sysFlapRi', () => merge([
     patch((z, t) => tkSkin(z, lerp(flapY0, flapY1, t), fi + 0.5 * flapCrown(z, t)), flapZ0, flapZ1, 14, () => [0, 1], 12),
     ...[flapZ0, flapZ1].map(zz => patch((y, t) => tkSkin(zz, y, lerp(fo, fi, t)), flapY0, flapY1, 8, () => [0, 1], 1)),
     ...[flapY0, flapY1].map(yy => patch((z, t) => tkSkin(z, yy, lerp(fo, fi, t)), flapZ0, flapZ1, 10, () => [0, 1], 1)),
   ]));
-  // tankkom: vier wanden van de rand van de opening naar de bodem en een bodem met de hals
+  // tankkom: vier wanden van de rand van de opening naar de bodem en een bodem met de hals. Golf 8 ronde 4: de wanden beginnen 0,3 mm onder de
+  // huid (was 4 mm); met de kier rond de klep keek je anders schuin langs de rand van het scherm achter de huid
+  const tkWall = -0.0003;
   const tkBowl = cache('sysTankkom', () => merge([
-    ...[bodTkZ[0], bodTkZ[1]].map(zz => patch((y, t) => [-lerp(-tkSkin(zz, y, -0.004)[0], tkFloor, t), y, zz], bodTkY[0], bodTkY[1], 8, () => [0, 1], 4)),
-    ...bodTkY.map(yy => patch((z, t) => [-lerp(-tkSkin(z, yy, -0.004)[0], tkFloor, t), yy, z], bodTkZ[0], bodTkZ[1], 8, () => [0, 1], 4)),
+    ...[bodTkZ[0], bodTkZ[1]].map(zz => patch((y, t) => [-lerp(-tkSkin(zz, y, tkWall)[0], tkFloor, t), y, zz], bodTkY[0], bodTkY[1], 8, () => [0, 1], 4)),
+    ...bodTkY.map(yy => patch((z, t) => [-lerp(-tkSkin(z, yy, tkWall)[0], tkFloor, t), yy, z], bodTkZ[0], bodTkZ[1], 8, () => [0, 1], 4)),
     patch((z, t) => [-tkFloor, lerp(bodTkY[0], bodTkY[1], t), z], bodTkZ[0], bodTkZ[1], 6, () => [0, 1], 6),
   ]));
   const vulRoute = [[-0.426, 0.30, -0.84], [-0.458, 0.304, -0.86], [-0.467, 0.32, -0.93], [-0.467, 0.34, -1.0], [-0.467, 0.3475, -1.07], [-0.467, 0.3475, -1.14], [-0.467, 0.3475, -1.2], [-0.455, 0.37, -1.26], [-0.447, 0.40, -1.32], [-0.40, 0.45, -1.43], [-0.40, 0.60, -1.52], [-0.44, 0.74, -1.58], [-0.62, 0.80, -1.62], [-0.76, 0.84, -1.66], [-tkNeck, flapY, flapZ]];   // route van de vulpijp, van de tank naar de tankhals
@@ -426,7 +433,7 @@ function buildFuel() {
     A('Tankklep', { d: 'Tankklep in het rechter achterscherm, in lak uitgevoerd. Opent na ontgrendelen door op de achterrand te drukken en draait dan ongeveer 140 graden om de scharnierrand aan de voorkant (hoek geschat).', ex: [-0.34, 0.05, 0],
       open: hinge(tkSkin(bodTkZ[1] + 0.004, flapY, 0.004), [0, 1, 0], 140 * PI / 180, { min: 112 * PI / 180, label: 'Tankklep', look: { dir: [-1, 0.3, -0.45], nodes: ['Tankklep', 'Tankkom'] } }) }, [
       P('Tankklep buitenkant', flapOut, MAT.paint, { d: 'Buitenkant van de tankklep in carrosseriekleur, die de welving van het scherm volgt.', ex: [-0.04, 0.01, 0] }),
-      P('Tankklep binnenzijde', flapIn, MAT.plasticGrey, { d: 'Grijze kunststof binnenzijde van de tankklep met de randen, zichtbaar als de klep openstaat; de randen lezen bij een dichte klep als de naad.', ex: [0.04, 0, 0] }),
+      P('Tankklep binnenzijde', flapIn, MAT.plastic, { d: 'Zwarte kunststof binnenzijde van de tankklep met de randen, zichtbaar als de klep openstaat; bij een dichte klep zie je de randen in de kier van ongeveer 3 mm rond de klep.', ex: [0.04, 0, 0] }),
     ]),
     sysClamp('Klem vulpijp', [-0.44, 0.302, -0.845], V3(1, 0, 0), 0.0185, V3(0.5, 0, 0)),
   ]);
