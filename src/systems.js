@@ -407,9 +407,10 @@ function buildFuel() {
     ...[flapZ0, flapZ1].map(zz => patch((y, t) => tkSkin(zz, y, lerp(fo, fi, t)), flapY0, flapY1, 8, () => [0, 1], 1)),
     ...[flapY0, flapY1].map(yy => patch((z, t) => tkSkin(z, yy, lerp(fo, fi, t)), flapZ0, flapZ1, 10, () => [0, 1], 1)),
   ]));
-  // tankkom: vier wanden van de rand van de opening naar de bodem en een bodem met de hals. Golf 8 ronde 4: de wanden beginnen 0,3 mm onder de
-  // huid (was 4 mm); met de kier rond de klep keek je anders schuin langs de rand van het scherm achter de huid
-  const tkWall = -0.0003;
+  // tankkom: vier wanden van de rand van de opening naar de bodem en een bodem met de hals. Golf 8 ronde 4: de wanden beginnen 1,2 mm onder de
+  // huid (was 4 mm); met de kier rond de klep keek je anders schuin langs de rand van het scherm achter de huid. Niet hoger: de integriteitstest
+  // eist dat een onderdeel dat geen carrosserie is minstens 1 mm binnen de huid blijft (op 0,3 mm: 'steekt zijdelings door de huid')
+  const tkWall = -0.0012;
   const tkBowl = cache('sysTankkom', () => merge([
     ...[bodTkZ[0], bodTkZ[1]].map(zz => patch((y, t) => [-lerp(-tkSkin(zz, y, tkWall)[0], tkFloor, t), y, zz], bodTkY[0], bodTkY[1], 8, () => [0, 1], 4)),
     ...bodTkY.map(yy => patch((z, t) => [-lerp(-tkSkin(z, yy, tkWall)[0], tkFloor, t), yy, z], bodTkZ[0], bodTkZ[1], 8, () => [0, 1], 4)),
