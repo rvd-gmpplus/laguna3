@@ -489,6 +489,13 @@ function buildDoor(s, isFront) {
     const k = k0 + Math.round(j), [za, zb] = cardZr(cardPts((cz0 + cz1) / 2)[k][1], k), z = lerp(za, zb, u), q = cardPts(z)[k]; return [s * q[0], q[1], q.length > 2 ? q[2] : z];
   }, 0, 1, nu, () => [0, k1 - k0], k1 - k0, ub);
   const cardU = br.filter(b => b > cz0 && b < cz1).map(b => (b - cz0) / (cz1 - cz0)), trimP = cardSurf(0, 11, 22, cardU), raamlijst = cardSurf(11, 16, 22, cardU);
+  // voorportier, golf 7 ronde 3 (foto portier bestuurder open): de zwarte bovenlijst van de portierkaart loopt onder de binnendriehoek door
+  // tot de voorrand van het portier; daar keek je tussen het einde van de kaart (z 0,803) en de voorrand op de gelakte binnenkant van het
+  // buitenpaneel. Staande strook van y 0,88 tot 0,924, 10 mm binnen het ruitvlak (onder de gordel recht omlaag), 2 mm achter de
+  // binnendriehoek; begint 2 cm achter het einde van de kaart, zodat er geen spleet tussen beide te zien is
+  const cardFront = isFront && patch((z, v) => {
+    const y = lerp(0.88, 0.924, v), x = bodGhHalf(z, y > YT(z) ? bodQy(z, y) : 0)[0] - 0.010; return [s * x, y, z];
+  }, cz1 - 0.02, 0.898, 10, () => [0, 1], 8);
   // band op het kaartvlak tussen y0 en y1 (functies van z), dx meter naar binnen; uiteinden begrensd zoals de kaart
   const cardBand = (za, zb, y0f, y1f, dx, nu, nv = 2) => patch((u, v) => {
     const ym = lerp(y0f((za + zb) / 2), y1f((za + zb) / 2), v), [ca, cb] = cardZr(ym, 11), z = lerp(Math.max(za, ca), Math.min(zb, cb), u), y = lerp(y0f(z), y1f(z), v);
@@ -692,7 +699,7 @@ function buildDoor(s, isFront) {
     const gT = cardX(spZ, spY + spR), gB = cardX(spZ, spY - spR), gK = (gT - gB) / (2 * spR), gX = (gT + gB) / 4 + cardX(spZ, spY) / 2;
     const lamp = isFront && patch((th, j) => { const r = j / 3, z = lZ + 0.05 * r * Math.cos(th), y = lY + 0.015 * r * Math.sin(th); return [s * (cardX(z, y) - 0.001 - 0.003 * Math.sqrt(Math.max(0, 1 - r * r))), y, z]; }, 0, 2 * PI, 20, () => [0, 3], 3);
     return [
-      P('Bekledingspaneel', trimP, MAT.bodDoorCard, { d: 'Gespoten kunststof drager van de portierkaart, van de onderrand tot de raamschacht; dekt binnenpaneel, raammechaniek en geleiderails af.', ex: [0, 0, 0] }),
+      P('Bekledingspaneel', cardFront ? merge([trimP, cardFront]) : trimP, MAT.bodDoorCard, { d: 'Gespoten kunststof drager van de portierkaart, van de onderrand tot de raamschacht; dekt binnenpaneel, raammechaniek en geleiderails af.' + (isFront ? ' Vooraan loopt de bovenlijst onder de binnenkant van de spiegeldriehoek door tot de voorrand van het portier.' : ''), ex: [0, 0, 0] }),
       P('Raamlijst', raamlijst, MAT.bodSatinBlack, { d: 'Ronde zwarte bovenrand van de portierkaart langs de raamschacht, waarop het binnenste raamschachtrubber ligt.', ex: [0, 0.05, 0] }),
       P('Inzet', inzet, MAT.leather, { d: 'Brede inzet in zwart leder met nerf tussen de armsteun en de sierlijst, als kussen met een afgeronde rand; loopt vooraan tot in de boog van de sierlijst.', ex: [-s * 0.03, 0.02, 0] }),
       P('Sierlijst pianozwart', merge([lijstB, swoosh]), MAT.bodPiano, { d: 'Brede hoogglans zwarte sierlijst onder de schouder van de portierkaart (vooraan 3,5 cm, achteraan 2 cm), die vooraan in een holle boog voor de greep langs omlaag buigt tot de voorkant van de armsteun; samen met de armsteun vormt de boog de trekgreep.', ex: [-s * 0.04, 0.04, 0] }),
