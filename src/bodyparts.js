@@ -1164,7 +1164,9 @@ function buildHeadlight(s) {
   const endWall = zz => patch((u, t) => bodLow(zz, lerp(...sideR(s, lo(zz), hi(zz)), u), t), 0, 1, 8, () => [-0.002, 0.07], 3);
   const back = at(2.0, 0.5, 0.075);
   return A(`Koplamp ${n}`, { d: 'Bi-xenon directionele koplamp met dagrijlicht en zwart masker; loopt ver terug langs het voorscherm (fase 2, standaard op Initiale Paris).', ex: [s * 0.32, 0.12, 0.62] }, [
-    P('Afdekglas', reg(lo, hi, -0.003), MAT.lensClear, { d: 'Gebogen polycarbonaat afdekglas dat het scherm- en kapvlak volgt.', ex: out(0.26) }),
+    // golf 8 ronde 2: 0,5 mm boven de huid (was 3 mm): trede tegen bumper, scherm en kap was 3 tot 3,8 mm, nu hoogstens ca. 1,5 mm
+    // (de bumperschaal ligt met zijn koorden tot 1 mm binnen de huid)
+    P('Afdekglas', reg(lo, hi, -0.0005), MAT.lensClear, { d: 'Gebogen polycarbonaat afdekglas dat het scherm- en kapvlak volgt.', ex: out(0.26) }),
     P('Zwart masker', merge([reg(z => lo(z) + (hi(z) - lo(z)) * 0.7, z => hi(z) - 0.002, 0.012), patch((z, p) => bodLow(z, p, 0.013), z0, 1.9, 8, z => sideR(s, lo(z) + 0.002, hi(z) - 0.002), 4)]), MAT.blackGloss, { d: 'Hoogglans zwart masker als ooglid boven de projectoren en achterin de lamp, kenmerkend voor de fase 2-koplamp.', ex: out(0.15) }),
     P('Reflectorvlak', holes(patch((z, p) => bodLow(z, p, 0.016), 1.9, z1, 48, z => sideR(s, lo(z) + 0.002, lo(z) + (hi(z) - lo(z)) * 0.7), 14)), MAT.chrome, { d: 'Verchroomd vlak rond de projectoren onder het masker.', ex: out(0.1) }),
     P('Lamphuis', merge([reg(lo, hi, 0.07), wall(lo), wall(hi), endWall(z0), endWall(z1), reg(z => lo(z) - 0.007, z => lo(z) + 0.002, 0.005), reg(z => hi(z) - 0.002, z => hi(z) + 0.006, 0.005)]), MAT.plastic, { d: 'Kunststof lamphuis waarin alle modules zijn gemonteerd.', ex: [0, 0, 0] }),
@@ -1659,7 +1661,8 @@ function buildBody() {
   const cage = A('Carrosseriekooi', { d: 'De gelaste ruwbouw (body in white): vloer, voorbouw, stijlen, dak en achterbouw, met de vaste buitenpanelen.', ex: [0, 0, 0] }, [floorGrp, frontGrp, sideRoof, rear, liners]);
 
   /* ================= motorkap ================= */
-  const hoodS = z => bodHoodS(z) + 0.0018;
+  // rand van de kap 0,0012 in s binnen de naadlijn (golf 8 ronde 2, was 0,0018): de naad met het scherm gemeten 5,2 in plaats van 6,8 mm
+  const hoodS = z => bodHoodS(z) + 0.0012;
   const hoodBr = bodDense(2.2, bodHoodZ1 - 0.002, 10).concat([bodHoodZ1 - 0.0005]);
   // binnenframe en isolatie op de hoogte van het dek zonder de verlaging van golf 5j (bodHoodDrop): de buitenhuid ligt daardoor tot
   // 2 cm dichter op het binnenframe (3 cm onder het dek), zonder dat het frame in de motorruimte zakt
@@ -1751,7 +1754,11 @@ function buildBody() {
   const fbLo = () => S1 * 0.45;
   // de bovenrand onder de naad met het scherm ligt 9 mm (in hoogte) onder de onderrand van het scherm (was 4 mm): de naad is
   // daardoor overal ca. 1,5 mm breed met de schermflens eronder, in plaats van een spleet van hoogstens 0,7 mm die als stippellijn las
-  const fbHi = z => { if (z < bodHLZ0) return bodSY(z, bodSeamF(z) - 0.005 * clamp((bodHLZ0 - z) / 0.012, 0, 1)); if (z <= bodHLZ1) return hlLow(z) - 0.002; const h = bodHoodS(z); return h >= 1 ? 1 : h - 0.002; };   // voor de kap: beide helften sluiten op de hartlijn
+  // golf 8 ronde 2: de bovenrand springt van de onderrand van de koplamp naar de kapnaad op fbJ, 0,5 mm voor het eind van de lamp
+  // (bodHLZ1 - 0,002) in plaats van op bodHLZ1: daartussen zat een strook van 2 mm zonder bumper en keek je naast de binnenspits
+  // van de koplamp in de motorruimte (kier 4 tot 5 mm)
+  const fbJ = bodHLZ1 - 0.0015;
+  const fbHi = z => { if (z < bodHLZ0) return bodSY(z, bodSeamF(z) - 0.005 * clamp((bodHLZ0 - z) / 0.012, 0, 1)); if (z < fbJ - 1e-7) return hlLow(z) - 0.002; const h = bodHoodS(z); return h >= 1 ? 1 : h - 0.002; };   // voor de kap: beide helften sluiten op de hartlijn
   // extra stations vlak voor de neus van de kap: daar loopt de kapvoorrand bijna dwars en liet lineaire interpolatie een gaatje open
 const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   const fbBr = bodDense(1.752, 1.82, 4).concat(bodDense(2.15, ZF, 16), bodDense(2.235, bodHoodZ1, 8), bodHoodTip);
@@ -1786,7 +1793,9 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   const bodLipTop = 0.303;   // hoogste punt van de onderlip: in de rubberlijn onder de chromen inlaatlijst, net onder het chroom (zie Onderlip)
   // stations naar doorbuiging (koorde hoogstens 1 mm, golf 5b-2): de stations voor de neus van de kap en de knikken van de bovenrand
   // (koplamp en kapvoorrand) blijven vast, de overige stations uit fbBr zijn kandidaten; was 56 x 30 gelijke stappen plus fbBr
-  const shF = bodSagSide(1.752, ZF, z => [fbLo(z), fbHi(z)], 0.001, { keep: bodHoodTip.concat([bodHLZ0, bodHLZ1, bodHoodZ1]), extra: fbBr, nuF: 240, nvF: 128 });
+  // golf 8 ronde 2: vaste stations op het eind van de koplamp en op fbJ, waar de bovenrand van de onderrand van de lamp naar de kapnaad
+  // springt; zonder die twee liep de koorde schuin omhoog en zag je naast de binnenspits van de koplamp door een driehoekig gat
+  const shF = bodSagSide(1.752, ZF, z => [fbLo(z), fbHi(z)], 0.001, { keep: bodHoodTip.concat([bodHLZ0, fbJ - 0.0005, fbJ, bodHLZ1, bodHoodZ1]), extra: fbBr, nuF: 240, nvF: 128 });
   // golf 5k: gelast met bodCreaseWeld. Het vroegere bodWeld laste op positie en normaal; na het knippen had elke driehoek een eigen vlakke
   // normaal en was de schaal vlak gearceerd. Met weldAll (ronde 1) gaf de knik onder de binnenhoek van de koplamp (station bodHLZ1) een lichte streep
   const shellF = bodCreaseWeld(merge([shF.geo(L), shF.geo(R), bodCap(ZF - 1e-4, 1)].map(g => bodClipPoly(g, grHolePoly, 2.1))));
