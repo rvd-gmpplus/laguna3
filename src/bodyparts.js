@@ -216,9 +216,22 @@ function bodGhAt(z, q, out = 0) { const [x, y] = bodGhHalf(z, q); return [x + ou
 const bodYG = z => { const g = bodGh(z); return g.yb + (g.ye - g.yb) * (bodQG / bodQS); };   // bovenrand zijruit
 const bodQG = 0.505;                                                                          // q van de bovenrand van de zijruiten
 // wielbooglip: dunne flens van r = ARCH tot ARCH + 0,04 net boven de huid
-function archLip(s, az) {
-  return patch((a, t) => { const r = ARCH + 0.004 + t * 0.036, z = az + r * Math.cos(a), y = AY + r * Math.sin(a), p = bodAt(z, y, 0.004 * (1 - t) + 0.001); return [s * p[0], p[1], p[2]]; },
-    0.02, PI - 0.02, 40, () => [0, 1], 2);
+// part (golf 8 ronde 2, voorste boog): 'scherm' is het deel achter de naad met de voorbumper (bodSeamF, tot 4 mm boven de naad zoals de
+// onderrand van het scherm), 'bumper' het deel ervoor (tot 5 mm eronder, zoals de bovenrand van de bumper). Tot ronde 2 hoorde de hele lip bij
+// het scherm en lag het voorste stuk (y 0,33 tot 0,47) op de bumper: trede tot 4,5 mm in de naad. Met part loopt de lip onderaan voor
+// (de eerste 0,3 rad, ca. 12 cm) glad uit in de huid: daar grenzen bumper en scherm aan de binnenrand van de lip. Zonder part de hele boog.
+function archLip(s, az, part) {
+  const pt = (a, t) => { const r = ARCH + 0.004 + t * 0.036; return [az + r * Math.cos(a), AY + r * Math.sin(a)]; };
+  const cutA = (t, dy) => {
+    const g = a => { const [z, y] = pt(a, t); return y - bodSeamF(z) - dy; };
+    let lo = 0.02, hi = 1.2; if (g(lo) >= 0) return lo;
+    for (let k = 0; k < 40; k++) { const m = (lo + hi) / 2; if (g(m) >= 0) hi = m; else lo = m; }
+    return hi;
+  };
+  const a0 = part === 'scherm' ? t => cutA(t, 0.004) : () => 0.02, a1 = part === 'bumper' ? t => cutA(t, -0.005) : () => PI - 0.02;
+  const fade = a => part ? sstep((a - 0.02) / 0.3) : 1;
+  return patch((u, t) => { const a = lerp(a0(t), a1(t), u), [z, y] = pt(a, t), p = bodAt(z, y, 0.0004 + (0.004 * (1 - t) + 0.0006) * fade(a)); return [s * p[0], p[1], p[2]]; },
+    0, 1, part === 'bumper' ? 6 : 40, () => [0, 1], 2);
 }
 /* ---------- naden en ruitlijnen (zijaanzicht, onderzoek exterieur §3) ---------- */
 // voorrand voorportier (schuin): recht van de onderhoek (z 0,84 op y 0,31) naar de punt op de gordel (z bodFDZ1). Golf 8 ronde 2 (vormbesluit,
@@ -1741,7 +1754,7 @@ function buildBody() {
   const fenderGeo = s => bodLowZip(s, bodZipZs(0.842, bodHLZ0 - 0.002, 60, ARCH_BREAKS.concat(bodDense(1.75, 1.81, 4)), 0.842, fJ, 0.0018),
     z => z >= fJ - 1e-6 ? bodLinCol(ffLo(z), ffHi(z), 22) : bodZipCol(ffLo(z), ffHi(z), fLv, 0.004));
   const fender = s => A(`Voorscherm ${sn(s)}`, { d: 'Geschroefd voorscherm boven het voorwiel, met wielboogflens.', ex: [s * 0.5, 0.08, 0.22] }, [
-    P('Schermpaneel', merge([fenderGeo(s), archLip(s, AXF)]), MAT.paint, { d: 'Kunststof of stalen spatbord, in carrosseriekleur gelakt.', ex: [s * 0.04, 0, 0] }),
+    P('Schermpaneel', merge([fenderGeo(s), archLip(s, AXF, 'scherm')]), MAT.paint, { d: 'Kunststof of stalen spatbord, in carrosseriekleur gelakt.', ex: [s * 0.04, 0, 0] }),
     ...[1.0, 1.25, 1.5, 1.72].map((z, i) => P(`Schermbout ${i + 1}`, hexBolt(0.02, 0.007, 'y'), MAT.steel, { d: 'Bout langs de bovenflens waarmee het scherm aan de binnenwand vastzit.', p: [s * (bodSec(z).xe - 0.03), YT(z) - 0.012, z], ex: [0, 0.06, 0] })),
     P('Schermsteun', G.rbox(0.03, 0.08, 0.06, 0.006), MAT.darkSteel, { d: 'Steun die de voorkant van het scherm aan de frontmodule verbindt.', p: [s * (surfX(1.78, 0.6) - 0.05), 0.6, 1.78], ex: [-s * 0.04, 0, 0.04] }),
     // flenzen onder de naden met de motorkap (6 mm onder de huid) en met de bumper (4 mm): door de naden zag je eerst afwisselend het lichte
@@ -1877,7 +1890,8 @@ const bodHoodTip = [2.284, 2.286, 2.288, 2.289, 2.2895, 2.2899, 2.2903];
   // bovenrand van de bovengrille: 6 mm onder de kapvoorrand (de boog van de koplampspits naar de neus, zie bodHoodS), op elke x gemeten
   const bodGrTop = x => { const z = bodHLZ1 + (bodHoodZ1 - bodHLZ1) * Math.sqrt(Math.max(0, 1 - (x / bodHoodX0) ** 2)); return halfPt(z, bodSAtX(z, x))[1] - 0.006; };
   const frontBumper = A('Voorbumper', { d: 'Kunststof bumperschaal van de fase 2 met een groot zwart grillevlak (omgekeerd trapezium met chromen U, vier golvende lamellen en het kentekenvlak) en in elke hoek een uitsparing met mistlamp, ribben en een chromen wenkbrauw.', ex: [0, -0.04, 0.72] }, [
-    P('Bumperschaal voor', shellF, MAT.paint, { d: 'Gespoten kunststof bumperschaal in carrosseriekleur.', ex: [0, 0, 0] }),
+    // met het voorste stuk van de wielbooglip (archLip, golf 8 ronde 2), dat op de bumper ligt
+    P('Bumperschaal voor', merge([shellF, archLip(L, AXF, 'bumper'), archLip(R, AXF, 'bumper')]), MAT.paint, { d: 'Gespoten kunststof bumperschaal in carrosseriekleur.', ex: [0, 0, 0] }),
     // flens onder de naad tussen kapvoorrand en bumper (6 mm onder de huid): door de naad is geen motorruimte meer te zien
     P('Kapnaadflens', merge([L, R].map(sd => lowSide(sd, bodHLZ1 - 0.03, bodHoodZ1, 20, z => { const h = bodHoodS(z); return [Math.min(0.999, h - 0.008), Math.min(1, h + 0.008)]; }, 2, bodDense(2.27, bodHoodZ1, 6).concat(bodHoodTip), 0.006))), MAT.plastic, { d: 'Kunststof flens van de bumperschaal onder de naad met de voorrand van de motorkap.', ex: [0, 0.03, 0.04] }),
     // golf 5n ronde 2: de bovengrille is het bovenste deel van het grote grillevlak: een glanzend zwarte band van 3,5 cm direct onder de
